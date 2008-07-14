@@ -58,12 +58,15 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_fBeatFirst = -1.;
     m_iScore = 0;
     m_iId = -1;
+    m_pVisualWave = 0;
     m_pWave = 0;
     m_pSegmentation = 0;
     m_pControlObjectBpm = 0;
     m_pControlObjectDuration = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
+
+    m_dVisualResampleRate = 0;
 
     m_BpmDetector = bpmDetector;
 
@@ -123,6 +126,9 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDe
 
     m_BpmDetector = bpmDetector;
 
+    m_pVisualWave = 0;
+    m_dVisualResampleRate = 0;
+    
     m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
@@ -848,6 +854,27 @@ void TrackInfoObject::setId(int iId)
     m_qMutex.unlock();
 }
 
+QVector<float> * TrackInfoObject::getVisualWaveform() {
+    m_qMutex.lock();
+    QVector<float> *pVisualWaveform = m_pVisualWave;
+    m_qMutex.unlock();
+    return pVisualWaveform;
+}
+
+void TrackInfoObject::setVisualResampleRate(double dVisualResampleRate) {
+    m_qMutex.lock();
+    m_dVisualResampleRate = dVisualResampleRate;
+    m_qMutex.unlock();
+}
+
+double TrackInfoObject::getVisualResampleRate() {
+    double rate;
+    m_qMutex.lock();
+    rate = m_dVisualResampleRate;
+    m_qMutex.unlock();
+    return rate;
+}
+
 Q3MemArray<char> * TrackInfoObject::getWaveSummary()
 {
     m_qMutex.lock();
@@ -864,6 +891,12 @@ Q3ValueList<long> * TrackInfoObject::getSegmentationSummary()
     m_qMutex.unlock();
 
     return pSegmentationSummary;
+}
+
+void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
+    m_qMutex.lock();
+    m_pVisualWave = pWave;
+    m_qMutex.unlock();
 }
 
 void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long> * pSegmentation)

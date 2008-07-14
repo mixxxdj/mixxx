@@ -55,6 +55,7 @@ public:
 protected:
     /** Main thread loop */
     void run();
+    void visualWaveformGen(TrackInfoObject *pTrackInfoObject);
 
     /** Queue holding files to generate a summary for */
     Q3PtrQueue<TrackInfoObject> m_qQueue;
@@ -63,8 +64,10 @@ protected:
     /** Wait condition */
     QWaitCondition m_qWait;
     QMutex m_qWaitMutex;
-	/** Pointer to config object **/
-	ConfigObject<ConfigValue> *m_Config;
+    /** Pointer to config object **/
+    ConfigObject<ConfigValue> *m_Config;
+    
+    ControlObjectThread *m_pControlVisualResample;
 };
 
 #endif

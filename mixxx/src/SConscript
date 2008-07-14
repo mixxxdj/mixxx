@@ -280,11 +280,9 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp  wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp
  readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
  track.cpp trackcollection.cpp trackplaylist.cpp wtracktableview.cpp wtracktablemodel.cpp wpromotracksmodel.cpp proxymodel.cpp xmlparse.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
- enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp bpmscheme.cpp  peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
+ enginetemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp bpmscheme.cpp  peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
  enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp
- wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp
- visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp
- visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualobject.cpp
+ waveformviewerfactory.cpp wvisualsimple.cpp wwaveformviewer.cpp wglwaveformviewer.cpp waveform/waveformrenderer.cpp waveform/waveformrenderbeat.cpp
  imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
  trackinfoobject.cpp soundsource.cpp
  midiledhandler.cpp

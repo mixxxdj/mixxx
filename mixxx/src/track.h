@@ -233,6 +233,10 @@ private:
     ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
     /** Pointer to waveform summary generator */
     WaveSummary *m_pWaveSummary;
+
+    /** Pointer to ControlObject for Ch1 and Ch2 visual resample rate */
+    ControlObjectThreadMain *m_pVisualResampleCh1, *m_pVisualResampleCh2;
+
     /** Pointer to BPM detection queue */
     BpmDetector *m_pBpmDetector;
     /** Pointer to the library scanner */

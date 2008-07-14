@@ -35,8 +35,6 @@ class Reader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-class WVisualWaveform;
-class VisualChannel;
 class EngineBufferCue;
 
 /**
@@ -72,8 +70,7 @@ public:
     /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
-    /** Pointer to visual widget */
-    void setVisual(WVisualWaveform *pVisualWaveform);
+
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
     /** Returns current bpm value (not thread-safe) */
@@ -87,11 +84,9 @@ public:
     /** Reset buffer playpos and set file playpos. This must only be called while holding the
       * pause mutex */
     void setNewPlaypos(double);
-    /** Return VisualChannel pointer */
-    VisualChannel *getVisualChannel();
+
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
-    CSAMPLE *update_visual();
     const char *getGroup();
     /** Set rate change when temp rate button is pressed */
     static void setTemp(double v);
@@ -101,9 +96,6 @@ public:
     static void setPerm(double v);
     /** Set rate change when perm rate small button is pressed */
     static void setPermSmall(double v);
-    /** Notify used to call seek when playpos slider changes */
-    //Monitor visualPlaypos;
-    float visualRate;
 
     /** Lock abs and buffer playpos vars, so that they can be accessed through
       * getBufferPlaypos() and getAbsPlaypos() from another thread */
@@ -181,6 +173,7 @@ private:
     ControlTTRotary *wheel, *m_pControlScratch;
     ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
+    ControlPotmeter *visualPlaypos;
     ControlObject *m_pFileBpm, *m_pSampleRate;
     ConfigObject<ConfigValue> *m_pConfig; 
                  
@@ -201,8 +194,6 @@ private:
     ControlPushButton *fwdButton, *backButton, *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
-    /** Pointer to VisualChannel */
-    VisualChannel *m_pVisualChannel;
 
     CSAMPLE *read_buffer_prt;
 

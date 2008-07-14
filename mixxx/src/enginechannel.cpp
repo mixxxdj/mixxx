@@ -54,14 +54,6 @@ EngineChannel::~EngineChannel()
     delete m_pEngineTemporal;
 }
 
-void EngineChannel::setVisual(EngineBuffer * pEngineBuffer)
-{
-    Q_ASSERT(pEngineBuffer);
-#ifdef TEMPORAL
-    m_pEngineTemporal->addVisual(pEngineBuffer);
-#endif
-}
-
 ControlPushButton * EngineChannel::getPFL()
 {
     return pfl;
@@ -77,4 +69,13 @@ void EngineChannel::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     // Temporal filtering
     m_pEngineTemporal->process(pOut, pOut, iBufferSize);
 #endif
+}
+
+void EngineChannel::setEngineBuffer(EngineBuffer *pEngineBuffer) {
+
+    Q_ASSERT(pEngineBuffer);
+#ifdef TEMPORAL
+    m_pEngineTemporal->setEngineBuffer(pEngineBuffer);
+#endif
+
 }

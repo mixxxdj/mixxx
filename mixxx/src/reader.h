@@ -30,7 +30,6 @@
 class ReaderExtractWave;
 class ReaderExtractBeat;
 class EngineBuffer;
-class VisualChannel;
 class ControlObjectThread;
 
 /**
@@ -48,7 +47,7 @@ public:
     Reader(EngineBuffer *_enginebuffer, QMutex *_pause);
     ~Reader();
 
-    void addVisual(VisualChannel *pVisualChannel);
+
     /** Request new track to be loaded. This method is thread safe, but may block */
     void requestNewTrack(TrackInfoObject *pTrack, bool bStartAtEndPos=false);
     /** Request seek. This method is thread safe, but may block */
@@ -142,8 +141,6 @@ private:
     int file_srate;
     /** Local copy of file length */
     long int file_length;
-    /** Pointer to VisualChannel */
-    VisualChannel *m_pVisualChannel;
 };
 
 #endif

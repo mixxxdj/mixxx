@@ -52,12 +52,15 @@
 #include "wnumberbpm.h"
 #include "wnumberrate.h"
 #include "wpixmapstore.h"
-#include "wvisualwaveform.h"
-#include "wvisualsimple.h"
+
 #include "woverview.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
+#include "waveformviewerfactory.h"
+#include "wvisualsimple.h"
+#include "wglwaveformviewer.h"
+#include "wwaveformviewer.h"
 
 #include "imgloader.h"
 #include "imginvert.h"
@@ -66,7 +69,7 @@
 #include "mixxx.h"
 #include "defs_promo.h"
 
-MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
+MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
 {
     view = 0;
     //    m_qWidgetList.setAutoDelete(true);
@@ -106,7 +109,7 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     setupColorScheme(docElem, pConfig);
 
     // Load all widgets defined in the XML file
-    createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
+    createAllWidgets(docElem, parent, pConfig);
 
 #ifdef __WIN__
 #ifndef QT3_SUPPORT
@@ -124,17 +127,33 @@ MixxxView::~MixxxView()
 
 void MixxxView::checkDirectRendering()
 {
-    // Check if DirectRendering is enabled and display warning
-    if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
-        (m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
-    {
-	if(m_pconfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
-	{
-	    QMessageBox::warning(0, "OpenGL Direct Rendering",
-                             "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
-	    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+    // IF
+    //  * A waveform viewer exists
+    // AND
+    //  * The waveform viewer is an OpenGL waveform viewer
+    // AND
+    //  * The waveform viewer does not have direct rendering enabled.
+    // THEN
+    //  * Warn user
+
+    // TODO rryan -- re-integrate with 'new' GL viewer
+    
+    
+    if((m_pVisualCh1 &&
+	WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1) == WAVEFORM_GL &&
+	!((WGLWaveformViewer *)m_pVisualCh1)->directRendering()) ||
+       (m_pVisualCh2 &&
+	WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2) == WAVEFORM_GL &&
+	!((WGLWaveformViewer *)m_pVisualCh2)->directRendering()))
+        {
+	    if(m_pconfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
+		{
+		    QMessageBox::warning(0, "OpenGL Direct Rendering",
+					 "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+		    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+		}
 	}
-    }
+    
 }
 
 bool MixxxView::activeWaveform()
@@ -282,7 +301,6 @@ void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> 
 
 void MixxxView::createAllWidgets(QDomElement docElem,
                                  QWidget * parent,
-                                 bool bVisualsWaveform,
                                  ConfigObject<ConfigValue> * pConfig) {
     WAbstractControl *currentControl = 0;
     QDomNode node = docElem.firstChild();
@@ -500,88 +518,75 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             // persistent: m_pVisualCh1, m_pVisualCh2
             else if (node.nodeName()=="Visual")
             {
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
-		    if(m_bVisualWaveform) {
-			((WVisualWaveform *)m_pVisualCh1)->setup(node);
-			((WVisualWaveform *)m_pVisualCh1)->resetColors();
-			((WVisualWaveform *)m_pVisualCh1)->show();
-			((WVisualWaveform *)m_pVisualCh1)->repaint();
-		    } else {
-			((WVisualSimple *)m_pVisualCh1)->setup(node);
-			((WVisualSimple *)m_pVisualCh1)->show();
-			((WVisualSimple *)m_pVisualCh1)->repaint();
-		    }
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
+		WaveformViewerType type;
+		
+                if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
-                    if (bVisualsWaveform)
-                    {
-                        m_pVisualCh1 = new WVisualWaveform(this, (QGLWidget *)m_pVisualCh2);
-                        if (((WVisualWaveform *)m_pVisualCh1)->isValid())
-                        {
-                            ((WVisualWaveform *)m_pVisualCh1)->setup(node);
-                            m_pVisualCh1->installEventFilter(m_pKeyboard);
-                            m_bVisualWaveform = true;
-                        }
-                        else
-                        {
-                            m_bVisualWaveform = false;
-                            delete m_pVisualCh1;
-			    m_pVisualCh1 = 0;
-                        }
-                    }
-                    if (!m_bVisualWaveform)
-                    {
-                        m_pVisualCh1 = new WVisualSimple(this, 0);
-                        ((WVisualSimple *)m_pVisualCh1)->setup(node);
-                        m_pVisualCh1->installEventFilter(m_pKeyboard);
-                    }
-                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
-                    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-                }
+		    if(m_pVisualCh1 == NULL) {
+			type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1);
 
-                if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
-		    if(m_bVisualWaveform) {
-			((WVisualWaveform *)m_pVisualCh2)->setup(node);
-			((WVisualWaveform *)m_pVisualCh2)->resetColors();
-			((WVisualWaveform *)m_pVisualCh2)->show();
-			((WVisualWaveform *)m_pVisualCh2)->repaint();
+			m_pVisualCh1->installEventFilter(m_pKeyboard);
+
+			// Hook up [Channel1],wheel Control Object to the Visual Controller
+			ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+			p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+			//ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 		    } else {
-			((WVisualSimple *)m_pVisualCh2)->setup(node);
-			((WVisualSimple *)m_pVisualCh2)->show();
-			((WVisualSimple *)m_pVisualCh2)->repaint();
+			type = WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1);
 		    }
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
-                {
-                    if (bVisualsWaveform)
-                    {
-                        m_pVisualCh2 = new WVisualWaveform(this, (QGLWidget *)m_pVisualCh1);
-                        if (((WVisualWaveform *)m_pVisualCh2)->isValid())
-                        {
-                            ((WVisualWaveform *)m_pVisualCh2)->setup(node);
-                            m_pVisualCh2->installEventFilter(m_pKeyboard);
-                            m_bVisualWaveform = true;
-                        }
-                        else
-                        {
-                            m_bVisualWaveform = false;
-                            delete m_pVisualCh2;
-			    m_pVisualCh2 = 0;
-                        }
-                    }
-                    if (!m_bVisualWaveform)
-                    {
-                        m_pVisualCh2 = new WVisualSimple(this, 0);
-                        ((WVisualSimple *)m_pVisualCh2)->setup(node);
-                        m_pVisualCh2->installEventFilter(m_pKeyboard);
-                    }
-                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
-                    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-                }
 
+		    // Things to do whether the waveform was previously created or not
+		    if(type == WAVEFORM_GL) {
+			m_bVisualWaveform = true; // TODO : remove this crust
+			((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
+			// TODO rryan re-enable this later
+			/*
+			((WVisualWaveform*)m_pVisualCh1)->resetColors();
+			*/
+		    } else if (type == WAVEFORM_WIDGET) {
+			m_bVisualWaveform = true;
+			((WWaveformViewer *)m_pVisualCh1)->setup(node);
+		    } else if (type == WAVEFORM_SIMPLE) {
+			((WVisualSimple*)m_pVisualCh1)->setup(node);
+		    }
+		    ((QWidget*)m_pVisualCh1)->show();
+		    ((QWidget*)m_pVisualCh1)->repaint();
+		    
+		}
+		else if (WWidget::selectNodeInt(node, "Channel")==2)
+		{
+		    if(m_pVisualCh2 == NULL) {
+			type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2);
+			
+			m_pVisualCh2->installEventFilter(m_pKeyboard);
+			
+			// Hook up [Channel1],wheel Control Object to the Visual Controller
+			ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+			p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+			//ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+		    }  else {
+			type = WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2);
+		    }
+		    
+		    // Things to do whether the waveform was previously created or not
+		    if(type == WAVEFORM_GL) {
+			m_bVisualWaveform = true; // TODO : remove this crust
+			
+			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
+			// TODO rryan re-enable this later
+			/*
+			((WVisualWaveform*)m_pVisualCh2)->resetColors();
+			*/
+		    } else if (type == WAVEFORM_WIDGET) {
+			m_bVisualWaveform = true;
+			((WWaveformViewer *)m_pVisualCh2)->setup(node);
+		    } else if (type == WAVEFORM_SIMPLE) {
+			((WVisualSimple*)m_pVisualCh2)->setup(node);
+		    }
+		    ((QWidget*)m_pVisualCh2)->show();
+		    ((QWidget*)m_pVisualCh2)->repaint();
+		}
+		
                 if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
                     m_bZoom = true;
             }
@@ -745,7 +750,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 }
 
 
-void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<ConfigValue> * pConfig, QString qSkinPath) {
+void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig, QString qSkinPath) {
     QObject *obj;
     int i;
 
@@ -774,7 +779,7 @@ void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<
     //load the skin
     QDomElement docElem = openSkin(qSkinPath);
     setupColorScheme(docElem, pConfig);
-    createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
+    createAllWidgets(docElem, parent, pConfig);
     show();
 
     for (i = 0; i < m_qWidgetList.size(); ++i) {

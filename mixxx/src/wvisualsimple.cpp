@@ -27,8 +27,11 @@
 #include <QPaintEvent>
 #include <QUrl>
 
-WVisualSimple::WVisualSimple(QWidget * pParent, const char * pName) : WWidget(pParent, pName)
+#include "waveform/waveformrenderer.h"
+
+WVisualSimple::WVisualSimple(const char* group, QWidget * pParent, const char * pName) : WWidget(pParent, pName)
 {
+    m_pWaveformRenderer = new WaveformRenderer(group);
     setAcceptDrops(true);
     m_iValue = 64;
 }
@@ -61,13 +64,16 @@ void WVisualSimple::setup(QDomNode node)
 {
     // Setup position and connections
     WWidget::setup(node);
-
+    
     // Size
     QString size = selectNodeQString(node, "Size");
     int x = size.left(size.find(",")).toInt();
     int y = size.mid(size.find(",")+1).toInt();
     setFixedSize(x,y);
 
+    m_pWaveformRenderer->resize(x,y);
+    m_pWaveformRenderer->setup(node);
+    
     // Set constants for line drawing
     m_qMarkerPos1.setX(x/2);
     m_qMarkerPos1.setY(0);
