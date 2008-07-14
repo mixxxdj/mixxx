@@ -43,6 +43,8 @@ const float kfFeatureStepSize = 0.01f;
 #define WAVESUMMARYCONSTANTS
 #endif
 
+class SoundSourceProxy;
+
 class WaveSummary : public QThread
 {
 public:
@@ -55,7 +57,7 @@ public:
 protected:
     /** Main thread loop */
     void run();
-    void visualWaveformGen(TrackInfoObject *pTrackInfoObject);
+    void visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource);
 
     /** Queue holding files to generate a summary for */
     Q3PtrQueue<TrackInfoObject> m_qQueue;
