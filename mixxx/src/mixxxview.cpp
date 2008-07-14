@@ -528,8 +528,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 			m_pVisualCh1->installEventFilter(m_pKeyboard);
 
 			// Hook up [Channel1],wheel Control Object to the Visual Controller
-			ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-			p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+			//ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+			//p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+			
 			//ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 		    } else {
 			type = WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1);
@@ -561,8 +562,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 			m_pVisualCh2->installEventFilter(m_pKeyboard);
 			
 			// Hook up [Channel1],wheel Control Object to the Visual Controller
-			ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-			p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+			//ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+			//p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+
 			//ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 		    }  else {
 			type = WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2);
