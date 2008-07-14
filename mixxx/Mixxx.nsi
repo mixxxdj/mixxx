@@ -15,7 +15,7 @@ Name "Mixxx"
 BrandingText " "
 
 ; The file to write
-OutFile "mixxx-1.6.0-beta3-win.exe"
+OutFile "mixxx-1.6.0-beta4-win.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Mixxx
