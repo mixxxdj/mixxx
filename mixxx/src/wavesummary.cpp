@@ -73,12 +73,13 @@ void WaveSummary::run()
         // Track processing
         //
 
+        // Open sound file
+        SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
+
         // Check if preview has been generated in the meantime
         Q3MemArray<char> *p = pTrackInfoObject->getWaveSummary();
         if (!p || p->size()==0)
         {
-            // Open sound file
-            SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
 
             // Allocate temp buffer
             SAMPLE * pBuffer = new SAMPLE[kiBlockSize*2];
@@ -136,23 +137,23 @@ void WaveSummary::run()
             pTrackInfoObject->setWaveSummary(pData, 0);
 
             delete [] pBuffer;
-            pBuffer = NULL;
-            delete pSoundSource;
-            pSoundSource = NULL;
-            
+            pBuffer = NULL;            
 
             qDebug() << "WaveSummary generation successful for " << pTrackInfoObject->getFilename();
         }
 
         if(pTrackInfoObject->getVisualWaveform() == NULL) {
-            visualWaveformGen(pTrackInfoObject);
+            visualWaveformGen(pTrackInfoObject, pSoundSource);
         }
+
+        delete pSoundSource;
+        pSoundSource = NULL;
+
     }
 }
 
-void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject) {
+void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource) {
     
-    SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
     int numSamples = pSoundSource->length();
     int sampleRate = pSoundSource->getSrate();
     
@@ -259,7 +260,5 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject) {
     
     qDebug() << "WaveSummary :: Waveform downsampling finished.";
 
-    delete pSoundSource;
     delete [] pBuffer;
-
 }
