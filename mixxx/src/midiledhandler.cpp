@@ -2,6 +2,7 @@
 #include "wwidget.h"
 //Added by qt3to4:
 #include <Q3PtrList>
+#include <QDebug>
 
 Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
@@ -9,8 +10,7 @@ MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, d
                                unsigned char status, unsigned char byte1)
     : m_threshold(threshold), m_midi(midi), m_status(status), m_byte1(byte1) {
 
-    m_cobj = ControlObject::getControl(\
-        ConfigKey(group, name));
+    m_cobj = ControlObject::getControl(ConfigKey(group, name));
     
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
     Q_ASSERT(m_cobj);

@@ -41,9 +41,8 @@ public:
     ~EngineChannel();
     void notify(double) {};
     ControlPushButton *getPFL();
-    void setVisual(EngineBuffer *pEngineBuffer);
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-
+    void setEngineBuffer(EngineBuffer* pEngineBuffer);
 private:
     EngineTemporal *m_pEngineTemporal;
     EngineVolume *m_pEngineTemporalVolume;

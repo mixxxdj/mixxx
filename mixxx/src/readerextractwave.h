@@ -28,7 +28,7 @@ class SignalVertexBuffer;
 class ReaderExtractHFC;
 class ReaderExtractBeat;
 class Reader;
-
+class ControlObject;
 // #define EXTRACT
 
 /**
@@ -45,7 +45,6 @@ public:
     ~ReaderExtractWave();
     void newSource(TrackInfoObject *);
     void reset();
-    void addVisual(VisualChannel *pVisualChannel);
     void *getBasePtr();
     int getRate();
     int getLength();
@@ -85,8 +84,7 @@ private:
     ReaderExtractHFC *readerhfc;
     /** Pointer to beat extractor */
     ReaderExtractBeat *readerbeat;
-    /** Pointer to associated VisualBuffer for beat marks */
-    VisualBuffer *m_pVisualBufferMarks;
+    ControlObject *m_pTrackSamples;
 };
 
 #endif

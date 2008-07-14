@@ -16,8 +16,7 @@
 ***************************************************************************/
 
 #include "readerextractbeat.h"
-#include "visual/visualbuffer.h"
-#include "readerevent.h"
+#include "readerevent.h"n
 #include "mathstuff.h"
 #include "peaklist.h"
 #include "probabilityvector.h"
@@ -152,9 +151,6 @@ void ReaderExtractBeat::reset()
     }
     confidence = -1.;
 
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, getBufferSize(), getBufferSize(), getRate()));
 }
 
 void * ReaderExtractBeat::getBasePtr()
@@ -652,9 +648,6 @@ void * ReaderExtractBeat::processChunk(const int _idx, const int start_idx, cons
     textbeat.flush();
 #endif
 
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(updateFrom, frameTo+frameAdd-updateFrom, getBufferSize(), getRate()));
 
     //qDebug() << "from " << frameFrom << "-" << frameTo << ", update from " << updateFrom;
 

@@ -134,6 +134,7 @@ class MixxxApp : public QMainWindow
 
     void slotlibraryMenuAboutToShow();
   
+    
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
@@ -155,6 +156,7 @@ class MixxxApp : public QMainWindow
     QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;
+    
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     //PlayerProxy *player;

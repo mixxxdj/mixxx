@@ -206,6 +206,7 @@ int main(int argc, char * argv[])
     }
 
     MixxxApp * mixxx=new MixxxApp(a, args, pSplash);
+    
     a->setMainWidget(mixxx);
 
     mixxx->show();

@@ -64,6 +64,7 @@ extern "C" void crashDlg()
     QMessageBox::critical(0, "Mixxx", "Mixxx has encountered a serious error and needs to close.");
 }
 
+
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
 {
     app = a;
@@ -233,19 +234,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     new ControlObject(ConfigKey("[Channel1]","duration"));
     new ControlObject(ConfigKey("[Channel2]","duration"));
 
-    // Initialize widgets
-    bool bVisualsWaveform = true;
-    if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
-        bVisualsWaveform = false;
-
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame;
     setCentralWidget(frame);
     //move(10,10);
     // Call inits to invoke all other construction parts
 
-    view=new MixxxView(frame, kbdconfig, bVisualsWaveform, qSkinPath, config);
+    view=new MixxxView(frame, kbdconfig, qSkinPath, config);
 
+    // TODO : Move this to WaveformViewerFactory or something.
+    /*
     if (bVisualsWaveform && !view->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
@@ -255,20 +253,19 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
         mb->show();
     }
+    */
 
     // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
     if (view->activeWaveform())
     {
-        buffer1->setVisual((WVisualWaveform *)view->m_pVisualCh1);
-        buffer2->setVisual((WVisualWaveform *)view->m_pVisualCh2);
-
         // Dynamic zoom on visuals
         if (view->m_bZoom)
         {
-            ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-marks"));
-            ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-signal"));
-            ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-marks"));
-            ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
+            // TODO rryan : USE THESE CONTROLOBJECTS IN THE NEWVISUAL CODE
+            //ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-marks"));
+            //ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-signal"));
+            //ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-marks"));
+            //ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
         }
     }
 
@@ -317,9 +314,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     // Ensure that visual receive updates when new tracks are loaded
     if (view->m_pVisualCh1)
-        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pVisualCh1, SLOT(slotNewTrack()));
+        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pVisualCh1, SLOT(slotNewTrack(TrackInfoObject *)));
     if (view->m_pVisualCh2)
-        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pVisualCh2, SLOT(slotNewTrack()));
+        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pVisualCh2, SLOT(slotNewTrack(TrackInfoObject *)));
 
 
 
@@ -378,8 +375,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 //#endif
 
     // Initialize visualization of temporal effects
-    channel1->setVisual(buffer1);
-    channel2->setVisual(buffer2);
+    channel1->setEngineBuffer(buffer1);
+    channel2->setEngineBuffer(buffer2);
 
     // Dynamic scaling of temporal effect curves
     if (view->m_bZoom)
@@ -395,9 +392,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     initActions();
     initMenuBar();
 
-    // Check direct rendering
-    if (bVisualsWaveform)
-        view->checkDirectRendering();
+    // Check direct rendering and warn user if they don't have it
+    view->checkDirectRendering();
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
@@ -1124,21 +1120,18 @@ void MixxxApp::slotHelpSupport()
 }
 
 void MixxxApp::rebootMixxxView() {
-
     // Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
     // So we check and if the size hasn't changed we don't make the call
     int oldh = view->height();
     int oldw = view->width();
     qDebug() << "Now in Rebootmixxview...";
-    bool bVisualsWaveform = true;
-    //TODO 0 or 1?
-    if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
-        bVisualsWaveform = false;
 
     QString qSkinPath = getSkinPath();
 
-    view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
+    view->rebootGUI(frame, config, qSkinPath);
+
     qDebug() << "rebootgui DONE";
+
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
       setFixedSize(view->width(), view->height() + menuBar()->height());
     }

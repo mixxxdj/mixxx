@@ -65,7 +65,6 @@
 // Include widget object types for eventFilter
 #include "wslidercomposed.h"
 #include "wknob.h"
-#include "wvisualwaveform.h"
 #include "woverview.h"
 //#include "wpushButton.h"
 #include "wwidget.h"
@@ -247,9 +246,11 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     connect(m_pSelectNextPlaylist, SIGNAL(valueChanged(double)), this, SLOT(slotSelectNextPlaylist(double)));
     connect(m_pSelectPrevPlaylist, SIGNAL(valueChanged(double)), this, SLOT(slotSelectPrevPlaylist(double)));
 
-     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
-     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)), this, SLOT(slotSelectTrackKnob(double)));
+    m_pVisualResampleCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","VisualResample")));
+    m_pVisualResampleCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","VisualResample")));
 
+    connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
+    connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)), this, SLOT(slotSelectTrackKnob(double)));
 
     TrackPlaylist::setTrack(this);
 
@@ -931,8 +932,8 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pTrackPlayer1->sendToBpmQueue();
 
     // Generate waveform summary
-    if ((m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0)))
-        m_pWaveSummary->enqueue(m_pTrackPlayer1);
+    m_pTrackPlayer1->setVisualResampleRate(m_pVisualResampleCh1->get());
+    m_pWaveSummary->enqueue(m_pTrackPlayer1);
 
     // Set waveform summary display
     m_pTrackPlayer1->setOverviewWidget(m_pView->m_pOverviewCh1);
@@ -1004,8 +1005,8 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pTrackPlayer2->sendToBpmQueue();
 
     // Generate waveform summary
-    if ((m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0)))
-        m_pWaveSummary->enqueue(m_pTrackPlayer2);
+    m_pTrackPlayer2->setVisualResampleRate(m_pVisualResampleCh2->get());
+    m_pWaveSummary->enqueue(m_pTrackPlayer2);
 
     // Set waveform summary display
     m_pTrackPlayer2->setOverviewWidget(m_pView->m_pOverviewCh2);

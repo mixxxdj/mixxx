@@ -47,7 +47,7 @@ public:
     EngineTemporal(const char *group, EngineObject *pEffect);
     ~EngineTemporal();
 
-    void addVisual(EngineBuffer *pEngineBuffer);
+    void setEngineBuffer(EngineBuffer *pEngineBuffer);
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     static float temporalWindow(float fShape, float fPos);

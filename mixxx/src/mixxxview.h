@@ -25,7 +25,6 @@
 
 //Added by qt3to4:
 #include <Q3ValueList>
-#include "configobject.h"
 #include <QList>
 #include "configobject.h"
 #include "imgsource.h"
@@ -57,8 +56,7 @@ class MixxxView : public QWidget
 {
     Q_OBJECT
 public:
-    /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
+    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
     ~MixxxView();
 
     /** Check if direct rendering is not available, and display warning */
@@ -89,13 +87,13 @@ public:
     /** Pointer to overview displays */
     WOverview *m_pOverviewCh1, *m_pOverviewCh2;
 
-    void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
+    void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
     static QList<QString> getSchemeList(QString qSkinPath);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
-    void createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig);
+    void createAllWidgets(QDomElement docElem, QWidget* parent, ConfigObject<ConfigValue> *pConfig);
 
     /*temp to change view*/
     WTrackTable *m_pTmpPlaylist;

@@ -16,21 +16,15 @@
 ***************************************************************************/
 
 #include "readerextract.h"
-#include "visual/visualchannel.h"
 
 ReaderExtract::ReaderExtract(ReaderExtract * _input, EngineBuffer * pEngineBuffer, QString qsVisualDataType)
 {
     m_qsVisualDataType = qsVisualDataType;
     input = _input;
     m_pEngineBuffer = pEngineBuffer;
-    m_pVisualBuffer = 0;
 }
 
 ReaderExtract::~ReaderExtract()
 {
 }
 
-void ReaderExtract::addVisual(VisualChannel * pVisualChannel)
-{
-    m_pVisualBuffer = pVisualChannel->add(this, m_pEngineBuffer, m_qsVisualDataType);
-}

@@ -388,9 +388,12 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                 *(destination++) = madScale(Synth.pcm.samples[1][i]);
             else
                 *(destination++) = madScale(Synth.pcm.samples[0][i]);
+
             // This is safe because we have Q_ASSERTed that samples_wanted is even.
             Total_samples_decoded += 2; 
+
         }
+
         if(Total_samples_decoded >= samples_wanted) {
             if(i < Synth.pcm.length)
                 rest = i;

@@ -32,8 +32,6 @@
 #include "enginebufferscalereal.h"
 #include "enginebufferscalesrc.h"
 #include "enginebufferscaledummy.h"
-#include "wvisualwaveform.h"
-#include "visual/visualchannel.h"
 #include "mathstuff.h"
 #include "player.h"
 #include "enginebuffercue.h"
@@ -158,6 +156,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)), this, SLOT(slotControlSeek(double)));
 
+    // Control used to communicate ratio playpos to GUI thread
+    visualPlaypos = new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
+    
     // Control used to communicate absolute playpos to GUI thread
     //ControlObject *controlabsplaypos = new ControlObject(ConfigKey(group, "absplayposition"));
     //absPlaypos = new ControlEngine(controlabsplaypos);
@@ -242,7 +243,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Used in update of playpos slider
     m_iSamplesCalculated = 0;
 
-    m_pVisualChannel = 0;
     reader->start();
 }
 
@@ -316,17 +316,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     }
     m_qPlayposMutex.unlock();
 
-}
-
-void EngineBuffer::setVisual(WVisualWaveform * pVisualWaveform)
-{
-    // Try setting up visuals
-    if (pVisualWaveform)
-    {
-        // Add buffer as a visual channel
-        m_pVisualChannel = pVisualWaveform->add(group);
-        reader->addVisual(m_pVisualChannel);
-    }
 }
 
 float EngineBuffer::getDistanceNextBeatMark()
@@ -758,11 +747,6 @@ void EngineBuffer::slotControlFastBack(double v)
         m_pRateSearch->set(0.);
     else
         m_pRateSearch->set(-4.);
-}
-
-VisualChannel * EngineBuffer::getVisualChannel()
-{
-    return m_pVisualChannel;
 }
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
@@ -1335,6 +1319,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 m_dAbsPlaypos = filepos_play;
                 m_dAbsStartpos = filepos_start;
                 m_qPlayposMutex.unlock();
+            }
+
+            // Update visual control object, this needs to be done more often than the bpm display and playpos slider
+            if(file_length_old != 0.) {
+                double f = math_max(0.,math_min(filepos_play, file_length_old));
+                visualPlaypos->set(f/file_length_old);
+            } else {
+                visualPlaypos->set(0.);
             }
         }
 

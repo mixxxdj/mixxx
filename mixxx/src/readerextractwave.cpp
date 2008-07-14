@@ -23,15 +23,14 @@
 //#include "readerextracthfc.h"
 //#include "readerextractbeat.h"
 #include "readerevent.h"
-#include "visual/visualchannel.h"
-#include "visual/visualbuffer.h"
 #include "soundsource.h"
 #include "soundsourceproxy.h"
+#include "controlobject.h"
+#include "enginebuffer.h"
 
 ReaderExtractWave::ReaderExtractWave(Reader * pReader, EngineBuffer * pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
 {
     m_pReader = pReader;
-    m_pVisualBufferMarks = 0;
 
     // Allocate temporary buffer
     temp = new SAMPLE[READCHUNKSIZE*2];
@@ -59,6 +58,9 @@ ReaderExtractWave::ReaderExtractWave(Reader * pReader, EngineBuffer * pEngineBuf
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)this, m_pEngineBuffer, WINDOWSIZE, STEPSIZE);
     readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, m_pEngineBuffer, WINDOWSIZE, STEPSIZE, 100);
 #endif
+
+    m_pTrackSamples = new ControlObject(ConfigKey(pEngineBuffer->getGroup(), "track_samples"));
+    m_pTrackSamples->set(0.);
 }
 
 ReaderExtractWave::~ReaderExtractWave()
@@ -72,6 +74,9 @@ ReaderExtractWave::~ReaderExtractWave()
     delete readerbeat;
     delete readerhfc;
 #endif
+
+    delete m_pTrackSamples;
+    m_pTrackSamples = NULL;
 }
 
 void ReaderExtractWave::newSource(TrackInfoObject * pTrack)
@@ -115,20 +120,11 @@ void ReaderExtractWave::newSource(TrackInfoObject * pTrack)
     bufferpos_end = 0;
     reset();
 
+    m_pTrackSamples->set(file->length());
+
 #ifdef EXTRACT
     readerhfc->newSource(pTrack);
     readerbeat->newSource(pTrack);
-#endif
-}
-
-void ReaderExtractWave::addVisual(VisualChannel * pVisualChannel)
-{
-    ReaderExtract::addVisual(pVisualChannel);
-    m_pVisualBufferMarks = pVisualChannel->add(this, m_pEngineBuffer, "marks");
-
-#ifdef EXTRACT
-//    readerhfc->addVisual(pVisualChannel);
-    readerbeat->addVisual(pVisualChannel);
 #endif
 }
 
@@ -152,11 +148,6 @@ void ReaderExtractWave::reset()
     readerbeat->reset();
 #endif
 
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
-    if (m_pVisualBufferMarks != 0)
-        QApplication::postEvent(m_pVisualBufferMarks, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
 }
 
 void * ReaderExtractWave::getBasePtr()
@@ -347,12 +338,6 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
-    if (m_pVisualBufferMarks != 0)
-        QApplication::postEvent(m_pVisualBufferMarks, new ReaderEvent(bufIdx, READCHUNKSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
-
 #ifdef EXTRACT
     // Do pre-processing...
 
@@ -414,9 +399,6 @@ long int ReaderExtractWave::seek(long int new_playpos)
         readerbeat->reset();
 #endif
 
-        // Update vertex buffer by sending an event containing indexes of where to update.
-        if (m_pVisualBuffer != 0)
-            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
     }
     else
         seekpos = 0;

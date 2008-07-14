@@ -22,6 +22,9 @@
 #include <q3memarray.h>
 #include <q3valuelist.h>
 #include <qmutex.h>
+#include <QVector>
+
+#include "defs.h"
 
 class QString;
 class QDomElement;
@@ -153,6 +156,15 @@ public:
     QString getURL();
     /** Set URL for track */
     void setURL(QString url);
+    /** Set pointer to visual waveform data */
+    void setVisualWaveform(QVector<float> *pWave);
+    /** Get pointer to visual waveform data */
+    QVector<float> * getVisualWaveform();
+
+    /** Set and get this track's desired visual resample rate */
+    void setVisualResampleRate(double dVisualResampleRate);
+    double getVisualResampleRate();
+
     /** Set pointer to waveform summary */
     void setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation);
     /** Returns a pointer to waveform summary */
@@ -220,6 +232,9 @@ private:
     int m_iScore;
     /** Id. Unique ID of track */
     int m_iId;
+
+    /** Pointer to visual waveform info */
+    QVector<float> *m_pVisualWave;
     /** Pointer to summary wave info */
     Q3MemArray<char> *m_pWave;
     /** Pointer to summary segmentation */
@@ -244,6 +259,7 @@ private:
     /** Pointer to ControlObject of duration value (only set when the track is loaded in a player) */
     ControlObject *m_pControlObjectDuration;
     int iTemp;
+    double m_dVisualResampleRate;
 
     /** Bpm Detection Queue */
     BpmDetector *m_BpmDetector;

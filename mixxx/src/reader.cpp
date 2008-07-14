@@ -21,7 +21,6 @@
 #include "readerextractwave.h"
 //#include "readerextractbeat.h"
 #include "rtthread.h"
-#include "visual/visualchannel.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
 #include "configobject.h"
@@ -34,7 +33,6 @@ Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause)
     m_dRate = 0.;
     m_pTrack = 0;
     pause = _pause;
-    m_pVisualChannel = 0;
 
     m_iReaderAccess = 0;
 
@@ -59,12 +57,6 @@ Reader::~Reader()
     delete m_pTrackEnd;
     delete m_pButtonCueSet;
     delete m_pButtonPlay;
-}
-
-void Reader::addVisual(VisualChannel * pVisualChannel)
-{
-    m_pVisualChannel = pVisualChannel;
-    readerwave->addVisual(m_pVisualChannel);
 }
 
 void Reader::requestNewTrack(TrackInfoObject * pTrack, bool bStartAtEndPos)
