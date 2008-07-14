@@ -373,8 +373,8 @@
   <Horizontal>true</Horizontal>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
-  <PeakFallTime>80</PeakFallTime>
-  <PeakFallStep>5</PeakFallStep>
+<!--  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>5</PeakFallStep> -->
   <Connection>
    <ConfigKey>[Master],VuMeterL</ConfigKey>
   </Connection>
