@@ -370,6 +370,11 @@
   <PathBack>vumeter-off-.png</PathBack>
   <Pos>518,200</Pos>
   <Horizontal>true</Horizontal>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
+ <!--
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>5</PeakFallStep> -->
   <Connection>
    <ConfigKey>[Master],VuMeter</ConfigKey>
   </Connection>
@@ -380,6 +385,8 @@
   <PathVu>vumeter-on-Ch1.png</PathVu>
   <PathBack>vumeter-off-Ch1.png</PathBack>
   <Pos>84,413</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -390,6 +397,8 @@
   <PathVu>vumeter-on-Ch2.png</PathVu>
   <PathBack>vumeter-off-Ch2.png</PathBack>
   <Pos>777,410</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
