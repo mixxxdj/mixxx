@@ -59,7 +59,7 @@ void WaveformRenderBeat::slotUpdateBeatFirst(double v) {
 }
 
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
-    qDebug() << "WaveformRenderBeat :: samples = " << samples;
+    qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
     m_iNumSamples = (int)samples;
 }
 
@@ -86,6 +86,8 @@ void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
     int samplesPerPixel = screenSamples / m_iWidth;
 
     m_iSampleRate = sampleRate;
+
+    qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << samplesPerPixel;
     m_iSamplesPerPixel = samplesPerPixel;
 
 }
@@ -103,7 +105,7 @@ void WaveformRenderBeat::setup(QDomNode node) {
 
 void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos) {
 
-    if(m_dBpm == -1)
+    if(m_dBpm == -1 || m_dBpm == 0)
         return;
 
     if(m_iSampleRate == -1)
@@ -111,6 +113,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
     if(m_iNumSamples == 0) {
         // This is a guard against us getting stuck without this number.
+        qDebug() << "WaveformRenderBeat guard";
         slotUpdateTrackSamples(m_pTrackSamples->get());
         return;
     }
