@@ -190,7 +190,7 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     // that it displays the wave as we work.
     pTrackInfoObject->setVisualWaveform(downsample);
     
-    qDebug() << "Samples per pixel: " << samplesPerPixel << " downsamples " << resultSamples << " from " << numSamples;
+    qDebug() << "Samplerate " << sampleRate << " Samples per pixel: " << samplesPerPixel << " downsamples " << resultSamples << " from " << numSamples;
 
     int bufRead = samplesPerPixel*2;
 
