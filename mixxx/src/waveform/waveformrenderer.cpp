@@ -41,7 +41,8 @@ m_pImage(),
 m_dPlayPos(0),
 m_dPlayPosOld(-1),
 m_iPlayPosTime(-1),
-m_iPlayPosTimeOld(-1)
+m_iPlayPosTimeOld(-1),
+m_pTrack(NULL)
 {
     m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"visual_playposition")));
     connect(m_pPlayPos, SIGNAL(valueChanged(double)), this, SLOT(slotUpdatePlayPos(double)));
@@ -375,11 +376,13 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 }
 
 void WaveformRenderer::newTrack(TrackInfoObject* pTrack) {
+
     m_pTrack = pTrack;
     m_pSampleBuffer = NULL;
     m_iNumSamples = 0;
     m_dPlayPos = 0;
     m_dPlayPosOld = 0;
+    
     m_pRenderBeat->newTrack(pTrack);
 }
 
