@@ -108,7 +108,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     if(m_dBpm == -1 || m_dBpm == 0)
         return;
 
-    if(m_iSampleRate == -1)
+    if(m_iSampleRate == -1 || m_iSampleRate == 0)
         return;
 
     if(m_iNumSamples == 0) {
