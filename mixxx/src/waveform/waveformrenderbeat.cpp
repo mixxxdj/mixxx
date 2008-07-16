@@ -77,13 +77,20 @@ void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
 
     // calculate beat info for this track:
     
-    int desiredSecondsToDisplay = m_pParent->getDesiredSecondsToDisplay();
+    int desiredSecondsToDisplay = 1; //m_pParent->getDesiredSecondsToDisplay();
     int sampleRate = pTrack->getSampleRate();
 
     // true number of samples displayed on the screen (i.e. mono signal)
     int screenSamples = desiredSecondsToDisplay * sampleRate;
+    int samplesPerPixel = screenSamples / 100;
 
-    int samplesPerPixel = screenSamples / m_iWidth;
+    int m = 4;
+    int f = sampleRate;
+    int z = 100;
+    int n = f / (m*z);
+
+    samplesPerPixel = f/z; //m*n
+    
 
     m_iSampleRate = sampleRate;
 
@@ -140,21 +147,26 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     // Therefore, sample s is a beat if it satisfies  s % 60f/b == 0.
     // where s is a /mono/ sample
 
-    double foo_factor = 60 * m_iSampleRate / m_dBpm;
+    double foo_factor = 60.0 * m_iSampleRate / m_dBpm;
 
     // NOTE: converting curpos from stereo samples to mono samples
     iCurPos = iCurPos >> 1;
     
     pPainter->setPen(colorMarks);
-    int basePos = iCurPos - m_iSamplesPerPixel*halfw;
+    double basePos = iCurPos - m_iSamplesPerPixel*halfw*4;
     double startPos = ceilf(basePos/foo_factor)*foo_factor;
-    double endPos = basePos + m_iWidth*m_iSamplesPerPixel;
+    double endPos = basePos + m_iWidth*m_iSamplesPerPixel*4;
 
+
+    pPainter->save();
+
+    pPainter->scale(1.0/4.0,1.0);
+    
     for(;startPos <= endPos; startPos+=foo_factor) {
         if(startPos < 0)
             continue;
-        int i = int((startPos - double(iCurPos))/m_iSamplesPerPixel)+halfw;
-        pPainter->drawLine(QLine(i,halfh,i,-halfh));
+        double i = 4*((startPos - double(iCurPos))/m_iSamplesPerPixel)+halfw*4;
+        pPainter->drawLine(QLineF(i,halfh,i,-halfh));
     }
     
     /*
@@ -174,13 +186,15 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
     if(m_iCuePoint != -1) {
         int cuePointMono = m_iCuePoint >> 1;
-        int i = (cuePointMono - iCurPos)/m_iSamplesPerPixel;
+        double i = 4*(cuePointMono - iCurPos)/m_iSamplesPerPixel;
         
-        if(abs(i) < halfw) {
+        if(abs(i) < halfw*4) {
             pPainter->setPen(colorCue);
-            pPainter->drawLine(QLine(i+halfw, halfh, i+halfw, -halfh));
+            double x = (i+4*halfw);
+            pPainter->drawLine(QLineF(x, halfh, x, -halfh));
         }
     }
-    
+
+    pPainter->restore();
     
 }

@@ -359,6 +359,9 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     pPainter->translate(0.0,m_iHeight/2.0);
     // Now scale so that positive-y points up.
     pPainter->scale(1.0,-1.0);
+
+    // Draw the center horizontal line under the signal.
+    pPainter->drawLine(QLine(0,0,m_iWidth,0));
     
     drawSignalLines(pPainter,playpos);
 
@@ -367,9 +370,6 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     // Draw various markers.
     pPainter->setPen(colorMarker);
     
-    // Draw the center horizontal line
-    pPainter->drawLine(QLine(0,0,m_iWidth,0));
-
     // Draw the center vertical line
     pPainter->drawLine(QLineF(m_iWidth/2.0,m_iHeight/2.0,m_iWidth/2.0,-m_iHeight/2.0));
 
