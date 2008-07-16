@@ -163,6 +163,11 @@ void WGLWaveformViewer::slotNewTrack(TrackInfoObject *pTrack) {
     
 }
 
+void WGLWaveformViewer::setValue(double) {
+    // unused, stops a bad connect from happening
+}
+
+
 
 bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     if(e->type() == QEvent::MouseButtonPress) {
