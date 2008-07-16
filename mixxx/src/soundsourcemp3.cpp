@@ -212,7 +212,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_frame_decode(Frame,&Stream);
             mad_frame_decode(Frame,&Stream);
             mad_frame_decode(Frame,&Stream);
-            if(mad_frame_decode(Frame,&Stream)) qDebug() << "MP3 decode warning";
+            mad_frame_decode(Frame,&Stream);
 
             // this is also explained in the above mad-dev post
             mad_synth_frame(&Synth, Frame);
