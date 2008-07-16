@@ -156,10 +156,14 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     
     int numSamples = pSoundSource->length();
     int sampleRate = pSoundSource->getSrate();
-    
-    int desiredSecondsToDisplay = 1; // MEH!    
+
+
+    // seconds per 100 pixels
+    int desiredSecondsToDisplay = 1; // MEH!
+    // window = 100 pixels
+    // seconds/window * stereo samples/second = stereo samples / window
     int samplesPerWindow = desiredSecondsToDisplay * sampleRate; // x seconds/window * y stereo samples / second = xy stereo samples / window
-    int width = pTrackInfoObject->getVisualResampleRate();
+    int width = 100; //pTrackInfoObject->getVisualResampleRate();
     
     samplesPerWindow += (samplesPerWindow % width);
     int samplesPerPixel = samplesPerWindow / width; // xy stereo samples per window / z pixels per window = xy/z stereo samples per pixel
@@ -170,11 +174,42 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     //samplesPerPixel *= 2; // stereo samples per pixel * 2 mono samples / 1 stereo sample = mono samples per pixel
 
     int curSamples = numSamples + (numSamples % samplesPerPixel);
-    int resultSamples = curSamples / samplesPerPixel; // total samples / samples per pixel = total pixels (downsampled stereo samples)
+    int resultSamples = curSamples / samplesPerPixel; // total mono samples / mono samples per pixel = total pixels (downsampled stereo samples)
 
+
+    int timesOversample = 5; // we oversample 5 times
+    int screenWidth = pTrackInfoObject->getVisualResampleRate();
+
+    //samplesPerWindow = screenWidth * sampleRate * desiredSecondsToDisplay;
+    //samplesPerPixel = samplesPerWindow / screenWidth;
+    // simplifies to:
+
+    samplesPerPixel = sampleRate * desiredSecondsToDisplay / 100;
+    resultSamples = curSamples / samplesPerPixel;
+
+
+    // REQUIRE : M * N * Z = F
+    // M : DOWNSAMPLES PER PIXEL
+    // N : SAMPLES PER DOWNSAMPLE
+    // F : SAMPLE RATE OF SONG
+    // Z : THE USER SEES 1 SECOND OF DATA IN Z PIXELS
+
+    // FOR ANTIALIASING, 4 DOWNSAMPLES PER PIXEL
+    int m = 4;
+    int f = sampleRate;
+    int z = 100;
+
+    int n = f / (m*z);
+
+    samplesPerPixel = n;
+    resultSamples = curSamples / n;
+    
+    
     if(resultSamples % 2 != 0)
         resultSamples++;
 
+    // Downsample from curSamples -> resultSamples
+    
     QVector<float> *downsample = new QVector<float>(resultSamples);
     int i,j;
     int filePos = 0;
@@ -185,7 +220,7 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     }
 
 
-    pTrackInfoObject->setVisualResampleRate(double(sampleRate)/samplesPerPixel);
+    //pTrackInfoObject->setVisualResampleRate(double(sampleRate)/samplesPerPixel);
     // Allow the visual waveform to display this before we've populated it so
     // that it displays the wave as we work.
     pTrackInfoObject->setVisualWaveform(downsample);
