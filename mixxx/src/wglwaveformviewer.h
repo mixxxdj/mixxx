@@ -34,6 +34,7 @@ public:
     
 public slots:
     void slotNewTrack(TrackInfoObject*);
+    void setValue(double);
 signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);

@@ -37,9 +37,9 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         // Support shared GL rendering contexts
         WGLWaveformViewer *other = (m_visualGLViewers.isEmpty() ? NULL : (WGLWaveformViewer*)m_visualGLViewers.first());
         if(other == NULL)
-            qDebug() << "WaveformViewerFactory :: other is null.";
+            qDebug() << "WaveformViewerFactory :: Making new GL context.";
         else
-            qDebug() << "WaveformViewerFactory :: other isn't null.";
+            qDebug() << "WaveformViewerFactory :: Sharing existing GL context.";
         
         WGLWaveformViewer *visual = new WGLWaveformViewer(group, parent, other);
 
