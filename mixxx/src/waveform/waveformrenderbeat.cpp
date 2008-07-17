@@ -166,7 +166,15 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
         if(startPos < 0)
             continue;
         double i = 4*((startPos - double(iCurPos))/m_iSamplesPerPixel)+halfw*4;
+        if(abs(i-4*halfw) < 20) {
+            pPainter->setPen(QColor(255,255,255));
+        }
+        
         pPainter->drawLine(QLineF(i,halfh,i,-halfh));
+        
+        if(abs(i-4*halfw) < 20) {
+            pPainter->setPen(colorMarks);
+        }
     }
     
     /*
