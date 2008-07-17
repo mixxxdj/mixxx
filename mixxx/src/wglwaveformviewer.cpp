@@ -29,7 +29,7 @@ WGLWaveformViewer::WGLWaveformViewer(const char *group, QWidget * pParent, const
 
     // Start a timer based on our desired FPS
     // TODO Eventually make this user-configurable.
-    int desired_fps = 60;
+    int desired_fps = 40;
     int update_interval = 1000 / desired_fps;
     m_iTimerID = startTimer(update_interval);
     
