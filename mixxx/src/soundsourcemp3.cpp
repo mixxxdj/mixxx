@@ -173,7 +173,7 @@ long SoundSourceMp3::seek(long filepos)
 
         if (framePos==0 || framePos>filepos || m_qSeekList.at()<5)
         {
-             qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
+            //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
             mad_stream_finish(&Stream);
