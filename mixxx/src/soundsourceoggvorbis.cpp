@@ -51,26 +51,12 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 , pRead(0)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
-    vorbisfile =  fopen(qBAFilename.data(), "r");
-    if (!vorbisfile)
-    {
-        qDebug() << "oggvorbis: cannot open" << qFilename;
-        return;
-    }
 
-    // Apparently this is needed to make windows happy:
-#ifdef __WIN__
-    _setmode(_fileno(vorbisfile), _O_BINARY);
-#endif
-
-    if(ov_open(vorbisfile, &vf, NULL, 0) < 0)
-    {
+    if(ov_fopen(qBAFilename.data(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
         return;
-    }
-    else
-    {
+    } else {
 
         // extract metadata
         vorbis_info * vi=ov_info(&vf,-1);
@@ -80,12 +66,13 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 
         if(channels > 2){
             qDebug() << "oggvorbis: No support for more than 2 channels!";
+            ov_clear(&vf);
+            filelength = 0;
             return;
         }
 
         filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
-        if (filelength == OV_EINVAL)
-        {
+        if (filelength == OV_EINVAL) {
             //The file is not seekable. Not sure if any action is needed.
         }
     }
@@ -95,9 +82,8 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis()
 {
     if (filelength > 0){
         ov_clear(&vf);
-        // note that fclose() is not needed, ov_clear() does this as well
     }
-};
+}
 
 
 /*
@@ -106,9 +92,16 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis()
 
 long SoundSourceOggVorbis::seek(long filepos)
 {
+    Q_ASSERT(filepos%2==0);
+    
     if (ov_seekable(&vf)){
-        index = ov_pcm_seek(&vf, filepos/2);
-        return filepos;
+        if(ov_pcm_seek(&vf, filepos >> 1) != 0) {
+            qDebug() << "ogg vorbis: Seek ERR on seekable.";
+        }
+
+        // Even if an error occured, return them the current position
+        // because that's what we promised.
+        return ov_pcm_tell(&vf) << 1;
     } else{
         qDebug() << "ogg vorbis: Seek ERR.";
         return 0;
@@ -123,15 +116,24 @@ long SoundSourceOggVorbis::seek(long filepos)
 
 unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination)
 {
+
+    Q_ASSERT(size%2==0);
+    
     pRead  = (char*) destination;
     dest   = (SAMPLE*) destination;
     
     index  = ret = 0;
+
+    // 'needed' is size of buffer in bytes. 'size' is size in SAMPLEs,
+    // which is 2 bytes.  If the stream is mono, we read 'size' bytes,
+    // so that half the buffer is full, then below we double each
+    // sample on the left and right channel. If the stream is stereo,
+    // then ov_read interleaves the samples into the full length of
+    // the buffer. 
     needed = size*channels;
 
     // loop until requested number of samples has been retrieved
-    while (needed > 0)
-    {
+    while (needed > 0) {
         index  += ret;
         needed -= ret;
 
@@ -139,10 +141,8 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
         ret = ov_read(&vf, pRead+index, needed, OV_ENDIAN_ARG, 2, 1, &current_section);
         
         // if eof (ret==0) or error(ret<0) we fill the rest with zero
-        if (ret <= 0)
-        {
-            while (needed > 0)
-            {
+        if (ret <= 0) {
+            while (needed > 0) {
                 pRead[index] = 0;
                 index++;
                 needed--;
@@ -151,11 +151,11 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     }
 
     // convert into stereo if file is mono
-    if (channels == 1)
-    {
-	for(int i=(index/2); i>0; i--)
-        {
-	    dest[i*2]     = dest[i];
+    if (channels == 1) {
+        // index should always be divisible by two because it's
+        // counting bytes when our word size is 2
+        for(int i=(index/2); i>0; i--) {
+            dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
         }
     }
@@ -175,25 +175,17 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     vorbis_comment *comment = NULL;
     OggVorbis_File vf;
 
-    FILE * vorbisfile = fopen(qBAFilename.data(), "r");
-    if (!vorbisfile) {
-        qDebug() << "oggvorbis: file cannot be opened.\n";
-        return ERR;
-    }
-
-    // Apparently this is needed to make windows happy:
-    #ifdef __WIN__
-    _setmode( _fileno( vorbisfile ), _O_BINARY );
-    #endif
-
-    if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.\n";
+    if (ov_fopen(qBAFilename.data(), &vf) < 0) {
+        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";        
         return ERR;
     }
 
     comment = ov_comment(&vf, -1);
-    if (comment == NULL)
+    if (comment == NULL) {
+        qDebug() << "oggvorbis: fatal error reading file.";
+        ov_clear(&vf);
         return ERR;
+    }
 
     if (QString(vorbis_comment_query(comment, "title", 0)).length()!=0)
         Track->setTitle(vorbis_comment_query(comment, "title", 0));
@@ -223,6 +215,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     }
     else
     {
+        qDebug() << "oggvorbis: fatal error reading file.";
         ov_clear(&vf);
         return ERR;
     }
