@@ -8,30 +8,26 @@
 #include <QVector>
 
 #include "waveformrenderbeat.h"
-
 #include "waveformrenderer.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "wskincolor.h"
 #include "wwidget.h"
 #include "trackinfoobject.h"
-#include "soundsourceproxy.h"
 
 WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent) {
 
     m_pParent = parent;
 
-    m_iCuePoint = -1;
     m_dBpm = -1;
     m_dBeatFirst = -1;
     m_iSampleRate = -1;
     
-    m_iSamplesPerPixel = -1;
+    m_dSamplesPerPixel = -1;
+    m_dSamplesPerDownsample = -1;
+    m_dBeatLength = -1;
     m_iNumSamples = 0;
     
-    m_pCuePoint = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "cue_point")));
-    connect(m_pCuePoint, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateCuePoint(double)));
-
     m_pBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "file_bpm")));
     connect(m_pBpm, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBpm(double)));
 
@@ -41,11 +37,6 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
     m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateTrackSamples(double)));
-}
-
-void WaveformRenderBeat::slotUpdateCuePoint(double v) {
-    qDebug() << "WaveformRenderBeat :: CuePoint = " << v;
-    m_iCuePoint = (int)v;
 }
 
 void WaveformRenderBeat::slotUpdateBpm(double v) {
@@ -70,32 +61,27 @@ void WaveformRenderBeat::resize(int w, int h) {
 
 void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
     m_pTrack = pTrack;
-    m_iCuePoint = -1;
     m_dBpm = -1;
     m_dBeatFirst = -1;
+    m_dBeatLength = -1;
     m_iNumSamples = 0;
 
     // calculate beat info for this track:
-    
-    int desiredSecondsToDisplay = 1; //m_pParent->getDesiredSecondsToDisplay();
+
     int sampleRate = pTrack->getSampleRate();
 
-    // true number of samples displayed on the screen (i.e. mono signal)
-    int screenSamples = desiredSecondsToDisplay * sampleRate;
-    int samplesPerPixel = screenSamples / 100;
-
-    int m = 4;
-    int f = sampleRate;
-    int z = 100;
-    int n = f / (m*z);
-
-    samplesPerPixel = f/z; //m*n
-    
+    // f = z * m * n
+    double m = m_pParent->getSubpixelsPerPixel();
+    double f = sampleRate;
+    double z = m_pParent->getPixelsPerSecond();
+    double n = f / (m*z);
 
     m_iSampleRate = sampleRate;
 
-    qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << samplesPerPixel;
-    m_iSamplesPerPixel = samplesPerPixel;
+    m_dSamplesPerDownsample = n;
+    m_dSamplesPerPixel = double(f)/z;
+    
+    qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
 
 }
 
@@ -103,9 +89,6 @@ void WaveformRenderBeat::setup(QDomNode node) {
 
     colorMarks.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
     colorMarks = WSkinColor::getCorrectColor(colorMarks);
-
-    colorCue.setNamedColor(WWidget::selectNodeQString(node, "CueColor"));
-    colorCue = WSkinColor::getCorrectColor(colorCue);
 
 }
 
@@ -115,15 +98,8 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     if(m_dBpm == -1 || m_dBpm == 0)
         return;
 
-    if(m_iSampleRate == -1 || m_iSampleRate == 0)
+    if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
         return;
-
-    if(m_iNumSamples == 0) {
-        // This is a guard against us getting stuck without this number.
-        qDebug() << "WaveformRenderBeat guard";
-        slotUpdateTrackSamples(m_pTrackSamples->get());
-        return;
-    }
 
     if(buffer == NULL)
         return;
@@ -132,9 +108,6 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     
     if(iCurPos % 2 != 0)
         iCurPos--;
-
-    int halfw = m_iWidth/2;
-    int halfh = m_iHeight/2;
 
     // iCurPos is the current sample being processed the current pixel
     // p, with respect to iCurPos is in the screen if it is less than
@@ -147,62 +120,57 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     // Therefore, sample s is a beat if it satisfies  s % 60f/b == 0.
     // where s is a /mono/ sample
 
-    double foo_factor = 60.0 * m_iSampleRate / m_dBpm;
+    // beat length in samples
+    if(m_dBeatLength <= 0) {
+        m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
+    }
+
+    const int oversample = m_pParent->getSubpixelsPerPixel();
+
+    pPainter->save();
+    pPainter->scale(1.0/oversample,1.0);
+    pPainter->setPen(colorMarks);
+    
+    double subpixelWidth = m_iWidth * oversample;
+    double subpixelHalfWidth = subpixelWidth / 2.0;
+    double halfw = m_iWidth/2;
+    double halfh = m_iHeight/2;
 
     // NOTE: converting curpos from stereo samples to mono samples
     iCurPos = iCurPos >> 1;
-    
-    pPainter->setPen(colorMarks);
-    double basePos = iCurPos - m_iSamplesPerPixel*halfw*4;
-    double startPos = ceilf(basePos/foo_factor)*foo_factor;
-    double endPos = basePos + m_iWidth*m_iSamplesPerPixel*4;
 
+    // basePos and endPos are in samples
+    double basePos = iCurPos - m_dSamplesPerPixel*halfw;
+    double endPos = basePos + m_iWidth*m_dSamplesPerPixel;
 
-    pPainter->save();
+    // snap to the first beat
+    double curPos = ceilf(basePos/m_dBeatLength)*m_dBeatLength;
 
-    pPainter->scale(1.0/4.0,1.0);
-    
-    for(;startPos <= endPos; startPos+=foo_factor) {
-        if(startPos < 0)
+    bool reset = false;
+    for(;curPos <= endPos; curPos+=m_dBeatLength) {
+        if(curPos < 0)
             continue;
-        double i = 4*((startPos - double(iCurPos))/m_iSamplesPerPixel)+halfw*4;
-        if(abs(i-4*halfw) < 20) {
+
+        // i relative to the current play position in subpixels
+        double i = (curPos - iCurPos)/m_dSamplesPerDownsample;
+
+        // If i is less than 20 subpixels from center, highlight it. 
+        if(abs(i) < 20) {
             pPainter->setPen(QColor(255,255,255));
+            reset = true;
         }
+
+        // Translate from -subpixelHalfWidth..subpixelHalfwidth to 0..subpixelWidth
+        i += subpixelHalfWidth;
         
         pPainter->drawLine(QLineF(i,halfh,i,-halfh));
-        
-        if(abs(i-4*halfw) < 20) {
+
+        if(reset) {
             pPainter->setPen(colorMarks);
+            reset = false;
         }
     }
     
-    /*
-    // search is slow! replace this
-    for(int i=0; i<m_iWidth;i++) {
-        int thisPos = (i-halfw)*m_iSamplesPerPixel + iCurPos;
-
-        if(thisPos < 0)
-            continue;
-        
-        if(thisPos % int(foo_factor) < m_iSamplesPerPixel) {
-            // a beat!
-            pPainter->drawLine(QLine(i,halfh,i,-halfh));
-        }
-
-        }*/
-
-    if(m_iCuePoint != -1) {
-        int cuePointMono = m_iCuePoint >> 1;
-        double i = 4*(cuePointMono - iCurPos)/m_iSamplesPerPixel;
-        
-        if(abs(i) < halfw*4) {
-            pPainter->setPen(colorCue);
-            double x = (i+4*halfw);
-            pPainter->drawLine(QLineF(x, halfh, x, -halfh));
-        }
-    }
-
     pPainter->restore();
     
 }

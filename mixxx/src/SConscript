@@ -282,7 +282,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  track.cpp trackcollection.cpp trackplaylist.cpp wtracktableview.cpp wtracktablemodel.cpp wpromotracksmodel.cpp proxymodel.cpp xmlparse.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
  enginetemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp bpmscheme.cpp  peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
  enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp
- waveformviewerfactory.cpp wvisualsimple.cpp wwaveformviewer.cpp wglwaveformviewer.cpp waveform/waveformrenderer.cpp waveform/waveformrenderbeat.cpp
+ waveformviewerfactory.cpp wvisualsimple.cpp wwaveformviewer.cpp wglwaveformviewer.cpp waveform/waveformrenderer.cpp waveform/waveformrenderbeat.cpp waveform/waveformrendermark.cpp
  imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
  trackinfoobject.cpp soundsource.cpp
  midiledhandler.cpp
