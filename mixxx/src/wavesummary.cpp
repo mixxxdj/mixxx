@@ -154,91 +154,48 @@ void WaveSummary::run()
 }
 
 void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource) {
-    
-    int numSamples = pSoundSource->length();
-    int sampleRate = pSoundSource->getSrate();
 
-
-    // seconds per 100 pixels
-    int desiredSecondsToDisplay = 1; // MEH!
-    // window = 100 pixels
-    // seconds/window * stereo samples/second = stereo samples / window
-    int samplesPerWindow = desiredSecondsToDisplay * sampleRate; // x seconds/window * y stereo samples / second = xy stereo samples / window
-    int width = 100; //pTrackInfoObject->getVisualResampleRate();
-    
-    samplesPerWindow += (samplesPerWindow % width);
-    int samplesPerPixel = samplesPerWindow / width; // xy stereo samples per window / z pixels per window = xy/z stereo samples per pixel
-
-    if(samplesPerPixel % 2 != 0)
-        samplesPerPixel--;
-
-    //samplesPerPixel *= 2; // stereo samples per pixel * 2 mono samples / 1 stereo sample = mono samples per pixel
-
-    int curSamples = numSamples + (numSamples % samplesPerPixel);
-    int resultSamples = curSamples / samplesPerPixel; // total mono samples / mono samples per pixel = total pixels (downsampled stereo samples)
-
-
-    int timesOversample = 5; // we oversample 5 times
-    int screenWidth = pTrackInfoObject->getVisualResampleRate();
-
-    //samplesPerWindow = screenWidth * sampleRate * desiredSecondsToDisplay;
-    //samplesPerPixel = samplesPerWindow / screenWidth;
-    // simplifies to:
-
-    samplesPerPixel = sampleRate * desiredSecondsToDisplay / 100;
-    resultSamples = curSamples / samplesPerPixel;
-
-
+    // More info about this in WaveformRenderer
     // REQUIRE : M * N * Z = F
     // M : DOWNSAMPLES PER PIXEL
     // N : SAMPLES PER DOWNSAMPLE
     // F : SAMPLE RATE OF SONG
     // Z : THE USER SEES 1 SECOND OF DATA IN Z PIXELS
+    // => N = F / (MZ)
 
-    // FOR ANTIALIASING, 4 DOWNSAMPLES PER PIXEL
-    int m = 4;
-    int f = sampleRate;
-    int z = 100;
-
-    int n = f / (m*z);
-
-    samplesPerPixel = n;
-    resultSamples = curSamples / n;
+    int numSamples = pSoundSource->length();
+    int f = pSoundSource->getSrate();
+    double mz = pTrackInfoObject->getVisualResampleRate();
+    double n = double(f) / mz;
     
+    int samplesPerDownsample = n;
+    int numDownsamples = numSamples / samplesPerDownsample;
     
-    if(resultSamples % 2 != 0)
-        resultSamples++;
+    if(numDownsamples % 2 != 0)
+        numDownsamples++;
 
-    // Downsample from curSamples -> resultSamples
+    // Downsample from curSamples -> numDownsamples
     
-    QVector<float> *downsample = new QVector<float>(resultSamples);
+    QVector<float> *downsample = new QVector<float>(numDownsamples);
     float *downsampleVector = downsample->data();
     int i,j;
     int filePos = 0;
 
     // Set the buffer to zero
-    for(i=0;i<resultSamples;i++) {
+    for(i=0;i<numDownsamples;i++) {
         (*downsample)[i] = 0;
     }
 
-
-    //pTrackInfoObject->setVisualResampleRate(double(sampleRate)/samplesPerPixel);
     // Allow the visual waveform to display this before we've populated it so
     // that it displays the wave as we work.
     pTrackInfoObject->setVisualWaveform(downsample);
     
-    qDebug() << "Samplerate " << sampleRate << " Samples per pixel: " << samplesPerPixel << " downsamples " << resultSamples << " from " << numSamples;
+    qDebug() << "WaveSummary: f " << f << " samplesPerDownsample: " << samplesPerDownsample << " downsamples " << numDownsamples << " from " << numSamples;
 
-    int readLen = samplesPerPixel*2*100;
-    int bufRead = samplesPerPixel*2;
-    int count = 2;
-    
-
-    /*    if(readLen % 2 != 0)
-        readLen++;
-    
-    if(bufRead % 2 != 0)
-    bufRead++;*/
+    // readLen and bufRead need to be divisible by 2
+    int bufRead = samplesPerDownsample*2;
+    int readLen = bufRead*100;
+    int count = 20;
 
     SAMPLE *pBuffer = new SAMPLE[readLen];
 
@@ -249,17 +206,14 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     qDebug() << "WaveSummary :: Beginning to downsample waveform.";
     j=0;
     SAMPLE sl,sr;
-    SAMPLE maxl=0,maxr=0,minl=0,minr=0;
-    float gmr=0, gml=0;
+    SAMPLE maxl=0,maxr=0;
 
-    int doWaveformDecay = 0;
+    int samplesAvailable = filePos;
 
-    int bytesAvailable = filePos;
-
-    while(filePos < numSamples && (j+2) < resultSamples) {
+    while(filePos < numSamples && (j+2) < numDownsamples) {
 
         SAMPLE* bufBase = pBuffer;
-        while(bytesAvailable >= bufRead) {
+        while(samplesAvailable >= bufRead) {
             maxl=0; maxr=0;
             for(i=0; (i+1) < bufRead && (i+1) < count; i+=2) {
                 sl = abs(bufBase[i]);
@@ -267,105 +221,25 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
 
                 if(sl > maxl)
                     maxl = sl;
-                //if(sl < minl)
-                //minl = sl;
 
                 if(sr > maxr)
                     maxr = sr;
-                //if(sr < minr)
-                //  minr = sr;
             }
 
-            //float fDecay = 0.99f;
-            //float max, min;
-
-
-            //max = math_max(abs(maxr),abs(minr));
-            //min = math_max(abs(maxl),abs(minl));
-            //max = math_max(maxr,maxl);
-            //min = -math_min(minr,minl);
-
-            /*float temp = gml * fDecay;
-            if(!doWaveformDecay || max > temp)
-                gml = max;
-            else
-                gml = temp;
-
-            temp = gmr * fDecay;
-            if(!doWaveformDecay || min > temp)
-                gmr = min;
-            else
-            gmr = temp;*/
-
-            //(*downsample)[j] = float(maxl)/32768.0;
             *(downsampleVector++) = maxl/32768.0;
             j++;
 
-            //(*downsample)[j] = float(maxr)/32768.0;
             *(downsampleVector++) = maxr/32768.0;
             j++;
 
             bufBase += bufRead;
-            bytesAvailable -= bufRead;
+            samplesAvailable -= bufRead;
         }
-
-        bytesAvailable += pSoundSource->read(readLen, pBuffer);
-        filePos += bytesAvailable;
+        int samplesRead = pSoundSource->read(readLen, pBuffer);
+        samplesAvailable += samplesRead;
+        filePos += samplesRead;
     }
 
-
-
-
-    /*
-    while(filePos < numSamples && (j+2) < resultSamples) {
-        maxl=0;minl=0;
-        maxr=0;minr=0;
-        
-        for(i=0;(i+1)<bufRead;i+=2) {
-
-            sl = pBuffer[i];
-            sr = pBuffer[i+1];
-
-            if(sl > maxl)
-                maxl = sl;
-            if(sl < minl)
-                minl = sl;
-            if(sr > maxr)
-                maxr = sr;
-            if(sr < minr)
-                minr = sr;
-        }
-
-        float fDecay = 0.99f;
-        float max, min;
-
-        max = math_max(abs(maxr),abs(minr));
-        min = math_max(abs(maxl),abs(minl));
-        //max = math_max(maxr,maxl);
-        //min = -math_min(minr,minl);
-
-        float temp = gml * fDecay;
-        if(!doWaveformDecay || max > temp)
-            gml = max;
-        else
-            gml = temp;
-
-        temp = gmr * fDecay;
-        if(!doWaveformDecay || min > temp)
-            gmr = min;
-        else
-            gmr = temp;
-           
-        (*downsample)[j] = gml/32768.0;
-        j++;
-
-        (*downsample)[j] = gmr/32768.0;
-        j++;
-
-        //filePos = pSoundSource->seek((j>>1)*seekLen);
-        filePos += pSoundSource->read(bufRead, pBuffer);
-    }
-    */
     qDebug() << "WaveSummary :: Waveform downsampling finished.";
     startTime = clock() - startTime;
     qDebug() << "WaveSummary :: Generation took " << double(startTime) / CLOCKS_PER_SEC << " seconds";

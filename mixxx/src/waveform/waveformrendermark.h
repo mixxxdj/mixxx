@@ -1,6 +1,6 @@
 
-#ifndef WAVEFORMRENDERBEAT_H
-#define WAVEFORMRENDERBEAT_H
+#ifndef WAVEFORMRENDERMARK_H
+#define WAVEFORMRENDERMARK_H
 
 #include <QObject>
 #include <QColor>
@@ -10,38 +10,39 @@ class QDomNode;
 class QPainter;
 class QPaintEvent;
 
+#include "configobject.h"
 
+
+class ConfigKey;
 class ControlObjectThreadMain;
 class WaveformRenderer;
 class TrackInfoObject;
-class SoundSourceProxy;
 
-class WaveformRenderBeat : public QObject {
+class WaveformRenderMark : public QObject {
     Q_OBJECT
 public:
     void resize(int w, int h);
     void setup(QDomNode node);
-    WaveformRenderBeat(const char *group, WaveformRenderer *parent);
+    WaveformRenderMark(const char *group, ConfigKey key, WaveformRenderer *parent);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos);
     void newTrack(TrackInfoObject *pTrack);
 
 public slots:
-    void slotUpdateBpm(double bpm);
-    void slotUpdateBeatFirst(double beatfirst);
+    void slotUpdateMarkPoint(double mark);
     void slotUpdateTrackSamples(double samples);
 private:
     WaveformRenderer *m_pParent;
-    ControlObjectThreadMain *m_pBpm;
-    ControlObjectThreadMain *m_pBeatFirst;
+    ControlObjectThreadMain *m_pMarkPoint;
     ControlObjectThreadMain *m_pTrackSamples;
     TrackInfoObject *m_pTrack;
+
+    int m_iMarkPoint;
     int m_iWidth, m_iHeight;
-    double m_dBpm;
-    double m_dBeatFirst;
-    QColor colorMarks;
-    double m_dSamplesPerPixel;
+    QColor markColor;
     double m_dSamplesPerDownsample;
-    double m_dBeatLength;
+
+    ConfigKey m_key;
+
     int m_iNumSamples;
     int m_iSampleRate;
 };
