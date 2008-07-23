@@ -891,7 +891,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
 
 /** Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view */
 void WTrackTableView::dropEvent(QDropEvent * event)
-{
+{	
     if (event->mimeData()->hasUrls()) {
 		QList<QUrl> urls(event->mimeData()->urls());
 		QUrl url;
@@ -967,7 +967,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 //FIXME: Use search filter here? I'm not sure what the correct behaviour
                 //       should be when a track is dropped onto the table and there's an
                 //       active search filter.
-                TrackInfoObject* draggedTrack = m_pTrack->getTrackCollection()->getTrack(url.path());
+                TrackInfoObject* draggedTrack = m_pTrack->getTrackCollection()->getTrack(url.toLocalFile());
                 if (draggedTrack) //Make sure the track was valid
                 {
                     if (m_pTable->insertRow(destIndex.row(), draggedTrack))
