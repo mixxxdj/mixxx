@@ -217,7 +217,7 @@ void WGLWaveformViewer::dropEvent(QDropEvent * event)
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
-        QString name = url.path();
+        QString name = url.toLocalFile();
 
         event->accept();
         emit(trackDropped(name));
