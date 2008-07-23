@@ -37,6 +37,10 @@ WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, p
 
 WOverview::~WOverview()
 {
+    if(m_pScreenBuffer != NULL) {
+        delete m_pScreenBuffer;
+        m_pScreenBuffer = NULL;
+    }
 }
 
 void WOverview::setup(QDomNode node)
@@ -68,10 +72,23 @@ void WOverview::setup(QDomNode node)
     }
     setBackgroundColor(WSkinColor::getCorrectColor(c));
 
-    // Setup screen buffer
+    // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
+    if(m_pScreenBuffer != NULL) {
+
+        // Since setup is called from MixxxView, we know that
+        // the current thread is the GUI thread. That way we know
+        // that paintEvent is not going on right now, and m_pScreenBuffer
+        // is therefore safe to delete.
+        
+        delete m_pScreenBuffer;
+        
+        // Flag the pixmap for regeneration.
+        waveformChanged = true;
+    }
+    
     m_pScreenBuffer = new QPixmap(this->size());
     m_pScreenBuffer->fill(this->backgroundColor());
-
+    
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
@@ -104,17 +121,17 @@ void WOverview::setData(Q3MemArray<char> * pWaveformSummary, Q3ValueList<long> *
     m_pSegmentation = pSegmentation;
     m_liSampleDuration = liSampleDuration;
 
-    // repaint(); // FIXME: Don't do repaints from non-UI threads, else you will cause XLib errors!!!!
     waveformChanged = true;
 }
 
-void WOverview::repaint() {
-    // Erase background
-    m_pScreenBuffer->fill(this->backgroundColor());
+void WOverview::redrawPixmap() {
 
     if (!m_pWaveformSummary || !m_pWaveformSummary->size())
         return;
 
+    // Erase background
+    m_pScreenBuffer->fill(this->backgroundColor());
+    
     QPainter paint(m_pScreenBuffer);
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
@@ -244,8 +261,12 @@ void WOverview::mousePressEvent(QMouseEvent * e)
 
 void WOverview::paintEvent(QPaintEvent *)
 {
+
+    if(!m_pScreenBuffer)
+        return;
+    
     if (waveformChanged) {
-      repaint();
+      redrawPixmap();
       waveformChanged = false;
     }
 

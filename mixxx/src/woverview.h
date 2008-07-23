@@ -39,7 +39,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
-    void repaint();
+    void redrawPixmap();
     QColor getMarkerColor();
     QColor getSignalColor();
 public slots:
