@@ -1366,7 +1366,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             case TRACK_END_MODE_LOOP:
                 //qDebug() << "loop";
-                slotControlSeek(0.);
+                if(filepos_play <= 0)
+                    slotControlSeek(file_length_old);
+                else
+                    slotControlSeek(0.);
                 break;
 /*
             case TRACK_END_MODE_PING:
