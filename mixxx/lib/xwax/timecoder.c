@@ -97,11 +97,11 @@ struct timecode_def_t timecode_def[] = {
         resolution: 1000,
         polarity: POLARITY_POSITIVE,
         bits: 20,
-        seed: 0x84c0c,
+        seed: 0xd8b40,
         tap: {2, 4, 6, 8, 10, 11, 14, 16, 17},
         ntaps: 9,
-        length: 940000,
-        safe: 930000,
+        length: 910000,
+        safe: 900000,
         lookup: NULL
     },
     {
