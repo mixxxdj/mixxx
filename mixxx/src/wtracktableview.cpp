@@ -71,10 +71,16 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     verticalHeader()->setDefaultSectionSize(20);
     setFrameStyle(Q3Frame::NoFrame);
     setCornerButtonEnabled ( false );
-    setSortingEnabled ( true );
     createActions();
     m_pSearchFilter = new SortFilterProxyModel(parent);
     setTableMode(TABLE_MODE_LIBRARY);
+
+    // Sort Library by Artist on startup...
+    setSortingEnabled ( true );
+    horizontalHeader()->setSortIndicatorShown(true);
+    horizontalHeader()->setSortIndicator(COL_ARTIST, Qt::AscendingOrder);
+    m_pSearchFilter->sort(COL_ARTIST);
+
 
     /*
         //setFocusStyle(Q3Table::FollowStyle);
