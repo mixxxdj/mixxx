@@ -3,6 +3,7 @@
 
 #include <QLineEdit>
 #include <QToolButton>
+#include <QLabel>
 
 class WSearchLineEdit : public QLineEdit {
 
@@ -13,12 +14,17 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent*);
+	virtual void focusInEvent(QFocusEvent*);
+	virtual void focusOutEvent(QFocusEvent*);
 
 private slots:
     void updateCloseButton(const QString& text);
 
 private:
+	void showPlaceholder();
+
 	QToolButton* m_clearButton;
+	bool m_place;
 };
 
 #endif
