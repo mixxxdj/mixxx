@@ -52,30 +52,45 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
 
+#ifdef __WIN__
     if(ov_fopen(qBAFilename.data(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
         return;
-    } else {
-
-        // extract metadata
-        vorbis_info * vi=ov_info(&vf,-1);
-
-        channels = vi->channels;
-        SRATE = vi->rate;
-
-        if(channels > 2){
-            qDebug() << "oggvorbis: No support for more than 2 channels!";
-            ov_clear(&vf);
-            filelength = 0;
-            return;
-        }
-
-        filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
-        if (filelength == OV_EINVAL) {
-            //The file is not seekable. Not sure if any action is needed.
-        }
     }
+#else 
+    FILE *vorbisfile =  fopen(qBAFilename.data(), "r");
+
+    if (!vorbisfile) {
+        qDebug() << "oggvorbis: cannot open" << qFilename;
+        return;
+    }
+
+    if(ov_open(vorbisfile, &vf, NULL, 0) < 0) {
+        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
+        filelength = 0;
+        return;
+    }
+#endif
+
+    // extract metadata
+    vorbis_info * vi=ov_info(&vf,-1);
+
+    channels = vi->channels;
+    SRATE = vi->rate;
+
+    if(channels > 2){
+        qDebug() << "oggvorbis: No support for more than 2 channels!";
+        ov_clear(&vf);
+        filelength = 0;
+        return;
+    }
+
+    filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
+    if (filelength == OV_EINVAL) {
+        //The file is not seekable. Not sure if any action is needed.
+    }
+
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
@@ -175,10 +190,26 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     vorbis_comment *comment = NULL;
     OggVorbis_File vf;
 
+#ifdef __WIN__
     if (ov_fopen(qBAFilename.data(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";        
         return ERR;
     }
+#else
+    FILE * vorbisfile = fopen(qBAFilename.data(), "r");
+
+    if (!vorbisfile) {
+        qDebug() << "oggvorbis: file cannot be opened.\n";
+        return ERR;
+    }
+
+    if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
+        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.\n";
+        return ERR;
+    }
+#endif
+
+
 
     comment = ov_comment(&vf, -1);
     if (comment == NULL) {

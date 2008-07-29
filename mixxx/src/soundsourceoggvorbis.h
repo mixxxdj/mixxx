@@ -36,7 +36,6 @@ class SoundSourceOggVorbis : public SoundSource {
  private:
   int channels;
   unsigned long filelength;
-  FILE *vorbisfile;
   OggVorbis_File vf;
   int current_section;
   unsigned long ret, needed, index;
