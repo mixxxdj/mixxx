@@ -1141,8 +1141,8 @@
  </ComboBox>
 
  <Search>
-  <Pos>285,284</Pos>
-  <Size>325,25</Size>
+  <Pos>355,284</Pos>
+  <Size>300,25</Size>
   <BgColor>#ffffff</BgColor>
  </Search>
 
