@@ -134,7 +134,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
 
     // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
     // more useful by adding the line number of the input file.
-    if ((key.isEmpty() || type.isEmpty()) && node.nodeName() != "#comment")
+    if (key.isEmpty() || type.isEmpty())
         qWarning() << "Missing <key> or <type> in MIDI map node:" << node.nodeName();
     if (!midino && type != "pitch")
         qWarning() << "No <midino> defined in MIDI map node:" << node.nodeName();
@@ -685,11 +685,13 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
         QDomNode ctrl = node.firstChild();
 
         while (!ctrl.isNull()) {
-            QString group = WWidget::selectNodeQString(ctrl, "group");
-            QString key = WWidget::selectNodeQString(ctrl, "key");
-            ConfigKey k(group, key);
-            ValueType m(ctrl);
-            set(k, m);
+            if(ctrl.nodeName() == "control") {
+                QString group = WWidget::selectNodeQString(ctrl, "group");
+                QString key = WWidget::selectNodeQString(ctrl, "key");
+                ConfigKey k(group, key);
+                ValueType m(ctrl);
+                set(k, m);
+            }
             ctrl = ctrl.nextSibling();
         }
     }
