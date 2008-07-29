@@ -27,7 +27,7 @@
 #include <QTableView>
 #include <QLabel>
 #include <QComboBox>
-#include <QLineEdit>
+//#include <QLineEdit>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QTableView>
@@ -52,6 +52,7 @@
 #include "wnumberbpm.h"
 #include "wnumberrate.h"
 #include "wpixmapstore.h"
+#include "wsearchlineedit.h"
 
 #include "woverview.h"
 #include "mixxxkeyboard.h"
@@ -706,7 +707,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="Search")
             {
                 if (m_pLineEditSearch == 0) {
-                    m_pLineEditSearch = new QLineEdit(this);
+                    m_pLineEditSearch = new WSearchLineEdit(pConfig->getConfigPath(), this);
                 }
 
                 // Set position

@@ -291,7 +291,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp
  enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp
  wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp playerinfo.cpp wabstractcontrol.cpp
- enginebufferscaledummy.cpp """)
+ enginebufferscaledummy.cpp wsearchlineedit.cpp""")
 
 #Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
