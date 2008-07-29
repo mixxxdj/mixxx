@@ -1,0 +1,520 @@
+<!DOCTYPE controller>
+<controller>
+	<!--
+	This is a midi mapping by Alex Markley for the Numark Total Control.
+	It is loosely based on the Traktor label card, supplied in the box
+	with the device.
+	
+	Since the Total Control uses swappable label cards, you may wish to
+	customize this mapping or replace it entirely.
+	
+	For information about this MIDI mapping format, see:
+	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format
+	
+	For reverse-engineered information about Numark Total Control's
+	MIDI codes, see: http://www.mixxx.org/wiki/doku.php/numark_total_control_midi_codes
+	
+	This is revision 20080729 of this file. For updates, please see:
+	http://alexmarkley.com/code/mixxx/midi/Numark%20Total%20Control.midi.xml
+	
+	Please send patches and updates to Alex Markley:
+	http://alexmarkley.com/contact
+	-->
+	<!-- LICENSE
+	Copyright (C) 2008, Alex Markley.
+	
+	This work is licensed under the Creative Commons Attribution 3.0 United States License.
+	To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/us/ or
+	send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco,
+	California, 94105, USA.
+	-->
+	<controls>
+		<!-- Nice, nice jog wheels. You may need to adjust the sensitivity for your setup though... -->
+		<control>
+			<group>[Channel1]</group>
+			<key>jog</key>
+			<miditype>Ctrl</miditype>
+			<midino>25</midino>
+			<sensitivity>2</sensitivity>
+			<options><diff/></options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>jog</key>
+			<miditype>Ctrl</miditype>
+			<midino>24</midino>
+			<sensitivity>2</sensitivity>
+			<options><diff/></options>
+		</control>
+		
+		<!-- This is the crossfader. Pretty standard... -->
+		<control>
+			<group>[Master]</group>
+			<key>crossfader</key>
+			<miditype>Ctrl</miditype>
+			<midino>10</midino>
+			<options><invert/></options>
+		</control>
+		
+		<!-- These are the pitch sliders. I prefer up=faster/down=slower, but BOTH label cards for total control have it the other way around. -->
+		<!-- If you want to rebel against the labelling and have up=faster, just remove the whole <options> chunk from both rate controls. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>rate</key>
+			<miditype>Ctrl</miditype>
+			<midino>11</midino>
+			<options><invert/></options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>rate</key>
+			<miditype>Ctrl</miditype>
+			<midino>12</midino>
+			<options><invert/></options>
+		</control>
+		
+		<!-- Total control has a very interesting feature. A track select knob! This allows you to scroll through your whole library and load tracks without ever touching the mouse. -->
+		<control>
+			<group>[Playlist]</group>
+			<key>SelectTrackKnob</key>
+			<miditype>Ctrl</miditype>
+			<midino>26</midino>
+			<options><selectknob/></options>
+		</control>
+		<!-- Press down on the select knob to load the selected track into the first stopped player. -->
+		<control>
+			<group>[Playlist]</group>
+			<key>LoadSelectedIntoFirstStopped</key>
+			<miditype>Key</miditype>
+			<midino>79</midino>
+		</control>
+		
+		<!-- The "1" button is assigned to turn on/off the flanger. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>flanger</key>
+			<miditype>Key</miditype>
+			<midino>49</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>flanger</key>
+			<miditype>Key</miditype>
+			<midino>53</midino>
+		</control>
+		
+		<!-- The "1" knob adjusts the flanger LFO period. -->
+		<!-- FIXME - This allows the user to turn the LFO period past the maximum and minimum extents.
+		<control>
+			<group>[Flanger]</group>
+			<key>lfoPeriod</key>
+			<miditype>Ctrl</miditype>
+			<midino>0</midino>
+			<options><diff/></options>
+		</control>
+		<control>
+			<group>[Flanger]</group>
+			<key>lfoPeriod</key>
+			<miditype>Ctrl</miditype>
+			<midino>4</midino>
+			<options><diff/></options>
+		</control>
+		-->
+		
+		
+		<!-- These three controls are for the master volume, headphone volume, and headphone mix. (Grouped together at the top of the center column.) -->
+		<control>
+			<group>[Master]</group>
+			<key>volume</key>
+			<miditype>Ctrl</miditype>
+			<midino>23</midino>
+		</control>
+		<control>
+			<group>[Master]</group>
+			<key>headVolume</key>
+			<miditype>Ctrl</miditype>
+			<midino>15</midino>
+		</control>
+		<control>
+			<group>[Master]</group>
+			<key>headMix</key>
+			<miditype>Ctrl</miditype>
+			<midino>22</midino>
+		</control>
+		
+		<!-- These are the volume sliders for channels one and two. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>volume</key>
+			<miditype>Ctrl</miditype>
+			<midino>8</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>volume</key>
+			<miditype>Ctrl</miditype>
+			<midino>9</midino>
+		</control>
+		
+		<!-- These are the play/pause keys for channels one and two. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>play</key>
+			<miditype>Key</miditype>
+			<midino>67</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>play</key>
+			<miditype>Key</miditype>
+			<midino>76</midino>
+		</control>
+		
+		<!-- I assigned the "LOOP" button to Mixxx's "Reverse" mode. Kindof a reach, but whatever... -->
+		<control>
+			<group>[Channel1]</group>
+			<key>reverse</key>
+			<miditype>Key</miditype>
+			<midino>73</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>reverse</key>
+			<miditype>Key</miditype>
+			<midino>77</midino>
+		</control>
+		
+		<!-- Hit the "SET CUE" button to set the cue point. (You may need to hit it a couple of times, although I'm not sure why. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>cue_set</key>
+			<miditype>Key</miditype>
+			<midino>59</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>cue_set</key>
+			<miditype>Key</miditype>
+			<midino>68</midino>
+		</control>
+		
+		<!-- Hit the Cue/Pause button to jump back to the previously-set cue point and stop. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>cue_gotoandstop</key>
+			<miditype>Key</miditype>
+			<midino>51</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>cue_gotoandstop</key>
+			<miditype>Key</miditype>
+			<midino>60</midino>
+		</control>
+		
+		<!-- While playing, hit the Cue/Play button to seamlessly jump to the previously-set cue point and continue playing. -->
+		<!-- WARNING: While stopped, this button appears to simply start playing, without first jumping to the cue point. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>cue_goto</key>
+			<miditype>Key</miditype>
+			<midino>74</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>cue_goto</key>
+			<miditype>Key</miditype>
+			<midino>78</midino>
+		</control>
+		
+		<!-- The CUE SOURCE button turns on and off headphone cuing on the associated channel. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>pfl</key>
+			<miditype>Key</miditype>
+			<midino>75</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>pfl</key>
+			<miditype>Key</miditype>
+			<midino>52</midino>
+		</control>
+		
+		<!-- The LOAD TRACK buttons on each side load the selected track into the relevant channel. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>LoadSelectedTrack</key>
+			<miditype>Key</miditype>
+			<midino>48</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>LoadSelectedTrack</key>
+			<miditype>Key</miditype>
+			<midino>55</midino>
+		</control>
+		
+		<!-- I've set the PITCH BEND buttons to adjust the pitch permanently. (Not to "snap back" when the button is released.) -->
+		<control>
+			<group>[Channel1]</group>
+			<key>rate_perm_down</key>
+			<miditype>Key</miditype>
+			<midino>65</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>rate_perm_down</key>
+			<miditype>Key</miditype>
+			<midino>69</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>rate_perm_up</key>
+			<miditype>Key</miditype>
+			<midino>66</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>rate_perm_up</key>
+			<miditype>Key</miditype>
+			<midino>70</midino>
+		</control>
+		
+		<!-- The SYNC buttons on each side will try to calculate the best pitch adjustment to match the other track's current BPM. -->
+		<control>
+			<group>[Channel1]</group>
+			<key>beatsync</key>
+			<miditype>Key</miditype>
+			<midino>64</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>beatsync</key>
+			<miditype>Key</miditype>
+			<midino>71</midino>
+		</control>
+		
+		<!-- Track gains, highs, high kills, mids, mid kills, lows, and low kills. Just like the labels say. ;) -->
+		<control>
+			<group>[Channel1]</group>
+			<key>pregain</key>
+			<miditype>Ctrl</miditype>
+			<midino>13</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>pregain</key>
+			<miditype>Ctrl</miditype>
+			<midino>14</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>filterHigh</key>
+			<miditype>Ctrl</miditype>
+			<midino>16</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>filterHigh</key>
+			<miditype>Ctrl</miditype>
+			<midino>17</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>filterHighKill</key>
+			<miditype>Key</miditype>
+			<midino>80</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>filterHighKill</key>
+			<miditype>Key</miditype>
+			<midino>82</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>filterMid</key>
+			<miditype>Ctrl</miditype>
+			<midino>18</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>filterMid</key>
+			<miditype>Ctrl</miditype>
+			<midino>19</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>filterMidKill</key>
+			<miditype>Key</miditype>
+			<midino>85</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>filterMidKill</key>
+			<miditype>Key</miditype>
+			<midino>81</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>filterLow</key>
+			<miditype>Ctrl</miditype>
+			<midino>20</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>filterLow</key>
+			<miditype>Ctrl</miditype>
+			<midino>21</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>filterLowKill</key>
+			<miditype>Key</miditype>
+			<midino>83</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>filterLowKill</key>
+			<miditype>Key</miditype>
+			<midino>84</midino>
+		</control>
+	</controls>
+	
+	<!-- Here are the triggers for various LEDs. -->
+	<lights>
+		<!-- Light if either track is playing. -->
+		<light>
+			<group>[Channel1]</group>
+			<key>play</key>
+			<status>0x90</status>
+			<midino>62</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>play</key>
+			<status>0x90</status>
+			<midino>78</midino>
+			<threshold>0.5</threshold>
+		</light>
+		
+		<!-- Light if pitch bend is 0% -->
+		<light>
+			<group>[Channel1]</group>
+			<key>rate</key>
+			<status>0x90</status>
+			<midino>52</midino>
+			<minimum>0.0</minimum>
+			<maximum>0.0</maximum>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>rate</key>
+			<status>0x90</status>
+			<midino>67</midino>
+			<minimum>0.0</minimum>
+			<maximum>0.0</maximum>
+		</light>
+		
+		<!-- Light up if we're in reverse mode. -->
+		<light>
+			<group>[Channel1]</group>
+			<key>reverse</key>
+			<status>0x90</status>
+			<midino>58</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>reverse</key>
+			<status>0x90</status>
+			<midino>74</midino>
+			<threshold>0.5</threshold>
+		</light>
+		
+		<!-- Light up if the track is in CUE SOURCE/HEADPHONE mode. -->
+		<light>
+			<group>[Channel1]</group>
+			<key>pfl</key>
+			<status>0x90</status>
+			<midino>63</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>pfl</key>
+			<status>0x90</status>
+			<midino>79</midino>
+			<threshold>0.5</threshold>
+		</light>
+		
+		<!-- Light up if the flanger is on. -->
+		<light>
+			<group>[Channel1]</group>
+			<key>flanger</key>
+			<status>0x90</status>
+			<midino>51</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>flanger</key>
+			<status>0x90</status>
+			<midino>68</midino>
+			<threshold>0.5</threshold>
+		</light>
+		
+		<!-- Light up to indicate center on highs/mids/lows -->
+		<light>
+			<group>[Channel1]</group>
+			<key>filterHigh</key>
+			<status>0x90</status>
+			<midino>80</midino>
+			<minimum>0.97</minimum>
+			<maximum>1.03</maximum>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>filterHigh</key>
+			<status>0x90</status>
+			<midino>83</midino>
+			<minimum>0.97</minimum>
+			<maximum>1.03</maximum>
+		</light>
+		<light>
+			<group>[Channel1]</group>
+			<key>filterMid</key>
+			<status>0x90</status>
+			<midino>81</midino>
+			<minimum>0.97</minimum>
+			<maximum>1.03</maximum>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>filterMid</key>
+			<status>0x90</status>
+			<midino>84</midino>
+			<minimum>0.97</minimum>
+			<maximum>1.03</maximum>
+		</light>
+		<light>
+			<group>[Channel1]</group>
+			<key>filterLow</key>
+			<status>0x90</status>
+			<midino>82</midino>
+			<minimum>0.97</minimum>
+			<maximum>1.03</maximum>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>filterLow</key>
+			<status>0x90</status>
+			<midino>85</midino>
+			<minimum>0.97</minimum>
+			<maximum>1.03</maximum>
+		</light>
+	</lights>
+</controller>
+
