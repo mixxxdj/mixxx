@@ -99,9 +99,9 @@ struct timecode_def_t timecode_def[] = {
         {2, 4, 6, 8, 10, 11, 14, 16, 17},
         9,
         POLARITY_POSITIVE,
-        0x84c0c,
-        940000,
-        930000,
+        0xd8b40,
+        910000,
+        900000,
         NULL
     },
     {
