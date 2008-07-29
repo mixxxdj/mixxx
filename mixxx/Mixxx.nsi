@@ -73,6 +73,9 @@ Section "Mixxx (required)" SecMixxx
   File "src\keyboard\Standard.kbd.cfg"
   File "src\keyboard\Old.kbd.cfg"
 
+  SetOutPath "$INSTDIR\skins"
+  File "src\skins\cross.png"
+
   SetOutPath "$INSTDIR\skins\Natt"
   File "src\skins\Natt\*"
 
