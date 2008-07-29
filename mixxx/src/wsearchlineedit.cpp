@@ -57,12 +57,5 @@ void WSearchLineEdit::showPlaceholder() {
 
 void WSearchLineEdit::updateCloseButton(const QString& text)
 {
-	// This is the simplest way to do it by far but has the slightly
-	// strange effect that if you paste Search... into the box (typing won't
-	// work, then you won't get the clear button.
-	// Who would ever do that...?
-	//if (text != "Search...") {
-	//	m_place = false;
-	//}
     m_clearButton->setVisible(!text.isEmpty() && !m_place);
 }
