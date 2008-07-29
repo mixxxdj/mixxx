@@ -716,6 +716,20 @@ void Track::slotActivatePlaylist(int index)
        index = m_pView->m_pComboBox->itemData(index).value<int>();
     } else { index = TABLE_MODE_LIBRARY; }
 
+    if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_PLAYQUEUE && index != TABLE_MODE_PLAYQUEUE) {
+       // Enable sorting mode -- optimize me if you can!
+       // TODO: Restore sort column / sort order and restore view position.
+       m_pView->m_pTrackTableView->setSortingEnabled(true);
+       m_pView->m_pTrackTableView->horizontalHeader()->setSortIndicator(COL_ARTIST, Qt::AscendingOrder);
+       m_pView->m_pTrackTableView->m_pSearchFilter->sort(COL_ARTIST);
+    } else if (m_pView->m_pTrackTableView->getTableMode() != TABLE_MODE_PLAYQUEUE && index == TABLE_MODE_PLAYQUEUE) {
+       // Disable sorting for play queue view, so tracks can be manually ordered using drag and drop...
+       // TODO: Save sort  column / sort order from sortIndicator and save view position (see how the search filterbox saves position for example implementation)
+       m_pView->m_pTrackTableView->m_pSearchFilter->sort(-1);
+       m_pView->m_pTrackTableView->setSortingEnabled(false);
+       m_pView->m_pTrackTableView->horizontalHeader()->setSortIndicatorShown(false);
+    }
+
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
@@ -743,7 +757,6 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_BROWSE);
-        return;
         break;
       case TABLE_MODE_PLAYLISTS: //Playlist List Model
         m_pView->m_pTrackTableView->reset();
