@@ -34,26 +34,26 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi) {
         QDomNode light = node.firstChild();
 
         while (!light.isNull()) {
-
-            QString group = WWidget::selectNodeQString(light, "group");
-            QString key = WWidget::selectNodeQString(light, "key");
-
-            unsigned char status = (unsigned char)WWidget::selectNodeInt(light, "status");
-            unsigned char midino = (unsigned char)WWidget::selectNodeInt(light, "midino");
-			float min = 0.0f;
-			float max = 1.0f;
-			if (!light.firstChildElement("threshold").isNull()) {
-				min = WWidget::selectNodeFloat(light, "threshold");
-			}
-			if (!light.firstChildElement("minimum").isNull()) {
-				min = WWidget::selectNodeFloat(light, "minimum");
-			}
-			if (!light.firstChildElement("maximum").isNull()) {
-				max = WWidget::selectNodeFloat(light, "maximum");
-			}
-
-            allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino));
-
+            if(light.nodeName() == "light") {
+                QString group = WWidget::selectNodeQString(light, "group");
+                QString key = WWidget::selectNodeQString(light, "key");
+    
+                unsigned char status = (unsigned char)WWidget::selectNodeInt(light, "status");
+                unsigned char midino = (unsigned char)WWidget::selectNodeInt(light, "midino");
+				float min = 0.0f;
+				float max = 1.0f;
+				if (!light.firstChildElement("threshold").isNull()) {
+					min = WWidget::selectNodeFloat(light, "threshold");
+				}
+				if (!light.firstChildElement("minimum").isNull()) {
+					min = WWidget::selectNodeFloat(light, "minimum");
+				}
+				if (!light.firstChildElement("maximum").isNull()) {
+					max = WWidget::selectNodeFloat(light, "maximum");
+				}
+    
+                allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino));
+            }
             light = light.nextSibling();
         }
     }
