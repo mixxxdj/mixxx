@@ -5,15 +5,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>616</width>
-    <height>436</height>
+    <width>608</width>
+    <height>402</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form2</string>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" >
+  <layout class="QVBoxLayout" >
+   <item>
     <widget class="Q3GroupBox" name="groupBoxMidi" >
      <property name="title" >
       <string>MIDI</string>
@@ -138,219 +138,7 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" >
-    <widget class="Q3GroupBox" name="groupBoxMice" >
-     <property name="title" >
-      <string>Mice</string>
-     </property>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
-     </property>
-     <layout class="QGridLayout" >
-      <item row="0" column="0" >
-       <widget class="QLabel" name="TextLabel5_2_3_3" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-        <property name="text" >
-         <string>Device</string>
-        </property>
-        <property name="wordWrap" >
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" >
-       <widget class="QComboBox" name="ComboBoxMouseDevice1" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>160</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" >
-       <widget class="QPushButton" name="pushButtonMouseCalibrate1" >
-        <property name="text" >
-         <string>Calibrate</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3" >
-       <spacer>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" >
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0" >
-       <widget class="QLabel" name="TextLabel5_2_3_3_3" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-        <property name="text" >
-         <string>Function</string>
-        </property>
-        <property name="wordWrap" >
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2" >
-       <widget class="QComboBox" name="ComboBoxMouseFunction1" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3" >
-       <spacer>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" >
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="0" >
-       <widget class="QLabel" name="TextLabel5_2_3_3_2" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-        <property name="text" >
-         <string>Device</string>
-        </property>
-        <property name="wordWrap" >
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" >
-       <widget class="QComboBox" name="ComboBoxMouseDevice2" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>160</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2" >
-       <widget class="QPushButton" name="pushButtonMouseCalibrate2" >
-        <property name="text" >
-         <string>Calibrate</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" >
-       <spacer>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" >
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="0" >
-       <widget class="QLabel" name="TextLabel5_2_3_3_3_2" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-        <property name="text" >
-         <string>Function</string>
-        </property>
-        <property name="wordWrap" >
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2" >
-       <widget class="QComboBox" name="ComboBoxMouseFunction2" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3" >
-       <widget class="QPushButton" name="pushButtonMouseHelp" >
-        <property name="text" >
-         <string>Help</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0" >
+   <item>
     <layout class="QHBoxLayout" >
      <item>
       <widget class="Q3GroupBox" name="groupHercules" >
@@ -360,8 +148,8 @@ p, li { white-space: pre-wrap; }
        <property name="orientation" >
         <enum>Qt::Vertical</enum>
        </property>
-       <layout class="QGridLayout" >
-        <item row="0" column="0" >
+       <layout class="QVBoxLayout" >
+        <item>
          <layout class="QGridLayout" >
           <item row="0" column="0" >
            <widget class="QLabel" name="TextLabelPowerMate1_2" >
@@ -415,6 +203,26 @@ p, li { white-space: pre-wrap; }
            </spacer>
           </item>
          </layout>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label" >
+          <property name="text" >
+           <string>On Linux, Hercules devices are configured here</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -526,28 +334,15 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </item>
-   <item row="1" column="1" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="0" >
+   <item>
     <spacer>
      <property name="orientation" >
       <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeHint" >
       <size>
-       <width>20</width>
-       <height>40</height>
+       <width>564</width>
+       <height>181</height>
       </size>
      </property>
     </spacer>

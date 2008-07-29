@@ -83,6 +83,14 @@
 #include "joysticklinux.h"
 #endif
 
+/*
+
+NOTE ABOUT MOUSE SUPPORT:
+There's a load of commented out stuff here from the mouse support which is slowly getting more
+and more deprecated. At some point this needs to be cleaned up properly... - Adam
+
+ */
+
 DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefMidiDlg()
 {
     m_pConfig = pConfig;
@@ -236,16 +244,16 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(slotUpdateProgressBar()));
     connect(m_pProgressDialog, SIGNAL(canceled()), this, SLOT(slotCancelCalibrate()));
 
-#ifndef __LINUX__
-    groupBoxMice->setEnabled(false);
-#endif
+//#ifndef __LINUX__
+//    groupBoxMice->setEnabled(false);
+//#endif
 
     connect(ComboBoxHercules, SIGNAL(activated(int)), this, SLOT(slotApply()));
-    connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
-    connect(ComboBoxMouseDevice2, SIGNAL(activated(int)), this, SLOT(slotApply()));
-    connect(pushButtonMouseCalibrate1, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate1()));
-    connect(pushButtonMouseCalibrate2, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate2()));
-    connect(pushButtonMouseHelp, SIGNAL(clicked()), this, SLOT(slotMouseHelp()));
+//    connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
+//    connect(ComboBoxMouseDevice2, SIGNAL(activated(int)), this, SLOT(slotApply()));
+//    connect(pushButtonMouseCalibrate1, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate1()));
+//    connect(pushButtonMouseCalibrate2, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate2()));
+//    connect(pushButtonMouseHelp, SIGNAL(clicked()), this, SLOT(slotMouseHelp()));
     slotUpdate();
     slotApply();
 }
@@ -358,25 +366,25 @@ void DlgPrefMidi::slotUpdate()
         }
     }
 
-    // Mouse
+/*    // Mouse
     QStringList qMouseConfigList;
     qMouseConfigList = Mouse::getMappings();
 
     QStringList qMouseDeviceList = Mouse::getDeviceList();
-    ComboBoxMouseDevice1->clear();
+//    ComboBoxMouseDevice1->clear();
     j=0;
     for (it = qMouseDeviceList.begin(); it != qMouseDeviceList.end(); ++it)
     {
-        ComboBoxMouseDevice1->insertItem(*it);
+//        ComboBoxMouseDevice1->insertItem(*it);
         if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","MouseDevice1")))
-            ComboBoxMouseDevice1->setCurrentItem(j);
+//            ComboBoxMouseDevice1->setCurrentItem(j);
         j++;
     }
-    ComboBoxMouseFunction1->clear();
+//    ComboBoxMouseFunction1->clear();
 //    qDebug() << "cur item " << ComboBoxMouseDevice1->currentItem();
-    if (ComboBoxMouseDevice1->currentItem()>0)
+//    if (ComboBoxMouseDevice1->currentItem()>0)
     {
-        ComboBoxMouseFunction1->setEnabled(true);
+//        ComboBoxMouseFunction1->setEnabled(true);
         pushButtonMouseCalibrate1->setEnabled(true);
         j=0;
         for (QStringList::Iterator it = qMouseConfigList.begin(); it != qMouseConfigList.end(); ++it)
@@ -420,7 +428,7 @@ void DlgPrefMidi::slotUpdate()
     {
         ComboBoxMouseFunction2->setEnabled(false);
         pushButtonMouseCalibrate2->setEnabled(false);
-    }
+    }*/
 }
 
 void DlgPrefMidi::slotApply()
@@ -478,7 +486,7 @@ void DlgPrefMidi::slotApply()
     if (m_pHercules)
         m_pHercules->selectMapping(ComboBoxHercules->currentText());
 
-    // Mice
+/*    // Mice
     Mouse::destroyAll();
     if (ComboBoxMouseDevice1->currentText()!="None")
     {
@@ -514,10 +522,10 @@ void DlgPrefMidi::slotApply()
     }
 
     // Write mouse config
-    m_pConfig->set(ConfigKey("[Controls]","MouseDevice1"), ConfigValue(ComboBoxMouseDevice1->currentText()));
-    m_pConfig->set(ConfigKey("[Controls]","MouseFunction1"), ConfigValue(ComboBoxMouseFunction1->currentText()));
-    m_pConfig->set(ConfigKey("[Controls]","MouseDevice2"), ConfigValue(ComboBoxMouseDevice2->currentText()));
-    m_pConfig->set(ConfigKey("[Controls]","MouseFunction2"), ConfigValue(ComboBoxMouseFunction2->currentText()));
+    //m_pConfig->set(ConfigKey("[Controls]","MouseDevice1"), ConfigValue(ComboBoxMouseDevice1->currentText()));
+    //m_pConfig->set(ConfigKey("[Controls]","MouseFunction1"), ConfigValue(ComboBoxMouseFunction1->currentText()));
+    //m_pConfig->set(ConfigKey("[Controls]","MouseDevice2"), ConfigValue(ComboBoxMouseDevice2->currentText()));
+    //m_pConfig->set(ConfigKey("[Controls]","MouseFunction2"), ConfigValue(ComboBoxMouseFunction2->currentText()));*/
 
 
 #ifdef __C_METRICS__
@@ -531,7 +539,7 @@ void DlgPrefMidi::slotApply()
 
 void DlgPrefMidi::slotMouseCalibrate1()
 {
-    Mouse::destroyAll();
+    /*Mouse::destroyAll();
     if (ComboBoxMouseDevice1->currentText()!="None")
     {
 #ifdef __LINUX__
@@ -549,7 +557,7 @@ void DlgPrefMidi::slotMouseCalibrate1()
     m_pTimer->start(100);
 
     // Start measurement
-    m_pMouseCalibrate->calibrateStart();
+    m_pMouseCalibrate->calibrateStart();*/
 }
 
 void DlgPrefMidi::slotMouseCalibrate2()
