@@ -13,7 +13,7 @@ class MidiLedHandler : QObject
 {
     Q_OBJECT
 public:
-	MidiLedHandler(QString group, QString name, MidiObject* midi, double threshold,
+	MidiLedHandler(QString group, QString name, MidiObject* midi, double min, double max,
 		unsigned char status, unsigned char byte1);
     ~MidiLedHandler();
 
@@ -26,7 +26,8 @@ public slots:
 
 private:
 	MidiObject* m_midi;
-	double m_threshold;
+	double m_min;
+	double m_max;
 	ControlObject* m_cobj;
 	unsigned char m_status;
 	unsigned char m_byte1;

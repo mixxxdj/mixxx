@@ -6,9 +6,9 @@
 
 Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
-MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, double threshold,
-                               unsigned char status, unsigned char byte1)
-    : m_threshold(threshold), m_midi(midi), m_status(status), m_byte1(byte1) {
+MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, double min,
+                               double max, unsigned char status, unsigned char byte1)
+    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_byte1(byte1) {
 
     m_cobj = ControlObject::getControl(ConfigKey(group, name));
     
@@ -23,7 +23,7 @@ MidiLedHandler::~MidiLedHandler() {
 
 void MidiLedHandler::controlChanged(double value) {
     unsigned char m_byte2 = 0x00;
-    if (value >= m_threshold) { m_byte2 = 0x7f; }
+    if (value >= m_min && value <= m_max) { m_byte2 = 0x7f; }
 
     m_midi->sendShortMsg(m_status, m_byte1, m_byte2);
 }
@@ -40,9 +40,19 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi) {
 
             unsigned char status = (unsigned char)WWidget::selectNodeInt(light, "status");
             unsigned char midino = (unsigned char)WWidget::selectNodeInt(light, "midino");
-            float threshold = WWidget::selectNodeFloat(light, "threshold");
+			float min = 0.0f;
+			float max = 1.0f;
+			if (!light.firstChildElement("threshold").isNull()) {
+				min = WWidget::selectNodeFloat(light, "threshold");
+			}
+			if (!light.firstChildElement("minimum").isNull()) {
+				min = WWidget::selectNodeFloat(light, "minimum");
+			}
+			if (!light.firstChildElement("maximum").isNull()) {
+				max = WWidget::selectNodeFloat(light, "maximum");
+			}
 
-            allhandlers.append(new MidiLedHandler(group, key, midi, threshold, status, midino));
+            allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino));
 
             light = light.nextSibling();
         }
