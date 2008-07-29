@@ -707,7 +707,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="Search")
             {
                 if (m_pLineEditSearch == 0) {
-                    m_pLineEditSearch = new WSearchLineEdit(pConfig->getConfigPath(), this);
+					MixxxView* parent = this;
+                    m_pLineEditSearch = new WSearchLineEdit(pConfig->getConfigPath(), parent);
                 }
 
                 // Set position
