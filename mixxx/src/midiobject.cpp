@@ -197,8 +197,12 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
         newValue = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), newValue);
         // qDebug() << "value coming out ComputeValue: " << newValue;
 
+		// I'm not sure entirely why buttons should be special here or what the difference is - Adam
         if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
-            p->set(newValue);
+			ControlObjectThread cot(p);
+			cot.slotSet(newValue);
+
+            //p->setValueFromThread(newValue);
             // qDebug() << "New Control Value: " << newValue << " (skipping queueFromMidi call)";
             return;
         }
