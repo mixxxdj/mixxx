@@ -43,6 +43,7 @@ private:
 
 	bool		   bShouldClose;
 	bool		   bIsRunning;
+    bool           m_bCDMode;      /**< CD mode disables the needle-skip prevention code */
 };        
 
 #endif

@@ -40,13 +40,16 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     m_samples               = NULL;
     char * timecode  =  NULL;
     bShouldClose    = false;
+    m_bCDMode               = false;
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
         timecode = "serato_2a";
     else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB)
         timecode = "serato_2b";
-    else if (strVinylType == MIXXX_VINYL_SERATOCD)
+    else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = "serato_cd";
+        m_bCDMode = true;
+    }
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
         timecode = "traktor_a";
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
@@ -195,7 +198,17 @@ void VinylControlXwax::run()
                 if ((dVinylPosition - iLeadInTime) > 0.0f) 
                 {   
                     //If the position from the timecode is more than a few seconds off, resync the position.
-                    if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
+                    if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && 
+                        (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
+                        !m_bCDMode)
+                    {
+                        syncPosition();
+                    }
+                    //If we're in CD mode, react to shorter skips (for rapid-fire cueing). There's no needles
+                    //with CDJs, so there's no point in trying to prevent needle skips.
+                    else if (fabs(dVinylPosition - filePosition - iLeadInTime) > 0.2 &&
+                             (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
+                             m_bCDMode) //CD Mode
                     {
                         syncPosition();
                     }
