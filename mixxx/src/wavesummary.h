@@ -54,22 +54,29 @@ public:
     void enqueue(TrackInfoObject *pTrackInfoObject);
 	void extractBeat(TrackInfoObject *pTrackInfoObject);
 
-protected:
+private:
     /** Main thread loop */
     void run();
+    /** Stop the thread */
+    void stop();
+    /** Generate a visual waveform for the given track */
     void visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource);
-
+    /** Generate a waveform summary for the given track */
+    void waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource);
     /** Queue holding files to generate a summary for */
     Q3PtrQueue<TrackInfoObject> m_qQueue;
     /** Mutex controlling access to m_qQueue */
     QMutex m_qMutex;
     /** Wait condition */
     QWaitCondition m_qWait;
-    QMutex m_qWaitMutex;
     /** Pointer to config object **/
     ConfigObject<ConfigValue> *m_Config;
     
     ControlObjectThread *m_pControlVisualResample;
+
+    bool m_bShouldExit;
+
+
 };
 
 #endif

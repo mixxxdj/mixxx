@@ -35,7 +35,9 @@ WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config)
 
 WaveSummary::~WaveSummary()
 {
-    terminate();
+    qDebug() << "~WaveSummary";
+    if(running())
+        stop();
 }
 
 void WaveSummary::enqueue(TrackInfoObject * pTrackInfoObject)
@@ -46,10 +48,16 @@ void WaveSummary::enqueue(TrackInfoObject * pTrackInfoObject)
     m_qWait.wakeAll();
 }
 
+void WaveSummary::stop() {
+    m_bShouldExit = true;
+    m_qWait.wakeAll();
+    wait();
+}
+
+
 void WaveSummary::run()
 {
-    int i = 0;
-    while (1)
+    while (!m_bShouldExit)
     {
         // Check if there is a new track to process in the queue...
         m_qMutex.lock();
@@ -62,9 +70,7 @@ void WaveSummary::run()
             // Wait for track to be requested
             m_qMutex.lock();
             m_qWait.wait(&m_qMutex);
-            //m_qWait.wait(&m_qWaitMutex);
 
-            //m_qMutex.lock();
             pTrackInfoObject = m_qQueue.dequeue();
             m_qMutex.unlock();
         }
@@ -77,70 +83,10 @@ void WaveSummary::run()
         // Open sound file
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
 
-        // Check if preview has been generated in the meantime
+        // Check if preview has been generated
         Q3MemArray<char> *p = pTrackInfoObject->getWaveSummary();
-        if (!p || p->size()==0)
-        {
-
-            // Allocate temp buffer
-            SAMPLE * pBuffer = new SAMPLE[kiBlockSize*2];
-
-            // Length of file in samples
-            long liLengthSamples = pSoundSource->length();
-            long liPos;
-            int j;
-
-            //
-            // Extract volume profile
-            //
-
-            // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
-            Q3MemArray<char> *pData = new Q3MemArray<char>(kiSummaryBufferSize);
-            for (i=0; i<pData->size(); ++i)
-                pData->at(i) = 0;
-
-            // Seek length used when extracting volume profile
-            int iSeekLength = (int)ceilf((float)liLengthSamples/((float)kiSummaryBufferSize/3.));
-            if (iSeekLength%2!=0)
-                iSeekLength--;
-
-            liPos = pSoundSource->seek(0);
-            liPos += pSoundSource->read(kiBlockSize, pBuffer);
-            i=0;
-            j = 0;
-
-            while (liPos<liLengthSamples && i<kiSummaryBufferSize-2)
-            {
-                // Find min and max value
-                int iMin=0, iMax=0;
-                for (int j=0; j<kiBlockSize; ++j)
-                {
-                    if (pBuffer[j]<iMin)
-                        iMin = pBuffer[j];
-                    if (pBuffer[j]>iMax)
-                        iMax = pBuffer[j];
-                }
-
-                // Store max and min amplitude
-                pData->at(i) = (char)math_max((iMin/256.),-127);
-                pData->at(i+1) = (char)math_min((iMax/256.),127);
-                pData->at(i+2) = 0;
-
-                i+=3;
-
-                // Seek to new pos
-                liPos = pSoundSource->seek(iSeekLength*(i/3));
-
-                // Read a new block of samples
-                liPos += pSoundSource->read(kiBlockSize, pBuffer);
-            }
-
-            pTrackInfoObject->setWaveSummary(pData, 0);
-
-            delete [] pBuffer;
-            pBuffer = NULL;            
-
-            qDebug() << "WaveSummary generation successful for " << pTrackInfoObject->getFilename();
+        if (!p || p->size()==0) {
+            waveformSummaryGen(pTrackInfoObject, pSoundSource);            
         }
 
         if(pTrackInfoObject->getVisualWaveform() == NULL) {
@@ -151,6 +97,72 @@ void WaveSummary::run()
         pSoundSource = NULL;
 
     }
+    qDebug() << "WaveSummary::run() exiting";
+}
+
+
+void WaveSummary::waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource) {
+    
+    // Allocate temp buffer
+    SAMPLE * pBuffer = new SAMPLE[kiBlockSize*2];
+
+    // Length of file in samples
+    long liLengthSamples = pSoundSource->length();
+    long liPos;
+    int j, i=0;
+
+    //
+    // Extract volume profile
+    //
+
+    // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
+    Q3MemArray<char> *pData = new Q3MemArray<char>(kiSummaryBufferSize);
+    for (i=0; i<pData->size(); ++i)
+        pData->at(i) = 0;
+
+    // Seek length used when extracting volume profile
+    int iSeekLength = (int)ceilf((float)liLengthSamples/((float)kiSummaryBufferSize/3.));
+    if (iSeekLength%2!=0)
+        iSeekLength--;
+
+    liPos = pSoundSource->seek(0);
+    liPos += pSoundSource->read(kiBlockSize, pBuffer);
+    i=0;
+    j = 0;
+
+    while (liPos<liLengthSamples && i<kiSummaryBufferSize-2)
+        {
+            // Find min and max value
+            int iMin=0, iMax=0;
+            for (int j=0; j<kiBlockSize; ++j)
+                {
+                    if (pBuffer[j]<iMin)
+                        iMin = pBuffer[j];
+                    if (pBuffer[j]>iMax)
+                        iMax = pBuffer[j];
+                }
+
+            // Store max and min amplitude
+            pData->at(i) = (char)math_max((iMin/256.),-127);
+            pData->at(i+1) = (char)math_min((iMax/256.),127);
+            pData->at(i+2) = 0;
+
+            i+=3;
+
+            // Seek to new pos
+            liPos = pSoundSource->seek(iSeekLength*(i/3));
+
+            // Read a new block of samples
+            liPos += pSoundSource->read(kiBlockSize, pBuffer);
+        }
+
+    pTrackInfoObject->setWaveSummary(pData, 0);
+
+    delete [] pBuffer;
+    pBuffer = NULL;            
+
+    qDebug() << "WaveSummary generation successful for " << pTrackInfoObject->getFilename();
+
 }
 
 void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource) {
