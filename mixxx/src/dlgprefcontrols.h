@@ -40,10 +40,10 @@ public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
-    void slotSetRateTempLeft(int);
-    void slotSetRateTempRight(int);
-    void slotSetRatePermLeft(int);
-    void slotSetRatePermRight(int);
+    void slotSetRateTempLeft(double);
+    void slotSetRateTempRight(double);
+    void slotSetRatePermLeft(double);
+    void slotSetRatePermRight(double);
     void slotSetVisuals(int pos);
     void slotSetScaleBpm(int pos);
     void slotSetTooltips(int pos);

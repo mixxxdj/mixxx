@@ -595,28 +595,28 @@ void EngineBuffer::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
-        rateSlider->sub(m_dPerm * m_pRateDir->get());
+        rateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
 }
 
 void EngineBuffer::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
-        rateSlider->sub(m_dPermSmall * m_pRateDir->get());
+        rateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void EngineBuffer::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUp->get())
-        rateSlider->add(m_dPerm * m_pRateDir->get());
+        rateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
 }
 
 void EngineBuffer::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
-        rateSlider->add(m_dPermSmall * m_pRateDir->get());
+        rateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void EngineBuffer::slotControlRateTempDown(double)
@@ -626,7 +626,7 @@ void EngineBuffer::slotControlRateTempDown(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->sub(m_dTemp * m_pRateDir->get());
+        rateSlider->sub(m_pRateDir->get() * m_dTemp / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempDown->get())
     {
@@ -642,7 +642,7 @@ void EngineBuffer::slotControlRateTempDownSmall(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->sub(m_dTempSmall * m_pRateDir->get());
+        rateSlider->sub(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempDownSmall->get())
     {
@@ -658,7 +658,7 @@ void EngineBuffer::slotControlRateTempUp(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->add(m_dTemp * m_pRateDir->get());
+        rateSlider->add(m_pRateDir->get() * m_dTemp / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempUp->get())
     {
@@ -674,7 +674,7 @@ void EngineBuffer::slotControlRateTempUpSmall(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->add(m_dTempSmall * m_pRateDir->get());
+        rateSlider->add(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempUpSmall->get())
     {

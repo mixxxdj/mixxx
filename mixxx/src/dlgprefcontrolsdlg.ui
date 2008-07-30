@@ -353,15 +353,24 @@
       </widget>
      </item>
      <item row="1" column="1" >
-      <widget class="QSpinBox" name="spinBoxTempRateLeft" >
+      <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft" >
        <property name="toolTip" >
         <string>Temporary rate change (between 1 and 8000) when left clicking</string>
        </property>
-       <property name="minimum" >
+       <property name="accelerated" >
+        <bool>true</bool>
+       </property>
+       <property name="decimals" >
         <number>1</number>
        </property>
+       <property name="minimum" >
+        <double>0.100000000000000</double>
+       </property>
        <property name="maximum" >
-        <number>8000</number>
+        <double>10.000000000000000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
@@ -382,15 +391,24 @@
       </widget>
      </item>
      <item row="1" column="4" >
-      <widget class="QSpinBox" name="spinBoxPermRateLeft" >
+      <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft" >
        <property name="toolTip" >
         <string>Permanent rate change (between 1 and 8000) when left clicking</string>
        </property>
-       <property name="minimum" >
+       <property name="accelerated" >
+        <bool>true</bool>
+       </property>
+       <property name="decimals" >
         <number>1</number>
        </property>
+       <property name="minimum" >
+        <double>0.100000000000000</double>
+       </property>
        <property name="maximum" >
-        <number>8000</number>
+        <double>10.000000000000000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
@@ -411,15 +429,24 @@
       </widget>
      </item>
      <item row="2" column="1" >
-      <widget class="QSpinBox" name="spinBoxTempRateRight" >
+      <widget class="QDoubleSpinBox" name="spinBoxTempRateRight" >
        <property name="toolTip" >
         <string>Temporary rate change (between 1 and 8000) when right clicking</string>
        </property>
-       <property name="minimum" >
+       <property name="accelerated" >
+        <bool>true</bool>
+       </property>
+       <property name="decimals" >
         <number>1</number>
        </property>
+       <property name="minimum" >
+        <double>0.100000000000000</double>
+       </property>
        <property name="maximum" >
-        <number>8000</number>
+        <double>10.000000000000000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
@@ -440,15 +467,24 @@
       </widget>
      </item>
      <item row="2" column="4" >
-      <widget class="QSpinBox" name="spinBoxPermRateRight" >
+      <widget class="QDoubleSpinBox" name="spinBoxPermRateRight" >
        <property name="toolTip" >
         <string>Permanent rate change (between 1 and 8000) when right clicking</string>
        </property>
-       <property name="minimum" >
+       <property name="accelerated" >
+        <bool>true</bool>
+       </property>
+       <property name="decimals" >
         <number>1</number>
        </property>
+       <property name="minimum" >
+        <double>0.100000000000000</double>
+       </property>
        <property name="maximum" >
-        <number>8000</number>
+        <double>10.000000000000000</double>
+       </property>
+       <property name="singleStep" >
+        <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
@@ -457,7 +493,7 @@
        <property name="orientation" >
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0" >
         <size>
          <width>20</width>
          <height>40</height>

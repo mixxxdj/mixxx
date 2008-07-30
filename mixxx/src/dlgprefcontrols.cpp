@@ -18,7 +18,7 @@
 #include <QList>
 #include <QDir>
 #include <QToolTip>
-#include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QWidget>
 
 #include "dlgprefcontrols.h"
@@ -96,23 +96,23 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Rate buttons configuration
     //
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(400));
+        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(QString("4.0")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(200));
+        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(QString("2.0")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(10));
+        m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(QString("1.0")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(10));
+        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(QString("1.0")));
 
-    connect(spinBoxTempRateLeft, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateTempLeft(int)));
-    connect(spinBoxTempRateRight, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateTempRight(int)));
-    connect(spinBoxPermRateLeft, SIGNAL(valueChanged(int)), this, SLOT(slotSetRatePermLeft(int)));
-    connect(spinBoxPermRateRight, SIGNAL(valueChanged(int)), this, SLOT(slotSetRatePermRight(int)));
+    connect(spinBoxTempRateLeft, SIGNAL(valueChanged(double)), this, SLOT(slotSetRateTempLeft(double)));
+    connect(spinBoxTempRateRight, SIGNAL(valueChanged(double)), this, SLOT(slotSetRateTempRight(double)));
+    connect(spinBoxPermRateLeft, SIGNAL(valueChanged(double)), this, SLOT(slotSetRatePermLeft(double)));
+    connect(spinBoxPermRateRight, SIGNAL(valueChanged(double)), this, SLOT(slotSetRatePermRight(double)));
 
-    spinBoxTempRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).toInt());
-    spinBoxTempRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).toInt());
-    spinBoxPermRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).toInt());
-    spinBoxPermRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).toInt());
+    spinBoxTempRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).toDouble());
+    spinBoxTempRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).toDouble());
+    spinBoxPermRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).toDouble());
+    spinBoxPermRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).toDouble());
 
 
     //
@@ -406,28 +406,36 @@ void DlgPrefControls::slotSetPositionDisplay(int)
     }
 }
 
-void DlgPrefControls::slotSetRateTempLeft(int v)
+void DlgPrefControls::slotSetRateTempLeft(double v)
 {
-    m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(v));
-    EngineBuffer::setTemp(v/1000.);
+    QString str;
+    str = str.setNum(v, 'f', 1);
+    m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(str));
+    EngineBuffer::setTemp(v);
 }
 
-void DlgPrefControls::slotSetRateTempRight(int v)
+void DlgPrefControls::slotSetRateTempRight(double v)
 {
-    m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(v));
-    EngineBuffer::setTempSmall(v/1000.);
+    QString str;
+    str = str.setNum(v, 'f', 1);
+    m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(str));
+    EngineBuffer::setTempSmall(v);
 }
 
-void DlgPrefControls::slotSetRatePermLeft(int v)
+void DlgPrefControls::slotSetRatePermLeft(double v)
 {
-    m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(v));
-    EngineBuffer::setPerm(v/1000.);
+    QString str;
+    str = str.setNum(v, 'f', 1);
+    m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(str));
+    EngineBuffer::setPerm(v);
 }
 
-void DlgPrefControls::slotSetRatePermRight(int v)
+void DlgPrefControls::slotSetRatePermRight(double v)
 {
-    m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(v));
-    EngineBuffer::setPermSmall(v/1000.);
+    QString str;
+    str = str.setNum(v, 'f', 1);
+    m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(str));
+    EngineBuffer::setPermSmall(v);
 }
 
 void DlgPrefControls::slotApply()
