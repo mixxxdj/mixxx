@@ -25,11 +25,12 @@
 #include <qapplication.h>
 #include <qdatetime.h>
 
-WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config)
+WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config) : 
+    m_bShouldExit(false)
 {
     // Store config object
     m_Config = _config;
-    
+
     start(QThread::IdlePriority);
 }
 
