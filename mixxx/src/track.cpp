@@ -480,8 +480,6 @@ void Track::readXML(QString location)
     QDomNode node = XmlParse::selectNode(elementRoot, "TrackList");
     m_pTrackCollection->readXML(node);
 
-    qDebug() << "Break";
-
     // Get all the Playlists written in the xml file:
     node = XmlParse::selectNode(elementRoot, "Playlists").firstChild();
     QString qPlaylistName; //Name of the current playlist

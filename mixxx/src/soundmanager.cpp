@@ -30,7 +30,7 @@
  */
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master) : QObject()
 {
-    qDebug() << "SoundManager::SoundManager()";
+    //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
     m_pMaster = _master;
     m_pInterleavedBuffer = new CSAMPLE[MAX_BUFFER_LEN];   
@@ -119,7 +119,7 @@ SoundManager::~SoundManager()
   */
 QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices)
 {
-    qDebug() << "SoundManager::getDeviceList";
+    //qDebug() << "SoundManager::getDeviceList";
     bool bMatchedCriteria = true;   //Whether or not the current device matched the filtering criteria
     
     if (m_devices.empty())
@@ -203,7 +203,7 @@ QString SoundManager::getHostAPI()
  */
 void SoundManager::closeDevices()
 {
-    qDebug() << "SoundManager::closeDevices()";
+    //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
     
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
@@ -238,7 +238,7 @@ void SoundManager::closeDevices()
 /** Closes all the devices and empties the list of devices we have. */
 void SoundManager::clearDeviceList()
 {
-    qDebug() << "SoundManager::clearDeviceList()";
+    //qDebug() << "SoundManager::clearDeviceList()";
 
     //Close the devices first.
     closeDevices();
@@ -262,7 +262,7 @@ QList<QString> SoundManager::getSamplerateList()
 //Creates a list of sound devices that PortAudio sees.
 void SoundManager::queryDevices()
 {
-    qDebug() << "SoundManager::queryDevices()";
+    //qDebug() << "SoundManager::queryDevices()";
     clearDeviceList();
 
 #ifdef __PORTAUDIO__
