@@ -55,7 +55,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
         timecode = "traktor_b";
     
-    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
+    //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables...";
 
     //Build the timecode lookup table.
@@ -73,7 +73,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     //Start this thread (ends up calling-back the function "run()" below)
     start();
 
-    qDebug() << "Created new VinylControlXwax!";
+    //qDebug() << "Created new VinylControlXwax!";
 }
 
 VinylControlXwax::~VinylControlXwax()
