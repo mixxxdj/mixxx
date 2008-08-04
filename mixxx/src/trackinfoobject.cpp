@@ -913,18 +913,24 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long>
 //      and should be removed the next time I work on the library. -- Albert
 TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
 {
+    TrackInfoObject* nextTrack = NULL;
     if (pPlaylist)
-        return pPlaylist->at(pPlaylist->getIndexOf(getId())+1);
-    return NULL;
+    {
+        nextTrack = pPlaylist->value( pPlaylist->getIndexOf(getId())+1, NULL );
+    }
+    return nextTrack;
 }
 
 //TODO: Get rid of these crappy methods. getNext() and getPrev() are terrible for modularity
 //      and should be removed the next time I work on the library. -- Albert
 TrackInfoObject * TrackInfoObject::getPrev(TrackPlaylist * pPlaylist)
 {
+    TrackInfoObject* prevTrack = NULL;
     if (pPlaylist)
-        return pPlaylist->at(pPlaylist->getIndexOf(getId())-1);
-    return NULL;
+    {
+        prevTrack = pPlaylist->value( pPlaylist->getIndexOf(getId())-1, NULL );
+    }
+    return prevTrack;
 }
 
 void TrackInfoObject::setOverviewWidget(WOverview * p)
