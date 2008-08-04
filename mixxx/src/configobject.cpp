@@ -530,7 +530,6 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
             // qDebug() << "last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
-    qDebug() << "No match for ConfigObject:" << v.value;
     return 0;
 }
 
