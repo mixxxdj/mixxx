@@ -12,6 +12,11 @@ MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, d
 
     m_cobj = ControlObject::getControl(ConfigKey(group, name));
     
+
+    //OMGWTFBBQ: Massive hack to temporarily fix LP #254564 for the 1.6.0 release. 
+    //           Something's funky with our <lights> blocks handling? -- Albert 08/05/2008
+    if (group.isEmpty() || name.isEmpty()) return;
+
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
     Q_ASSERT(m_cobj);
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
