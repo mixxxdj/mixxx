@@ -156,6 +156,7 @@ mkdir "$TMP_DMG_DIR"                                # Create a temp dmg director
 cp -r Mixxx.app "$TMP_DMG_DIR"                      # Copy Mixxx.app there
 cp README "$TMP_DMG_DIR"                            # Copy the README too
 cp LICENSE "$TMP_DMG_DIR"                           # ... and the LICENSE
+cp Mixxx-Manual.pdf "$TMP_DMG_DIR"                  # ... and the manual
 cp "$DMG_ICON" "$TMP_DMG_DIR/.VolumeIcon.icns"      # Copy the icon for the dmg
 SetFile -a C "$TMP_DMG_DIR"                         # Set the folder's icon
 # Might need to do the SetFile on the final .dmg instead...?
