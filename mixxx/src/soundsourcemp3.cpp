@@ -56,7 +56,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
                 // ignore LOSTSYNC due to ID3 tags
                 int tagsize = id3_tag_query (Stream.this_frame,Stream.bufend - Stream.this_frame);
                 if (tagsize > 0) {
-                    qDebug() << "SSMP3::SSMP3() : skipping ID3 tag size " << tagsize;
+                    //qDebug() << "SSMP3::SSMP3() : skipping ID3 tag size " << tagsize;
                     mad_stream_skip (&Stream, tagsize);
                     continue;
                 }
@@ -421,7 +421,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                     // Ignore LOSTSYNC due to ID3 tags
                     int tagsize = id3_tag_query(Stream.this_frame, Stream.bufend - Stream.this_frame);
                     if(tagsize > 0) {
-                        qDebug() << "SSMP3::Read Skipping ID3 tag size: " << tagsize;
+                        //qDebug() << "SSMP3::Read Skipping ID3 tag size: " << tagsize;
                         mad_stream_skip(&Stream, tagsize);
                     }
                     continue;
@@ -607,7 +607,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
                     // ignore LOSTSYNC due to ID3 tags
                     int tagsize = id3_tag_query(Stream.this_frame, Stream.bufend - Stream.this_frame);
                     if (tagsize > 0) {
-                        qDebug() << "SSMP3::ParseHeader Skipping ID3 tag size: " << tagsize;
+                        //qDebug() << "SSMP3::ParseHeader Skipping ID3 tag size: " << tagsize;
                         mad_stream_skip(&Stream, tagsize);
                         continue;
                     }
