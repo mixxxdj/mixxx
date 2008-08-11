@@ -31,7 +31,6 @@ class QStackedWidget;
 
 class MixxxApp;
 class MixxxView;
-class PlayerProxy;
 class SoundManager;
 class Track;
 class DlgPrefSound;
