@@ -60,8 +60,7 @@ private:
     int getSliderLatencyMsec(int);
     /** Transform latency value in msec to slider value */
     int getSliderLatencyVal(int);
-    /** Pointer to player device */
-    //PlayerProxy *player;
+    /** Pointer to the sound manager */
     SoundManager* m_pSoundManager;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
