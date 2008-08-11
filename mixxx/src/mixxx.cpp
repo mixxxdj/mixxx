@@ -41,7 +41,6 @@
 #include "log.h"
 #include "dlgabout.h"
 
-#include "playerproxy.h"
 #include "soundmanager.h"
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
@@ -93,7 +92,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 #endif
 
     //Reset pointer to players
-    //player = 0;
     soundmanager = 0;
     m_pTrack = 0;
     prefDlg = 0;
@@ -204,8 +202,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
 
     // Initialize player device
-    //Player::setMaster(master);
-    //player = new PlayerProxy(config);
 
     soundmanager = new SoundManager(config, master);
     soundmanager->queryDevices();
@@ -334,9 +330,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 #endif
 
     // Try open player device If that fails, the preference panel is opened.
-    //if (!player->open())
-    //    prefDlg->setHidden(false);
-
     if (soundmanager->setupDevices() != 0)
     {
 
@@ -437,10 +430,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
-    //qDebug() << "close player, " << qTime.elapsed();
-    //player->close();
-    //qDebug() << "player->close() done";
-
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
     qDebug() << "soundmanager->close() done";
@@ -449,8 +438,6 @@ MixxxApp::~MixxxApp()
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
-    //qDebug() << "delete player, " << qTime.elapsed();
-    //delete player;
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
     qDebug() << "delete master, " << qTime.elapsed();

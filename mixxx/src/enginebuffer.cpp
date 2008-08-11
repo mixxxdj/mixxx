@@ -33,7 +33,6 @@
 #include "enginebufferscalesrc.h"
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
-#include "player.h"
 #include "enginebuffercue.h"
 
 // Static default values for rate buttons

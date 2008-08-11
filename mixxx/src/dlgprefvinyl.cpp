@@ -23,7 +23,6 @@
 #include <QList>
 #include <QButtonGroup>
 #include "dlgprefvinyl.h"
-#include "playerproxy.h"
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
@@ -42,7 +41,6 @@
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
                            ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg()
 {
-    //player = _player;
     m_pSoundManager = soundman;
     config = _config;
 
@@ -247,7 +245,6 @@ void DlgPrefVinyl::slotApply()
 
     // Apply Soundcard options
 
-    //player->close();
     //m_pSoundManager->closeDevices();
 
     //NOTE: Soundcard options (input device selection) is applied by DlgPrefSound...

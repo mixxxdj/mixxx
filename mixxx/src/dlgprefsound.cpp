@@ -16,7 +16,6 @@
 ***************************************************************************/
 
 #include "dlgprefsound.h"
-//#include "playerproxy.h"
 #include <qcombobox.h>
 #include <QButtonGroup>
 #include <QtDebug>
@@ -41,7 +40,6 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
                            ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefSoundDlg()
 {
     m_bLatencySliderDrag = false;
-    //player = _player;
     m_pSoundManager = _soundman;
     config = _config;
 	m_parent = parent;
@@ -125,7 +123,6 @@ void DlgPrefSound::slotUpdate()
     // API's
     ComboBoxSoundApi->clear();
     ComboBoxSoundApi->insertItem(0, "None");
-    //QStringList api = player->getSoundApiList();
     QList<QString> apis = m_pSoundManager->getHostAPIList();
     QListIterator<QString> api_it(apis);
     QString api;
@@ -192,7 +189,6 @@ void DlgPrefSound::slotUpdate()
 
     // Sample rate
     ComboBoxSamplerates->clear();
-    //QStringList srates = player->getSampleRates();
     QList<QString> srates = m_pSoundManager->getSamplerateList();
     QListIterator<QString> srate_it(srates);
     QString srate;
@@ -293,7 +289,6 @@ void DlgPrefSound::slotApply()
     qDebug() << "request msec " << getSliderLatencyMsec(SliderLatency->value());
 
     // Close devices, and open using config data
-    //player->close();
     m_pSoundManager->closeDevices();
 
     // Not much to do if the API is None...
