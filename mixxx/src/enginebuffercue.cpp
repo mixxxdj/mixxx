@@ -18,7 +18,6 @@
 #include "controlobject.h"
 #include "enginebuffercue.h"
 #include "enginebuffer.h"
-#include "player.h"
 #include "mathstuff.h"
 
 EngineBufferCue::EngineBufferCue(const char * group, EngineBuffer * pEngineBuffer)

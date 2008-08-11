@@ -159,7 +159,6 @@ class MixxxApp : public QMainWindow
     
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
-    //PlayerProxy *player;
     SoundManager *soundmanager;
     MidiObject *midi;
     ControlObject *control;

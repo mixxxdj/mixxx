@@ -530,18 +530,6 @@
 				>
 			</File>
 			<File
-				RelativePath="player.cpp"
-				>
-			</File>
-			<File
-				RelativePath="playerportaudio.cpp"
-				>
-			</File>
-			<File
-				RelativePath="playerproxy.cpp"
-				>
-			</File>
-			<File
 				RelativePath="powermate.cpp"
 				>
 			</File>
@@ -1832,18 +1820,6 @@
 			</File>
 			<File
 				RelativePath="visual\picking.h"
-				>
-			</File>
-			<File
-				RelativePath="player.h"
-				>
-			</File>
-			<File
-				RelativePath="playerportaudio.h"
-				>
-			</File>
-			<File
-				RelativePath="playerproxy.h"
 				>
 			</File>
 			<File
