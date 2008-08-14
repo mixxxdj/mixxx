@@ -66,6 +66,7 @@ public:
     /** Puts an TrackInfoObject into the queue of BPM detection. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmReceiver=NULL);
     void enqueue(TrackInfoObject *pTrackInfoObject, BpmScheme *scheme, BpmReceiver *pBpmReceiver=NULL);
+    int queueCount();
 
 protected:
     /** Main thread loop */

@@ -81,6 +81,8 @@
 #include "cmetrics.h"
 #endif
 
+#include <QtDebug>
+
 using namespace soundtouch;
 
 #define INPUT_BLOCK_SAMPLES       2048
@@ -165,6 +167,7 @@ int BpmDetect::decimate(SAMPLETYPE * dest, const SAMPLETYPE * src, int numsample
     outcount = 0;
     for (count = 0; count < numsamples; count++)
     {
+//        qDebug() << "======"<< "count:"<< count << "numsamples:"<<numsamples << "outcount:"<< outcount << "decimateSum:"<< decimateSum << "decimateCount:"<< decimateCount;
         decimateSum += src[count];
 
         decimateCount++;

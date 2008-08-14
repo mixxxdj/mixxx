@@ -65,23 +65,27 @@ BpmDetector::~BpmDetector()
     delete m_pEngineSpectralFwd;
 }
 
+int BpmDetector::queueCount() {
+    return m_qQueue.count();
+}
+
 void BpmDetector::enqueue(TrackInfoObject * pTrackInfoObject, BpmReceiver * pBpmReceiver)
 {
     int minBpm, maxBpm;
     bool entire;
-    
+
     m_qMutex.lock();
     BpmDetectionPackage * package = new BpmDetectionPackage();
     package->_TrackInfoObject = pTrackInfoObject;
     package->_BpmReceiver = pBpmReceiver;
-    
+
     // Read
     minBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     maxBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     entire = (bool)m_Config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
-    
+
     package->_Scheme = new BpmScheme("Default", minBpm, maxBpm, entire);
-  
+
     m_qQueue.enqueue(package);
     m_qMutex.unlock();
     m_qWait.wakeAll();
@@ -111,6 +115,8 @@ void BpmDetector::calculateBPMSoundTouch(TrackInfoObject *pTrackInfoObject, BpmR
     unsigned int length = 0, read = 0, totalsteps = 0, pos = 0, end = 0;
     int channels = 2;
     float frequency = 44100;
+
+    qDebug() << "BPM detection starting for" << pTrackInfoObject->getFilename();
 
     if(pTrackInfoObject->getSampleRate())
     {
@@ -191,14 +197,14 @@ void BpmDetector::calculateBPMSoundTouch(TrackInfoObject *pTrackInfoObject, BpmR
 #ifdef __C_METRICS__
                 cm_writemsg_ascii(1, "BPM detection failed, setting to 0.");
 #endif
-                
+
                 if(pBpmReceiver){
                     pBpmReceiver->setComplete(pTrackInfoObject, true, BPM);
-                }    
-                
+                }
+
                 delete pSoundSource;
                 return;
-            }  
+            }
 
 }
 
@@ -212,7 +218,7 @@ void BpmDetector::calculateBPMTue(TrackInfoObject *pTrackInfoObject, BpmReceiver
 
 //The fallback is broken and is causing crashes.  This will break us out and set the BPM to 0
 //Remove these lines if you get the old BPM detection working
-    
+
 //qDebug() << "BPM detection failed the first time. Trying old version.";
 
 
@@ -281,7 +287,7 @@ void BpmDetector::calculateBPMTue(TrackInfoObject *pTrackInfoObject, BpmReceiver
     pPeaks->update(0, iBeatBlockLength);
 
     // Initialize beat probability vector
-    ProbabilityVector * bpv = new ProbabilityVector(60.f/(float)pScheme->getMaxBpm(), 
+    ProbabilityVector * bpv = new ProbabilityVector(60.f/(float)pScheme->getMaxBpm(),
                                                     60.f/(float)pScheme->getMinBpm(), kiBeatBins);
 
     // Calculate BPM
@@ -328,7 +334,6 @@ void BpmDetector::calculateBPMTue(TrackInfoObject *pTrackInfoObject, BpmReceiver
 
     qDebug() << "BPM detection successful for" << pTrackInfoObject->getFilename();
 
-    
 }
 
 void BpmDetector::run()

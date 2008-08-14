@@ -1340,26 +1340,45 @@ bool Track::checkLibraryLastModified()
 /** Runs the BPM detection on every track in the TrackCollection that doesn't already have a BPM. */
 void Track::slotBatchBPMDetection()
 {
-/*
-    //Unfinished/WIP - Albert Jan 31/08
-    //General idea should work more or less, I suppose...
+    /* Possible use cases:
+       1) BPM detect whole library
+       2) BPM detect play queue or a specific play list
+    */
 
-    //Iterate over each TrackInfoObject stored in m_pTrackCollection
-    TrackInfoObject* cur_track;
-    QListIterator<TrackCollection*> it(m_qPlaylists);
-    TrackPlaylist* current;
-    while (it.hasNext())
-    {
-        current = it.next();
-        if (current->getListName()==qName)
-            return current;
+    // TODO: Abort batch processing if either deck is playing and tell user...
+    int processed = 0;
+    for (int i =0; i < m_pTrackCollection->getSize(); i++) {
+      TrackInfoObject* cur_track = m_pTrackCollection->getTrack(i);
+
+      if (!cur_track->isValid()) continue; // Skip invalid track objects
+
+      // Batch Process Wave Summary
+      if (cur_track->getWaveSummary() == NULL || cur_track->getWaveSummary()->size() == 0) {
+        processed++;
+        // TODO: convert the qDebug statement to a status dialog box.
+        qDebug() << "Track #"<< i << "= Batch job #"<< processed << ":" << cur_track->getTitle() << "by" << cur_track->getArtist() << "has WaveSummary: false -- has BPM value:" << (cur_track->getBpm() > 0) << " ("<< m_pBpmDetector->queueCount() << "tracks in the BPM Detect Queue )";
+        // Open sound file
+        SoundSourceProxy * pSoundSource = new SoundSourceProxy(cur_track);
+	m_pWaveSummary->waveformSummaryGen(cur_track, pSoundSource, false);
+        delete pSoundSource;
+        pSoundSource = NULL;
+
+        // Batch Process BPM
+        if (cur_track->getBpm() == 0) {
+          cur_track->sendToBpmQueue();
+        }
+      }
+
+      // FIXME: remove the song count limitation when BPM detect doesn't crash...
+      if (processed == 100) { qDebug() << "----- BPM detection/Waveform generation batch processing limit of " << processed << " songs has been reached. Rerun to detect more songs."; break; }
     }
-
-    //(TIO -> TrackInfoObject)
-    //Check to see if the TIO already has a non-zero BPM
-
-    //If not, run TIO->sendToBpmQueue().
-
-*/
+    // Block the UI thread until BPM detection queue is cleared.
+    while (m_pBpmDetector->queueCount()) {
+      // TODO: convert the qDebug statement to a status dialog box.
+      qDebug() << "---- waiting for BPM detection queue to empty... " << m_pBpmDetector->queueCount() << " to go.";
+      sleep(3);
+    }
+    // Save the track database to disk...
+    writeXML(m_pConfig->getValueString(ConfigKey("[Playlist]","Listfile")));
 }
 

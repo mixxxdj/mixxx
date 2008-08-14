@@ -899,14 +899,14 @@ void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long> * pSegmentation)
+void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long> * pSegmentation, bool updateUI)
 {
     m_qMutex.lock();
     m_pWave = pWave;
     m_pSegmentation = pSegmentation;
     m_qMutex.unlock();
 
-    setOverviewWidget(m_pOverviewWidget);
+    if (updateUI) setOverviewWidget(m_pOverviewWidget);
 }
 
 //TODO: Get rid of these crappy methods. getNext() and getPrev() are terrible for modularity

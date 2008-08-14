@@ -87,7 +87,7 @@ void WaveSummary::run()
         // Check if preview has been generated
         Q3MemArray<char> *p = pTrackInfoObject->getWaveSummary();
         if (!p || p->size()==0) {
-            waveformSummaryGen(pTrackInfoObject, pSoundSource);            
+            waveformSummaryGen(pTrackInfoObject, pSoundSource);
         }
 
         if(pTrackInfoObject->getVisualWaveform() == NULL) {
@@ -101,9 +101,8 @@ void WaveSummary::run()
     qDebug() << "WaveSummary::run() exiting";
 }
 
+void WaveSummary::waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource, bool updateUI) {
 
-void WaveSummary::waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource) {
-    
     // Allocate temp buffer
     SAMPLE * pBuffer = new SAMPLE[kiBlockSize*2];
 
@@ -157,10 +156,10 @@ void WaveSummary::waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSou
             liPos += pSoundSource->read(kiBlockSize, pBuffer);
         }
 
-    pTrackInfoObject->setWaveSummary(pData, 0);
+    pTrackInfoObject->setWaveSummary(pData, 0, updateUI);
 
     delete [] pBuffer;
-    pBuffer = NULL;            
+    pBuffer = NULL;
 
     qDebug() << "WaveSummary generation successful for " << pTrackInfoObject->getFilename();
 

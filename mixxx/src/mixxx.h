@@ -211,6 +211,8 @@ class MixxxApp : public QMainWindow
 
     QAction *iPodToggle;
 
+    QAction *batchBpmDetect;
+
     QAction *libraryRescan;
 
     QAction *optionsBeatMark;
