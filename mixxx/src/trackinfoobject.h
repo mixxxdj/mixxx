@@ -52,7 +52,7 @@ public:
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &, BpmDetector *bpmDetector);
     ~TrackInfoObject();
-    /** Returns true if the object contains valid information */    
+    /** Returns true if the object contains valid information */
     bool isValid() const;
     int parse();
     /** Checks if the file given in m_sFilename really exists on the disc, and
@@ -165,8 +165,9 @@ public:
     void setVisualResampleRate(double dVisualResampleRate);
     double getVisualResampleRate();
 
-    /** Set pointer to waveform summary */
-    void setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation);
+    /** Set pointer to waveform summary -- updates UI by default */
+    void setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation, bool updateUI = true);
+
     /** Returns a pointer to waveform summary */
     Q3MemArray<char> *getWaveSummary();
     /** Returns a pointer to segmentation summary */

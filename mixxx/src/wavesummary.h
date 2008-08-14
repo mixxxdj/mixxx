@@ -52,7 +52,10 @@ public:
     ~WaveSummary();
     /** Puts an TrackInfoObject into the queue of summary generation. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject);
-	void extractBeat(TrackInfoObject *pTrackInfoObject);
+    void extractBeat(TrackInfoObject *pTrackInfoObject);
+
+    /** Generate a waveform summary data for the given track */
+    void waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource, bool updateUI = true);
 
 private:
     /** Main thread loop */
@@ -61,8 +64,7 @@ private:
     void stop();
     /** Generate a visual waveform for the given track */
     void visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource);
-    /** Generate a waveform summary for the given track */
-    void waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSourceProxy *pSoundSource);
+
     /** Queue holding files to generate a summary for */
     Q3PtrQueue<TrackInfoObject> m_qQueue;
     /** Mutex controlling access to m_qQueue */
@@ -71,7 +73,7 @@ private:
     QWaitCondition m_qWait;
     /** Pointer to config object **/
     ConfigObject<ConfigValue> *m_Config;
-    
+
     ControlObjectThread *m_pControlVisualResample;
 
     bool m_bShouldExit;
