@@ -155,12 +155,12 @@ public slots:
     void slotSendToPlaylist(TrackPlaylist* playlist, TrackInfoObject* pTrackInfoObject);
     /** Slot for sending a track to a playlist */
     void slotSendToPlaylist(TrackPlaylist* playlist, QString filename);
-    
+
     /** Slot for showing a particular playlist in the track table view */
-    void slotShowPlaylist(TrackPlaylist* playlist); 
+    void slotShowPlaylist(TrackPlaylist* playlist);
     /** Runs the BPM detection on every track in the TrackCollection */
     void slotBatchBPMDetection();
-    
+
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
@@ -173,7 +173,7 @@ signals:
 private:
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
-    
+
     /** Creates the promo tracks playlist dynamically */
     void initPromoTracks();
     /** Load the special promo track metadata from an XML file */
@@ -191,7 +191,7 @@ private:
     TrackPlaylist m_qPlayqueuePlaylist;
     /** The promo tracks playlist */
     TrackPlaylist m_qPromoPlaylist;
-    
+
     /** Data Model for Library */
     WTrackTableModel *m_pLibraryModel;
     /** Data Model for Playqueue*/
@@ -206,7 +206,7 @@ private:
     WTrackTableModel *m_pPlaylistModel;
     /** Data Model containing the list of playlists */
     WPlaylistListModel *m_pPlaylistListModel;
-    
+
     /** Pointer to playlist for which a popup menu is currently displayed */
     TrackPlaylist *m_pActivePopupPlaylist;
     /** Pointer to TrackInfoObject for which a popup menu is currently displayed */
@@ -249,8 +249,8 @@ private:
     unsigned int m_iPlayqueueIdx;
     /** Provides access to the config keys */
     ConfigObject<ConfigValue> *m_pConfig;
-    
-    int savedRowPosition;    
+
+    int savedRowPosition;
 };
 
 #endif
