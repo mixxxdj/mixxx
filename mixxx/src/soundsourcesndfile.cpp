@@ -132,6 +132,16 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
     Track->setSampleRate(info.samplerate);
     Track->setChannels(info.channels);
 
+    const char *string;
+    string = sf_get_string(fh, SF_STR_ARTIST);
+//    qDebug() << location << "SF_STR_ARTIST" << string;
+    if(string && strlen(string))
+        Track->setArtist(string);
+    string = sf_get_string(fh, SF_STR_TITLE);
+    if(string && strlen(string))
+        Track->setTitle(string);
+//    qDebug() << location << "SF_STR_TITLE" << string;
+
     sf_close( fh );
     return OK;
 }
