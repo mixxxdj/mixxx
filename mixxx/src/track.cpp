@@ -10,6 +10,10 @@
 //
 //
 
+#ifdef __WIN__
+#include <windows.h> // for Sleep()  on Windows
+#endif
+
 #include "track.h"
 #include "trackinfoobject.h"
 #include "trackcollection.h"
@@ -1376,7 +1380,11 @@ void Track::slotBatchBPMDetection()
     while (m_pBpmDetector->queueCount()) {
       // TODO: convert the qDebug statement to a status dialog box.
       qDebug() << "---- waiting for BPM detection queue to empty... " << m_pBpmDetector->queueCount() << " to go.";
+#ifdef __WIN__
+      Sleep(3000);
+#else
       sleep(3);
+#endif
     }
     // Save the track database to disk...
     writeXML(m_pConfig->getValueString(ConfigKey("[Playlist]","Listfile")));
