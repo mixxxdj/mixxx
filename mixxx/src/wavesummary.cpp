@@ -248,8 +248,14 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
             samplesAvailable -= bufRead;
         }
         int samplesRead = pSoundSource->read(readLen, pBuffer);
-        samplesAvailable += samplesRead;
-        filePos += samplesRead;
+        if(samplesRead) {
+            samplesAvailable += samplesRead;
+            filePos += samplesRead;
+        } else {
+            /* early EOF return, break out of the loop. */
+            qDebug() << "Waveform thread: got early EOF.";
+            filePos = numSamples;
+        }
     }
 
     qDebug() << "WaveSummary :: Waveform downsampling finished.";
