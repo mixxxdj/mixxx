@@ -95,12 +95,12 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         m_iAvgFrameSize = 0;
 
     mad_header_finish (&Header); // This is a macro for nothing.
-    
+
     if (currentframe==0)
         bitrate = 0;
     else
         bitrate = bitrate/currentframe;
-    
+
     framecount = currentframe;
     currentframe = 0;
 /*
@@ -393,14 +393,14 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                 *(destination++) = madScale(Synth.pcm.samples[0][i]);
 
             // This is safe because we have Q_ASSERTed that samples_wanted is even.
-            Total_samples_decoded += 2; 
+            Total_samples_decoded += 2;
 
         }
 
         if(Total_samples_decoded >= samples_wanted) {
             if(i < Synth.pcm.length)
                 rest = i;
-            else 
+            else
                 rest = -1;
             return Total_samples_decoded;
         }
@@ -506,12 +506,10 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             // http://www.id3.org/id3v2.4.0-frames.txt
             QString s;
             getField(tag,"TIT2",&s); // TIT2 : Title
-            if (s.length()>2)
-                Track->setTitle(s);
+            Track->setTitle(s);
             s="";
             getField(tag,"TPE1",&s); // TPE1 : Artist
-            if (s.length()>2)
-                Track->setArtist(s);
+            Track->setArtist(s);
             s="";
             getField(tag,"TBPM",&s); // TBPM: the bpm
             float bpm = 0;
@@ -533,7 +531,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
         // this closes 'tag' for us
         id3_file_close(fh);
     }
-    
+
     // Get file length. This has to be done by one of these options:
     // 1) looking for the tag named TLEN (above),
     //   -- too buggy to rely on
@@ -547,13 +545,13 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     //   -- We do not do this, 7/2008
 
     // Open file, initialize MAD and read beginnning of file
-    
+
     QFile file(location);
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "SSMP3::ParseHeader Open failed:" << location;
         return ERR;
     }
-    
+
     mad_stream Stream;
     mad_header Header;
 
@@ -567,7 +565,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     unsigned long bytesperframe = 0;
     bool constantbitrate = true;
     int frames = 0;
-    
+
     // Number of bytes to read at a time to determine duration
     const unsigned int READLENGTH = 5000;
     char *inputbuf = new char[READLENGTH];
@@ -592,7 +590,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
         // This preserves skiplen, so if we had a buffer error earlier
         // the skip will occur when we give it more data.
         mad_stream_buffer(&Stream, (unsigned char *) inputbuf, readbytes);
-        
+
         while((Stream.bufend - Stream.this_frame) > 0) {
             if(mad_header_decode(&Header,&Stream) == -1) {
                 if(!MAD_RECOVERABLE(Stream.error)) {
