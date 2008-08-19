@@ -342,33 +342,18 @@ void TrackInfoObject::parseFilename()
 
     if (m_sFilename.find('-') != -1)
     {
-        m_sArtist = m_sFilename.section('-',0,0); // Get the first part
+        m_sArtist = m_sFilename.section('-',0,0).trimmed(); // Get the first part
         m_sTitle = m_sFilename.section('-',1,1); // Get the second part
-        m_sTitle = m_sTitle.section('.',0,-2); // Remove the ending
-        m_sType = m_sFilename.section('.',-1); // Get the ending
+        m_sTitle = m_sTitle.section('.',0,-2).trimmed(); // Remove the ending
     }
     else
     {
-        m_sTitle = m_sFilename.section('.',0,-2); // Remove the ending;
-        m_sType = m_sFilename.section('.',-1); // Get the ending
+        m_sTitle = m_sFilename.section('.',0,-2).trimmed(); // Remove the ending;
+        m_sType = m_sFilename.section('.',-1).trimmed(); // Get the ending
     }
 
-    // Remove spaces from start and end of title and artist
-    while (m_sArtist.startsWith(" "))
-        m_sArtist = m_sArtist.right(m_sArtist.length()-1);
-    while (m_sArtist.endsWith(" "))
-        m_sArtist = m_sArtist.left(m_sArtist.length()-1);
-    while (m_sTitle.startsWith(" "))
-        m_sTitle = m_sTitle.right(m_sTitle.length()-1);
-    while (m_sTitle.endsWith(" "))
-        m_sTitle = m_sTitle.left(m_sTitle.length()-1);
-
-
-    // Sort out obviously wrong parsings:
-    if ((m_sArtist.length() < 3) || (m_sTitle.length() < 3))
-    {
-        m_sTitle = m_sFilename.section('.',0,-2);
-        m_sArtist = "";
+    if (m_sTitle.length() == 0) {
+        m_sTitle = m_sFilename.section('.',0,-2).trimmed();
     }
 
     // Find the length:
@@ -378,7 +363,7 @@ void TrackInfoObject::parseFilename()
     m_sComment = QString("");
 
     // Find the type
-    m_sType = m_sFilename.section(".",-1).lower();
+    m_sType = m_sFilename.section(".",-1).lower().trimmed();
 
     m_qMutex.unlock();
 }
@@ -544,7 +529,7 @@ void TrackInfoObject::setHeaderParsed(bool parsed)
 QString TrackInfoObject::getInfo()  const
 {
     m_qMutex.lock();
-    QString artist = m_sArtist == "" ? "" : m_sArtist + ", ";
+    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
     QString sInfo = artist + m_sTitle;
     m_qMutex.unlock();
 
@@ -587,7 +572,7 @@ QString TrackInfoObject::getTitle()  const
 void TrackInfoObject::setTitle(QString s)
 {
     m_qMutex.lock();
-    m_sTitle = s;
+    m_sTitle = s.trimmed();
     m_qMutex.unlock();
 /*
     if (m_pTableItemTitle)
@@ -610,7 +595,7 @@ QString TrackInfoObject::getArtist()  const
 void TrackInfoObject::setArtist(QString s)
 {
     m_qMutex.lock();
-    m_sArtist = s;
+    m_sArtist = s.trimmed();
     m_qMutex.unlock();
 /*
     if (m_pTableItemArtist)
