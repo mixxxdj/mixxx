@@ -37,7 +37,8 @@
 #include <ladspaloader.h>
 #endif
 
-#ifdef A_THING_THAT_IS_NOT_DEFFED //Q_WS_WIN
+#ifdef Q_WS_WIN
+#ifdef DEBUGCONSOLE
 #include <io.h> // Debug Console
 #include <windows.h>
 
@@ -62,7 +63,8 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
         setvbuf( stderr, NULL, _IONBF, 0 );
     }
 }
-#endif
+#endif // DEBUGCONSOLE
+#endif // Q_WS_WIN
 
 QApplication * a;
 
@@ -131,11 +133,11 @@ int main(int argc, char * argv[])
 #ifdef Q_WS_WIN
     // For windows write all debug messages to a logfile:
     Logfile.setName( "mixxx.log" );
-#ifndef QT3_SUPPORT
+  #ifndef QT3_SUPPORT
     Logfile.open(IO_WriteOnly | IO_Translate);
-#else
+  #else
     Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-#endif
+  #endif
   #ifdef DEBUGCONSOLE
     InitDebugConsole();
     qInstallMsgHandler( MessageOutput );
