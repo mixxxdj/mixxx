@@ -634,7 +634,13 @@ if int(flags_ipod):
 	if platform == 'win32':
 		env.Append(LIBS = 'gpod');
 		# You must check v-this-v directory out from http://publicsvn.songbirdnest.com/vendor-binaries/trunk/windows-i686-msvc8/libgpod/
-		env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib') 
+		env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib')
+		# Following building the following must be added to the dist folder in order for mixxx to run with ipod support on Win32
+		# \windows-i686-msvc8\libgpod\release\lib\libgpod.dll
+		# \windows-i686-msvc8\glib\release\bin\libgobject-2.0-0.dll
+		# \windows-i686-msvc8\glib\release\bin\libglib-2.0-0.dll
+		# \windows-i686-msvc8\libiconv\release\bin\iconv.dll
+		# \windows-i686-msvc8\gettext\release\binintl.dll
 	if platform == 'linux' or platform == 'osx':
 		# env.Append(LIBS = 'libgpod-1.0')
 		# env.Append(LIBS = 'glib-2.0')
