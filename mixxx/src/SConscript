@@ -630,10 +630,17 @@ else:
 flags_ipod = getFlags(env, 'ipod', 0)
 if int(flags_ipod):
 	env.Append(CXXFLAGS = '-D__IPOD__')
-	# env.Append(LIBS = 'libgpod-1.0')
-	# env.Append(LIBS = 'glib-2.0')
-	env.ParseConfig('pkg-config libgpod-1.0 --silence-errors --cflags --libs')
-	env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
+
+	if platform == 'win32':
+		env.Append(LIBS = 'gpod');
+		# You must check v-this-v directory out from http://publicsvn.songbirdnest.com/vendor-binaries/trunk/windows-i686-msvc8/libgpod/
+		env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib') 
+	if platform == 'linux' or platform == 'osx':
+		# env.Append(LIBS = 'libgpod-1.0')
+		# env.Append(LIBS = 'glib-2.0')
+		env.ParseConfig('pkg-config libgpod-1.0 --silence-errors --cflags --libs')
+		env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
+		
 	sources += Split("""wipodtracksmodel.cpp """) #IPOD
 	print "iPod support... enabled"
 	build_flags += 'ipod '
