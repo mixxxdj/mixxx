@@ -700,13 +700,15 @@ if int(flags_vinylcontrol):
 else:
 	print "Vinyl Control... disabled"
 
-flags_msvcdebug = getFlags(env, 'msvcdebug', 1)
+flags_msvcdebug = getFlags(env, 'msvcdebug', 0)
 if int(flags_msvcdebug) and platform == 'win32':
+	env.Append(CCFLAGS = '/MDd') # required for sndfile w/ flac support on windows
 	env.Append(LINKFLAGS = '/DEBUG')
 	env.Append(CXXFLAGS = '/ZI')
 	print "MSVC Debugging... enabled"
 	build_flags += 'msvcdebug '
 else:
+	env.Append(CCFLAGS = '/MD') # required for sndfile w/ flac support on windows
 	print "MSVC Debugging... disabled"
 
 flags_script = getFlags(env, 'script', 0)
