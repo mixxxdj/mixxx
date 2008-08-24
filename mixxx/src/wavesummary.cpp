@@ -179,15 +179,15 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     int f = pSoundSource->getSrate();
     double mz = pTrackInfoObject->getVisualResampleRate();
     double n = double(f) / mz;
-    
+
     int samplesPerDownsample = n;
     int numDownsamples = numSamples / samplesPerDownsample;
-    
+
     if(numDownsamples % 2 != 0)
         numDownsamples++;
 
     // Downsample from curSamples -> numDownsamples
-    
+
     QVector<float> *downsample = new QVector<float>(numDownsamples);
     float *downsampleVector = downsample->data();
     int i,j;
@@ -201,7 +201,7 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     // Allow the visual waveform to display this before we've populated it so
     // that it displays the wave as we work.
     pTrackInfoObject->setVisualWaveform(downsample);
-    
+
     qDebug() << "WaveSummary: f " << f << " samplesPerDownsample: " << samplesPerDownsample << " downsamples " << numDownsamples << " from " << numSamples;
 
     // readLen and bufRead need to be divisible by 2
