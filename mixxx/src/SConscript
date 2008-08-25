@@ -1031,8 +1031,14 @@ if platform == 'win32':
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
-
-
+	def cleanSVNDirsFromDist():
+		if os.path.exists("dist"):
+			print "Cleaning .svn directories from dist... ",
+			os.system('cmd.exe /c @FOR /F "tokens=*" %D IN (\'dir /b /ad /s dist\*.svn*\') do @(rd /s /q "%D") 2> NUL')
+			print "Done."
+	import atexit
+	atexit.register(cleanSVNDirsFromDist)
+	
 def BuildRelease(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
