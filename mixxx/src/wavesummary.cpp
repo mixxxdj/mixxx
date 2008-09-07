@@ -176,6 +176,7 @@ void WaveSummary::visualWaveformGen(TrackInfoObject *pTrackInfoObject, SoundSour
     // => N = F / (MZ)
 
     int numSamples = pSoundSource->length();
+    if (numSamples <= 0) return;
     int f = pSoundSource->getSrate();
     double mz = pTrackInfoObject->getVisualResampleRate();
     double n = double(f) / mz;

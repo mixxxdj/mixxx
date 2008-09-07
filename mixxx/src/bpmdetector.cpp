@@ -128,7 +128,7 @@ void BpmDetector::calculateBPMSoundTouch(TrackInfoObject *pTrackInfoObject, BpmR
     }
 
     length = pSoundSource->length();
-
+    if (length <= 0) return;
     if(!pScheme->getAnalyzeEntireSong())
     {
         length = length / 2;
