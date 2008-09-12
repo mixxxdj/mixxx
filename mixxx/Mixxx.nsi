@@ -66,8 +66,9 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\midi
   File "dist\midi\*.xml"
 
-  SetOutPath $INSTDIR\promo
-  File "dist\promo\*"
+  ;Disabled for initial 1.6.0 release
+  ;SetOutPath $INSTDIR\promo
+  ;File "dist\promo\*"
 
   SetOutPath $INSTDIR\keyboard
   File "src\keyboard\Standard.kbd.cfg"
@@ -75,9 +76,6 @@ Section "Mixxx (required)" SecMixxx
 
   SetOutPath "$INSTDIR\skins"
   File "src\skins\cross.png"
-
-  SetOutPath "$INSTDIR\skins\Natt"
-  File "src\skins\Natt\*"
 
   SetOutPath "$INSTDIR\skins\Collusion (1280)"
   File "src\skins\Collusion (1280)\*"
@@ -1279,7 +1277,6 @@ Section "Uninstall"
   Delete $INSTDIR\skins\outlineClose\*.*
   Delete $INSTDIR\skins\outlineSmall\*.*
   Delete $INSTDIR\skins\outlineMini\*.*
-  Delete "$INSTDIR\skins\Natt\*.*"
   Delete "$INSTDIR\skins\Collusion (1280)\*.*"
   Delete "$INSTDIR\skins\Collusion (1280-WS)\*.*"
   Delete $INSTDIR\skins\hercules\*.*
@@ -1288,12 +1285,11 @@ Section "Uninstall"
   Delete $INSTDIR\skins\*.*
   Delete $INSTDIR\keyboard\*.*
   Delete $INSTDIR\midi\*.*
-  Delete $INSTDIR\promo\*.*
+  ;Delete $INSTDIR\promo\*.*
   RMDir "$INSTDIR\skins\outline"
   RMDir "$INSTDIR\skins\outlineClose"
   RMDir "$INSTDIR\skins\outlineSmall"
   RMDir "$INSTDIR\skins\outlineMini"
-  RMDir "$INSTDIR\skins\Natt"
   RMDir "$INSTDIR\skins\Collusion (1280)"
   RMDir "$INSTDIR\skins\Collusion (1280-WS)"
   RMDir "$INSTDIR\skins\hercules"
@@ -1302,7 +1298,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins"
   RMDir "$INSTDIR\midi"
   RMDir "$INSTDIR\keyboard"
-  RMDir "$INSTDIR\promo"
+  ;RMDir "$INSTDIR\promo"
 
 
   ; Remove shortcuts, if any
