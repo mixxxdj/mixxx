@@ -32,6 +32,7 @@
   */
 
 class WaveformRenderer;
+class TrackInfoObject;
 
 class WVisualSimple : public WWidget
 {
@@ -52,7 +53,7 @@ signals:
 
 public slots:
     void setValue(double) {};
-    void slotNewTrack();
+    void slotNewTrack(TrackInfoObject* track);
     
 protected:
     int m_iStartPosX, m_iValue;
