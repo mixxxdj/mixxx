@@ -275,6 +275,7 @@
 		</control>
 
 <!-- Scratch -->
+<!-- There is no Master scratch control in Mixxx. -Albert 09/15/2008
 		<control>
 			<group>[Master]</group>
 			<key>scratch</key>
@@ -282,7 +283,7 @@
 			<midino>0x29</midino>
 			<midichan>1</midichan>
 		</control>
-
+-->
 <!-- Balance -->
 		<control>
 			<group>[Master]</group>
