@@ -10,15 +10,16 @@ MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, d
                                double max, unsigned char status, unsigned char byte1)
     : m_min(min), m_max(max), m_midi(midi), m_status(status), m_byte1(byte1) {
 
-    m_cobj = ControlObject::getControl(ConfigKey(group, name));
-    
-
-    //OMGWTFBBQ: Massive hack to temporarily fix LP #254564 for the 1.6.0 release. 
+    //OMGWTFBBQ: Massive hack to temporarily fix LP #254564 for the 1.6.0 release.
     //           Something's funky with our <lights> blocks handling? -- Albert 08/05/2008
     if (group.isEmpty() || name.isEmpty()) return;
 
+    m_cobj = ControlObject::getControl(ConfigKey(group, name));
+
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
-    Q_ASSERT(m_cobj);
+    // Q_ASSERT(m_cobj);
+    Q_ASSERT_X(m_cobj, "MidiLedHandler", "Invalid config group: '" + group + "' name:'" + name + "'");
+
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
 }
@@ -42,7 +43,7 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi) {
             if(light.nodeName() == "light") {
                 QString group = WWidget::selectNodeQString(light, "group");
                 QString key = WWidget::selectNodeQString(light, "key");
-    
+
                 unsigned char status = (unsigned char)WWidget::selectNodeInt(light, "status");
                 unsigned char midino = (unsigned char)WWidget::selectNodeInt(light, "midino");
 				float min = 0.0f;
@@ -56,7 +57,7 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi) {
 				if (!light.firstChildElement("maximum").isNull()) {
 					max = WWidget::selectNodeFloat(light, "maximum");
 				}
-    
+
                 allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino));
             }
             light = light.nextSibling();
