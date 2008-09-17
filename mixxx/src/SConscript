@@ -337,7 +337,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
-	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C'):
+	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C') and not (platform == 'win32' and conf.CheckLib(['portaudio'])):
 		print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 		Exit(1)
 
