@@ -79,7 +79,7 @@ void WaveformRenderMark::setup(QDomNode node) {
 }
 
 
-void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos) {
+void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
 
     if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
         return;
@@ -87,14 +87,14 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     // necessary?
     if(buffer == NULL)
         return;
-    
-    const int oversample = m_pParent->getSubpixelsPerPixel();
+
+    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
 
     pPainter->save();
-    pPainter->scale(1.0/oversample,1.0);
+    pPainter->scale(1.0/subpixelsPerPixel,1.0);
     pPainter->setPen(markColor);
     
-    double subpixelWidth = m_iWidth * oversample;
+    double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
     double halfh = m_iHeight/2;
     

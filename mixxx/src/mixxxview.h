@@ -74,8 +74,6 @@ public:
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
     /** Pointer to rate slider widgets */
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
-    /** Allow dynamic zoom on visuals */
-    bool m_bZoom;
     /** Pointer to ComboBox*/
     QComboBox *m_pComboBox;
     //WComboBox *m_pComboBox;
