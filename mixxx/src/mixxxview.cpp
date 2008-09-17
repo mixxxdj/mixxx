@@ -99,7 +99,6 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     m_pNumberPosCh2 = 0;
     m_pSliderRateCh1 = 0;
     m_pSliderRateCh2 = 0;
-    m_bZoom = false;
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
@@ -590,8 +589,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    ((QWidget*)m_pVisualCh2)->repaint();
 		}
 		
-                if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
-                    m_bZoom = true;
             }
 
 

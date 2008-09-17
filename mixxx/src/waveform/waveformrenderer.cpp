@@ -54,6 +54,17 @@ QObject()
     m_pRenderCue = new WaveformRenderMark(group, ConfigKey(group, "cue_point"), this);
 
     m_pCOVisualResample = new ControlObject(ConfigKey(group, "VisualResample"));
+
+    m_pRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
+    if(m_pRate != NULL) {
+        connect(m_pRate, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateRate(double)));
+    }
+
+    m_pRateRange = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
+    if(m_pRateRange != NULL) {
+        connect(m_pRateRange, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateRateRange(double)));
+    }
+
 }
 
 
@@ -61,6 +72,14 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pCOVisualResample)
         delete m_pCOVisualResample;
     m_pCOVisualResample = NULL;
+
+    if(m_pRate)
+        delete m_pRate;
+    m_pRate = NULL;
+    
+    if(m_pRateRange)
+        delete m_pRateRange;
+    m_pRateRange = NULL;
 
     if(m_pPlayPos)
         delete m_pPlayPos;
@@ -82,6 +101,15 @@ void WaveformRenderer::slotUpdatePlayPos(double v) {
     m_dPlayPos = v;
     m_iPlayPosTime = clock();
 }
+
+void WaveformRenderer::slotUpdateRate(double v) {
+    m_dRate = v;
+}
+
+void WaveformRenderer::slotUpdateRateRange(double v) {
+    m_dRateRange = v;
+}
+
 
 void WaveformRenderer::resize(int w, int h) {
     m_iWidth = w;
@@ -271,7 +299,7 @@ bool WaveformRenderer::fetchWaveformFromTrack() {
     
 
 
-void WaveformRenderer::drawSignalLines(QPainter *pPainter,double playpos) {
+void WaveformRenderer::drawSignalLines(QPainter *pPainter,double playpos, double rateAdjust) {
     
     if(m_pSampleBuffer == NULL) {
         return;
@@ -287,9 +315,18 @@ void WaveformRenderer::drawSignalLines(QPainter *pPainter,double playpos) {
 
     pPainter->save();
 
-    int subpixelWidth = m_iWidth * m_iSubpixelsPerPixel;
+    double subpixelsPerPixel = m_iSubpixelsPerPixel * (1.0 + rateAdjust);
+    
+    int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
 
-    pPainter->scale(1.0/float(m_iSubpixelsPerPixel),m_iHeight*0.40);
+    pPainter->scale(1.0/subpixelsPerPixel,m_iHeight*0.40);
+
+    // If the array is not large enough, expand it.
+    // Amortize the cost of this by requesting a factor of 2 more.
+    if(m_lines.size() < subpixelWidth) {
+        m_lines.resize(2*subpixelWidth);
+    }
+    
     int halfw = subpixelWidth/2;
     for(int i=0;i<subpixelWidth;i++) {
         // Start at curPos minus half the waveform viewer
@@ -303,7 +340,8 @@ void WaveformRenderer::drawSignalLines(QPainter *pPainter,double playpos) {
         }
     }
 
-    pPainter->drawLines(m_lines);
+    // Only draw lines that we have provided
+    pPainter->drawLines(m_lines.data(), subpixelWidth);
 
     pPainter->restore();
 }
@@ -406,7 +444,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     }
     */
 
-    double playpos = m_dPlayPos + playposadjust;
+    double playpos = m_dPlayPos;
     
     if(m_bRepaintBackground) {
         generateBackgroundPixmap();
@@ -426,19 +464,23 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     // Translate our coordinate frame from (0,0) at top left
     // to (0,0) at left, center. All the subrenderers expect this.
-    
     pPainter->translate(0.0,m_iHeight/2.0);
+
     // Now scale so that positive-y points up.
     pPainter->scale(1.0,-1.0);
-
+    
     // Draw the center horizontal line under the signal.
     pPainter->drawLine(QLine(0,0,m_iWidth,0));
+
+    // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
+    double rateAdjust = math_min(0.99, m_dRate * m_dRateRange);
     
-    drawSignalLines(pPainter,playpos);
+    // Draw the signal
+    drawSignalLines(pPainter,playpos,rateAdjust);
 
     // Draw various markers.
-    m_pRenderBeat->draw(pPainter,pEvent, m_pSampleBuffer, playpos);
-    m_pRenderCue->draw(pPainter,pEvent, m_pSampleBuffer, playpos);
+    m_pRenderBeat->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    m_pRenderCue->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
     
     pPainter->setPen(colorMarker);
     

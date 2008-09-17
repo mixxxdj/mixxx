@@ -22,7 +22,7 @@ public:
     void resize(int w, int h);
     void setup(QDomNode node);
     WaveformRenderBeat(const char *group, WaveformRenderer *parent);
-    void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos);
+    void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackInfoObject *pTrack);
 
 public slots:

@@ -238,7 +238,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config);
 
-    // TODO : Move this to WaveformViewerFactory or something.
+    // TODO rryan : Move this to WaveformViewerFactory or something.
     /*
     if (bVisualsWaveform && !view->activeWaveform())
     {
@@ -250,20 +250,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         mb->show();
     }
     */
-
-    // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
-    if (view->activeWaveform())
-    {
-        // Dynamic zoom on visuals
-        if (view->m_bZoom)
-        {
-            // TODO rryan : USE THESE CONTROLOBJECTS IN THE NEWVISUAL CODE
-            //ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-marks"));
-            //ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-signal"));
-            //ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-marks"));
-            //ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
-        }
-    }
 
     // Verify path for xml track file.
     QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
@@ -370,15 +356,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
     channel2->setEngineBuffer(buffer2);
-
-    // Dynamic scaling of temporal effect curves
-    if (view->m_bZoom)
-    {
-        // TODO rryan, use these!
-        //ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-temporal"));
-        //ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-temporal"));
-    }
-
+    
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif

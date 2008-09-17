@@ -93,7 +93,7 @@ void WaveformRenderBeat::setup(QDomNode node) {
 }
 
 
-void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos) {
+void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
 
     if(m_dBpm == -1 || m_dBpm == 0)
         return;
@@ -125,13 +125,14 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
         m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
     }
 
-    const int oversample = m_pParent->getSubpixelsPerPixel();
+    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
+    const int oversample = (int)subpixelsPerPixel;
 
     pPainter->save();
-    pPainter->scale(1.0/oversample,1.0);
+    pPainter->scale(1.0/subpixelsPerPixel,1.0);
     pPainter->setPen(colorMarks);
     
-    double subpixelWidth = m_iWidth * oversample;
+    double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
     double halfw = m_iWidth/2;
     double halfh = m_iHeight/2;
@@ -140,8 +141,8 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     iCurPos = iCurPos >> 1;
 
     // basePos and endPos are in samples
-    double basePos = iCurPos - m_dSamplesPerPixel*halfw;
-    double endPos = basePos + m_iWidth*m_dSamplesPerPixel;
+    double basePos = iCurPos - m_dSamplesPerPixel*halfw*(1.0+rateAdjust);
+    double endPos = basePos + m_iWidth*m_dSamplesPerPixel*(1.0+rateAdjust);
 
     // snap to the first beat
     double curPos = ceilf(basePos/m_dBeatLength)*m_dBeatLength;

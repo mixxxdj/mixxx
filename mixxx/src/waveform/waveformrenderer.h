@@ -24,7 +24,7 @@ public:
 
     void resize(int w, int h);
     void draw(QPainter* pPainter, QPaintEvent *pEvent);
-    void drawSignalLines(QPainter*, double playpos);
+    void drawSignalLines(QPainter*, double playpos, double rateAdjust);
     void drawSignalPixmap(QPainter* p);
     void newTrack(TrackInfoObject *pTrack);
     void setup(QDomNode node);
@@ -33,6 +33,8 @@ public:
     int getPixelsPerSecond();
 public slots:
     void slotUpdatePlayPos(double playpos);
+    void slotUpdateRate(double rate);
+    void slotUpdateRateRange(double rate);
 
 private:
     void generateBackgroundPixmap();
@@ -43,7 +45,7 @@ private:
     int m_iNumSamples;
 
     int m_iPlayPosTime, m_iPlayPosTimeOld;
-    double m_dPlayPos, m_dPlayPosOld;
+    double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange;
 
     QVector<float> *m_pSampleBuffer;
     QVector<QLineF> m_lines;
@@ -53,7 +55,9 @@ private:
     QImage m_pImage;
 
     ControlObjectThreadMain *m_pPlayPos;
-
+    ControlObjectThreadMain *m_pRate;
+    ControlObjectThreadMain *m_pRateRange;
+    
     ControlObject *m_pCOVisualResample;
 
     WaveformRenderBeat *m_pRenderBeat;
