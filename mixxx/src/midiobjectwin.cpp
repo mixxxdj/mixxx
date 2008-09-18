@@ -18,6 +18,7 @@
 #include "midiobjectwin.h"
 #include "midiledhandler.h"
 #include <atlconv.h>
+#include <QtCore>
 #include <QtDebug>
 
 #ifdef __WIN__
@@ -124,8 +125,11 @@ void MidiObjectWin::run()
 
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
 {
-    qDebug() << QString("midi miditype: ") << QString(channel& 240) << QString(" ch: ") << QString(channel&15) << QString(", ctrl: ") << QString(midicontrol) << QString(", val: ") << QString(midivalue);
-    send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);
+    qDebug() << QString("midi miditype: %1 ch: %2, ctrl: %3, val: %4").arg(QString::number(channel& 240, 16).toUpper())
+       .arg(QString::number(channel&15, 16).toUpper())
+       .arg(QString::number(midicontrol, 16).toUpper())
+       .arg(QString::number(midivalue, 16).toUpper());
+    receive((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue, device); // void receive(MidiCategory category, char channel, char control, char value, QString device);
 }
 
 // C/C++ wrapper function
