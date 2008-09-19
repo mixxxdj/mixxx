@@ -71,7 +71,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x14</midino>
 			<options>
-				<switch/>
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -79,12 +79,18 @@
 			<key>PrevTrack</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x09</midino>
+			<options>
+				<button/>
+			</options>
 		</control>
 		<control>
 			<group>[Channel1]</group>
 			<key>NextTrack</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x0A</midino>
+			<options>
+				<button/>
+			</options>
 		</control>
 		
 		<control>
@@ -150,7 +156,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x18</midino>
 			<options>
-				<switch/>
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -158,12 +164,18 @@
 			<key>PrevTrack</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x21</midino>
+			<options>
+				<button/>
+			</options>
 		</control>
 		<control>
 			<group>[Channel2]</group>
 			<key>NextTrack</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x22</midino>
+			<options>
+				<button/>
+			</options>
 		</control>
 
 <!-- New for RMX -->
@@ -171,93 +183,104 @@
     		<control>
    			<group>[Channel1]</group>
 			<key>filterHighKill</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x0E</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
     		<control>
    			<group>[Channel2]</group>
 			<key>filterHighKill</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x26</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
     		<control>
    			<group>[Channel1]</group>
 			<key>filterMidKill</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x0F</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
     		<control>
    			<group>[Channel2]</group>
 			<key>filterMidKill</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x27</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
     		<control>
    			<group>[Channel1]</group>
 			<key>filterLowKill</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x10</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
     		<control>
    			<group>[Channel2]</group>
 			<key>filterLowKill</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x28</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
 
 <!-- Sync Buttons -->
 		<control>
 			<group>[Channel1]</group>
 			<key>beatsync</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x07</midino>
-			<midichan>1</midichan>
 		</control>
 		<control>
 			<group>[Channel2]</group>
 			<key>beatsync</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x1B</midino>
-			<midichan>1</midichan>
 		</control>
-
 
 <!-- Up/Down -->
 		<control>
 			<group>[Playlist]</group>
-			<key>SelectNextTrack</key>
-			<miditype>Key</miditype>
+			<key>SelectPrevTrack</key>
+			<miditype>Ctrl</miditype>
 			<midino>0x2A</midino>
-			<midichan>1</midichan>
 		</control>
 		<control>
 			<group>[Playlist]</group>
-			<key>SelectPrevTrack</key>
-			<miditype>Key</miditype>
+			<key>SelectNextTrack</key>
+			<miditype>Ctrl</miditype>
 			<midino>0x2B</midino>
-			<midichan>1</midichan>
 		</control>
 
 <!-- Load Deck A/B -->
 		<control>
 			<group>[Channel1]</group>
 			<key>LoadSelectedTrack</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x12</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
 		<control>
 			<group>[Channel2]</group>
 			<key>LoadSelectedTrack</key>
-			<miditype>Key</miditype>
+			<miditype>Ctrl</miditype>
 			<midino>0x16</midino>
-			<midichan>1</midichan>
+			<options>
+				<button/>
+			</options>
 		</control>
 
 <!-- A/B Gain  -->
@@ -330,6 +353,7 @@
 		</light>
 
 <!-- Scratch -->
+<!--
 		<light>
 			<group>[Master]</group>
 			<key>scratch</key>
@@ -337,7 +361,7 @@
 			<midino>0x29</midino>
 			<threshold>0.5</threshold>
 		</light>
-
+-->
 <!-- Headphone Cue -->
 		<light>
 			<group>[Channel1]</group>
