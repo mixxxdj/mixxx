@@ -858,7 +858,8 @@ void MixxxApp::slotOptionsBeatMark(bool)
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
-    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+
+// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
 #ifdef __LINUX__
@@ -1046,6 +1047,8 @@ void MixxxApp::slotHelpAbout()
 "Ulrich Heske<br>"
 "James Hagerman<br>"
 "quil0m80<br>"
+"Michael Pujos<br>"
+"Mark Glines<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
