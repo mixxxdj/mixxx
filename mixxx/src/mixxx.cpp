@@ -645,7 +645,7 @@ void MixxxApp::initMenuBar()
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
     libraryMenu->addAction(playlistsImport);
-    libraryMenu->addAction(batchBpmDetect);
+    //libraryMenu->addAction(batchBpmDetect);
 
 #ifdef __IPOD__
     libraryMenu->addSeparator();
