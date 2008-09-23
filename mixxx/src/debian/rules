@@ -13,7 +13,7 @@
 
 
 CFLAGS = -Wall -g
-MIXXX_SCONS_FLAGS = djconsole=1 prefix=/usr install_root=$(CURDIR)/debian/tmp/usr
+MIXXX_SCONS_FLAGS = djconsole=1 optimize=2 prefix=/usr install_root=$(CURDIR)/debian/tmp/usr
 SCONS = scons
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
