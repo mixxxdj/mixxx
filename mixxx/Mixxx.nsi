@@ -1207,7 +1207,7 @@ Section "Mixxx (required)" SecMixxx
   WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"
   
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "DisplayName" "NSIS Mixxx"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "DisplayName" "Mixxx"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "NoRepair" 1
