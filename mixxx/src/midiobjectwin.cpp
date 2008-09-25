@@ -129,7 +129,7 @@ void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
        .arg(QString::number(channel&15, 16).toUpper())
        .arg(QString::number(midicontrol, 16).toUpper())
        .arg(QString::number(midivalue, 16).toUpper());
-    receive((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue, device); // void receive(MidiCategory category, char channel, char control, char value, QString device);
+    send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);	
 }
 
 // C/C++ wrapper function
