@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>546</height>
+    <width>442</width>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -275,8 +275,14 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" >
+   <item rowspan="2" row="2" column="0" >
     <widget class="QGroupBox" name="groupBox" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title" >
       <string>Control Mode</string>
      </property>
@@ -306,6 +312,14 @@
     </widget>
    </item>
    <item row="2" column="1" >
+    <widget class="QGroupBox" name="groupBoxSignalQuality" >
+     <property name="title" >
+      <string>Signal Quality</string>
+     </property>
+     <layout class="QGridLayout" />
+    </widget>
+   </item>
+   <item row="3" column="1" >
     <widget class="QLabel" name="label" >
      <property name="enabled" >
       <bool>false</bool>

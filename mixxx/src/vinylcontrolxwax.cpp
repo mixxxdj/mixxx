@@ -28,7 +28,7 @@
    1) The smoothing thing that xwax does
    2) Tons of cleanup
    3) Speed up needle dropping
-   4) ....?
+   4) Extrapolate small dropouts and keep track of "dynamics"
 
  ********************/
 
@@ -54,7 +54,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
         timecode = "traktor_a";
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
         timecode = "traktor_b";
-    
+
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables...";
 
@@ -66,7 +66,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     }
 
     //Initialize the timecoder structure.
-    timecoder_init(&timecoder); 
+    timecoder_init(&timecoder);
     timecoder.rate = iSampleRate;
 
 
@@ -91,7 +91,7 @@ VinylControlXwax::~VinylControlXwax()
     bShouldClose = true;
     waitForNextInput.wakeAll();
     lockSamples.unlock();
-    
+
     controlScratch->slotSet(0.0f);
     wait();
 }
@@ -106,8 +106,9 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecoder_submit(&timecoder, samples, size);
 
         //Update the input signal strength
-        timecodeStrength->slotSet(samples[0] / SHRT_MAX);
-    
+        timecodeInputL->slotSet((float)fabs(samples[0]) / SHRT_MAX);
+        timecodeInputR->slotSet((float)fabs(samples[1]) / SHRT_MAX);
+
         waitForNextInput.wakeAll();
         lockSamples.unlock();
     }
@@ -136,7 +137,7 @@ void VinylControlXwax::run()
     {
         lockSamples.lock();
         waitForNextInput.wait(&lockSamples);
-        lockSamples.unlock(); 
+        lockSamples.unlock();
 
         if (bShouldClose)
             return;
@@ -149,10 +150,10 @@ void VinylControlXwax::run()
         iVCMode = mode->get();
         //Check if vinyl control is enabled...
         bIsEnabled = enabled->get();
-        
+
         //Get the pitch range from the prefs.
         fRateRange = rateRange->get();
-        
+
         // Analyse the input samples
         int iPosition = -1;
         iPosition = timecoder_get_position(&timecoder, &when);
@@ -164,12 +165,12 @@ void VinylControlXwax::run()
 
 
         //Initialize drift control to zero in case we don't get any position data to calculate it with.
-        dDriftControl = 0.0f;        
+        dDriftControl = 0.0f;
 
         //qDebug() << "iLeadInTime:" << iLeadInTime << "dVinylPosition" << dVinylPosition;
 
         alive = timecoder_get_alive(&timecoder);
-        
+
         pitch_unavailable = timecoder_get_pitch(&timecoder, &dVinylPitch);
 
         if (duration != NULL && bIsEnabled)
@@ -179,24 +180,27 @@ void VinylControlXwax::run()
             // When there's a timecode signal available
             if((alive && !pitch_unavailable))
             {
+                //Notify the UI that the timecode quality is good
+                timecodeQuality->slotSet(1.0f);
+
                 //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
                 //qDebug() << "dVinylPosition: " << dVinylPosition << ", dVinylPitch: " << dVinylPitch << ", when: " << when;
- 
+
                 //FIXME (when Mark finished variable samplerates in timecoder)
                 //Hack to make other samplerates work with xwax:
                 //dVinylPitch *= (iSampleRate/44100);
-               
+
                 dVinylScratch = dVinylPitch;         //Use this value to instruct Mixxx for scratching/seeking.
                 dVinylPitch = dVinylPitch - 1.0f;         //Shift the 33 RPM value (33 RPM = 0.0)
                 dVinylPitch = dVinylPitch / fRateRange;   //Normalize to the pitch range. (8% = 1.0)
-               
+
 
                 //Re-get the duration, just in case a track hasn't been loaded yet...
                 //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
                 //If xwax has given us a valid position from the timecode (will be -1.0f if invalid)
-                if ((dVinylPosition - iLeadInTime) > 0.0f) 
-                {   
+                if ((dVinylPosition - iLeadInTime) > 0.0f)
+                {
                     //If the position from the timecode is more than a few seconds off, resync the position.
                     if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && 
                         (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
@@ -204,7 +208,7 @@ void VinylControlXwax::run()
                     {
                         syncPosition();
                     }
-                    //If we're in CD mode, react to shorter skips (for rapid-fire cueing). There's no needles
+                   //If we're in CD mode, react to shorter skips (for rapid-fire cueing). There's no needles
                     //with CDJs, so there's no point in trying to prevent needle skips.
                     else if (fabs(dVinylPosition - filePosition - iLeadInTime) > 0.2 &&
                              (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
@@ -215,21 +219,20 @@ void VinylControlXwax::run()
                     //else if (fabs(dVinylPosition - iLeadInTime) < 0.3) //Force resync at start 
                     //    syncPosition(); 
                         
-                        
-                    //Calculate how much the vinyl's position has drifted from it's timecode.
-                    //(This is caused by the manufacturing process of the vinyl.) 
+                    //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
+                    //(This is caused by the manufacturing process of the vinyl.)
                     if (filePosition != 0.0f)
                         dDriftControl = (((dVinylPosition-iLeadInTime)/filePosition) - 1)/100 * 4.0f;
-                    
+
                     //Useful debug message for tracking down the problem of the vinyl's position "drifting":
                     //qDebug() << "Ratio of vinyl's position and Mixxx's: " << fabs(dVinylPosition/filePosition);
-                    
+
                     /*
                     qDebug() << "dDriftControl: " << dDriftControl;
                     qDebug() << "Xwax says the time is: " << dVinylPosition;
                     qDebug() << "Mixxx says the time is: " << filePosition;
                     qDebug() << "dVinylPitch: " << dVinylPitch;
-                    //qDebug() << "diff in positions:" << fabs(dVinylPosition - filePosition);                           
+                    //qDebug() << "diff in positions:" << fabs(dVinylPosition - filePosition);
                     */
                 }
                 else if (dVinylPosition > 0.0f) //Valid timecode, but we're in the timecode before the lead-in time...
@@ -241,22 +244,25 @@ void VinylControlXwax::run()
                     //timecode passes the lead-in time mark. After that, this code should enter
                     //the "if" statement above this instead of falling into this "else".
                 }
-                
+
                 playButton->slotSet(0.0f);
                 rateSlider->slotSet(0.0f);
-                
+
                 if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
                     controlScratch->slotSet(dVinylScratch + dDriftControl);
                 else
                     controlScratch->slotSet(dVinylScratch);
                 //qDebug() << "dVinylScratch" << dVinylScratch << "dDriftControl" << dDriftControl;
-    
+
                 dOldPos = dVinylPosition;
                 dOldPitch = dVinylPitch;
             }
             else //No pitch data available (the needle is up/stopped.... or really crappy signal)
             {
-                controlScratch->slotSet(0.0f); 
+                controlScratch->slotSet(0.0f);
+
+                //Notify the UI that the timecode quality is garbage/missing.
+                timecodeQuality->slotSet(0.0f);
             }
         }
     }

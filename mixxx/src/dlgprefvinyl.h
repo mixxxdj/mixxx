@@ -21,10 +21,14 @@
 #include "ui_dlgprefvinyldlg.h"
 #include "configobject.h"
 #include "soundmanager.h"
+#include "vinylcontrolsignalwidget.h"
 
 class QWidget;
 class PlayerProxy;
 class ControlObject;
+class ControlObjectThreadMain;
+
+
 
 /**
   *@author Stefan Langhammer
@@ -50,15 +54,34 @@ public slots:
 	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();
     void enableValidComboBoxes();
+    void updateSignalQuality1(double value);
+    void updateSignalQuality2(double value);
+    void updateInputLevelLeft1(double value);
+    void updateInputLevelRight1(double value);
+    void updateInputLevelLeft2(double value);
+    void updateInputLevelRight2(double value);
+    void slotClose();
+    void slotShow();
 
 signals:
     void apply();
 private:
+    VinylControlSignalWidget m_signalWidget1;
+    VinylControlSignalWidget m_signalWidget2;
+
+
     /** Pointer to player device */
     //PlayerProxy *player;
     SoundManager* m_pSoundManager;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    /** Indicates the strength of the timecode signal on each input */
+    ControlObjectThreadMain* m_timecodeQuality1;
+    ControlObjectThreadMain* m_timecodeQuality2;
+    ControlObjectThreadMain* m_vinylControlInput1L;
+    ControlObjectThreadMain* m_vinylControlInput1R;
+    ControlObjectThreadMain* m_vinylControlInput2L;
+    ControlObjectThreadMain* m_vinylControlInput2R;
 };
 
 #endif

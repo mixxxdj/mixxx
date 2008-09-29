@@ -110,6 +110,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #ifdef __VINYLCONTROL__
     connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotShow()));
+    connect(this, SIGNAL(closeDlg()), wvinylcontrol,    SLOT(slotClose()));
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control
 #endif

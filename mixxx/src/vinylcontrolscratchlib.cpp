@@ -102,12 +102,12 @@ void VinylControlScratchlib::AnalyseSamples(short * samples, size_t size)
     }
 
     if (strVinylType == MIXXX_VINYL_FINALSCRATCH)
-        timecodeStrength->slotSet(analyzer->GetTimecodesPerSecond() / 32);
+        timecodeQuality->slotSet(analyzer->GetTimecodesPerSecond() / 32);
     else if (strVinylType == MIXXX_VINYL_MIXVIBESDVSCD)
-        timecodeStrength->slotSet(analyzer->GetTimecodesPerSecond() / 32);
+        timecodeQuality->slotSet(analyzer->GetTimecodesPerSecond() / 32);
 
     waitForNextInput.wakeAll();
-    lockSamples.unlock();    
+    lockSamples.unlock();
 }
 
 
@@ -169,7 +169,7 @@ void VinylControlScratchlib::run()
 
         //Vinyl control mode
         iVCMode = mode->get();
-        
+
         //Check if vinyl control is enabled...
         bIsEnabled = enabled->get();
 

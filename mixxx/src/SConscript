@@ -215,6 +215,7 @@ elif platform == 'win32':
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 #	env.Append(LIBPATH = (flags_qtdir + "/plugins/iconengines"))
 
+
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
 if not env.has_key('CACHEDIR'):
@@ -283,7 +284,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
  track.cpp trackcollection.cpp trackplaylist.cpp wtracktableview.cpp wtracktablemodel.cpp wpromotracksmodel.cpp proxymodel.cpp xmlparse.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
  enginetemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp bpmscheme.cpp  peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
- enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp
+ enginebufferscalereal.cpp powermate.cpp  hercules.cpp mouse.cpp
  waveformviewerfactory.cpp wvisualsimple.cpp wwaveformviewer.cpp wglwaveformviewer.cpp waveform/waveformrenderer.cpp waveform/waveformrenderbeat.cpp waveform/waveformrendermark.cpp
  imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
  trackinfoobject.cpp soundsource.cpp
@@ -299,7 +300,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
 
 #Compile platform specific hardware support
 if platform == 'linux':
-	sources += Split("""powermatelinux.cpp herculeslinux.cpp joysticklinux.cpp mouselinux.cpp """)
+	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
 #elif platform == 'win32':
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
@@ -319,7 +320,8 @@ elif platform == 'osx':
 if platform == 'win32':
 	env.Append(CPPPATH='../../../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='../../../mixxx-winlib')
-	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib', '/subsystem:windows', '/entry:mainCRTStartup'])
+	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
+#'/subsystem:windows',
 
 #Check for dependencies if we're not doing a clean...
 
@@ -479,7 +481,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 #Declare the flags for Mixxx's config/track listing files:
 if platform == 'linux':
-	env.Append(CXXFLAGS = '-D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = '-DTEMPORAL -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 	env.Append(CXXFLAGS = '-DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
 elif platform == 'osx':
 	env.Append(CXXFLAGS = '-D__MACX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
@@ -688,7 +690,7 @@ else:
 flags_vinylcontrol = getFlags(env, 'vinylcontrol', 1)
 if int(flags_vinylcontrol):
 	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
-	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp enginevinylcontrol.cpp """)
+	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp vinylcontrolsignalwidget.cpp enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='../../lib/xwax')
 	if platform == 'win32':
 		sources += Split("""../../lib/xwax/timecoder_win32.c """)
@@ -1107,13 +1109,17 @@ def BuildUbuntuPackage(target, source, env):
 		
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
-		print "Exporting source tree from HEAD"
+		print "Exporting source tree from 1.6.0 r2231"
 		
-		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + version)
+		os.system('svn export --force -r2231 . ubuntu/mixxx-' + version)
 		
 		print "Copying promo tracks dir"
 		os.system('cp -r promo ubuntu/mixxx-' + version)
-		
+	
+		#Remove the Natt skin to fix our 1.6.0 release, damn plagarism
+		print "Removing Natt skin..."
+		os.system('rm -rf ubuntu/mixxx-' + version + '/src/skins/Natt')
+
 		os.chdir('ubuntu')
 		
 		#Temporarily move the debian directory out of the source directory

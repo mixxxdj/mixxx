@@ -27,31 +27,34 @@ class VinylControl : public QThread
 {
     public:
         VinylControl(ConfigObject<ConfigValue> *pConfig, const char *_group);
-        ~VinylControl();
+        virtual ~VinylControl();
     	virtual void ToggleVinylControl(bool enable) = 0;
     	virtual bool isEnabled() = 0;
     	/*virtual void syncPitch(double pitch) = 0;
     	virtual void syncPosition() = 0; */
-    	virtual void AnalyseSamples(short* samples, size_t size) = 0;  
+    	virtual void AnalyseSamples(short* samples, size_t size) = 0;
     	virtual float getSpeed();
     	//virtual float getTimecodeStrength();
     protected:
 	    virtual void run() = 0;						// main thread loop
-	    
-	    QString strVinylType;	 
+
+	    QString strVinylType;
         ConfigObject<ConfigValue> *m_pConfig;	/** Pointer to config database */
         const char* group;
     	ControlObjectThread *playButton;		//The ControlObject used to start/stop playback of the song.
     	ControlObjectThread *playPos;			//The ControlObject used to change the playback position in the song.
     	ControlObjectThread *controlScratch;	//The ControlObject used to seek when the record is spinning fast.
     	ControlObjectThread *rateSlider;		//The ControlObject used to change the speed/pitch of the song.
-    	ControlObjectThread *reverseButton;	//The ControlObject used to reverse playback of the song. 
-    	ControlObjectThread *duration;		//The ControlObject used to get the duration of the current song.    
+    	ControlObjectThread *reverseButton;	//The ControlObject used to reverse playback of the song.
+    	ControlObjectThread *duration;		//The ControlObject used to get the duration of the current song.
     	ControlObjectThread *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     	ControlObjectThread *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
     	ControlObjectThread *rateRange;         //The ControlObject used to the get the pitch range from the prefs.
-    	ControlObjectThread *timecodeStrength;  //The ControlObject used to notify the GUI about the strength of the timecode signal.
-        int iLeadInTime;				//The lead-in time...
+    	ControlObjectThread *timecodeQuality;   //The ControlObject used to notify the GUI about the quality of the timecode signal.
+        ControlObjectThread *timecodeInputL;    //The ControlObject used to notify the GUI about vinyl control left channel's volume.
+        ControlObjectThread *timecodeInputR;    //The ControlObject used to notify the GUI about vinyl control right channel's volume.
+
+    	int iLeadInTime;				//The lead-in time...
     	float dVinylPitch; 			//The speed/pitch of the timecoded vinyl as read by scratchlib.
     	double dVinylPosition; 			//The position of the needle on the record as read by scratchlib.
 	    double dVinylScratch;
