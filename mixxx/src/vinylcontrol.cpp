@@ -19,14 +19,17 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
     enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
-    timecodeStrength    = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlStrength"))); 
+    timecodeQuality     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlQuality")));
+    timecodeInputL      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputL")));
+    timecodeInputR      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputR")));
+
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
     dVinylScratch = 0.0f;
     dDriftControl   = 0.0f;
     fRateRange = 0.0f;
-    
+
     //Get the vinyl type
     strVinylType = m_pConfig->getValueString(ConfigKey("[VinylControl]","strVinylType"));
 
@@ -38,7 +41,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
 
     //Vinyl control mode
     iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
-    
+
     //Enabled or not
     bIsEnabled = m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
 
@@ -49,9 +52,9 @@ void VinylControl::ToggleVinylControl(bool enable)
     bIsEnabled = enable;
     if (m_pConfig)
         m_pConfig->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)enable));
-    
+
     enabled->slotSet(enable);
-    
+
     //Reset the scratch control to make sure we don't get stuck moving forwards or backwards.
     if (!enable)
         controlScratch->slotSet(0.0f);

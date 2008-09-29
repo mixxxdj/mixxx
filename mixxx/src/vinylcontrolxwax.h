@@ -15,7 +15,7 @@ class VinylControlXwax : public VinylControl
 {
     public:
         VinylControlXwax(ConfigObject<ConfigValue> *pConfig, const char *_group);
-        ~VinylControlXwax();
+        virtual ~VinylControlXwax();
     	void ToggleVinylControl(bool enable);
     	bool isEnabled();
     	void AnalyseSamples(short* samples, size_t size);      

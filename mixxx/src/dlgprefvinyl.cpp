@@ -20,23 +20,15 @@
 
 #include <QtCore>
 #include <QtDebug>
-#include <QList>
-#include <QButtonGroup>
+#include <QtGui>
 #include "dlgprefvinyl.h"
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qslider.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qmessagebox.h>
-#include <qthread.h>
 #include "controlobject.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
-#include <qwidget.h>
 #include "vinylcontrol.h" //For vinyl type string constants
-
+#include "controlobjectthreadmain.h"
+#include "vinylcontrolsignalwidget.h"
+#include "dlgprefvinyl.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
                            ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg()
@@ -52,22 +44,39 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     vinylControlMode.addButton(RelativeMode);
     vinylControlMode.addButton(ScratchMode);
 
+    //Get access to the timecode strength ControlObjects
+    m_timecodeQuality1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylControlQuality")));
+    m_timecodeQuality2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlQuality")));
+
+    m_vinylControlInput1L = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylControlInputL")));
+    m_vinylControlInput1R = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylControlInputR")));
+    m_vinylControlInput2L = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlInputL")));
+    m_vinylControlInput2R = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlInputR")));
+
+
+    m_signalWidget1.setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    m_signalWidget2.setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    const unsigned signalWidgetWidth = 75;
+    const unsigned signalWidgetHeight = 75;
+    m_signalWidget1.setMinimumSize(signalWidgetWidth, signalWidgetHeight);
+    m_signalWidget2.setMinimumSize(signalWidgetWidth, signalWidgetHeight);
+    m_signalWidget1.setMaximumSize(signalWidgetWidth, signalWidgetHeight);
+    m_signalWidget2.setMaximumSize(signalWidgetWidth, signalWidgetHeight);
+    m_signalWidget1.setupWidget();
+    m_signalWidget2.setupWidget();
+
+    delete groupBoxSignalQuality->layout();
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->layout()->addWidget(&m_signalWidget1);
+    layout->layout()->addWidget(&m_signalWidget2);
+    groupBoxSignalQuality->setLayout(layout);
+
     //Device input.
     ComboBoxDeviceDeck1->setEnabled(true);
     ComboBoxDeviceDeck2->setEnabled(true);
 
-    // Disabled Input Device selection (see note at the top)
-
-    //connect(ComboBoxDeviceDeck1,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    //connect(ComboBoxDeviceDeck2,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
-
-    //connect(RelativeMode,              SIGNAL(stateChanged(int)), this, SLOT(EnableRelativeModeSlotApply()));
-    //connect(ScratchMode,               SIGNAL(stateChanged(int)), this, SLOT(EnableScratchModeSlotApply()));
-    //connect(VinylGain,              SIGNAL(valueChanged(int)), this, SLOT(VinylGainSlotApply()));
-
 	connect(ComboBoxDeviceDeck1,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck1Change()));
 	connect(ComboBoxDeviceDeck2,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck2Change()));
-	
 
     // Connect event handler
     /*
@@ -98,6 +107,36 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
 
 DlgPrefVinyl::~DlgPrefVinyl()
 {
+}
+
+/** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
+void DlgPrefVinyl::slotShow()
+{
+    //Connect the signal quality ControlObjects to this dialog, so they start updating
+    connect(m_timecodeQuality1, SIGNAL(valueChanged(double)), this, SLOT(updateSignalQuality1(double)));
+    connect(m_timecodeQuality2, SIGNAL(valueChanged(double)), this, SLOT(updateSignalQuality2(double)));
+
+    connect(m_vinylControlInput1L, SIGNAL(valueChanged(double)), this, SLOT(updateInputLevelLeft1(double)));
+    connect(m_vinylControlInput1R, SIGNAL(valueChanged(double)), this, SLOT(updateInputLevelRight1(double)));
+    connect(m_vinylControlInput2L, SIGNAL(valueChanged(double)), this, SLOT(updateInputLevelLeft2(double)));
+    connect(m_vinylControlInput2R, SIGNAL(valueChanged(double)), this, SLOT(updateInputLevelRight2(double)));
+
+    //(Re)Initialize the signal quality indicators
+    m_signalWidget1.resetWidget();
+    m_signalWidget2.resetWidget();
+
+}
+
+/** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
+void DlgPrefVinyl::slotClose()
+{
+    //Stop updating the vinyl control signal indicators when the prefs dialog is closed.
+    m_timecodeQuality1->disconnect(this);
+    m_timecodeQuality2->disconnect(this);
+    m_vinylControlInput1L->disconnect(this);
+    m_vinylControlInput1R->disconnect(this);
+    m_vinylControlInput2L->disconnect(this);
+    m_vinylControlInput2R->disconnect(this);
 }
 
 void DlgPrefVinyl::slotUpdate()
@@ -133,7 +172,7 @@ void DlgPrefVinyl::slotUpdate()
     }
 
     // Get input channels of the current device - FIXME
-    int channels;  
+    int channels;
     channels = 0;
     QString channelname = "";
 
@@ -156,7 +195,6 @@ void DlgPrefVinyl::slotUpdate()
 
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
-
 }
 
 /** Called when the first deck device combobox changes */
@@ -167,7 +205,7 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck1Change()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelDeck1->clear();
-	
+
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
@@ -187,7 +225,7 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck1Change()
 				}
 			}
 			break;
-		} 
+		}
 	}
     enableValidComboBoxes();
 }
@@ -219,7 +257,7 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
 				}
 			}
 			break;
-		} 
+		}
 	}
 	enableValidComboBoxes();
 }
@@ -258,9 +296,9 @@ void DlgPrefVinyl::slotApply()
     if (AbsoluteMode->isChecked())
         iMode = MIXXX_VCMODE_ABSOLUTE;
     if (RelativeMode->isChecked())
-        iMode = MIXXX_VCMODE_RELATIVE;        
+        iMode = MIXXX_VCMODE_RELATIVE;
     if (ScratchMode->isChecked())
-        iMode = MIXXX_VCMODE_SCRATCH;    
+        iMode = MIXXX_VCMODE_SCRATCH;
 
     ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
     config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
@@ -276,13 +314,13 @@ void DlgPrefVinyl::ChannelsSlotApply()
 {
     // Channels
     qDebug() << "DlgPrefVinyl::ChannelsSlotApply()";
-/*	
+/*
 	QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
 	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelMaster->clear();
-	
+
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
@@ -302,10 +340,10 @@ void DlgPrefVinyl::ChannelsSlotApply()
 				}
 			}
 			break;
-		} 
+		}
 	}
 	//enableValidComboBoxes();	//TODO: probably need something like this - Albert ( see dlgprefsound.cpp )
-	
+
     config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
 	qDebug() << "Setting deck1 channel input to:" << ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString();
@@ -315,7 +353,7 @@ void DlgPrefVinyl::ChannelsSlotApply()
 void DlgPrefVinyl::enableValidComboBoxes()
 {
     //int validSoundApi = ComboBoxSoundApi->currentText() != "None";
-    
+
     /*
     ComboBoxSoundcardMaster->setEnabled(validSoundApi);
     ComboBoxChannelMaster->setEnabled(validSoundApi && ComboBoxSoundcardMaster->currentText() != "None");
@@ -355,11 +393,60 @@ void DlgPrefVinyl::VinylGainSlotApply()
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
     //Update the config key...
     config->set(ConfigKey("[VinylControl]","VinylControlGain"), ConfigValue(VinylGain->value()));
-   
+
     //Update the ControlObject...
     ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
     pControlObjectVinylControlGain->set(VinylGain->value());
-    
+
     //qDebug() << "Setting Gain Text";
     //gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
 }
+
+/** @brief Wraps updateSignalQuality to work nicely with slots
+  * @param value The new signal quality level for channel 1 (0.0f-1.0f)
+  */
+void DlgPrefVinyl::updateSignalQuality1(double value)
+{
+    m_signalWidget1.updateSignalQuality(VINYLCONTROL_SIGQUALITY, value);
+}
+
+/** @brief Wraps updateSignalQuality to work nicely with slots
+  * @param value The new signal quality level for channel 2 (0.0f-1.0f)
+  */
+void DlgPrefVinyl::updateSignalQuality2(double value)
+{
+    m_signalWidget2.updateSignalQuality(VINYLCONTROL_SIGQUALITY, value);
+}
+
+/** @brief Wraps updateSignalQuality to work nicely with slots
+  * @param value The new input level for the left channel of the first deck (0.0f-1.0f)
+  */
+void DlgPrefVinyl::updateInputLevelLeft1(double value)
+{
+    m_signalWidget1.updateSignalQuality(VINYLCONTROL_SIGLEFTCHANNEL, value);
+}
+
+/** @brief Wraps updateSignalQuality to work nicely with slots
+  * @param value The new input level for the right channel of the first deck (0.0f-1.0f)
+  */
+void DlgPrefVinyl::updateInputLevelRight1(double value)
+{
+    m_signalWidget1.updateSignalQuality(VINYLCONTROL_SIGRIGHTCHANNEL, value);
+}
+
+/** @brief Wraps updateSignalQuality to work nicely with slots
+  * @param value The new input level for the left channel of the second deck (0.0f-1.0f)
+  */
+void DlgPrefVinyl::updateInputLevelLeft2(double value)
+{
+    m_signalWidget2.updateSignalQuality(VINYLCONTROL_SIGLEFTCHANNEL, value);
+}
+
+/** @brief Wraps updateSignalQuality to work nicely with slots
+  * @param value The new input level for the right channel of the second deck (0.0f-1.0f)
+  */
+void DlgPrefVinyl::updateInputLevelRight2(double value)
+{
+    m_signalWidget2.updateSignalQuality(VINYLCONTROL_SIGRIGHTCHANNEL, value);
+}
+
