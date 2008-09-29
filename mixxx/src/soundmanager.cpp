@@ -33,15 +33,15 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
     m_pMaster = _master;
-    m_pInterleavedBuffer = new CSAMPLE[MAX_BUFFER_LEN];   
+    m_pInterleavedBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pStreamBuffers[SOURCE_MASTER] = (CSAMPLE*)_master->getMasterBuffer();
     m_pStreamBuffers[SOURCE_HEADPHONES] = (CSAMPLE*)_master->getHeadphoneBuffer();
-    
+
     //Note that we deal with input as shorts instead of CSAMPLEs
     m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE] = new short[MAX_BUFFER_LEN];
     m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO] = new short[MAX_BUFFER_LEN];
     m_pReceiverBuffers[RECEIVER_MICROPHONE] = new short[MAX_BUFFER_LEN];
-   
+
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
@@ -64,8 +64,14 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
     ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
     ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
-    ControlObjectThreadMain* pControlObjectVinylControlSignalQuality1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlStrength")));
-    ControlObjectThreadMain* pControlObjectVinylControlSignalQuality2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlStrength")));
+    ControlObjectThreadMain* pControlObjectVinylControlSignalQuality1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlQuality")));
+    ControlObjectThreadMain* pControlObjectVinylControlSignalQuality2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlQuality")));
+    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlInputL")));
+    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlInputR")));
+    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputL")));
+    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputR")));
+
+
 
     pControlObjectLatency->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
@@ -80,7 +86,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back("44100");
     m_samplerates.push_back("48000");
-    m_samplerates.push_back("96000"); 
+    m_samplerates.push_back("96000");
 
 #ifdef __PORTAUDIO__
     PaError err = Pa_Initialize();
@@ -101,7 +107,7 @@ SoundManager::~SoundManager()
     clearDeviceList();
 
     Pa_Terminate();
-    
+
     delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
     delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     delete m_pReceiverBuffers[RECEIVER_MICROPHONE];
@@ -121,7 +127,7 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
 {
     //qDebug() << "SoundManager::getDeviceList";
     bool bMatchedCriteria = true;   //Whether or not the current device matched the filtering criteria
-    
+
     if (m_devices.empty())
         this->queryDevices();
 
@@ -144,14 +150,14 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
             if (bOutputDevices)
             {
                  if (device->getNumOutputChannels() <= 0)
-                    bMatchedCriteria = false;                    
+                    bMatchedCriteria = false;
             }
             if (bInputDevices)
             {
                 if (device->getNumInputChannels() <= 0)
                     bMatchedCriteria = false;
             }
-            
+
             if (bMatchedCriteria)
                 filteredDeviceList.push_back(device);
         }
@@ -161,7 +167,7 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
     return m_devices;
 }
 
-/** Get a list of host APIs supported by PortAudio. 
+/** Get a list of host APIs supported by PortAudio.
  *  @return The list of audio APIs supported on the current computer.
  */
 QList<QString> SoundManager::getHostAPIList()
@@ -194,8 +200,8 @@ QString SoundManager::getHostAPI()
     return m_hostAPI;
 }
 
-/** Closes all the open sound devices. 
- * 
+/** Closes all the open sound devices.
+ *
  *  Because multiple soundcards might be open, this member function
  *  simply runs through the list of all known soundcards (from PortAudio)
  *  and attempts to close them all. Closing a soundcard that isn't open
@@ -205,7 +211,7 @@ void SoundManager::closeDevices()
 {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
-    
+
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
@@ -215,7 +221,7 @@ void SoundManager::closeDevices()
         dev_it.next()->close();
     }
     //requestBufferMutex.unlock();
-    
+
     //requestBufferMutex.lock();
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
@@ -253,7 +259,7 @@ void SoundManager::clearDeviceList()
 
 /** Returns a list of samplerates we will attempt to support.
  *  @return The list of available samplerates.
- */ 
+ */
 QList<QString> SoundManager::getSamplerateList()
 {
     return m_samplerates;
@@ -335,7 +341,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
     }
 
     if (devices)
-    {    	
+    {
         //Set the default master device to be the first ouput device in the list (that matches the API)
 		QList<SoundDevice *> qlistAPI = getDeviceList(getHostAPI(), true, false);
 		if(! qlistAPI.isEmpty())
@@ -420,7 +426,7 @@ int SoundManager::setupDevices()
 			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt();
 			recv.channels = 2;
 			recv.type = RECEIVER_VINYLCONTROL_ONE;
-			
+
             device->addReceiver(recv);
             bNeedToOpenDeviceForInput = 1;
         }
@@ -430,7 +436,7 @@ int SoundManager::setupDevices()
 			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt();
 			recv.channels = 2;
 			recv.type = RECEIVER_VINYLCONTROL_TWO;
-			
+
             device->addReceiver(recv);
             bNeedToOpenDeviceForInput = 1;
         }
@@ -469,40 +475,41 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
     //qDebug() << "iNumDevicesHaveRequestedBuffer" << iNumDevicesHaveRequestedBuffer;
-    
+
     //When the first device requests a buffer...
-    requestBufferMutex.lock();
-
-    if (iNumDevicesHaveRequestedBuffer == 0)
+    if (requestBufferMutex.tryLock())
     {
-        //First, sync control parameters with changes from GUI thread
-        sync();
+        if (iNumDevicesHaveRequestedBuffer == 0)
+        {
+            //First, sync control parameters with changes from GUI thread
+            sync();
 
-        //Process a block of samples for output. iFramesPerBuffer is the
-        //number of samples for one channel, but the EngineObject
-        //architecture expects number of samples for two channels
-        //as input (buffer size) so...
-        m_pMaster->process(0, 0, iFramesPerBuffer*2);
+            //Process a block of samples for output. iFramesPerBuffer is the
+            //number of samples for one channel, but the EngineObject
+            //architecture expects number of samples for two channels
+            //as input (buffer size) so...
+            m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
+        }
+        iNumDevicesHaveRequestedBuffer++;
+
+        if (iNumDevicesHaveRequestedBuffer >= iNumDevicesOpenedForOutput)
+            iNumDevicesHaveRequestedBuffer = 0;
+
+        requestBufferMutex.unlock();
     }
-    iNumDevicesHaveRequestedBuffer++;
-
-    if (iNumDevicesHaveRequestedBuffer >= iNumDevicesOpenedForOutput)
-        iNumDevicesHaveRequestedBuffer = 0;
-
-    requestBufferMutex.unlock();
 	return m_pStreamBuffers;
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
-CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer, 
+CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
                                    unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
     short* vinylControlBuffer1 = NULL; /** Pointer to the buffer containing the vinyl control audio for deck 1*/
     short* vinylControlBuffer2 = NULL; /** Pointer to the buffer containing the vinyl control audio for deck 1*/
-    
+
 //    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE]
-    
+
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
     //short vinylControlBuffer2[iFramesPerBuffer * 2];
     //short *vinylControlBuffer1 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
@@ -537,7 +544,7 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 
 /*
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-        
+
         for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Deinterlace the input audio data from the portaudio buffer
