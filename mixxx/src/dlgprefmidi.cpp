@@ -78,11 +78,6 @@
 #include "herculeslinux.h"
 #endif
 
-#include "joystick.h"
-#ifdef __LINUX__
-#include "joysticklinux.h"
-#endif
-
 /*
 
 NOTE ABOUT MOUSE SUPPORT:
@@ -208,20 +203,6 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
         }
     }
 
-    // Try initializing Joystick
-    m_pJoystick = 0;
-#ifdef __LINUX__
-    m_pJoystick = new JoystickLinux();
-#endif
-    if (m_pJoystick)
-    {
-        if (!m_pJoystick->opendev())
-        {
-            delete m_pJoystick;
-            m_pJoystick = 0;
-        }
-    }
-
     // Try initializing Hercules DJ Console
     
 #ifdef __LINUX__
@@ -264,8 +245,6 @@ DlgPrefMidi::~DlgPrefMidi()
         delete m_pPowerMate1;
     if (m_pPowerMate2)
         delete m_pPowerMate2;
-    if (m_pJoystick)
-        delete m_pJoystick;
     if (m_pHercules)
         delete m_pHercules;
 }
@@ -606,10 +585,6 @@ void DlgPrefMidi::slotCancelCalibrate()
    }
 
    void DlgPrefMidi::setupMouse()
-   {
-   }
-
-   void DlgPrefMidi::setupJoystick()
    {
    }
 
