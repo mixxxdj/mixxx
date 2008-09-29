@@ -28,7 +28,6 @@ class MidiObject;
 class PowerMate;
 class Mouse;
 class Hercules;
-class Joystick;
 class Q3ProgressDialog;
 class QTimer;
 
@@ -58,7 +57,6 @@ signals:
 private:
 /*    void setupPowerMates();
     void setupMouse();
-    void setupJoystick();
     void setupHercules();*/
    
     MidiObject *m_pMidi;
@@ -67,7 +65,6 @@ private:
     PowerMate *m_pPowerMate1, *m_pPowerMate2;
     Mouse *m_pMouse1, *m_pMouse2;
     Hercules *m_pHercules;
-    Joystick *m_pJoystick;
     Q3ProgressDialog *m_pProgressDialog;
     QTimer *m_pTimer;
     int m_iProgress;
