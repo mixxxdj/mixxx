@@ -1,0 +1,3 @@
+Import('env')
+env.SharedLibrary('caps', ['Compress.cc', 'Phaser.cc', 'Reverb.cc'])
+
