@@ -1,0 +1,3 @@
+Import('env')
+env.SharedLibrary('cmt', ['delay.cpp', 'filter.cpp'])
+
