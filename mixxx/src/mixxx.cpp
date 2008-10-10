@@ -404,7 +404,9 @@ MixxxApp::~MixxxApp()
       m_pTrack->m_qIPodPlaylist.clear();
     }
 #endif
-
+    qDebug() << "save config, " << qTime.elapsed();
+    config->Save();
+ 
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
@@ -446,8 +448,6 @@ MixxxApp::~MixxxApp()
     //   delete m_pBpmDetector;
     //   delete m_pWaveSummary;
 
-    qDebug() << "save config, " << qTime.elapsed();
-    config->Save();
     qDebug() << "delete config, " << qTime.elapsed();
     delete config;
 
