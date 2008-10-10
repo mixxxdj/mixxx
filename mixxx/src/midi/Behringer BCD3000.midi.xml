@@ -134,13 +134,14 @@
       <midino>16</midino>	
       <midichan>1</midichan>
     </control>
-    <control>
+<!--    <control>
       <group>[Channel1]</group>
       <key>loop</key>
       <miditype>Key</miditype>
       <midino>15</midino>	
       <midichan>1</midichan>
     </control>
+-->
     <control>
       <group>[Channel1]</group>
       <key>cue_set</key>
@@ -267,13 +268,14 @@
       <midino>24</midino>	
       <midichan>1</midichan>
     </control>
-    <control>
+<!--    <control>
       <group>[Channel2]</group>
       <key>loop</key>
       <miditype>Key</miditype>
       <midino>23</midino>	
       <midichan>1</midichan>
     </control>
+-->
     <control>
       <group>[Channel2]</group>
       <key>cue_set</key>
