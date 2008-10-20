@@ -1,3 +1,27 @@
+import os
+import sys
+
 Import('env')
-env.SharedLibrary('cmt', ['delay.cpp', 'filter.cpp'])
+
+#Get the platform/OS that we're building on:
+if os.name == 'nt':
+	print 'Platform: Windows'
+	platform = 'win32'
+elif sys.platform == 'linux2':
+	print 'Platform: Linux'
+	platform = 'linux'
+elif sys.platform == 'darwin':
+	print 'Platform: OS X'
+	platform = 'osx'
+else:
+	print 'Platform: Unknown (assuming Linux-like)'
+	platform = 'linux'
+
+cmtlib = env.SharedLibrary('cmt', ['cmt.cpp', 'init.cpp', 'descriptor.cpp', 'delay.cpp', 'filter.cpp'])
+
+if platform == 'win32':
+	cmtlib_tgt = env.Install("../../../../dist/ladpsa_plugins/", cmtlib)
+elif platform == 'osx':
+	cmtlib_tgt = env.Install("../../../../Mixxx.app/ladspa_plugins", cmtlib)
+env.Alias('install', cmtlib_tgt)
 
