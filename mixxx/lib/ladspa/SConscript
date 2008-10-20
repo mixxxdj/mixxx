@@ -1,4 +1,5 @@
 #We want to build the LADSPA plugins without any "lib" prefix on POSIX platforms.
 env = Environment(SHLIBPREFIX='')
+env.Append(CPPPATH=['.'])
 SConscript(['caps/SConscript'], exports='env')
 SConscript(['cmt/SConscript'], exports='env')
