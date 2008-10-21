@@ -44,6 +44,8 @@ public slots:
     void slotControlCueCDJ(double v);
 
 private:
+    void saveCuePoint(double cue);
+    
     /** Controls used to manipulate the cue point */
     ControlPushButton *buttonCueSet, *buttonCueGoto, *buttonCueGotoAndStop, *buttonCuePreview, *buttonCueCDJ;
     /** A single control to manipulate the cue point (suggested by Thread) */
@@ -61,6 +63,8 @@ private:
     bool m_bCuePreview;
     /** Pointer to EngineBuffer */
     EngineBuffer *m_pEngineBuffer;
+    /** Group identifier string */
+    const char* m_group;
 };
 
 #endif

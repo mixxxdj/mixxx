@@ -183,6 +183,11 @@ public:
     /** Set pointer to ControlObject holding duration value in engine */
     void setDurationControlObject(ControlObject *p);
 	QString getFilepath() const;
+    /** Save the cue point (in samples... I think) */
+    void setCuePoint(float cue);
+    /** Get saved the cue point */
+    float getCuePoint();
+
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
@@ -233,6 +238,8 @@ private:
     int m_iScore;
     /** Id. Unique ID of track */
     int m_iId;
+    /** Cue point in samples or something */
+    float m_fCuePoint;
 
     /** Pointer to visual waveform info */
     QVector<float> *m_pVisualWave;

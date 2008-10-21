@@ -65,6 +65,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_pControlObjectDuration = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
+    m_fCuePoint = 0.0f;
 
     m_dVisualResampleRate = 0;
 
@@ -120,6 +121,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDe
     m_bHeaderParsed = false;
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
+    m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
@@ -210,6 +212,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
+    XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
     if (m_pWave) {
         XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
     }
@@ -952,4 +955,16 @@ void TrackInfoObject::setURL(QString url)
 QString TrackInfoObject::getURL()
 {
     return m_sURL;
+}
+
+void TrackInfoObject::setCuePoint(float cue)
+{
+    m_qMutex.lock();
+    m_fCuePoint = cue;
+    m_qMutex.unlock();
+}
+
+float TrackInfoObject::getCuePoint()
+{
+    return m_fCuePoint;
 }

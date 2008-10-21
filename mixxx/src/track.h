@@ -117,6 +117,10 @@ public slots:
     void slotLoadPlayer1(QString filename, bool bStartFromEndPos = false);
     /** Load the given track in player 2 if it exists */
     void slotLoadPlayer2(QString filename, bool bStartFromEndPos = false);
+    /** Finish loading a track into Player1 after Reader has loaded the song into memory */
+    void slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos);
+    /** Finish loading a track into Player2 after Reader has loaded the song into memory */
+    void slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer1(double);
     /** Slot used when playback reaches end of track */
@@ -227,6 +231,8 @@ private:
     ControlObjectThreadMain *m_pPlayButtonCh1, *m_pPlayButtonCh2;
     /** Pointer to ControlObject for next/prev buttons */
     ControlObjectThreadMain *m_pNextTrackCh1, *m_pNextTrackCh2, *m_pPrevTrackCh1, *m_pPrevTrackCh2;
+    /** Pointer to ControlObject for cue points (NOT the cue buttons - the cue points are the indices of the cue point samples.)*/
+    ControlObjectThreadMain *m_pCuePointCh1, *m_pCuePointCh2;
     /** Pointer to ControlObject for playlist navigation/loading into Players */
      ControlObjectThreadMain *m_pLoadSelectedTrackCh1, *m_pLoadSelectedTrackCh2, *m_pLoadSelectedIntoFirstStopped, *m_pSelectNextTrack, *m_pSelectPrevTrack, *m_pSelectTrackKnob, *m_pSelectNextPlaylist, *m_pSelectPrevPlaylist;
     /** Pointer to ControlObject for play position */

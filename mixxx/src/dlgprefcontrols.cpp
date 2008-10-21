@@ -157,9 +157,17 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     ComboBoxCueDefault->addItem("CDJ Mode");
     ComboBoxCueDefault->addItem("Simple");
     ComboBoxCueDefault->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).toInt());
-    
+   
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
-    
+
+    //Cue recall
+    ComboBoxCueRecall->addItem(tr("On"));
+    ComboBoxCueRecall->addItem(tr("Off"));
+    ComboBoxCueRecall->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]", "CueRecall")).toInt());
+    //NOTE: for CueRecall, 0 means ON....
+    connect(ComboBoxCueRecall, SIGNAL(activated(int)), this, SLOT(slotSetCueRecall(int)));
+
+
 // #ifndef QT3_SUPPORT
 //     const QFileInfoList * list = dir.entryInfoList();
 //     if (list!=0)
@@ -340,6 +348,11 @@ void DlgPrefControls::slotSetCueDefault(int)
     m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(ComboBoxCueDefault->currentIndex()));
     m_pControlCueDefault1->slotSet(ComboBoxCueDefault->currentIndex());
     m_pControlCueDefault2->slotSet(ComboBoxCueDefault->currentIndex());
+}
+
+void DlgPrefControls::slotSetCueRecall(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]","CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
 }
 
 void DlgPrefControls::slotSetScaleBpm(int)
