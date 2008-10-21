@@ -26,8 +26,9 @@
 #include "configobject.h"
 #include <QDebug>
 
-Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause)
+Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause, ConfigObject<ConfigValue>* _config)
 {
+    m_pConfig = _config;
     readerExiting = false;
     enginebuffer = _enginebuffer;
     m_dRate = 0.;
@@ -169,11 +170,10 @@ void Reader::newtrack()
     // Set pause while loading new track
     pause->lock();
 
-
 // qDebug() << "newtrack, got pause lock";
 
     // Get filename
-    bool bStartAtEndPos;
+    bool bStartAtEndPos = false;
 
     trackqueuemutex.lock();
     if (!trackqueue.isEmpty())
@@ -212,9 +212,6 @@ void Reader::newtrack()
     else {
         enginebuffer->setNewPlaypos(0);
 
-        //Reset the cue point to the beginning of the track:
-
-        m_pButtonCueSet->slotSet(1.0);
         //Reset the play button (I'm not sure why this is necessary, but it is...
         //If you don't believe me, uncomment it and notice that you'll have to click
         //play twice to start playback when you load a new track.)
@@ -234,6 +231,8 @@ void Reader::newtrack()
 
     // Stop pausing process method
     pause->unlock();
+
+    emit(finishedLoading(m_pTrack, bStartAtEndPos));
 }
 
 void Reader::run()
@@ -262,11 +261,13 @@ void Reader::run()
 // qDebug() << "check seek";
 
         // Check if a seek is requested
-        seekqueuemutex.lock();
-        requeststate = seekqueue.isEmpty();
-        seekqueuemutex.unlock();
-        if (!requeststate)
-            seek();
+        while(!seekqueue.isEmpty()) {
+            seekqueuemutex.lock();
+            requeststate = seekqueue.isEmpty();
+            seekqueuemutex.unlock();
+            if (!requeststate)
+                seek();
+        }
 
 //  qDebug() << "read";
 

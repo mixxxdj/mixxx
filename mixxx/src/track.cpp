@@ -218,6 +218,11 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pPlayButtonCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pPlayButtonCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","play")));
 
+    // Get cue points 
+    m_pCuePointCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_point")));
+    m_pCuePointCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_point")));
+
+
     // Play position for each player. Used to determine which track to load next
     m_pPlayPositionCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","playposition")));
     m_pPlayPositionCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","playposition")));
@@ -257,6 +262,10 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)), this, SLOT(slotSelectTrackKnob(double)));
 
     TrackPlaylist::setTrack(this);
+
+
+    connect(m_pBuffer1->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)), this, SLOT(slotFinishLoadingPlayer1(TrackInfoObject*, bool)));
+    connect(m_pBuffer2->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)), this, SLOT(slotFinishLoadingPlayer2(TrackInfoObject*, bool)));
 
 	m_pView->m_pTrackTableView->repaintEverything();
 
@@ -939,6 +948,18 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1, bStartFromEndPos);
 
+    //The rest of the track loading code gets executed in slotFinishLoadingPlayer1(), 
+    //which gets called when Reader emits a signal saying it's done loading the song. This prevents
+    //several race conditions.
+}
+
+/** This slot gets called when Reader has finished loading a new track, because Reader loads it in a separate thread.
+    This code is essentially the second half of slotLoadPlayer1(), which is the stuff that needs to be executed
+    after the song has been loaded into the reader. Before this function was implemented, there were a handful
+    of race conditions in slotLoadPlayer1() where stuff was executed at the same time as Reader was loading the 
+    track. This function explicitly solves that problem. */
+void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos)
+{
     // Read the tags if required
     if(!m_pTrackPlayer1->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer1);
@@ -963,6 +984,24 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     m_pTrackPlayer1->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));
     m_pTrackPlayer1->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel1]","duration")));
 
+    // Update TrackInfoObject of the helper class
+    PlayerInfo::Instance().setTrackInfo(1, m_pTrackPlayer1);
+    
+    //Set the cue point, if it was saved.
+    m_pCuePointCh1->slotSet(m_pTrackPlayer1->getCuePoint());
+
+    //Seek to cue position if we're not starting at end of song and cue recall is on
+    if (!bStartFromEndPos) {
+        int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
+        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
+            //Note that cueRecall == 0 corresponds to "ON", not OFF.
+            float cue_point = m_pTrackPlayer1->getCuePoint();
+            long numSamplesInSong = m_pBuffer1->getReader()->getFileLength(); 
+            cue_point = cue_point / (numSamplesInSong);
+            m_pPlayPositionCh1->slotSet(cue_point);
+        }
+    }
+
     // Set duration in playpos widget
 //    if (m_pView->m_pNumberPosCh1)
 //        m_pView->m_pNumberPosCh1->setDuration(m_pTrackPlayer1->getDuration());
@@ -972,9 +1011,6 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pView->m_pTextCh1->setText(m_pTrackPlayer1->getInfo());
 
     emit(newTrackPlayer1(m_pTrackPlayer1));
-
-    // Update TrackInfoObject of the helper class
-    PlayerInfo::Instance().setTrackInfo(1, m_pTrackPlayer1);
 }
 
 void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromEndPos)
@@ -1011,7 +1047,11 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 
     // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
+}
 
+/** See comment for slotFinishLoadingPlayer1 */
+void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos)
+{
     // Read the tags if required
     if(!m_pTrackPlayer2->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer2);
@@ -1036,6 +1076,25 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));
     m_pTrackPlayer2->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel2]","duration")));
 
+    // Update TrackInfoObject of the helper class
+    PlayerInfo::Instance().setTrackInfo(2, m_pTrackPlayer2);
+    
+    //Set the cue point, if it was saved.
+    m_pCuePointCh2->slotSet(m_pTrackPlayer2->getCuePoint());
+    
+    //Seek to cue position if we're not starting at end of song and cue recall is on
+    if (!bStartFromEndPos) {
+        int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
+        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
+            //Note that cueRecall == 0 corresponds to "ON", not OFF.
+            float cue_point = m_pTrackPlayer2->getCuePoint();
+            long numSamplesInSong = m_pBuffer2->getReader()->getFileLength(); 
+            cue_point = cue_point / (numSamplesInSong);
+            m_pPlayPositionCh2->slotSet(cue_point);
+        }
+    }
+
+
     // Set duration in playpos widget
 //    if (m_pView->m_pNumberPosCh2)
 //        m_pView->m_pNumberPosCh2->setDuration(m_pTrackPlayer2->getDuration());
@@ -1046,9 +1105,9 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 
     emit(newTrackPlayer2(m_pTrackPlayer2));
 
-    // Update TrackInfoObject of the helper class
-    PlayerInfo::Instance().setTrackInfo(2, m_pTrackPlayer2);
+
 }
+
 
 void Track::slotLoadPlayer1(QString filename, bool bStartFromEndPos)
 {

@@ -217,7 +217,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScale = 0;
     setNewPlaypos(0.);
 
-    reader = new Reader(this, &pause);
+    reader = new Reader(this, &pause, _config);
     read_buffer_prt = reader->getBufferWavePtr();
     file_length_old = -1;
     file_srate_old = 0;

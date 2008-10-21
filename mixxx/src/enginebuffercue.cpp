@@ -14,6 +14,9 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
+#include "playerinfo.h"
+#include "trackinfoobject.h"
 #include "controlpushbutton.h"
 #include "controlobject.h"
 #include "enginebuffercue.h"
@@ -24,6 +27,7 @@ EngineBufferCue::EngineBufferCue(const char * group, EngineBuffer * pEngineBuffe
 {
     m_pEngineBuffer = pEngineBuffer;
     m_bCuePreview = false;
+    m_group = group;
 
     // Get pointer to play button
     playButton = ControlObject::getControl(ConfigKey(group, "play"));
@@ -77,17 +81,30 @@ EngineBufferCue::~EngineBufferCue()
     delete cuePoint;
 }
 
+void EngineBufferCue::saveCuePoint(double cue)
+{
+    //Save the cue point inside the TrackInfoObject for that player.
+    int channel = m_group[8] - '0'; //The 8th char of [Channel#] is the #.
+    TrackInfoObject* currentTrack = PlayerInfo::Instance().getTrackInfo(channel);
+    if (currentTrack) //Ensures a track is loaded :)
+        currentTrack->setCuePoint(cue);
+    else
+        Q_ASSERT("currentTrack not found in EngineBufferCue::slotControlCueSet");
+}
+
 // Set the cue point at the current play position:
+//THIS FUNCTION IS DEPRECATED AND DOESN'T GET USED ANYMORE -- Albert (found out the hard way) Oct 20/08
 void EngineBufferCue::slotControlCueSet(double v)
 {
-    //qDebug() << "***slotControlCueSet!!";
     if (v)
     {
         double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
         if (!even((int)cue))
             cue--;
         cuePoint->set(cue);
-    }
+    
+        saveCuePoint(cue);
+   }
 }
 
 // Goto the cue point:
@@ -160,6 +177,7 @@ void EngineBufferCue::slotControlCueSimple(double v)
             if (!even((int)cue))
                 cue--;
             cuePoint->set(cue);
+            saveCuePoint(cue);
         }
         else  //If playback is ongoing, then jump to the cue-point.
             m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
@@ -201,6 +219,7 @@ void EngineBufferCue::slotControlCueCDJ(double v) {
         } else {
             // Set new cue point
             cuePoint->set(cue);
+            saveCuePoint(cue);
         }
     }
 }

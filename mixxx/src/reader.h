@@ -18,11 +18,8 @@
 #ifndef READER_H
 #define READER_H
 
-#include <qthread.h>
-#include <qwaitcondition.h>
-#include <qmutex.h>
-#include <q3valuelist.h>
-#include <q3ptrlist.h>
+#include <QtCore>
+#include "configobject.h"
 #include "trackinfoobject.h"
 #include "defs.h"
 #include "monitor.h"
@@ -43,8 +40,9 @@ class ControlObjectThread;
 
 class Reader: public QThread
 {
+    Q_OBJECT 
 public:
-    Reader(EngineBuffer *_enginebuffer, QMutex *_pause);
+    Reader(EngineBuffer *_enginebuffer, QMutex *_pause, ConfigObject<ConfigValue> * _config);
     ~Reader();
 
 
@@ -84,7 +82,12 @@ public:
       * mutex */
     void setRate(double dRate);
 
+signals:
+    void finishedLoading(TrackInfoObject* track, bool bStartAtEndPos);
+
 private:
+    /** Config file accessor */
+    ConfigObject<ConfigValue>* m_pConfig;
     /** Main loop of the thread */
     void run();
     /** Stop thread */

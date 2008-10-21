@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
-    <height>487</height>
+    <width>427</width>
+    <height>505</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -273,12 +273,22 @@
      <item row="8" column="0" >
       <widget class="QLabel" name="label" >
        <property name="text" >
-        <string>Default cue behavior</string>
+        <string>Cue behaviour</string>
        </property>
       </widget>
      </item>
      <item row="8" column="1" colspan="2" >
       <widget class="QComboBox" name="ComboBoxCueDefault" />
+     </item>
+     <item row="9" column="0" >
+      <widget class="QLabel" name="textLabelCueRecall" >
+       <property name="text" >
+        <string>Auto Recall Cue</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1" colspan="2" >
+      <widget class="QComboBox" name="ComboBoxCueRecall" />
      </item>
     </layout>
    </item>
@@ -493,7 +503,7 @@
        <property name="orientation" >
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" >
         <size>
          <width>20</width>
          <height>40</height>

@@ -52,6 +52,7 @@ public slots:
 	void slotUpdateSchemes();
     void slotSetPositionDisplay(int);
     void slotSetCueDefault(int);
+    void slotSetCueRecall(int);
     void slotApply();
 private:
     /** Pointer to ConfigObject */
