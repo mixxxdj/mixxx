@@ -1,5 +1,5 @@
 #Build the SConscript file in /src, and make it us src/.obj for storing obj output.
-SConscript(File('lib/ladspa/SConscript'), build_dir=Dir('lib/ladspa/.obj'), duplicate=0)
+#SConscript(File('lib/ladspa/SConscript'), build_dir=Dir('lib/ladspa/.obj'), duplicate=0)
 SConscript(File('src/SConscript'), build_dir=Dir('src/.obj'), duplicate=0) 
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", "#src/.obj/mixxx", Copy("$TARGET", "$SOURCE"))
