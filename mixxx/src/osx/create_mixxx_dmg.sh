@@ -1,5 +1,6 @@
 #!/bin/bash
-MIXXX_PATH=../MacOS/mixxx
+MIXXX_OLD_PATH=../MacOS/mixxx
+MIXXX_PATH=../MacOS/Mixxx
 VOL_NAME="Mixxx"
 TMP_DMG_DIR="/tmp/mixxx_dmg"
 ARCH=macintel
@@ -52,6 +53,9 @@ install_name_tool -id @executable_path/../Frameworks/libogg.0.dylib libogg.0.dyl
 install_name_tool -id @executable_path/../Frameworks/libsndfile.1.dylib libsndfile.1.dylib
 install_name_tool -id @executable_path/../Frameworks/libFLAC.7.dylib libFLAC.7.dylib
 
+echo "Renaming mixxx binary to capitalised Mixxx"
+mv $MIXXX_OLD_PATH $MIXXX_PATH
+
 echo "Changing library ids in the Mixxx binary..."
 install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib $MIXXX_PATH
 install_name_tool -change $QT4_PATH/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib $MIXXX_PATH
@@ -100,7 +104,7 @@ do
     strip -S $lib                      # Strip all the libraries
 done
 
-strip ../MacOS/mixxx                # Strip the mixxx binary
+strip $MIXXX_PATH                # Strip the mixxx binary
 
 echo "Copying QT4 imageformat plugins"
 cd ..
