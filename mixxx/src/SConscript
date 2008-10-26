@@ -318,7 +318,7 @@ elif platform == 'osx':
 
 #Set up the library path on Windows:
 if platform == 'win32':
-	env.Append(CPPPATH='../../../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
+	env.Append(CPPPATH=['../../../mixxx-winlib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='../../../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 #'/subsystem:windows',
