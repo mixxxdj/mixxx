@@ -9,27 +9,14 @@ Standards-Version: 3.7.3
 Package: mixxx
 Section: sound
 Architecture: any
-Depends: mixxx-data (= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: pdf-viewer
-Description: Digital Disc Jockey Interface
- Mixxx is a digital DJ system, where wave, ogg and mp3 files can be mixed on a
- computer for use in live performances. Filters, crossfader, and speed control
- are provided. Mixxx can sync the 2 streams automatically, using an algorithm
- to detect the beat.
+Replaces: mixxx-data
+Description: Digital DJ interface
+ Mixxx allows DJs to perform live mixes with their digital music library. A 
+ robust mixing engine including filters, gains, a crossfader, and pitch control
+ are provided. Mixxx also features BPM detection to help DJs find the tempo of
+ songs in their library.
  .
- Mixxx works with Jack or OSS, can be controlled from the GUI or from external
- controllers, including MIDI devices and joysticks, and supports skins.
-
-Package: mixxx-data
-Section: sound
-Architecture: all
-Description: Digital Disc Jockey Interface -- data files
- This package provides images and skin configuration files required for mixxx.
- .
- Mixxx is a digital DJ system, where wave, ogg and mp3 files can be mixed on a
- computer for use in live performances. Filters, crossfader, and speed control
- are provided. Mixxx can sync the 2 streams automatically, using an algorithm
- to detect the beat.
- .
- Mixxx works with Jack or OSS, can be controlled from the GUI or from external
- controllers, including MIDI devices and joysticks, and supports skins.
+ Mixxx works with ALSA, JACK, and OSS, and supports many popular DJ controllers
+ including the Hercules MK2 and M-Audio X-Session Pro.
