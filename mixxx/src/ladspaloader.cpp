@@ -31,8 +31,10 @@ LADSPALoader::LADSPALoader()
         // add default path if LADSPA_PATH is not set
 #ifdef __LINUX__
         paths.push_back ("/usr/lib/ladspa/");
+        paths.push_back ("/usr/lib64/ladspa/");
 #elif __MACX__
         paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
+        paths.push_back ("../../ladspa_plugins"); //ladspa_plugins directory in Mixxx.app bundle
 #elif __WIN32__
         // not tested yet but should work:
         QString programFiles = QString(getenv("ProgramFiles"));
