@@ -11,7 +11,7 @@
 #include "ladspaview.h"
 #include "mixxx.h"
 
-DlgLADSPA::DlgLADSPA(MixxxApp * mixxx) : QDialog(mixxx, "")
+DlgLADSPA::DlgLADSPA(QWidget* parent) : QDialog(parent, "")
 {
     setWindowTitle("LADSPA");
     //resize(580, 280);

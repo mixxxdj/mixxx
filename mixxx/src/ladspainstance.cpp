@@ -58,6 +58,7 @@ bool LADSPAInstance::isInplaceBroken()
 
 bool LADSPAInstance::isEnabled()
 {
+    qDebug() << "isEnabled() == " << m_pControlObjectEnable->get();
     return m_pControlObjectEnable->get() > 0.0;
 }
 

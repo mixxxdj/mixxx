@@ -47,7 +47,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     }
     if (y < 0)
     {
-	y = parent->height() + y;
+	    y = parent->height() + y;
     }
     QDomElement spacingElement = element.firstChildElement("Spacing");
     QString spacing = spacingElement.text();
@@ -92,9 +92,12 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 	}
 	else if (configKey.startsWith("[LADSPA],EnableEffect"))
 	{
+        qDebug() << "Setting up LADSPA EnableEffect" << slotString;
 	    QString keyString = QString("EnableEffect") + slotString;
 	    ConfigKey *key = new ConfigKey("[LADSPA]", keyString);
+        qDebug() << "Key string:" << keyString;
 	    ControlObject *control = new ControlPushButton(*key, false);
+        control->set(1.0f);
 	    m_pEnableButton = new WPushButton(m_pScrollWidget);
 	    buttonElement.firstChildElement("Connection").firstChildElement("ConfigKey").firstChild().setNodeValue("[LADSPA]," + keyString);
 	    m_pEnableButton->setup(buttonElement);
@@ -107,7 +110,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 
     QDomElement labelElement = element.firstChildElement("Label");
     m_pLabel = new QLabel(m_pScrollWidget);
-    m_pLabel->setText("Drag a preset from the list & drop it here");
+    m_pLabel->setText(tr("Drag a preset from the list & drop it here"));
 
     posElement = labelElement.firstChildElement("Pos");
     pos = posElement.text();
@@ -119,15 +122,15 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     }
     if (y < 0)
     {
-	y = this->height() + y;
+	    y = this->height() + y;
     }
     m_pLabel->move(x, y);
 
     QDomElement widthElement = labelElement.firstChildElement("Width");
     if (!(widthElement.isNull()))
     {
-	width = widthElement.text().toInt();
-	m_pLabel->setMaximumWidth(width);
+	    width = widthElement.text().toInt();
+	    m_pLabel->setMaximumWidth(width);
     }
 
     m_pLabel->setPalette(palette);

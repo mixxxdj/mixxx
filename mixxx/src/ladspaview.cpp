@@ -21,6 +21,9 @@
 
 LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 {
+    m_pGridLayout = new QGridLayout();
+    this->setLayout(m_pGridLayout);
+
     QDomDocument skin("LADSPASkin");
     QFile file(WWidget::getPath("ladspa_skin.xml"));
     if (!file.open(IO_ReadOnly))
@@ -37,13 +40,13 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     QDomElement bgElement = docElement.firstChildElement("Background");
     QString filename = bgElement.firstChildElement("Path").text();
     QPixmap *background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-    QLabel *bg = new QLabel(this);
+    //QLabel *bg = new QLabel(this);
 
-    bg->move(0, 0);
-    bg->setPixmap(*background);
-    bg->lower();
-    this->setFixedSize(background->width(), background->height());
-    parent->setMinimumSize(background->width(), background->height());
+    //bg->move(0, 0);
+    //bg->setPixmap(*background);
+    //bg->lower();
+    //this->setFixedSize(background->width(), background->height());
+    //parent->setMinimumSize(background->width(), background->height());
     
     QDomElement bgColorNode = docElement.firstChildElement("BgColor");
     QDomElement fgColorNode = docElement.firstChildElement("FgColor");
@@ -65,6 +68,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     m_pPresetList = new QListWidget(this);
     m_pPresetList->setDragEnabled(true);
 
+
     QDomElement presetListElement = docElement.firstChildElement("PresetList");
 
     QDomElement posElement = presetListElement.firstChildElement("Pos");
@@ -79,7 +83,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     {
 	y = this->height() + y;
     }
-    m_pPresetList->move(x, y);
+    //m_pPresetList->move(x, y);
 
     QDomElement sizeElement = presetListElement.firstChildElement("Size");
     QString size = sizeElement.text();
@@ -87,14 +91,18 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     int height = size.mid(size.indexOf(",") + 1).toInt();
     if (width <= 0)
     {
-	width = this->width() + width;
+        width = this->width() + width;
     }
     if (height <= 0)
     {
-	height = this->height() + height;
+        height = this->height() + height;
     }    
-    m_pPresetList->resize(width, height);
-
+    
+    //m_pPresetList->resize(width, height);
+    m_pPresetList->setMinimumSize(65, 200);
+    m_pPresetList->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+    
+    
     m_pPresetManager = new LADSPAPresetManager();
 
     for (unsigned int i = 0; i < m_pPresetManager->getPresetCount(); i++)
@@ -107,9 +115,9 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     }
 
     m_pSlotTable = new QWidget(this);
-
+    
     QDomElement slotTableElement = docElement.firstChildElement("SlotTable");
-
+    
     posElement = slotTableElement.firstChildElement("Pos");
     pos = posElement.text();
     x = pos.left(pos.indexOf(",")).toInt();
@@ -120,7 +128,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     }
     if (y < 0)
     {
-	y = this->height() + y;
+        y = this->height() + y;
     }
     m_pSlotTable->move(x, y);
 
@@ -130,14 +138,15 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     height = size.mid(size.indexOf(",") + 1).toInt();
     if (width <= 0)
     {
-	width = this->width() + width;
+        width = this->width() + width;
     }
     if (height <= 0)
     {
-	height = this->height() + height;
+        height = this->height() + height;
     }    
-    m_pSlotTable->resize(width, height);
-
+    //m_pSlotTable->resize(width, height);
+    m_pSlotTable->setMinimumSize(400, 200);
+    m_pSlotTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_pSlotTable->show();
 
     QDomElement slotsElement = slotTableElement.firstChildElement("Slots");
@@ -146,16 +155,23 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     QDomElement slotElement = slotTableElement.firstChildElement("Slot");
     for (int i = 0; i < numberOfSlots; i++)
     {
-	LADSPAPresetSlot *p = new LADSPAPresetSlot(m_pSlotTable, slotElement, i, m_pPresetManager, palette);
-	p->show();
+        LADSPAPresetSlot *p = new LADSPAPresetSlot(m_pSlotTable, slotElement, i, m_pPresetManager, palette);
+        p->show();
     }
 
+    m_pPresetList->updateGeometry(); //Notify Qt that the preset list has changed.
     m_pPresetList->setBackgroundRole(QPalette::Window);
     m_pPresetList->setPalette(palette);
     m_pPresetList->setAutoFillBackground(true);
-    parent->setPalette(palette);
+    //parent->setPalette(palette);
+
+    m_pGridLayout->addWidget(m_pPresetList, 0, 0);//,   //row 0, col 0
+                                            //1, 1);  //span 1 row, span 1 col
+    m_pGridLayout->addWidget(m_pSlotTable, 0, 1);//,   //row 0, col 1
+                                           //1, 2);  //span 1 row, span 2 cols
 }
 
 LADSPAView::~LADSPAView()
 {
+    delete m_pGridLayout;
 }

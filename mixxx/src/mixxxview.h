@@ -46,7 +46,11 @@ class MixxxKeyboard;
 class QComboBox;
 class QLineEdit;
 class QPushButton;
+class QGridLayout;
+class QTabWidget;
 class WTrackTableView;
+class DlgLADSPA; class LADSPAView;
+
 /**
  * This class provides an incomplete base for your application view.
  */
@@ -92,6 +96,7 @@ public:
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
     void createAllWidgets(QDomElement docElem, QWidget* parent, ConfigObject<ConfigValue> *pConfig);
+    void setupTabWidget(QDomNode node);
 
     /*temp to change view*/
     WTrackTable *m_pTmpPlaylist;
@@ -108,6 +113,22 @@ private:
     /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
     ConfigObject<ConfigValue> *m_pconfig;
+
+    /** Tab widget, which contains several "pages" for different views */
+    QTabWidget* m_pTabWidget;
+    /** The widget containing the library/tracktable page */
+    QWidget* m_pTabWidgetLibraryPage;
+    /** The widget containing the effects/LADSPA page */
+    QWidget* m_pTabWidgetEffectsPage;
+    /** The layout for the library page. Allows stuff to resize automatically */
+    QGridLayout* m_pLibraryPageLayout;
+    /** The layout for the effects page. Allows stuff to resize automatically */
+    QGridLayout* m_pEffectsPageLayout;
+
+#ifdef __LADSPA__
+    DlgLADSPA* m_pDlgLADSPA;
+    LADSPAView* m_pLADSPAView;
+#endif
 };
 
 #endif

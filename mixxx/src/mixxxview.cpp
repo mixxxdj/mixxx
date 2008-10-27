@@ -16,25 +16,10 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
+#include <QtGui>
+
 #include "mixxxview.h"
-
-#include <QDir>
-#include <QPixmap>
-#include <QToolTip>
-#include <QEvent>
-#include <QMenuBar>
-#include <QList>
-#include <QTableView>
-#include <QLabel>
-#include <QComboBox>
-//#include <QLineEdit>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QTableView>
-#include <QLineEdit>
-#include <QtDebug>
-#include <QMessageBox>
-
 #include "wtracktablemodel.h"
 #include "wtracktableview.h"
 #include "wwidget.h"
@@ -68,6 +53,10 @@
 #include "imgcolor.h"
 #include "wskincolor.h"
 #include "mixxx.h"
+#ifdef __LADSPA__
+#include "dlgladspa.h"
+#include "ladspaview.h"
+#endif
 #include "defs_promo.h"
 
 MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
@@ -88,7 +77,6 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
 #endif
 #endif
-
     // Default values for visuals
     //m_pTrackTable = 0;
     m_pTextCh1 = 0;
@@ -105,6 +93,11 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     m_pComboBox = 0;
     m_pTrackTableView = 0;
     m_pLineEditSearch = 0;
+    m_pTabWidget = 0;
+    m_pTabWidgetLibraryPage = 0;
+    m_pTabWidgetEffectsPage = 0;
+    m_pLibraryPageLayout = new QGridLayout();
+    m_pEffectsPageLayout = new QGridLayout();
 
     setupColorScheme(docElem, pConfig);
 
@@ -685,17 +678,22 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         m_pComboBox->addItem( "Free Tracks", TABLE_MODE_PROMO );
                     // m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
                     m_pComboBox->installEventFilter(m_pKeyboard);
+               
+                    //Add the combo box to the the library page's layout.
+                    m_pLibraryPageLayout->addWidget(m_pComboBox, 0, 0, Qt::AlignLeft); //Row 0, col 0
                 }
+                /*
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.indexOf(",")).toInt();
                 int y = pos.mid(pos.indexOf(",")+1).toInt();
                 m_pComboBox->move(x,y);
+                */
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.indexOf(",")).toInt();
-                y = size.mid(size.indexOf(",")+1).toInt();
+                int x = size.left(size.indexOf(",")).toInt();
+                int y = size.mid(size.indexOf(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
                 m_pComboBox->show();
             }
@@ -706,19 +704,22 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (m_pLineEditSearch == 0) {
 					MixxxView* parent = this;
                     QString path = pConfig->getConfigPath();
-                    m_pLineEditSearch = new WSearchLineEdit(path, (QWidget*)parent);
+                    m_pLineEditSearch = new WSearchLineEdit(path, this);
+                    m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
                 }
-
+                
+                /*
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.indexOf(",")).toInt();
                 int y = pos.mid(pos.indexOf(",")+1).toInt();
                 m_pLineEditSearch->move(x+35,y);
+                */
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.indexOf(",")).toInt();
-                y = size.mid(size.indexOf(",")+1).toInt();
+                int x = size.left(size.indexOf(",")).toInt();
+                int y = size.mid(size.indexOf(",")+1).toInt();
                 m_pLineEditSearch->setFixedSize(x,y);
                 m_pLineEditSearch->show();
             }
@@ -726,9 +727,44 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 	    // persistent: m_pTrackTableView
             else if (node.nodeName()=="TableView")
             {
+                if (m_pTabWidget == 0) {
+                    //Create the tab widget to store the various panes in (library, effects, etc.)
+                    m_pTabWidget = new QTabWidget(this);
+
+                    //Create the pages that go in the tab widget
+                    m_pTabWidgetLibraryPage = new QWidget();
+                    //m_pTabWidgetEffectsPage = new QWidget();
+                    
+                    //m_pDlgLADSPA = new DlgLADSPA(this);
+                    m_pLADSPAView = new LADSPAView(this);
+                    m_pTabWidgetEffectsPage = m_pLADSPAView; //m_pDlgLADSPA; 
+
+                    //Set the margins to be 0 for all the layouts.
+                    m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
+      //              m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+
+                    m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
+    //                m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
+                }
+
                 if (m_pTrackTableView == 0) {
                     m_pTrackTableView = new WTrackTableView(this, pConfig);
+                    //Add the track table to the library page's layout, so it's positioned/sized automatically
+                    m_pLibraryPageLayout->addWidget(m_pTrackTableView,
+                                                    1, 0, //From row 1, col 0,
+                                                    1,    //Span 1 row
+                                                    3,    //Span 3 cols
+                                                    0);   //Default alignment
+                    //Add the library page to the tab widget.
+                    m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
+
+                    //Add the effects page to the tab widget.
+                    m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
                 }
+                
+                //Move the tab widget into position and size it properly.
+                setupTabWidget(node);
+
                 m_pTrackTableView->setup(node);
                 m_pTrackTableView->installEventFilter(m_pKeyboard);
                 m_pTrackTableView->show();
@@ -812,3 +848,23 @@ QList<QString> MixxxView::getSchemeList(QString qSkinPath) {
     return schlist;
 }
 
+void MixxxView::setupTabWidget(QDomNode node)
+{
+    // Position
+    if (!WWidget::selectNode(node, "Pos").isNull())
+    {
+        QString pos = WWidget::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.indexOf(",")).toInt();
+        int y = pos.mid(pos.indexOf(",")+1).toInt();
+        m_pTabWidget->move(x,y);
+    }
+
+    // Size
+    if (!WWidget::selectNode(node, "Size").isNull())
+    {
+        QString size = WWidget::selectNodeQString(node, "Size");
+        int x = size.left(size.indexOf(",")).toInt();
+        int y = size.mid(size.indexOf(",")+1).toInt();
+        m_pTabWidget->setFixedSize(x,y);
+    }
+ }
