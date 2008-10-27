@@ -35,6 +35,7 @@ LADSPALoader::LADSPALoader()
 #elif __MACX__
         paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
         paths.push_back ("../../ladspa_plugins"); //ladspa_plugins directory in Mixxx.app bundle
+        paths.push_back ("Mixxx.app/ladspa_plugins"); //ladspa_plugins directory in Mixxx.app bundle
 #elif __WIN32__
         // not tested yet but should work:
         QString programFiles = QString(getenv("ProgramFiles"));
@@ -48,12 +49,16 @@ LADSPALoader::LADSPALoader()
     {
         QDir dir(* path);
 
+        //qDebug() << "Looking for plugins in directory:" << dir;
+    
         // get the list of files in the directory
         QFileInfoList files = dir.entryInfoList();
 
         // load each file in the directory
         for (QFileInfoList::iterator file = files.begin(); file != files.end(); file++)
         {
+            //qDebug() << "Looking at file:" << (*file).absoluteFilePath();
+
             if ((*file).isDir())
             {
                 continue;
