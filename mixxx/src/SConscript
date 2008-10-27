@@ -914,6 +914,9 @@ keyboardmappings_files = glob.glob('../keyboard/*')
 #Promo tracks
 promotracks_files = glob.glob('../../promo/*')
 
+#LADSPA shizzle
+ladspapresets_files = glob.glob('../ladspa_presets/*')
+
 #Documentation
 docs_files = glob.glob('../../LICENSE')
 docs_files += glob.glob('../../README')
@@ -959,6 +962,7 @@ if platform == 'linux':
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
+		ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
 		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
 		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
@@ -969,6 +973,7 @@ if platform == 'linux':
 		env.Alias('install', skins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
+		env.Alias('install', ladspapresets)
 		env.Alias('install', docs)
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
@@ -1000,6 +1005,7 @@ if platform == 'osx':
 	skins = env.Install(osx_dist_path + "/skins", skin_files)
 	midimappings = env.Install(osx_dist_path + "/midi", midimappings_files)
 	keyboardmappings = env.Install(osx_dist_path + "/keyboard", keyboardmappings_files)
+	ladspapresets = env.Install(osx_dist_path + "/ladspa_presets", ladspapresets_files)
 	docs = env.Install(osx_dist_path + "/doc", docs_files)
 	promotracks = env.Install(osx_dist_path + "/promo", promotracks_files)
 	osx_plist = env.Install(osx_dist_path + "/Contents", osx_plist_file)
@@ -1022,6 +1028,7 @@ if platform == 'win32':
 	skins = env.Install("../../dist/skins", skin_files)
 	midimappings = env.Install("../../dist/midi", midimappings_files)
 	keyboardmappings = env.Install("../../dist/keyboard", keyboardmappings_files)
+	ladspapresets = env.Install("../../dist/ladspa_presets", ladspapresets_files)
 	docs = env.Install("../../dist/doc/", docs_files)
 	promotracks = env.Install("../../dist/promo/", promotracks_files)
 	#icon = env.Install("../../dist", icon_files)
@@ -1032,6 +1039,7 @@ if platform == 'win32':
 	env.Alias('mixxx', skins)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
+	env.Alias('mixxx', ladspapresets)
 	env.Alias('mixxx', promotracks)
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)
