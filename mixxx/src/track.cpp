@@ -298,7 +298,7 @@ void Track::resizeColumnsForLibraryMode()
 }
 
 void Track::timerEvent(QTimerEvent *event) {
-  if (m_pView && m_pView->m_pTrackTableView && m_pView->m_pLineEditSearch->isModified()) {
+  if (m_pView && m_pView->m_pTrackTableView && m_pView->m_pLineEditSearch && m_pView->m_pLineEditSearch->isModified()) {
 
       if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_LIBRARY && m_pView->m_pLineEditSearch->text() == "") {
       // qDebug() << "Restore viewport to position to row:" << savedRowPosition;
