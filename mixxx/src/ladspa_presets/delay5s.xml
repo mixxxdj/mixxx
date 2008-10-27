@@ -1,0 +1,23 @@
+<Delay5s>
+ <Plugin ID="0">delay_5s</Plugin>
+ <Knob>
+  <Label>Delay</Label>
+  <Min>0.0</Min>
+  <Max>5.0</Max>
+  <Default>1.0</Default>
+  <Connection>
+   <Plugin>0</Plugin>
+   <Port>0</Port>
+  </Connection>
+ </Knob>
+ <Knob>
+  <Label>Dry/wet</Label>
+  <Min>0.0</Min>
+  <Max>1.0</Max>
+  <Default>0.5</Default>
+  <Connection>
+   <Plugin>0</Plugin>
+   <Port>1</Port>
+  </Connection>
+ </Knob>
+</Delay5s>
