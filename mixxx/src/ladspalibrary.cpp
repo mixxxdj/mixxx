@@ -25,6 +25,11 @@ LADSPALibrary::LADSPALibrary(QString file)
     {
         m_descriptorFunction = (LADSPA_Descriptor_Function) m_pLibrary->resolve("ladspa_descriptor");
 
+		if (m_descriptorFunction == NULL) {
+			QString error("The file " + file + " is not a LADSPA plugin");
+			throw error;
+		}
+
         const LADSPA_Descriptor * descriptor;
 
         for (unsigned long index = 0; (descriptor = m_descriptorFunction(index)) != NULL; index++)
