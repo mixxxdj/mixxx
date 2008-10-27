@@ -109,6 +109,9 @@ WTrackTableView::~WTrackTableView()
 /*Graphically sets up playlist and library directory*/
 void WTrackTableView::setup(QDomNode node)
 {
+    //NOTE: Position and size are now managed by a QLayout
+    //      inside mixxxview.cpp's tab widget.
+/*
     // Position
     if (!WWidget::selectNode(node, "Pos").isNull())
     {
@@ -126,7 +129,9 @@ void WTrackTableView::setup(QDomNode node)
         int y = size.mid(size.indexOf(",")+1).toInt();
         setFixedSize(x,y);
     }
-    // Foreground color
+  */
+
+  // Foreground color
     QColor fgc(0,255,0);
     if (!WWidget::selectNode(node, "FgColor").isNull())
     {

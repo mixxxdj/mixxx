@@ -17,7 +17,7 @@
 
 class QListWidget;
 class QScrollArea;
-
+class QGridLayout;
 class WKnob;
 
 class LADSPAPresetManager;
@@ -36,6 +36,7 @@ private:
     QListWidget * m_pPresetList;
     LADSPAPresetManager * m_pPresetManager;
     QWidget * m_pSlotTable;
+    QGridLayout* m_pGridLayout;
 };
 
 #endif

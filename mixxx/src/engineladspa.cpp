@@ -34,7 +34,7 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
     {
         m_bufferSize = iBufferSize;
         m_monoBufferSize = m_bufferSize / 2;
-        qDebug() << "LADSPA: setBufferSize: " << m_monoBufferSize << " (" << m_bufferSize << ")";
+        //qDebug() << "LADSPA: setBufferSize: " << m_monoBufferSize << " (" << m_bufferSize << ")";
         LADSPAControl::setBufferSize(m_monoBufferSize);
 
         if (m_pBufferLeft[0] != NULL)
@@ -83,6 +83,7 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 	{
 	    if ((*instance)->isEnabled())
 	    {
+            //qDebug() << "enabled";
 		CSAMPLE wet = (CSAMPLE)(*instance)->getWet();
 		if ((*instance)->isInplaceBroken() || wet < 1.0)
 		{

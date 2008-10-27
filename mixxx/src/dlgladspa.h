@@ -20,7 +20,7 @@ class DlgLADSPA : public QDialog
     Q_OBJECT
 
 public:
-    DlgLADSPA(MixxxApp *mixxx);
+    DlgLADSPA(QWidget* parent);
     ~DlgLADSPA();
 
 private:
