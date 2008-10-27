@@ -58,21 +58,26 @@ LADSPALoader::LADSPALoader()
             {
                 continue;
             }
-            LADSPALibrary * library = new LADSPALibrary ((*file).absoluteFilePath());
 
-            // add the library to the list of all libraries
-            m_Libraries.append (library);
+			try {
+				LADSPALibrary * library = new LADSPALibrary ((*file).absoluteFilePath());
 
-            const LADSPAPluginList * plugins = library->pluginList();
+				// add the library to the list of all libraries
+				m_Libraries.append (library);
 
-            m_Plugins.resize(m_PluginCount + library->pluginCount());
+				const LADSPAPluginList * plugins = library->pluginList();
 
-            // add each plugin in the library to the vector of all plugins
-            for (LADSPAPluginList::const_iterator plugin = plugins->begin(); plugin != plugins->end(); plugin++)
-            {
-                m_PluginCount++;
-                m_Plugins[m_PluginCount - 1] = *plugin;
-            }
+				//m_Plugins.resize(m_PluginCount + library->pluginCount());
+
+				// add each plugin in the library to the vector of all plugins
+				for (LADSPAPluginList::const_iterator plugin = plugins->begin(); plugin != plugins->end(); plugin++)
+				{
+	                m_PluginCount++;
+					m_Plugins.push_back(*plugin);
+				}
+			} catch (QString& s) {
+				qDebug() << s;
+			}
         }
     }
 }
