@@ -361,11 +361,14 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	CheckFFMPEG(conf, sources)
 
 	#Check for LADSPA header, if it was passed as a flag
-	flags_ladspa = getFlags(env, 'ladspa', 0)
+	flags_ladspa = getFlags(env, 'ladspa', 1)
 	if int(flags_ladspa):
 		if not conf.CheckCHeader('ladspa.h'):
 			print 'Did not find the LADSPA header file (ladspa.h) - exiting!'
 			Exit(1)
+ 	else:
+		print 'LADSPA must be turned on, sorry enry.'
+		Exit(1)
 
 	#Platform-specific checks for Linux and Win32...
 	if platform == 'linux' or platform == 'win32':
