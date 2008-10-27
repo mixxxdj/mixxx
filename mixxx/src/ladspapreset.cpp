@@ -37,7 +37,7 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
 	if (plugin == NULL)
 	{
 	    m_bValid = false;
-	    qWarning() << "LADSPA: Plugin " << pluginElement.text() << " not found (required by preset " << m_qName << ")";
+	    qDebug() << "LADSPA: Plugin " << pluginElement.text() << " not found (required by preset " << m_qName << ")";
 	    return; // ?
 	}
         m_Plugins[j] = plugin;
