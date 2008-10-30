@@ -620,7 +620,7 @@ void MixxxApp::initMenuBar()
     macroMenu=new QMenu("&Macro");
 #endif
 #ifdef __LADSPA__
-    ladspaMenu=new QMenu("LADSPA");
+//    ladspaMenu=new QMenu("LADSPA");
 #endif
 
     // menuBar entry fileMenu
@@ -666,7 +666,7 @@ void MixxxApp::initMenuBar()
     macroMenu->addAction(macroStudio);
 #endif
 #ifdef __LADSPA__
-    ladspaMenu->addAction(ladspaShow);
+    // ladspaMenu->addAction(ladspaShow);
 #endif
 
     menuBar()->addMenu(fileMenu);
@@ -678,7 +678,7 @@ void MixxxApp::initMenuBar()
     menuBar()->addMenu(macroMenu);
 #endif
 #ifdef __LADSPA__
-    menuBar()->addMenu(ladspaMenu);
+//    menuBar()->addMenu(ladspaMenu);
 #endif
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
