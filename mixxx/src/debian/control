@@ -10,6 +10,7 @@ Package: mixxx
 Section: sound
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: caps, cmt, swh-plugins
 Suggests: pdf-viewer
 Replaces: mixxx-data
 Description: Digital DJ interface
