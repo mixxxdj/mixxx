@@ -132,7 +132,7 @@ void BpmDetector::calculateBPMSoundTouch(TrackInfoObject *pTrackInfoObject, BpmR
     if(!pScheme->getAnalyzeEntireSong())
     {
         length = length / 2;
-        pos = length / 2;
+        pos = length / 4;
 
     }
 
@@ -345,6 +345,9 @@ void BpmDetector::run()
         BpmScheme * pScheme = NULL;
 
         // Check if there is a new track to process in the queue...
+
+		// FIXME:? Is there a race condition here where the wakeAll is called
+		// in between this next unlock and the lock for the wait below?
 
         m_qMutex.lock();
         BpmDetectionPackage * package = m_qQueue.dequeue();

@@ -27,7 +27,8 @@
 #endif
 #endif
 
-MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
+MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device),
+	outhandle()
 {
 	updateDeviceList();
 

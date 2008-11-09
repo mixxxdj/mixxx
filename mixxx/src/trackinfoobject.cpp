@@ -41,8 +41,9 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDetector * bpmDetector) : m_sFilename(sFile), m_sFilepath(sPath)
-{
+TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDetector * bpmDetector) 
+	: m_sFilename(sFile), m_sFilepath(sPath),
+	m_chordData() {
     m_sArtist = "";
     m_sTitle = "";
     m_sType= "";
@@ -102,7 +103,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDetector)
-{
+	: m_chordData() {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sFilepath = XmlParse::selectNodeQString(nodeHeader, "Filepath");
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");

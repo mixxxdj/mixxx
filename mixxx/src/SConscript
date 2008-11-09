@@ -247,6 +247,7 @@ opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Ex
 opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
 opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
 opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript support.', 0)
+opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
@@ -293,7 +294,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp
  enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp
  wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp playerinfo.cpp wabstractcontrol.cpp
- enginebufferscaledummy.cpp wsearchlineedit.cpp""")
+ enginebufferscaledummy.cpp wsearchlineedit.cpp segmentation.cpp engineanalyserqueue.cpp""")
 
 #Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
@@ -717,6 +718,17 @@ if platform == 'win32':
 	else:
 		env.Append(CCFLAGS = '/MD') # required for sndfile w/ flac support on windows
 		print "MSVC Debugging... disabled"
+
+
+flags_tonal = getFlags(env, 'tonal', 0)
+if int(flags_tonal):
+	print "Tonal analysis... enabled"
+	build_flags += 'tonal '
+	sources += Split("""tonal/FourierTransform.cxx tonal/Segmentation.cxx
+			tonal/tonalanalyser.cpp tonal/ConstantQTransform.cxx
+			tonal/ConstantQFolder.cxx""")
+else:
+	print "Tonal analysis... disabled"
 
 flags_script = getFlags(env, 'script', 0)
 if int(flags_script):

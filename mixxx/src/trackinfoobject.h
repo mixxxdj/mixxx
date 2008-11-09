@@ -39,6 +39,9 @@ class BpmReceiver;
 class BpmScheme;
 class TrackPlaylist;
 
+//template <class T> class Segmentation;
+#include "segmentation.h"
+
 #define NumBpmFactors 4
 
 const float Factors[NumBpmFactors]={0.33, 0.5, 2, 0.25};
@@ -188,6 +191,11 @@ public:
     /** Get saved the cue point */
     float getCuePoint();
 
+	const Segmentation<QString>* getChordData() { return &m_chordData; }
+	void setChordData(Segmentation<QString> cd) {
+		m_chordData = cd; 
+	}
+
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
@@ -271,6 +279,8 @@ private:
 
     /** Bpm Detection Queue */
     BpmDetector *m_BpmDetector;
+
+	Segmentation<QString> m_chordData;
 };
 
 #endif
