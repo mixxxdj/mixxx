@@ -1,5 +1,5 @@
 #include "tonalanalyser.h"
-#include "discontinuoussegmentation.hxx"
+#include "DiscontinuousSegmentation.hxx"
 #include "../segmentation.h"
 #include "../trackinfoobject.h"
 
