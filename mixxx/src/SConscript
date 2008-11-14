@@ -585,9 +585,9 @@ else:
 env.Append(CPPPATH=['../../lib/kissfft'])
 sources += Split("""../../lib/kissfft/kiss_fft.c""")
 
-#libsamplerate
-env.Append(CPPPATH='../../lib/libsamplerate')
-sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
+#libsamplerate - Getting rid of this out of our source tree since we don't use it. 
+#env.Append(CPPPATH='../../lib/libsamplerate')
+#sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
 
 #fidlib (for EQs)
 env.Append(CPPPATH='../../lib/fidlib-0.9.9/')
