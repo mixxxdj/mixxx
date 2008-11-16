@@ -204,7 +204,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     }
 
     // Try initializing Hercules DJ Console
-    
+
 #ifdef __LINUX__
     m_pHercules = new HerculesLinux();
 #endif
@@ -229,7 +229,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
 //    groupBoxMice->setEnabled(false);
 //#endif
 
-    connect(ComboBoxHercules, SIGNAL(activated(int)), this, SLOT(slotApply()));
+//    connect(ComboBoxHercules, SIGNAL(activated(int)), this, SLOT(slotApply()));
 //    connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
 //    connect(ComboBoxMouseDevice2, SIGNAL(activated(int)), this, SLOT(slotApply()));
 //    connect(pushButtonMouseCalibrate1, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate1()));
@@ -331,6 +331,7 @@ void DlgPrefMidi::slotUpdate()
         groupPowerMates->setEnabled(false);
 
     // Hercules
+/*
     if (m_pHercules)
     {
         ComboBoxHercules->clear();
@@ -344,7 +345,7 @@ void DlgPrefMidi::slotUpdate()
             j++;
         }
     }
-
+*/
 /*    // Mouse
     QStringList qMouseConfigList;
     qMouseConfigList = Mouse::getMappings();
@@ -418,7 +419,7 @@ void DlgPrefMidi::slotApply()
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction1"), ConfigValue(ComboBoxPowerMate1->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction2"), ConfigValue(ComboBoxPowerMate2->currentText()));
-    m_pConfig->set(ConfigKey("[Controls]","HerculesMapping"), ConfigValue(ComboBoxHercules->currentText()));
+  //  m_pConfig->set(ConfigKey("[Controls]","HerculesMapping"), ConfigValue(ComboBoxHercules->currentText()));
 
     // Since things can go wrong during this midi code (like hangs) move it
     // into another thread so we can do something sensible if it breaks
@@ -462,8 +463,10 @@ void DlgPrefMidi::slotApply()
         m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
 
     // Hercules
+/*
     if (m_pHercules)
         m_pHercules->selectMapping(ComboBoxHercules->currentText());
+*/
 
 /*    // Mice
     Mouse::destroyAll();
