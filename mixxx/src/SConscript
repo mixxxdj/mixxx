@@ -239,7 +239,7 @@ opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole'
 opts.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 opts.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
-opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
+opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
 opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 opts.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 opts.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
