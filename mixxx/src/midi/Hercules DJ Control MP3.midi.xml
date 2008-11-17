@@ -370,7 +370,21 @@
 			<midino>0x02</midino>
 			<threshold>0.5</threshold>
 		</light>
+		<light>
+                        <group>[Channel1]</group>
+                        <key>pfl</key>
+                        <status>0xB0</status>
+                        <midino>0x7E</midino>
+                        <threshold>0.5</threshold>
+                </light>
+                <light>
+                        <group>[Channel2]</group>
+                        <key>pfl</key>
+                        <status>0xB0</status>
+                        <midino>0x7D</midino>
+                        <threshold>0.5</threshold>
 
+		</light>
 
 <!--		<light>
 			<group>[Channel1]</group>
