@@ -1133,9 +1133,9 @@ def BuildUbuntuPackage(target, source, env):
 		
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
-		print "Exporting source tree from 1.6.0 r2231"
+		print "Exporting source tree from 1.6.2 r2383"
 		
-		os.system('svn export --force -r2231 . ubuntu/mixxx-' + version)
+		os.system('svn export --force -r2383 . ubuntu/mixxx-' + version)
 		
 		print "Copying promo tracks dir"
 		os.system('cp -r promo ubuntu/mixxx-' + version)
