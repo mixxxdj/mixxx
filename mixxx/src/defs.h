@@ -17,7 +17,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "1.6.1"
+#define VERSION "1.6.2"
 #define MIXXX_PROMO_DIR "promo"
 
 #include <math.h>
