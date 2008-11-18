@@ -1,3 +1,9 @@
+mixxx (1.6.2-0ubuntu1) hardy; urgency=low
+
+  * New upstream release - removes libDJConsole support (new driver from Hercules make this obsolete)
+  
+ -- Garth Dahlstrom <ironstorm@users.sourceforge.net>  Tue,  13 November 2008 01:45:00 -0500
+
 mixxx (1.6.1-0ubuntu1) hardy; urgency=low
 
   * New upstream release
