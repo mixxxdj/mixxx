@@ -386,7 +386,7 @@
 
 		</light>
 
-<!--		<light>
+		<light>
 			<group>[Channel1]</group>
 			<key>VuMeter</key>
 			<status>0xB0</status>
@@ -457,7 +457,7 @@
 			<midino>0x10</midino>
 			<threshold>0.8</threshold>
 		</light>
-	-->
+
 	</lights>
 </controller>
 
