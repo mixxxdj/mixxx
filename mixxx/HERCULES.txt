@@ -1,9 +1,0 @@
-Hercules DJ Console.
-
-Previous track button is "cue set"
-Next track button is "cue preview"
-Cue button is "loop"
-
-For "Standard" mapping beat sync buttons are disabled (temporarily)
-
-Further, for "InBeat" mapping, the pitch sliders work as volume sliders, the volume knob as gain, the crossfader as tempo for both players.
