@@ -363,11 +363,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 	#Check for LADSPA header, if it was passed as a flag
 	flags_ladspa = getFlags(env, 'ladspa', 1)
-	if int(flags_ladspa):
-		if not conf.CheckCHeader('ladspa.h'):
-			print 'Did not find the LADSPA header file (ladspa.h) - exiting!'
-			Exit(1)
- 	else:
+	if not int(flags_ladspa):
 		print 'LADSPA must be turned on, sorry enry.'
 		Exit(1)
 
@@ -1128,14 +1124,14 @@ def BuildUbuntuPackage(target, source, env):
 		print "Now building DEB package..."
 		
 		mixxx_dir = 'mixxx-' + version
-		mixxx_tarball = 'mixxx_' + version + '.orig.tar.gz' #The underscore is super important here
-															#to make the deb package work
+		mixxx_tarball = 'mixxx_' + version + '.orig.tar.gz' #The underscore is super important here to make the deb package work
 		
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
-		print "Exporting source tree from 1.6.2 r2383"
-		
-		os.system('svn export --force -r2383 . ubuntu/mixxx-' + version)
+
+		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
+		print "Exporting source tree from HEAD"
+		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + version)
 		
 		print "Copying promo tracks dir"
 		os.system('cp -r promo ubuntu/mixxx-' + version)
