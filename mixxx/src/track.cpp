@@ -1254,8 +1254,10 @@ void Track::slotLoadSelectedTrackCh1(double v)
     if (v && m_pView->m_pTrackTableView->m_pTable) {
         // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
+        int row = index.row();
+        if (row < 0 || row >= m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->size()) return; // prevent QList out-of-bounds asserts
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
-	    // If there is one, load it
+        // If there is one, load it
 	if (pTrack) slotLoadPlayer1(pTrack);
     }
 }
