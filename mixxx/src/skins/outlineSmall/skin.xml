@@ -344,7 +344,7 @@
   <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch1.png</Handle>
   <Slider>volslider-off-Ch1.png</Slider>
-  <Pos>7,404</Pos>
+  <Pos>7,388</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
    <ConfigKey>[Channel1],volume</ConfigKey>
@@ -356,7 +356,7 @@
   <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch2.png</Handle>
   <Slider>volslider-off-Ch2.png</Slider>
-  <Pos>700,404</Pos>
+  <Pos>700,388</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
    <ConfigKey>[Channel2],volume</ConfigKey>
@@ -384,7 +384,7 @@
   <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch1.png</PathVu>
   <PathBack>vumeter-off-Ch1.png</PathBack>
-  <Pos>84,410</Pos>
+  <Pos>84,392</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
   <Connection>
@@ -396,7 +396,7 @@
   <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch2.png</PathVu>
   <PathBack>vumeter-off-Ch2.png</PathBack>
-  <Pos>777,410</Pos>
+  <Pos>777,392</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
   <Connection>
@@ -715,7 +715,7 @@
    <Pressed>flanger-on-Ch1.png</Pressed>
    <Unpressed>flanger-on-Ch1.png</Unpressed>
   </State>
-  <Pos>56,348</Pos>
+  <Pos>56,334</Pos>
   <Connection>
    <ConfigKey>[Channel1],flanger</ConfigKey>
   </Connection>
@@ -734,7 +734,7 @@
    <Pressed>flanger-on-Ch2.png</Pressed>
    <Unpressed>flanger-on-Ch2.png</Unpressed>
   </State>
-  <Pos>750,348</Pos>
+  <Pos>750,334</Pos>
   <Connection>
    <ConfigKey>[Channel2],flanger</ConfigKey>
   </Connection>
@@ -753,7 +753,7 @@
    <Pressed>head-on-Ch1.png</Pressed>
    <Unpressed>head-on-Ch1.png</Unpressed>
   </State>
-  <Pos>7,348</Pos>
+  <Pos>7,334</Pos>
   <Connection>
    <ConfigKey>[Channel1],pfl</ConfigKey>
   </Connection>
@@ -772,7 +772,7 @@
    <Pressed>head-on-Ch2.png</Pressed>
    <Unpressed>head-on-Ch2.png</Unpressed>
   </State>
-  <Pos>700,348</Pos>
+  <Pos>700,334</Pos>
   <Connection>
    <ConfigKey>[Channel2],pfl</ConfigKey>
   </Connection>
@@ -852,7 +852,7 @@
   <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
-  <Pos>48,414</Pos>
+  <Pos>48,396</Pos>
   <Connection>
    <ConfigKey>[Channel1],pregain</ConfigKey>
   </Connection>
@@ -863,7 +863,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>48,458</Pos>
+  <Pos>48,440</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterHigh</ConfigKey>
   </Connection>
@@ -878,7 +878,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>48,502</Pos>
+  <Pos>48,484</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterMid</ConfigKey>
   </Connection>
@@ -893,7 +893,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>48,545</Pos>
+  <Pos>48,527</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterLow</ConfigKey>
   </Connection>
@@ -907,7 +907,7 @@
   <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
-  <Pos>741,414</Pos>
+  <Pos>741,396</Pos>
   <Connection>
    <ConfigKey>[Channel2],pregain</ConfigKey>
   </Connection>
@@ -918,7 +918,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>741,458</Pos>
+  <Pos>741,440</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterHigh</ConfigKey>
   </Connection>
@@ -933,7 +933,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>741,502</Pos>
+  <Pos>741,484</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterMid</ConfigKey>
   </Connection>
@@ -948,7 +948,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>741,545</Pos>
+  <Pos>741,527</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterLow</ConfigKey>
   </Connection>
