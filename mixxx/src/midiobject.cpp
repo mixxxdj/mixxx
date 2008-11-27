@@ -155,10 +155,27 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     default:
         type = MIDI_EMPTY;
     }
+/*
+    qDebug() << QString("MidiObject::receive from device: %1, type: %2, catagory: %3, ch: %4, ctrl: %5, val: %6").arg(device)
+       .arg(QString::number(type))
+       .arg(QString::number(category, 16).toUpper())
+       .arg(QString::number(channel, 16).toUpper())
+       .arg(QString::number(control, 16).toUpper())
+       .arg(QString::number(value, 16).toUpper());
+*/
+    if (midiLearn) {
+    	emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
+    	return; // Don't pass on controls when in dialog
+    }
 
-	if (!m_pMidiConfig) {
-		return;
-	} // Used to be this:
+    if (debug) {
+    	emit(debugInfo(new ConfigValueMidi(type,control,channel), device));
+    	return; // Don't pass on controls when in dialog
+    }
+
+    if (!m_pMidiConfig) {
+	return;
+    } // Used to be this:
     //Q_ASSERT(m_pMidiConfig);
     ConfigKey * pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
@@ -204,10 +221,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
 
 		// I'm not sure entirely why buttons should be special here or what the difference is - Adam
         if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
-			ControlObjectThread cot(p);
-			cot.slotSet(newValue);
-
-            //p->setValueFromThread(newValue);
+            p->set(newValue);
             // qDebug() << "New Control Value: " << newValue << " (skipping queueFromMidi call)";
             return;
         }
