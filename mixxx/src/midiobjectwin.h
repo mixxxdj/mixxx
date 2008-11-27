@@ -19,28 +19,30 @@
 #define MIDIOBJECTWIN_H
 
 #include "midiobject.h"
-
 #include "windows.h"
+#include <QtCore>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
 class MidiObjectWin : public MidiObject  {
-public: 
-    MidiObjectWin(QString device);
+public:
+    MidiObjectWin();
     ~MidiObjectWin();
     void devOpen(QString device);
-    void devClose();
-    void handleMidi(char channel, char midicontrol, char midivalue);
-	void sendShortMsg(unsigned int word);
-	virtual void updateDeviceList();
+    void devClose(QString device);
+    void handleMidi(char channel, char midicontrol, char midivalue, QString device);
+    void sendShortMsg(unsigned int word);
+    virtual void updateDeviceList();
+
+    QMap<QString, HMIDIIN> handles;
+
 protected:
     void run();
     void stop();
 
-    HMIDIIN         handle;
-	HMIDIOUT		outhandle;
+    HMIDIOUT outhandle;
 };
 
 void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);

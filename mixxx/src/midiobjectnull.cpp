@@ -17,7 +17,7 @@
 
 #include "midiobjectnull.h"
 
-MidiObjectNull::MidiObjectNull(QString device) : MidiObject(device)
+MidiObjectNull::MidiObjectNull() : MidiObject()
 {
 }
 
@@ -29,6 +29,6 @@ void MidiObjectNull::devOpen(QString)
 {
 }
 
-void MidiObjectNull::devClose()
+void MidiObjectNull::devClose(QString)
 {
 }

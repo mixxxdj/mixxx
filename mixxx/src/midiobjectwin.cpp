@@ -27,8 +27,7 @@
 #endif
 #endif
 
-MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device),
-	outhandle()
+MidiObjectWin::MidiObjectWin() : MidiObject()
 {
 	updateDeviceList();
 
@@ -41,14 +40,13 @@ MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device),
        else
        if (devices.count()==0)
         qDebug() << "MIDI: No MIDI devices available.";
-       else
-        devOpen(devices.first());*/
+        */
 }
 
 MidiObjectWin::~MidiObjectWin()
 {
-    // Close device and delete buffer
-    devClose();
+    // Close devices and delete buffer
+	while (openDevices.count() > 0) devClose(openDevices.takeFirst());
 }
 
 void MidiObjectWin::updateDeviceList() {
@@ -73,6 +71,7 @@ void MidiObjectWin::updateDeviceList() {
 
 void MidiObjectWin::devOpen(QString device)
 {
+    if (openDevices.contains(device)) return;
     USES_CONVERSION; // enable WCHAR to char macro conversion
     // Select device. If not found, select default (first in list).
     unsigned int i;
@@ -86,18 +85,23 @@ void MidiObjectWin::devOpen(QString device)
             break;
         }
     }
-    if (i==midiInGetNumDevs())
-        i = 0;
+    if (i==midiInGetNumDevs()) {
+        qDebug() << "Error: Unable to find requested MIDI device " << device;
+        return;
+    }
 
-//  handle = new HMIDIIN;
+    HMIDIIN handle;
     MMRESULT res = midiInOpen(&handle, i, (DWORD)MidiInProc, (DWORD) this, CALLBACK_FUNCTION);
     if (res == MMSYSERR_NOERROR) {
         // Should follow selected device !!!!
-        openDevice = device;
+        openDevices.append(device);
     } else {
         qDebug() << "Error opening midi device";
         return;
     }
+
+    // Add device and handle to list
+    handles.insert(device, handle);
 
     res = midiOutOpen(&outhandle, i, NULL, NULL, CALLBACK_NULL);
     if (res != MMSYSERR_NOERROR)
@@ -108,11 +112,13 @@ void MidiObjectWin::devOpen(QString device)
         qDebug() << "Error starting midi.";
 }
 
-void MidiObjectWin::devClose()
+void MidiObjectWin::devClose(QString device)
 {
+    HMIDIIN handle = handles.value(device);
     midiInReset(handle);
     midiInClose(handle);
-    openDevice = QString("");
+    handles.remove(device);
+    openDevices.remove(device);
 }
 
 void MidiObjectWin::stop()
@@ -124,13 +130,13 @@ void MidiObjectWin::run()
 {
 }
 
-void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
+void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue, QString device)
 {
     qDebug() << QString("midi miditype: %1 ch: %2, ctrl: %3, val: %4").arg(QString::number(channel& 240, 16).toUpper())
        .arg(QString::number(channel&15, 16).toUpper())
        .arg(QString::number(midicontrol, 16).toUpper())
        .arg(QString::number(midivalue, 16).toUpper());
-    send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);	
+    receive((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue, device); // void receive(MidiCategory category, char channel, char control, char value, QString device);
 }
 
 // C/C++ wrapper function
@@ -140,7 +146,8 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
     switch (wMsg) {
     case MIM_DATA:
         qDebug() << "MIM_DATA";
-        midi->handleMidi(dwParam1&0x000000ff, (dwParam1&0x0000ff00)>>8, (dwParam1&0x00ff0000)>>16);
+        midi->handleMidi(dwParam1 & 0x000000ff, (dwParam1 & 0x0000ff00) >> 8, (dwParam1 & 0x00ff0000) >> 16, midi->handles.key(hMidiIn));
+	qDebug() << "MIM_DATA done.";
         break;
     case MIM_LONGDATA:
         qDebug() << "MIM_LONGDATA";

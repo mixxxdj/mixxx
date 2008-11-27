@@ -1,0 +1,269 @@
+<ui version="4.0" >
+ <class>DlgPrefMidiBindingsDlg</class>
+ <widget class="QWidget" name="DlgPrefMidiBindingsDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>624</width>
+    <height>436</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+  <widget class="QGroupBox" name="groupBox" >
+     <property name="minimumSize" >
+      <size>
+       <width>100</width>
+       <height>60</height>
+      </size>
+     </property>
+   <property name="title" >
+    <string>Quick MIDI Learn</string>
+   </property>
+   <widget class="QPushButton" name="btnSingleLearn" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>101</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>MIDI Learn</string>
+    </property>
+    <property name="checkable" >
+     <bool>true</bool>
+    </property>
+    <property name="checked" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnGroupLearn" >
+    <property name="geometry" >
+     <rect>
+      <x>100</x>
+      <y>20</y>
+      <width>161</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Group Learn Selected</string>
+    </property>
+    <property name="checkable" >
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>260</x>
+      <y>25</y>
+      <width>51</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Status:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelStatus" >
+    <property name="geometry" >
+     <rect>
+      <x>310</x>
+      <y>25</y>
+      <width>211</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+   </widget>
+  </widget>
+</item>
+<item>
+  <widget class="QTableWidget" name="tblBindings" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>531</width>
+     <height>211</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="alternatingRowColors" >
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode" >
+    <enum>QAbstractItemView::ExtendedSelection</enum>
+   </property>
+   <property name="selectionBehavior" >
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <property name="columnCount" >
+    <number>5</number>
+   </property>
+   <column>
+    <property name="text" >
+     <string>Control</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>MIDI</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Device</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Type</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Options</string>
+    </property>
+   </column>
+  </widget>
+</item>
+<item>
+  <layout class="QHBoxLayout" name="horizontalLayout" >
+<item>
+  <widget class="QGroupBox" name="groupBox_2" >
+     <property name="minimumSize" >
+      <size>
+       <width>300</width>
+       <height>80</height>
+      </size>
+     </property>
+   <property name="title" >
+    <string>Binding Preset Management</string>
+   </property>
+   <widget class="QPushButton" name="btnImportXML" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>161</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Import from XML...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnExportXML" >
+    <property name="geometry" >
+     <rect>
+      <x>160</x>
+      <y>20</y>
+      <width>161</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Export to XML...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnClearBindings" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>50</y>
+      <width>161</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Clear Bindings...</string>
+    </property>
+   </widget>
+  </widget>
+</item>
+<item>
+  <widget class="QGroupBox" name="groupBox_3" >
+     <property name="minimumSize" >
+      <size>
+        <width>201</width>
+        <height>121</height>
+      </size>
+     </property>
+   <property name="title" >
+    <string>Preset Management</string>
+   </property>
+   <widget class="QPushButton" name="btnAddBinding" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>121</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Add Control...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnRemoveBinding" >
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>20</y>
+      <width>81</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Remove</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnChangeMidiBinding" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>80</y>
+      <width>201</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Change MIDI Binding...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAdvancedOptions" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>50</y>
+      <width>201</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Set Advanced Options...</string>
+    </property>
+   </widget>
+  </widget>
+</item>
+</layout>
+</item>
+</layout>
+  </widget>
+ <resources/>
+ <connections/>
+</ui>

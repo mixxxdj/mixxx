@@ -7,8 +7,8 @@
 Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
 MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, double min,
-                               double max, unsigned char status, unsigned char byte1)
-    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_byte1(byte1) {
+                               double max, unsigned char status, unsigned char byte1, QString device)
+    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_byte1(byte1), m_device(device) {
 
     //OMGWTFBBQ: Massive hack to temporarily fix LP #254564 for the 1.6.0 release.
     //           Something's funky with our <lights> blocks handling? -- Albert 08/05/2008
@@ -31,10 +31,10 @@ void MidiLedHandler::controlChanged(double value) {
     unsigned char m_byte2 = 0x00;
     if (value >= m_min && value <= m_max) { m_byte2 = 0x7f; }
 
-    m_midi->sendShortMsg(m_status, m_byte1, m_byte2);
+    m_midi->sendShortMsg(m_status, m_byte1, m_byte2, m_device);
 }
 
-void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi) {
+void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi, QString device) {
 
     if (!node.isNull() && node.isElement()) {
         QDomNode light = node.firstChild();
@@ -58,8 +58,8 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi) {
 					max = WWidget::selectNodeFloat(light, "maximum");
 				}
 
-                allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino));
-            }
+            	allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino, device));
+			}
             light = light.nextSibling();
         }
     }

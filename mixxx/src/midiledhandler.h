@@ -14,10 +14,10 @@ class MidiLedHandler : QObject
     Q_OBJECT
 public:
 	MidiLedHandler(QString group, QString name, MidiObject* midi, double min, double max,
-		unsigned char status, unsigned char byte1);
+		unsigned char status, unsigned char byte1, QString device);
     ~MidiLedHandler();
 
-	static void createHandlers(QDomNode node, MidiObject* midi);
+	static void createHandlers(QDomNode node, MidiObject* midi, QString device);
 	static void destroyHandlers();
 	static Q3PtrList<MidiLedHandler> allhandlers;
 
@@ -31,7 +31,7 @@ private:
 	ControlObject* m_cobj;
 	unsigned char m_status;
 	unsigned char m_byte1;
-
+	QString m_device;
 };
 
 #endif

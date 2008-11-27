@@ -134,7 +134,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
 
     // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
     // more useful by adding the line number of the input file.
-    if (key.isEmpty() || type.isEmpty())
+    if ((key.isEmpty() || type.isEmpty()) && node.nodeName() != "#comment")
         qWarning() << "Missing <key> or <type> in MIDI map node:" << node.nodeName();
     if (!midino && type != "pitch")
         qWarning() << "No <midino> defined in MIDI map node:" << node.nodeName();
@@ -418,6 +418,16 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
     return _newmidivalue;
 }
 
+QString ConfigValueMidi::getType() {
+    if (miditype==MIDI_KEY)
+        return "Key";
+    else if (miditype==MIDI_CTRL)
+        return "Ctrl";
+    else if (miditype==MIDI_PITCH)
+        return "Pitch";
+    else
+    	return "";
+}
 
 ConfigValueKbd::ConfigValueKbd()
 {
@@ -520,6 +530,10 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
+		if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0){
+            // qDebug() << "#534: QString::compare match for " << it->key->group << it->key->item;
+            return it->key;
+		}
         if (((ValueType)*it->val) == ((ValueType)v))
         {
             // qDebug() << "match" << it->val->value.toUpper() << "with" << v.value.toUpper();
@@ -530,6 +544,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
             // qDebug() << "last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
+    qDebug() << "No match for ConfigObject:" << v.value;
     return 0;
 }
 

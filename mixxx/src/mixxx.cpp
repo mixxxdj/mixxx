@@ -45,6 +45,7 @@
 #include "soundmanager.h"
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
+#include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
 #ifdef __IPOD__
@@ -96,6 +97,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     soundmanager = 0;
     m_pTrack = 0;
     prefDlg = 0;
+    midi = 0;
 
     // Read the config file from home directory
     config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
@@ -308,8 +310,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
+    // Initialise midi
+    MidiDeviceHandler * midiHandler = new MidiDeviceHandler();
+    midi = midiHandler->getMidiPtr();
+
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, config);
+    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, midi, config);
     prefDlg->setHidden(true);
 
 #ifdef __LADSPA__

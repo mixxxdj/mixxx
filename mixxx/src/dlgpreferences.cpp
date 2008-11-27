@@ -27,7 +27,9 @@
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
-#include "dlgprefmidi.h"
+//#include "dlgprefmidi.h"
+#include "dlgprefmididevice.h"
+#include "dlgprefmidibindings.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
@@ -35,6 +37,7 @@
 #include "dlgprefrecord.h"
 #include "mixxx.h"
 #include "track.h"
+#include "midiobject.h"
 #include <QTabWidget>
 
 #include <QTabBar>
@@ -43,8 +46,8 @@
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
-                               SoundManager * soundman,
-                               Track *track, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
+                               SoundManager * soundman, Track *track,
+                               MidiObject * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
 
@@ -59,7 +62,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, config);
-    wmidi  = new DlgPrefMidi(this, config);
+ //   wmidi  = new DlgPrefMidi(this, config);
+    wmidiDevice  = new DlgPrefMidiDevice(this, midi, config);
+    wmidiBindings  = new DlgPrefMidiBindings(this, midi, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     weq = new DlgPrefEQ(this, config);
@@ -80,11 +85,13 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     }
 
     pagesWidget->addWidget(wsound);
-    pagesWidget->addWidget(wmidi);
+    //pagesWidget->addWidget(wmidi);
+    pagesWidget->addWidget(wmidiDevice);
+    pagesWidget->addWidget(wmidiBindings);
     pagesWidget->addWidget(wplaylist);
     pagesWidget->addWidget(wcontrols);
-    pagesWidget->addWidget(weq);  
-    pagesWidget->addWidget(wcrossfader);      
+    pagesWidget->addWidget(weq);
+    pagesWidget->addWidget(wcrossfader);
     pagesWidget->addWidget(wrecord);
     pagesWidget->addWidget(wbpm);
 #ifdef __VINYLCONTROL__
@@ -93,14 +100,16 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #ifdef __SHOUTCAST__
     pagesWidget->addWidget(wshoutcast);
 #endif
- 
+
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
 
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
+//    connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wmidiDevice,	SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wmidiBindings, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), weq,       SLOT(slotUpdate()));
@@ -110,8 +119,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #ifdef __VINYLCONTROL__
     connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()), wvinylcontrol,    SLOT(slotClose()));
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control
 #endif
@@ -124,11 +131,13 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                                                                  //connect for wsound...
 #endif
     connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
+//    connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wmidiDevice,	SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wmidiBindings,	SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));    
+    connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
@@ -154,12 +163,24 @@ void DlgPreferences::createIcons()
     soundButton->setText(tr("Sound Hardware"));
     soundButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     soundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+/*
     QListWidgetItem * midiButton = new QListWidgetItem(contentsWidget);
     midiButton->setIcon(QIcon(":/images/preferences/controllers.png"));
     midiButton->setText(tr("Input Controllers"));
     midiButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+*/
+    QListWidgetItem * midiDeviceButton = new QListWidgetItem(contentsWidget);
+    midiDeviceButton->setIcon(QIcon(":/images/preferences/controllers.png"));
+    midiDeviceButton->setText(tr("MIDI Device Selection"));
+    midiDeviceButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    midiDeviceButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem * midiBindingsButton = new QListWidgetItem(contentsWidget);
+    midiBindingsButton->setIcon(QIcon(":/images/preferences/controllers.png"));
+    midiBindingsButton->setText(tr("MIDI Bindings"));
+    midiBindingsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     QListWidgetItem * playlistButton = new QListWidgetItem(contentsWidget);
     playlistButton->setIcon(QIcon(":/images/preferences/library.png"));
@@ -231,7 +252,7 @@ void DlgPreferences::showVinylControlPage()
 {
 #ifdef __VINYLCONTROL__
     pagesWidget->setCurrentWidget(wvinylcontrol);
-    
+
     for (int i = 0; i < contentsWidget->count(); i++)
     {
         if (contentsWidget->item(i)->text() == tr("Vinyl Control"))
