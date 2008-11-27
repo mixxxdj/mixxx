@@ -61,7 +61,7 @@ DlgPrefMidiDevice::DlgPrefMidiDevice(QWidget *parent, MidiObject *midi, ConfigOb
 
     // Select the first MIDI device, if there is one.
     if (listMidiDevices->count()) {
-		listMidiDevices->setCurrentRow(0, QItemSelectionModel::ClearAndSelect);
+		listMidiDevices->setCurrentRow(0/*, QItemSelectionModel::ClearAndSelect*/);
 		slotGetInfo(listMidiDevices->currentItem(), 0);
     }
 }
