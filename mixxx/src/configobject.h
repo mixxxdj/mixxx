@@ -60,7 +60,7 @@ class ConfigKey
 public:
     ConfigKey();
     ConfigKey(QString g, QString i);
-   
+
     QString group, item;
 };
 
@@ -102,6 +102,7 @@ public:
     char translateValue(char value);
     double ComputeValue(MidiType _miditype, double _prevmidivalue, double _newmidivalue);
     friend bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2);
+    QString getType();
 
     MidiType miditype;
     int midino, midichannel;

@@ -1,9 +1,8 @@
 /***************************************************************************
-                          midiobjectnull.h  -  description
+                    mididevicehandler.h  -  MIDI devices thread
                              -------------------
-    begin                : Thu Jul 4 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
+    copyright            : (C) 2008 by Tom Care
+    email                : psyc0de@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,22 +13,22 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef MIDIOBJECTNULL_H
-#define MIDIOBJECTNULL_H
+#ifndef MIDIDEVICEHANDLER_H
+#define MIDIDEVICEHANDLER_H
 
 #include "midiobject.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class MidiObjectNull : public MidiObject  {
+/*
+ * This class abstracts all the horrible mess of OS specific MIDI handler
+ * creation.
+ */
+class MidiDeviceHandler {
 public:
-    MidiObjectNull();
-    ~MidiObjectNull();
-    void devOpen(QString device);
-    void devClose(QString device);
+	MidiDeviceHandler();
+	~MidiDeviceHandler();
+	MidiObject* getMidiPtr();
+private:
+	MidiObject* m_pMidi;
 };
 
 #endif

@@ -17,21 +17,16 @@
 #ifndef MIDIOBJECT_H
 #define MIDIOBJECT_H
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <q3ptrvector.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <signal.h>
-#include <qthread.h>
-#include <qobject.h>
-#include <qstringlist.h>
-#include <qstring.h>
+#include <Q3PtrVector>
+#include <QtCore>
 #include "defs.h"
 #include "configobject.h"
+
+
 class ControlObject;
 class QWidget;
+class DlgPrefMidiBindings;
+class DlgPrefMidiDevice;
 
 // These enums are used in the decoding of the status message into voice categories
 typedef enum {
@@ -47,45 +42,71 @@ typedef enum {
 
 class MidiObject : public QThread
 {
+		Q_OBJECT
+
 public:
-    MidiObject(QString device);
+    MidiObject();
     ~MidiObject();
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
 	virtual void updateDeviceList() {};
-    virtual void devClose() = 0;
+    virtual void devClose(QString) = 0;
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
     virtual QStringList *getDeviceList();
     /** Returns the name of the current open device */
-    QString getOpenDevice();
+    QStringList getOpenDevices();
     /** Returns a list of available configurations. Takes as input the directory path
       * containing the configuration files */
     QStringList *getConfigList(QString path);
 
 	// Stuff for sending messages to control leds etc
-	void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
+	void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);
 	virtual void sendShortMsg(unsigned int word);
+
+	// Rx/Tx Toggle Functions
+	bool getRxStatus(QString device);
+	bool getTxStatus(QString device);
+	void setRxStatus(QString device, bool status);
+	void setTxStatus(QString device, bool status);
+	bool getDebugStatus();
+	void enableDebug(DlgPrefMidiDevice *dlgDevice);
+	void disableDebug();
+
+	bool getMidiLearnStatus();
+	void enableMidiLearn(DlgPrefMidiBindings *dlgBindings);
+	void disableMidiLearn();
+
+    signals:
+    void midiEvent(ConfigValueMidi *value, QString device);
+    void debugInfo(ConfigValueMidi *event, QString device);
+
 protected:
     void run() {};
     void stop();
-    void send(MidiCategory category, char channel, char control, char value);
+    void receive(MidiCategory category, char channel, char control, char value, QString device);
 
-    bool requestStop;
+    bool requestStop, debug, midiLearn;
+    QHash<QString, bool> RxEnabled, TxEnabled;
 
     int fd, count, size, no;
     Q3PtrVector<ControlObject> controlList;
 
     /** List of available midi devices */
     QStringList devices;
-    /** Name of current open device */
-    QString openDevice;
+    /** Name of current open devices */
+    QStringList openDevices;
     /** List of available midi configurations. Initialized upon call to getConfigList() */
     QStringList configs;
     /** Pointer to midi config object*/
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
+
+    // Pointer to device dialog (for debug output)
+    DlgPrefMidiDevice *dlgDevice;
+    // Pointer to bindings dialog (for MIDI learn)
+    DlgPrefMidiBindings *dlgBindings;
 };
 
 void abortRead(int);

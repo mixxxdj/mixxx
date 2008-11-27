@@ -21,7 +21,7 @@
 #include <QDebug>
 #include "midiobjectalsaseq.h"
 
-MidiObjectALSASeq::MidiObjectALSASeq(QString device) : MidiObject(device)
+MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject()
 {
     m_handle = NULL;
     pinfo = NULL;
@@ -67,9 +67,11 @@ MidiObjectALSASeq::MidiObjectALSASeq(QString device) : MidiObject(device)
         return;
     }
 
+    getClientPortsList();
+
     // BJW Actually open the requested device (otherwise it won't be opened
     // until reconfigured via the Preferences dialog!)
-    devOpen(device);
+    //devOpen(device);
 
     start();
 }
@@ -89,12 +91,11 @@ int MidiObjectALSASeq::getClientPortsList(void)
 
     //Look for input ports only.
     uiAlsaFlags = SND_SEQ_PORT_CAP_READ  | SND_SEQ_PORT_CAP_SUBS_READ;
-    
+
     //qDebug() << "****MIDI: Listing ALSA Sequencer clients:";
 
     //Clear the list of devices:
-    while (!devices.empty())
-        devices.pop_back();
+    devices.clear();
 
     snd_seq_client_info_t * pClientInfo;
     snd_seq_port_info_t * pPortInfo;
@@ -118,27 +119,27 @@ int MidiObjectALSASeq::getClientPortsList(void)
                 unsigned int uiPortCapability = snd_seq_port_info_get_capability(pPortInfo);
                 if (((uiPortCapability & uiAlsaFlags) == uiAlsaFlags) &&
                     ((uiPortCapability & SND_SEQ_PORT_CAP_NO_EXPORT) == 0)) {
-                    QString sClientName = QString::number(iAlsaClient) + ":";
-                    sClientName += snd_seq_client_info_get_name(pClientInfo);
+                    //QString sClientName = QString::number(iAlsaClient) + ":";
+                    //sClientName += snd_seq_client_info_get_name(pClientInfo);
                     //qjackctlAlsaPort *pPort = 0;
-                    int iAlsaPort = snd_seq_port_info_get_port(pPortInfo);
+                    //int iAlsaPort = snd_seq_port_info_get_port(pPortInfo);
 
-                    QString sPortName = QString::number(iAlsaPort) + ":";
-                    sPortName += snd_seq_port_info_get_name(pPortInfo);
+                    QString sPortName /*= QString::number(iAlsaPort) + ":";
+                    sPortName */= snd_seq_port_info_get_name(pPortInfo);
                     //qDebug() << sPortName;
                     //qDebug() << "active port: " << sActivePortName;
 
                     //Blacklist the "Midi Through" and "Mixxx" output devices
                     //in order to avoid MIDI feedback loops (say, so the MIDI
-                    //LED handlers don't fire MIDI messages back to Mixxx 
+                    //LED handlers don't fire MIDI messages back to Mixxx
                     //itself).
                     if (!sPortName.toLower().contains("midi through") &&
                         !sPortName.toLower().contains("mixxx"))
                     {
-                        if (sPortName == sActivePortName) //Make the port we're currently connected to be the first choice
+                        //if (sPortName == sActivePortName) //Make the port we're currently connected to be the first choice
                                                           //in the combobox in the MIDI preferences dialog.
-                            devices.prepend(sPortName);
-                        else
+                        //    devices.prepend(sPortName);
+                        //else
                             devices.append(sPortName);
                         iDirtyCount++;
                     }
@@ -205,8 +206,8 @@ void MidiObjectALSASeq::devOpen(QString device)
                     sClientName += snd_seq_client_info_get_name(pClientInfo);
                     int iAlsaPort = snd_seq_port_info_get_port(pPortInfo);
 
-                    QString sPortName = QString::number(iAlsaPort) + ":";
-                    sPortName += snd_seq_port_info_get_name(pPortInfo);
+                    QString sPortName = /*QString::number(iAlsaPort) + ":";
+                    sPortName +=*/ snd_seq_port_info_get_name(pPortInfo);
 
                     if (sPortName == device)
                     {
@@ -214,7 +215,7 @@ void MidiObjectALSASeq::devOpen(QString device)
 
                         snd_seq_connect_from(m_handle, m_input, iAlsaClient, iAlsaPort);
                         snd_seq_connect_to(m_handle, m_input, iAlsaClient, iAlsaPort);
-                        sActivePortName = sPortName;
+                        sActivePortNames.append(sPortName);
                     }
                     else {
                         //Disconnect Mixxx from any other ports (might be annoying, but let's us be safe.)
@@ -243,7 +244,7 @@ void MidiObjectALSASeq::devOpen(QString device)
 
 }
 
-void MidiObjectALSASeq::devClose()
+void MidiObjectALSASeq::devClose(QString device)
 {
 
 }
@@ -267,41 +268,47 @@ void MidiObjectALSASeq::run()
             snd_seq_event_t * ev;
             if (snd_seq_event_input(m_handle, &ev) >= 0 && ev)
             {
+
                 char channel;
                 char midicontrol;
                 char midivalue;
+                snd_seq_port_info_t * portInfo; //Info container for midi endpoint
+                snd_seq_port_info_alloca(&portInfo);
+
+                //Get info about sending midi endpoint
+                snd_seq_get_any_port_info(m_handle, ev->source.client, ev->source.port, portInfo);
 
                 if (ev->type == SND_SEQ_EVENT_CONTROLLER)
                 {
                     channel = ev->data.control.channel;
                     midicontrol = ev->data.control.param;
                     midivalue = ev->data.control.value;
-                    send(CTRL_CHANGE, channel, midicontrol, midivalue);
+                    receive(CTRL_CHANGE, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
                 } else if (ev->type == SND_SEQ_EVENT_NOTEON)
                 {
                     channel = ev->data.note.channel;
                     midicontrol = ev->data.note.note;
                     midivalue = ev->data.note.velocity;
-                    send(NOTE_ON, channel, midicontrol, midivalue);
+                    receive(NOTE_ON, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
                 } else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
                 {
                     channel = ev->data.note.channel;
                     midicontrol = ev->data.note.note;
                     midivalue = ev->data.note.velocity;
-                    send(NOTE_OFF, channel, midicontrol, midivalue);
+                    receive(NOTE_OFF, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
                 } else if (ev->type == SND_SEQ_EVENT_PITCHBEND)
                 {
                     channel = ev->data.control.channel;
                     // BJW: Uniquely among the MIDI backends, ALSA SEQ "cooks" the pitchbend event
                     // into a number between -8192 and +8191. Here we convert it back to how the raw MIDI
                     // message would look (using the ALSA function pitchbend_decode()), because that's what
-                    // the other backends supply. It then gets cooked again in MidiObject::send().
+                    // the other backends supply. It then gets cooked again in MidiObject::receive().
                     // qDebug() << "ALSA SEQ PITCH BEND: Cooked value: " << ev->data.control.value;
                     int temp = ev->data.control.value + 8192;
                     midicontrol = temp & 0x7f;
                     midivalue = (temp >> 7) & 0x7f;
                     // qDebug() << "`-- Decooked to " << midicontrol << " " << midivalue;
-                    send(PITCH_WHEEL, channel, midicontrol, midivalue);
+                    receive(PITCH_WHEEL, channel, midicontrol, midivalue, "TODO");
                 } else if (ev->type == SND_SEQ_EVENT_NOTE)
                 {
                     //what is a note event (a combinaison of a note on and a note off?)

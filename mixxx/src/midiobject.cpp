@@ -14,13 +14,14 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qdir.h>
 #include <QtDebug>
-#include <qwidget.h>
 #include "midiobject.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include <algorithm>
+#include <signal.h>
+#include "dlgprefmididevice.h"
+#include "dlgprefmidibindings.h"
 
 
 /* -------- ------------------------------------------------------
@@ -29,11 +30,13 @@
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(QString)
+MidiObject::MidiObject()
 {
     m_pMidiConfig = 0;
     no = 0;
     requestStop = false;
+    midiLearn = false;
+    debug = false;
 }
 
 /* -------- ------------------------------------------------------
@@ -52,7 +55,7 @@ void MidiObject::setMidiConfig(ConfigObject<ConfigValueMidi> * pMidiConfig)
 
 void MidiObject::reopen(QString device)
 {
-    devClose();
+    devClose(device);
     devOpen(device);
 }
 
@@ -115,9 +118,9 @@ QStringList * MidiObject::getConfigList(QString path)
     return &configs;
 }
 
-QString MidiObject::getOpenDevice()
+QStringList MidiObject::getOpenDevices()
 {
-    return openDevice;
+    return openDevices;
 }
 
 /* -------- ------------------------------------------------------
@@ -125,8 +128,11 @@ QString MidiObject::getOpenDevice()
    Input:   Values as received from MIDI
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::send(MidiCategory category, char channel, char control, char value)
+void MidiObject::receive(MidiCategory category, char channel, char control, char value, QString device)
 {
+    // qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
+	if (!RxEnabled[device]) return;
+
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
     // qDebug() << "MidiObject::send() miditype: " << category << " ch: " << channel << ", ctrl: " << control << ", val: " << value;
@@ -154,15 +160,14 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
 		return;
 	} // Used to be this:
     //Q_ASSERT(m_pMidiConfig);
-    // qDebug() << "Querying action for MIDI message type=" << type << " control=" << control << " channel=" << channel;
     ConfigKey * pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
     if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
-    // qDebug() << "MidiObject::send ok" << pConfigKey->group << pConfigKey->item;
+    // qDebug() << "MidiObject::receive ok" << pConfigKey->group << pConfigKey->item;
 
     ControlObject * p = ControlObject::getControl(*pConfigKey);
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
-
+    // qDebug() << "MidiObject::receive value:" << QString::number(value, 16).toUpper() << " c:" << c << "c->midioption:" << ((ConfigValueMidi *)c->val)->midioption << "p:" << p;
     // BJW: Apply any mapped (7-bit integer) translations
     if (c && p) {
         value = ((ConfigValueMidi *)c->val)->translateValue(value);
@@ -229,7 +234,8 @@ void abortRead(int)
 #endif
 }
 
-void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
+void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device) {
+	if (!TxEnabled[device]) return;
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
@@ -239,3 +245,49 @@ void MidiObject::sendShortMsg(unsigned int /* word */) {
 	// This warning comes out rather frequently now we're using LEDs with VuMeters
     //qDebug() << "MIDI message sending not implemented yet on this platform";
 }
+
+bool MidiObject::getRxStatus(QString device) {
+	return RxEnabled[device];
+}
+
+bool MidiObject::getTxStatus(QString device) {
+	return TxEnabled[device];
+}
+
+void MidiObject::setRxStatus(QString device, bool status) {
+	RxEnabled[device] = status;
+}
+
+void MidiObject::setTxStatus(QString device, bool status) {
+	TxEnabled[device] = status;
+}
+
+bool MidiObject::getDebugStatus() {
+	return debug;
+}
+
+void MidiObject::enableDebug(DlgPrefMidiDevice *dlgDevice) {
+	debug = true;
+	this->dlgDevice = dlgDevice;
+	connect(this, SIGNAL(debugInfo(ConfigValueMidi *, QString)), dlgDevice, SLOT(slotDebug(ConfigValueMidi *, QString)));
+}
+
+void MidiObject::disableDebug() {
+	debug = false;
+}
+
+bool MidiObject::getMidiLearnStatus() {
+	return midiLearn;
+}
+
+void MidiObject::enableMidiLearn(DlgPrefMidiBindings *dlgBindings) {
+	midiLearn = true;
+	this->dlgBindings = dlgBindings;
+	connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(singleLearn(ConfigValueMidi *, QString)));
+	connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(groupLearn(ConfigValueMidi *, QString)));
+}
+
+void MidiObject::disableMidiLearn() {
+	midiLearn = false;
+}
+

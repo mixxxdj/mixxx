@@ -26,19 +26,19 @@
   */
 
 class MidiObjectALSASeq : public MidiObject  {
-public: 
-    MidiObjectALSASeq(QString device);
+public:
+    MidiObjectALSASeq();
     ~MidiObjectALSASeq();
     int getClientPortsList(void);
     void devOpen(QString device);
-    void devClose();
+    void devClose(QString device);
     void sendShortMsg(unsigned int word);
 protected:
     void run();
-    
+
     snd_seq_t *m_handle;
     snd_seq_port_info_t *pinfo;
-    QString sActivePortName; //The name of the port/client we're currently connected to.
+    QList<QString> sActivePortNames; //The name of the port/client we're currently connected to.
     int m_client;
     int m_input;
     int m_queue;
