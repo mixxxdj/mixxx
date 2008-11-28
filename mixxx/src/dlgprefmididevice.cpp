@@ -61,7 +61,12 @@ DlgPrefMidiDevice::DlgPrefMidiDevice(QWidget *parent, MidiObject *midi, ConfigOb
 
     // Select the first MIDI device, if there is one.
     if (listMidiDevices->count()) {
-		listMidiDevices->setCurrentRow(0/*, QItemSelectionModel::ClearAndSelect*/);
+#if QT_VERSION >= 0x040400
+        listMidiDevices->setCurrentRow(0, QItemSelectionModel::ClearAndSelect);
+#else
+        //Ensures backwards compatiblity with Qt 4.3, but at the expense of possibly introducing a bug.
+        listMidiDevices->setCurrentRow(0);
+#endif
 		slotGetInfo(listMidiDevices->currentItem(), 0);
     }
 }
