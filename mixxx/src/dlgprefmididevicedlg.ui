@@ -252,7 +252,7 @@ Type</string>
         </column>
         <column>
          <property name="text" >
-          <string>Value</string>
+          <string>MIDI #</string>
          </property>
         </column>
        </widget>
