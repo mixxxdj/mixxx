@@ -76,11 +76,14 @@ DlgPrefMidiDevice::~DlgPrefMidiDevice() {
 }
 
 void DlgPrefMidiDevice::slotDebug(ConfigValueMidi *event, QString device) {
-	tblDebug->insertRow(0);
-	tblDebug->setItem(0, 0, new QTableWidgetItem(device));
-	tblDebug->setItem(0, 1, new QTableWidgetItem(QString("%1").arg(event->miditype)));
-	tblDebug->setItem(0, 2, new QTableWidgetItem(QString("%1").arg(event->midichannel)));
-	tblDebug->setItem(0, 3, new QTableWidgetItem(QString("%1").arg(event->midino)));
+// TODO: it would be really cool if we could have the rows go in descending order, so we don't have to refocus with each row...
+	int rowNumber = tblDebug->rowCount();
+	tblDebug->insertRow(rowNumber);
+	tblDebug->setItem(rowNumber, 0, new QTableWidgetItem(device));
+	tblDebug->setItem(rowNumber, 1, new QTableWidgetItem(QString("%1").arg(event->miditype)));
+	tblDebug->setItem(rowNumber, 2, new QTableWidgetItem(QString("%1").arg(event->midichannel)));
+	tblDebug->setItem(rowNumber, 3, new QTableWidgetItem(QString("%1").arg(event->midino)));
+        tblDebug->selectRow(rowNumber);
 }
 
 void DlgPrefMidiDevice::slotUpdate() {
