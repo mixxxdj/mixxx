@@ -199,7 +199,7 @@ void DlgPrefMidiBindings::slotApply() {
  * selected.
  */
 void DlgPrefMidiBindings::singleLearn(ConfigValueMidi *value, QString device) {
-	if (!singleLearning) return;
+	if (!singleLearning || tblBindings->rowCount() == 0) return;
 	singleLearning = false; // Stop message queue
 	// Get list of currently selected rows
 	QList<QTableWidgetItem *> cellList = tblBindings->selectedItems();
@@ -254,7 +254,7 @@ void DlgPrefMidiBindings::singleLearn(ConfigValueMidi *value, QString device) {
  * is disabled.
  */
 void DlgPrefMidiBindings::groupLearn(ConfigValueMidi *value, QString device) {
-	if (!groupLearning) return;
+	if (!groupLearning || tblBindings->rowCount() == 0) return;
 	// Get list of currently selected rows
 	QList<QTableWidgetItem *> cellList = tblBindings->selectedItems();
 	// Get the row of the control to be learned
