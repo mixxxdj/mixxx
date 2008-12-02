@@ -42,7 +42,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
     connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveBinding()));
     connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
 
-    // Try to read in the current XML bindings file, or create one if nothing is available
+    // Try to read in the current XML bindings file, or create one if nothing is available  
     loadPreset(BINDINGS_PATH);
     applyPreset();
     m_pMidi->disableMidiLearn();
@@ -56,7 +56,7 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
  * Overloaded function for convenience
  */
 void DlgPrefMidiBindings::loadPreset(QString path) {
-	loadPreset(WWidget::openXMLFile(path, "controller"));
+	loadPreset(WWidget::openXMLFile(path, "controller"));	
 }
 
 /* loadPreset(QDomElement)
@@ -119,16 +119,39 @@ void DlgPrefMidiBindings::savePreset(QString path) {
  * the LED handler.
  */
 void DlgPrefMidiBindings::applyPreset() {
-	QDomElement controller = m_pBindings.firstChildElement("controller");
 	MidiLedHandler::destroyHandlers();
-	while (!controller.isNull()) {
+        QDomElement controller = m_pBindings.firstChildElement("controller");
+        // For each device
+        while (!controller.isNull()) {
+		// Device Controls
+                m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
+
+		// Device Outputs - LEDs
+		QString deviceId = controller.attribute("id","");
+		QDomNode node = controller.firstChild();
 		// For each device
-		m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
-		MidiLedHandler::createHandlers(m_pBindings.firstChildElement("controller").namedItem("lights"), m_pMidi, controller.attribute("id",""));
-		m_pMidi->setMidiConfig(m_pMidiConfig);
-		// Next device
-		controller = controller.nextSiblingElement("controller");
-	}
+		QDomElement element = node.toElement();
+		while (!node.isNull() && element.tagName() != "outputs")
+		{
+			node = node.nextSibling();
+			element = node.toElement();
+		}
+		if (element.tagName() == "outputs") {
+			node = node.firstChild();
+			element = node.toElement();
+			while (!node.isNull()) {
+				MidiLedHandler::createHandlers(element, m_pMidi, deviceId);
+
+				node = node.nextSibling();
+				element = node.toElement();	
+			}
+		}
+
+                m_pMidi->setMidiConfig(m_pMidiConfig);
+
+                // Next device
+                controller = controller.nextSiblingElement("controller");
+        }
 }
 
 /* clearPreset()
@@ -311,8 +334,10 @@ void DlgPrefMidiBindings::slotImportXML() {
 	QString fileName = QFileDialog::getOpenFileName(this,
 		     "Import Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
 		     "Preset Files (*.xml)");
-	if (!fileName.isNull())
+	if (!fileName.isNull()) {
 		loadPreset(fileName);
+		applyPreset();
+	}
 }
 
 /* slotExportXML()
@@ -546,6 +571,9 @@ void DlgPrefMidiBindings::buildDomElement() {
 		}
 		controls.appendChild(control);
 	}
+	// FIXME: outputs block!!!!
+
+	
 }
 
 /* getControlList()
