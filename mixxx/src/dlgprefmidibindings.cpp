@@ -42,7 +42,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
     connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveBinding()));
     connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
 
-    // Try to read in the current XML bindings file, or create one if nothing is available  
+    // Try to read in the current XML bindings file, or create one if nothing is available
     loadPreset(BINDINGS_PATH);
     applyPreset();
     m_pMidi->disableMidiLearn();
@@ -323,6 +323,7 @@ void DlgPrefMidiBindings::slotGroupLearnToggle() {
 	} else {
 		// Disable MIDI Hook
 		m_pMidi->disableMidiLearn();
+		labelStatus->setText("Group MIDI Learn disabled");
 		btnSingleLearn->setEnabled(true);
 	}
 }
