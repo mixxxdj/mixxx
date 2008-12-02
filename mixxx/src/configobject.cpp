@@ -160,7 +160,6 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
         }
 
         QString optname = opt.nodeName().lower();
-        qDebug() << "Found option" << optname;
         if (optname == "invert")
             midioption = MIDI_OPT_INVERT;
         else if (optname == "rot64inv")
@@ -186,7 +185,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
             midioption = MIDI_OPT_NORMAL;
         }
 
-        qDebug() << "Option: " << midioption;
+        qDebug() << "Found option: " << optname << "(" << midioption << ")";
     } else {
         midioption = MIDI_OPT_NORMAL;
     }
