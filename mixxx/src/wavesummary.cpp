@@ -25,7 +25,7 @@
 #include <qapplication.h>
 #include <qdatetime.h>
 
-WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config) : 
+WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config) :
     m_bShouldExit(false)
 {
     // Store config object
@@ -108,6 +108,7 @@ void WaveSummary::waveformSummaryGen(TrackInfoObject *pTrackInfoObject, SoundSou
 
     // Length of file in samples
     long liLengthSamples = pSoundSource->length();
+    if (liLengthSamples <= 0) return;
     long liPos;
     int j, i=0;
 
