@@ -25,6 +25,9 @@ const QStringList options = (QStringList() << "Normal" << "Invert" << "Rot64" <<
 		<< "Rot64Fast" << "Diff" << "Button" << "Switch" << "HercJog"
 		<< "Spread64" << "SelectKnob");
 
+static QString toHex(QString numberStr) {
+  return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+}
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefMidiBindingsDlg() {
     setupUi(this);
@@ -80,8 +83,9 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 			QString key = WWidget::selectNodeQString(control, "key");
 			QString controltype = WWidget::selectNodeQString(control, "controltype");
 			QString miditype = WWidget::selectNodeQString(control, "miditype");
-			QString midino = WWidget::selectNodeQString(control, "midino");
-			QString midichan = WWidget::selectNodeQString(control, "midichan");
+			// We convert to midino and midichan to base 10 because that his how they will be matched to midi keys internally.
+			QString midino = QString::number(WWidget::selectNodeQString(control, "midino").toUShort(NULL, 0), 10);
+			QString midichan = QString::number(WWidget::selectNodeQString(control, "midichan").toUShort(NULL, 0), 10);
 
 			QDomElement optionsNode = control.firstChildElement("options");
 			// At the moment, use one element, in future iterate through options
@@ -120,14 +124,44 @@ void DlgPrefMidiBindings::savePreset(QString path) {
  */
 void DlgPrefMidiBindings::applyPreset() {
 	MidiLedHandler::destroyHandlers();
+
         QDomElement controller = m_pBindings.firstChildElement("controller");
+        // For each device
+        while (!controller.isNull()) {
+		// Device Outputs - LEDs
+		QString deviceId = controller.attribute("id","");
+
+		qDebug() << "Processing MIDI Control Bindings for" << deviceId;
+                m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
+
+//		QDomNode output = controller.namedItem("outputs").toElement().firstChild();
+//		while (!output.isNull()) {
+//			qDebug() << "output:" << output.toElement().tagName() << output.toElement().text();
+//			output = output.nextSibling();
+//		}
+
+		qDebug() << "Processing MIDI Output Bindings for" << deviceId;
+		MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_pMidi, deviceId);
+
+                // Next device
+                controller = controller.nextSiblingElement("controller");
+	}
+        m_pMidi->setMidiConfig(m_pMidiConfig);
+
+/*
+	QDomNode node = controller.firstChild();
+	while (!node.isNull()) {
+                m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
+
+
+		node
+        }
+
         // For each device
         while (!controller.isNull()) {
 		// Device Controls
                 m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
 
-		// Device Outputs - LEDs
-		QString deviceId = controller.attribute("id","");
 		QDomNode node = controller.firstChild();
 		// For each device
 		QDomElement element = node.toElement();
@@ -149,9 +183,8 @@ void DlgPrefMidiBindings::applyPreset() {
 
                 m_pMidi->setMidiConfig(m_pMidiConfig);
 
-                // Next device
-                controller = controller.nextSiblingElement("controller");
         }
+*/
 }
 
 /* clearPreset()
@@ -375,7 +408,7 @@ void DlgPrefMidiBindings::slotRemoveBinding() {
 
 	// Prompt user for confirmation
 	if (QMessageBox::warning(this, "Remove Binding",
-				"Are you sure you want to remove the selected bindings?",
+				"Are you sure you want to remove the selected binding(s)?",
 				QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
 				!= QMessageBox::Ok)
 			return;
@@ -523,15 +556,14 @@ void DlgPrefMidiBindings::buildDomElement() {
 		text = nodeMaker.createTextNode(tblBindings->item(y,1)->text().split(' ',
 						QString::SkipEmptyParts, Qt::CaseInsensitive).at(0));
 		midiType.appendChild(text);
-
 		QDomElement midiNo = nodeMaker.createElement("midino");
-		text = nodeMaker.createTextNode(tblBindings->item(y,1)->text().split(' ',
-						QString::SkipEmptyParts, Qt::CaseInsensitive).at(1));
+		text = nodeMaker.createTextNode(toHex(tblBindings->item(y,1)->text().split(' ',
+						QString::SkipEmptyParts, Qt::CaseInsensitive).at(1)));
 		midiNo.appendChild(text);
 
 		QDomElement midiChan = nodeMaker.createElement("midichan");
-		text = nodeMaker.createTextNode(tblBindings->item(y,1)->text().split(' ',
-						QString::SkipEmptyParts, Qt::CaseInsensitive).at(2));
+		text = nodeMaker.createTextNode(toHex(tblBindings->item(y,1)->text().split(' ',
+						QString::SkipEmptyParts, Qt::CaseInsensitive).at(2)));
 		midiChan.appendChild(text);
 
 		QDomElement controlType = nodeMaker.createElement("controltype");
