@@ -13,8 +13,8 @@ class MidiLedHandler : QObject
 {
     Q_OBJECT
 public:
-	MidiLedHandler(QString group, QString name, MidiObject* midi, double min, double max,
-		unsigned char status, unsigned char byte1, QString device, unsigned char on, unsigned char off);
+	MidiLedHandler(QString group, QString key, MidiObject* midi, double min, double max,
+		unsigned char status, unsigned char midino, QString device, unsigned char on, unsigned char off);
     ~MidiLedHandler();
 
 	static void createHandlers(QDomNode node, MidiObject* midi, QString device);
@@ -30,7 +30,7 @@ private:
 	double m_max;
 	ControlObject* m_cobj;
 	unsigned char m_status;
-	unsigned char m_byte1;
+	unsigned char m_midino;
 	QString m_device;
 	unsigned char m_on;
 	unsigned char m_off;

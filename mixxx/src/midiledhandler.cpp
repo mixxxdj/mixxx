@@ -6,19 +6,19 @@
 
 Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
-MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, double min,
-                               double max, unsigned char status, unsigned char byte1, QString device, unsigned char on, unsigned char off)
-    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_byte1(byte1), m_device(device), m_on(on), m_off(off) {
+MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject * midi, double min,
+                               double max, unsigned char status, unsigned char midino, QString device, unsigned char on, unsigned char off)
+    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_midino(midino), m_device(device), m_on(on), m_off(off) {
 
     //OMGWTFBBQ: Massive hack to temporarily fix LP #254564 for the 1.6.0 release.
     //           Something's funky with our <lights> blocks handling? -- Albert 08/05/2008
-    if (group.isEmpty() || name.isEmpty()) return;
+    if (group.isEmpty() || key.isEmpty()) return;
 
-    m_cobj = ControlObject::getControl(ConfigKey(group, name));
+    m_cobj = ControlObject::getControl(ConfigKey(group, key));
 
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
     // Q_ASSERT(m_cobj);
-    Q_ASSERT_X(m_cobj, "MidiLedHandler", "Invalid config group: '" + group + "' name:'" + name + "'");
+    Q_ASSERT_X(m_cobj, "MidiLedHandler", "Invalid config group: '" + group + "' name:'" + key + "'");
 
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
@@ -34,8 +34,8 @@ void MidiLedHandler::controlChanged(double value) {
     if (lastStatus!=m_byte2) {
 	lastStatus=m_byte2;
  	if (m_byte2 != 0xff) {
-		// qDebug() << "MIDI bytes:" << m_status << ", " << m_byte1 << ", " << m_byte2 ;
-		m_midi->sendShortMsg(m_status, m_byte1, m_byte2, m_device);
+		// qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
+		m_midi->sendShortMsg(m_status, m_midino, m_byte2, m_device);
 	}
     }
 }
