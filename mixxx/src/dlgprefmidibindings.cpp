@@ -53,6 +53,10 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
     connect(btnOutputImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
     connect(btnOutputExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
+    connect(btnClearOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearOutputBindings()));
+    connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
+    connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
+
 
     // Try to read in the current XML bindings file, or create one if nothing is available
     loadPreset(BINDINGS_PATH);
@@ -210,6 +214,12 @@ void DlgPrefMidiBindings::clearTable() {
 	tblBindings->clearContents();
 	tblBindings->setRowCount(0);
 }
+
+void DlgPrefMidiBindings::clearOutputTable() {
+	tblOutputBindings->clearContents();
+	tblOutputBindings->setRowCount(0);
+}
+
 
 /* slotUpdate()
  * Called when the dialog is loaded.
@@ -393,7 +403,7 @@ void DlgPrefMidiBindings::slotExportXML() {
  * Clears the table and DOM of all bindings.
  */
 void DlgPrefMidiBindings::slotClear() {
-	if (QMessageBox::warning(this, "Clear Bindings",
+	if (QMessageBox::warning(this, "Clear Input Bindings",
 			"Are you sure you want to clear all bindings?",
 			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
 			!= QMessageBox::Ok)
@@ -402,12 +412,20 @@ void DlgPrefMidiBindings::slotClear() {
 	clearTable();
 }
 
-/* slotRemoveBinding()
- * Removes one or more selected bindings from the table.
- */
-void DlgPrefMidiBindings::slotRemoveBinding() {
+void DlgPrefMidiBindings::slotClearOutputBindings() {
+	if (QMessageBox::warning(this, "Clear Output Bindings",
+			"Are you sure you want to clear all bindings?",
+			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
+			!= QMessageBox::Ok)
+		return;
+//	clearPreset(); // FIXME: Change clearPreset to delete nodes instead of dumping whole document
+	clearOutputTable();
+}
+
+
+void DlgPrefMidiBindings::removeSelectedBindings(QTableWidget* table) {
 	// If nothing selected, return
-	int count = tblBindings->selectedItems().count();
+	int count = table->selectedItems().count();
 	if (count == 0) return;
 
 	// Prompt user for confirmation
@@ -420,7 +438,7 @@ void DlgPrefMidiBindings::slotRemoveBinding() {
 	// Generate list of rows
 	QList<int> rows;
 	int row;
-	QList<QTableWidgetItem *> cellList = tblBindings->selectedItems();
+	QList<QTableWidgetItem *> cellList = table->selectedItems();
 	for (int i = 0; i < cellList.count(); i++) {
 		row = cellList[i]->row();
 		rows.append(row);
@@ -432,8 +450,21 @@ void DlgPrefMidiBindings::slotRemoveBinding() {
 	qSort(rows);
 
 	// Remove elements in reverse order
-	while (rows.count() != 0) tblBindings->removeRow(rows.takeLast());
+	while (rows.count() != 0) table->removeRow(rows.takeLast());
 }
+
+
+/* slotRemoveBinding()
+ * Removes one or more selected bindings from the table.
+ */
+void DlgPrefMidiBindings::slotRemoveBinding() {
+	removeSelectedBindings(tblBindings);
+}
+
+void DlgPrefMidiBindings::slotRemoveOutputBinding() {
+	removeSelectedBindings(tblOutputBindings);
+}
+
 
 /* slotAddBinding()
  * Adds a binding to the table, with a minimum of the control and device info.
@@ -482,28 +513,44 @@ void DlgPrefMidiBindings::slotAddBinding() {
 
 	// At this stage we have enough information to create a blank, learnable binding
 	addRow(device, group, key, controltype ,miditype, midino, midichan, option);
+	tblBindings->selectRow(tblBindings->rowCount() - 1); // Focus the row just added
+}
+
+void DlgPrefMidiBindings::slotAddOutputBinding() {
+	// TODO: make pretty dialog
+	bool ok = true;
+
+	QStringList selectionList;
+	selectionList = QStringList(m_pMidi->getOpenDevices());
+	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,2)->text()); }
+	QString device = QInputDialog::getItem(this, tr("Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
+        if (!ok) return;
+
+	addOutputRow("light", "[Channel1]", "play", "", "", toHex(0), toHex(0), device, "0x7F", "0x00");
+
+	tblOutputBindings->selectRow(tblOutputBindings->rowCount() - 1); // Focus the row just added
 }
 
 /* slotChangeBinding()
  * Changes the currently selected binding(s) until the user cancels.
  */
-void DlgPrefMidiBindings::slotChangeBinding() {
+//void DlgPrefMidiBindings::slotChangeBinding() {
 	// TODO: make pretty dialog
 	// For each field in the table
 	// Get new information
 	// If user cancels, return
 	// Change the selected row
-}
+//}
 
 /* slotAdvancedOptions()
  * Changes the advanced options for the currently selected binding(s).
  */
-void DlgPrefMidiBindings::slotAdvancedOptions() {
+//void DlgPrefMidiBindings::slotAdvancedOptions() {
 	// TODO: make pretty dialog
 	// Ask for string of options
 	// Tokenise, validate
 	// Update options column
-}
+//}
 
 /* setRowBackground(int, QColor)
  * Colours the specified row of the table.
@@ -531,7 +578,6 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	optionBox->addItems(options);
 	optionBox->setCurrentText(option);
 	tblBindings->setCellWidget(row, 4, optionBox);
-
 }
 
 void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QString key, QString min, QString max, QString status, QString midino, QString device, QString on, QString off) { 
@@ -549,11 +595,10 @@ void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QStrin
 	tblOutputBindings->setItem(row, 2, new QTableWidgetItem(midino + " " + status));
 	tblOutputBindings->setItem(row, 3, new QTableWidgetItem(device));
 	tblOutputBindings->setItem(row, 4, new QTableWidgetItem(min));
-	tblOutputBindings->setItem(row, 5, new QTableWidgetItem(min));
+	tblOutputBindings->setItem(row, 5, new QTableWidgetItem(max));
 	tblOutputBindings->setItem(row, 6, new QTableWidgetItem(on));
 	tblOutputBindings->setItem(row, 7, new QTableWidgetItem(off));
 	//tblOutputBindings->setItem(row, 4, new QTableWidgetItem("none"));
-
 }
 
 
