@@ -48,6 +48,7 @@ public slots:
 private:
 	void setRowBackground(int row, QColor color);
 	void addRow(QString device, QString group, QString key, QString controltype, QString miditype, QString midino, QString midichan, QString option);
+	void addOutputRow(QString outputType, QString group, QString key, QString min, QString max, QString status, QString midino, QString device, QString on, QString off);
 	void loadPreset(QString path);
 	void loadPreset(QDomElement root);
 	void savePreset(QString path);

@@ -25,6 +25,9 @@ const QStringList options = (QStringList() << "Normal" << "Invert" << "Rot64" <<
 		<< "Rot64Fast" << "Diff" << "Button" << "Switch" << "HercJog"
 		<< "Spread64" << "SelectKnob");
 
+const QStringList outputChoices = (QStringList() << "light");
+
+
 static QString toHex(QString numberStr) {
   return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
@@ -41,9 +44,15 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
     connect(btnGroupLearn, SIGNAL(clicked()), this, SLOT(slotGroupLearnToggle()));
     connect(btnImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
+
     connect(btnClearBindings, SIGNAL(clicked()), this, SLOT(slotClear()));
     connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveBinding()));
     connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
+
+    // Output tab
+    connect(btnOutputImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
+    connect(btnOutputExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
+
 
     // Try to read in the current XML bindings file, or create one if nothing is available
     loadPreset(BINDINGS_PATH);
@@ -99,6 +108,45 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 			addRow(deviceid, group, key, controltype, miditype, midino, midichan, option);
 			control = control.nextSiblingElement("control");
 		}
+
+		QDomNode output = controller.namedItem("outputs").toElement().firstChild();
+		while (!output.isNull()) {
+			QString outputType = output.nodeName();
+	                QString group = WWidget::selectNodeQString(output, "group");
+	                QString key = WWidget::selectNodeQString(output, "key");
+
+	                QString status = QString::number(WWidget::selectNodeInt(output, "status"));
+	                QString midino = QString::number(WWidget::selectNodeInt(output, "midino"));
+
+	                QString on = "0x7f";	// Compatible with Hercules and others
+	                QString off = "0x00";
+	                QString min = "";
+	                QString max = "";
+
+		        if(outputType == "light") {
+	                if (!output.firstChildElement("on").isNull()) {
+	                    on = QString::number(WWidget::selectNodeInt(output, "on"));
+	                }
+	                if (!output.firstChildElement("off").isNull()) {
+	                    off = QString::number(WWidget::selectNodeInt(output, "off"));
+	                }
+	                if (!output.firstChildElement("threshold").isNull()) {
+	                    min = WWidget::selectNodeFloat(output, "threshold");
+	                }
+	                if (!output.firstChildElement("minimum").isNull()) {
+	                    min = WWidget::selectNodeQString(output, "minimum");
+	                }
+	                if (!output.firstChildElement("maximum").isNull()) {
+	                    max = WWidget::selectNodeQString(output, "maximum");
+	                }
+			}
+                	qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << deviceid << "on/off:" << on << off;
+
+			addOutputRow(outputType, group, key, min, max, toHex(status), toHex(midino), deviceid, on, off);
+
+			output = output.nextSibling();
+		}
+
 		controller = controller.nextSiblingElement("controller");
 	}
 }
@@ -119,7 +167,7 @@ void DlgPrefMidiBindings::savePreset(QString path) {
 }
 
 /* applyPreset()
- * Load the current bindings set into the MIDI handler, and the lights info into
+ * Load the current bindings set into the MIDI handler, and the outputs info into
  * the LED handler.
  */
 void DlgPrefMidiBindings::applyPreset() {
@@ -134,12 +182,6 @@ void DlgPrefMidiBindings::applyPreset() {
 		qDebug() << "Processing MIDI Control Bindings for" << deviceId;
                 m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
 
-//		QDomNode output = controller.namedItem("outputs").toElement().firstChild();
-//		while (!output.isNull()) {
-//			qDebug() << "output:" << output.toElement().tagName() << output.toElement().text();
-//			output = output.nextSibling();
-//		}
-
 		qDebug() << "Processing MIDI Output Bindings for" << deviceId;
 		MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_pMidi, deviceId);
 
@@ -147,44 +189,6 @@ void DlgPrefMidiBindings::applyPreset() {
                 controller = controller.nextSiblingElement("controller");
 	}
         m_pMidi->setMidiConfig(m_pMidiConfig);
-
-/*
-	QDomNode node = controller.firstChild();
-	while (!node.isNull()) {
-                m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
-
-
-		node
-        }
-
-        // For each device
-        while (!controller.isNull()) {
-		// Device Controls
-                m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
-
-		QDomNode node = controller.firstChild();
-		// For each device
-		QDomElement element = node.toElement();
-		while (!node.isNull() && element.tagName() != "outputs")
-		{
-			node = node.nextSibling();
-			element = node.toElement();
-		}
-		if (element.tagName() == "outputs") {
-			node = node.firstChild();
-			element = node.toElement();
-			while (!node.isNull()) {
-				MidiLedHandler::createHandlers(element, m_pMidi, deviceId);
-
-				node = node.nextSibling();
-				element = node.toElement();	
-			}
-		}
-
-                m_pMidi->setMidiConfig(m_pMidiConfig);
-
-        }
-*/
 }
 
 /* clearPreset()
@@ -529,6 +533,29 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	tblBindings->setCellWidget(row, 4, optionBox);
 
 }
+
+void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QString key, QString min, QString max, QString status, QString midino, QString device, QString on, QString off) { 
+
+	tblOutputBindings->setRowCount(tblOutputBindings->rowCount() + 1);
+	int row = tblOutputBindings->rowCount() - 1;
+
+	//Setup the Options combobox
+	QComboBox *optionBox = new QComboBox();
+	optionBox->addItems(outputChoices);
+	optionBox->setCurrentText(outputType);
+	tblOutputBindings->setCellWidget(row, 0, optionBox);
+
+	tblOutputBindings->setItem(row, 1, new QTableWidgetItem(group + " " + key));
+	tblOutputBindings->setItem(row, 2, new QTableWidgetItem(midino + " " + status));
+	tblOutputBindings->setItem(row, 3, new QTableWidgetItem(device));
+	tblOutputBindings->setItem(row, 4, new QTableWidgetItem(min));
+	tblOutputBindings->setItem(row, 5, new QTableWidgetItem(min));
+	tblOutputBindings->setItem(row, 6, new QTableWidgetItem(on));
+	tblOutputBindings->setItem(row, 7, new QTableWidgetItem(off));
+	//tblOutputBindings->setItem(row, 4, new QTableWidgetItem("none"));
+
+}
+
 
 /* buildDomElement()
  * Updates the DOM with what is currently in the table
