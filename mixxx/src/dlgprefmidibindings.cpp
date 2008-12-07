@@ -25,7 +25,7 @@ const QStringList options = (QStringList() << "Normal" << "Invert" << "Rot64" <<
 		<< "Rot64Fast" << "Diff" << "Button" << "Switch" << "HercJog"
 		<< "Spread64" << "SelectKnob");
 
-const QStringList outputChoices = (QStringList() << "light");
+const QStringList outputTypeChoices = (QStringList() << "light");
 
 
 static QString toHex(QString numberStr) {
@@ -122,27 +122,27 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 	                QString status = QString::number(WWidget::selectNodeInt(output, "status"));
 	                QString midino = QString::number(WWidget::selectNodeInt(output, "midino"));
 
-	                QString on = "0x7f";	// Compatible with Hercules and others
+	                QString on = "0x7F";	// Compatible with Hercules and others
 	                QString off = "0x00";
 	                QString min = "";
 	                QString max = "";
 
 		        if(outputType == "light") {
-	                if (!output.firstChildElement("on").isNull()) {
-	                    on = QString::number(WWidget::selectNodeInt(output, "on"));
-	                }
-	                if (!output.firstChildElement("off").isNull()) {
-	                    off = QString::number(WWidget::selectNodeInt(output, "off"));
-	                }
-	                if (!output.firstChildElement("threshold").isNull()) {
-	                    min = WWidget::selectNodeFloat(output, "threshold");
-	                }
-	                if (!output.firstChildElement("minimum").isNull()) {
-	                    min = WWidget::selectNodeQString(output, "minimum");
-	                }
-	                if (!output.firstChildElement("maximum").isNull()) {
-	                    max = WWidget::selectNodeQString(output, "maximum");
-	                }
+		                if (!output.firstChildElement("on").isNull()) {
+		                    on = WWidget::selectNodeQString(output, "on");
+		                }
+		                if (!output.firstChildElement("off").isNull()) {
+		                    off = WWidget::selectNodeQString(output, "off");
+		                }
+		                if (!output.firstChildElement("threshold").isNull()) {
+		                    min = WWidget::selectNodeQString(output, "threshold");
+		                }
+		                if (!output.firstChildElement("minimum").isNull()) {
+		                    min = WWidget::selectNodeQString(output, "minimum");
+		                }
+		                if (!output.firstChildElement("maximum").isNull()) {
+		                    max = WWidget::selectNodeQString(output, "maximum");
+		                }
 			}
                 	qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << deviceid << "on/off:" << on << off;
 
@@ -526,7 +526,7 @@ void DlgPrefMidiBindings::slotAddOutputBinding() {
 	QString device = QInputDialog::getItem(this, tr("Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
         if (!ok) return;
 
-	addOutputRow("light", "[Channel1]", "play", "", "", toHex(0), toHex(0), device, "0x7F", "0x00");
+	addOutputRow(outputTypeChoices.value(0), "[Channel1]", "play", "", "", toHex(0), toHex(0), device, "0x7F", "0x00");
 
 	tblOutputBindings->selectRow(tblOutputBindings->rowCount() - 1); // Focus the row just added
 }
@@ -555,11 +555,13 @@ void DlgPrefMidiBindings::slotAddOutputBinding() {
 /* setRowBackground(int, QColor)
  * Colours the specified row of the table.
  */
+/*
 void DlgPrefMidiBindings::setRowBackground(int row, QColor color) {
 	for (int i = 0; i < tblBindings->columnCount(); i++) {
 		tblBindings->item(row, i)->setBackgroundColor(color);
 	}
 }
+*/
 
 /* addRow(QString, QString, QString, QString, QString, QString, QString)
  * Adds a row to the table representing one binding
@@ -571,7 +573,6 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	tblBindings->setItem(row, 1, new QTableWidgetItem(miditype + " " + midino + " " + midichan));
 	tblBindings->setItem(row, 2, new QTableWidgetItem(device));
 	tblBindings->setItem(row, 3, new QTableWidgetItem(controltype));
-	//tblBindings->setItem(row, 4, new QTableWidgetItem("none"));
 
 	//Setup the Options combobox
 	QComboBox *optionBox = new QComboBox();
@@ -587,7 +588,7 @@ void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QStrin
 
 	//Setup the Options combobox
 	QComboBox *optionBox = new QComboBox();
-	optionBox->addItems(outputChoices);
+	optionBox->addItems(outputTypeChoices);
 	optionBox->setCurrentText(outputType);
 	tblOutputBindings->setCellWidget(row, 0, optionBox);
 
@@ -598,7 +599,6 @@ void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QStrin
 	tblOutputBindings->setItem(row, 5, new QTableWidgetItem(max));
 	tblOutputBindings->setItem(row, 6, new QTableWidgetItem(on));
 	tblOutputBindings->setItem(row, 7, new QTableWidgetItem(off));
-	//tblOutputBindings->setItem(row, 4, new QTableWidgetItem("none"));
 }
 
 
@@ -676,9 +676,71 @@ void DlgPrefMidiBindings::buildDomElement() {
 		}
 		controls.appendChild(control);
 	}
-	// FIXME: outputs block!!!!
 
-	
+	for (int y = 0; y < tblOutputBindings->rowCount(); y++) {
+		// For each row
+		QString outputType = ((QComboBox*)tblOutputBindings->cellWidget(y,0))->currentText().trimmed();
+		QString device = tblOutputBindings->item(y,3)->text().trimmed();
+
+		QHash<QString, QString> outputMapping;
+		outputMapping["group"] = tblOutputBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0).trimmed();
+		outputMapping["key"] = tblOutputBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1).trimmed();
+		outputMapping["status"] = tblOutputBindings->item(y,2)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0);
+		outputMapping["midino"] = tblOutputBindings->item(y,2)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1);
+//		outputMapping["device"] = tblOutputBindings->item(y,3)->text().trimmed();
+		outputMapping["minimum"] = tblOutputBindings->item(y,4)->text().trimmed();
+		outputMapping["maximum"] = tblOutputBindings->item(y,5)->text().trimmed();
+		outputMapping["on"] = tblOutputBindings->item(y,6)->text().trimmed();
+		outputMapping["off"] = tblOutputBindings->item(y,7)->text().trimmed();
+
+		// Clean up any optional values
+		if (outputMapping["maximum"].isEmpty()) {
+			if (!outputMapping["minimum"].isEmpty()) {
+				outputMapping["threshold"] = outputMapping["minimum"];
+			}
+			outputMapping.remove("minimum");
+			outputMapping.remove("maximum");
+		}
+		if (outputMapping["on"].isEmpty() || outputMapping["off"].isEmpty()) {
+			outputMapping.remove("on");
+			outputMapping.remove("off");
+		}
+
+		// Generate output XML
+		QDomText text;
+		QDomDocument nodeMaker;
+		QDomElement output = nodeMaker.createElement(outputType);
+
+		// TODO: make these output in a more humaan friendly order
+		foreach (QString tagName, outputMapping.keys()) {
+			QDomElement tagNode = nodeMaker.createElement(tagName);
+			text = nodeMaker.createTextNode(outputMapping.value(tagName));
+			tagNode.appendChild(text);
+			output.appendChild(tagNode);
+		}
+
+		// Find the controller to attach the XML to...
+		QDomElement controller = m_pBindings.firstChildElement("controller");
+		while (controller.attribute("id","") != device && !controller.isNull()) {
+			controller = controller.nextSiblingElement("controller");
+		}
+		if (controller.isNull()) {
+			// No tag was found - create it
+			controller = nodeMaker.createElement("controller");
+			controller.setAttribute("id", device);
+			m_pBindings.appendChild(controller);
+		}
+
+		// Find the outputs block
+		QDomElement outputs = controller.firstChildElement("outputs");
+		if (outputs.isNull()) {
+			outputs = nodeMaker.createElement("outputs");
+			controller.appendChild(outputs);
+		}
+		// attach the output to the outputs block
+		outputs.appendChild(output);
+	}
+
 }
 
 /* getControlList()
