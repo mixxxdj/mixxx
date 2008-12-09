@@ -72,7 +72,7 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
  * Overloaded function for convenience
  */
 void DlgPrefMidiBindings::loadPreset(QString path) {
-	loadPreset(WWidget::openXMLFile(path, "controller"));	
+	loadPreset(WWidget::openXMLFile(path, "controller"));
 }
 
 /* loadPreset(QDomElement)
@@ -80,6 +80,7 @@ void DlgPrefMidiBindings::loadPreset(QString path) {
  */
 void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 	clearTable();
+	clearOutputTable();
 	if (root.isNull()) return;
 	// For each controller in the DOM
 	m_pBindings = root;
@@ -418,7 +419,6 @@ void DlgPrefMidiBindings::slotClearOutputBindings() {
 			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
 			!= QMessageBox::Ok)
 		return;
-//	clearPreset(); // FIXME: Change clearPreset to delete nodes instead of dumping whole document
 	clearOutputTable();
 }
 
@@ -581,7 +581,7 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	tblBindings->setCellWidget(row, 4, optionBox);
 }
 
-void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QString key, QString min, QString max, QString status, QString midino, QString device, QString on, QString off) { 
+void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QString key, QString min, QString max, QString status, QString midino, QString device, QString on, QString off) {
 
 	tblOutputBindings->setRowCount(tblOutputBindings->rowCount() + 1);
 	int row = tblOutputBindings->rowCount() - 1;
@@ -609,53 +609,31 @@ void DlgPrefMidiBindings::buildDomElement() {
 	clearPreset(); // Create blank document
 	for (int y = 0; y < tblBindings->rowCount(); y++) {
 		// For each row
-
 		QDomText text;
 		QDomDocument nodeMaker;
 		QDomElement control = nodeMaker.createElement("control");
 
-		QDomElement group = nodeMaker.createElement("group");
-		text = nodeMaker.createTextNode(tblBindings->item(y,0)->text().split(' ',
-				QString::SkipEmptyParts, Qt::CaseInsensitive).at(0));
-		group.appendChild(text);
+		QHash<QString, QString> controlMapping;
+		controlMapping["group"] = tblBindings->item(y,0)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0).trimmed();
+		controlMapping["key"] = tblBindings->item(y,0)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1).trimmed();
+		controlMapping["miditype"] = tblBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0).trimmed();
+		controlMapping["midino"] = tblBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1).trimmed();
+		controlMapping["midichan"] = tblBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(2).trimmed();
+		controlMapping["controltype"] = tblBindings->item(y,3)->text().trimmed();
+		controlMapping["options"] = ((QComboBox*)tblBindings->cellWidget(y,4))->currentText().trimmed();
 
-		QDomElement key = nodeMaker.createElement("key");
-		text = nodeMaker.createTextNode(tblBindings->item(y,0)->text().split(' ',
-				QString::SkipEmptyParts, Qt::CaseInsensitive).at(1));
-		key.appendChild(text);
-
-		QDomElement midiType = nodeMaker.createElement("miditype");
-		text = nodeMaker.createTextNode(tblBindings->item(y,1)->text().split(' ',
-						QString::SkipEmptyParts, Qt::CaseInsensitive).at(0));
-		midiType.appendChild(text);
-		QDomElement midiNo = nodeMaker.createElement("midino");
-		text = nodeMaker.createTextNode(toHex(tblBindings->item(y,1)->text().split(' ',
-						QString::SkipEmptyParts, Qt::CaseInsensitive).at(1)));
-		midiNo.appendChild(text);
-
-		QDomElement midiChan = nodeMaker.createElement("midichan");
-		text = nodeMaker.createTextNode(toHex(tblBindings->item(y,1)->text().split(' ',
-						QString::SkipEmptyParts, Qt::CaseInsensitive).at(2)));
-		midiChan.appendChild(text);
-
-		QDomElement controlType = nodeMaker.createElement("controltype");
-		text = nodeMaker.createTextNode(tblBindings->item(y,3)->text());
-		controlType.appendChild(text);
-
-		QDomElement options = nodeMaker.createElement("options");
-		QString comboText = ((QComboBox*)tblBindings->cellWidget(y,4))->currentText();
-		if (comboText != "Normal") {
-			QDomElement singleOption = nodeMaker.createElement(comboText);
-			options.appendChild(singleOption);
+		// TODO: make these output in a more human friendly order
+		foreach (QString tagName, controlMapping.keys()) {
+			QDomElement tagNode = nodeMaker.createElement(tagName);
+			if (tagName != "options") {
+				text = nodeMaker.createTextNode(controlMapping.value(tagName));
+				tagNode.appendChild(text);
+			} else if (tagName == "options" && controlMapping[tagName] != "Normal") {
+				QDomElement singleOption = nodeMaker.createElement(tagName);
+				tagNode.appendChild(singleOption);
+			}
+			control.appendChild(tagNode);
 		}
-
-		control.appendChild(group);
-		control.appendChild(key);
-		control.appendChild(midiType);
-		control.appendChild(midiNo);
-		control.appendChild(midiChan);
-		control.appendChild(controlType);
-		control.appendChild(options);
 
 		//Add control to correct device tag - find the correct tag
 		QDomElement controller = m_pBindings.firstChildElement("controller");
@@ -711,7 +689,7 @@ void DlgPrefMidiBindings::buildDomElement() {
 		QDomDocument nodeMaker;
 		QDomElement output = nodeMaker.createElement(outputType);
 
-		// TODO: make these output in a more humaan friendly order
+		// TODO: make these output in a more human friendly order
 		foreach (QString tagName, outputMapping.keys()) {
 			QDomElement tagNode = nodeMaker.createElement(tagName);
 			text = nodeMaker.createTextNode(outputMapping.value(tagName));
