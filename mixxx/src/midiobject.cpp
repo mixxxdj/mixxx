@@ -182,9 +182,18 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
     // qDebug() << "MidiObject::receive ok" << pConfigKey->group << pConfigKey->item;
 
-    ControlObject * p = ControlObject::getControl(*pConfigKey);
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
+
+    // Custom MixxxScript (QtScript) handler
+    if (((ConfigValueMidi *)c->val)->midioption==MIDI_OPT_SCRIPT) {
+        qDebug() << "MidiObject::Calling script" << pConfigKey->item;
+//      call {pConfigKey->item}(category, channel, control, value, device);
+        return;
+    }
+
+    ControlObject * p = ControlObject::getControl(*pConfigKey);
     // qDebug() << "MidiObject::receive value:" << QString::number(value, 16).toUpper() << " c:" << c << "c->midioption:" << ((ConfigValueMidi *)c->val)->midioption << "p:" << p;
+
     // BJW: Apply any mapped (7-bit integer) translations
     if (c && p) {
         value = ((ConfigValueMidi *)c->val)->translateValue(value);

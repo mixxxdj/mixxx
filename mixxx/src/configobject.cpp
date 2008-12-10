@@ -180,6 +180,9 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
             midioption = MIDI_OPT_SPREAD64;
         else if (optname == "selectknob")
         	midioption = MIDI_OPT_SELECTKNOB;
+        
+        else if (optname == "script-binding")
+        	midioption = MIDI_OPT_SCRIPT;
         else {
             qWarning() << "Unknown option:" << optname;
             midioption = MIDI_OPT_NORMAL;
@@ -243,6 +246,9 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
         midioption = MIDI_OPT_SPREAD64;
     else if (option.contains("SelectKnob", false))
         midioption = MIDI_OPT_SELECTKNOB;
+        
+    else if (option.contains("Script-Binding", false))
+        midioption = MIDI_OPT_SCRIPT;
     else
         midioption = MIDI_OPT_NORMAL;
     // Store string with corrected config value
