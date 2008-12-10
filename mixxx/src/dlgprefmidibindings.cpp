@@ -52,6 +52,8 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
     connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
 
     // Output tab
+    connect(btnTestOutputBinding, SIGNAL(clicked()), this, SLOT(slotTestOutputBinding()));
+
     connect(btnOutputImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
     connect(btnOutputExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
@@ -424,6 +426,37 @@ void DlgPrefMidiBindings::slotClearOutputBindings() {
 	clearOutputTable();
 }
 
+void DlgPrefMidiBindings::slotTestOutputBinding() {
+	// If nothing selected, return
+	if (tblOutputBindings->currentRow() == -1) {
+		labelOutputStatus->setText("No output row selected"); btnTestOutputBinding->setChecked(false); return;
+	}
+	int y = tblOutputBindings->currentRow();
+
+	QString outputType = ((QComboBox*)tblOutputBindings->cellWidget(y,1))->currentText().trimmed();
+	QString device = tblOutputBindings->item(y,3)->text().trimmed();
+	// FIXME: check that device is actually physically connected before trying to send output!
+
+	qDebug() << "slotTestOutputBinding firing"<< (btnTestOutputBinding->isChecked() ? "ON" : "OFF") << "event for row:" << y << "outputType:" << outputType << "on device:" << device;
+
+	if (outputType == "light") {
+
+		bool ok = true;
+		unsigned char status = (unsigned char) tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(0).trimmed().toUShort(&ok, 0);
+		// FIXME: if you blank col3 these !ok doesn't catch the problem and trigger the error check below
+		if (!ok) { labelOutputStatus->setText("invalid MIDI status code (col 3, value 1)"); btnTestOutputBinding->setChecked(false); return; }
+		unsigned char midino = (unsigned char) tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(1).trimmed().toUShort(&ok, 0);;
+		if (!ok) { labelOutputStatus->setText("invalid MIDI # code (col 3, value 2)"); btnTestOutputBinding->setChecked(false); return; }
+
+		unsigned on = (unsigned char) tblOutputBindings->item(y,6)->text().trimmed().toUShort(&ok, 0);
+		if (!ok) { on = 0x7f; }
+		int off = (unsigned char) tblOutputBindings->item(y,7)->text().trimmed().toUShort(&ok, 0);
+		if (!ok) { off = 0x00; }
+
+		m_pMidi->sendShortMsg(status, midino, btnTestOutputBinding->isChecked()? on : off , device);
+	}
+	labelOutputStatus->setText( btnTestOutputBinding->isChecked()? outputType + " on" : outputType + " off" );
+}
 
 void DlgPrefMidiBindings::removeSelectedBindings(QTableWidget* table) {
 	// If nothing selected, return
