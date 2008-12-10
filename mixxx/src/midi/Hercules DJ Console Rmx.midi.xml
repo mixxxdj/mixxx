@@ -530,5 +530,37 @@
                     <options/>
                 </control>
             </controls>
+
+	<outputs>
+		<light>
+			<group>[Channel1]</group>
+			<key>play</key>
+			<status>0xB0</status>
+			<midino>0x0B</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>play</key>
+			<status>0xB0</status>
+			<midino>0x23</midino>
+			<threshold>0.5</threshold>
+		</light>
+<!-- Headphone Cue -->
+		<light>
+			<group>[Channel1]</group>
+			<key>pfl</key>
+			<status>0xB0</status>
+			<midino>0x14</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>pfl</key>
+			<status>0xB0</status>
+			<midino>0x18</midino>
+			<threshold>0.5</threshold>
+		</light>
+</outputs>
         </controller>
     </MixxxMIDIPreset>

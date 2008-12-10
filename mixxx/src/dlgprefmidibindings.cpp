@@ -21,9 +21,11 @@
 #include "configobject.h"
 
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
-const QStringList options = (QStringList() << "Normal" << "Invert" << "Rot64" << "Rot64Inv"
+const QStringList options = (QStringList() << "Normal" << "Script-Binding" << "Invert" << "Rot64" << "Rot64Inv"
 		<< "Rot64Fast" << "Diff" << "Button" << "Switch" << "HercJog"
 		<< "Spread64" << "SelectKnob");
+
+QStringList controKeyOptionChoices;
 
 const QStringList outputTypeChoices = (QStringList() << "light");
 
@@ -478,37 +480,33 @@ void DlgPrefMidiBindings::slotAddBinding() {
 	// Try to load values, when that fails pick up last entry values from existing table where present.
 	selectionList = QStringList(m_pMidi->getOpenDevices());
 	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,2)->text()); }
-	QString device = QInputDialog::getItem(this, tr("1/8 Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
+	QString device = QInputDialog::getItem(this, tr("1/6 Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
         if (!ok) return;
 
-	selectionList = QStringList();
-	selectionList << "[Master]" << "[Channel1]" << "[Channel2]";
-	QString group = QInputDialog::getItem(this, tr("2/8 Select Control Group"), tr("Select Control Group"), selectionList, 0, false,  &ok);
+    QString controlKey = QInputDialog::getItem(this, tr("2/6 Select Control Group + Key"), tr("Select Control Group + Key"), getControlKeyList(), 0, false,  &ok);
         if (!ok) return;
-
-	selectionList = QStringList();
-	selectionList << "play" << "nextTrack" << "prevTrack";
-	QString key = QInputDialog::getItem(this, tr("3/8 Select Control Key"), tr("Select Control Key"), selectionList, 0, true,  &ok);
-        if (!ok) return;
+    QString group = controlKey.trimmed().split(" ").at(0).trimmed();
+    QString key = controlKey.trimmed().split(" ").at(1).trimmed();
 
 	selectionList = QStringList();
 	selectionList << "Ctrl" << "Key" << "Pitch";
-	QString miditype = QInputDialog::getItem(this, tr("4/8 Select MIDI Type"), tr("Select MIDI Type"), selectionList, 0, false,  &ok);
+	QString miditype = QInputDialog::getItem(this, tr("3/6 Select MIDI Type"), tr("Select MIDI Type"), selectionList, 0, false,  &ok);
         if (!ok) return;
 
-	QString midino = QString::number(QInputDialog::getInteger(this, tr("5/8 Select Midi No."), tr("Type in the MIDI number value"), 1, 0, 127, 1, &ok));
+	QString midino = QString::number(QInputDialog::getInteger(this, tr("4/6 Select Midi No."), tr("Type in the MIDI number value"), 1, 0, 127, 1, &ok));
         if (!ok) return;
 
-	QString midichan = QString::number(QInputDialog::getInteger(this, tr("6/8 Select Midi Channel"), tr("Type in the MIDI channel value (ch)"), 1, 0, 127, 1, &ok));
+	QString midichan = QString::number(QInputDialog::getInteger(this, tr("5/6 Select Midi Channel"), tr("Type in the MIDI channel value (ch)"), 1, 0, 127, 1, &ok));
         if (!ok) return;
 
-	selectionList = QStringList(getControlList());
-	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,3)->text()); }
-	QString controltype = QInputDialog::getItem(this, tr("7/8 Select Control"), tr("Select a function of Mixxx to control"), selectionList, 0, true, &ok);
-        if (!ok) return;
+//	selectionList = QStringList(getControlTypeList());
+//	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,3)->text()); }
+//	QString controltype = QInputDialog::getItem(this, tr("7/8 Select Control"), tr("Select a function of Mixxx to control"), selectionList, 0, true, &ok);
+//        if (!ok) return;
+    QString controltype = "";
 
 	selectionList = QStringList(options);
-	QString option = QInputDialog::getItem(this, tr("8/8 Select Option"), tr("Select an optional behaviour modifier"), selectionList, 0, true, &ok);
+	QString option = QInputDialog::getItem(this, tr("6/6 Select Option"), tr("Select an optional behaviour modifier"), selectionList, 0, true, &ok);
         if (!ok) return;
 
 	// At this stage we have enough information to create a blank, learnable binding
@@ -569,7 +567,18 @@ void DlgPrefMidiBindings::setRowBackground(int row, QColor color) {
 void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QString controltype, QString miditype, QString midino, QString midichan, QString option) {
 	tblBindings->setRowCount(tblBindings->rowCount() + 1);
 	int row = tblBindings->rowCount() - 1;
-	tblBindings->setItem(row, 0, new QTableWidgetItem(group + " " + key));
+
+	QComboBox *controlKeysComboBox = new QComboBox();
+	controlKeysComboBox->setEditable(true);
+	controlKeysComboBox->addItems(getControlKeyList());
+	QString controlKey = QString(group + " " + key).trimmed();
+	if (controlKeysComboBox->findText(controlKey) == -1) {
+		controlKeysComboBox->addItem(controlKey);
+	}
+	controlKeysComboBox->setCurrentIndex(controlKeysComboBox->findText(controlKey));
+
+	tblBindings->setCellWidget(row, 0, controlKeysComboBox);
+
 	tblBindings->setItem(row, 1, new QTableWidgetItem(miditype + " " + midino + " " + midichan));
 	tblBindings->setItem(row, 2, new QTableWidgetItem(device));
 	tblBindings->setItem(row, 3, new QTableWidgetItem(controltype));
@@ -577,7 +586,7 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	//Setup the Options combobox
 	QComboBox *optionBox = new QComboBox();
 	optionBox->addItems(options);
-	optionBox->setCurrentText(option);
+	optionBox->setEditText(option);
 	tblBindings->setCellWidget(row, 4, optionBox);
 }
 
@@ -589,10 +598,19 @@ void DlgPrefMidiBindings::addOutputRow(QString outputType, QString group, QStrin
 	//Setup the Options combobox
 	QComboBox *optionBox = new QComboBox();
 	optionBox->addItems(outputTypeChoices);
-	optionBox->setCurrentText(outputType);
+	optionBox->setEditText(outputType);
 	tblOutputBindings->setCellWidget(row, 0, optionBox);
 
-	tblOutputBindings->setItem(row, 1, new QTableWidgetItem(group + " " + key));
+	QComboBox *controlKeysComboBox = new QComboBox();
+	controlKeysComboBox->setEditable(true);
+	controlKeysComboBox->addItems(getControlKeyList());
+	QString controlKey = QString(group + " " + key).trimmed();
+	if (controlKeysComboBox->findText(controlKey) == -1) {
+		controlKeysComboBox->addItem(controlKey);
+	}
+	controlKeysComboBox->setCurrentIndex(controlKeysComboBox->findText(controlKey));
+	tblOutputBindings->setCellWidget(row, 1, controlKeysComboBox);
+
 	tblOutputBindings->setItem(row, 2, new QTableWidgetItem(midino + " " + status));
 	tblOutputBindings->setItem(row, 3, new QTableWidgetItem(device));
 	tblOutputBindings->setItem(row, 4, new QTableWidgetItem(min));
@@ -613,12 +631,16 @@ void DlgPrefMidiBindings::buildDomElement() {
 		QDomDocument nodeMaker;
 		QDomElement control = nodeMaker.createElement("control");
 
+		QString device = tblBindings->item(y,2)->text().trimmed();
+
 		QHash<QString, QString> controlMapping;
-		controlMapping["group"] = tblBindings->item(y,0)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0).trimmed();
-		controlMapping["key"] = tblBindings->item(y,0)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1).trimmed();
-		controlMapping["miditype"] = tblBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0).trimmed();
-		controlMapping["midino"] = tblBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1).trimmed();
-		controlMapping["midichan"] = tblBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(2).trimmed();
+		QString controlKey = ((QComboBox*)tblBindings->cellWidget(y,0))->currentText().trimmed();
+		if (controlKey.isEmpty() || controlKey.split(' ').count() < 2 || controlKey.indexOf("[") == -1 || controlKey.indexOf("]") == -1) continue; // Invalid mapping, skip it.
+		controlMapping["group"] = controlKey.split(' ').at(0).trimmed();
+		controlMapping["key"] = controlKey.split(' ').at(1).trimmed();
+		controlMapping["miditype"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(0).trimmed();
+		controlMapping["midino"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(1).trimmed();
+		controlMapping["midichan"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(2).trimmed();
 		controlMapping["controltype"] = tblBindings->item(y,3)->text().trimmed();
 		controlMapping["options"] = ((QComboBox*)tblBindings->cellWidget(y,4))->currentText().trimmed();
 
@@ -637,13 +659,13 @@ void DlgPrefMidiBindings::buildDomElement() {
 
 		//Add control to correct device tag - find the correct tag
 		QDomElement controller = m_pBindings.firstChildElement("controller");
-		while (controller.attribute("id","") != tblBindings->item(y,2)->text() && !controller.isNull()) {
+		while (controller.attribute("id","") != device && !controller.isNull()) {
 			controller = controller.nextSiblingElement("controller");
 		}
 		if (controller.isNull()) {
 			// No tag was found - create it
 			controller = nodeMaker.createElement("controller");
-			controller.setAttribute("id", tblBindings->item(y,2)->text());
+			controller.setAttribute("id", device);
 			m_pBindings.appendChild(controller);
 		}
 		// Check for controls tag
@@ -661,10 +683,13 @@ void DlgPrefMidiBindings::buildDomElement() {
 		QString device = tblOutputBindings->item(y,3)->text().trimmed();
 
 		QHash<QString, QString> outputMapping;
-		outputMapping["group"] = tblOutputBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0).trimmed();
-		outputMapping["key"] = tblOutputBindings->item(y,1)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1).trimmed();
-		outputMapping["status"] = tblOutputBindings->item(y,2)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(0);
-		outputMapping["midino"] = tblOutputBindings->item(y,2)->text().split(' ', QString::SkipEmptyParts, Qt::CaseInsensitive).at(1);
+		QString controlKey = ((QComboBox*)tblOutputBindings->cellWidget(y,1))->currentText().trimmed();
+		if (controlKey.isEmpty() || controlKey.split(' ').count() < 2 || controlKey.indexOf("[") == -1 || controlKey.indexOf("]") == -1) continue; // Invalid mapping, skip it.
+
+		outputMapping["group"] = controlKey.split(' ').at(0).trimmed();
+		outputMapping["key"] = controlKey.trimmed().split(' ').at(1).trimmed();
+		outputMapping["status"] = tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(0).trimmed();
+		outputMapping["midino"] = tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(1).trimmed();
 //		outputMapping["device"] = tblOutputBindings->item(y,3)->text().trimmed();
 		outputMapping["minimum"] = tblOutputBindings->item(y,4)->text().trimmed();
 		outputMapping["maximum"] = tblOutputBindings->item(y,5)->text().trimmed();
@@ -721,36 +746,24 @@ void DlgPrefMidiBindings::buildDomElement() {
 
 }
 
-/* getControlList()
+/* getControlKeyList()
  * Gets the list of control objects
  */
-QStringList DlgPrefMidiBindings::getControlList() {
-/*
-	ConfigOption<ValueType> *it;
-	for (it = m_pConfig->list.first(); it; it = m_pConfig->list.next())
-	    {
-	        qDebug() << "group:" << it->key->group << "item:" << it->key->item;
-	    }
-	return QStringList();
-*/
-/*
-    ConfigOption<ValueType> * it;
-    for (it = list.first(); it; it = list.next())
-    {
-		qDebug() << "key:"<< it->key <<"value:" << it->val->value;
+QStringList DlgPrefMidiBindings::getControlKeyList() {
+    // midi/BindableConfigKeys.txt = grep "ConfigKey" *.cpp | grep \\[ | sed -e 's/.*ConfigKey("//g' | cut -d \) -f1 | sed -e 's/[",]/ /g' -e 's/ \+/ /g' | egrep -ve '[+:>]' | sort -u | egrep -e "\[Channel[12]\]|\[Master\]" > midi/BindableConfigKeys.txt
+	if (controKeyOptionChoices.count() == 0) {
+		QFile input(m_pConfig->getConfigPath() + "midi/BindableConfigKeys.txt");
+
+		if (!input.open(QIODevice::ReadOnly)) return QStringList();
+
+	     while (!input.atEnd()) {
+	         QString line = input.readLine().trimmed();
+	         if (line.indexOf('#') == 0) continue; // ignore # hashed out comments
+	         if (!line.isNull()) controKeyOptionChoices.append(line);
+	     }
+		input.close();
 	}
-	return;
-*/
-	QFile input("midi/controls.txt");
-	if (!input.open(QIODevice::ReadOnly))
-	         return QStringList(); //Error opening the file, return blank list
-	QTextStream inputstream(&input);
-
-	QStringList list;
-	while (!inputstream.atEnd()) list.append(inputstream.readLine(1024));
-	input.close();
-
-	return list;
+	return controKeyOptionChoices;
 }
 
 /* TODO:
