@@ -61,7 +61,7 @@ private:
 	void clearTable();
 	void clearOutputTable();
 	void buildDomElement();
-	QStringList getControlList();
+	QStringList getControlKeyList();
 	bool singleLearning;
 	bool groupLearning;
 	int currentGroupRow;
