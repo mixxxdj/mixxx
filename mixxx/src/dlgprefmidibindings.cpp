@@ -31,41 +31,41 @@ const QStringList outputTypeChoices = (QStringList() << "light");
 
 
 static QString toHex(QString numberStr) {
-  return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+	return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefMidiBindingsDlg() {
-    setupUi(this);
-    m_pConfig = pConfig;
-    singleLearning = false;
-    groupLearning = false;
-    m_pMidi = midi;
+	setupUi(this);
+	m_pConfig = pConfig;
+	singleLearning = false;
+	groupLearning = false;
+	m_pMidi = midi;
 
-    // Connect buttons to slots
-    connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
-    connect(btnGroupLearn, SIGNAL(clicked()), this, SLOT(slotGroupLearnToggle()));
-    connect(btnImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
-    connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
+	// Connect buttons to slots
+	connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
+	connect(btnGroupLearn, SIGNAL(clicked()), this, SLOT(slotGroupLearnToggle()));
+	connect(btnImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
+	connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
-    connect(btnClearBindings, SIGNAL(clicked()), this, SLOT(slotClear()));
-    connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveBinding()));
-    connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
+	connect(btnClearBindings, SIGNAL(clicked()), this, SLOT(slotClear()));
+	connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveBinding()));
+	connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
 
-    // Output tab
-    connect(btnTestOutputBinding, SIGNAL(clicked()), this, SLOT(slotTestOutputBinding()));
+	// Output tab
+	connect(btnTestOutputBinding, SIGNAL(clicked()), this, SLOT(slotTestOutputBinding()));
 
-    connect(btnOutputImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
-    connect(btnOutputExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
+	connect(btnOutputImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
+	connect(btnOutputExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
-    connect(btnClearOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearOutputBindings()));
-    connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
-    connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
+	connect(btnClearOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearOutputBindings()));
+	connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
+	connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
 
 
-    // Try to read in the current XML bindings file, or create one if nothing is available
-    loadPreset(BINDINGS_PATH);
-    applyPreset();
-    m_pMidi->disableMidiLearn();
+	// Try to read in the current XML bindings file, or create one if nothing is available
+	loadPreset(BINDINGS_PATH);
+	applyPreset();
+	m_pMidi->disableMidiLearn();
 }
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
@@ -92,8 +92,8 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 	while (!controller.isNull()) {
 		// For each controller
 		// Get deviceid
-		QString deviceid = controller.attribute("id","");
-		qDebug() << deviceid << " settings found" << endl;
+		QString device = controller.attribute("id","");
+		qDebug() << device << " settings found" << endl;
 		QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 		while (!control.isNull()) {
 			// For each control
@@ -109,49 +109,49 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 			// At the moment, use one element, in future iterate through options
 			QString option;
 			if (optionsNode.hasChildNodes()) {
-				 option = optionsNode.firstChild().nodeName();
+				option = optionsNode.firstChild().nodeName();
 			} else {
 				option = "Normal";
 			}
 			// Construct row in table
-			addRow(deviceid, group, key, controltype, miditype, midino, midichan, option);
+			addRow(device, group, key, controltype, miditype, midino, midichan, option);
 			control = control.nextSiblingElement("control");
 		}
 
 		QDomNode output = controller.namedItem("outputs").toElement().firstChild();
 		while (!output.isNull()) {
 			QString outputType = output.nodeName();
-	                QString group = WWidget::selectNodeQString(output, "group");
-	                QString key = WWidget::selectNodeQString(output, "key");
+			QString group = WWidget::selectNodeQString(output, "group");
+			QString key = WWidget::selectNodeQString(output, "key");
 
-	                QString status = QString::number(WWidget::selectNodeInt(output, "status"));
-	                QString midino = QString::number(WWidget::selectNodeInt(output, "midino"));
+			QString status = QString::number(WWidget::selectNodeInt(output, "status"));
+			QString midino = QString::number(WWidget::selectNodeInt(output, "midino"));
 
-	                QString on = "0x7F";	// Compatible with Hercules and others
-	                QString off = "0x00";
-	                QString min = "";
-	                QString max = "";
+			QString on = "0x7F";	// Compatible with Hercules and others
+			QString off = "0x00";
+			QString min = "";
+			QString max = "";
 
-		        if(outputType == "light") {
-		                if (!output.firstChildElement("on").isNull()) {
-		                    on = WWidget::selectNodeQString(output, "on");
-		                }
-		                if (!output.firstChildElement("off").isNull()) {
-		                    off = WWidget::selectNodeQString(output, "off");
-		                }
-		                if (!output.firstChildElement("threshold").isNull()) {
-		                    min = WWidget::selectNodeQString(output, "threshold");
-		                }
-		                if (!output.firstChildElement("minimum").isNull()) {
-		                    min = WWidget::selectNodeQString(output, "minimum");
-		                }
-		                if (!output.firstChildElement("maximum").isNull()) {
-		                    max = WWidget::selectNodeQString(output, "maximum");
-		                }
+			if(outputType == "light") {
+				if (!output.firstChildElement("on").isNull()) {
+					on = WWidget::selectNodeQString(output, "on");
+				}
+				if (!output.firstChildElement("off").isNull()) {
+					off = WWidget::selectNodeQString(output, "off");
+				}
+				if (!output.firstChildElement("threshold").isNull()) {
+					min = WWidget::selectNodeQString(output, "threshold");
+				}
+				if (!output.firstChildElement("minimum").isNull()) {
+					min = WWidget::selectNodeQString(output, "minimum");
+				}
+				if (!output.firstChildElement("maximum").isNull()) {
+					max = WWidget::selectNodeQString(output, "maximum");
+				}
 			}
-                	qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << deviceid << "on/off:" << on << off;
+			qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << device << "on/off:" << on << off;
 
-			addOutputRow(outputType, group, key, min, max, toHex(status), toHex(midino), deviceid, on, off);
+			addOutputRow(outputType, group, key, min, max, toHex(status), toHex(midino), device, on, off);
 
 			output = output.nextSibling();
 		}
@@ -165,8 +165,7 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
  */
 void DlgPrefMidiBindings::savePreset(QString path) {
 	QFile output(path);
-	if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate))
-	         return;
+	if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
 	QTextStream outputstream(&output);
 	// Construct the DOM from the table
 	buildDomElement();
@@ -182,22 +181,22 @@ void DlgPrefMidiBindings::savePreset(QString path) {
 void DlgPrefMidiBindings::applyPreset() {
 	MidiLedHandler::destroyHandlers();
 
-        QDomElement controller = m_pBindings.firstChildElement("controller");
-        // For each device
-        while (!controller.isNull()) {
+	QDomElement controller = m_pBindings.firstChildElement("controller");
+	// For each device
+	while (!controller.isNull()) {
 		// Device Outputs - LEDs
 		QString deviceId = controller.attribute("id","");
 
 		qDebug() << "Processing MIDI Control Bindings for" << deviceId;
-                m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
+		m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
 
 		qDebug() << "Processing MIDI Output Bindings for" << deviceId;
 		MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_pMidi, deviceId);
 
-                // Next device
-                controller = controller.nextSiblingElement("controller");
+		// Next device
+		controller = controller.nextSiblingElement("controller");
 	}
-        m_pMidi->setMidiConfig(m_pMidiConfig);
+	m_pMidi->setMidiConfig(m_pMidiConfig);
 }
 
 /* clearPreset()
@@ -206,7 +205,7 @@ void DlgPrefMidiBindings::applyPreset() {
 void DlgPrefMidiBindings::clearPreset() {
 	// Create a new blank DomNode
 	QString blank = "<MixxxMIDIPreset version=\"" + QString(VERSION) + "\">\n"
-		"</MixxxMIDIPreset>\n";
+	"</MixxxMIDIPreset>\n";
 	QDomDocument doc("Bindings");
 	doc.setContent(blank);
 	m_pBindings = doc.documentElement();
@@ -385,8 +384,8 @@ void DlgPrefMidiBindings::slotGroupLearnToggle() {
  */
 void DlgPrefMidiBindings::slotImportXML() {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		     "Import Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
-		     "Preset Files (*.xml)");
+			"Import Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
+			"Preset Files (*.xml)");
 	if (!fileName.isNull()) {
 		loadPreset(fileName);
 		applyPreset();
@@ -398,10 +397,9 @@ void DlgPrefMidiBindings::slotImportXML() {
  */
 void DlgPrefMidiBindings::slotExportXML() {
 	QString fileName = QFileDialog::getSaveFileName(this,
-		     "Export Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
-		     "Preset Files (*.xml)");
-	if (!fileName.isNull())
-		savePreset(fileName);
+			"Export Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
+			"Preset Files (*.xml)");
+	if (!fileName.isNull()) savePreset(fileName);
 }
 
 /* slotClear()
@@ -410,8 +408,7 @@ void DlgPrefMidiBindings::slotExportXML() {
 void DlgPrefMidiBindings::slotClear() {
 	if (QMessageBox::warning(this, "Clear Input Bindings",
 			"Are you sure you want to clear all bindings?",
-			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
-			!= QMessageBox::Ok)
+			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
 		return;
 	clearPreset();
 	clearTable();
@@ -420,8 +417,7 @@ void DlgPrefMidiBindings::slotClear() {
 void DlgPrefMidiBindings::slotClearOutputBindings() {
 	if (QMessageBox::warning(this, "Clear Output Bindings",
 			"Are you sure you want to clear all bindings?",
-			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
-			!= QMessageBox::Ok)
+			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
 		return;
 	clearOutputTable();
 }
@@ -440,7 +436,6 @@ void DlgPrefMidiBindings::slotTestOutputBinding() {
 	qDebug() << "slotTestOutputBinding firing"<< (btnTestOutputBinding->isChecked() ? "ON" : "OFF") << "event for row:" << y << "outputType:" << outputType << "on device:" << device;
 
 	if (outputType == "light") {
-
 		bool ok = true;
 		unsigned char status = (unsigned char) tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(0).trimmed().toUShort(&ok, 0);
 		// FIXME: if you blank col3 these !ok doesn't catch the problem and trigger the error check below
@@ -456,6 +451,12 @@ void DlgPrefMidiBindings::slotTestOutputBinding() {
 		m_pMidi->sendShortMsg(status, midino, btnTestOutputBinding->isChecked()? on : off , device);
 	}
 	labelOutputStatus->setText( btnTestOutputBinding->isChecked()? outputType + " on" : outputType + " off" );
+// TODO: create "outputCycleNext" checkbox which when checked will move to the next row when an off event happens
+//	if (outputCycleNext && tblOutputBindings->count() > 0 && !btnTestOutputBinding->isChecked()) {
+//		if (tblOutputBindings->count() - 1 > y) {
+//			tblOutputBindings->setCurrentRow(y++);
+//		} else { tblOutputBindings->setCurrentRow(0); }
+//	}
 }
 
 void DlgPrefMidiBindings::removeSelectedBindings(QTableWidget* table) {
@@ -465,10 +466,10 @@ void DlgPrefMidiBindings::removeSelectedBindings(QTableWidget* table) {
 
 	// Prompt user for confirmation
 	if (QMessageBox::warning(this, "Remove Binding",
-				"Are you sure you want to remove the selected binding(s)?",
-				QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
-				!= QMessageBox::Ok)
-			return;
+			"Are you sure you want to remove the selected binding(s)?",
+			QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel)
+	!= QMessageBox::Ok)
+		return;
 
 	// Generate list of rows
 	QList<int> rows;
@@ -514,33 +515,33 @@ void DlgPrefMidiBindings::slotAddBinding() {
 	selectionList = QStringList(m_pMidi->getOpenDevices());
 	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,2)->text()); }
 	QString device = QInputDialog::getItem(this, tr("1/6 Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
-        if (!ok) return;
+	if (!ok) return;
 
-    QString controlKey = QInputDialog::getItem(this, tr("2/6 Select Control Group + Key"), tr("Select Control Group + Key"), getControlKeyList(), 0, false,  &ok);
-        if (!ok) return;
-    QString group = controlKey.trimmed().split(" ").at(0).trimmed();
-    QString key = controlKey.trimmed().split(" ").at(1).trimmed();
+	QString controlKey = QInputDialog::getItem(this, tr("2/6 Select Control Group + Key"), tr("Select Control Group + Key"), getControlKeyList(), 0, false,  &ok);
+	if (!ok) return;
+	QString group = controlKey.trimmed().split(" ").at(0).trimmed();
+	QString key = controlKey.trimmed().split(" ").at(1).trimmed();
 
 	selectionList = QStringList();
 	selectionList << "Ctrl" << "Key" << "Pitch";
 	QString miditype = QInputDialog::getItem(this, tr("3/6 Select MIDI Type"), tr("Select MIDI Type"), selectionList, 0, false,  &ok);
-        if (!ok) return;
+	if (!ok) return;
 
 	QString midino = QString::number(QInputDialog::getInteger(this, tr("4/6 Select Midi No."), tr("Type in the MIDI number value"), 1, 0, 127, 1, &ok));
-        if (!ok) return;
+	if (!ok) return;
 
 	QString midichan = QString::number(QInputDialog::getInteger(this, tr("5/6 Select Midi Channel"), tr("Type in the MIDI channel value (ch)"), 1, 0, 127, 1, &ok));
-        if (!ok) return;
+	if (!ok) return;
 
-//	selectionList = QStringList(getControlTypeList());
-//	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,3)->text()); }
-//	QString controltype = QInputDialog::getItem(this, tr("7/8 Select Control"), tr("Select a function of Mixxx to control"), selectionList, 0, true, &ok);
-//        if (!ok) return;
-    QString controltype = "";
+	//	selectionList = QStringList(getControlTypeList());
+	//	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,3)->text()); }
+	//	QString controltype = QInputDialog::getItem(this, tr("7/8 Select Control"), tr("Select a function of Mixxx to control"), selectionList, 0, true, &ok);
+	//        if (!ok) return;
+	QString controltype = "";
 
 	selectionList = QStringList(options);
 	QString option = QInputDialog::getItem(this, tr("6/6 Select Option"), tr("Select an optional behaviour modifier"), selectionList, 0, true, &ok);
-        if (!ok) return;
+	if (!ok) return;
 
 	// At this stage we have enough information to create a blank, learnable binding
 	addRow(device, group, key, controltype ,miditype, midino, midichan, option);
@@ -555,7 +556,7 @@ void DlgPrefMidiBindings::slotAddOutputBinding() {
 	selectionList = QStringList(m_pMidi->getOpenDevices());
 	if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,2)->text()); }
 	QString device = QInputDialog::getItem(this, tr("Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
-        if (!ok) return;
+	if (!ok) return;
 
 	addOutputRow(outputTypeChoices.value(0), "[Channel1]", "play", "", "", toHex(0), toHex(0), device, "0x7F", "0x00");
 
@@ -566,21 +567,21 @@ void DlgPrefMidiBindings::slotAddOutputBinding() {
  * Changes the currently selected binding(s) until the user cancels.
  */
 //void DlgPrefMidiBindings::slotChangeBinding() {
-	// TODO: make pretty dialog
-	// For each field in the table
-	// Get new information
-	// If user cancels, return
-	// Change the selected row
+// TODO: make pretty dialog
+// For each field in the table
+// Get new information
+// If user cancels, return
+// Change the selected row
 //}
 
 /* slotAdvancedOptions()
  * Changes the advanced options for the currently selected binding(s).
  */
 //void DlgPrefMidiBindings::slotAdvancedOptions() {
-	// TODO: make pretty dialog
-	// Ask for string of options
-	// Tokenise, validate
-	// Update options column
+// TODO: make pretty dialog
+// Ask for string of options
+// Tokenise, validate
+// Update options column
 //}
 
 /* setRowBackground(int, QColor)
@@ -592,7 +593,7 @@ void DlgPrefMidiBindings::setRowBackground(int row, QColor color) {
 		tblBindings->item(row, i)->setBackgroundColor(color);
 	}
 }
-*/
+ */
 
 /* addRow(QString, QString, QString, QString, QString, QString, QString)
  * Adds a row to the table representing one binding
@@ -619,7 +620,7 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	//Setup the Options combobox
 	QComboBox *optionBox = new QComboBox();
 	optionBox->addItems(options);
-	optionBox->setEditText(option);
+	optionBox->setCurrentIndex(optionBox->findText(option));
 	tblBindings->setCellWidget(row, 4, optionBox);
 }
 
@@ -684,7 +685,7 @@ void DlgPrefMidiBindings::buildDomElement() {
 				text = nodeMaker.createTextNode(controlMapping.value(tagName));
 				tagNode.appendChild(text);
 			} else if (tagName == "options" && controlMapping[tagName] != "Normal") {
-				QDomElement singleOption = nodeMaker.createElement(tagName);
+				QDomElement singleOption = nodeMaker.createElement(controlMapping[tagName]);
 				tagNode.appendChild(singleOption);
 			}
 			control.appendChild(tagNode);
@@ -723,7 +724,7 @@ void DlgPrefMidiBindings::buildDomElement() {
 		outputMapping["key"] = controlKey.trimmed().split(' ').at(1).trimmed();
 		outputMapping["status"] = tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(0).trimmed();
 		outputMapping["midino"] = tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(1).trimmed();
-//		outputMapping["device"] = tblOutputBindings->item(y,3)->text().trimmed();
+		//		outputMapping["device"] = tblOutputBindings->item(y,3)->text().trimmed();
 		outputMapping["minimum"] = tblOutputBindings->item(y,4)->text().trimmed();
 		outputMapping["maximum"] = tblOutputBindings->item(y,5)->text().trimmed();
 		outputMapping["on"] = tblOutputBindings->item(y,6)->text().trimmed();
@@ -783,17 +784,17 @@ void DlgPrefMidiBindings::buildDomElement() {
  * Gets the list of control objects
  */
 QStringList DlgPrefMidiBindings::getControlKeyList() {
-    // midi/BindableConfigKeys.txt = grep "ConfigKey" *.cpp | grep \\[ | sed -e 's/.*ConfigKey("//g' | cut -d \) -f1 | sed -e 's/[",]/ /g' -e 's/ \+/ /g' | egrep -ve '[+:>]' | sort -u | egrep -e "\[Channel[12]\]|\[Master\]" > midi/BindableConfigKeys.txt
+	// midi/BindableConfigKeys.txt = grep "ConfigKey" *.cpp | grep \\[ | sed -e 's/.*ConfigKey("//g' | cut -d \) -f1 | sed -e 's/[",]/ /g' -e 's/ \+/ /g' | egrep -ve '[+:>]' | sort -u | egrep -e "\[Channel[12]\]|\[Master\]" > midi/BindableConfigKeys.txt
 	if (controKeyOptionChoices.count() == 0) {
 		QFile input(m_pConfig->getConfigPath() + "midi/BindableConfigKeys.txt");
 
 		if (!input.open(QIODevice::ReadOnly)) return QStringList();
 
-	     while (!input.atEnd()) {
-	         QString line = input.readLine().trimmed();
-	         if (line.indexOf('#') == 0) continue; // ignore # hashed out comments
-	         if (!line.isNull()) controKeyOptionChoices.append(line);
-	     }
+		while (!input.atEnd()) {
+			QString line = input.readLine().trimmed();
+			if (line.indexOf('#') == 0) continue; // ignore # hashed out comments
+			if (!line.isNull()) controKeyOptionChoices.append(line);
+		}
 		input.close();
 	}
 	return controKeyOptionChoices;
