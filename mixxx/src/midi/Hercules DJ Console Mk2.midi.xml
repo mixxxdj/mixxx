@@ -90,7 +90,7 @@
         <group>[Channel1]</group>
         <key>pfl</key>
         <miditype>Ctrl</miditype>
-        <midino>34</midino>
+        <midino>33</midino>
         <midichan>1</midichan>
         <controltype>button</controltype>
         <options>
@@ -280,7 +280,7 @@
         <group>[Channel2]</group>
         <key>pfl</key>
         <miditype>Ctrl</miditype>
-        <midino>36</midino>
+        <midino>34</midino>
         <midichan>1</midichan>
         <controltype>button</controltype>
         <options>
