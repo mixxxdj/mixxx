@@ -17,15 +17,8 @@
 
 #include "midiobjectwin.h"
 #include "midiledhandler.h"
-#include <atlconv.h>
 #include <QtCore>
 #include <QtDebug>
-
-#ifdef __WIN__
-#ifdef __MSVS2005__
-#pragma comment (lib, "atls.lib")
-#endif
-#endif
 
 MidiObjectWin::MidiObjectWin() : MidiObject()
 {
@@ -51,7 +44,6 @@ MidiObjectWin::~MidiObjectWin()
 
 void MidiObjectWin::updateDeviceList() {
 
-    USES_CONVERSION; // enable WCHAR to char macro conversion
     // Fill in list of available devices
 	devices.clear();
 
@@ -59,11 +51,11 @@ void MidiObjectWin::updateDeviceList() {
     for (unsigned int i=0; i<midiInGetNumDevs(); i++)
     {
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
+		QString device_name= QString::fromUcs2((const ushort*)info.szPname);
+        qDebug() << "Midi Device '" << device_name << "' found.";
 
-        qDebug() << "Midi Device '" << W2A(info.szPname) << "' found.";
-
-        if (strlen(W2A(info.szPname))>0)
-            devices.append(W2A(info.szPname));
+		if (!device_name.isEmpty())
+            devices.append(device_name);
         else
             devices.append(QString("Device %1").arg(i));
     }
@@ -72,16 +64,16 @@ void MidiObjectWin::updateDeviceList() {
 void MidiObjectWin::devOpen(QString device)
 {
     if (openDevices.contains(device)) return;
-    USES_CONVERSION; // enable WCHAR to char macro conversion
     // Select device. If not found, select default (first in list).
     unsigned int i;
     MIDIINCAPS info;
     for (i=0; i<midiInGetNumDevs(); i++)
     {
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
-        if (strlen(W2A(info.szPname))>0 && ((QString(W2A(info.szPname)) == device) || (QString("Device %1").arg(i) == device)))
+		QString device_name = QString::fromUcs2((const ushort*)info.szPname);
+		if ((!device_name.isEmpty() && (device_name == device))|| (QString("Device %1").arg(i) == device))
         {
-            qDebug() << "Using Midi Device #" << i << ": " << W2A(info.szPname);
+            qDebug() << "Using Midi Device #" << i << ": " << device_name;
             break;
         }
     }
