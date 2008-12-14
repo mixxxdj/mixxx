@@ -174,7 +174,7 @@
          </rect>
         </property>
         <property name="text" >
-         <string>MIDI Send:</string>
+         <string>MIDI Output:</string>
         </property>
        </widget>
        <widget class="QComboBox" name="comboMidiTxEnable" >
@@ -219,7 +219,7 @@
          </rect>
         </property>
         <property name="text" >
-         <string>MIDI Recieve:</string>
+         <string>MIDI Input:</string>
         </property>
        </widget>
       </widget>
