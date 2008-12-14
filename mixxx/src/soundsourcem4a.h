@@ -21,6 +21,9 @@
 #include "soundsource.h"
 #include "mp4.h"
 
+#include "neaacdec.h"
+#include "m4a/ip.h"
+
 class TrackInfoObject;
 
 
@@ -35,9 +38,11 @@ class SoundSourceM4A : public SoundSource {
  private:
   int channels;
   int trackId;
-  long sampleId;
+  unsigned long sampleSize;
   unsigned long filelength;
   MP4FileHandle mp4file;
+
+  input_plugin_data ipd;
 };
 
 #endif

@@ -17,91 +17,84 @@
 #include "trackinfoobject.h"
 #include "soundsourcem4a.h"
 #include <QtDebug>
+#include "neaacdec.h"
 
 #ifdef __WIN__
 #include <io.h>
 #include <fcntl.h>
 #endif
 
+#include "m4a/mp4-mixxx.cpp"
+
 SoundSourceM4A::SoundSourceM4A(QString qFileName) : SoundSource(qFileName)
 {
-   QString mp4FileName;
-   mp4FileName = qFileName;
-   trackId = MP4_INVALID_TRACK_ID;
-   sampleId = 0;
-   mp4file = MP4Read(mp4FileName);
-   if (mp4file == MP4_INVALID_FILE_HANDLE) {
-     qDebug() << "mp4: " << mp4FileName << "could not be opened using the MP4 decoder.";
-     filelength = 0;
-     return;
-   }
-   trackId = MP4FindTrackId(mp4file, 0); // We are only interested in first track for the initial dev iteration
-   if (trackId == MP4_INVALID_TRACK_ID) {
-	   qDebug() << "trackId is invalid.";
-	   return;
-   }
-   channels = 2; //FIXME: hard coded M4A to 2 channels
+	// Initialize variables to invalid values in case loading fails.
+	mp4file = MP4_INVALID_FILE_HANDLE;
+	filelength = -1;
 
-   filelength = MP4GetTrackNumberOfSamples(mp4file, trackId);
-   SRATE = (filelength * 1024 * 1000) / MP4ConvertFromTrackDuration(mp4file, trackId, MP4GetTrackDuration(mp4file, trackId), MP4_MSECS_TIME_SCALE);
-   SRATE = 44100; // FIXME: Hard-coded SRATE, above formula for SRATE overflows an unsigned long... :(
-   qDebug() << "SRATE:"<< SRATE;
-   qDebug() << "filelength:" << filelength;
+	// Copy QString to char[] buffer for mp4_open to read from later
+	ipd.filename = new char[ qFileName.length() + 1 ];
+	strcpy(ipd.filename, qFileName);
+
+	int mp4_open_status = mp4_open(&ipd);
+	if (mp4_open_status != 0) {
+		// FIXME: Why the heck does the file fail to open more then half the time?!?!?
+		qDebug() << "SSM4A: failed to open MP4 file '" << qFileName << "' w/ status:" << mp4_open_status << " FIXME.";
+		return;
+	}
+	// mp4_open succeeded -> populate variables
+	mp4file = ((struct mp4_private*) ipd.private_ipd)->mp4.handle;
+	filelength = ((struct mp4_private*) ipd.private_ipd)->mp4.num_samples;
+	SRATE = ((struct mp4_private*) ipd.private_ipd)->sample_rate;
+	channels = ((struct mp4_private*) ipd.private_ipd)->channels;
+	qDebug() << "SSM4A: channels:" << channels << "filelength:" << filelength << "Sample Rate:" << SRATE;
 }
 
 SoundSourceM4A::~SoundSourceM4A(){
    if (mp4file != MP4_INVALID_FILE_HANDLE) {
-      MP4Close(mp4file);
+      mp4_close(&ipd);
+      mp4file = MP4_INVALID_FILE_HANDLE;
    }
 }
 
 long SoundSourceM4A::seek(long filepos){
-	Q_ASSERT(filepos % 2 == 0);
-	sampleId = 1 + (2 * filepos / READCHUNKSIZE); // sampleId is 1 indexed
-    qDebug() << "seek sampleId:"<< sampleId << "filepos:"<< filepos;
+	if (filelength ==-1) return -1; // Abort if file did not load.
+	// qDebug() << "MP4SEEK: seek time:" << filepos / (channels * SRATE) ;
+	mp4_seek(&ipd, filepos / (channels * SRATE) ); 	// FIXME: replace time-based seek which is imprecise/gittery with file position-based seek
+	return filepos;
 }
 
 unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destination){
-	Q_ASSERT(size % 2 == 0);
-
-    MP4Timestamp sampleTime;
-    MP4Duration sampleDuration, sampleRenderingOffset;
-    bool isSyncSample;
-
-//    uint32_t sample_size = MP4GetTrackMaxSampleSize(mp4file, trackId);
-//    uint8_t *sample = (uint8_t *)malloc(sample_size);
-    unsigned int this_size = MP4GetTrackMaxSampleSize(mp4file, trackId); // size;
-
-    uint8_t *sample = (uint8_t*) destination;
-
-	bool ret = MP4ReadSample(mp4file,
-			trackId,
-			sampleId,
-			&sample,
-			&this_size,
-			&sampleTime,
-			&sampleDuration,
-			&sampleRenderingOffset,
-			&isSyncSample);
-    qDebug() << "read Track:"<< trackId << "Sample:" << sampleId << "Length:" << this_size << "success:"<<ret;
-	if (ret == false) {
-		qDebug() << "read: Sample read error\n";
-		return -1;
-	}
-    return this_size;
+	if (filelength ==-1) return -1; // Abort if file did not load.
+	// We want to read a total of "size" samples, and the mp4_read() function wants to
+	// know how many bytes we want to decode. One sample is 16-bits = 2 bytes here, so we
+	// multiply size by 2 to get the number of bytes we want to decode.
+	int total_bytes_to_decode = size * 2;
+	int total_bytes_decoded = 0;
+	int num_samples_req = 4096;
+	do {
+		if (total_bytes_decoded + num_samples_req > total_bytes_to_decode)
+			num_samples_req = total_bytes_to_decode - total_bytes_decoded;
+		total_bytes_decoded += mp4_read(&ipd, (char *)&destination[total_bytes_decoded/2], num_samples_req);
+	} while (total_bytes_decoded < total_bytes_to_decode);
+	// Tell us about it only if we end up decoding a different value then what we expect.
+	if (total_bytes_decoded % (size * 2)) qDebug() << "MP4READ: total_bytes_decoded:" << total_bytes_decoded << "size:" << size;
+	return total_bytes_decoded/2; //There are two bytes in a 16-bit sample, so divide by 2.
 }
 
 inline long unsigned SoundSourceM4A::length(){
-   return filelength;
+     if (filelength == -1) return -1;
+     return channels * mp4_duration(&ipd) * SRATE;
 }
 
 int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
-    QString mp4FileName = Track->getLocation();
-
+    if (Track->getHeaderParsed()) return OK;
+	QString mp4FileName = Track->getLocation();
     char *value;
     MP4FileHandle mp4file = MP4Read(mp4FileName);
     if (mp4file == MP4_INVALID_FILE_HANDLE) {
      qDebug() << "mp4: " << mp4FileName << "could not be opened using the MP4 decoder.";
+     Track->setHeaderParsed(false);
      return ERR;
    }
 
@@ -130,8 +123,7 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
    int trackId = MP4FindTrackId(mp4file, 0); // We are only interested in first track for the initial dev iteration
    Track->setDuration(MP4ConvertFromTrackDuration(mp4file, trackId, MP4GetTrackDuration(mp4file, trackId), MP4_SECS_TIME_SCALE));
    Track->setBitrate(MP4GetTrackBitRate(mp4file, trackId)/1000);
-
-   Track->setChannels(2); // FIXME: hard-coded to 2 channels
+   Track->setChannels(2); // FIXME: hard-coded to 2 channels - real value is not available until faacDecInit2 is called
 
    MP4Close(mp4file);
    return OK;
