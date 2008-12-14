@@ -20,6 +20,10 @@
 #include "wwidget.h"
 #include "configobject.h"
 
+#ifdef __SCRIPT__
+#include "script/midiscriptengine.h"
+#endif
+
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
 const QStringList options = (QStringList() << "Normal" << "Script-Binding" << "Invert" << "Rot64" << "Rot64Inv"
 		<< "Rot64Fast" << "Diff" << "Button" << "Switch" << "HercJog"
@@ -61,7 +65,6 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
 	connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
 	connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
 
-
 	// Try to read in the current XML bindings file, or create one if nothing is available
 	loadPreset(BINDINGS_PATH);
 	applyPreset();
@@ -95,6 +98,12 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 		QString device = controller.attribute("id","");
 		qDebug() << device << " settings found" << endl;
 		QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
+
+#ifdef __SCRIPT__
+		bool scriptGood=m_pMidi->ScriptEngine->evaluateScript();
+		QStringList scriptFunctions;
+		if (scriptGood) scriptFunctions = m_pMidi->ScriptEngine->getFunctionList();
+#endif
 		while (!control.isNull()) {
 			// For each control
 			QString group = WWidget::selectNodeQString(control, "group");
@@ -113,8 +122,19 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 			} else {
 				option = "Normal";
 			}
+			
+#ifdef __SCRIPT__
+			// Verify script functions are loaded
+			if (scriptGood && (option=="script-binding" || option=="Script-Binding") && scriptFunctions.indexOf(key)==-1) {
+				QMessageBox::warning(this, "Warning: Script function not found", "Function "+key+" not found in script "+m_pMidi->ScriptEngine->getFilepath()+".\nThis control will be unbound.  Please correct by either adding the script method or correcting the key name before relearning the control.");
+				addRow(device, group, key, controltype, "", "", "", option); // Drop the midi binding bit...
+			} else {
+#endif
 			// Construct row in table
 			addRow(device, group, key, controltype, miditype, midino, midichan, option);
+#ifdef __SCRIPT__
+			}
+#endif
 			control = control.nextSiblingElement("control");
 		}
 

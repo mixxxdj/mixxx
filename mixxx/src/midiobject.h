@@ -22,6 +22,9 @@
 #include "defs.h"
 #include "configobject.h"
 
+#ifdef __SCRIPT__
+#include "script/midiscriptengine.h"
+#endif
 
 class ControlObject;
 class QWidget;
@@ -61,6 +64,10 @@ public:
     /** Returns a list of available configurations. Takes as input the directory path
       * containing the configuration files */
     QStringList *getConfigList(QString path);
+
+#ifdef __SCRIPT__
+    MidiScriptEngine *ScriptEngine;
+#endif
 
 	// Stuff for sending messages to control leds etc
 	void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);

@@ -37,6 +37,9 @@ MidiObject::MidiObject()
     requestStop = false;
     midiLearn = false;
     debug = false;
+#ifdef __SCRIPT__
+    ScriptEngine = new MidiScriptEngine(UNIX_SHARE_PATH "/midi/midi-mappings-scripts.js");
+#endif
 }
 
 /* -------- ------------------------------------------------------
