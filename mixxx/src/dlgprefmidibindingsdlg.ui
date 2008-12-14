@@ -161,7 +161,7 @@
           </size>
          </property>
          <property name="title" >
-          <string>Binding Preset Management</string>
+          <string>Input Binding Management</string>
          </property>
          <layout class="QGridLayout" name="gridLayout" >
           <item row="0" column="0" >
