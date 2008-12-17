@@ -111,9 +111,15 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 			QString controltype = WWidget::selectNodeQString(control, "controltype");
 			QString miditype = WWidget::selectNodeQString(control, "miditype");
 			// We convert to midino and midichan to base 10 because that his how they will be matched to midi keys internally.
-			QString midino = QString::number(WWidget::selectNodeQString(control, "midino").toUShort(NULL, 0), 10);
-			QString midichan = QString::number(WWidget::selectNodeQString(control, "midichan").toUShort(NULL, 0), 10);
-
+			bool ok = false;
+			QString midino = QString::number(WWidget::selectNodeQString(control, "midino").toUShort(&ok, 0), 10);
+			QString midichan = !ok ? "" : QString::number(WWidget::selectNodeQString(control, "midichan").toUShort(&ok, 0), 10);
+			if (miditype.trimmed().length() == 0 || !ok) { // Blank all values, if they one is invalid
+				qDebug() << "One or more of miditype, midino, or midichan elements were omitted. The MIDI control has been cleared, you'll have to reteach it.";
+				miditype = "";
+				midino = "";
+				midichan = "";
+			}
 			QDomElement optionsNode = control.firstChildElement("options");
 			// At the moment, use one element, in future iterate through options
 			QString option;
@@ -627,15 +633,15 @@ void DlgPrefMidiBindings::addRow(QString device, QString group, QString key, QSt
 	controlKeysComboBox->addItems(getControlKeyList());
 	QString controlKey = QString(group + " " + key).trimmed();
 	if (controlKeysComboBox->findText(controlKey) == -1) {
-		controlKeysComboBox->addItem(controlKey);
+		controlKeysComboBox->addItem(controlKey.trimmed());
 	}
 	controlKeysComboBox->setCurrentIndex(controlKeysComboBox->findText(controlKey));
 
 	tblBindings->setCellWidget(row, 0, controlKeysComboBox);
 
-	tblBindings->setItem(row, 1, new QTableWidgetItem(miditype + " " + midino + " " + midichan));
-	tblBindings->setItem(row, 2, new QTableWidgetItem(device));
-	tblBindings->setItem(row, 3, new QTableWidgetItem(controltype));
+	tblBindings->setItem(row, 1, new QTableWidgetItem(QString(miditype + " " + midino + " " + midichan).trimmed()));
+	tblBindings->setItem(row, 2, new QTableWidgetItem(device.trimmed()));
+	tblBindings->setItem(row, 3, new QTableWidgetItem(controltype.trimmed()));
 
 	//Setup the Options combobox
 	QComboBox *optionBox = new QComboBox();
@@ -689,12 +695,23 @@ void DlgPrefMidiBindings::buildDomElement() {
 
 		QHash<QString, QString> controlMapping;
 		QString controlKey = ((QComboBox*)tblBindings->cellWidget(y,0))->currentText().trimmed();
-		if (controlKey.isEmpty() || controlKey.split(' ').count() < 2 || controlKey.indexOf("[") == -1 || controlKey.indexOf("]") == -1) continue; // Invalid mapping, skip it.
-		controlMapping["group"] = controlKey.split(' ').at(0).trimmed();
-		controlMapping["key"] = controlKey.split(' ').at(1).trimmed();
-		controlMapping["miditype"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(0).trimmed();
-		controlMapping["midino"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(1).trimmed();
-		controlMapping["midichan"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(2).trimmed();
+
+		if (controlKey.isEmpty() 
+			|| controlKey.trimmed().split(' ').count() < 2 
+			|| controlKey.indexOf("[") == -1 
+			|| controlKey.indexOf("]") == -1) {
+			qDebug() << "MIDI Input Row"<<y+1<<"was dropped during save because controlKey value of" << controlKey <<"is invalid."; 
+			continue; // Invalid mapping, skip it.
+		}
+		controlMapping["group"] = controlKey.trimmed().split(' ').at(0).trimmed();
+		controlMapping["key"] = controlKey.trimmed().split(' ').at(1).trimmed();
+		if ( tblBindings->item(y,1)->text().trimmed().split(' ').count() == 3 ) {
+			controlMapping["miditype"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(0).trimmed();
+			controlMapping["midino"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(1).trimmed();
+			controlMapping["midichan"] = tblBindings->item(y,1)->text().trimmed().split(' ').at(2).trimmed();
+		} else {
+			qDebug() << "MIDI value of" << tblBindings->item(y,1)->text().trimmed() << "was omitted from the mapping saved for row"<<y+1<<"."; 
+		}
 		controlMapping["controltype"] = tblBindings->item(y,3)->text().trimmed();
 		controlMapping["options"] = ((QComboBox*)tblBindings->cellWidget(y,4))->currentText().trimmed();
 
@@ -738,9 +755,16 @@ void DlgPrefMidiBindings::buildDomElement() {
 
 		QHash<QString, QString> outputMapping;
 		QString controlKey = ((QComboBox*)tblOutputBindings->cellWidget(y,1))->currentText().trimmed();
-		if (controlKey.isEmpty() || controlKey.split(' ').count() < 2 || controlKey.indexOf("[") == -1 || controlKey.indexOf("]") == -1) continue; // Invalid mapping, skip it.
-
-		outputMapping["group"] = controlKey.split(' ').at(0).trimmed();
+		if (controlKey.isEmpty() 
+			|| controlKey.trimmed().split(' ').count() < 2 
+			|| controlKey.indexOf("[") == -1 
+			|| controlKey.indexOf("]") == -1
+			|| tblOutputBindings->item(y,2)->text().trimmed().split(' ').count() < 2) {
+			qDebug() << "MIDI Output Row"<<y+1<<"was dropped during save because it contains invalid values."; 
+			continue; // Invalid mapping, skip it.
+		}
+		
+		outputMapping["group"] = controlKey.trimmed().split(' ').at(0).trimmed();
 		outputMapping["key"] = controlKey.trimmed().split(' ').at(1).trimmed();
 		outputMapping["status"] = tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(0).trimmed();
 		outputMapping["midino"] = tblOutputBindings->item(y,2)->text().trimmed().split(' ').at(1).trimmed();
