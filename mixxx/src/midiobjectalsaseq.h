@@ -33,6 +33,7 @@ public:
     void devOpen(QString device);
     void devClose(QString device);
     void sendShortMsg(unsigned int word);
+    void sendSysexMsg(unsigned char data[], unsigned int length);
 protected:
     void run();
 

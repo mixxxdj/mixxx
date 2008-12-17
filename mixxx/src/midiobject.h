@@ -23,7 +23,7 @@
 #include "configobject.h"
 
 #ifdef __SCRIPT__
-#include "script/midiscriptengine.h"
+class MidiScriptEngine;     // Forward declaration
 #endif
 
 class ControlObject;
@@ -45,7 +45,7 @@ typedef enum {
 
 class MidiObject : public QThread
 {
-		Q_OBJECT
+                Q_OBJECT
 
 public:
     MidiObject();
@@ -53,7 +53,7 @@ public:
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
-	virtual void updateDeviceList() {};
+        virtual void updateDeviceList() {};
     virtual void devClose(QString) = 0;
     void add(ControlObject* c);
     void remove(ControlObject* c);
@@ -65,26 +65,27 @@ public:
       * containing the configuration files */
     QStringList *getConfigList(QString path);
 
+    // Stuff for sending messages to control leds etc
+    void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);
+    virtual void sendShortMsg(unsigned int word);
+    virtual void sendSysexMsg(unsigned char data[], unsigned int length);
+
+    // Rx/Tx Toggle Functions
+    bool getRxStatus(QString device);
+    bool getTxStatus(QString device);
+    void setRxStatus(QString device, bool status);
+    void setTxStatus(QString device, bool status);
+    bool getDebugStatus();
+    void enableDebug(DlgPrefMidiDevice *dlgDevice);
+    void disableDebug();
+
+    bool getMidiLearnStatus();
+    void enableMidiLearn(DlgPrefMidiBindings *dlgBindings);
+    void disableMidiLearn();
+
 #ifdef __SCRIPT__
-    MidiScriptEngine *ScriptEngine;
+    MidiScriptEngine *getMidiScriptEngine();
 #endif
-
-	// Stuff for sending messages to control leds etc
-	void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);
-	virtual void sendShortMsg(unsigned int word);
-
-	// Rx/Tx Toggle Functions
-	bool getRxStatus(QString device);
-	bool getTxStatus(QString device);
-	void setRxStatus(QString device, bool status);
-	void setTxStatus(QString device, bool status);
-	bool getDebugStatus();
-	void enableDebug(DlgPrefMidiDevice *dlgDevice);
-	void disableDebug();
-
-	bool getMidiLearnStatus();
-	void enableMidiLearn(DlgPrefMidiBindings *dlgBindings);
-	void disableMidiLearn();
 
     signals:
     void midiEvent(ConfigValueMidi *value, QString device);
@@ -114,6 +115,10 @@ protected:
     DlgPrefMidiDevice *dlgDevice;
     // Pointer to bindings dialog (for MIDI learn)
     DlgPrefMidiBindings *dlgBindings;
+
+#ifdef __SCRIPT__
+    MidiScriptEngine *m_pScriptEngine;
+#endif
 };
 
 void abortRead(int);
