@@ -22,7 +22,9 @@
 #include <signal.h>
 #include "dlgprefmididevice.h"
 #include "dlgprefmidibindings.h"
-
+#ifdef __SCRIPT__
+#include "script/midiscriptengine.h"
+#endif
 
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop
@@ -38,7 +40,7 @@ MidiObject::MidiObject()
     midiLearn = false;
     debug = false;
 #ifdef __SCRIPT__
-	ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
+    ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
     ScriptEngine = new MidiScriptEngine(m_pConfig->getConfigPath().append("/midi/midi-mappings-scripts.js"));
 #endif
 }
@@ -262,59 +264,68 @@ void abortRead(int)
 }
 
 void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device) {
-	if (!TxEnabled[device]) return;
+    if (!TxEnabled[device]) return;
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
 }
 
 void MidiObject::sendShortMsg(unsigned int /* word */) {
-	// This warning comes out rather frequently now we're using LEDs with VuMeters
+    // This warning comes out rather frequently now we're using LEDs with VuMeters
     //qDebug() << "MIDI message sending not implemented yet on this platform";
 }
 
+void MidiObject::sendSysexMsg(unsigned char data[], unsigned int length) {
+    qDebug() << "MIDI system exclusive message sending not yet implemented on this platform";
+}
+
 bool MidiObject::getRxStatus(QString device) {
-	return RxEnabled[device];
+    return RxEnabled[device];
 }
 
 bool MidiObject::getTxStatus(QString device) {
-	return TxEnabled[device];
+    return TxEnabled[device];
 }
 
 void MidiObject::setRxStatus(QString device, bool status) {
-	RxEnabled[device] = status;
+    RxEnabled[device] = status;
 }
 
 void MidiObject::setTxStatus(QString device, bool status) {
-	TxEnabled[device] = status;
+    TxEnabled[device] = status;
 }
 
 bool MidiObject::getDebugStatus() {
-	return debug;
+    return debug;
 }
 
 void MidiObject::enableDebug(DlgPrefMidiDevice *dlgDevice) {
-	debug = true;
-	this->dlgDevice = dlgDevice;
-	connect(this, SIGNAL(debugInfo(ConfigValueMidi *, QString)), dlgDevice, SLOT(slotDebug(ConfigValueMidi *, QString)));
+    debug = true;
+    this->dlgDevice = dlgDevice;
+    connect(this, SIGNAL(debugInfo(ConfigValueMidi *, QString)), dlgDevice, SLOT(slotDebug(ConfigValueMidi *, QString)));
 }
 
 void MidiObject::disableDebug() {
-	debug = false;
+    debug = false;
 }
 
 bool MidiObject::getMidiLearnStatus() {
-	return midiLearn;
+    return midiLearn;
 }
 
 void MidiObject::enableMidiLearn(DlgPrefMidiBindings *dlgBindings) {
-	midiLearn = true;
-	this->dlgBindings = dlgBindings;
-	connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(singleLearn(ConfigValueMidi *, QString)));
-	connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(groupLearn(ConfigValueMidi *, QString)));
+    midiLearn = true;
+    this->dlgBindings = dlgBindings;
+    connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(singleLearn(ConfigValueMidi *, QString)));
+    connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(groupLearn(ConfigValueMidi *, QString)));
 }
 
 void MidiObject::disableMidiLearn() {
-	midiLearn = false;
+    midiLearn = false;
 }
 
+#ifdef __SCRIPT__
+MidiScriptEngine * MidiObject::getMidiScriptEngine() {
+    return m_pScriptEngine;
+}
+#endif

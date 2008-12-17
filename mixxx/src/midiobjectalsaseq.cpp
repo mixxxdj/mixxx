@@ -343,13 +343,29 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
 
     // Decide which event type to choose
     switch ((byte1 & 0xf0)) {
-    case 0x90:
+    case 0x90:  // Note on/off
         snd_seq_ev_set_noteon(&ev, byte1&0xf, byte2, byte3);
-	    snd_seq_event_output_direct(m_handle, &ev);
-	    break;
-    case 0xb0:
-	    snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
-	    snd_seq_event_output_direct(m_handle, &ev);
-	    break;
+        snd_seq_event_output_direct(m_handle, &ev);
+        break;
+    case 0xb0:  // Control Change
+        snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
+        snd_seq_event_output_direct(m_handle, &ev);
+        break;
     }
+}
+
+// The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
+void MidiObjectALSASeq::sendSysexMsg(unsigned char data[], unsigned int length) {
+    snd_seq_event_t ev;
+
+    // Initialize the event structure
+    snd_seq_ev_set_direct(&ev);
+    snd_seq_ev_set_source(&ev, m_input);
+
+    // Send to all subscribers
+    snd_seq_ev_set_dest(&ev, SND_SEQ_ADDRESS_SUBSCRIBERS, 0);
+
+    // Do it
+    snd_seq_ev_set_sysex(&ev,length,data);
+    snd_seq_event_output_direct(m_handle, &ev);
 }

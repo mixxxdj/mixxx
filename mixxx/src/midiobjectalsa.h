@@ -19,7 +19,7 @@
 #define MIDIOBJECTALSA_H
 
 #include <midiobject.h>
-#include <sys/asoundlib.h>
+#include <alsa/asoundlib.h>
 
 /**
   *@author Tue & Ken Haste Andersen
