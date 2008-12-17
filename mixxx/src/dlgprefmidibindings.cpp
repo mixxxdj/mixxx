@@ -100,9 +100,9 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 		QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
 #ifdef __SCRIPT__
-		bool scriptGood=m_pMidi->ScriptEngine->evaluateScript();
+		bool scriptGood=m_pMidi->getMidiScriptEngine()->evaluateScript();
 		QStringList scriptFunctions;
-		if (scriptGood) scriptFunctions = m_pMidi->ScriptEngine->getFunctionList();
+		if (scriptGood) scriptFunctions = m_pMidi->getMidiScriptEngine()->getFunctionList();
 #endif
 		while (!control.isNull()) {
 			// For each control
@@ -126,7 +126,7 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
 #ifdef __SCRIPT__
 			// Verify script functions are loaded
 			if (scriptGood && (option=="script-binding" || option=="Script-Binding") && scriptFunctions.indexOf(key)==-1) {
-				QMessageBox::warning(this, "Warning: Script function not found", "Function "+key+" not found in script "+m_pMidi->ScriptEngine->getFilepath()+".\nThis control will be unbound.  Please correct by either adding the script method or correcting the key name before relearning the control.");
+				QMessageBox::warning(this, "Warning: Script function not found", "Function "+key+" not found in script "+m_pMidi->getMidiScriptEngine()->getFilepath()+".\nThis control will be unbound.  Please correct by either adding the script method or correcting the key name before relearning the control.");
 				addRow(device, group, key, controltype, "", "", "", option); // Drop the midi binding bit...
 			} else {
 #endif
