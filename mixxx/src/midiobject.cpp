@@ -41,7 +41,7 @@ MidiObject::MidiObject()
     debug = false;
 #ifdef __SCRIPT__
     ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
-    ScriptEngine = new MidiScriptEngine(m_pConfig->getConfigPath().append("/midi/midi-mappings-scripts.js"));
+    m_pScriptEngine = new MidiScriptEngine(m_pConfig->getConfigPath().append("/midi/midi-mappings-scripts.js"));
 #endif
 }
 
