@@ -19,58 +19,111 @@
 #include "midiscriptengine.h"
 
 /* -------- ------------------------------------------------------
-   Purpose: Open default script file, read into QString, evaluate() it
-   Input:   -
-   Output:  -
-   -------- ------------------------------------------------------ */
-// MidiScriptEngine::MidiScriptEngine() {
-// 
-// 	// Default common script file
-// 	MidiScriptEngine(UNIX_SHARE_PATH "/midi/midi-mappings-scripts.js");
-// }
-
-/* -------- ------------------------------------------------------
-   Purpose: Open script file, read into QString, evaluate() it
+   Purpose: Open script file, read into QString
    Input:   Path to script file
    Output:  -
    -------- ------------------------------------------------------ */
-MidiScriptEngine::MidiScriptEngine(QString filepath) : m_engine() {
+MidiScriptEngine::MidiScriptEngine() : m_engine() {
 
-	m_filepath=filepath;
-// 	qDebug() << "MidiScriptEngine: Path construction";
-
-	QScriptValue globalObject = m_engine.globalObject();
-	globalObject.setProperty("Mixxx", m_engine.newQObject(this));
-	
-	// Read in the script file
-	QFile input(m_filepath);
-	if (!input.open(QIODevice::ReadOnly)) {
-		qWarning() << "MidiScriptEngine: Problem opening the script file: " << m_filepath << ", error #" << input.error();
-		return;
-	}
-	m_scriptCode = QString(input.readAll());
-	input.close();
+    engineGlobalObject = m_engine.globalObject();
+    engineGlobalObject.setProperty("engine", m_engine.newQObject(this));
+//     QObject *someObject = new MidiObject;
+//     QScriptValue objectValue = m_engine.newQObject(someObject);
+//     engineGlobalObject.setProperty("midi", objectValue);
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
 }
 
 /* -------- ------------------------------------------------------
+   Purpose: Load a script file into this object and add to existing code.
+   Input:   Path to script file
+   Output:  true if load successful
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::loadScript(QString filepath) {
+
+    m_lastFilepath=filepath;
+
+    // Read in the script file
+    QFile input(m_lastFilepath);
+    if (!input.open(QIODevice::ReadOnly)) {
+        qWarning() << "MidiScriptEngine: Problem opening the script file: " << m_lastFilepath << ", error #" << input.error();
+        return false;
+    }
+    m_scriptCode.append(input.readAll());
+    m_scriptCode.append('\n');
+    input.close();
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Return the file path of the most recently loaded script
+   Input:   -
+   Output:  m_lastFilepath QString
+   -------- ------------------------------------------------------ */
+QString MidiScriptEngine::getLastFilepath() {
+    return m_lastFilepath;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Clear out the script code (to load new)
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::clearCode() {
+    m_scriptCode.clear();
+    return;
+}
+
+/* -------- ------------------------------------------------------
    Purpose: Validate script syntax, then evaluate() it so the
             functions are registered & available for use.
    Input:   -
-   Output:  m_result QString is set
+   Output:  m_result QScriptValue
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::evaluateScript() {
-	if (!m_engine.canEvaluate(m_scriptCode)) {
-		qWarning() << "MidiScriptEngine: ?Syntax error in script file:" << m_filepath;
-		m_scriptCode.clear();	// Free up now-unneeded memory
-		return false;
-	}
-	m_result = m_engine.evaluate(m_scriptCode).toString();
-	qDebug() << "MidiScriptEngine: Script" << m_filepath << "evaluated successfully.";
-// 	qDebug() << "m_scriptCode: " << m_scriptCode;
-	return true;
+void MidiScriptEngine::evaluateScript() {
+    if (!m_engine.canEvaluate(m_scriptCode)) {
+        qWarning() << "MidiScriptEngine: ?Syntax error in script file:" << m_lastFilepath;
+        m_scriptCode.clear();    // Free up now-unneeded memory
+        m_scriptGood=false;
+        return;
+    }
+    m_result = m_engine.evaluate(m_scriptCode);
+//     if (!checkException())
+//         qDebug() << "MidiScriptEngine: Script code evaluated successfully.";
+    m_scriptGood=true;
+    return;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Execute a script function
+   Input:   -
+   Output:  m_result QScriptValue
+   -------- ------------------------------------------------------ */
+QScriptValue MidiScriptEngine::execute(QString function) {
+    if (!m_engine.canEvaluate(function)) {
+        qWarning() << "MidiScriptEngine: ?Syntax error in function " << function;
+        return QScriptValue();
+    }
+    m_result = m_engine.evaluate(function);
+//     if (!checkException(m_result))
+//         qDebug() << "MidiScriptEngine: Script function" << function << "executed successfully.";
+    return m_result;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Check to see if a script threw an exception
+   Input:   QScriptValue returned from call(scriptFunctionName)
+   Output:  true if there was an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::checkException() {
+    if (m_engine.hasUncaughtException()) {
+        int line = m_engine.uncaughtExceptionLineNumber();
+//         qDebug() << "MidiScriptEngine: uncaught exception" << m_engine.uncaughtException().toString() << "\nBacktrace:\n" << m_engine.uncaughtExceptionBacktrace();
+        qDebug() << "MidiScriptEngine: uncaught exception" << m_engine.uncaughtException().toString() << "at line" << line;
+        return true;
+    }
+    return false;
 }
 
 /* -------- ------------------------------------------------------
@@ -79,16 +132,25 @@ bool MidiScriptEngine::evaluateScript() {
    Output:  m_result QString
    -------- ------------------------------------------------------ */
 QString MidiScriptEngine::getResult() {
-	return m_result;
+    return m_result.toString();
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Return the file path of the current script
+   Purpose: Return if the script evaulated successfully or not
    Input:   -
-   Output:  m_result QString
+   Output:  m_scriptGood boolean
    -------- ------------------------------------------------------ */
-QString MidiScriptEngine::getFilepath() {
-	return m_filepath;
+bool MidiScriptEngine::isGood() {
+    return m_scriptGood;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Return the script engine
+   Input:   -
+   Output:  m_engine QScriptEngine
+   -------- ------------------------------------------------------ */
+QScriptEngine * MidiScriptEngine::getEngine() {
+    return &m_engine;
 }
 
 /* -------- ------------------------------------------------------
@@ -99,30 +161,30 @@ QString MidiScriptEngine::getFilepath() {
    -------- ------------------------------------------------------ */
 QStringList MidiScriptEngine::getFunctionList() {
 
-	QStringList functionList;
-	QStringList codeLines=m_scriptCode.split("\n");
-	
-// 	qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;	
-	
-	qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
-	
-	// grep 'function' midi/midi-mappings-scripts.js|grep -i '(msg)'|sed -e 's/function \(.*\)(msg).*/\1/i' -e 's/[= ]//g'
-	QRegExp rx("*function*(msg)*");	// Find all lines with function names in them
-	rx.setPatternSyntax(QRegExp::Wildcard);
-	
-	int position = codeLines.indexOf(rx);
+    QStringList functionList;
+    QStringList codeLines=m_scriptCode.split("\n");
+    
+//     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;    
+    
+    qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
+    
+    // grep 'function' midi/midi-mappings-scripts.js|grep -i '(msg)'|sed -e 's/function \(.*\)(msg).*/\1/i' -e 's/[= ]//g'
+    QRegExp rx("*.*function*(*)*");    // Find all lines with function names in them
+    rx.setPatternSyntax(QRegExp::Wildcard);
+    
+    int position = codeLines.indexOf(rx);
 
-	while (position != -1) {	// While there are more matches
-	
-		QString line = codeLines.takeAt(position);	// Pull & remove the current match from the list.
-		
-		if (line.indexOf('#') != 0) {	// ignore # hashed out comments
-			QStringList field = line.split(" ");
-			qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
-			functionList.append(field[0]);
-		}
-		position = codeLines.indexOf(rx);
-	}
+    while (position != -1) {    // While there are more matches
+    
+        QString line = codeLines.takeAt(position);    // Pull & remove the current match from the list.
+        
+        if (line.indexOf('#') != 0) {    // ignore # hashed out comments
+            QStringList field = line.split(" ");
+            qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
+            functionList.append(field[0]);
+        }
+        position = codeLines.indexOf(rx);
+    }
 
-	return functionList;
+    return functionList;
 }

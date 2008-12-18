@@ -21,25 +21,33 @@
 
 class MidiScriptEngine : public QObject {
 
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MidiScriptEngine();
-	MidiScriptEngine(QString);
-	~MidiScriptEngine();
+    MidiScriptEngine();
+    ~MidiScriptEngine();
+    
+    QScriptValue engineGlobalObject;
+    QScriptEngine *getEngine();
 
-	QString getResult();
-	QString getFilepath();
+    void clearCode();
+    bool loadScript(QString filepath);
+    QString getResult();
+    QString getLastFilepath();
 
-	bool evaluateScript();
-	QStringList getFunctionList();
-	
+    void evaluateScript();
+    bool isGood();
+    QScriptValue execute(QString);
+    QStringList getFunctionList();
+    
+    bool checkException();
+    
 private:
-	QScriptEngine m_engine;
-	QString m_filepath;
-	QString m_scriptCode;
-	QString m_result;
+    QScriptEngine m_engine;
+    QScriptValue m_result;
+    QString m_lastFilepath;
+    QString m_scriptCode;
+    bool m_scriptGood;
 };
-
 #endif
 
