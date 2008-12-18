@@ -40,8 +40,32 @@ MidiObject::MidiObject()
     midiLearn = false;
     debug = false;
 #ifdef __SCRIPT__
+    m_pScriptEngine = new MidiScriptEngine();
+    m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
+
     ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
-    m_pScriptEngine = new MidiScriptEngine(m_pConfig->getConfigPath().append("/midi/midi-mappings-scripts.js"));
+    m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("/midi/midi-mappings-scripts.js"));
+// FIXME: this hack below has to be replaced with something better... even *.js is preferrable to a hard coded string switch statement.
+//     switch (m_device) {
+//         case "SCS.3d MIDI *":
+//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("/midi/Stanton-SCS3d-scripts.js"));
+//             break;
+//         case "Hercules MK2 *":
+//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("/midi/Hercules-MK2-scripts.js"));
+//             break;
+//     }
+    qDebug() << "MidiObject: Evaluating all script code";
+    m_pScriptEngine->evaluateScript();
+    if (!m_pScriptEngine->checkException()) qDebug() << "MidiObject: Script code evaluated successfully";
+
+/*    // Call script's init function if it exists - First need m_channel and m_device in this object
+    QScriptValue scriptFunction = m_pScriptEngine->execute("init");
+    if (!scriptFunction.isFunction()) qDebug() << "MidiObject: No init function in script";
+    else {
+        scriptFunction.call(QScriptValue());
+        m_pScriptEngine->checkException();
+    }
+*/
 #endif
 }
 
@@ -94,7 +118,7 @@ void MidiObject::remove(ControlObject * c)
 
 QStringList * MidiObject::getDeviceList()
 {
-	updateDeviceList();
+    updateDeviceList();
     return &devices;
 }
 
@@ -137,7 +161,7 @@ QStringList MidiObject::getOpenDevices()
 void MidiObject::receive(MidiCategory category, char channel, char control, char value, QString device)
 {
     // qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
-	if (!RxEnabled[device]) return;
+    if (!RxEnabled[device]) return;
 
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
@@ -170,32 +194,49 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
        .arg(QString::number(value, 16).toUpper());
 */
     if (midiLearn) {
-    	emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
-    	return; // Don't pass on controls when in dialog
+        emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
+        return; // Don't pass on controls when in dialog
     }
 
     if (debug) {
-    	emit(debugInfo(new ConfigValueMidi(type,control,channel), device));
-    	return; // Don't pass on controls when in dialog
+        emit(debugInfo(new ConfigValueMidi(type,control,channel), device));
+        return; // Don't pass on controls when in dialog
     }
 
     if (!m_pMidiConfig) {
-	return;
+    return;
     } // Used to be this:
     //Q_ASSERT(m_pMidiConfig);
     ConfigKey * pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
     if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
     // qDebug() << "MidiObject::receive ok" << pConfigKey->group << pConfigKey->item;
-
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
 
+#ifdef __SCRIPT__
     // Custom MixxxScript (QtScript) handler
     if (((ConfigValueMidi *)c->val)->midioption==MIDI_OPT_SCRIPT) {
-        qDebug() << "MidiObject::Calling script" << pConfigKey->item;
-//      call {pConfigKey->item}(category, channel, control, value, device);
-        return;
+//         qDebug() << "MidiObject: Calling script function" << pConfigKey->item;
+        QScriptValue scriptFunction = m_pScriptEngine->execute(pConfigKey->item);
+        if (!scriptFunction.isFunction()) qDebug() << "MidiObject: Invalid Function";
+        else {
+//             ScriptMidiMsg *tempMidiMsg = new ScriptMidiMsg(channel, control, value, device);
+//             QScriptValue msg = m_pScriptEngine->getEngine().newQObject(tempMidiMsg);
+//             m_pScriptEngine->engineGlobalObject.setProperty("msg", msg);
+            QScriptValueList args;
+            // Channel and Device should be in this object
+            args << QScriptValue(m_pScriptEngine->getEngine(), channel);
+            args << QScriptValue(m_pScriptEngine->getEngine(), device);
+            // -----
+            args << QScriptValue(m_pScriptEngine->getEngine(), control);
+            args << QScriptValue(m_pScriptEngine->getEngine(), value);
+
+            scriptFunction.call(QScriptValue(),args);
+            m_pScriptEngine->checkException();
+            return;
+        }
     }
+#endif
 
     ControlObject * p = ControlObject::getControl(*pConfigKey);
     // qDebug() << "MidiObject::receive value:" << QString::number(value, 16).toUpper() << " c:" << c << "c->midioption:" << ((ConfigValueMidi *)c->val)->midioption << "p:" << p;
@@ -230,11 +271,11 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (c && p)
     {
         // qDebug() << "value going into ComputeValue: " << newValue;
-		ControlObject::sync();
+        ControlObject::sync();
         newValue = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), newValue);
         // qDebug() << "value coming out ComputeValue: " << newValue;
 
-		// I'm not sure entirely why buttons should be special here or what the difference is - Adam
+        // I'm not sure entirely why buttons should be special here or what the difference is - Adam
         if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
             p->set(newValue);
             // qDebug() << "New Control Value: " << newValue << " (skipping queueFromMidi call)";
@@ -242,7 +283,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         }
 
         // qDebug() << "New Control Value: " << newValue << " ";
-		p->queueFromMidi(category, newValue);
+        p->queueFromMidi(category, newValue);
     }
 
 }
@@ -273,6 +314,19 @@ void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
 void MidiObject::sendShortMsg(unsigned int /* word */) {
     // This warning comes out rather frequently now we're using LEDs with VuMeters
     //qDebug() << "MIDI message sending not implemented yet on this platform";
+}
+
+void MidiObject::sendSysexMsg(QList<int> data, unsigned int length) {
+    unsigned char * sysexMsg;
+    sysexMsg = new unsigned char [length];
+
+    for (int i=0; i<length; i++) {
+        sysexMsg[i] = data.at(i);
+//         qDebug() << "sysexMsg" << i << "=" << sysexMsg[i] << ", data=" << data.at(i);
+    }
+
+    sendSysexMsg(sysexMsg,length);
+    delete[] sysexMsg;
 }
 
 void MidiObject::sendSysexMsg(unsigned char data[], unsigned int length) {
