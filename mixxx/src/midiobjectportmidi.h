@@ -1,9 +1,9 @@
 /***************************************************************************
-                          midiobjectportmidi.h  -  description
+                          midiobjectalsaseq.h  -  description
                              -------------------
-    begin                : Thu Jul 4 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
+    begin                : Mon Sep 25 2006
+    copyright            : (C) 2006 by Cedric GESTES
+    email                : goctaf@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,30 +18,34 @@
 #ifndef MIDIOBJECTPORTMIDI_H
 #define MIDIOBJECTPORTMIDI_H
 
-#include <midiobject.h>
 #include <portmidi.h>
 #include <porttime.h>
+#include <QtCore>
+#include "midiobject.h"
 
-#include <stdlib.h>
-// #include <unistd.h>
-
+#define MIXXX_PORTMIDI_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
+#define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
 /**
-  *@author Tue & Ken Haste Andersen
+  *@author Albert Santoni
   */
 
-class MidiObjectPortMidi : public MidiObject
-{
-public: 
-    MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *, QApplication *app, ControlObject *control, QString device);
+class MidiObjectPortMidi : public MidiObject  {
+public:
+    MidiObjectPortMidi();
     ~MidiObjectPortMidi();
+	void updateDeviceList();
     void devOpen(QString device);
-    void devClose();
+    void devClose(QString device);
+    void sendShortMsg(unsigned int word);
+    void sendSysexMsg(unsigned char data[], unsigned int length);
 protected:
     void run();
-
-    PmEvent     buffer[10];
-    PmStream    *midi;
-
+	QString m_strActiveDevice;
+	PortMidiStream *m_pInputStream;
+	PortMidiStream *m_pOutputStream;
+	PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
+	static QList<QString> m_deviceList;
+	QMutex m_mutex;
 };
 
 #endif

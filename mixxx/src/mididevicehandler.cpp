@@ -49,14 +49,15 @@
 MidiDeviceHandler::MidiDeviceHandler() {
     // Open midi
     m_pMidi = 0;
+#ifdef __PORTMIDI__
+    m_pMidi = new MidiObjectPortMidi();
+    return;
+#endif
 #ifdef __ALSAMIDI__
     m_pMidi = new MidiObjectALSA();
 #endif
 #ifdef __ALSASEQMIDI__
     m_pMidi = new MidiObjectALSASeq();
-#endif
-#ifdef __PORTMIDI__
-    m_pMidi = new MidiObjectPortMidi();
 #endif
 #ifdef __COREMIDI__
     m_pMidi = new MidiObjectCoreMidi();
