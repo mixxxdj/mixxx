@@ -247,6 +247,7 @@ opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Ca
 opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
 opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript support.', 0)
 opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
+opts.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 opts.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
@@ -354,11 +355,18 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	#Check if FFMPEG was enabled
 	CheckFFMPEG(conf, sources)
 
-	#Check for LADSPA header, if it was passed as a flag
-	flags_ladspa = getFlags(env, 'ladspa', 1)
-	if not int(flags_ladspa):
-		print 'LADSPA must be turned on, sorry enry.'
-		Exit(1)
+	#PortMidi backend support
+	flags_portmidi = getFlags(env, 'portmidi', 0)
+	if int(flags_portmidi):
+		if not conf.CheckLib(['portmidi', 'libportmidi']):
+			print "Did not find portmidi or it\'s development headers, exiting!"
+			Exit(1)
+		#if not conf.CheckLib(['porttime', 'libporttime']):
+		#	print "Did not find porttime or it\'s development headers, exiting!"
+		#	Exit(1)
+		sources += Split("""midiobjectportmidi.cpp """); 
+		env.Append(CXXFLAGS = '-D__PORTMIDI__')
+	
 
 	#Platform-specific checks for Linux and Win32...
 	if platform == 'linux' or platform == 'win32':
@@ -404,7 +412,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			print "Did not find libasound (aka. libasound2), exiting!"
 			Exit(1)
 
-		#Check for libdjconsole, if it was passed as a flag
+        #Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = getFlags(env, 'djconsole', 0)
 		flags_djconsole_legacy = getFlags(env, 'djconsole_legacy', 0)
 		if int(flags_djconsole):
@@ -671,7 +679,7 @@ else:
 	print "Shoutcast support... disabled"
 
 #LADSPA
-flags_ladspa = getFlags(env, 'ladspa', 0)
+flags_ladspa = 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CXXFLAGS = '-D__LADSPA__')
@@ -721,6 +729,7 @@ if int(flags_tonal):
 else:
 	print "Tonal analysis... disabled"
 
+		
 flags_m4a = getFlags(env, 'm4a', 0)
 if int(flags_m4a):
 	print "Apple M4A audio file support... enabled"
