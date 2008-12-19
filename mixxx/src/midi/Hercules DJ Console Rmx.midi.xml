@@ -546,6 +546,23 @@
 			<midino>0x23</midino>
 			<threshold>0.5</threshold>
 		</light>
+      <light>
+        <group>[Channel1]</group>
+        <key>playposition</key>
+        <status>0xB0</status>
+        <midino>0x3B</midino>
+        <minimum>0.9</minimum>
+        <maximum>0.99</maximum>
+      </light>
+      <light>
+        <group>[Channel2]</group>
+        <key>playposition</key>
+        <status>0xB0</status>
+        <midino>0x53</midino>
+        <minimum>0.9</minimum>
+        <maximum>0.99</maximum>
+      </light>
+
 <!-- Headphone Cue -->
 		<light>
 			<group>[Channel1]</group>
