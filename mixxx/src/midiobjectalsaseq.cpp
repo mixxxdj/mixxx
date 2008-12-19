@@ -332,7 +332,7 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     byte1 = word & 0xff;
     byte2 = (word>>8) & 0xff;
     byte3 = (word>>16) & 0xff;
-    //qDebug() << "MIDI message send via alsa seq: " << byte1 << " " << byte2 << " " << byte3;
+    // qDebug() << "MIDI message send via alsa seq -- byte1:" << byte1 << "byte2:" << byte2 << "byte3:" << byte3;
 
     // Initialize the event structure
     snd_seq_ev_set_direct(&ev);
