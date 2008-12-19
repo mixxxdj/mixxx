@@ -308,7 +308,7 @@ void abortRead(int)
 }
 
 void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device) {
-    if (!TxEnabled[device]) return;
+//    if (!TxEnabled[device]) { qDebug() << "Device:"<< device << "is not enabled for transmit."; return; }
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
@@ -316,7 +316,7 @@ void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
 
 void MidiObject::sendShortMsg(unsigned int /* word */) {
     // This warning comes out rather frequently now we're using LEDs with VuMeters
-    //qDebug() << "MIDI message sending not implemented yet on this platform";
+    // qDebug() << "MIDI message sending not implemented yet on this platform";
 }
 
 void MidiObject::sendSysexMsg(QList<int> data, unsigned int length) {
