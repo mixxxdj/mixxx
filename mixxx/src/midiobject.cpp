@@ -44,19 +44,19 @@ MidiObject::MidiObject()
     m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
 
     ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
-    m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("/midi/midi-mappings-scripts.js"));
+    m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/midi-mappings-scripts.js"));
 // FIXME: this hack below has to be replaced with something better... even *.js is preferrable to a hard coded string switch statement.
 //     switch (m_device) {
 //         case "SCS.3d MIDI *":
-//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("/midi/Stanton-SCS3d-scripts.js"));
+//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/Stanton-SCS3d-scripts.js"));
 //             break;
 //         case "Hercules MK2 *":
-//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("/midi/Hercules-MK2-scripts.js"));
+//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/Hercules-MK2-scripts.js"));
 //             break;
 //     }
     qDebug() << "MidiObject: Evaluating all script code";
     m_pScriptEngine->evaluateScript();
-    if (!m_pScriptEngine->checkException()) qDebug() << "MidiObject: Script code evaluated successfully";
+    if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Script code evaluated successfully";
 
 /*    // Call script's init function if it exists - First need m_channel and m_device in this object
     QScriptValue scriptFunction = m_pScriptEngine->execute("init");
@@ -218,7 +218,10 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (((ConfigValueMidi *)c->val)->midioption==MIDI_OPT_SCRIPT) {
 //         qDebug() << "MidiObject: Calling script function" << pConfigKey->item;
         QScriptValue scriptFunction = m_pScriptEngine->execute(pConfigKey->item);
-        if (!scriptFunction.isFunction()) qDebug() << "MidiObject: Invalid Function";
+        if (!scriptFunction.isFunction()) {
+            qDebug() << "MidiObject: Invalid function" << pConfigKey->item;
+            return;
+        }
         else {
 //             ScriptMidiMsg *tempMidiMsg = new ScriptMidiMsg(channel, control, value, device);
 //             QScriptValue msg = m_pScriptEngine->getEngine().newQObject(tempMidiMsg);

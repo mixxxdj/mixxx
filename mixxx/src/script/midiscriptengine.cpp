@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "midiscriptengine.h"
+#include "../controlobject.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Open script file, read into QString
@@ -187,4 +188,42 @@ QStringList MidiScriptEngine::getFunctionList() {
     }
 
     return functionList;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Returns the current value of a Mixxx control (for scripts)
+   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
+   Output:  The value
+   -------- ------------------------------------------------------ */
+double MidiScriptEngine::getValue(QString group, QString name) {
+    
+    QByteArray ba = group.toUtf8();
+    const char *grp = ba.data();
+    
+    ba = name.toUtf8();
+    const char *nam = ba.data();
+
+    ControlObject *pot = ControlObject::getControl(ConfigKey(grp, nam));
+    if (pot == NULL) {
+        qDebug("MidiScriptEngine: Unknown control %s:%s", grp, nam);
+        return 0.0;
+    }
+    return pot->get();
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Sets new value of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
+
+    QByteArray ba = group.toUtf8();
+    const char *grp = ba.data();
+    
+    ba = name.toUtf8();
+    const char *nam = ba.data();
+    
+    ControlObject *pot = ControlObject::getControl(ConfigKey(grp, nam));
+    pot->queueFromThread(newValue);
 }
