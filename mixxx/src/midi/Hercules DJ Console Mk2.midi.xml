@@ -455,7 +455,6 @@
         <group>[Channel2]</group>
         <key>playposition</key>
         <status>0xB0</status>
-        <midino>0x00</midino>
         <midino>0x05</midino>
         <minimum>0.9</minimum>
         <maximum>0.99</maximum>
