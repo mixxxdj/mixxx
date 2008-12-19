@@ -349,6 +349,18 @@
                 </control>
                 <control>
                     <group>[Master]</group>
+                    <key>HerculesRMX.toggle_scratch_mode</key>
+                    <miditype>Ctrl</miditype>
+                    <midino>41</midino>
+                    <midichan>1</midichan>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                    <controltype>button</controltype>
+                </control>
+<!--
+                <control>
+                    <group>[Master]</group>
                     <key>headMix</key>
                     <miditype>Ctrl</miditype>
                     <midino>46</midino>
@@ -529,6 +541,7 @@
                     <controltype>button</controltype>
                     <options/>
                 </control>
+-->
             </controls>
 
 	<outputs>
