@@ -445,6 +445,23 @@
       </light>
       <light>
         <group>[Channel1]</group>
+        <key>playposition</key>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <minimum>0.9</minimum>
+        <maximum>0.99</maximum>
+      </light>
+      <light>
+        <group>[Channel2]</group>
+        <key>playposition</key>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <midino>0x05</midino>
+        <minimum>0.9</minimum>
+        <maximum>0.99</maximum>
+      </light>
+      <light>
+        <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
