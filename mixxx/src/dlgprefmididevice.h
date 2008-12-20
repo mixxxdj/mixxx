@@ -34,7 +34,7 @@ public slots:
     void slotApply();
     void slotGetInfo(QListWidgetItem * current, QListWidgetItem * previous);
     void slotUpdateEnabled();
-    void slotDebug(ConfigValueMidi *event, QString device);
+    void slotDebug(ConfigValueMidi *event, char value, QString device);
 
 private:
 	void saveSettings(QString device, QString Rx, QString Tx); // Save current settings to the configobject

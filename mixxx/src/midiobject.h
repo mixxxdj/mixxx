@@ -90,7 +90,7 @@ public:
 
     signals:
     void midiEvent(ConfigValueMidi *value, QString device);
-    void debugInfo(ConfigValueMidi *event, QString device);
+    void debugInfo(ConfigValueMidi *event, char value, QString device);
 
 protected:
     void run() {};
