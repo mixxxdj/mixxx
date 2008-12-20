@@ -1,5 +1,5 @@
     <MixxxMIDIPreset version="1.6.0~beta3" >
-        <controller id="Hercules DJ Console Rmx MIDI" >
+        <controller id="Hercules DJ Console RMX MIDI" >
             <controls>
                 <control>
                     <group>[Master]</group>
@@ -352,6 +352,28 @@
                     <key>HerculesRMX.toggle_scratch_mode</key>
                     <miditype>Ctrl</miditype>
                     <midino>41</midino>
+                    <midichan>1</midichan>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                    <controltype>button</controltype>
+                </control>
+                <control>
+                    <key>HerculesRMX.up_down_arrows</key>
+                    <group>[Playlist]</group>
+                    <miditype>Ctrl</miditype>
+                    <midino>42</midino>
+                    <midichan>1</midichan>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                    <controltype>button</controltype>
+                </control>
+                <control>
+                    <key>HerculesRMX.up_down_arrows</key>
+                    <group>[Playlist]</group>
+                    <miditype>Ctrl</miditype>
+                    <midino>43</midino>
                     <midichan>1</midichan>
                     <options>
                         <Script-Binding/>
