@@ -73,6 +73,14 @@ DlgPrefMidiDevice::DlgPrefMidiDevice(QWidget *parent, MidiObject *midi, ConfigOb
 #endif
 		slotGetInfo(listMidiDevices->currentItem(), 0);
     }
+
+    // Install event handler to handle hiding...
+    installEventFilter(this);
+}
+
+bool DlgPrefMidiDevice::eventFilter(QObject * o, QEvent * e)
+{
+    if (e->type() == QEvent::Hide) tblDebug->setRowCount(0);
 }
 
 DlgPrefMidiDevice::~DlgPrefMidiDevice() {

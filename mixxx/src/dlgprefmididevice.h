@@ -42,6 +42,7 @@ private:
 	bool deviceEnabled(); // Is the currently selected device enabled?
 	void presetAvailable(QString deviceName); // Is there a preset available
 	void setupDevices();
+        bool eventFilter(QObject * o, QEvent * e);
     MidiObject *m_pMidi;
     ConfigObject<ConfigValue> *m_pDeviceSettings;
     ConfigObject<ConfigValue> *m_pConfig;
