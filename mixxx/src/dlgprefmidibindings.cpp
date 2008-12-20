@@ -829,7 +829,7 @@ void DlgPrefMidiBindings::buildDomElement() {
  * Gets the list of control objects
  */
 QStringList DlgPrefMidiBindings::getControlKeyList() {
-    // midi/BindableConfigKeys.txt = grep "ConfigKey" *.cpp | grep \\[ | sed -e 's/.*ConfigKey("//g' | cut -d \) -f1 | sed -e 's/[",]/ /g' -e 's/ \+/ /g' | egrep -ve '[+:>]' | sort -u | egrep -e "\[Channel[12]\]|\[Master\]" > midi/BindableConfigKeys.txt
+    // midi/BindableConfigKeys.txt = grep "ConfigKey" *.cpp | grep \\[ | sed -e 's/.*ConfigKey("//g' | cut -d \) -f1 | sed -e 's/[",]/ /g' -e 's/ \+/ /g' | egrep -ve '[+:>]' | sort -u | egrep -e "\[Channel[12]\]|\[Master\]|\[Playlist\]" > midi/BindableConfigKeys.txt
     if (controKeyOptionChoices.count() == 0) {
         QFile input(m_pConfig->getConfigPath() + "midi/BindableConfigKeys.txt");
 
@@ -837,7 +837,7 @@ QStringList DlgPrefMidiBindings::getControlKeyList() {
 
         while (!input.atEnd()) {
             QString line = input.readLine().trimmed();
-            if (line.indexOf('#') == 0) continue; // ignore # hashed out comments
+            if (line.isEmpty() || line.indexOf('#') == 0) continue; // ignore # hashed out comments
             if (!line.isNull()) controKeyOptionChoices.append(line);
         }
         input.close();

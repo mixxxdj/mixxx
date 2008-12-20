@@ -106,3 +106,12 @@
 [Master] Record 
 [Master] samplerate 
 [Master] volume 
+# [Playlist] Directory 
+# [Playlist] LastModified 
+# [Playlist] Listfile 
+[Playlist] LoadSelectedIntoFirstStopped 
+[Playlist] SelectNextPlaylist 
+[Playlist] SelectNextTrack 
+[Playlist] SelectPrevPlaylist 
+[Playlist] SelectPrevTrack 
+[Playlist] SelectTrackKnob
