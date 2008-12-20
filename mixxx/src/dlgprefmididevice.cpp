@@ -22,6 +22,10 @@
 
 #define DEVICE_CONFIG_PATH QDir::homePath().append("/").append(".MixxxMIDIDevices")
 
+static QString toHex(QString numberStr) {
+    return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+}
+
 DlgPrefMidiDevice::DlgPrefMidiDevice(QWidget *parent, MidiObject *midi, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefMidiDeviceDlg() {
     setupUi(this);
 
@@ -75,7 +79,7 @@ DlgPrefMidiDevice::~DlgPrefMidiDevice() {
 
 }
 
-void DlgPrefMidiDevice::slotDebug(ConfigValueMidi *event, QString device) {
+void DlgPrefMidiDevice::slotDebug(ConfigValueMidi *event, char value, QString device) {
 // TODO: it would be really cool if we could have the rows go in descending order, so we don't have to refocus with each row...
 	int rowNumber = tblDebug->rowCount();
 	tblDebug->insertRow(rowNumber);
@@ -83,6 +87,7 @@ void DlgPrefMidiDevice::slotDebug(ConfigValueMidi *event, QString device) {
 	tblDebug->setItem(rowNumber, 1, new QTableWidgetItem(QString("%1").arg(event->miditype)));
 	tblDebug->setItem(rowNumber, 2, new QTableWidgetItem(QString("%1").arg(event->midichannel)));
 	tblDebug->setItem(rowNumber, 3, new QTableWidgetItem(QString("%1").arg(event->midino)));
+	tblDebug->setItem(rowNumber, 4, new QTableWidgetItem(QString("%1").arg(toHex(QString::number(value)))));
         tblDebug->selectRow(rowNumber);
 }
 

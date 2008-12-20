@@ -161,7 +161,7 @@ QStringList MidiObject::getOpenDevices()
 void MidiObject::receive(MidiCategory category, char channel, char control, char value, QString device)
 {
     // qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
-    if (!RxEnabled[device]) return;
+    // if (!RxEnabled[device]) return;
 
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
@@ -199,7 +199,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     }
 
     if (debug) {
-        emit(debugInfo(new ConfigValueMidi(type,control,channel), device));
+        emit(debugInfo(new ConfigValueMidi(type,control,channel), value, device));
         return; // Don't pass on controls when in dialog
     }
 
@@ -359,7 +359,7 @@ bool MidiObject::getDebugStatus() {
 void MidiObject::enableDebug(DlgPrefMidiDevice *dlgDevice) {
     debug = true;
     this->dlgDevice = dlgDevice;
-    connect(this, SIGNAL(debugInfo(ConfigValueMidi *, QString)), dlgDevice, SLOT(slotDebug(ConfigValueMidi *, QString)));
+    connect(this, SIGNAL(debugInfo(ConfigValueMidi *, char, QString)), dlgDevice, SLOT(slotDebug(ConfigValueMidi *, char, QString)));
 }
 
 void MidiObject::disableDebug() {
