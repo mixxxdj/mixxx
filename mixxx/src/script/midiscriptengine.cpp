@@ -164,21 +164,21 @@ QStringList MidiScriptEngine::getFunctionList() {
 
     QStringList functionList;
     QStringList codeLines=m_scriptCode.split("\n");
-    
-//     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;    
-    
+
+//     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
+
     qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
-    
+
     // grep 'function' midi/midi-mappings-scripts.js|grep -i '(msg)'|sed -e 's/function \(.*\)(msg).*/\1/i' -e 's/[= ]//g'
     QRegExp rx("*.*function*(*)*");    // Find all lines with function names in them
     rx.setPatternSyntax(QRegExp::Wildcard);
-    
+
     int position = codeLines.indexOf(rx);
 
     while (position != -1) {    // While there are more matches
-    
+
         QString line = codeLines.takeAt(position);    // Pull & remove the current match from the list.
-        
+
         if (line.indexOf('#') != 0) {    // ignore # hashed out comments
             QStringList field = line.split(" ");
             qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
@@ -196,16 +196,9 @@ QStringList MidiScriptEngine::getFunctionList() {
    Output:  The value
    -------- ------------------------------------------------------ */
 double MidiScriptEngine::getValue(QString group, QString name) {
-    
-    QByteArray ba = group.toUtf8();
-    const char *grp = ba.data();
-    
-    ba = name.toUtf8();
-    const char *nam = ba.data();
-
-    ControlObject *pot = ControlObject::getControl(ConfigKey(grp, nam));
+    ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
     if (pot == NULL) {
-        qDebug("MidiScriptEngine: Unknown control %s:%s", grp, nam);
+        qDebug("MidiScriptEngine: Unknown control %s:%s", group, name);
         return 0.0;
     }
     return pot->get();
@@ -217,13 +210,6 @@ double MidiScriptEngine::getValue(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
-
-    QByteArray ba = group.toUtf8();
-    const char *grp = ba.data();
-    
-    ba = name.toUtf8();
-    const char *nam = ba.data();
-    
-    ControlObject *pot = ControlObject::getControl(ConfigKey(grp, nam));
+    ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
     pot->queueFromThread(newValue);
 }
