@@ -1302,6 +1302,7 @@ void Track::slotSelectPrevTrack(double v)
 void Track::slotSelectTrackKnob(double v)
 {
     int i = (int)v;
+    m_pView->m_pTrackTableView->setUpdatesEnabled(false);
     while(i != 0)
     {
         if(i > 0)
@@ -1315,6 +1316,7 @@ void Track::slotSelectTrackKnob(double v)
             i++;
         }
     }
+    m_pView->m_pTrackTableView->setUpdatesEnabled(true);
 }
 
 void Track::slotNextTrackPlayer1(double v)
