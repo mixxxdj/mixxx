@@ -180,7 +180,6 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
             midioption = MIDI_OPT_SPREAD64;
         else if (optname == "selectknob")
         	midioption = MIDI_OPT_SELECTKNOB;
-        
         else if (optname == "script-binding")
         	midioption = MIDI_OPT_SCRIPT;
         else {
@@ -246,7 +245,6 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
         midioption = MIDI_OPT_SPREAD64;
     else if (option.contains("SelectKnob", false))
         midioption = MIDI_OPT_SELECTKNOB;
-        
     else if (option.contains("Script-Binding", false))
         midioption = MIDI_OPT_SCRIPT;
     else
@@ -490,7 +488,8 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     // Search for key in list, and set value if found
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
-        if (it->key->group == k.group & it->key->item == k.item)
+        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0)
+//         if (it->key->group == k.group & it->key->item == k.item)
         {
             //qDebug() << "set found." << group << "," << item;
             //cout << "1: " << v.value << "\n";
@@ -535,18 +534,18 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
-		if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0){
-            // qDebug() << "#534: QString::compare match for " << it->key->group << it->key->item;
+        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0){
+            //qDebug() << "ConfigObject #534: QString::compare match for " << it->key->group << it->key->item;
             return it->key;
-		}
+        }
         if (((ValueType)*it->val) == ((ValueType)v))
         {
-            // qDebug() << "match" << it->val->value.toUpper() << "with" << v.value.toUpper();
+            //qDebug() << "ConfigObject: match" << it->val->value.toUpper() << "with" << v.value.toUpper();
             return it->key;
         }
 
         if (it == list.getLast()) {
-            // qDebug() << "last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
+            //qDebug() << "ConfigObject: last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
     qDebug() << "No match for ConfigObject:" << v.value;
