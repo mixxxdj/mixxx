@@ -26,7 +26,7 @@ class MidiScriptEngine : public QObject {
 public:
     MidiScriptEngine();
     ~MidiScriptEngine();
-    
+
     QScriptValue engineGlobalObject;
     QScriptEngine *getEngine();
 
@@ -39,12 +39,12 @@ public:
     bool isGood();
     QScriptValue execute(QString);
     QStringList getFunctionList();
-    
+
     bool checkException();
-    
+
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
-    
+
 private:
     QScriptEngine m_engine;
     QScriptValue m_result;

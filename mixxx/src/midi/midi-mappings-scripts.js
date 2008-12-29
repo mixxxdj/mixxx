@@ -25,9 +25,11 @@ HerculesRMX.toggle_scratch_mode = function (channel, device, control, value) {
 HerculesRMX.up_down_arrows = function (channel, device, control, value) {
    script.debug(channel, device, control, value);
    HerculesRMX.playlistJogScrollMode = value > 0;
-   switch (control) {
-      case 0x2A: engine.setValue("[Playlist]","SelectPrevTrack", (value > 0)); break;
-      case 0x2B: engine.setValue("[Playlist]","SelectNextTrack", (value > 0)); break;
+   if (value > 0) {
+     switch (control) {
+        case 0x2A: engine.setValue("[Playlist]","SelectPrevTrack", (value > 0)); break;
+        case 0x2B: engine.setValue("[Playlist]","SelectNextTrack", (value > 0)); break;
+     }
    }
 }
 
@@ -48,7 +50,7 @@ HerculesRMX.jog_wheel = function (channel, device, control, value) {
 }
 
 HerculesRMX.play = function (channel, device, control, value) {
-   script.debug(channel, device, control, value);
+   // Only send events when play is pushed, not when it comes back up.
    if (value > 0) {
      engine.setValue("[Channel1]","play", !engine.getValue("[Channel1]","play"));
    }
