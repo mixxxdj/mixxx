@@ -39,6 +39,7 @@ MidiObject::MidiObject()
     requestStop = false;
     midiLearn = false;
     debug = false;
+    
 #ifdef __SCRIPT__
     m_pScriptEngine = new MidiScriptEngine();
     m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
@@ -55,10 +56,11 @@ MidiObject::MidiObject()
 //             break;
 //     }
     qDebug() << "MidiObject: Evaluating all script code";
+    
     m_pScriptEngine->evaluateScript();
     if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Script code evaluated successfully";
 
-/*    // Call script's init function if it exists - First need m_channel and m_device in this object
+/*    // Call script's init function if it exists - First need deviceChannel and deviceName in this object
     QScriptValue scriptFunction = m_pScriptEngine->execute("init");
     if (!scriptFunction.isFunction()) qDebug() << "MidiObject: No init function in script";
     else {
@@ -233,6 +235,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
             // -----
             args << QScriptValue(m_pScriptEngine->getEngine(), control);
             args << QScriptValue(m_pScriptEngine->getEngine(), value);
+            args << QScriptValue(m_pScriptEngine->getEngine(), category);
 
             scriptFunction.call(QScriptValue(),args);
             m_pScriptEngine->checkException();
