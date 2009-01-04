@@ -1,5 +1,5 @@
 /***************************************************************************
-                          midiscriptengine.h  -  description
+                          midiscriptengine.cpp  -  description
                           -------------------
     begin                : Fri Dec 12 2008
     copyright            : (C) 2008 by Sean M. Pappalardo
@@ -28,9 +28,9 @@ MidiScriptEngine::MidiScriptEngine() : m_engine() {
 
     engineGlobalObject = m_engine.globalObject();
     engineGlobalObject.setProperty("engine", m_engine.newQObject(this));
-//     QObject *someObject = new MidiObject;
-//     QScriptValue objectValue = m_engine.newQObject(someObject);
-//     engineGlobalObject.setProperty("midi", objectValue);
+//     ControlObject* m_cobj;
+//     m_cobj = ControlObject::getControl(ConfigKey("[Channel1]","back"));
+//     engineGlobalObject.setProperty("revers", m_engine.newQObject(m_cobj));
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
@@ -48,7 +48,7 @@ bool MidiScriptEngine::loadScript(QString filepath) {
     // Read in the script file
     QFile input(m_lastFilepath);
     if (!input.open(QIODevice::ReadOnly)) {
-        qWarning() << "MidiScriptEngine: Problem opening the script file: " << m_lastFilepath << ", error #" << input.error();
+        qCritical() << "MidiScriptEngine: Problem opening the script file: " << m_lastFilepath << ", error #" << input.error();
         return false;
     }
     m_scriptCode.append(input.readAll());
@@ -84,7 +84,7 @@ void MidiScriptEngine::clearCode() {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::evaluateScript() {
     if (!m_engine.canEvaluate(m_scriptCode)) {
-        qWarning() << "MidiScriptEngine: ?Syntax error in script file:" << m_lastFilepath;
+        qCritical() << "MidiScriptEngine: ?Syntax error in script file:" << m_lastFilepath;
         m_scriptCode.clear();    // Free up now-unneeded memory
         m_scriptGood=false;
         return;
@@ -103,7 +103,7 @@ void MidiScriptEngine::evaluateScript() {
    -------- ------------------------------------------------------ */
 QScriptValue MidiScriptEngine::execute(QString function) {
     if (!m_engine.canEvaluate(function)) {
-        qWarning() << "MidiScriptEngine: ?Syntax error in function " << function;
+        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
         return QScriptValue();
     }
     m_result = m_engine.evaluate(function);
@@ -120,8 +120,8 @@ QScriptValue MidiScriptEngine::execute(QString function) {
 bool MidiScriptEngine::checkException() {
     if (m_engine.hasUncaughtException()) {
         int line = m_engine.uncaughtExceptionLineNumber();
-//         qDebug() << "MidiScriptEngine: uncaught exception" << m_engine.uncaughtException().toString() << "\nBacktrace:\n" << m_engine.uncaughtExceptionBacktrace();
-        qDebug() << "MidiScriptEngine: uncaught exception" << m_engine.uncaughtException().toString() << "at line" << line;
+//         qCritical() << "MidiScriptEngine: uncaught exception" << m_engine.uncaughtException().toString() << "\nBacktrace:\n" << m_engine.uncaughtExceptionBacktrace();
+        qCritical() << "MidiScriptEngine: uncaught exception" << m_engine.uncaughtException().toString() << "at line" << line;
         return true;
     }
     return false;
@@ -198,7 +198,7 @@ QStringList MidiScriptEngine::getFunctionList() {
 double MidiScriptEngine::getValue(QString group, QString name) {
     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
     if (pot == NULL) {
-        qDebug("MidiScriptEngine: Unknown control %s:%s", group, name);
+        qDebug() << "MidiScriptEngine: Unknown control" << group << name;
         return 0.0;
     }
     return pot->get();
@@ -212,4 +212,35 @@ double MidiScriptEngine::getValue(QString group, QString name) {
 void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
     pot->queueFromThread(newValue);
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
+   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
+                script function name, true if you want to disconnect
+   Output:  true if successful
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
+    ControlObject* m_cobj = ControlObject::getControl(ConfigKey(group,name));
+    
+    QScriptValue slot = execute(function);
+    if (!checkException() && slot.isFunction()) {    // If no problems,
+        // Do the deed
+        if (disconnect) {
+            qScriptDisconnect(m_cobj, SIGNAL(valueChanged(double)), QScriptValue(), slot);
+            qScriptDisconnect(m_cobj, SIGNAL(valueChangedFromEngine(double)), QScriptValue(), slot);
+            qDebug() << "MidiScriptEngine:" << group << name << "disconnected from" << function;
+        }
+        else {
+            qScriptConnect(m_cobj, SIGNAL(valueChanged(double)), QScriptValue(), slot);
+            qScriptConnect(m_cobj, SIGNAL(valueChangedFromEngine(double)), QScriptValue(), slot);
+            qDebug() << "MidiScriptEngine:" << group << name << "connected to" << function;
+        }
+        
+        return true;
+        
+    } else {
+        qWarning() << "MidiScriptEngine:" << group << name << "didn't connect/disconnect to/from" << function;
+        return false;
+        }
 }

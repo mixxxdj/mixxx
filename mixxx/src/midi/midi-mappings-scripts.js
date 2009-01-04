@@ -45,7 +45,7 @@ HerculesRMX.jog_wheel = function (channel, device, control, value) {
        engine.setValue(HerculesRMX.jogWheels[control],"scratch", jogValue/64);
    } else { // do pitch adjustment
        // print("do pitching adjust " + jogValue);
-       engine.setValue(HerculesRMX.jogWheels[control],"wheel", jogValue/32)
+       engine.setValue(HerculesRMX.jogWheels[control],"wheel", jogValue/32);
    }
 }
 

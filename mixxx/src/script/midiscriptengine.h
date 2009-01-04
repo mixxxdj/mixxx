@@ -44,6 +44,7 @@ public:
 
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
+    Q_INVOKABLE bool connectControl(QString group, QString name, QString function, bool disconnect = false);
 
 private:
     QScriptEngine m_engine;
