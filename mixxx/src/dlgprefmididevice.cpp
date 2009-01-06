@@ -81,6 +81,7 @@ DlgPrefMidiDevice::DlgPrefMidiDevice(QWidget *parent, MidiObject *midi, ConfigOb
 bool DlgPrefMidiDevice::eventFilter(QObject * o, QEvent * e)
 {
     if (e->type() == QEvent::Hide) tblDebug->setRowCount(0);
+	return false; //Let the event be handled further
 }
 
 DlgPrefMidiDevice::~DlgPrefMidiDevice() {
