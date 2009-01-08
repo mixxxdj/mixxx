@@ -54,6 +54,10 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
         timecode = "traktor_a";
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
         timecode = "traktor_b";
+    else {
+        qDebug() << "Unknown vinyl type, defaulting to serato_2a";
+        timecode = "serato_2a";
+    }
 
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables...";
