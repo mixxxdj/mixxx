@@ -15,6 +15,10 @@ HerculesRMX.leds = { "scratch":0x29 };
 HerculesRMX.scratchMode = false;
 HerculesRMX.playlistJogScrollMode = false;
 HerculesRMX.jogWheels = { 0x2F:"[Channel1]", 0x30:"[Channel2]" };
+HerculesRMX.stopButtons = { 0x0D:"[Channel1]", 0x25:"[Channel2]" };
+// TODO HerculesRMX controls should be divided into channels...  then signals should directed 
+// to each channel without thinking about specific controls to allow for easy rebinding.
+
 HerculesRMX.toggle_scratch_mode = function (channel, device, control, value) {
     if (value > 0) {
 	HerculesRMX.scratchMode = !HerculesRMX.scratchMode;
@@ -22,7 +26,15 @@ HerculesRMX.toggle_scratch_mode = function (channel, device, control, value) {
     }
 }
 
+HerculesRMX.stop_and_reset_track = function (channel, device, control, value) {
+   if (value > 0) {
+	engine.setValue(HerculesRMX.stopButtons[control],"play", 0);
+	engine.setValue(HerculesRMX.stopButtons[control],"start", 0);
+   }
+}
+
 HerculesRMX.up_down_arrows = function (channel, device, control, value) {
+   // TODO replace with two seperate functions to make them distinctly rebindable.
    script.debug(channel, device, control, value);
    HerculesRMX.playlistJogScrollMode = value > 0;
    if (value > 0) {
