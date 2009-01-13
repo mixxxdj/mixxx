@@ -241,14 +241,15 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     QDomDocument skin("skin");
     QFile file(WWidget::getPath("skin.xml"));
     QFileInfo fi(file);
-
+    QByteArray qbaFilename = fi.fileName().toUtf8();
+    
     if (!file.open(QIODevice::ReadOnly))
-    {
-	qFatal("Could not open skin definition file: %s", (char *)fi.fileName().constData());
+    {  
+        qFatal("Could not open skin definition file: %s", qbaFilename.constData());
     }
     if (!skin.setContent(&file))
     {
-	qFatal("Error parsing skin definition file: %s", (char *)fi.fileName().constData());
+        qFatal("Error parsing skin definition file: %s", qbaFilename.constData());
     }
 
     file.close();
