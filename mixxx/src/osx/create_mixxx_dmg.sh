@@ -14,7 +14,7 @@ then
     echo "Error: Mixxx.app bundle doesn't exist. Run \"scons\" to create it."
     exit
 fi
-    
+
 cd Mixxx.app
 cd Contents
 mkdir Frameworks
