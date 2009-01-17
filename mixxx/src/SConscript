@@ -855,7 +855,7 @@ if int(flags_cmetrics):
 		env.Append(LIBS = 'cmetrics')
 	else:
 		client = 'MIXXX'
-		server = 'casemetrics.net' #NOTE: Permission to use this server is granted only to mixxx, any other use must obtain prior permission
+		server = 'metrics.mixxx.org' # mixxx metrics collector
 		Export('env platform client server flags_force32')
 		env.Append(CPPPATH='../../lib/cmetrics')
 		sources += SConscript('../../lib/cmetrics/SConscript')
