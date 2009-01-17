@@ -414,7 +414,7 @@ MixxxApp::~MixxxApp()
 #endif
     qDebug() << "save config, " << qTime.elapsed();
     config->Save();
- 
+
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
@@ -456,14 +456,17 @@ MixxxApp::~MixxxApp()
     //   delete m_pBpmDetector;
     //   delete m_pWaveSummary;
 
-    qDebug() << "delete config, " << qTime.elapsed();
-    delete config;
-
     delete frame;
-#ifdef __C_METRICS__
+
+#ifdef __C_METRICS__ // cmetrics will cause this whole method to segfault on Linux/i386 if it is called after config is deleted. Obviously, it depends on config somehow.
+	qDebug() << "cmetrics to report:" << "Mixxx deconstructor complete.";
 	cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE, "Mixxx deconstructor complete.");
 	cm_close(10);
 #endif
+
+    qDebug() << "delete config, " << qTime.elapsed();
+    delete config;
+
 #ifdef __WIN__
     _exit(0);
 #endif

@@ -64,14 +64,24 @@
 #endif //LIB_CLIENT
 
 /* SERVER SPECIFIC FIELDS */
-#define SERVER_HOST "casemetrics.net"
-//#define SERVER_CGI_DIR "/log.php"
-//#define SERVER_HOST "192.168.1.22"
-#define SERVER_CGI_DIR "/transact1.php"
-#define SERVER_HTTP_PORT 80
-#define SERVER_RETRY_T 2000    //msecs
-#define MAX_CONNECT_ATTEMP 10
-#define SERVER_MAX_RETRY_C 2
+#ifndef SERVER_HOST
+    #define SERVER_HOST "casemetrics.net"
+#endif
+#ifndef SERVER_CGI_DIR
+    #define SERVER_CGI_DIR "/metrics/collector.php"
+#endif
+#ifndef SERVER_HTTP_PORT
+    #define SERVER_HTTP_PORT 80
+#endif
+#ifndef SERVER_RETRY_T
+    #define SERVER_RETRY_T 2000    //msecs
+#endif
+#ifndef MAX_CONNECT_ATTEMP
+    #define MAX_CONNECT_ATTEMP 10
+#endif
+#ifndef SERVER_MAX_RETRY_C
+    #define SERVER_MAX_RETRY_C 2
+#endif
 
 /* PLATFORM SPECIFIC */
 #ifdef WIN32
