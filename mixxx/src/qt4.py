@@ -243,7 +243,7 @@ def generate(env):
 	# TODO: 'Replace' should be 'SetDefault'
 #	env.SetDefault(
 	env.Replace(
-		QTDIR  = _detect(env),
+#		QTDIR  = _detect(env),
 		QT4_BINPATH = os.path.join('$QTDIR', 'bin'),
 		QT4_CPPPATH = os.path.join('$QTDIR', 'include'),
 		QT4_LIBPATH = os.path.join('$QTDIR', 'lib'),
