@@ -463,16 +463,18 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
 
 		#Check for QT4 (framework)
-		"""if not os.path.exists('/Library/Frameworks/QtCore.framework/Versions/4/Headers/QtCore') or :
+		if not os.path.exists('/Library/Frameworks/QtCore.framework/Versions/4/Headers/QtCore'):
 			print 'Did not find QT4 framework, going to look for libs instead (use qtdir flag)...'
 		else:
-			env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql')
+			env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtCore.framework/Headers/')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtOpenGL.framework/Headers/')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/Qt3Support.framework/Headers/')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtGui.framework/Headers/')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtXml.framework/Headers/')
-"""
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtXml.framework/Headers/')
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtScript.framework/Headers/')
+		"""
 		#Check for QT libs (rather than framework)
 		if not os.path.exists(flags_qtdir):
 			print 'Did not find QT4 path (qtdir: ' + flags_qtdir + ' not found), exiting!'
@@ -486,7 +488,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			env.Append(LIBS = 'QtOpenGL');
 			env.Append(LIBS = 'QtNetwork');
 			env.Append(LIBS = 'QtSql');
-			
+		"""	
 			
 		#Check for CoreMIDI
 		if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
@@ -768,9 +770,14 @@ flags_script = getFlags(env, 'script', 0)
 if int(flags_script):
 	if platform == 'win32':
 		env.Append(LIBS = 'QtScript4')
-	else:
+	elif platform == 'linux':
 		env.Append(LIBS = 'QtScript')
+	elif platform == 'osx':
+	     #XXX put in logic here to add a -framework QtScript
+	     #env.Append(
+	     pass
 	print "MixxxScript (QtScript)... enabled"
+
 	build_flags += 'script '
 	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp
 			script/scriptstudio.cpp script/scriptrecorder.cpp
