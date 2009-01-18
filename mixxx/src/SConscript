@@ -405,6 +405,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
 			env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
 			env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
+			env.ParseConfig('pkg-config QtScript --silence-errors --cflags --libs')
 			# Might be missing $QTDIR/include/Qt still...
 
 		#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
