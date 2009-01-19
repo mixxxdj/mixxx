@@ -21,6 +21,7 @@
 #include "midimapping.h"
 #include "midiledhandler.h"
 #include "configobject.h"
+#include <qapplication.h>
 
 static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
@@ -271,7 +272,7 @@ void MidiMapping::loadPreset(QDomElement root) {
    Output:  Reference to QList of QHashes, each hash containing
             a parameter by name
    -------- ------------------------------------------------------ */
-QList<QHash> * MidiMapping::getRowParams() {
+QList<QHash<QString,QString> >* MidiMapping::getRowParams() {
     return &m_pAddRowParams;
 }
 
@@ -282,7 +283,7 @@ QList<QHash> * MidiMapping::getRowParams() {
    Output:  Reference to QList of QHashes, each hash containing
             a parameter by name
    -------- ------------------------------------------------------ */
-QList<QHash> * MidiMapping::getOutputRowParams() {
+QList<QHash<QString,QString> >* MidiMapping::getOutputRowParams() {
     return &m_pAddOutputRowParams;
 }
 
@@ -293,8 +294,9 @@ QList<QHash> * MidiMapping::getOutputRowParams() {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiMapping::deleteRowParams() {
-    delete m_pAddRowParams;
-    delete m_pAddOutputRowParams;
+// TODO: need to delete lists elements
+//    delete m_pAddRowParams; 
+//    delete m_pAddOutputRowParams;
 }
 
 /* savePreset(QString)
@@ -305,7 +307,7 @@ void MidiMapping::savePreset(QString path) {
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
     // Construct the DOM from the table
-    buildDomElement();
+//    buildDomElement();
     // Save the DOM to the XML file
     m_pBindings.save(outputstream, 4);
     output.close();

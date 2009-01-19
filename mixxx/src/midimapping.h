@@ -26,6 +26,9 @@
 #include "script/midiscriptengine.h"
 #endif
 
+class MidiObject;     // Forward declaration
+
+
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
 
 class MidiMapping : public QObject
@@ -62,6 +65,9 @@ class MidiMapping : public QObject
         MidiObject* m_pMidiObject;
         QList<QHash<QString,QString> > m_pAddRowParams;
         QList<QHash<QString,QString> > m_pAddOutputRowParams;
+
+ConfigObject<ConfigValueMidi> *m_pMidiConfig; // FIXME: added to make midimappings.cpp compile
+
 };
 
 #endif
