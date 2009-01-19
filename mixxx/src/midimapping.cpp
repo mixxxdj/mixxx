@@ -22,8 +22,6 @@
 #include "midiledhandler.h"
 #include "configobject.h"
 
-#define BINDINGS_PATH QDir::homePath().append("/").append(".mixxxMIDIBindings.xml")
-
 static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
@@ -53,7 +51,7 @@ MidiMapping::~MidiMapping() {
    Input:   QString file name, QString function prefix
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::addScriptFile(QString filename, QString functionprefix) {
+void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
    m_pScriptFileNames.append(filename);
    m_pScriptFunctionPrefixes.append(functionprefix);
 }

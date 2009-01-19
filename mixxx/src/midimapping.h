@@ -26,6 +26,8 @@
 #include "script/midiscriptengine.h"
 #endif
 
+#define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
+
 class MidiMapping : public QObject
 {
     public:
