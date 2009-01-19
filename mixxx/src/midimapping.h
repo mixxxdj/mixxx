@@ -20,8 +20,11 @@
 #ifndef MIDIMAPPING_H
 #define MIDIMAPPING_H
 
-// #include "midiobject.h"
+#include "midiobject.h"
 
+#ifdef __SCRIPT__
+#include "script/midiscriptengine.h"
+#endif
 
 class MidiMapping : public QObject
 {
@@ -33,8 +36,8 @@ class MidiMapping : public QObject
         void loadPreset(QString path);
         void loadPreset(QDomElement root);
         
-        QList<QHash>* getRowParams();
-        QList<QHash>* getOutputRowParams();
+        QList<QHash<QString,QString> >* getRowParams();
+        QList<QHash<QString,QString> >* getOutputRowParams();
         void deleteRowParams();
         
         void savePreset(QString path = BINDINGS_PATH);
@@ -55,8 +58,8 @@ class MidiMapping : public QObject
 #endif
         QDomElement m_pBindings;
         MidiObject* m_pMidiObject;
-        QList<QHash> m_pAddRowParams;
-        QList<QHash> m_pAddOutputRowParams;
+        QList<QHash<QString,QString> > m_pAddRowParams;
+        QList<QHash<QString,QString> > m_pAddOutputRowParams;
 };
 
 #endif
