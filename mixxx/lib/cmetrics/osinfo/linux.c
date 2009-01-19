@@ -19,13 +19,29 @@
  **********************************************/
 
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "../globaldefs.h"
 #include "../utf/utstr.h"
 XCHAR *osInfoStz()
 {
-    XCHAR *buf = malloc(200);
+    XCHAR *buf = malloc(2048);
 
-    xsprintf(buf, 200, "Not Implemented");
+    // TODO: report kernel version
+    FILE *ret;
+    if (((ret  = (FILE *) fopen("/proc/version", "r")) == NULL)) {
+	// TODO: Read contents of lsb-release
+    } else {
+    	xsprintf(buf, 500, "Linux kernel verison information unavailable.");
+    }
+    fclose(ret);
+
+    // TODO: report distro release
+    if (((ret  = (FILE *) fopen("/etc/lsb-release", "r")) == NULL)) {
+	// TODO: Read contents of lsb-release
+    } else {
+    	xsprintf(buf, 500, "Non-LSB distro or LSB version info unavailable.");
+    }
+    fclose(ret);
+
     return buf;
 }
