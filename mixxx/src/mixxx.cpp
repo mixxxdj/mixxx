@@ -104,62 +104,37 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
-	//Initialize Case Metrics if User is OK with that
-	int fuserAgreeToDataCollection = false;
-	if(config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram")) == QString("yes"))
-		fuserAgreeToDataCollection = true;
-	else if(config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram")) != QString("no"))
-	{
-		while(1)
-		{
-			fuserAgreeToDataCollection = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?", "Yes", "No", "Privacy Policy", 0, -1);
-			if(fuserAgreeToDataCollection == 0)
-			{
-				fuserAgreeToDataCollection = true;
-				config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(QString("yes")));
-				break;
-			}
-			else if(fuserAgreeToDataCollection == 1)
-			{
-				fuserAgreeToDataCollection = false;
-				config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(QString("no")));
-				break;
-			}
-			else
-			{
-				//show privacy policy
-				QMessageBox::information(this, "Mixxx: Privacy Policy", "Mixxx's development is driven by community feedback.  In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.\n\nThe hardware information will include:\n\t- CPU model and features\n\t- Total/Available Amount of RAM\n\t- Available disk space\n\t- OS version\n\nYour usage information will include:\n\t- Settings/Preferences\n\t- Internal errors\n\t- Internal debugging messages\n\t- Performance statistics (average latency, CPU usage)\n\nThis information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.\n");
-			}
-		}
-	}
-    //If the user agrees, attempt to load the user ID from the config file
-    const char *pstzUID;
-    bool fFreePstzUID = false;
-    if(fuserAgreeToDataCollection)
-    {
-        if(config->getValueString(ConfigKey("[User Experience]", "UID")) == QString(""))
-        {
-            pstzUID = cm_generate_userid();
-            fFreePstzUID = true;
-            if(pstzUID != NULL)
-            {
-                config->set(ConfigKey("[User Experience]", "UID"), ConfigValue(QString(pstzUID)));
-            }
-        }
-        else
-        {
-            pstzUID = config->getValueString(ConfigKey("[User Experience]", "UID")).ascii();
-        }
+    // Initialize Case Metrics if User is OK with that
+
+    QString metricsAgree = config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"));
+    if (metricsAgree.isEmpty()) {
+      metricsAgree = "no";
+      int dlg = -1;
+      while (dlg != 0 && dlg != 1) {
+         dlg = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?", "Yes", "No", "Privacy Policy", 0, -1);
+  	 switch (dlg) {
+           case 0: metricsAgree = "yes";
+  	   case 1: break;
+           default: //show privacy policy
+	            QMessageBox::information(this, "Mixxx: Privacy Policy", "Mixxx's development is driven by community feedback.  In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.\n\nThe hardware information will include:\n\t- CPU model and features\n\t- Total/Available Amount of RAM\n\t- Available disk space\n\t- OS version\n\nYour usage information will include:\n\t- Settings/Preferences\n\t- Internal errors\n\t- Internal debugging messages\n\t- Performance statistics (average latency, CPU usage)\n\nThis information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.\n");
+                    break;
+  	 }
+      }
+    }	
+    config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(metricsAgree));
+
+    // If the user agrees...
+    if(metricsAgree == "yes") {
+       // attempt to load the user ID from the config file
+       if ( config->getValueString(ConfigKey("[User Experience]", "UID")) == ""){
+         QString pUID = cm_generate_userid();
+         if(!pUID.isEmpty()) config->set(ConfigKey("[User Experience]", "UID"), ConfigValue(pUID));
+       }
     }
-
-	cm_init(100,20, fuserAgreeToDataCollection, MIXXCMETRICS_RELEASE_ID, pstzUID);
-
-    if(fFreePstzUID)
-        free((void*)pstzUID);
-
+    // Initialize cmetrics
+    cm_init(100,20, metricsAgree == "yes", MIXXCMETRICS_RELEASE_ID, config->getValueString(ConfigKey("[User Experience]", "UID")).ascii());
     cm_set_crash_dlg(crashDlg);
-	cm_writemsg_ascii(MIXXXCMETRICS_VERSION,
-	                  VERSION);
+    cm_writemsg_ascii(MIXXXCMETRICS_VERSION, VERSION);
 #endif
 
     // Store the path in the config database
