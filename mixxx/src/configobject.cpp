@@ -488,8 +488,8 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     // Search for key in list, and set value if found
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
-        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0)
-//         if (it->key->group == k.group & it->key->item == k.item)
+//         if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0)
+        if (it->key->group == k.group && it->key->item == k.item)
         {
             //qDebug() << "set found." << group << "," << item;
             //cout << "1: " << v.value << "\n";
@@ -515,7 +515,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
     for (it = list.first(); it; it = list.next())
     {
         //qDebug() << it->key->group << k->group << it->key->item << k->item;
-        if (it->key->group == k.group & it->key->item == k.item)
+        if (it->key->group == k.group && it->key->item == k.item)
         {
             //cout << it->key->group << ":" << it->key->item << ", val: " << it->val->value << "\n";
             return it;
@@ -580,7 +580,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
 
             if (line.length() != 0)
 			{
-                if (line.startsWith("[") & line.endsWith("]"))
+                if (line.startsWith("[") && line.endsWith("]"))
                 {
                     group++;
                     groupStr = line;

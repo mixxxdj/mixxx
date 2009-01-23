@@ -19,7 +19,7 @@ ConfigObject::ConfigOption * ConfigObject::set(ConfigKey * k, ConfigValue * v)
     // Search for key in list, and set value if found
     ConfigObject::ConfigOption * it;
     for (it = list.first(); it; it = list.next())
-        if (it->key->group == k->group & it->key->control == k->control)
+        if (it->key->group == k->group && it->key->control == k->control)
         {
             it->val->midino = v->midino;      // Should be done smarter using object copying
             it->val->midimask = v->midimask;
