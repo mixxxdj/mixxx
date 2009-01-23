@@ -105,9 +105,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
-
     QString metricsAgree = config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"));
-    if (metricsAgree.isEmpty()) {
+
+    if (metricsAgree.isEmpty() || (metricsAgree != "yes" && metricsAgree != "no")) {
       metricsAgree = "no";
       int dlg = -1;
       while (dlg != 0 && dlg != 1) {
