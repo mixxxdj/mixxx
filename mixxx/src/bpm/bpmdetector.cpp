@@ -21,7 +21,7 @@
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
-#include "enginespectralfwd.h"
+#include "engine/enginespectralfwd.h"
 #include "peaklist.h"
 #include "probabilityvector.h"
 #include "windowkaiser.h"

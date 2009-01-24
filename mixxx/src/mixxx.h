@@ -48,9 +48,9 @@
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
-#include "enginebuffer.h"
-#include "enginechannel.h"
-#include "enginemaster.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginechannel.h"
+#include "engine/enginemaster.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
 #include "trackplaylist.h"

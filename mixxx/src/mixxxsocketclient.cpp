@@ -13,7 +13,6 @@
 #include "mixxxsocketclient.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "enginebuffer.h"
 #include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"

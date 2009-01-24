@@ -9,7 +9,7 @@
 
 #include "ladspapreset.h"
 #include "ladspapresetinstance.h"
-#include "engineladspa.h"
+#include "engine/engineladspa.h"
 #include "ladspaloader.h"
 
 #include <QtCore>

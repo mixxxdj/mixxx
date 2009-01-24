@@ -46,12 +46,12 @@
 #include <QMenu>
 #include <QCursor>
 #include <q3cstring.h>
-#include "enginebuffer.h"
+#include "engine/enginebuffer.h"
 #include "reader.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "configobject.h"
-#include "engineanalyserqueue.h"
+#include "engine/engineanalyserqueue.h"
 #include "trackimporter.h"
 #include "wavesummary.h"
 #include "bpm/bpmdetector.h"

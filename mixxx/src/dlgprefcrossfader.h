@@ -20,7 +20,6 @@
 
 #include "ui_dlgprefcrossfaderdlg.h"
 #include "configobject.h"
-#include "enginefilterblock.h"
 
 #define MIXXX_XFADER_SLOWFADE   "SlowFade"
 #define MIXXX_XFADER_FASTCUT    "FastCut"

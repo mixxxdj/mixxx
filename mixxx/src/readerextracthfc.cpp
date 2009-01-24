@@ -16,7 +16,7 @@
 ***************************************************************************/
 
 #include "readerextracthfc.h"
-#include "enginespectralfwd.h"
+#include "engine/enginespectralfwd.h"
 #include "readerevent.h"
 #include "windowkaiser.h"
 

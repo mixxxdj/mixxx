@@ -17,7 +17,7 @@
 
 #include "reader.h"
 
-#include "enginebuffer.h"
+#include "engine/enginebuffer.h"
 #include "readerextractwave.h"
 //#include "readerextractbeat.h"
 #include "rtthread.h"

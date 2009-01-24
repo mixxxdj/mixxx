@@ -16,11 +16,11 @@
 
 #include "enginerecord.h"
 #include "defs_recording.h"
-#include "../controllogpotmeter.h"
-#include "../configobject.h"
-#include "../controlobjectthread.h"
-#include "../controlobject.h"
-#include "../dlgprefrecord.h"
+#include "controllogpotmeter.h"
+#include "configobject.h"
+#include "controlobjectthread.h"
+#include "controlobject.h"
+#include "dlgprefrecord.h"
 
 /***************************************************************************
 *									   *

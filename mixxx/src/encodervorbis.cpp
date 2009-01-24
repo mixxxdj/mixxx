@@ -35,7 +35,7 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include <string.h> // needed for memcpy
 #include <QDebug>
 
-#include "engineabstractrecord.h"
+#include "engine/engineabstractrecord.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "playerinfo.h"

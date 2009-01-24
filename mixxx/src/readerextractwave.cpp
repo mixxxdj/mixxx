@@ -26,7 +26,7 @@
 #include "soundsource.h"
 #include "soundsourceproxy.h"
 #include "controlobject.h"
-#include "enginebuffer.h"
+#include "engine/enginebuffer.h"
 
 ReaderExtractWave::ReaderExtractWave(Reader * pReader, EngineBuffer * pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
 {
