@@ -7,14 +7,14 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "ladspaview.h"
-
 #include <QtCore>
 #include <QtGui>
 
-#include "ladspapresetmanager.h"
-#include "ladspapresetinstance.h"
-#include "ladspapresetslot.h"
+#include "ladspaview.h"
+#include "ladspa/ladspapresetmanager.h"
+#include "ladspa/ladspapresetinstance.h"
+#include "ladspa/ladspapresetslot.h"
+
 #include "wknob.h"
 #include "wskincolor.h"
 #include "wpixmapstore.h"

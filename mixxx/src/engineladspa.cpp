@@ -12,7 +12,7 @@
 #include "engineladspa.h"
 
 #include "controlpotmeter.h"
-#include "ladspacontrol.h"
+#include "ladspa/ladspacontrol.h"
 
 EngineLADSPA * EngineLADSPA::m_pEngine = NULL;
 

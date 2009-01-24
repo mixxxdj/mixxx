@@ -34,7 +34,7 @@
 #include "log.h"
 
 #ifdef __LADSPA__
-#include <ladspaloader.h>
+#include <ladspa/ladspaloader.h>
 #endif
 
 #ifdef Q_WS_WIN

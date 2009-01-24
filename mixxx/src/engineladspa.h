@@ -12,8 +12,8 @@
 
 #include "engineobject.h"
 
-#include "ladspainstance.h"
-#include "ladspaplugin.h"
+#include "ladspa/ladspainstance.h"
+#include "ladspa/ladspaplugin.h"
 
 class ControlPotmeter;
 class LADSPAControl;
