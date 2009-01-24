@@ -70,9 +70,12 @@ void MidiMapping::loadPreset(QString path) {
  * Loads a set of MIDI bindings from a QDomElement structure.
  */
 void MidiMapping::loadPreset(QDomElement root) {
-    qDebug() << "MidiMapping: loadPreset() called";
-    m_rowMutex.lock();
-    m_outputRowMutex.lock();
+    qDebug() << QString("MidiMapping: loadPreset() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    
+//     m_rowMutex.lock();
+//     m_outputRowMutex.lock();
+    QMutexLocker lockRows(&m_rowMutex);
+    QMutexLocker lockOutputRows(&m_outputRowMutex);
 
     if (root.isNull()) return;
     // For each controller in the DOM
@@ -213,7 +216,7 @@ void MidiMapping::loadPreset(QDomElement root) {
         }
         qDebug() << "MidiMapping: Rows ready!";
 //         m_rowsReady.wakeAll();
-        m_rowMutex.unlock();
+//         m_rowMutex.unlock();
 
         QDomNode output = controller.namedItem("outputs").toElement().firstChild();
         while (!output.isNull()) {
@@ -269,7 +272,7 @@ void MidiMapping::loadPreset(QDomElement root) {
         }
         qDebug() << "MidiMapping: Output rows ready!";
 //         m_outputRowsReady.wakeAll();
-        m_outputRowMutex.unlock();
+//         m_outputRowMutex.unlock();
 
         controller = controller.nextSiblingElement("controller");
     }
@@ -284,7 +287,7 @@ void MidiMapping::loadPreset(QDomElement root) {
    -------- ------------------------------------------------------ */
 
 QList<QHash<QString,QString> > * MidiMapping::getRowParams() {
-    qDebug() << "MidiMapping: getRowParams() called";
+    qDebug() << QString("MidiMapping: getRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     m_rowMutex.lock();  // Wait until we're done building the QList
 //     m_rowsReady.wait(&m_rowMutex);
     m_rowMutex.unlock();
@@ -300,7 +303,7 @@ QList<QHash<QString,QString> > * MidiMapping::getRowParams() {
             a parameter by name
    -------- ------------------------------------------------------ */
 QList<QHash<QString,QString> > * MidiMapping::getOutputRowParams() {
-    qDebug() << "MidiMapping: getOutputRowParams() called";
+    qDebug() << QString("MidiMapping: getOutputRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     m_outputRowMutex.lock();  // Wait until we're done building the QList
 //     m_outputRowsReady.wait(&m_outputRowMutex);
     m_outputRowMutex.unlock();
