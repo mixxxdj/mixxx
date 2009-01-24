@@ -28,9 +28,11 @@
 //Added by qt3to4:
 #include <QEvent>
 #include <QtGui>
+
 #include "mixxx.h"
 #include "trackinfoobject.h"
-#include "bpmscheme.h"
+#include "bpm/bpmscheme.h"
+
 #include "xmlparse.h"
 
 DlgBpmTap::DlgBpmTap(QWidget *, TrackInfoObject * tio, 

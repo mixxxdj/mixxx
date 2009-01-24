@@ -23,9 +23,9 @@
 #include <Q3MemArray>
 #include <QtDebug>
 #include "trackinfoobject.h"
-#include "bpmdetector.h"
-#include "bpmscheme.h"
-#include "bpmreceiver.h"
+#include "bpm/bpmdetector.h"
+#include "bpm/bpmscheme.h"
+#include "bpm/bpmreceiver.h"
 #include "soundsourceproxy.h"
 #include "trackplaylist.h"
 //#include "wtracktable.h"

@@ -54,7 +54,7 @@
 #include "engineanalyserqueue.h"
 #include "trackimporter.h"
 #include "wavesummary.h"
-#include "bpmdetector.h"
+#include "bpm/bpmdetector.h"
 #include "woverview.h"
 #include "playerinfo.h"
 #include "defs_promo.h"
