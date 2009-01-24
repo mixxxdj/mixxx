@@ -74,14 +74,18 @@
 #include <math.h>
 #include <assert.h>
 #include <string.h>
+
+#include <QtDebug>
+
 #include "FIFOSampleBuffer.h"
 #include "peakfinder.h"
 #include "bpmdetect.h"
+
 #ifdef __C_METRICS__
 #include "cmetrics.h"
 #endif
 
-#include <QtDebug>
+
 
 using namespace soundtouch;
 

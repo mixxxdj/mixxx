@@ -38,7 +38,7 @@
 #include "mixxxsocketserver.h"
 #include "mixxxmenuplaylists.h"
 #include "wavesummary.h"
-#include "bpmdetector.h"
+#include "bpm/bpmdetector.h"
 #include "log.h"
 #include "dlgabout.h"
 

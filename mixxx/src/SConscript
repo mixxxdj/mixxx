@@ -285,12 +285,12 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp  wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp
  readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
  track.cpp trackcollection.cpp trackplaylist.cpp wtracktableview.cpp wtracktablemodel.cpp wpromotracksmodel.cpp proxymodel.cpp xmlparse.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
- enginetemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp bpmscheme.cpp  peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
+ enginetemporal.cpp wavesummary.cpp bpm/bpmdetector.cpp bpm/bpmdetect.cpp bpm/bpmscheme.cpp  bpm/peakfinder.cpp bpm/wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
  enginebufferscalereal.cpp powermate.cpp  hercules.cpp mouse.cpp
  waveformviewerfactory.cpp wvisualsimple.cpp wwaveformviewer.cpp wglwaveformviewer.cpp waveform/waveformrenderer.cpp waveform/waveformrenderbeat.cpp waveform/waveformrendermark.cpp
  imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
  trackinfoobject.cpp soundsource.cpp
- midiledhandler.cpp
+ midiledhandler.cpp 
  sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
  dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp
  enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp

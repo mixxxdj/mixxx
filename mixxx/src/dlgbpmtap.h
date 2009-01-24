@@ -21,10 +21,11 @@
 #include "ui_dlgbpmtapdlg.h"
 #include <QEvent>
 #include <QtGui>
-#include "configobject.h"
-#include "bpmreceiver.h"
-#include "track.h"
 #include <qlist.h>
+
+#include "configobject.h"
+#include "track.h"
+#include "bpm/bpmreceiver.h"
 
 class MixxxApp;
 class TrackInfoObject;

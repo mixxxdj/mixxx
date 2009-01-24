@@ -15,10 +15,10 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "dlgbpmscheme.h"
-#include "bpmscheme.h"
 #include <QtCore>
-//define MIXXX
+
+#include "dlgbpmscheme.h"
+#include "bpm/bpmscheme.h"
 
 DlgBpmScheme::DlgBpmScheme(BpmScheme *& bpmScheme) : QDialog(), Ui::DlgBpmSchemeDlg(), m_BpmScheme(bpmScheme)
 {

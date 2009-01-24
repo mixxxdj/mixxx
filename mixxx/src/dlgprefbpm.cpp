@@ -15,11 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "dlgprefbpm.h"
-#include "dlgbpmscheme.h"
-#include "bpmscheme.h"
-#include "xmlparse.h"
-//define MIXXX
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qwidget.h>
@@ -31,10 +26,12 @@
 #include <QtCore>
 #include <QMessageBox>
 
+#include "dlgprefbpm.h"
+#include "dlgbpmscheme.h"
+#include "bpm/bpmscheme.h"
+#include "xmlparse.h"
 
 #define CONFIG_KEY "[BPM]"
-
-
 
 DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefBPMDlg()
 {
