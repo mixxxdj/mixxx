@@ -17,9 +17,9 @@
 #ifndef ENGINERECORD_H
 #define ENGINERECORD_H
 
-#include "../controlobjectthread.h"
-#include "../configobject.h"
-#include "../engineobject.h"
+#include "controlobjectthread.h"
+#include "configobject.h"
+#include "engine/engineobject.h"
 #include "writeaudiofile.h"
 
 #define THRESHOLD_REC 2. //high enough that its not triggered by white noise

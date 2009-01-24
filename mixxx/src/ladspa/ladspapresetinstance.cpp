@@ -8,6 +8,7 @@
 ***************************************************************************/
 
 #include <QtCore>
+#include "engine/engineladspa.h"
 #include "ladspapresetinstance.h"
 #include "ladspapresetknob.h"
 #include "controlpotmeter.h"

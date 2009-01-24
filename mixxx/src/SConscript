@@ -277,25 +277,158 @@ finally:
 	f.close()
 
 #Mixxx sources to build
-sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp
- controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp
- controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmididevice.cpp dlgprefmidibindings.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp dlgbpmtap.cpp dlgprefbpm.cpp dlgbpmscheme.cpp dlgabout.cpp
- dlgprefeq.cpp dlgprefcrossfader.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp
- enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mididevicehandler.cpp mixxx.cpp mixxxview.cpp
- soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp  wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp
- readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
- track.cpp trackcollection.cpp trackplaylist.cpp wtracktableview.cpp wtracktablemodel.cpp wpromotracksmodel.cpp proxymodel.cpp xmlparse.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
- enginetemporal.cpp wavesummary.cpp bpm/bpmdetector.cpp bpm/bpmdetect.cpp bpm/bpmscheme.cpp  bpm/peakfinder.cpp bpm/wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
- enginebufferscalereal.cpp powermate.cpp  hercules.cpp mouse.cpp
- waveformviewerfactory.cpp wvisualsimple.cpp wwaveformviewer.cpp wglwaveformviewer.cpp waveform/waveformrenderer.cpp waveform/waveformrenderbeat.cpp waveform/waveformrendermark.cpp
- imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
- trackinfoobject.cpp soundsource.cpp
- midiledhandler.cpp 
- sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
- dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp
- enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp
- wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp playerinfo.cpp wabstractcontrol.cpp
- enginebufferscaledummy.cpp wsearchlineedit.cpp segmentation.cpp engineanalyserqueue.cpp""")
+sources = Split("""
+                
+                input.cpp
+                mixxxmenuplaylists.cpp
+                trackplaylistlist.cpp
+                mixxxkeyboard.cpp
+                configobject.cpp
+                controlobjectthread.cpp
+                controlobjectthreadwidget.cpp
+                controlobjectthreadmain.cpp
+                controlevent.cpp
+                controllogpotmeter.cpp
+                controlobject.cpp
+                controlnull.cpp
+                controlpotmeter.cpp
+                controlpushbutton.cpp
+                controlttrotary.cpp
+                controlbeat.cpp
+
+                dlgpreferences.cpp
+                dlgprefsound.cpp
+                dlgprefmididevice.cpp
+                dlgprefmidibindings.cpp
+                dlgprefplaylist.cpp
+                dlgprefcontrols.cpp
+                dlgbpmtap.cpp
+                dlgprefbpm.cpp
+                dlgbpmscheme.cpp
+                dlgabout.cpp
+                dlgprefeq.cpp
+                dlgprefcrossfader.cpp
+
+                engine/enginebuffercue.cpp
+                engine/enginebuffer.cpp
+                engine/enginebufferscale.cpp
+                engine/enginebufferscalelinear.cpp
+                engine/engineclipping.cpp
+                engine/enginefilterblock.cpp
+                engine/enginefilteriir.cpp
+                engine/enginefilter.cpp
+                engine/engineobject.cpp
+                engine/enginepregain.cpp
+                engine/enginevolume.cpp
+                engine/enginechannel.cpp
+                engine/enginemaster.cpp
+                engine/enginedelay.cpp
+                engine/engineflanger.cpp
+                engine/enginespectralfwd.cpp
+                engine/enginevumeter.cpp
+                engine/enginetemporal.cpp
+                engine/enginebeatseek.cpp
+                engine/enginebufferscalereal.cpp
+                engine/enginevinylsoundemu.cpp
+                engine/enginesidechain.cpp
+                engine/enginefilterbutterworth8.cpp
+                engine/enginexfader.cpp
+                engine/enginebufferscaledummy.cpp
+                engine/engineanalyserqueue.cpp
+                
+                main.cpp
+                midiobject.cpp
+                midiobjectnull.cpp
+                mididevicehandler.cpp
+                mixxx.cpp
+                mixxxview.cpp
+                soundsourcemp3.cpp
+                soundsourceoggvorbis.cpp
+
+                wwidget.cpp
+                wpixmapstore.cpp
+                wlabel.cpp
+                wnumber.cpp
+                wnumberpos.cpp
+                wnumberrate.cpp
+                wnumberbpm.cpp
+                wknob.cpp
+                wdisplay.cpp
+                wvumeter.cpp
+                wpushbutton.cpp
+                wslidercomposed.cpp
+                wslider.cpp
+                wstatuslight.cpp
+                
+                mathstuff.cpp
+                readerextract.cpp
+                readerextractwave.cpp
+                readerevent.cpp
+                rtthread.cpp
+                windowkaiser.cpp
+                probabilityvector.cpp
+                reader.cpp
+
+                peaklist.cpp
+                rotary.cpp
+                log.cpp
+                track.cpp
+                trackcollection.cpp
+                trackplaylist.cpp
+                wtracktableview.cpp
+                wtracktablemodel.cpp
+                wpromotracksmodel.cpp
+                proxymodel.cpp
+                xmlparse.cpp
+                trackimporter.cpp
+                parser.cpp
+                parserpls.cpp
+                parserm3u.cpp
+                wavesummary.cpp
+
+                bpm/bpmdetector.cpp
+                bpm/bpmdetect.cpp
+                bpm/bpmscheme.cpp
+                bpm/peakfinder.cpp
+                bpm/wavesegmentation.cpp
+                
+                soundsourceproxy.cpp
+                woverview.cpp
+                powermate.cpp
+                hercules.cpp
+                mouse.cpp
+
+                
+                waveformviewerfactory.cpp
+                wvisualsimple.cpp
+                wwaveformviewer.cpp
+                wglwaveformviewer.cpp
+                waveform/waveformrenderer.cpp
+                waveform/waveformrenderbeat.cpp
+                waveform/waveformrendermark.cpp
+                
+                imginvert.cpp
+                imgloader.cpp
+                imgcolor.cpp
+                wskincolor.cpp
+                trackinfoobject.cpp
+                soundsource.cpp
+                midiledhandler.cpp
+                sounddevice.cpp
+                soundmanager.cpp
+                sounddeviceportaudio.cpp
+                dlgprefrecord.cpp
+                recording/enginerecord.cpp
+                recording/writeaudiofile.cpp
+                wtracktablefilter.cpp
+                wplaylistlistmodel.cpp
+                libraryscanner.cpp
+                libraryscannerdlg.cpp
+                playerinfo.cpp
+                wabstractcontrol.cpp
+                wsearchlineedit.cpp
+                segmentation.cpp
+                """)
 
 #Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
@@ -581,7 +714,7 @@ if platform == 'win32':
 
 #SoundTouch
 env.Append(CPPPATH=['../../lib/soundtouch']) #Needed two ../../'s because we're compiling from "src/.obj"
-sources += Split("""enginebufferscalest.cpp ../../lib/soundtouch/SoundTouch.cpp ../../lib/soundtouch/TDStretch.cpp ../../lib/soundtouch/RateTransposer.cpp ../../lib/soundtouch/AAFilter.cpp ../../lib/soundtouch/FIFOSampleBuffer.cpp ../../lib/soundtouch/FIRFilter.cpp """)
+sources += Split("""engine/enginebufferscalest.cpp ../../lib/soundtouch/SoundTouch.cpp ../../lib/soundtouch/TDStretch.cpp ../../lib/soundtouch/RateTransposer.cpp ../../lib/soundtouch/AAFilter.cpp ../../lib/soundtouch/FIFOSampleBuffer.cpp ../../lib/soundtouch/FIRFilter.cpp """)
 if platform == 'win32':
 	sources += Split("""../../lib/soundtouch/cpu_detect_x86_win.cpp ../../lib/soundtouch/mmx_win.cpp ../../lib/soundtouch/sse_win.cpp ../../lib/soundtouch/3dnow_win.cpp""")
 else:
@@ -607,7 +740,7 @@ sources += Split("""../../lib/kissfft/kiss_fft.c""")
 
 #libsamplerate - Getting rid of this out of our source tree since we don't use it. 
 #env.Append(CPPPATH='../../lib/libsamplerate')
-#sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
+#sources += Split("""engine/enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
 
 #fidlib (for EQs)
 env.Append(CPPPATH='../../lib/fidlib-0.9.9/')
@@ -693,7 +826,7 @@ if int(flags_shoutcast):
 	env.Append(LIBS = 'shout');
 	env.Append(LIBS = 'vorbisenc');
 	env.Append(CXXFLAGS = '-D__SHOUTCAST__')
-	sources += Split(""" dlgprefshoutcast.cpp engineshoutcast.cpp encodervorbis.cpp """ )
+	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encodervorbis.cpp """ )
 	env.Uic4('dlgprefshoutcastdlg.ui')
 	print "Shoutcast support... enabled"
 	build_flags += 'shoutcast '
@@ -705,7 +838,7 @@ flags_ladspa = 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CXXFLAGS = '-D__LADSPA__')
-	sources += Split("""engineladspa.cpp
+	sources += Split("""engine/engineladspa.cpp
                             ladspa/ladspaloader.cpp
                             ladspa/ladspalibrary.cpp
                             ladspa/ladspaplugin.cpp
@@ -730,7 +863,7 @@ else:
 flags_vinylcontrol = getFlags(env, 'vinylcontrol', 1)
 if int(flags_vinylcontrol):
 	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
-	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp vinylcontrolsignalwidget.cpp enginevinylcontrol.cpp """)
+	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp vinylcontrolsignalwidget.cpp engine/enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='../../lib/xwax')
 	if platform == 'win32':
 		sources += Split("""../../lib/xwax/timecoder_win32.c """)

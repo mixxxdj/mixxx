@@ -16,7 +16,7 @@
 ***************************************************************************/
 
 #include "dlgprefeq.h"
-#include "enginefilteriir.h"
+#include "engine/enginefilteriir.h"
 #include "controlobject.h"
 #include <qlineedit.h>
 #include <q3filedialog.h>

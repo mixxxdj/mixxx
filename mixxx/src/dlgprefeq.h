@@ -20,7 +20,7 @@
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "enginefilterblock.h"
+#include "engine/enginefilterblock.h"
 
 class QWidget;
 /**

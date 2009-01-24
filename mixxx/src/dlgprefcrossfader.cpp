@@ -16,9 +16,9 @@
 ***************************************************************************/
 
 #include "dlgprefcrossfader.h"
-#include "enginefilteriir.h"
+#include "engine/enginefilteriir.h"
 #include "controlobject.h"
-#include "enginexfader.h"
+#include "engine/enginexfader.h"
 #include <qlineedit.h>
 #include <q3filedialog.h>
 #include <qwidget.h>

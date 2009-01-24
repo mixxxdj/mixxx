@@ -21,7 +21,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
-#include "enginemaster.h"
+#include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
 
 /** Initializes Mixxx's audio core
