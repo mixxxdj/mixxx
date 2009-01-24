@@ -17,6 +17,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <qapplication.h>
 #include "wwidget.h"    // FIXME: This should be xmlparse.h
 #include "midimapping.h"
 #include "midiledhandler.h"
@@ -27,9 +28,9 @@ static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
 
-MidiMapping::MidiMapping(MidiObject* midi_object) : QObject() {
-    m_pMidiObject = midi_object;
-    m_pScriptEngine = midi_object->getMidiScriptEngine();
+MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(midi_object) {
+//     m_pMidiObject = midi_object;
+    m_pScriptEngine = midi_object.getMidiScriptEngine();
     
     // Try to read in the current XML bindings file, one from the command line, or create one if nothing is available
     QStringList commandLineArgs = QApplication::arguments();
@@ -69,6 +70,9 @@ void MidiMapping::loadPreset(QString path) {
  * Loads a set of MIDI bindings from a QDomElement structure.
  */
 void MidiMapping::loadPreset(QDomElement root) {
+    qDebug() << "MidiMapping: loadPreset() called";
+    m_rowMutex.lock();
+    m_outputRowMutex.lock();
 
     if (root.isNull()) return;
     // For each controller in the DOM
@@ -207,6 +211,9 @@ void MidiMapping::loadPreset(QDomElement root) {
             m_pAddRowParams << parameters;  // Add to the master list
             control = control.nextSiblingElement("control");
         }
+        qDebug() << "MidiMapping: Rows ready!";
+//         m_rowsReady.wakeAll();
+        m_rowMutex.unlock();
 
         QDomNode output = controller.namedItem("outputs").toElement().firstChild();
         while (!output.isNull()) {
@@ -260,6 +267,9 @@ void MidiMapping::loadPreset(QDomElement root) {
 
             output = output.nextSibling();
         }
+        qDebug() << "MidiMapping: Output rows ready!";
+//         m_outputRowsReady.wakeAll();
+        m_outputRowMutex.unlock();
 
         controller = controller.nextSiblingElement("controller");
     }
@@ -272,7 +282,13 @@ void MidiMapping::loadPreset(QDomElement root) {
    Output:  Reference to QList of QHashes, each hash containing
             a parameter by name
    -------- ------------------------------------------------------ */
-QList<QHash<QString,QString> >* MidiMapping::getRowParams() {
+
+QList<QHash<QString,QString> > * MidiMapping::getRowParams() {
+    qDebug() << "MidiMapping: getRowParams() called";
+    m_rowMutex.lock();  // Wait until we're done building the QList
+//     m_rowsReady.wait(&m_rowMutex);
+    m_rowMutex.unlock();
+
     return &m_pAddRowParams;
 }
 
@@ -283,7 +299,12 @@ QList<QHash<QString,QString> >* MidiMapping::getRowParams() {
    Output:  Reference to QList of QHashes, each hash containing
             a parameter by name
    -------- ------------------------------------------------------ */
-QList<QHash<QString,QString> >* MidiMapping::getOutputRowParams() {
+QList<QHash<QString,QString> > * MidiMapping::getOutputRowParams() {
+    qDebug() << "MidiMapping: getOutputRowParams() called";
+    m_outputRowMutex.lock();  // Wait until we're done building the QList
+//     m_outputRowsReady.wait(&m_outputRowMutex);
+    m_outputRowMutex.unlock();
+
     return &m_pAddOutputRowParams;
 }
 
@@ -322,20 +343,22 @@ void MidiMapping::applyPreset() {
 
     QDomElement controller = m_pBindings.firstChildElement("controller");
     // For each device
+    ConfigObject<ConfigValueMidi> * MidiConfig;
     while (!controller.isNull()) {
         // Device Outputs - LEDs
         QString deviceId = controller.attribute("id","");
 
         qDebug() << "MidiMapping: Processing MIDI Control Bindings for" << deviceId;
-        m_pMidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
+        MidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
 
         qDebug() << "MidiMapping: Processing MIDI Output Bindings for" << deviceId;
-        MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_pMidiObject, deviceId);
+        MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_rMidiObject, deviceId);
 
         // Next device
         controller = controller.nextSiblingElement("controller");
     }
-    m_pMidiObject->setMidiConfig(m_pMidiConfig);
+    // TODO: replace with multiple controller supported call and move into above loop
+    m_rMidiObject.setMidiConfig(MidiConfig);
 }
 
 /* clearPreset()
