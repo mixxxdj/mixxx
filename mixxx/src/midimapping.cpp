@@ -24,6 +24,9 @@
 #include "configobject.h"
 #include <qapplication.h>
 
+QMutex MidiMapping::m_rowMutex;
+QMutex MidiMapping::m_outputRowMutex;
+
 static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
@@ -211,12 +214,12 @@ void MidiMapping::loadPreset(QDomElement root) {
 #ifdef __SCRIPT__
             }
 #endif
-            m_pAddRowParams << parameters;  // Add to the master list
+            m_addRowParams << parameters;  // Add to the master list
             control = control.nextSiblingElement("control");
         }
         qDebug() << "MidiMapping: Rows ready!";
 //         m_rowsReady.wakeAll();
-//         m_rowMutex.unlock();
+        m_rowMutex.unlock();
 
         QDomNode output = controller.namedItem("outputs").toElement().firstChild();
         while (!output.isNull()) {
@@ -249,7 +252,7 @@ void MidiMapping::loadPreset(QDomElement root) {
                     max = WWidget::selectNodeQString(output, "maximum");
                 }
             }
-            qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << device << "on/off:" << on << off;
+            if (outputType!="#comment") qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << device << "on/off:" << on << off;
 
             // Assemble a QList of QHashes here for dlgprefmidibindings to pick up when it's ready
             QHash<QString, QString> parameters;
@@ -265,7 +268,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             parameters["on"]=on;
             parameters["off"]=off;
             
-            m_pAddOutputRowParams << parameters;
+            if (parameters["outputType"]!="#comment") m_addOutputRowParams << parameters;
 //             addOutputRow(outputType, group, key, min, max, toHex(status), toHex(midino), device, on, off);
 
             output = output.nextSibling();
@@ -285,14 +288,15 @@ void MidiMapping::loadPreset(QDomElement root) {
    Output:  Reference to QList of QHashes, each hash containing
             a parameter by name
    -------- ------------------------------------------------------ */
-
 QList<QHash<QString,QString> > * MidiMapping::getRowParams() {
-    qDebug() << QString("MidiMapping: getRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+
+//     qDebug() << QString("MidiMapping: getRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     m_rowMutex.lock();  // Wait until we're done building the QList
 //     m_rowsReady.wait(&m_rowMutex);
     m_rowMutex.unlock();
+    qDebug() << "MidiMapping: Getting rowParams";
 
-    return &m_pAddRowParams;
+    return &m_addRowParams;
 }
 
 /* -------- ------------------------------------------------------
@@ -303,12 +307,13 @@ QList<QHash<QString,QString> > * MidiMapping::getRowParams() {
             a parameter by name
    -------- ------------------------------------------------------ */
 QList<QHash<QString,QString> > * MidiMapping::getOutputRowParams() {
-    qDebug() << QString("MidiMapping: getOutputRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+//     qDebug() << QString("MidiMapping: getOutputRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     m_outputRowMutex.lock();  // Wait until we're done building the QList
 //     m_outputRowsReady.wait(&m_outputRowMutex);
     m_outputRowMutex.unlock();
+    qDebug() << "MidiMapping: Getting outputRowParams";
 
-    return &m_pAddOutputRowParams;
+    return &m_addOutputRowParams;
 }
 
 /* -------- ------------------------------------------------------
@@ -319,8 +324,8 @@ QList<QHash<QString,QString> > * MidiMapping::getOutputRowParams() {
    -------- ------------------------------------------------------ */
 void MidiMapping::deleteRowParams() {
 // TODO: need to delete lists elements
-//    delete m_pAddRowParams; 
-//    delete m_pAddOutputRowParams;
+//    delete m_addRowParams; 
+//    delete m_addOutputRowParams;
 }
 
 /* savePreset(QString)
@@ -331,7 +336,7 @@ void MidiMapping::savePreset(QString path) {
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
     // Construct the DOM from the table
-//    buildDomElement();
+//    buildDomElement();    // TODO: Needs to be migrated from dlgprefmidibindings too.
     // Save the DOM to the XML file
     m_pBindings.save(outputstream, 4);
     output.close();
@@ -381,7 +386,7 @@ void MidiMapping::clearPreset() {
    Input:   QDomElement control, QString device
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiMapping::addControl(QDomElement control, QString device) {
+void MidiMapping::addControl(QDomElement &control, QString device) {
     QDomDocument nodeMaker;
     //Add control to correct device tag - find the correct tag
     QDomElement controller = m_pBindings.firstChildElement("controller");
@@ -408,7 +413,7 @@ void MidiMapping::addControl(QDomElement control, QString device) {
    Input:   QDomElement output, QString device
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiMapping::addOutput(QDomElement output, QString device) {
+void MidiMapping::addOutput(QDomElement &output, QString device) {
     QDomDocument nodeMaker;
     // Find the controller to attach the XML to...
     QDomElement controller = m_pBindings.firstChildElement("controller");

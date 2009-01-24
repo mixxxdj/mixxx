@@ -46,8 +46,8 @@ class MidiMapping : public QObject
         void applyPreset();
         void clearPreset();
         
-        void addControl(QDomElement control, QString device);
-        void addOutput(QDomElement output, QString device);
+        void addControl(QDomElement& control, QString device);
+        void addOutput(QDomElement& output, QString device);
 
     private:
 #ifdef __SCRIPT__
@@ -60,12 +60,12 @@ class MidiMapping : public QObject
 #endif
         QDomElement m_pBindings;
         MidiObject &m_rMidiObject;
-        QList<QHash<QString,QString> > m_pAddRowParams;
-        QList<QHash<QString,QString> > m_pAddOutputRowParams;
+        QList<QHash<QString,QString> > m_addRowParams;
+        QList<QHash<QString,QString> > m_addOutputRowParams;
         
         /** To prevent an object from accessing the QLists before we're done building them */
-        QMutex m_rowMutex;
-        QMutex m_outputRowMutex;
+        static QMutex m_rowMutex;
+        static QMutex m_outputRowMutex;
         QWaitCondition m_rowsReady;
         QWaitCondition m_outputRowsReady;
 };
