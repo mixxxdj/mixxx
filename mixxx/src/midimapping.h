@@ -26,16 +26,13 @@
 #include "script/midiscriptengine.h"
 #endif
 
-class MidiObject;     // Forward declaration
-
-
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
 
 class MidiMapping : public QObject
 {
     public:
         /** Constructor also loads & applies the default XML MIDI mapping file */
-        MidiMapping(MidiObject* midi_object);
+        MidiMapping(MidiObject &midi_object);
         ~MidiMapping();
         
         void loadPreset(QString path);
@@ -62,12 +59,15 @@ class MidiMapping : public QObject
         MidiScriptEngine *m_pScriptEngine;
 #endif
         QDomElement m_pBindings;
-        MidiObject* m_pMidiObject;
+        MidiObject &m_rMidiObject;
         QList<QHash<QString,QString> > m_pAddRowParams;
         QList<QHash<QString,QString> > m_pAddOutputRowParams;
-
-ConfigObject<ConfigValueMidi> *m_pMidiConfig; // FIXME: added to make midimappings.cpp compile
-
+        
+        /** To prevent an object from accessing the QLists before we're done building them */
+        QMutex m_rowMutex;
+        QMutex m_outputRowMutex;
+        QWaitCondition m_rowsReady;
+        QWaitCondition m_outputRowsReady;
 };
 
 #endif
