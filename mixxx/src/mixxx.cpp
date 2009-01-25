@@ -35,7 +35,6 @@
 #include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"
-#include "mixxxsocketserver.h"
 #include "mixxxmenuplaylists.h"
 #include "wavesummary.h"
 #include "bpm/bpmdetector.h"
@@ -330,11 +329,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     if (args.qlMusicFiles.count()>2)
         m_pTrack->slotLoadPlayer2(args.qlMusicFiles.at(2));
 #endif
-
-    // Set up socket interface
-//#ifndef __WIN__
-//    new MixxxSocketServer(m_pTrack);
-//#endif
 
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
