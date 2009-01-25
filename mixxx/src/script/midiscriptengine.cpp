@@ -71,7 +71,7 @@ QString MidiScriptEngine::getLastFilepath() {
 void MidiScriptEngine::clearCode() {
     m_scriptCode.clear();
     m_scriptGood=false;
-    m_result="";
+    m_result=QScriptValue();
     return;
 }
 
