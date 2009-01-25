@@ -371,7 +371,6 @@ sources = Split("""
 
                 peaklist.cpp
                 rotary.cpp
-                log.cpp
                 track.cpp
                 trackcollection.cpp
                 trackplaylist.cpp
