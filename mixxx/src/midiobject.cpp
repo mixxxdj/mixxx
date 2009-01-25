@@ -22,6 +22,7 @@
 #include <signal.h>
 #include "dlgprefmididevice.h"
 #include "dlgprefmidibindings.h"
+
 #ifdef __SCRIPT__
 #include "script/midiscriptengine.h"
 #endif
@@ -39,36 +40,6 @@ MidiObject::MidiObject()
     requestStop = false;
     midiLearn = false;
     debug = false;
-    
-#ifdef __SCRIPT__
-    m_pScriptEngine = new MidiScriptEngine();
-    m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
-
-    ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
-    m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/midi-mappings-scripts.js"));
-// FIXME: this hack below has to be replaced with something better... even *.js is preferrable to a hard coded string switch statement.
-//     switch (m_device) {
-//         case "SCS.3d MIDI *":
-//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/Stanton-SCS3d-scripts.js"));
-//             break;
-//         case "Hercules MK2 *":
-//             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/Hercules-MK2-scripts.js"));
-//             break;
-//     }
-    qDebug() << "MidiObject: Evaluating all script code";
-    
-    m_pScriptEngine->evaluateScript();
-    if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Script code evaluated successfully";
-
-/*    // Call script's init function if it exists - First need deviceChannel and deviceName in this object
-    QScriptValue scriptFunction = m_pScriptEngine->execute("init");
-    if (!scriptFunction.isFunction()) qDebug() << "MidiObject: No init function in script";
-    else {
-        scriptFunction.call(QScriptValue());
-        m_pScriptEngine->checkException();
-    }
-*/
-#endif
 }
 
 /* -------- ------------------------------------------------------
@@ -79,6 +50,68 @@ MidiObject::MidiObject()
 MidiObject::~MidiObject()
 {
 }
+
+#ifdef __SCRIPT__
+/* -------- ------------------------------------------------------
+   Purpose: Loads and processes MIDI scripts
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiObject::loadScripts()
+{
+    m_pScriptEngine = new MidiScriptEngine();
+    m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
+
+    ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
+    
+    // Individually load & evaluate script files in the QList (built by dlgPrefMidiBindings) to check for errors
+    // so line numbers will be accurate per file (for syntax errors at least) to make troubleshooting much easier
+    bool scriptError = false;
+    
+    for (int i=0; i<scriptFileNames.size(); i++) {
+        m_pScriptEngine->clearCode();   // So line numbers will be correct
+        
+        QString filename = scriptFileNames.at(i);
+        qDebug() << "MidiObject: Loading & testing MIDI script" << filename;
+        m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(filename));
+        
+        m_pScriptEngine->evaluateScript();
+        if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Success";
+        else {
+            // This is only included for completeness since checkException should pop a qCritical() itself if there's a problem
+            qCritical() << "MidiObject: Failure evaluating MIDI script" << filename;
+            scriptError = true;
+        }
+    }
+    
+    qDebug() << "MidiObject: Loading & evaluating all MIDI script code";
+    m_pScriptEngine->clearCode();   // Start from scratch
+    
+    if (!scriptError) {
+        while (!scriptFileNames.isEmpty()) {
+            m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(scriptFileNames.takeFirst()));
+        }
+        
+        m_pScriptEngine->evaluateScript();
+        if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Script code evaluated successfully";
+    
+        // Call each script's init function if it exists
+        while (!scriptFunctionPrefixes.isEmpty()) {
+            QString initName = scriptFunctionPrefixes.takeFirst();
+            if (initName!="") {
+                initName.append(".init");
+                qDebug() << "MidiObject: Executing" << initName;
+                QScriptValue scriptFunction = m_pScriptEngine->execute(initName);
+                if (!scriptFunction.isFunction()) qWarning() << "MidiObject: No" << initName << "function in script";
+                else {
+                    scriptFunction.call(QScriptValue());
+                    m_pScriptEngine->checkException();
+                }
+            }
+        }
+    }
+}
+#endif
 
 void MidiObject::setMidiConfig(ConfigObject<ConfigValueMidi> * pMidiConfig)
 {
@@ -189,11 +222,11 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     }
 /*
     qDebug() << QString("MidiObject::receive from device: %1, type: %2, catagory: %3, ch: %4, ctrl: %5, val: %6").arg(device)
-       .arg(QString::number(type))
-       .arg(QString::number(category, 16).toUpper())
-       .arg(QString::number(channel, 16).toUpper())
-       .arg(QString::number(control, 16).toUpper())
-       .arg(QString::number(value, 16).toUpper());
+    .arg(QString::number(type))
+    .arg(QString::number(category, 16).toUpper())
+    .arg(QString::number(channel, 16).toUpper())
+    .arg(QString::number(control, 16).toUpper())
+    .arg(QString::number(value, 16).toUpper());
 */
     if (midiLearn) {
         emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
@@ -291,7 +324,6 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         // qDebug() << "New Control Value: " << newValue << " ";
         p->queueFromMidi(category, newValue);
     }
-
 }
 
 void MidiObject::stop()

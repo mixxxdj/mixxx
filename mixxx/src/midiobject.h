@@ -85,6 +85,10 @@ public:
     void disableMidiLearn();
     
 #ifdef __SCRIPT__
+    QList<QString> scriptFileNames;
+    QList<QString> scriptFunctionPrefixes;
+    
+    void loadScripts();
     MidiScriptEngine *getMidiScriptEngine();
 #endif
 

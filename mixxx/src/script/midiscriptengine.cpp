@@ -28,9 +28,6 @@ MidiScriptEngine::MidiScriptEngine() : m_engine() {
 
     engineGlobalObject = m_engine.globalObject();
     engineGlobalObject.setProperty("engine", m_engine.newQObject(this));
-//     ControlObject* m_cobj;
-//     m_cobj = ControlObject::getControl(ConfigKey("[Channel1]","back"));
-//     engineGlobalObject.setProperty("revers", m_engine.newQObject(m_cobj));
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
@@ -73,6 +70,8 @@ QString MidiScriptEngine::getLastFilepath() {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::clearCode() {
     m_scriptCode.clear();
+    m_scriptGood=false;
+    m_result="";
     return;
 }
 
@@ -179,7 +178,7 @@ QStringList MidiScriptEngine::getFunctionList() {
 
         QString line = codeLines.takeAt(position);    // Pull & remove the current match from the list.
 
-        if (line.indexOf('#') != 0) {    // ignore # hashed out comments
+        if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore comments
             QStringList field = line.split(" ");
             qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
             functionList.append(field[0]);

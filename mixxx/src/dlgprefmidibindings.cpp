@@ -65,8 +65,14 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, Conf
     connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
     connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
 
-    // Try to read in the current XML bindings file, or create one if nothing is available
-    loadPreset(BINDINGS_PATH);
+    // Try to read in the current XML bindings file, one from the command line, or create one if nothing is available
+    QStringList commandLineArgs = QApplication::arguments();
+    int loadXML = commandLineArgs.indexOf("--loadXMLfile");
+    if (loadXML!=-1) {
+        qDebug() << "Loading custom MIDI mapping file:" << commandLineArgs.at(loadXML+1);
+        loadPreset(commandLineArgs.at(loadXML+1));
+    }
+    else loadPreset(BINDINGS_PATH);
     applyPreset();
     m_pMidi->disableMidiLearn();
 }
@@ -97,14 +103,36 @@ void DlgPrefMidiBindings::loadPreset(QDomElement root) {
         // Get deviceid
         QString device = controller.attribute("id","");
         qDebug() << device << " settings found" << endl;
-        QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
-
+        
 #ifdef __SCRIPT__
+        // Get a list of MIDI script files to load (loaded by MidiObject)
+        QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
+        
+        // Default currently required file
+        m_pMidi->scriptFileNames.append("midi-mappings-scripts.js");
+        m_pMidi->scriptFunctionPrefixes.append("");
+        
+        // Look for additional ones
+        while (!scriptFile.isNull()) {
+        
+            QString functionPrefix = scriptFile.attribute("functionprefix","");
+            QString filename = WWidget::selectNodeQString(scriptFile, "filename");
+            m_pMidi->scriptFileNames.append(filename);
+            m_pMidi->scriptFunctionPrefixes.append(functionPrefix);
+        
+            scriptFile = scriptFile.nextSiblingElement("file");
+        }
+
+        m_pMidi->loadScripts(); // This will halt execution if there's a problem with a script (qCritical)
+
         MidiScriptEngine * ScriptEngine = m_pMidi->getMidiScriptEngine();
         bool scriptGood = ScriptEngine->isGood();
         QStringList scriptFunctions;
         if (scriptGood) scriptFunctions = ScriptEngine->getFunctionList();
 #endif
+
+        QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
+        
         while (!control.isNull()) {
             // For each control
             QString group = WWidget::selectNodeQString(control, "group");
