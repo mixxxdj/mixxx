@@ -43,7 +43,14 @@ void EngineAnalyserQueue::doAnalysis(TrackInfoObject* tio) {
 
 	int read = 0;
 
-	do {
+    // FIXME: Duplicate mono stuff to stereo for analysis
+	//Q_ASSERT(tio->getChannels() == 2);
+	if (tio->getChannels() != 2) {
+        qDebug() << "FIXME: Engine analysis requires songs to be in stereo.";
+        return;
+    }
+    
+    do {
 		read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
 
 		// Safety net in case something later barfs on 0 sample input
@@ -51,8 +58,6 @@ void EngineAnalyserQueue::doAnalysis(TrackInfoObject* tio) {
 			break;
 		}
 
-		// FIXME: Duplicate mono stuff to stereo for analysis
-		Q_ASSERT(tio->getChannels() == 2);
 
 		for (int i = 0; i < read; i++) {
 			samples[i] = ((float)data16[i])/32767.0f;
