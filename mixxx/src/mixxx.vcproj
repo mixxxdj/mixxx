@@ -482,14 +482,6 @@
 				>
 			</File>
 			<File
-				RelativePath="mixxxsocketclient.cpp"
-				>
-			</File>
-			<File
-				RelativePath="mixxxsocketserver.cpp"
-				>
-			</File>
-			<File
 				RelativePath="mixxxview.cpp"
 				>
 			</File>
@@ -1647,58 +1639,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxxsocketclient.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketclient.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketclient.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketclient.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketclient.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="mixxxsocketserver.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketserver.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketserver.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketserver.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketserver.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="mixxxview.h"
 				>
 				<FileConfiguration
@@ -2837,14 +2777,6 @@
 			</File>
 			<File
 				RelativePath="moc_mixxxmenuplaylists.cpp"
-				>
-			</File>
-			<File
-				RelativePath="moc_mixxxsocketclient.cpp"
-				>
-			</File>
-			<File
-				RelativePath="moc_mixxxsocketserver.cpp"
 				>
 			</File>
 			<File
