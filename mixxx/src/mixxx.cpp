@@ -38,7 +38,6 @@
 #include "mixxxmenuplaylists.h"
 #include "wavesummary.h"
 #include "bpm/bpmdetector.h"
-#include "log.h"
 #include "dlgabout.h"
 
 #include "soundmanager.h"
@@ -347,11 +346,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
     app->installEventFilter(this); //The eventfilter is located in this Mixxx class as a callback.
-
-    // Initialize the log if a log file name was given on the command line
-    Log *pLog = 0;
-    if (args.qLogFileName.length()>0)
-        pLog = new Log(args.qLogFileName, m_pTrack);
 
     //If we were told to start in fullscreen mode on the command-line, then turn on fullscreen mode.
     if (args.bStartInFullscreen)

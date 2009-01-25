@@ -252,7 +252,6 @@ class MixxxApp : public QMainWindow
 struct CmdlineArgs
 {
     QList<QString> qlMusicFiles;    /* List of files to load into players at startup */
-    QString qLogFileName;           /* Log file */ 
     bool bStartInFullscreen;        /* Start in fullscreen mode */
 };
 

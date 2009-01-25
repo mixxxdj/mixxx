@@ -1,3 +1,5 @@
+#include <QtDebug>
+
 #include "engineanalyserqueue.h"
 #include "soundsourceproxy.h"
 

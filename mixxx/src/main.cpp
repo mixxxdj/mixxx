@@ -31,7 +31,6 @@
 #include "mixxx.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
-#include "log.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -194,11 +193,6 @@ int main(int argc, char * argv[])
     QString qLogFileName = "";
     for (int i=0; i<argc; ++i)
     {
-        if (argv[i]==QString("--log"))
-        {
-            args.qLogFileName = argv[i+1];
-            i++;
-        }
         if (argv[i]==QString("-f") || argv[i]==QString("--f"))
         {
             args.bStartInFullscreen = true;
