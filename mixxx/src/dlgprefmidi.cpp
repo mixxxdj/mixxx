@@ -69,7 +69,7 @@
 #ifdef __LINUX__
 #include "powermatelinux.h"
 #endif
-#ifdef __WIN__
+#ifdef __WIN32__
 #include "powermatewin.h"
 #endif
 
@@ -178,7 +178,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     m_pPowerMate1 = new PowerMateLinux();
     m_pPowerMate2 = new PowerMateLinux();
 #endif
-#ifdef __WIN__
+#ifdef __WIN32__
 //    m_pPowerMate1 = new PowerMateWin();
 //    m_pPowerMate2 = new PowerMateWin();
 #endif
@@ -430,7 +430,7 @@ void DlgPrefMidi::slotApply()
 
     // Close MIDI
 #ifndef __LINUX__
-#ifndef __WIN__
+#ifndef __WIN32__
     // Deadly hack attack
     m_pMidi->devClose();
 #endif

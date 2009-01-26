@@ -335,7 +335,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
 //Do something more advanced one day if you like - Adam
             setHostAPI(MIXXX_PORTAUDIO_DIRECTSOUND_STRING);
 #endif
-#ifdef __MACX__
+#ifdef __APPLE__
         setHostAPI(MIXXX_PORTAUDIO_COREAUDIO_STRING);
 #endif
     }

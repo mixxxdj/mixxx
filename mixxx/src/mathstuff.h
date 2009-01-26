@@ -28,7 +28,7 @@ int sign(CSAMPLE);
 int invmatrix(CSAMPLE *);
 void polcoe(CSAMPLE x[], CSAMPLE y[], int n, CSAMPLE cof[]);
 CSAMPLE mod2pi(CSAMPLE);
-#ifdef __WIN__
+#ifdef __WIN32__
 int round(CSAMPLE x);
 #endif
 CSAMPLE arctan2(CSAMPLE y, CSAMPLE x);

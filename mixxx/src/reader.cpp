@@ -238,7 +238,7 @@ void Reader::newtrack()
 void Reader::run()
 {
     //qDebug() << "Reader running...";
-#ifdef __MACX__
+#ifdef __APPLE__
     rtThread();
 #endif
 

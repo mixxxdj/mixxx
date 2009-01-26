@@ -24,11 +24,11 @@
 #include "cmetrics.h"
 #endif
 
-#ifdef __WIN__
+#ifdef __WIN32__
 #include <windows.h>
 #endif
 
-#ifdef __MACX__
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -677,13 +677,13 @@ QString ConfigObject<ValueType>::getConfigPath()
         qConfigPath = UNIX_SHARE_PATH;
     }
 #endif
-#ifdef __WIN__
+#ifdef __WIN32__
     // On Windows, set the config dir relative to the application dir
     char * str = new char[200];
     GetModuleFileName(NULL, (WCHAR *)str, 200);
     qConfigPath = QFileInfo(str).dirPath();
 #endif
-#ifdef __MACX__
+#ifdef __APPLE__
     // Set the path relative to the bundle directory
     CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
     CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);

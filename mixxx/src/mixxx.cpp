@@ -84,12 +84,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
-#ifdef __MACX__
     setWindowIcon(QIcon(":icon.svg"));
-#else
-    setWindowIcon(QIcon(":icon.svg"));
-    //setWindowIcon(QIcon(":iconsmall.png")); //This is a smaller 16x16 icon, looks cleaner...
-#endif
 
     //Reset pointer to players
     soundmanager = 0;
@@ -430,7 +425,7 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config, " << qTime.elapsed();
     delete config;
 
-#ifdef __WIN__
+#ifdef __WIN32__
     _exit(0);
 #endif
 }

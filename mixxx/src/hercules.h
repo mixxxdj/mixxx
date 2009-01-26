@@ -18,7 +18,7 @@
 #ifndef HERCULES_H
 #define HERCULES_H
 
-#ifdef __WIN__
+#ifdef __WIN32__
 #ifndef _MSC_VER
 /* Not MSVC, one of these:
    __MINGW32__

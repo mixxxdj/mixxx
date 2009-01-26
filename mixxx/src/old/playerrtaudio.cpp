@@ -343,7 +343,7 @@ QStringList PlayerRtAudio::getSampleRates()
 
 QString PlayerRtAudio::getSoundApi()
 {
-#ifdef __WIN__
+#ifdef __WIN32__
     return QString("DirectSound");
 #endif
 #ifdef __LINUX__

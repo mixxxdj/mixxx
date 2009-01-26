@@ -740,10 +740,10 @@ QStringList PlayerPortAudio::getSoundApiList()
      #ifdef __LINUX__
        return QStringList("OSS (PA)");
      #endif
-     #ifdef __MACX__
+     #ifdef __APPLE__
        return QStringList("CoreAudio (PA)");
      #endif
-     #ifdef __WIN__
+     #ifdef __WIN32__
        return QStringList("WMME (PA)");
      #endif
      */

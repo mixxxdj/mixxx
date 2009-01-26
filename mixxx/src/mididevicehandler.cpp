@@ -35,7 +35,7 @@
 #ifdef __LINUX__
 #include "powermatelinux.h"
 #endif
-#ifdef __WIN__
+#ifdef __WIN32__
 #include "powermatewin.h"
 #endif
 

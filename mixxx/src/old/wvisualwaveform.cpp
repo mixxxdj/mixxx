@@ -34,7 +34,7 @@ WVisualWaveform::WVisualWaveform(QWidget * pParent, const QGLWidget * pShareWidg
 
     installEventFilter(this);
 
-#ifdef __MACX__
+#ifdef __APPLE__
     // Hack to reduce load in GUI thread. This makes the system behave
     // "correctly" on MacOS X, where it would otherwise stall the system
     // for some seconds now and then.
@@ -44,7 +44,7 @@ WVisualWaveform::WVisualWaveform(QWidget * pParent, const QGLWidget * pShareWidg
     //I'm going to experiment a bit with the timings - Albert:
     m_iTimerID = startTimer(30);
 #endif
-#ifdef __WIN__
+#ifdef __WIN32__
     m_iTimerID = startTimer(30);
 #endif
 #ifdef __LINUX__
