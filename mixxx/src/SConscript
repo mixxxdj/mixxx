@@ -638,7 +638,7 @@ if platform == 'linux':
 	env.Append(CXXFLAGS = '-DTEMPORAL -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 	env.Append(CXXFLAGS = '-DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
 elif platform == 'osx':
-	env.Append(CXXFLAGS = '-D__MACX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = '-DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 elif platform == 'win32':
 	env.Append(CXXFLAGS = '-D__WIN32__ -DBPMSCHEME_FILE=\\"mixxxbpmschemes.xml\\" -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
 
@@ -681,8 +681,8 @@ if not platform == 'win32':
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g -D_REENTRANT """)) # omghax
 	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g -Wl,-rpath,$QTDIR/lib"""))
 if platform == 'win32':
-	env.Append(CXXFLAGS = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
-	env.Append(CCFLAGS  = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
+	env.Append(CXXFLAGS = '-DWIN32') #for soundtouch
+	env.Append(CCFLAGS  = '-DWIN32') #for soundtouch
 
 #Uic these guys (they're moc'd automatically after this) - Generates the code for the QT UI forms
 env.Uic4('dlgpreferencesdlg.ui')

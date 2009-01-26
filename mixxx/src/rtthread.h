@@ -22,7 +22,7 @@
 #ifndef RTTHREAD_H
 #define RTTHREAD_H
 
-#ifdef __MACX__
+#ifdef __APPLE__
   #include <mach/mach_init.h>
   #include <mach/task_policy.h>
   #include <mach/thread_act.h>
@@ -35,7 +35,7 @@
   #include <sys/resource.h>
 #endif
 
-#ifdef __MACX__
+#ifdef __APPLE__
   int get_bus_speed();
 #endif
 

@@ -71,7 +71,7 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     // Try to open the file pointed to by qSkinPath
     QDomElement docElem = openSkin(qSkinPath);
 
-#ifdef __WIN__
+#ifdef __WIN32__
 #ifndef QT3_SUPPORT
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
@@ -104,7 +104,7 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     // Load all widgets defined in the XML file
     createAllWidgets(docElem, parent, pConfig);
 
-#ifdef __WIN__
+#ifdef __WIN32__
 #ifndef QT3_SUPPORT
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);

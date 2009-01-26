@@ -16,14 +16,14 @@
 
 #include "rtthread.h"
 
-#ifdef __WIN__
+#ifdef __WIN32__
   #include "windows.h"
 #endif
 #include <string.h>
 #include <qobject.h>
 #include <QDebug>
 
-#ifdef __MACX__
+#ifdef __APPLE__
 int get_bus_speed()
 {
     int mib[2];
@@ -43,7 +43,7 @@ int get_bus_speed()
 
 void rtThread()
 {
-#ifdef __MACX__
+#ifdef __APPLE__
     struct thread_time_constraint_policy ttcpolicy;
     kern_return_t theError;
     /* This is in AbsoluteTime units, which are equal to
@@ -64,7 +64,7 @@ void rtThread()
         qDebug() << "Can't do thread_policy_set";
 #endif
 #ifdef __UNIX__
-#ifndef __MACX__
+#ifndef __APPLE__
     // Try to set realtime priority on the current executing thread. This should be used in time-critical
     // producer threads.
     struct sched_param schp;
@@ -80,7 +80,7 @@ void rtThread()
         qDebug() << "Not possible to give audio producer thread high prioriy.";
 #endif
 #endif
-#ifdef __WIN__
+#ifdef __WIN32__
 //    HANDLE h = GetCurrentThread();
 //    SetThreadPriority(h,THREAD_PRIORITY_BELOW_NORMAL);
 #endif
