@@ -207,7 +207,7 @@ else:
 #The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
 #and on Windows where all the paths are set in the shell.
 if platform == 'linux' or platform == 'osx':
-	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
+	env = Environment(tools=['default','qt4', 'msvs', 'OSConsX'], toolpath=['../', './', 'osx'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
  	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 elif platform == 'win32':
@@ -1192,38 +1192,20 @@ if platform == 'linux':
 			#Delete(unix_share_path + "/mixxx/midi")
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
-#Build the Mixxx.app directory
+#Build the Mixxx.app bundle
 if platform == 'osx':
-
-	#Files needed to create the OS X package
-	osx_plist_file = glob.glob('../osx/Info.plist')
-	osx_pkginfo_file = glob.glob('../osx/PkgInfo')
-	osx_icns_file = glob.glob('../osx/application.icns')
-	
-	osx_dist_path = "../../Mixxx.app"
-	osx_share_path = osx_dist_path
-	binary = env.Install(osx_dist_path + "/Contents/MacOS", binary_files)
-	skins = env.Install(osx_dist_path + "/skins", skin_files)
-	midimappings = env.Install(osx_dist_path + "/midi", midimappings_files)
-	keyboardmappings = env.Install(osx_dist_path + "/keyboard", keyboardmappings_files)
-	ladspapresets = env.Install(osx_dist_path + "/ladspa_presets", ladspapresets_files)
-	docs = env.Install(osx_dist_path + "/doc", docs_files)
-	promotracks = env.Install(osx_dist_path + "/promo", promotracks_files)
-	osx_plist = env.Install(osx_dist_path + "/Contents", osx_plist_file)
-	osx_pkginfo = env.Install(osx_dist_path + "/Contents", osx_pkginfo_file)
-	osx_icns = env.Install(osx_dist_path + "/Contents/Resources", osx_icns_file)
-
-	
-	#Makes each of those Install builders get fired off when you run "scons install" :)
-	env.Alias('install', binary)
-	env.Alias('install', skins)
-	env.Alias('install', midimappings)
-	env.Alias('install', keyboardmappings)
-	env.Alias('install', promotracks)
-	env.Alias('install', osx_plist)
-	env.Alias('install', osx_pkginfo)
-	env.Alias('install', osx_icns)
-
+	#Mixxx build variables
+	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
+	MIXXX_VERSION="1.6.5" #tmp tmp tmp, this should probably be in the env?
+	ARCH="macintel" #XXX should get this from scons or the system somehow?
+	DMG_ICON="src/osx/VolumeIcon.icns"
+	bundle = env.App("Mixxx", [mixxx_bin, 'osx/application.icns',
+		Dir('skins/'), Dir('midi/'), Dir('keyboard/'),
+		Dir('ladspa_presets'), Dir('doc/'), Dir('promo/')])
+	env.Default(bundle)
+		#XXX we should *not* need to specify the paths with ../../ like this
+	dmg = env.Dmg('Mixxx-'+MIXXX_VERSION+'-'+ARCH, [bundle, '../../Mixxx-Manual.pdf', '../../LICENSE', '../../README'], VOLNAME=VOLNAME, ICON = DMG_ICON)
+	env.Alias('package', dmg)
 		
 if platform == 'win32':
 	skins = env.Install("../../dist/skins", skin_files)
