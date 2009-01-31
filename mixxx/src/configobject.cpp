@@ -679,8 +679,8 @@ QString ConfigObject<ValueType>::getConfigPath()
 #endif
 #ifdef __WIN32__
     // On Windows, set the config dir relative to the application dir
-    char * str = new char[200];
-    GetModuleFileName(NULL, (WCHAR *)str, 200);
+    char* str = new char[200];
+    GetModuleFileName(NULL, str, 200);
     qConfigPath = QFileInfo(str).dirPath();
 #endif
 #ifdef __APPLE__
