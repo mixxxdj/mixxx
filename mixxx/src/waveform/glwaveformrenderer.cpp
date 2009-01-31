@@ -16,8 +16,8 @@
 #include "soundsourceproxy.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
-#include "wwidget.h"
-#include "wskincolor.h"
+#include "widget/wwidget.h"
+#include "widget/wskincolor.h"
 
 #define DEFAULT_SECONDS_TO_DISPLAY 4
 #define SCALE_TEST 4

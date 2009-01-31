@@ -19,10 +19,10 @@
 #include <QtCore>
 #include <QtGui>
 
-#include "wknob.h"
-#include "wslider.h"
-#include "wpushbutton.h"
-#include "woverview.h"
+#include "widget/wknob.h"
+#include "widget/wslider.h"
+#include "widget/wpushbutton.h"
+#include "widget/woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
 #include "readerextractwave.h"

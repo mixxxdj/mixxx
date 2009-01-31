@@ -11,8 +11,8 @@
 #include "waveformrenderer.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
-#include "wskincolor.h"
-#include "wwidget.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
 WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent) {

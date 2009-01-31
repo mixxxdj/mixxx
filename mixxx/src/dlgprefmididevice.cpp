@@ -18,7 +18,7 @@
 #include <QtCore>
 #include "dlgprefmididevice.h"
 #include "midiledhandler.h"
-#include "wwidget.h"
+#include "widget/wwidget.h"
 
 #define DEVICE_CONFIG_PATH QDir::homePath().append("/").append(".MixxxMIDIDevices")
 

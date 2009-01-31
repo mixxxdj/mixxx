@@ -345,20 +345,24 @@ sources = Split("""
                 soundsourcemp3.cpp
                 soundsourceoggvorbis.cpp
 
-                wwidget.cpp
-                wpixmapstore.cpp
-                wlabel.cpp
-                wnumber.cpp
-                wnumberpos.cpp
-                wnumberrate.cpp
-                wnumberbpm.cpp
-                wknob.cpp
-                wdisplay.cpp
-                wvumeter.cpp
-                wpushbutton.cpp
-                wslidercomposed.cpp
-                wslider.cpp
-                wstatuslight.cpp
+                widget/wwidget.cpp
+                widget/wlabel.cpp
+                widget/wnumber.cpp
+                widget/wnumberpos.cpp
+                widget/wnumberrate.cpp
+                widget/wnumberbpm.cpp
+                widget/wknob.cpp
+                widget/wdisplay.cpp
+                widget/wvumeter.cpp
+                widget/wpushbutton.cpp
+                widget/wslidercomposed.cpp
+                widget/wslider.cpp
+                widget/wstatuslight.cpp
+		widget/woverview.cpp
+		widget/wskincolor.cpp
+		widget/wabstractcontrol.cpp
+                widget/wsearchlineedit.cpp
+		widget/wpixmapstore.cpp
                 
                 mathstuff.cpp
                 readerextract.cpp
@@ -392,16 +396,16 @@ sources = Split("""
                 bpm/wavesegmentation.cpp
                 
                 soundsourceproxy.cpp
-                woverview.cpp
+                
                 powermate.cpp
                 hercules.cpp
                 mouse.cpp
 
-                
+
+                widget/wvisualsimple.cpp
+                widget/wwaveformviewer.cpp
+                widget/wglwaveformviewer.cpp
                 waveformviewerfactory.cpp
-                wvisualsimple.cpp
-                wwaveformviewer.cpp
-                wglwaveformviewer.cpp
                 waveform/waveformrenderer.cpp
                 waveform/waveformrenderbeat.cpp
                 waveform/waveformrendermark.cpp
@@ -409,7 +413,7 @@ sources = Split("""
                 imginvert.cpp
                 imgloader.cpp
                 imgcolor.cpp
-                wskincolor.cpp
+                
                 trackinfoobject.cpp
                 soundsource.cpp
                 midiledhandler.cpp
@@ -424,8 +428,7 @@ sources = Split("""
                 libraryscanner.cpp
                 libraryscannerdlg.cpp
                 playerinfo.cpp
-                wabstractcontrol.cpp
-                wsearchlineedit.cpp
+                
                 segmentation.cpp
                 """)
 

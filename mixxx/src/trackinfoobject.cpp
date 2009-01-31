@@ -30,7 +30,7 @@
 #include "trackplaylist.h"
 //#include "wtracktable.h"
 //#include "wtracktableitem.h"
-#include "woverview.h"
+#include "widget/woverview.h"
 #include "xmlparse.h"
 #include <qdom.h>
 #include "controlobject.h"

@@ -33,7 +33,7 @@
 #include "controlobject.h"
 #include "midiobjectnull.h"
 #include "midiledhandler.h"
-#include "wwidget.h"
+#include "widget/wwidget.h"
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
