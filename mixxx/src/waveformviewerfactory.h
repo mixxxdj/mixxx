@@ -6,7 +6,7 @@
 #include <QDomNode>
 
 #include "configobject.h"
-#include "wwidget.h"
+#include "widget/wwidget.h"
 
 class WVisualSimple;
 class WWaveformViewer;

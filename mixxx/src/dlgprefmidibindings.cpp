@@ -17,7 +17,7 @@
 #include <QtGui>
 #include <QDebug>
 #include "dlgprefmidibindings.h"
-#include "wwidget.h"
+#include "widget/wwidget.h"
 #include "configobject.h"
 
 #ifdef __SCRIPT__

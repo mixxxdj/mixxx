@@ -5,10 +5,10 @@
 #include "configobject.h"
 #include "waveformviewerfactory.h"
 
-#include "wvisualsimple.h"
-#include "wglwaveformviewer.h"
-#include "wwaveformviewer.h"
-//#include "wvisualwaveform.h"
+#include "widget/wvisualsimple.h"
+#include "widget/wglwaveformviewer.h"
+#include "widget/wwaveformviewer.h"
+
 
 QList<QObject*> WaveformViewerFactory::m_viewers = QList<QObject*>();
 QList<WVisualSimple*> WaveformViewerFactory::m_simpleViewers = QList<WVisualSimple*>();

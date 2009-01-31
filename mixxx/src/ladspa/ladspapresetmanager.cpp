@@ -12,7 +12,7 @@
 
 #include "ladspapresetmanager.h"
 #include "ladspaloader.h"
-#include "wwidget.h"
+#include "widget/wwidget.h"
 
 
 LADSPAPresetManager::LADSPAPresetManager()

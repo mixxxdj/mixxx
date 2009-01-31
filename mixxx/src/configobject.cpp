@@ -18,7 +18,7 @@
 #include "configobject.h"
 #include <qdir.h>
 #include <QtDebug>
-#include "wwidget.h"
+#include "widget/wwidget.h"
 
 #ifdef __C_METRICS__
 #include "cmetrics.h"

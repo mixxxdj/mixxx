@@ -13,8 +13,8 @@
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
-#include "wskincolor.h"
-#include "wwidget.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
 WaveformRenderMark::WaveformRenderMark(const char *group, ConfigKey key, WaveformRenderer *parent) {

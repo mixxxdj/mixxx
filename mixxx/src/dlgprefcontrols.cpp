@@ -27,8 +27,8 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "mixxxview.h"
-#include "wnumberpos.h"
-#include "wnumberbpm.h"
+#include "widget/wnumberpos.h"
+#include "widget/wnumberbpm.h"
 #include "engine/enginebuffer.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()

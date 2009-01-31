@@ -42,7 +42,7 @@
 
 //#include "wtreeview.h"
 #include "dlgbpmtap.h"
-#include "wnumberpos.h"
+#include "widget/wnumberpos.h"
 #include <QMenu>
 #include <QCursor>
 #include <q3cstring.h>
@@ -55,7 +55,6 @@
 #include "trackimporter.h"
 #include "wavesummary.h"
 #include "bpm/bpmdetector.h"
-#include "woverview.h"
 #include "playerinfo.h"
 #include "defs_promo.h"
 #include "soundsourceproxy.h"
@@ -68,11 +67,11 @@
 #include <QDebug>
 
 // Include widget object types for eventFilter
-#include "wslidercomposed.h"
-#include "wknob.h"
-#include "woverview.h"
-//#include "wpushButton.h"
-#include "wwidget.h"
+#include "widget/wslidercomposed.h"
+#include "widget/wknob.h"
+#include "widget/woverview.h"
+//#include "widget/wpushButton.h"
+#include "widget/wwidget.h"
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>

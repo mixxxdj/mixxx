@@ -18,8 +18,8 @@
 #include "soundsourceproxy.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
-#include "wwidget.h"
-#include "wskincolor.h"
+#include "widget/wwidget.h"
+#include "widget/wskincolor.h"
 
 #define DEFAULT_SUBPIXELS_PER_PIXEL 4
 #define DEFAULT_PIXELS_PER_SECOND 100

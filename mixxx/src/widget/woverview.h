@@ -12,7 +12,7 @@
 #ifndef WOVERVIEW_H
 #define WOVERVIEW_H
 
-#include <wwidget.h>
+#include "wwidget.h"
 #include <qcolor.h>
 #include <q3valuelist.h>
 //Added by qt3to4:

@@ -15,9 +15,9 @@
 #include "ladspa/ladspapresetinstance.h"
 #include "ladspa/ladspapresetslot.h"
 
-#include "wknob.h"
-#include "wskincolor.h"
-#include "wpixmapstore.h"
+#include "widget/wknob.h"
+#include "widget/wskincolor.h"
+#include "widget/wpixmapstore.h"
 
 LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 {

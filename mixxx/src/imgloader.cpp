@@ -1,5 +1,5 @@
 #include "imgloader.h"
-#include "wwidget.h"
+#include "widget/wwidget.h"
 
 ImgLoader::ImgLoader() {
 }

@@ -16,10 +16,11 @@
 ***************************************************************************/
 
 #include <QtDebug>
+#include <qtooltip.h>
 #include "wwidget.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
-#include "qtooltip.h"
+
 
 // Static member variable definition
 QString WWidget::m_qPath;

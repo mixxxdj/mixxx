@@ -18,7 +18,7 @@
 ***************************************************************************/
 
 #include <qapplication.h>
-#include "wwidget.h"    // FIXME: This should be xmlparse.h
+#include "widget/wwidget.h"    // FIXME: This should be xmlparse.h
 #include "midimapping.h"
 #include "midiledhandler.h"
 #include "configobject.h"
