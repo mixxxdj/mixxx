@@ -1,3 +1,4 @@
+#include "defs.h"
 #include "enginexfader.h"
 
 float EngineXfader::getCalibration(float transform)
@@ -35,5 +36,4 @@ void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition
 	if(gain2 < 0.)
 		gain2 = 0.;
 
-	return;
 }
