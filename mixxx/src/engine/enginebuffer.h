@@ -166,7 +166,7 @@ private:
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
     ControlPushButton *buttonLoop;
     ControlObject *m_pControlObjectBeatLoop;
-    ControlObject *rateEngine, *m_pRateDir, *m_pRateRange, *m_pRealSearch;
+    ControlObject *rateEngine, *m_pRateDir, *m_pRateRange;
     ControlObject *m_pMasterRate;
 	ControlObject *m_pJog;
     ControlPotmeter *rateSlider, *m_pRateSearch;
