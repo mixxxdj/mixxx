@@ -312,7 +312,9 @@ sources = Split("""
                 engine/enginebuffercue.cpp
                 engine/enginebuffer.cpp
                 engine/enginebufferscale.cpp
+		engine/enginebufferscaledummy.cpp
                 engine/enginebufferscalelinear.cpp
+		engine/enginebufferscalereal.cpp
                 engine/engineclipping.cpp
                 engine/enginefilterblock.cpp
                 engine/enginefilteriir.cpp
@@ -327,13 +329,11 @@ sources = Split("""
                 engine/enginespectralfwd.cpp
                 engine/enginevumeter.cpp
                 engine/enginetemporal.cpp
-                engine/enginebeatseek.cpp
-                engine/enginebufferscalereal.cpp
                 engine/enginevinylsoundemu.cpp
                 engine/enginesidechain.cpp
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
-                engine/enginebufferscaledummy.cpp
+                
                 engine/engineanalyserqueue.cpp
                 
                 main.cpp
