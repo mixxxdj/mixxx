@@ -101,10 +101,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Search rate. Rate used when searching in sound. This overrules the playback rate
     m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.);
 
-    // Control if RealSearch is enabled
-    m_pRealSearch = new ControlObject(ConfigKey(group, "realSearch"));
-    m_pRealSearch->set(0.);
-
     // Range of rate
     m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
 
@@ -890,17 +886,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If searching in progress...
         if (m_pRateSearch->get()!=0.)
         {
-            // If RealSearch is enabled, set playback rate to baserate
-            if (m_pRealSearch->get())
-            {
-                rate = baserate;
-//                 m_pScale->setFastMode(false);
-            }
-            else
-            {
-                rate = m_pRateSearch->get();
-//                 m_pScale->setFastMode(true);
-            }
+            rate = m_pRateSearch->get();
+//            m_pScale->setFastMode(true);
         }
 //         else
 //             m_pScale->setFastMode(false);
@@ -1332,7 +1319,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 //          qDebug() << "filepos_play " << filepos_play << ", len " << file_length_old << ", back " << backwards << ", play " << playButton->get();
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((playButton->get() || (!m_pRealSearch->get() && (fwdButton->get() || backButton->get()))) &&
+        if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
             !m_pTrackEnd->get() && readerinfo &&
             ((filepos_play<=0. && backwards) ||
              ((int)filepos_play>=file_length_old && !backwards)))
