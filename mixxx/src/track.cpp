@@ -51,7 +51,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "configobject.h"
-#include "engine/engineanalyserqueue.h"
+#include "analyserqueue.h"
 #include "trackimporter.h"
 #include "wavesummary.h"
 #include "bpm/bpmdetector.h"
@@ -80,7 +80,7 @@
 
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, 
 			 EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
-			 WaveSummary * pWaveSummary, BpmDetector * pBpmDetector, EngineAnalyserQueue* eaq)
+			 WaveSummary * pWaveSummary, BpmDetector * pBpmDetector, AnalyserQueue* analyserQueue)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -95,7 +95,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_iLibraryIdx = 0;   //FIXME: Deprecated, can safely remove.
     m_iPlayqueueIdx = 0; //FIXME: Deprecated, can safely remove.
 
-	m_eaq = eaq;
+	m_analyserQueue = analyserQueue;
 
     m_pTrackCollection = new TrackCollection(m_pBpmDetector);
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
@@ -971,7 +971,7 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
     if (m_pTrackPlayer1->getBpmConfirm()== false || m_pTrackPlayer1->getBpm() == 0.)
         m_pTrackPlayer1->sendToBpmQueue();
 
-	m_eaq->queueAnalyseTrack(pTrackInfoObject);
+	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
     // Generate waveform summary
     m_pTrackPlayer1->setVisualResampleRate(m_pVisualResampleCh1->get());
@@ -1064,6 +1064,8 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
     // Detect BPM if required
     if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)
         m_pTrackPlayer2->sendToBpmQueue();
+
+    m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
     // Generate waveform summary
     m_pTrackPlayer2->setVisualResampleRate(m_pVisualResampleCh2->get());

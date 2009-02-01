@@ -469,7 +469,8 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     }
 
     return false;
-
+    // The following code is not used now that we emulate qScriptConnect.
+    /*
     if (!checkException() && slot.isFunction()) {    // If no problems,
         // Do the deed
         if (disconnect) {
@@ -500,6 +501,7 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
         qWarning() << "MidiScriptEngine:" << group << name << "didn't connect/disconnect to/from" << function;
         return false;
         }
+    */
 }
 
 /* -------- ------------------------------------------------------
