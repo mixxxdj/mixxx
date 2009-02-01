@@ -12,20 +12,35 @@
   <property name="windowTitle" >
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" >
    <item>
     <widget class="QTabWidget" name="tabWidget" >
      <property name="styleSheet" >
-      <string notr="true" />
+      <string/>
      </property>
      <property name="currentIndex" >
       <number>0</number>
      </property>
+     <widget class="QWidget" name="deviceTab" >
+      <attribute name="title" >
+       <string>Device</string>
+      </attribute>
+      <widget class="QComboBox" name="comboBoxMidiDevice" >
+       <property name="geometry" >
+        <rect>
+         <x>80</x>
+         <y>50</y>
+         <width>351</width>
+         <height>161</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
      <widget class="QWidget" name="tabInputBindings" >
       <attribute name="title" >
-       <string>MIDI Input Bindings</string>
+       <string>Input Bindings</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2" >
+      <layout class="QVBoxLayout" >
        <item>
         <widget class="QGroupBox" name="groupBoxLearning" >
          <property name="minimumSize" >
@@ -37,119 +52,54 @@
          <property name="title" >
           <string>Quick MIDI Learn</string>
          </property>
-         <widget class="QLabel" name="labelInputStatic" >
-          <property name="geometry" >
-           <rect>
-            <x>332</x>
-            <y>11</y>
-            <width>51</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text" >
-           <string>Status:</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="labelStatus" >
-          <property name="geometry" >
-           <rect>
-            <x>332</x>
-            <y>28</y>
-            <width>161</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="btnGroupLearn" >
-          <property name="geometry" >
-           <rect>
-            <x>172</x>
-            <y>17</y>
-            <width>154</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="styleSheet" >
-           <string notr="true" >background-color: rgb(255, 255, 200);</string>
-          </property>
-          <property name="text" >
-           <string>Group Learn Selected</string>
-          </property>
-          <property name="checkable" >
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="btnSingleLearn" >
-          <property name="geometry" >
-           <rect>
-            <x>11</x>
-            <y>17</y>
-            <width>155</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="styleSheet" >
-           <string notr="true" >background-color: rgb(255, 255, 200);</string>
-          </property>
-          <property name="text" >
-           <string>MIDI Learn</string>
-          </property>
-          <property name="checkable" >
-           <bool>true</bool>
-          </property>
-          <property name="checked" >
-           <bool>false</bool>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTableWidget" name="tblBindings" >
-         <property name="font" >
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="alternatingRowColors" >
-          <bool>true</bool>
-         </property>
-         <property name="selectionMode" >
-          <enum>QAbstractItemView::ExtendedSelection</enum>
-         </property>
-         <property name="selectionBehavior" >
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-         <property name="columnCount" >
-          <number>5</number>
-         </property>
-         <column>
-          <property name="text" >
-           <string>Control</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>MIDI</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Device</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Type</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Options</string>
-          </property>
-         </column>
+         <layout class="QGridLayout" >
+          <item rowspan="2" row="0" column="0" >
+           <widget class="QPushButton" name="btnSingleLearn" >
+            <property name="styleSheet" >
+             <string>background-color: rgb(255, 255, 200);</string>
+            </property>
+            <property name="text" >
+             <string>MIDI Learn</string>
+            </property>
+            <property name="checkable" >
+             <bool>true</bool>
+            </property>
+            <property name="checked" >
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item rowspan="2" row="0" column="1" >
+           <widget class="QPushButton" name="btnGroupLearn" >
+            <property name="styleSheet" >
+             <string>background-color: rgb(255, 255, 200);</string>
+            </property>
+            <property name="text" >
+             <string>Group Learn</string>
+            </property>
+            <property name="checkable" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" >
+           <widget class="QLabel" name="labelInputStatic" >
+            <property name="text" >
+             <string>Status:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3" >
+           <widget class="QLabel" name="labelStatus" >
+            <property name="text" >
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="4" >
+           <widget class="QTableView" name="inputMappingTablePlaceholder" />
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -163,11 +113,11 @@
          <property name="title" >
           <string>Input Binding Management</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout" >
+         <layout class="QGridLayout" >
           <item row="0" column="0" >
            <widget class="QPushButton" name="btnAddBinding" >
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(200, 255, 200);</string>
+             <string>background-color: rgb(200, 255, 200);</string>
             </property>
             <property name="text" >
              <string>Add Control</string>
@@ -177,7 +127,7 @@
           <item row="0" column="2" >
            <widget class="QPushButton" name="btnExportXML" >
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(200, 255, 200);</string>
+             <string>background-color: rgb(200, 255, 200);</string>
             </property>
             <property name="text" >
              <string>Save to XML</string>
@@ -187,7 +137,7 @@
           <item row="1" column="0" >
            <widget class="QPushButton" name="btnRemoveBinding" >
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
+             <string>background-color: rgb(255, 200, 200);</string>
             </property>
             <property name="text" >
              <string>Remove Control</string>
@@ -197,7 +147,7 @@
           <item row="1" column="2" >
            <widget class="QPushButton" name="btnImportXML" >
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
+             <string>background-color: rgb(255, 200, 200);</string>
             </property>
             <property name="text" >
              <string>Load from XML</string>
@@ -210,7 +160,7 @@
              <bool>false</bool>
             </property>
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
+             <string>background-color: rgb(255, 200, 200);</string>
             </property>
             <property name="text" >
              <string>Clear All Bindings</string>
@@ -218,11 +168,11 @@
            </widget>
           </item>
           <item row="0" column="1" >
-           <spacer name="horizontalSpacer" >
+           <spacer>
             <property name="orientation" >
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" >
              <size>
               <width>40</width>
               <height>20</height>
@@ -231,243 +181,11 @@
            </spacer>
           </item>
           <item row="0" column="3" >
-           <spacer name="horizontalSpacer_2" >
+           <spacer>
             <property name="orientation" >
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tabOutputBindings" >
-      <attribute name="title" >
-       <string>MIDI Output Bindings</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3" >
-       <item>
-        <widget class="QGroupBox" name="groupBoxOutputTesting" >
-         <property name="minimumSize" >
-          <size>
-           <width>100</width>
-           <height>60</height>
-          </size>
-         </property>
-         <property name="styleSheet" >
-          <string notr="true" >background-color: rgb(210, 210, 210);</string>
-         </property>
-         <property name="title" >
-          <string>Test MIDI Output</string>
-         </property>
-         <widget class="QLabel" name="labelOutputStatic" >
-          <property name="geometry" >
-           <rect>
-            <x>170</x>
-            <y>11</y>
-            <width>51</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text" >
-           <string>Status:</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="labelOutputStatus" >
-          <property name="geometry" >
-           <rect>
-            <x>176</x>
-            <y>31</y>
-            <width>311</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="btnTestOutputBinding" >
-          <property name="geometry" >
-           <rect>
-            <x>11</x>
-            <y>21</y>
-            <width>155</width>
-            <height>30</height>
-           </rect>
-          </property>
-          <property name="styleSheet" >
-           <string notr="true" >background-color: rgb(255, 255, 200);</string>
-          </property>
-          <property name="text" >
-           <string>Test Output</string>
-          </property>
-          <property name="checkable" >
-           <bool>true</bool>
-          </property>
-          <property name="checked" >
-           <bool>false</bool>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTableWidget" name="tblOutputBindings" >
-         <property name="font" >
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet" >
-          <string notr="true" />
-         </property>
-         <property name="alternatingRowColors" >
-          <bool>true</bool>
-         </property>
-         <property name="selectionMode" >
-          <enum>QAbstractItemView::SingleSelection</enum>
-         </property>
-         <property name="selectionBehavior" >
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-         <property name="columnCount" >
-          <number>8</number>
-         </property>
-         <column>
-          <property name="text" >
-           <string>Output Type</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Control</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>MIDI</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Device</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Min</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Max</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>On</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Off</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBoxOutputManagement" >
-         <property name="minimumSize" >
-          <size>
-           <width>300</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="styleSheet" >
-          <string notr="true" >background-color: rgb(210, 210, 210);</string>
-         </property>
-         <property name="title" >
-          <string>Output Binding Management</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2" >
-          <item row="0" column="0" >
-           <widget class="QPushButton" name="btnAddOutputBinding" >
-            <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(200, 255, 200);</string>
-            </property>
-            <property name="text" >
-             <string>Add Output</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2" >
-           <widget class="QPushButton" name="btnOutputExportXML" >
-            <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(200, 255, 200);</string>
-            </property>
-            <property name="text" >
-             <string>Save to XML</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" >
-           <widget class="QPushButton" name="btnRemoveOutputBinding" >
-            <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
-            </property>
-            <property name="text" >
-             <string>Remove Output</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2" >
-           <widget class="QPushButton" name="btnOutputImportXML" >
-            <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
-            </property>
-            <property name="text" >
-             <string>Load from XML</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4" >
-           <widget class="QPushButton" name="btnClearOutputBindings" >
-            <property name="autoFillBackground" >
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
-            </property>
-            <property name="text" >
-             <string>Clear All Bindings</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" >
-           <spacer name="horizontalSpacer_3" >
-            <property name="orientation" >
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0" >
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="3" >
-           <spacer name="horizontalSpacer_4" >
-            <property name="orientation" >
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" >
              <size>
               <width>40</width>
               <height>20</height>

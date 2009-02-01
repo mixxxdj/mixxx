@@ -251,6 +251,10 @@ void MidiObjectALSASeq::devClose(QString device)
 
 void MidiObjectALSASeq::run()
 {
+    qDebug() << QString("MidiObjectAlsaSeq: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+    MidiObject::run();
+
     struct pollfd * pfds;
     int npfds;
     int rt;

@@ -22,9 +22,11 @@
 #include "defs.h"
 #include "configobject.h"
 
-#ifdef __SCRIPT__
+#ifdef __MIDISCRIPT__
 class MidiScriptEngine;     // Forward declaration
 #endif
+
+class MidiMapping;     // Forward declaration
 
 class ControlObject;
 class QWidget;
@@ -65,7 +67,7 @@ public:
       * containing the configuration files */
     QStringList *getConfigList(QString path);
 
-    // Stuff for sending messages to control leds etc
+    // Stuff for sending messages to control the device
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);
     virtual void sendShortMsg(unsigned int word);
     virtual void sendSysexMsg(unsigned char data[], unsigned int length);
@@ -84,7 +86,7 @@ public:
     void enableMidiLearn(DlgPrefMidiBindings *dlgBindings);
     void disableMidiLearn();
     
-#ifdef __SCRIPT__
+#ifdef __MIDISCRIPT__
     QList<QString> scriptFileNames;
     QList<QString> scriptFunctionPrefixes;
     
@@ -92,12 +94,16 @@ public:
     MidiScriptEngine *getMidiScriptEngine();
 #endif
 
+    MidiMapping *getMidiMapping();
+
     signals:
     void midiEvent(ConfigValueMidi *value, QString device);
     void debugInfo(ConfigValueMidi *event, char value, QString device);
 
 protected:
-    void run() {};
+#ifdef __MIDISCRIPT__
+    void run();
+#endif
     void stop();
     void receive(MidiCategory category, char channel, char control, char value, QString device);
 
@@ -120,10 +126,13 @@ protected:
     DlgPrefMidiDevice *dlgDevice;
     // Pointer to bindings dialog (for MIDI learn)
     DlgPrefMidiBindings *dlgBindings;
-
-#ifdef __SCRIPT__
+    
+#ifdef __MIDISCRIPT__
     MidiScriptEngine *m_pScriptEngine;
 #endif
+    
+    /** Device MIDI mapping object */
+    MidiMapping *m_pMidiMapping;    //FIXME: should this be a pointer, won't compile without the *
 };
 
 void abortRead(int);

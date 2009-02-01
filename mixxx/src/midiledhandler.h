@@ -13,11 +13,11 @@ class MidiLedHandler : QObject
 {
     Q_OBJECT
 public:
-	MidiLedHandler(QString group, QString key, MidiObject* midi, double min, double max,
+	MidiLedHandler(QString group, QString key, MidiObject& midi, double min, double max,
 		unsigned char status, unsigned char midino, QString device, unsigned char on, unsigned char off);
     ~MidiLedHandler();
 
-	static void createHandlers(QDomNode node, MidiObject* midi, QString device);
+	static void createHandlers(QDomNode node, MidiObject& midi, QString device);
 	static void destroyHandlers();
 	static Q3PtrList<MidiLedHandler> allhandlers;
 
@@ -25,7 +25,7 @@ public slots:
 	void controlChanged(double value);
 
 private:
-	MidiObject* m_midi;
+	MidiObject& m_midi;
 	double m_min;
 	double m_max;
 	ControlObject* m_cobj;
