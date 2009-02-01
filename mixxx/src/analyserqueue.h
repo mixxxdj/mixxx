@@ -6,8 +6,11 @@
 #include <QQueue>
 #include <QWaitCondition>
 
+#include "configobject.h"
 #include "analyser.h"
 #include "trackinfoobject.h"
+
+class SoundSourceProxy;
 
 class AnalyserQueue : public QThread {
 
@@ -20,7 +23,7 @@ public:
 
 	void run();
 
-	static AnalyserQueue* createDefaultAnalyserQueue();
+	static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
 
 private:
 	void addAnalyser(Analyser* an);
@@ -28,7 +31,7 @@ private:
 	QList<Analyser*> m_aq;
 
 	TrackInfoObject* dequeueNextBlocking();
-	void doAnalysis(TrackInfoObject* tio);
+	void doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource);
 
 	bool m_exit;
 

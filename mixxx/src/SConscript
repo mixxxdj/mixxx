@@ -336,6 +336,8 @@ sources = Split("""
                 engine/enginexfader.cpp
                 
                 analyserqueue.cpp
+		analyserwavesummary.cpp
+		analyserbpm.cpp
                 
                 main.cpp
                 midiobject.cpp

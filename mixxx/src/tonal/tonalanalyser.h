@@ -8,7 +8,7 @@ class TonalAnalyser : public Analyser {
 
 public:
 	TonalAnalyser();
-	void initialise(TrackInfoObject* tio);
+	void initialise(TrackInfoObject* tio, int sampleRate, int totalSamples);
 	void process(const CSAMPLE *pIn, const int iLen);
 	void finalise(TrackInfoObject* tio);
 

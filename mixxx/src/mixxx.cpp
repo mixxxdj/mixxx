@@ -257,7 +257,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, config,
-		buffer1, buffer2, m_pWaveSummary, m_pBpmDetector, AnalyserQueue::createDefaultAnalyserQueue());
+		buffer1, buffer2, m_pWaveSummary, m_pBpmDetector, AnalyserQueue::createDefaultAnalyserQueue(config));
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals

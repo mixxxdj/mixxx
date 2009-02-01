@@ -1,0 +1,23 @@
+#ifndef ANALYSER_WAVESUMMARY_H
+#define ANALYSER_WAVESUMMARY_H
+
+#include "analyser.h"
+
+class AnalyserWavesummary : public Analyser {
+
+public:
+	AnalyserWavesummary();
+	void initialise(TrackInfoObject* tio, int sampleRate, int totalSamples);
+	void process(const CSAMPLE *pIn, const int iLen);
+	void finalise(TrackInfoObject* tio);
+
+private:
+	Q3MemArray<char> *m_pData;
+    int m_iCurPos;
+    int m_iBufferPos;
+    int m_iStrideLength;
+    float m_fMax;
+    float m_fMin;
+};
+
+#endif
