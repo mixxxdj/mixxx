@@ -8,6 +8,7 @@
 #include "tonal/tonalanalyser.h"
 #endif
 
+#include "analyserwaveform.h"
 #include "analyserwavesummary.h"
 #include "analyserbpm.h"
 
@@ -119,6 +120,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #endif
     
     ret->addAnalyser(new AnalyserWavesummary());
+    ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
 
 	ret->start(QThread::IdlePriority);

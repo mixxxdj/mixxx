@@ -338,6 +338,7 @@ sources = Split("""
                 analyserqueue.cpp
 		analyserwavesummary.cpp
 		analyserbpm.cpp
+		analyserwaveform.cpp
                 
                 main.cpp
                 midiobject.cpp
