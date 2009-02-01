@@ -38,7 +38,7 @@ void TonalAnalyser::finalise(TrackInfoObject* tio) {
 
 }
 
-void TonalAnalyser::initialise(TrackInfoObject* tio) {
+void TonalAnalyser::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
 	m_time = 0;
 }
 

@@ -1,11 +1,15 @@
 #include <QtDebug>
 
+#include "trackinfoobject.h"
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 
 #ifdef __TONAL__
 #include "tonal/tonalanalyser.h"
 #endif
+
+#include "analyserwavesummary.h"
+#include "analyserbpm.h"
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
 		m_tioq(), m_qm(), m_qwait(), m_exit(false) {
@@ -32,16 +36,13 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 		return tio;
 }
 
-void AnalyserQueue::doAnalysis(TrackInfoObject* tio) {
+void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource) {
 
 	// CHANGING THIS WILL BREAK TONALANALYSER!!!!
 	const int ANALYSISBLOCKSIZE = 2*32768;
 
 	SAMPLE data16[ANALYSISBLOCKSIZE];
     CSAMPLE samples[ANALYSISBLOCKSIZE];
-
-	// Get the audio
-	SoundSourceProxy * pSoundSource = new SoundSourceProxy(tio);
 
 	int read = 0;
 
@@ -80,14 +81,19 @@ void AnalyserQueue::run() {
 	while (!m_exit) {
 
 		TrackInfoObject* next = dequeueNextBlocking();
+        
+        // Get the audio
+        SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
+        int iNumSamples = pSoundSource->length();
+        int iSampleRate = pSoundSource->getSrate();
 
 		QListIterator<Analyser*> it(m_aq);
 
 		while (it.hasNext()) {
-			it.next()->initialise(next);
+			it.next()->initialise(next, iSampleRate, iNumSamples);
 		}
 
-		doAnalysis(next);
+		doAnalysis(next, pSoundSource);
 
 		QListIterator<Analyser*> itf(m_aq);
 
@@ -105,12 +111,15 @@ void AnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
 	m_qm.unlock();
 }
 
-AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue() {
+AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config) {
 	AnalyserQueue* ret = new AnalyserQueue();
 
 #ifdef __TONAL__
 	ret->addAnalyser(new TonalAnalyser());
 #endif
+    
+    ret->addAnalyser(new AnalyserWavesummary());
+    ret->addAnalyser(new AnalyserBPM(_config));
 
 	ret->start(QThread::IdlePriority);
 	return ret;
