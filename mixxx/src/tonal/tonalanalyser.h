@@ -1,10 +1,10 @@
 #ifndef TONAL_TONALANALYSER_H
 #define TONAL_TONALANALYSER_H
 
-#include "../engineanalyser.h"
+#include "analyser.h"
 #include "ChordExtractor.hxx"
 
-class TonalAnalyser : public EngineAnalyser {
+class TonalAnalyser : public Analyser {
 
 public:
 	TonalAnalyser();

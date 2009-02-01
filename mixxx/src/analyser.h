@@ -1,10 +1,10 @@
-#ifndef ENGINEANALYSER_H
-#define ENGINEANALYSER_H
+#ifndef ANALYSER_H
+#define ANALYSER_H
 
 #include "defs.h"
 
 /*
- * An EngineAnalyser is an object which wants to process an entire song to
+ * An Analyser is an object which wants to process an entire song to
  * calculate some kind of metadata about it. This could be bpm, the
  * summary, key or something else crazy. This is to help consolidate the
  * many different threads currently processing the whole track in Mixxx on load.
@@ -13,7 +13,7 @@
 
 class TrackInfoObject;
 
-class EngineAnalyser {
+class Analyser {
 
 public:
 	virtual void initialise(TrackInfoObject* tio) { }

@@ -1,22 +1,22 @@
 #include <QtDebug>
 
-#include "engineanalyserqueue.h"
+#include "analyserqueue.h"
 #include "soundsourceproxy.h"
 
 #ifdef __TONAL__
 #include "tonal/tonalanalyser.h"
 #endif
 
-EngineAnalyserQueue::EngineAnalyserQueue() : m_aq(),
+AnalyserQueue::AnalyserQueue() : m_aq(),
 		m_tioq(), m_qm(), m_qwait(), m_exit(false) {
 
 }
 
-void EngineAnalyserQueue::addAnalyser(EngineAnalyser* an) {
+void AnalyserQueue::addAnalyser(Analyser* an) {
 	m_aq.push_back(an);
 }
 
-TrackInfoObject* EngineAnalyserQueue::dequeueNextBlocking() {
+TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 		m_qm.lock();
 
 		if (m_tioq.isEmpty()) {
@@ -32,7 +32,7 @@ TrackInfoObject* EngineAnalyserQueue::dequeueNextBlocking() {
 		return tio;
 }
 
-void EngineAnalyserQueue::doAnalysis(TrackInfoObject* tio) {
+void AnalyserQueue::doAnalysis(TrackInfoObject* tio) {
 
 	// CHANGING THIS WILL BREAK TONALANALYSER!!!!
 	const int ANALYSISBLOCKSIZE = 2*32768;
@@ -65,7 +65,7 @@ void EngineAnalyserQueue::doAnalysis(TrackInfoObject* tio) {
 			samples[i] = ((float)data16[i])/32767.0f;
 		}
 
-		QListIterator<EngineAnalyser*> it(m_aq);
+		QListIterator<Analyser*> it(m_aq);
 
 		while (it.hasNext()) {
 			it.next()->process(samples, read);
@@ -75,13 +75,13 @@ void EngineAnalyserQueue::doAnalysis(TrackInfoObject* tio) {
 
 }
 
-void EngineAnalyserQueue::run() {
+void AnalyserQueue::run() {
 
 	while (!m_exit) {
 
 		TrackInfoObject* next = dequeueNextBlocking();
 
-		QListIterator<EngineAnalyser*> it(m_aq);
+		QListIterator<Analyser*> it(m_aq);
 
 		while (it.hasNext()) {
 			it.next()->initialise(next);
@@ -89,7 +89,7 @@ void EngineAnalyserQueue::run() {
 
 		doAnalysis(next);
 
-		QListIterator<EngineAnalyser*> itf(m_aq);
+		QListIterator<Analyser*> itf(m_aq);
 
 		while (itf.hasNext()) {
 			itf.next()->finalise(next);
@@ -98,15 +98,15 @@ void EngineAnalyserQueue::run() {
 	}
 }
 
-void EngineAnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
+void AnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
 	m_qm.lock();
 	m_tioq.enqueue(tio);
 	m_qwait.wakeAll();
 	m_qm.unlock();
 }
 
-EngineAnalyserQueue* EngineAnalyserQueue::createDefaultAnalyserQueue() {
-	EngineAnalyserQueue* ret = new EngineAnalyserQueue();
+AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue() {
+	AnalyserQueue* ret = new AnalyserQueue();
 
 #ifdef __TONAL__
 	ret->addAnalyser(new TonalAnalyser());
@@ -116,8 +116,8 @@ EngineAnalyserQueue* EngineAnalyserQueue::createDefaultAnalyserQueue() {
 	return ret;
 }
 
-EngineAnalyserQueue::~EngineAnalyserQueue() {
-		QListIterator<EngineAnalyser*> it(m_aq);
+AnalyserQueue::~AnalyserQueue() {
+		QListIterator<Analyser*> it(m_aq);
 
 		while (it.hasNext()) {
 			delete it.next();

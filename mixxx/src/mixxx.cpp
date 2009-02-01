@@ -30,7 +30,7 @@
 #include "controlobjectthreadmain.h"
 #include "reader.h"
 #include "engine/enginebuffer.h"
-#include "engine/engineanalyserqueue.h"
+#include "analyserqueue.h"
 #include "engine/enginevumeter.h"
 #include "track.h"
 #include "trackcollection.h"
@@ -257,7 +257,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, config,
-		buffer1, buffer2, m_pWaveSummary, m_pBpmDetector, EngineAnalyserQueue::createDefaultAnalyserQueue());
+		buffer1, buffer2, m_pWaveSummary, m_pBpmDetector, AnalyserQueue::createDefaultAnalyserQueue());
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals

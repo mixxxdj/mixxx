@@ -31,7 +31,7 @@ class MixxxView;
 class WTrackTable;
 class WTrackTableModel;
 class WPromoTracksModel;
-class EngineAnalyserQueue;
+class AnalyserQueue;
 
 #ifdef __IPOD__
 class WIPodTracksModel;
@@ -62,7 +62,7 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, EngineAnalyserQueue* eaq);
+    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, AnalyserQueue* eaq);
     ~Track();
     /** Read xml file */
     void readXML(QString location);
@@ -187,7 +187,7 @@ private:
     /** Check if the promo track directory exists */
     bool checkPromoDirExists();
 
-	EngineAnalyserQueue* m_eaq;
+    AnalyserQueue* m_analyserQueue;
 
     /** Pointer to the Importer class */
     TrackImporter *m_pTrackImporter;

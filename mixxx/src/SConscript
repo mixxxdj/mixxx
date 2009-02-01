@@ -335,7 +335,7 @@ sources = Split("""
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
                 
-                engine/engineanalyserqueue.cpp
+                analyserqueue.cpp
                 
                 main.cpp
                 midiobject.cpp
