@@ -6,7 +6,7 @@
 
 Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
-MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject * midi, double min,
+MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject & midi, double min,
                                double max, unsigned char status, unsigned char midino, QString device, unsigned char on, unsigned char off)
     : m_min(min), m_max(max), m_midi(midi), m_status(status), m_midino(midino), m_device(device), m_on(on), m_off(off) {
 
@@ -35,12 +35,12 @@ void MidiLedHandler::controlChanged(double value) {
 	lastStatus=m_byte2;
  	if (m_byte2 != 0xff) {
 		// qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
-		m_midi->sendShortMsg(m_status, m_midino, m_byte2, m_device);
+		m_midi.sendShortMsg(m_status, m_midino, m_byte2, m_device);
 	}
     }
 }
 
-void MidiLedHandler::createHandlers(QDomNode node, MidiObject * midi, QString device) {
+void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString device) {
     if (!node.isNull() && node.isElement()) {
         QDomNode light = node;
         while (!light.isNull()) {

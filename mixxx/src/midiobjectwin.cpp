@@ -120,6 +120,9 @@ void MidiObjectWin::stop()
 
 void MidiObjectWin::run()
 {
+    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+    MidiObject::run();
 }
 
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue, QString device)

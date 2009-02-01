@@ -64,7 +64,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     wsound = new DlgPrefSound(this, soundman, config);
  //   wmidi  = new DlgPrefMidi(this, config);
     wmidiDevice  = new DlgPrefMidiDevice(this, midi, config);
-    wmidiBindings  = new DlgPrefMidiBindings(this, midi, config);
+    wmidiBindings  = new DlgPrefMidiBindings(this, *midi, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     weq = new DlgPrefEQ(this, config);

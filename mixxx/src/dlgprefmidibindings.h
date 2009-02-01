@@ -20,13 +20,15 @@
 #include <QtGui>
 #include "ui_dlgprefmidibindingsdlg.h"
 #include "configobject.h"
-#include "midiledhandler.h"
 #include "midiobject.h"
+
+//Forward declaration
+class MidiInputMappingTableView;
 
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
 public:
-    DlgPrefMidiBindings(QWidget *parent, MidiObject *midi, ConfigObject<ConfigValue> *pConfig);
+    DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefMidiBindings();
 
 
@@ -45,30 +47,17 @@ public slots:
     void singleLearn(ConfigValueMidi *value, QString device);
     void groupLearn(ConfigValueMidi *value, QString device);
 
-    void slotTestOutputBinding();
-    void slotClearOutputBindings();
-    void slotAddOutputBinding();
-    void slotRemoveOutputBinding();
-
 private:
-	void setRowBackground(int row, QColor color);
-	void addRow(QString device, QString group, QString key, QString controltype, QString miditype, QString midino, QString midichan, QString option);
-	void addOutputRow(QString outputType, QString group, QString key, QString min, QString max, QString status, QString midino, QString device, QString on, QString off);
-    void removeSelectedBindings(QTableWidget* table);
-	void loadPreset(QString path);
-	void loadPreset(QDomElement root);
-	void savePreset(QString path);
-	void applyPreset();
-	void clearPreset();
-	void clearTable();
-	void clearOutputTable();
-	void buildDomElement();
-	QStringList getControlKeyList();
-	bool singleLearning;
-	bool groupLearning;
-	int currentGroupRow;
-	QDomElement m_pBindings;
-    MidiObject *m_pMidi;
+    void setRowBackground(int row, QColor color);
+    void loadPreset(QString path);
+    void savePreset(QString path);
+    QStringList getControlKeyList();
+    
+    bool singleLearning;
+    bool groupLearning;
+    int currentGroupRow;
+    MidiInputMappingTableView* m_pInputMappingTableView;
+    MidiObject &m_rMidi;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
 };

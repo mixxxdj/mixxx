@@ -245,7 +245,8 @@ opts.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
 opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
 opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
-opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript support.', 1)
+opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
+opts.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 opts.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 opts.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
@@ -338,8 +339,12 @@ sources = Split("""
                 
                 main.cpp
                 midiobject.cpp
+                midimapping.cpp
                 midiobjectnull.cpp
                 mididevicehandler.cpp
+                midiinputmappingtablemodel.cpp
+                midiinputmappingtableview.cpp
+                midicommand.cpp
                 mixxx.cpp
                 mixxxview.cpp
                 soundsourcemp3.cpp
@@ -915,7 +920,7 @@ if int(flags_m4a):
 else:
 	print "Apple M4A audio file support... disabled"
 
-
+# Script Studio
 flags_script = getFlags(env, 'script', 0)
 if int(flags_script):
 	if platform == 'win32':
@@ -926,7 +931,7 @@ if int(flags_script):
 	     #XXX put in logic here to add a -framework QtScript
 	     #env.Append(
 	     pass
-	print "MixxxScript (QtScript)... enabled"
+	print "MixxxScript Studio... enabled"
 
 	build_flags += 'script '
 	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp
@@ -936,15 +941,35 @@ if int(flags_script):
 			script/numbercontrolevent.cpp script/numberrecorder.cpp
 			script/macrolist.cpp script/trackrecorder.cpp
 			script/sdatetime.cpp script/signalrecorder.cpp
-			script/macrolistitem.cpp script/qtscriptinterface.cpp
-			script/midiscriptengine.cpp""")
+			script/macrolistitem.cpp script/qtscriptinterface.cpp""")
 	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
 	env.Append(CXXFLAGS = '-D__SCRIPT__')
 	
 	env.Uic4('script/scriptstudio.ui')
 else:
 	flags_script = 0
-	print "SuperCoolAwesomeScript (name contest pending)... disabled"
+	print "MixxxScript Studio... disabled"
+
+# MIDI Scripting
+flags_midiscript = getFlags(env, 'midiscript', 0)
+if int(flags_midiscript):
+	if platform == 'win32':
+		env.Append(LIBS = 'QtScript4')
+	elif platform == 'linux':
+		env.Append(LIBS = 'QtScript')
+	elif platform == 'osx':
+	     #XXX put in logic here to add a -framework QtScript
+	     #env.Append(
+	     pass
+	print "MIDI Scripting... enabled"
+
+	build_flags += 'midiscript '
+	sources += Split("""script/midiscriptengine.cpp""")
+	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
+	env.Append(CXXFLAGS = '-D__MIDISCRIPT__')
+else:
+	flags_midiscript = 0
+	print "MIDI Scripting... disabled"
 
 #Optimization
 if platform == 'win32':
@@ -1141,6 +1166,8 @@ dll_files = glob.glob('../../../mixxx-winlib/*.dll') # TODO: Use reference to Sh
 dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
 if int(flags_script):
+	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+if int(flags_midiscript):
 	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
 
 if platform == 'linux':

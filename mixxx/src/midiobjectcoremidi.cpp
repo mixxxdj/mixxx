@@ -103,6 +103,9 @@ void MidiObjectCoreMidi::stop()
 
 void MidiObjectCoreMidi::run()
 {
+    qDebug() << QString("MidiObjectCoreMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+    MidiObject::run();
 }
 
 void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString device)

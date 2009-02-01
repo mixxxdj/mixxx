@@ -16,6 +16,7 @@
 
 #include <QtDebug>
 #include "midiobject.h"
+#include "midimapping.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include <algorithm>
@@ -23,7 +24,7 @@
 #include "dlgprefmididevice.h"
 #include "dlgprefmidibindings.h"
 
-#ifdef __SCRIPT__
+#ifdef __MIDISCRIPT__
 #include "script/midiscriptengine.h"
 #endif
 
@@ -40,6 +41,22 @@ MidiObject::MidiObject()
     requestStop = false;
     midiLearn = false;
     debug = false;
+
+#ifdef __MIDISCRIPT__
+    //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    m_pScriptEngine = new MidiScriptEngine();
+    
+    m_pScriptEngine->start();
+    // Wait for the m_pScriptEngine to initialize
+    while(!m_pScriptEngine->isReady()) ;
+    m_pScriptEngine->moveToThread(m_pScriptEngine);
+
+    
+    m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
+    m_pMidiMapping = new MidiMapping(*this);
+    m_pMidiMapping->loadInitialPreset();
+#endif
+    
 }
 
 /* -------- ------------------------------------------------------
@@ -51,65 +68,16 @@ MidiObject::~MidiObject()
 {
 }
 
-#ifdef __SCRIPT__
+#ifdef __MIDISCRIPT__
 /* -------- ------------------------------------------------------
-   Purpose: Loads and processes MIDI scripts
+   Purpose: Allows the child MIDI thread to create the ScriptEngine
+            & load the script files
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::loadScripts()
+void MidiObject::run()
 {
-    m_pScriptEngine = new MidiScriptEngine();
-    m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
 
-    ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
-    
-    // Individually load & evaluate script files in the QList (built by dlgPrefMidiBindings) to check for errors
-    // so line numbers will be accurate per file (for syntax errors at least) to make troubleshooting much easier
-    bool scriptError = false;
-    
-    for (int i=0; i<scriptFileNames.size(); i++) {
-        m_pScriptEngine->clearCode();   // So line numbers will be correct
-        
-        QString filename = scriptFileNames.at(i);
-        qDebug() << "MidiObject: Loading & testing MIDI script" << filename;
-        m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(filename));
-        
-        m_pScriptEngine->evaluateScript();
-        if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Success";
-        else {
-            // This is only included for completeness since checkException should pop a qCritical() itself if there's a problem
-            qCritical() << "MidiObject: Failure evaluating MIDI script" << filename;
-            scriptError = true;
-        }
-    }
-    
-    qDebug() << "MidiObject: Loading & evaluating all MIDI script code";
-    m_pScriptEngine->clearCode();   // Start from scratch
-    
-    if (!scriptError) {
-        while (!scriptFileNames.isEmpty()) {
-            m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(scriptFileNames.takeFirst()));
-        }
-        
-        m_pScriptEngine->evaluateScript();
-        if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiObject: Script code evaluated successfully";
-    
-        // Call each script's init function if it exists
-        while (!scriptFunctionPrefixes.isEmpty()) {
-            QString initName = scriptFunctionPrefixes.takeFirst();
-            if (initName!="") {
-                initName.append(".init");
-                qDebug() << "MidiObject: Executing" << initName;
-                QScriptValue scriptFunction = m_pScriptEngine->execute(initName);
-                if (!scriptFunction.isFunction()) qWarning() << "MidiObject: No" << initName << "function in script";
-                else {
-                    scriptFunction.call(QScriptValue());
-                    m_pScriptEngine->checkException();
-                }
-            }
-        }
-    }
 }
 #endif
 
@@ -200,8 +168,9 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
 
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
-    // qDebug() << "MidiObject::send() miditype: " << category << " ch: " << channel << ", ctrl: " << control << ", val: " << value;
-
+    
+//     qDebug() << "MidiObject::receive() miditype: " << (int)category << " ch: " << (int)channel << ", ctrl: " << (int)control << ", val: " << (int)value;
+    
     MidiType type = MIDI_EMPTY;
     switch (category) {
     case NOTE_OFF:
@@ -220,14 +189,20 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     default:
         type = MIDI_EMPTY;
     }
-/*
-    qDebug() << QString("MidiObject::receive from device: %1, type: %2, catagory: %3, ch: %4, ctrl: %5, val: %6").arg(device)
-    .arg(QString::number(type))
-    .arg(QString::number(category, 16).toUpper())
-    .arg(QString::number(channel, 16).toUpper())
-    .arg(QString::number(control, 16).toUpper())
-    .arg(QString::number(value, 16).toUpper());
-*/
+
+    //m_pMidiMappingtype,control,channel));
+//     qDebug() << "MidiObject: type:" << (int)type << "control:" << (int)control << "channel:" << (int)channel;
+    MidiCommand inputCommand(type, control, channel);
+    MidiControl* midiControl = m_pMidiMapping->getInputMidiControl(inputCommand);
+    //If there was no control bound to that MIDI command, return;
+    if (!midiControl)
+        return;
+    else {
+//         qDebug() << "MidiObject: " << midiControl->getControlObjectGroup() << midiControl->getControlObjectValue();
+    }
+        
+    ConfigKey configKey(midiControl->getControlObjectGroup(), midiControl->getControlObjectValue());
+       
     if (midiLearn) {
         emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
         return; // Don't pass on controls when in dialog
@@ -238,92 +213,29 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         return; // Don't pass on controls when in dialog
     }
 
-    if (!m_pMidiConfig) {
-    return;
-    } // Used to be this:
-    //Q_ASSERT(m_pMidiConfig);
-    ConfigKey * pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
-
-    if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
-    // qDebug() << "MidiObject::receive ok" << pConfigKey->group << pConfigKey->item;
-    ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
-
-#ifdef __SCRIPT__
+#ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
-    if (((ConfigValueMidi *)c->val)->midioption==MIDI_OPT_SCRIPT) {
-//         qDebug() << "MidiObject: Calling script function" << pConfigKey->item;
-        QScriptValue scriptFunction = m_pScriptEngine->execute(pConfigKey->item);
-        if (!scriptFunction.isFunction()) {
-            qDebug() << "MidiObject: Invalid function" << pConfigKey->item;
-            return;
+    if (midiControl->getMidiOption() == MIDI_OPT_SCRIPT) {
+//         qDebug() << "MidiObject: Calling script function" << configKey.item;
+        
+        if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, category)) {
+            qDebug() << "MidiObject: Invalid script function" << configKey.item;
         }
-        else {
-//             ScriptMidiMsg *tempMidiMsg = new ScriptMidiMsg(channel, control, value, device);
-//             QScriptValue msg = m_pScriptEngine->getEngine().newQObject(tempMidiMsg);
-//             m_pScriptEngine->engineGlobalObject.setProperty("msg", msg);
-            QScriptValueList args;
-            // Channel and Device should be in this object
-            args << QScriptValue(m_pScriptEngine->getEngine(), channel);
-            args << QScriptValue(m_pScriptEngine->getEngine(), device);
-            // -----
-            args << QScriptValue(m_pScriptEngine->getEngine(), control);
-            args << QScriptValue(m_pScriptEngine->getEngine(), value);
-            args << QScriptValue(m_pScriptEngine->getEngine(), category);
-
-            scriptFunction.call(QScriptValue(),args);
-            m_pScriptEngine->checkException();
-            return;
-        }
+        return;
     }
 #endif
+    
+    ControlObject * p = ControlObject::getControl(configKey);
+    
+    double newValue = (double)value;
+    m_pMidiMapping->ComputeValue(midiControl->getMidiOption(), p->GetMidiValue(), newValue);
+    // qDebug() << "value coming out ComputeValue: " << newValue;
 
-    ControlObject * p = ControlObject::getControl(*pConfigKey);
-    // qDebug() << "MidiObject::receive value:" << QString::number(value, 16).toUpper() << " c:" << c << "c->midioption:" << ((ConfigValueMidi *)c->val)->midioption << "p:" << p;
+    ControlObject::sync();
 
-    // BJW: Apply any mapped (7-bit integer) translations
-    if (c && p) {
-        value = ((ConfigValueMidi *)c->val)->translateValue(value);
-    }
+    p->queueFromMidi(category, newValue);
 
-    // BJW: newValue is the post-processed value, which may be floating point.
-    double newValue = (double) value;
-
-    // This is done separately from the switch above because it needs to go after translateValue()
-    if (type == MIDI_PITCH) {
-        unsigned int _14bit;
-        // Pitch bend should be 14-bit control, so control and value are multiplexed
-        // (value is the MSB, control the LSB)
-        // and passed as a double within the 0-127 range, but with decimal info
-        // BJW: Moved here from below so that the right numbers go into ComputeValue
-        _14bit = value;
-        _14bit <<= 7;
-        _14bit |= (unsigned char) control;
-        // qDebug() << "-- 14 bit pitch " << _14bit;
-        // Need to force the centre point, otherwise the conversion formula maps it very slightly off-centre (not any more)
-        if (_14bit == 8192)
-            newValue = 64.0;
-        else
-            newValue = (double) _14bit * 127. / 16383.;
-        // qDebug() << "-- converted to " << newValue;
-    }
-
-    if (c && p)
-    {
-        // qDebug() << "value going into ComputeValue: " << newValue;
-        ControlObject::sync();
-        newValue = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), newValue);
-        // qDebug() << "value coming out ComputeValue: " << newValue;
-
-        // I'm not sure entirely why buttons should be special here or what the difference is - Adam
-        if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
-            p->set(newValue);
-            // qDebug() << "New Control Value: " << newValue << " (skipping queueFromMidi call)";
-            return;
-        }
-
-        // qDebug() << "New Control Value: " << newValue << " ";
-        p->queueFromMidi(category, newValue);
-    }
+    return;
 }
 
 void MidiObject::stop()
@@ -416,8 +328,12 @@ void MidiObject::disableMidiLearn() {
     midiLearn = false;
 }
 
-#ifdef __SCRIPT__
+#ifdef __MIDISCRIPT__
 MidiScriptEngine * MidiObject::getMidiScriptEngine() {
     return m_pScriptEngine;
 }
 #endif
+
+MidiMapping * MidiObject::getMidiMapping() {
+    return m_pMidiMapping;
+}
