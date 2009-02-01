@@ -15,10 +15,15 @@ const float kfFeatureStepSize = 0.01f;
 
 
 AnalyserWavesummary::AnalyserWavesummary() {
-
+    m_pData = NULL;
 }
 
 void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
+    Q3MemArray<char> *p = tio->getWaveSummary();
+    if(p != NULL && p->size() > 0) {
+        return;
+    }
+    
     m_pData = new Q3MemArray<char>(kiSummaryBufferSize);
 
     for (int i=0; i<m_pData->size(); i++)
@@ -35,6 +40,8 @@ void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int t
 }
 
 void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
+    if(m_pData == NULL)
+        return;
 
     //qDebug() << "AnalyserWavesummary::process() processing " << iLen << " samples";
     for(int i=0; i<iLen; i++) {
@@ -60,6 +67,9 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyserWavesummary::finalise(TrackInfoObject *tio) {
+    if(m_pData == NULL)
+        return;
     tio->setWaveSummary(m_pData, 0, true);
+    m_pData = NULL;
     qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
 }
