@@ -22,9 +22,6 @@
 #include "configobject.h"
 #include "midiobject.h"
 
-//Forward declaration
-class MidiInputMappingTableView;
-
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
 public:
@@ -52,11 +49,11 @@ private:
     void loadPreset(QString path);
     void savePreset(QString path);
     QStringList getControlKeyList();
-    
+
     bool singleLearning;
     bool groupLearning;
     int currentGroupRow;
-    MidiInputMappingTableView* m_pInputMappingTableView;
+    QTableView* m_pInputMappingTableView;
     MidiObject &m_rMidi;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
