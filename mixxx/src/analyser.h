@@ -19,6 +19,7 @@ public:
     virtual void initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) { }
 	virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
 	virtual void finalise(TrackInfoObject* tio) { }
+	virtual ~Analyser() {}
 };
 
 #endif
