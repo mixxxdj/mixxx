@@ -616,13 +616,13 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			print 'Did not find QT4 framework, going to look for libs instead (use qtdir flag)...'
 		else:
 			env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtCore.framework/Headers/')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtOpenGL.framework/Headers/')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/Qt3Support.framework/Headers/')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtGui.framework/Headers/')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtXml.framework/Headers/')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtXml.framework/Headers/')
-			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtScript.framework/Headers/')
+			env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
+						'/Library/Frameworks/QtOpenGL.framework/Headers/',
+						'/Library/Frameworks/Qt3Support.framework/Headers/',
+						'/Library/Frameworks/QtGui.framework/Headers/',
+						'/Library/Frameworks/QtXml.framework/Headers/',
+						'/Library/Frameworks/QtXml.framework/Headers/',
+						'/Library/Frameworks/QtScript.framework/Headers/'])
 			
 		#Check for CoreMIDI
 		if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
