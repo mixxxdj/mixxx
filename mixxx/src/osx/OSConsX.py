@@ -142,10 +142,20 @@ Writer = Builder(action = write_file, emitter = no_sources)
 
 
 
-def build_app(target, source, env, ICON = None):
+def build_app(target, source, env):
+	"""
+	
+	PLUGINS - a list of plugins to install; as a feature/hack/bug (inspired by Qt, but probably needed by other libs) you can pass a tuple where the first is the file/node and the second is the folder under PlugIns/ that you want it installed to
+	"""
 	#TODO: make it strip(1) the installed binary (saves about 1Mb)
 	
 	#EEEP: this code is pretty flakey because I can't figure out how to force; have asked the scons list about it
+	
+	
+	#This doesn't handle Frameworks correctly, only .dylibs
+	#useful to know: http://developer.apple.com/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253
+ 	#^ so you do have to copy in and _entire_ framework to be sure...
+ 	#but for some frameworks it's okay to pretend they are regular 
 	
 	
 	bundle = target[0]
@@ -155,47 +165,122 @@ def build_app(target, source, env, ICON = None):
 	contents = Dir(os.path.join(str(bundle), "Contents"))
 	MacOS = Dir(os.path.join(str(contents), "MacOS/"))
 	frameworks = Dir(os.path.join(str(contents), "Frameworks")) #we put both frameworks and standard unix sharedlibs in here
+	plugins = Dir(os.path.join(str(contents), "PlugIns"))
 	
 	#installed_bin = source[-1] #env['APP_INSTALLED_BIN']
-	installed_bin = os.path.join(str(MacOS), os.path.basename(str(binary)))  #have use os.path.basename in case there were other dirs tacked onto the front (env.Install() normally handles this for us, but since we are working around that we have to do it ourself)
+	installed_bin = os.path.join(str(MacOS), os.path.basename(str(binary)).title())  #.title() to fit in better with the OS X style
 	
+	strip = bool(env.get('STRIP',False))
 	
 	"todo: expose the ability to override the list of System dirs"
 	#ugh, I really don't like this... I wish I could package it up nicer. I could use a Builder but then I would have to pass in to the builder installed_bin which seems backwards since 
 	
-	embed_deps = otool.embed_dependencies(str(binary))
-	locals = [os.path.basename(a) for o,a in embed_deps] #precache the list of names of libs we are using so we can figure out if a lib is local or not (and therefore a ref to it needs to be updated) #XXX it seems kind of wrong to only look at the basename (even if, by the nature of libraries, that must be enough) but there is no easy way to compute the abspath
 	
+	#could we use patch_lib on the initial binary itself????
 	
-	#it would be nice if we could have the libs installed by SCons, but since what specific libs are needed depend on the binary already having been built (so that we can run otool against it) that kind of fails; the other option is to try to look at the build flags we are passing and guess what libs will be linked against but that seems like an even worse barrel of GIANT COBRAS
+	def embed_lib(abs):
+		"get the path to embed library abs in the bundle"
+		name = os.path.basename(abs)
+		return os.path.join(str(frameworks), name)
 	
-	#XXX stripping should be optional
-	#This doesn't handle Frameworks correctly, only .dylibs
-	#useful to know: http://developer.apple.com/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253
- 	#^ so you do have to copy in and _entire_ framework to be sure...
-	#What we should really do is: record somewhere a hash keyed by the library's name, so you can go "this library is going to be embedded at this location"
+	def relative(emb):
+		"compute the path of the given embedded binary relative to the binary, i.e. @executable_path/../+..."
+		# assume that we start in X.app/Contents/, since we know neccessarily that @executable_path/../ gives us that
+		# so then we only need
+		base = os.path.abspath(str(installed_bin))
+		emb = os.path.abspath(emb) #XXX is abspath really necessary?
+		down = emb[len(os.path.commonprefix([base, emb])):] #the path from Contents/ down to the file. Since we are taking away the length of the common prefix we are left with only what is unique to the embedded library's path
+		return os.path.join("@executable_path/../", down)
+	
+	#todo: precache all this shit, in case we have to change the install names of a lot of libraries
+	
+	def automagic_references(embedded): #XXX bad name
+		"modify a binary file to patch up all it's references"
+		
+		for ref in otool.dependencies(embedded):
+			if ref in locals:
+				embd = locals[ref][1] #the path that this reference is getting embedded at
+				otool.change_ref(str(embedded), ref, relative(embd))
+		
+	
+	def patch_lib(embedded):
+		otool.change_id(embedded, relative(embedded)) #change the name the library knows itself as
+		automagic_references(embedded)
+		if strip: #XXX stripping seems to only work on libs compiled a certain way, todo: try out ALL the options, see if can adapt it to work on every sort of lib
+			system("strip -S '%s' 2>/dev/null" % embedded), #(the stripping fails with ""symbols referenced by relocation entries that can't be stripped"" for some obscure Apple-only reason sometimes, related to their hacks to gcc---it depends on how the file was compiled; since we don't /really/ care about this we just let it silently fail)
+		
 	
 	
 	#Workarounds for a bug/feature in SCons such that it doesn't neccessarily run the source builders before the target builders (wtf scons??)
 	Execute(Mkdir(contents))
 	Execute(Mkdir(MacOS))
 	Execute(Mkdir(frameworks))
-	print "INSTALLING '%s' AS '%s'" % (binary, installed_bin)
-	shutil.copy(str(binary), installed_bin) #e.g. this SHOULD be an env.Install() call, but if scons decides to run build_app before that env.Install then build_app fails and brings the rest of the build with it, of course
-	system("strip '%s'" % installed_bin)
+	Execute(Mkdir(plugins))
 	
-	for orig, abs in embed_deps:
-		name = os.path.basename(abs)
-		relative = os.path.join("@executable_path/../Frameworks/", name)
-		embedded = os.path.join(str(frameworks), name)
-		shutil.copy(abs, embedded)
-		system("strip -S '%s' 2>/dev/null" % embedded), #(the stripping fails with ""symbols referenced by relocation entries that can't be stripped"" for some obscure Apple-only reason sometimes, related to their hacks to gcc---it depends on how the file was compiled; since we don't /really/ care about this we just let it silently fail)
-		system("install_name_tool -change '%s' '%s' '%s'" % (orig, relative, installed_bin)) #change the reference to the library in the binary
-		system("install_name_tool -id '%s' '%s'" % (relative, embedded)) #change the name the library knows itself as
-		for d_dep in otool.otool(abs):
-			if os.path.basename(d_dep) in locals:
-				system("install_name_tool -change '%s' '%s' '%s'" % (d_dep, os.path.join("@executable_path/../Frameworks/", os.path.basename(d_dep)), embedded))
 	
+	#XXX locals should be keyed by absolute path to the lib, not by reference; that way it's easy to tell when a lib referenced in two different ways is actually the same
+	#XXX rename locals => embeds
+	#precache the list of names of libs we are using so we can figure out if a lib is local or not (and therefore a ref to it needs to be updated) #XXX it seems kind of wrong to only look at the basename (even if, by the nature of libraries, that must be enough) but there is no easy way to compute the abspath
+	locals = {} # [ref] => (absolute_path, embedded_path) (ref is the original reference from looking at otool -L; we use this to decide if two libs are the same)
+	for ref, path in otool.embed_dependencies(str(binary)): #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+		locals[ref] = (path, embed_lib(path))
+	
+	plugins_l = [] #XXX bad name
+	for p in env['PLUGINS']: #build any neccessary dirs for plugins (siiiigh)
+		if type(p) == tuple:
+			Execute(Mkdir(os.path.join(str(plugins), str(p[0]))))
+			
+			embedded_p = os.path.join(str(plugins), str(p[0]), os.path.basename(str(p[1])))
+			p = p[1] #source
+		else:
+			embedded_p = os.path.join(str(plugins), os.path.basename(str(p)))
+			p = p #redundant; for clarity
+			
+			
+		#this is
+		#embed_deps += otool.embed_dependencies(str(p))
+		#embed_deps.uniq!(lambda ref,path: key = ref)
+		#written out procedurally, since I don't have a convenient uniq! at my beck and call
+		
+		plugins_l.append(  (p, embedded_p)  )
+		
+		print "Scanning plugin", p
+		for ref, path in otool.embed_dependencies(str(p)):
+			print p, ":", ref, path
+			if ref not in locals:
+				print "New ref found, adding"
+				locals[ref] = path, embed_lib(path)
+			else:
+				assert path == locals[ref][0], "Path '%s' is not '%s'" % (path, locals[ref][0])
+		print "Post loop"
+	print "post post loop"
+	
+	#we really should have a libref-to-abspath function somewhere... right now it's inline in embed_dependencies()
+	#better yet, make a Frameworks type that you say Framework("QtCore") and then can use that as a dependency
+	
+	
+	print "Installing main binary:"
+	Execute(Copy(installed_bin, binary)) #e.g. this SHOULD be an env.Install() call, but if scons decides to run build_app before that env.Install then build_app fails and brings the rest of the build with it, of course
+	for ref in otool.dependencies(str(installed_bin)):
+		if ref in locals:
+			embedded = locals[ref][1]
+			otool.change_ref(str(installed_bin), ref, relative(embedded)) #change the reference to the library in the program binary
+	if strip:
+		system("strip '%s'" % installed_bin)
+	
+	
+	print "Installing embedded libs:"
+	for ref, (abs, embedded) in locals.iteritems():
+		Execute(Copy(embedded, abs))
+		patch_lib(embedded)
+	
+	
+	print "Installing plugins:"
+	for p, embedded_p in plugins_l:
+		print "installing", p,"to",embedded_p
+		Execute(Copy(embedded_p, p)) #:/
+		patch_lib(str(embedded_p))
+		
 	
 def emit_app(target, source, env):
 	"""The first source is the binary program file, the rest are files/folders to include in the App's Resources directory.
@@ -217,6 +302,11 @@ def emit_app(target, source, env):
 		icon = env['ICON']
 	except KeyError:
 		icon = "application.icns"
+	
+	try:
+		plugins = env['PLUGINS']
+	except KeyError:
+		plugins = env['PLUGINS'] = []
 	
 	#so, this doesn't work realistically because if the passed in icon is a remote path then shit clashes
 	#but still it might be useful. XXX think this through.
@@ -247,7 +337,7 @@ def emit_app(target, source, env):
 	bundle = Dir(str(bundle))	#coerce the bundle target into being a Dir
 	contents = Dir(os.path.join(str(bundle), "Contents"))
 	frameworks = Dir(os.path.join(str(contents), "Frameworks")) #we put both frameworks and standard unix sharedlibs in here
-	plugins = Dir(os.path.join(str(contents), "PlugIns")) #TODO: plugins
+	
 	env['APP_RESOURCES'] = Dir(os.path.join(str(contents), "Resources"))
 	
 	
@@ -287,10 +377,12 @@ def emit_app(target, source, env):
 			#InstallDir(env['APP_RESOURCES'], i, env) #this is what we are aiming for
 			#so we use both! heh....
 		elif isinstance(i, SCons.Node.FS.File):
-			#source+=
 			env.Install(env['APP_RESOURCES'], i)
 	
-	return bundle, source #+[installed_bin]
+	
+	plugins = env['PLUGINS']
+	
+	return bundle, source+plugins #+[installed_bin]
 
 
 
@@ -327,12 +419,15 @@ def build_plist(target, source, env):
 
 Plist = Builder(action = build_plist, emitter = no_sources, suffix="plist")
 
+#TODO: want to be able to say env.Append(FRAMEWORKS=['QtCore']) and have it get translated properly... is there any way to do that here?
+
 
 def generate(env):
 	env['BUILDERS']['App'] = App
 	env['BUILDERS']['Dmg'] = Dmg
 	env['BUILDERS']['Plist'] = Plist
 	env['BUILDERS']['Writer'] = Writer #this should be in a different module, really
+	env['BUILDERS']
 	
 def exists(env):
 	return os.platform == 'darwin'

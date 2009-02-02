@@ -8,48 +8,22 @@
 ***************************************************************************/
 
 #include <QtCore>
+#include <qapplication.h>
 #include "ladspaloader.h"
 
 LADSPALoader::LADSPALoader()
 {
     m_PluginCount = 0;
+    
+    QStringList plugin_paths;
 
-    QString ladspaPath = QString(getenv("LADSPA_PATH"));
-    QStringList paths;
-
-    if (!ladspaPath.isEmpty())
-    {
-        // get the list of directories containing LADSPA plugins
-#ifdef __WIN32__
-        paths = ladspaPath.split(';');
-#else
-        paths = ladspaPath.split(':');
-#endif
-    }
-    else
-    {
-        // add default path if LADSPA_PATH is not set
-#ifdef __LINUX__
-        paths.push_back ("/usr/lib/ladspa/");
-        paths.push_back ("/usr/lib64/ladspa/");
-#elif __MACX__
-        paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
-        paths.push_back ("../../ladspa_plugins"); //ladspa_plugins directory in Mixxx.app bundle
-        paths.push_back ("Mixxx.app/ladspa_plugins"); //ladspa_plugins directory in Mixxx.app bundle
-#elif __WIN32__
-        // not tested yet but should work:
-        QString programFiles = QString(getenv("ProgramFiles"));
-        paths.push_back (programFiles+"\\LADSPA Plugins");
-        paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
-#endif
-    }
 
     // load each directory
-    for (QStringList::iterator path = paths.begin(); path != paths.end(); path++)
+    for (QStringList::iterator path = plugin_paths.begin(); path != plugin_paths.end(); path++)
     {
         QDir dir(* path);
 
-        //qDebug() << "Looking for plugins in directory:" << dir;
+        qDebug() << "Looking for plugins in directory:" << dir.absolutePath();
     
         // get the list of files in the directory
         QFileInfoList files = dir.entryInfoList();
@@ -57,7 +31,7 @@ LADSPALoader::LADSPALoader()
         // load each file in the directory
         for (QFileInfoList::iterator file = files.begin(); file != files.end(); file++)
         {
-            //qDebug() << "Looking at file:" << (*file).absoluteFilePath();
+            qDebug() << "Looking at file:" << (*file).absoluteFilePath();
 
             if ((*file).isDir())
             {

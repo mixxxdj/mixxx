@@ -1,7 +1,15 @@
-#We want to build the LADSPA plugins without any "lib" prefix on POSIX platforms.
 
-#Import('*') #make these all part of a hierarchical build
-env = Environment(SHLIBPREFIX='')
-env.Append(CPPPATH=['.'], ENV = os.environ)
-SConscript(['caps/SConscript'], exports='env')
-SConscript(['cmt/SConscript'], exports='env')
+import os
+
+#Import('env') # do we want to do this? we don't really want to pollute the higher level env with the lower, right?
+Import('platform')
+
+env = Environment(SHLIBPREFIX='') #We want to build the LADSPA plugins without any "lib" prefix on POSIX platforms. <-- why?
+env.Append(CPPPATH=['#lib/ladspa']) #XXX should be '.' but SCons isn't smart enough to know that because this is a subfile in a variant dir that we need to rewrite the paths
+
+nodes = []
+
+nodes += SConscript(['caps/SConscript'], exports='env')
+nodes += SConscript(['cmt/SConscript'], exports='env')
+
+Return('nodes')
