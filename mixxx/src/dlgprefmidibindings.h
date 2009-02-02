@@ -25,6 +25,7 @@
 //Forward declarations
 class MidiChannelDelegate;
 class MidiTypeDelegate;
+class MidiNoDelegate;
 
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
@@ -60,6 +61,7 @@ private:
     MidiObject &m_rMidi;
     MidiChannelDelegate* m_pMidiChannelDelegate;
     MidiTypeDelegate* m_pMidiTypeDelegate;
+    MidiNoDelegate* m_pMidiNoDelegate;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
 };

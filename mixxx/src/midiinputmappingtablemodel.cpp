@@ -26,7 +26,7 @@ QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) co
      if (index.row() >= m_pMapping->size())
          return QVariant();
 
-     if (role == Qt::DisplayRole) {
+     if (role == Qt::DisplayRole || role == Qt::EditRole) {
          //This might be super slow, but that's the price of using a map/hash table.
          //Also note that QMaps are always sorted by key, whereas QHashes are not sorted and rearrange themselves.
          QList<MidiCommand> keys = m_pMapping->keys();

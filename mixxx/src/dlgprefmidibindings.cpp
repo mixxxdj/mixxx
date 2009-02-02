@@ -19,6 +19,7 @@
 #include "midiinputmappingtablemodel.h"
 #include "midichanneldelegate.h"
 #include "miditypedelegate.h"
+#include "midinodelegate.h"
 #include "dlgprefmidibindings.h"
 #include "widget/wwidget.h"
 #include "configobject.h"
@@ -53,8 +54,10 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
     //Set up the cool item delegates for the mapping tables
     m_pMidiChannelDelegate = new MidiChannelDelegate();
     m_pMidiTypeDelegate = new MidiTypeDelegate();
+    m_pMidiNoDelegate = new MidiNoDelegate();
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDITYPE, m_pMidiTypeDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
 
     // Connect buttons to slots
     connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
