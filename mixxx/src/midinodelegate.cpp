@@ -28,10 +28,8 @@ QWidget *MidiNoDelegate::createEditor(QWidget *parent,
 void MidiNoDelegate::setEditorData(QWidget *editor,
                                     const QModelIndex &index) const
 {
-    qDebug() << index;
     int value = index.model()->data(index, Qt::EditRole).toInt();
 
-    qDebug() << "returning value to editor:" << index.column();
     QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
     spinBox->setValue(value);
     spinBox->interpretText();
