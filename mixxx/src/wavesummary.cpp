@@ -81,6 +81,10 @@ void WaveSummary::run()
         // Track processing
         //
 
+        // rryan 2/2009 : Waveform track processing is now done in
+        // AnalyserWaveform and AnalyserWavesummary. This thread is
+        // vestigial.
+        /*
         // Open sound file
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
 
@@ -96,7 +100,7 @@ void WaveSummary::run()
 
         delete pSoundSource;
         pSoundSource = NULL;
-
+        */
     }
     qDebug() << "WaveSummary::run() exiting";
 }
