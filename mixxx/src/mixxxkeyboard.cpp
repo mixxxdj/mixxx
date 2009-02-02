@@ -120,22 +120,22 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e)
 {
     QString s = QKeySequence(e->key());
         #ifdef QT3_SUPPORT
-    if (e->state() & Qt::ShiftModifier)
+    if (e->modifiers() & Qt::ShiftModifier)
         s = "Shift+" + s;
-    if (e->state() & Qt::ControlModifier)
+    if (e->modifiers() & Qt::ControlModifier)
         s = "Ctrl+" + s;
-    if (e->state() & Qt::AltModifier)
+    if (e->modifiers() & Qt::AltModifier)
         s = "Alt+" + s;
     #else
-    if (e->state() & ShiftButton)
+    if (e->modifiers() & ShiftButton)
         s = "Shift+" + s;
-    if (e->state() & ControlButton)
+    if (e->modifiers() & ControlButton)
         s = "Ctrl+" + s;
-    if (e->state() & AltButton)
+    if (e->modifiers() & AltButton)
         s = "Alt+" + s;
     #endif
 
-//     qDebug() << "key" << s;
+     qDebug() << "keyboard press: " << s;
 
     return QKeySequence(s);
 }

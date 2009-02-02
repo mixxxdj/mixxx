@@ -130,7 +130,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
 
     QTextOStream(&value) << midino << " ch " << midichannel;
 
-    type = type.lower();
+    type = type.toLower();
 
     // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
     // more useful by adding the line number of the input file.
@@ -159,7 +159,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
             qCritical("Multiple option elements in midi mapping not supported yet");
         }
 
-        QString optname = opt.nodeName().lower();
+        QString optname = opt.nodeName().toLower();
         if (optname == "invert")
             midioption = MIDI_OPT_INVERT;
         else if (optname == "rot64inv")
@@ -204,11 +204,11 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
     QString option;
 
     QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel >> option;
-    if (type.contains("Key",false))
+    if (type.contains("Key",Qt::CaseInsensitive))
         miditype = MIDI_KEY;
-    else if (type.contains("Ctrl",false))
+    else if (type.contains("Ctrl",Qt::CaseInsensitive))
         miditype = MIDI_CTRL;
-    else if (type.contains("Pitch",false))
+    else if (type.contains("Pitch",Qt::CaseInsensitive))
         miditype = MIDI_PITCH;
     else
         miditype = MIDI_EMPTY;
@@ -225,27 +225,28 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
         midino = -1;
     qDebug() << "miditype:" << type << "midino" << midino << "midichannel" << midichannel;
 
-    if (option.contains("Invert", false))
+    //This should be a map
+    if (option.contains("Invert", Qt::CaseInsensitive))
         midioption = MIDI_OPT_INVERT;
-    else if (option.contains("Rot64Inv", false))
+    else if (option.contains("Rot64Inv", Qt::CaseInsensitive))
         midioption = MIDI_OPT_ROT64_INV;
-    else if (option.contains("Rot64Fast", false))
+    else if (option.contains("Rot64Fast", Qt::CaseInsensitive))
         midioption = MIDI_OPT_ROT64_FAST;
-    else if (option.contains("Rot64", false))
+    else if (option.contains("Rot64", Qt::CaseInsensitive))
         midioption = MIDI_OPT_ROT64;
-    else if (option.contains("Diff", false))
+    else if (option.contains("Diff", Qt::CaseInsensitive))
         midioption = MIDI_OPT_DIFF;
-    else if (option.contains("Button", false))
+    else if (option.contains("Button", Qt::CaseInsensitive))
         midioption = MIDI_OPT_BUTTON;
-    else if (option.contains("Switch", false))
+    else if (option.contains("Switch", Qt::CaseInsensitive))
         midioption = MIDI_OPT_SWITCH;
-    else if (option.contains("HercJog", false))
+    else if (option.contains("HercJog", Qt::CaseInsensitive))
         midioption = MIDI_OPT_HERC_JOG;
-    else if (option.contains("Spread64", false))
+    else if (option.contains("Spread64", Qt::CaseInsensitive))
         midioption = MIDI_OPT_SPREAD64;
-    else if (option.contains("SelectKnob", false))
+    else if (option.contains("SelectKnob", Qt::CaseInsensitive))
         midioption = MIDI_OPT_SELECTKNOB;
-    else if (option.contains("Script-Binding", false))
+    else if (option.contains("Script-Binding", Qt::CaseInsensitive))
         midioption = MIDI_OPT_SCRIPT;
     else
         midioption = MIDI_OPT_NORMAL;
@@ -316,10 +317,11 @@ char ConfigValueMidi::translateValue(char value)
     if (!translateMidiValues.isEmpty()) {
         MidiValueMap::Iterator it;
         if ((it = translateMidiValues.find(value)) != translateMidiValues.end()) {
-            // qDebug() << "MIDI value " << value << " translated to " << it.data();
-            return it.data();
+            // qDebug() << "MIDI value " << value << " translated to " << it.value();
+            return it.value();
         }
     }
+    //if no mapping found, don't translate
     return value;
 }
 
@@ -576,7 +578,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
 
         while (!text.atEnd())
         {
-            line = text.readLine().stripWhiteSpace();
+            line = text.readLine().trimmed();
 
             if (line.length() != 0)
 			{
@@ -591,7 +593,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     QString key;
                     QTextIStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
-                    val = val.stripWhiteSpace();
+                    val = val.trimmed();
                     //qDebug() << "control:" << key << "value:" << val;
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
@@ -627,11 +629,7 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     QFile file(filename);
-#ifndef QT3_SUPPORT
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-#else
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-#endif
     {
         qDebug() << "Could not write file" << filename << ", don't worry.";
         return;
@@ -653,8 +651,8 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
             stream << it->key->item << " " << it->val->value << "\n";
         }
         file.close();
-        if (file.status()!=IO_Ok)
-            qDebug() << "Error while writing configuration file.";
+        if (file.error()!=QFile::NoError) //could be better... should actually say what the error was..
+	  qDebug() << "Error while writing configuration file:" << file.errorString();
     }
 }
 

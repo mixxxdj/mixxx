@@ -34,7 +34,7 @@ Input::Input()
 
 Input::~Input()
 {
-    if (running())
+    if (isRunning())
     {
         terminate();
         wait();
