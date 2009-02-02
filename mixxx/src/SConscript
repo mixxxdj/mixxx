@@ -350,6 +350,9 @@ sources = Split("""
                 midiobjectnull.cpp
                 mididevicehandler.cpp
                 midiinputmappingtablemodel.cpp
+                midichanneldelegate.cpp
+                miditypedelegate.cpp
+                midinodelegate.cpp
                 midicommand.cpp
                 mixxx.cpp
                 mixxxview.cpp

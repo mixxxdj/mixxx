@@ -47,8 +47,6 @@ void MidiTypeDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     }
 }
 
-
-
 QWidget *MidiTypeDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &/* option */,
         const QModelIndex &/* index */) const
@@ -67,7 +65,10 @@ void MidiTypeDelegate::setEditorData(QWidget *editor,
     int value = index.model()->data(index, Qt::EditRole).toInt();
 
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
-    comboBox->setCurrentIndex(value);
+    comboBox->setCurrentIndex(value - 1); //HACK HACK HACK HACK HACK HACK
+    //The hack above is because the useful values in the MidiType enum start at 1, not 0,
+    //but the indices in the combobox have to start at 1. This is the only place the hack
+    //is needed.
 }
 
 void MidiTypeDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
