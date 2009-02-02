@@ -189,7 +189,7 @@ def build_app(target, source, env, ICON = None):
 		relative = os.path.join("@executable_path/../Frameworks/", name)
 		embedded = os.path.join(str(frameworks), name)
 		shutil.copy(abs, embedded)
-		system("strip '%s' 2>/dev/null" % embedded), #(the stripping fails with ""symbols referenced by relocation entries that can't be stripped"" for some obscure Apple-only reason sometimes, related to their hacks to gcc---it depends on how the file was compiled; since we don't /really/ care about this we just let it silently fail)
+		system("strip -S '%s' 2>/dev/null" % embedded), #(the stripping fails with ""symbols referenced by relocation entries that can't be stripped"" for some obscure Apple-only reason sometimes, related to their hacks to gcc---it depends on how the file was compiled; since we don't /really/ care about this we just let it silently fail)
 		system("install_name_tool -change '%s' '%s' '%s'" % (orig, relative, installed_bin)) #change the reference to the library in the binary
 		system("install_name_tool -id '%s' '%s'" % (relative, embedded)) #change the name the library knows itself as
 		for d_dep in otool.otool(abs):
