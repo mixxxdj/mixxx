@@ -51,9 +51,9 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString sPath, const QString sFile, BpmDetector *bpmDetector);
+    TrackInfoObject(const QString sPath, const QString sFile);
     /** Creates a new track given information from the xml file. */
-    TrackInfoObject(const QDomNode &, BpmDetector *bpmDetector);
+    TrackInfoObject(const QDomNode &);
     ~TrackInfoObject();
     /** Returns true if the object contains valid information */
     bool isValid() const;
@@ -75,10 +75,6 @@ public:
     QString getDurationStr() const;
     /** Returns the location of the file, included path */
     QString getLocation() const;
-    /** Add this TrackInfoObject instance to the BPM detection queue */
-    void sendToBpmQueue();
-    void sendToBpmQueue(BpmReceiver *pBpmReceiver);
-    void sendToBpmQueue(BpmReceiver *pBpmReceiver, BpmScheme *pScheme);
     /** Returns BPM */
     float getBpm() const;
     /** Set BPM */
@@ -276,9 +272,6 @@ private:
     ControlObject *m_pControlObjectDuration;
     int iTemp;
     double m_dVisualResampleRate;
-
-    /** Bpm Detection Queue */
-    BpmDetector *m_BpmDetector;
 
 	Segmentation<QString> m_chordData;
 };

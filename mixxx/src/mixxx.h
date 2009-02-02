@@ -145,9 +145,6 @@ class MixxxApp : public QMainWindow
      * changing the view class.
      */
     MixxxView *view;
-    /** Pointer to the bpm detector */
-    BpmDetector *m_pBpmDetector;
-
     QFrame *frame;
 
     QApplication *app;

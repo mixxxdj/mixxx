@@ -32,6 +32,7 @@
 #include "mixxx.h"
 #include "trackinfoobject.h"
 #include "bpm/bpmscheme.h"
+#include "analyserqueue.h"
 
 #include "xmlparse.h"
 
@@ -40,6 +41,11 @@ DlgBpmTap::DlgBpmTap(QWidget *, TrackInfoObject * tio,
                     QDialog(), Ui::DlgBpmTapDlg()
 {
     // m_pMixxx = mixxx;
+    m_pAnalyserQueue = AnalyserQueue::createBPMAnalyserQueue(_config);
+    connect(m_pAnalyserQueue,
+            SIGNAL(trackFinished(TrackInfoObject*)),
+            this,
+            SLOT(slotComplete(TrackInfoObject*)));
     m_CurrentTrack = tio;
     m_TrackPlaylist = playlist;
     config = _config;
@@ -179,8 +185,12 @@ void DlgBpmTap::slotDetectBPM()
     scheme->setMaxBpm(spinBoxBPMRangeEnd->value());
     scheme->setAnalyzeEntireSong(chkAnalyzeEntireSong->isChecked());
     
-    m_CurrentTrack->setBpmConfirm(false);
-    m_CurrentTrack->sendToBpmQueue(this, scheme);
+    //m_CurrentTrack->setBpmConfirm(false);
+    //m_CurrentTrack->sendToBpmQueue(this, scheme);
+
+    m_pAnalyserQueue->start();
+    m_pAnalyserQueue->queueAnalyseTrack(m_CurrentTrack);
+    
 }
 
 void DlgBpmTap::slotLoadDialog()
@@ -289,7 +299,24 @@ void DlgBpmTap::setComplete(TrackInfoObject * tio, bool failed, float returnBpm)
     //btnTap->setEnabled(true);
     txtBPM->setText(QString("%1").arg(returnBpm, 3,'f',1));
     this->update();
+}
 
+void DlgBpmTap::slotComplete(TrackInfoObject *tio) {
+    qDebug() << "DlgBpmTap got complete signal";
+    if(tio != m_CurrentTrack)
+        return;
+
+    m_pAnalyserQueue->stop();
+    float bpm = tio->getBpm();
+    
+    progressBPMDetect->setMaximum(100);
+    progressBPMDetect->setValue(0);
+    //progressBPMDetect->reset();
+    btnTap->setText("&Push to tap tempo");
+    //btnTap->setEnabled(true);
+    txtBPM->setText(QString("%1").arg(bpm, 3,'f',1));
+    this->update();
+    
 }
 
 void DlgBpmTap::loadBpmSchemes()
@@ -300,7 +327,7 @@ void DlgBpmTap::loadBpmSchemes()
     {   
         QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
         qDebug() << "BpmSchemes::readXML" << location;
-        
+       
         // Open XML file
         QFile file(location);
         QDomDocument domXML("Mixxx_BPM_Scheme_List");

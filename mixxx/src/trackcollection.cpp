@@ -19,10 +19,9 @@
 #include "defs.h"
 
 
-TrackCollection::TrackCollection(BpmDetector * bpmDetector)
+TrackCollection::TrackCollection()
 {
     m_iCounter = -1;
-    m_BpmDetector = bpmDetector;
 }
 
 TrackCollection::~TrackCollection()
@@ -37,7 +36,7 @@ void TrackCollection::readXML(QDomNode node)
     {
         if (tracknode.isElement() && tracknode.nodeName()=="Track")
         {
-            TrackInfoObject * pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
+            TrackInfoObject * pTrack = new TrackInfoObject(tracknode);
             addTrack(pTrack);
 
             //qDebug() << "Trying to add" << pTrack->getTitle() << "to TrackCollection";
@@ -169,7 +168,7 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
         QFileInfo file(location);
         if (file.exists())
         {
-            TrackInfoObject * pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_BpmDetector );
+            TrackInfoObject * pTrack = new TrackInfoObject(file.absolutePath(), file.fileName());
             // Add track to the collection
             if (pTrack->isValid())
             {

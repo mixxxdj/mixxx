@@ -25,7 +25,7 @@ class BpmDetector;
 class TrackCollection
 {
 public:
-    TrackCollection(BpmDetector *bpmDetector);
+    TrackCollection();
     ~TrackCollection();
     /** Read database content from XML file */
     void readXML(QDomNode node);
@@ -54,8 +54,6 @@ protected:
     QList <TrackInfoObject*> m_qTrackList;
     /** Counter used to assign unique id's to tracks in database */
     long int m_iCounter;
-    /** Bpm detection queue being passed through for the TrackInfoObject */
-    BpmDetector *m_BpmDetector;
 };
 
 #endif

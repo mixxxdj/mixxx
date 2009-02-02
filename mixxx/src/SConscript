@@ -399,7 +399,6 @@ sources = Split("""
                 parserpls.cpp
                 parserm3u.cpp
 
-                bpm/bpmdetector.cpp
                 bpm/bpmdetect.cpp
                 bpm/bpmscheme.cpp
                 bpm/peakfinder.cpp

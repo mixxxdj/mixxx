@@ -39,7 +39,6 @@ class WIPodTracksModel;
 class WPlaylistListModel;
 class WTreeList;
 class ControlObjectThreadMain;
-class BpmDetector;
 class QSortFilterProxyModel;
 class QDirModel;
 class LibraryScanner;
@@ -61,7 +60,7 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, BpmDetector *pBpmDetector, AnalyserQueue* eaq);
+    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, AnalyserQueue* eaq);
     ~Track();
     /** Read xml file */
     void readXML(QString location);
@@ -244,8 +243,6 @@ private:
     /** Pointer to ControlObject for Ch1 and Ch2 visual resample rate */
     ControlObjectThreadMain *m_pVisualResampleCh1, *m_pVisualResampleCh2;
 
-    /** Pointer to BPM detection queue */
-    BpmDetector *m_pBpmDetector;
     /** Pointer to the library scanner */
     LibraryScanner *m_pScanner;
     /** Pointer to the library scanning dialog */

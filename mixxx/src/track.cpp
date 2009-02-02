@@ -79,7 +79,7 @@
 
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, 
 			 EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
-			 BpmDetector * pBpmDetector, AnalyserQueue* analyserQueue)
+			 AnalyserQueue* analyserQueue)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -88,14 +88,13 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pActivePopupPlaylist = 0;
     m_pTrackPlayer1 = 0;
     m_pTrackPlayer2 = 0;
-    m_pBpmDetector = pBpmDetector;
     m_pConfig = config;
     m_iLibraryIdx = 0;   //FIXME: Deprecated, can safely remove.
     m_iPlayqueueIdx = 0; //FIXME: Deprecated, can safely remove.
 
 	m_analyserQueue = analyserQueue;
 
-    m_pTrackCollection = new TrackCollection(m_pBpmDetector);
+    m_pTrackCollection = new TrackCollection();
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
     m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
@@ -965,9 +964,6 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
     // Read the tags if required
     if(!m_pTrackPlayer1->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer1);
-    // Detect BPM if required
-    if (m_pTrackPlayer1->getBpmConfirm()== false || m_pTrackPlayer1->getBpm() == 0.)
-        m_pTrackPlayer1->sendToBpmQueue();
 
     // This has to happen before the AnalyserQueue works on the track.
     m_pTrackPlayer1->setVisualResampleRate(m_pVisualResampleCh1->get());
@@ -1057,9 +1053,6 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
     // Read the tags if required
     if(!m_pTrackPlayer2->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer2);
-    // Detect BPM if required
-    if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)
-        m_pTrackPlayer2->sendToBpmQueue();
 
     // This has to happen before the AnalyserQueue works on the track.
     m_pTrackPlayer2->setVisualResampleRate(m_pVisualResampleCh2->get());
@@ -1425,26 +1418,17 @@ void Track::slotBatchBPMDetection()
       if (cur_track->getWaveSummary() == NULL || cur_track->getWaveSummary()->size() == 0) {
         processed++;
         // TODO: convert the qDebug statement to a status dialog box.
-        qDebug() << "Track #"<< i << "= Batch job #"<< processed << ":" << cur_track->getTitle() << "by" << cur_track->getArtist() << "has WaveSummary: false -- has BPM value:" << (cur_track->getBpm() > 0) << " ("<< m_pBpmDetector->queueCount() << "tracks in the BPM Detect Queue )";
+        qDebug() << "Track #"<< i << "= Batch job #"<< processed << ":" << cur_track->getTitle() << "by" << cur_track->getArtist() << "has WaveSummary: false -- has BPM value:" << (cur_track->getBpm() > 0);
 
+        // TODO(rryan) make an AnalyserQueue here
         // Batch Process BPM
-        if (cur_track->getBpm() == 0) {
-          cur_track->sendToBpmQueue();
-        }
+        //if (cur_track->getBpm() == 0) {
+        //cur_track->sendToBpmQueue();
+        //}
       }
 
       // FIXME: remove the song count limitation when BPM detect doesn't crash...
       if (processed == 100) { qDebug() << "----- BPM detection/Waveform generation batch processing limit of " << processed << " songs has been reached. Rerun to detect more songs."; break; }
-    }
-    // Block the UI thread until BPM detection queue is cleared.
-    while (m_pBpmDetector->queueCount()) {
-      // TODO: convert the qDebug statement to a status dialog box.
-      qDebug() << "---- waiting for BPM detection queue to empty... " << m_pBpmDetector->queueCount() << " to go.";
-#ifdef __WIN32__
-      Sleep(3000);
-#else
-      sleep(3);
-#endif
     }
     // Save the track database to disk...
     writeXML(m_pConfig->getValueString(ConfigKey("[Playlist]","Listfile")));
