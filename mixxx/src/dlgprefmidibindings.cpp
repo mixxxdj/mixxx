@@ -48,8 +48,16 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
     m_pInputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiInputMappingTableModel());
 
     m_pInputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_pInputMappingTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_pInputMappingTableView->setSelectionMode(QAbstractItemView::ContiguousSelection); //The model won't like ExtendedSelection, probably.
     m_pInputMappingTableView->verticalHeader()->hide();
+
+    //Set up "delete" as a shortcut key to remove a row for the MIDI input table.
+    m_deleteMIDIInputRowAction = new QAction(m_pInputMappingTableView);
+    /*m_deleteMIDIInputRowAction->setShortcut(QKeySequence::Delete);
+    m_deleteMIDIInputRowAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(m_deleteMIDIInputRowAction, SIGNAL(triggered()), this, SLOT(slotRemoveInputBinding()));
+    */
+    //The above shortcut doesn't work yet, not quite sure why. -- Albert Feb 1 / 2009
 
     //Set up the cool item delegates for the mapping tables
     m_pMidiChannelDelegate = new MidiChannelDelegate();
@@ -66,7 +74,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
     connect(btnClearBindings, SIGNAL(clicked()), this, SLOT(slotClear()));
-    connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveBinding()));
+    connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
     connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
 
     m_rMidi.disableMidiLearn();
@@ -75,6 +83,10 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
     //delete m_pMidiConfig;
     delete m_pMidiChannelDelegate;
+    delete m_pMidiNoDelegate;
+    delete m_pMidiTypeDelegate;
+
+    delete m_deleteMIDIInputRowAction;
 }
 
 /* loadPreset(QString)
@@ -92,7 +104,7 @@ void DlgPrefMidiBindings::slotUpdate() {
 
 }
 
-void DlgPrefMidiBindings::slotRemoveBinding()
+void DlgPrefMidiBindings::slotRemoveInputBinding()
 {
 	QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
 	if (selectedIndices.size() > 0)
@@ -160,13 +172,13 @@ void DlgPrefMidiBindings::slotSingleLearnToggle() {
     if (singleLearning) {
         // Enable MIDI Hook
         m_rMidi.enableMidiLearn(this);
-        labelStatus->setText("Single MIDI Learn: waiting...");
+        //labelStatus->setText("Single MIDI Learn: waiting...");
         // Can't do group learning while single learning
         btnGroupLearn->setEnabled(false);
     } else {
         // Disable MIDI Hook
         m_rMidi.disableMidiLearn();
-        labelStatus->setText("Single MIDI Learn disabled");
+        //labelStatus->setText("Single MIDI Learn disabled");
         btnGroupLearn->setEnabled(true);
     }
 }
@@ -179,13 +191,13 @@ void DlgPrefMidiBindings::slotGroupLearnToggle() {
     if (groupLearning) {
         // Enable MIDI Hook
         m_rMidi.enableMidiLearn(this);
-        labelStatus->setText("Group MIDI Learn: waiting...");
+        //labelStatus->setText("Group MIDI Learn: waiting...");
         // Can't do group learning while single learning
         btnSingleLearn->setEnabled(false);
     } else {
         // Disable MIDI Hook
         m_rMidi.disableMidiLearn();
-        labelStatus->setText("Group MIDI Learn disabled");
+        //labelStatus->setText("Group MIDI Learn disabled");
         btnSingleLearn->setEnabled(true);
     }
 }

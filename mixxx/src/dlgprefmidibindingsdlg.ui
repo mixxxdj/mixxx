@@ -12,97 +12,75 @@
   <property name="windowTitle" >
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <item>
-    <widget class="QTabWidget" name="tabWidget" >
-     <property name="styleSheet" >
-      <string notr="true" />
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QLabel" name="label" >
+     <property name="font" >
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text" >
+      <string>Your Device Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" >
+    <widget class="QToolBox" name="toolBox" >
+     <property name="frameShape" >
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="currentIndex" >
-      <number>1</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="deviceTab" >
-      <attribute name="title" >
-       <string>Device</string>
+     <widget class="QWidget" name="page" >
+      <property name="geometry" >
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>520</width>
+        <height>326</height>
+       </rect>
+      </property>
+      <attribute name="label" >
+       <string>MIDI Input</string>
       </attribute>
-      <widget class="QComboBox" name="comboBoxMidiDevice" >
-       <property name="geometry" >
-        <rect>
-         <x>80</x>
-         <y>50</y>
-         <width>351</width>
-         <height>161</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="tabInputBindings" >
-      <attribute name="title" >
-       <string>Input Bindings</string>
-      </attribute>
-      <layout class="QVBoxLayout" >
-       <item>
-        <widget class="QGroupBox" name="groupBoxLearning" >
-         <property name="minimumSize" >
-          <size>
-           <width>100</width>
-           <height>50</height>
-          </size>
+      <layout class="QGridLayout" name="gridLayout_2" >
+       <item row="0" column="0" >
+        <widget class="QPushButton" name="btnSingleLearn" >
+         <property name="styleSheet" >
+          <string notr="true" />
          </property>
-         <property name="title" >
-          <string>Quick MIDI Learn</string>
+         <property name="text" >
+          <string>MIDI Learn</string>
          </property>
-         <layout class="QGridLayout" >
-          <item rowspan="2" row="0" column="0" >
-           <widget class="QPushButton" name="btnSingleLearn" >
-            <property name="styleSheet" >
-             <string notr="true" />
-            </property>
-            <property name="text" >
-             <string>MIDI Learn</string>
-            </property>
-            <property name="checkable" >
-             <bool>true</bool>
-            </property>
-            <property name="checked" >
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item rowspan="2" row="0" column="1" >
-           <widget class="QPushButton" name="btnGroupLearn" >
-            <property name="styleSheet" >
-             <string notr="true" />
-            </property>
-            <property name="text" >
-             <string>Group Learn</string>
-            </property>
-            <property name="checkable" >
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2" >
-           <widget class="QLabel" name="labelInputStatic" >
-            <property name="text" >
-             <string>Status:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3" >
-           <widget class="QLabel" name="labelStatus" >
-            <property name="text" >
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="4" >
-           <widget class="QTableView" name="m_pInputMappingTableView" />
-          </item>
-         </layout>
+         <property name="checkable" >
+          <bool>true</bool>
+         </property>
+         <property name="checked" >
+          <bool>false</bool>
+         </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1" >
+        <widget class="QPushButton" name="btnGroupLearn" >
+         <property name="styleSheet" >
+          <string notr="true" />
+         </property>
+         <property name="text" >
+          <string>Group Learn</string>
+         </property>
+         <property name="checkable" >
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2" >
+        <widget class="QTableView" name="m_pInputMappingTableView" />
+       </item>
+       <item row="2" column="0" colspan="2" >
         <widget class="QGroupBox" name="groupBoxInputManagement" >
          <property name="minimumSize" >
           <size>
@@ -113,7 +91,7 @@
          <property name="title" >
           <string>Input Binding Management</string>
          </property>
-         <layout class="QGridLayout" >
+         <layout class="QGridLayout" name="_2" >
           <item row="0" column="0" >
            <widget class="QPushButton" name="btnAddBinding" >
             <property name="styleSheet" >
@@ -124,7 +102,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2" >
+          <item row="0" column="3" >
            <widget class="QPushButton" name="btnExportXML" >
             <property name="styleSheet" >
              <string notr="true" />
@@ -134,17 +112,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QPushButton" name="btnRemoveBinding" >
-            <property name="styleSheet" >
-             <string notr="true" />
-            </property>
-            <property name="text" >
-             <string>Remove Control</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2" >
+          <item row="0" column="5" >
            <widget class="QPushButton" name="btnImportXML" >
             <property name="styleSheet" >
              <string notr="true" />
@@ -154,7 +122,17 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="4" >
+          <item row="0" column="1" >
+           <widget class="QPushButton" name="btnRemoveBinding" >
+            <property name="styleSheet" >
+             <string notr="true" />
+            </property>
+            <property name="text" >
+             <string>Remove Control</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" >
            <widget class="QPushButton" name="btnClearBindings" >
             <property name="autoFillBackground" >
              <bool>false</bool>
@@ -167,36 +145,117 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <spacer>
-            <property name="orientation" >
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0" >
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="3" >
-           <spacer>
-            <property name="orientation" >
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0" >
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
+         <zorder>btnAddBinding</zorder>
+         <zorder>btnExportXML</zorder>
+         <zorder>groupBoxLearning</zorder>
+         <zorder></zorder>
+         <zorder></zorder>
+         <zorder>btnImportXML</zorder>
+         <zorder>btnRemoveBinding</zorder>
+         <zorder>btnClearBindings</zorder>
         </widget>
        </item>
       </layout>
+      <zorder>groupBoxInputManagement</zorder>
+      <zorder>groupBoxLearning</zorder>
+      <zorder>m_pInputMappingTableView</zorder>
+      <zorder>btnGroupLearn</zorder>
+      <zorder>btnSingleLearn</zorder>
+      <zorder>groupBoxInputManagement</zorder>
+      <zorder>btnSingleLearn</zorder>
+      <zorder>btnGroupLearn</zorder>
+      <zorder>m_pInputMappingTableView</zorder>
+      <zorder>groupBoxInputManagement</zorder>
+     </widget>
+     <widget class="QWidget" name="page_2" >
+      <property name="geometry" >
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>520</width>
+        <height>326</height>
+       </rect>
+      </property>
+      <attribute name="label" >
+       <string>MIDI Output</string>
+      </attribute>
+      <widget class="QLabel" name="label_2" >
+       <property name="geometry" >
+        <rect>
+         <x>80</x>
+         <y>0</y>
+         <width>361</width>
+         <height>321</height>
+        </rect>
+       </property>
+       <property name="font" >
+        <font>
+         <family>Courier New</family>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text" >
+        <string>                      ,;-. 
+                    ,((--). 
+                   /         
+                  |          | 
+                  |          | 
+                 (,'"`.  ,'"`.) 
+                 :     /     ; 
+                 `.o  ,'`.  o,' 
+                 (|`>'`--'`&lt;'|)            ,-, 
+     ,.           |/        |         ,-./ / 
+   _ | ,-.       (          )        | `-'`--. 
+  ( `' (_/|__         (o   /       ,-'     ,-' 
+   ;         )    ,|`.  - ,'|.      `-.   )  
+   | (    ,-'   _/ `-.`""',-' ---.   /      ; 
+   |     |   ,-'    /  /   |   |--/       | 
+   |     |_,|    / /  /   /   |          | 
+   |     `     |                /        ,' 
+   |           |              | /      _,' 
+   :           ,              `/------' 
+    `-.___,---')                `. 
+             ,'                    
+            /                       
+           :                        : 
+           |                      _,| 
+            --.___         __,--' ; 
+             `.    `"""""""'      ,' 
+               |                  | 
+               |      .____,      | 
+               |         |        | 
+               |         |        | 
+               |         |        | 
+               |         |        | 
+               |         |        | 
+     -hrr-     |         |        | 
+               |         |        | 
+               |-._____,-|-.____,-| 
+               |_        |_       | 
+             ,'  `------'| `-----'  
+            /           _|_          
+            `--._____,-'   `-.___,-' 
+</string>
+       </property>
+       <property name="scaledContents" >
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3" >
+       <property name="geometry" >
+        <rect>
+         <x>360</x>
+         <y>280</y>
+         <width>131</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Mmmmm, MIDI....</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>

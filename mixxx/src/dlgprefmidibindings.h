@@ -42,7 +42,7 @@ public slots:
     void slotImportXML();
     void slotExportXML();
     void slotClear();
-    void slotRemoveBinding();
+    void slotRemoveInputBinding();
     void slotAddBinding();
 //    void slotChangeBinding();
 //    void slotAdvancedOptions();
@@ -62,6 +62,7 @@ private:
     MidiChannelDelegate* m_pMidiChannelDelegate;
     MidiTypeDelegate* m_pMidiTypeDelegate;
     MidiNoDelegate* m_pMidiNoDelegate;
+    QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
 };
