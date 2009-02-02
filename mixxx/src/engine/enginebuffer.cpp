@@ -861,9 +861,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Apply jog
             // FIXME: Sensitivity should be configurable separately?
             const double fact = m_pRateRange->get();
-            double val = m_jogfilter->filter(m_pJog->get());
+            double jogVal = m_pJog->get();
+            double val = m_jogfilter->filter(jogVal);
             rate += val * fact;
-            m_pJog->set(0.);
+            if(jogVal != 0.0) 
+                m_pJog->set(0.);
 
             // BJW: Apply reverse button (moved from above)
             if (reverseButton->get()) {
@@ -873,8 +875,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         else
         {
             // Stopped. Wheel, jog and scratch controller all scrub through audio.
-            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(m_pJog->get()))*baserate; //*10.;
-			m_pJog->set(0.);
+            double jogVal = m_pJog->get();
+            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(jogVal))*baserate; //*10.;
+            if(jogVal != 0.)
+                m_pJog->set(0.);
         }
 
         // BJW: Disabled this. bpmrate was always 1. [Master],rate doesn't appear to be useable.
@@ -1290,8 +1294,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 }
                 else
                     playposSlider->set(0.);
-                bpmControl->set(filebpm);
-                rateEngine->set(rate);
+                if(filebpm != bpmControl->get())
+                    bpmControl->set(filebpm);
+                if(rate != rateEngine->get())
+                    rateEngine->set(rate);
 
                 m_iSamplesCalculated = 0;
 
