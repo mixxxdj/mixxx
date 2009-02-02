@@ -252,5 +252,5 @@ struct CmdlineArgs
     bool bStartInFullscreen;        /* Start in fullscreen mode */
 };
 
-#endif
 
+#endif

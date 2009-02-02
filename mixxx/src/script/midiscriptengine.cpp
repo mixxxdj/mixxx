@@ -85,7 +85,7 @@ MidiScriptEngine::~MidiScriptEngine() {
 }
 
 bool MidiScriptEngine::event(QEvent* e) {
-    qDebug() << QString("----------------------------------MidiScriptEngine: Event Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+  //qDebug() << QString("----------------------------------MidiScriptEngine: Event Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     qDebug() << "MidiScriptEngine::event() Event Type:" << e->type();
     if(e->type() == EXECUTE_EVENT_TYPE) {
         ExecuteEvent *ee = (ExecuteEvent*)e;
@@ -112,7 +112,7 @@ bool MidiScriptEngine::event(QEvent* e) {
    Output: -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::run() {
-    qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+  //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     // Create the MidiScriptEngine
     m_pEngine = new QScriptEngine();
@@ -178,7 +178,7 @@ void MidiScriptEngine::clearCode() {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::evaluateScript() {
 //     QMutexLocker locker(&m_mutex);  //Prevent more than one thread using the ScriptEngine at a time
-    qDebug() << QString("MidiScriptEngine: AllEval Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+//    qDebug() << QString("MidiScriptEngine: AllEval Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     
     if(m_pEngine == NULL) {
         return;
@@ -231,7 +231,7 @@ bool MidiScriptEngine::execute(QString function, char channel, QString device, c
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function) {
 //     QMutexLocker locker(&m_mutex);  //Prevent more than one thread using the ScriptEngine at a time
-    qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+  // qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
         return false;
@@ -440,7 +440,7 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
 //     qDebug() << QString("MidiScriptEngine: Connect: ControlObject Thread ID=%1").arg(cobj->thread()->currentThreadId(),0,16);
     
 //     QMutexLocker locker(&m_mutex);  // Prevent more than one thread using the ScriptEngine at a time
-    qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //   qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
         return false;
@@ -516,7 +516,7 @@ void MidiScriptEngine::slotValueChanged(double value) {
     }
     ConfigKey key = sender->getKey();
 
-    qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if(m_connectedControls.contains(key)) {
         QString function = m_connectedControls.value(key);

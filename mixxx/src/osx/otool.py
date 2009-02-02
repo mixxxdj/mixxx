@@ -63,7 +63,7 @@ def otool(binary):
 	"return in a list of strings the OS X 'install names' of Mach-O binaries (dylibs and programs)"
 	"Do not run this on object code archive (.a) files, it is not designed for that."
 	#if not os.path.exists(binary): raise Exception("'%s' not found." % binary)
-	
+	if not type(binary) == str: raise ValueError("otool() requires a path (as a string)")
 	stdin, stdout, stderr = os.popen3('otool -L "%s"' % binary)
 	try:
 		header = stdout.readline() #discard the first line since it is just the name of the file or an error message (or if reading .as, the first item on the list)
@@ -82,8 +82,15 @@ def otool(binary):
 		stderr.close()
 
 
-#Question: is there any reason that I can't conflate FRAMEWORKS and LIBPATH? Like, is there any case searching for a framework in a libpath or searching for a lib in a framework path would.. no, no there won't be, not if the proper naming conventions are followed (and dyld enforces that).
-  #proof: if you look for libX.dylib in a framework dir you don't find it because a framework dir only contains X.framework/ folders, and if you look for X.framework in a folder full of libX.dylib.. well same thing
+def dependencies(binary):
+	l = otool(binary)
+	if os.path.basename(l[0]) == os.path.basename(binary):
+		print "Removing -id field result %s from %s" % (l.pop(0), binary)
+	return l
+
+
+
+
   
 
 
@@ -121,8 +128,9 @@ def embed_dependencies(binary,
 			#experiments show that giving an unspecified path is asking dyld(1) to find the library for us. This covers that case.
 			#i will not do further experiments to figure out what dyld(1)'s specific search algorithm is (whether it looks at frameworks separate from dylibs) because that's not the public interface
 			
-			for P in LOCAL+SYSTEM: #XXX should local have priority over system or vice versa?
+			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
 				p = os.path.abspath(os.path.join(P, e))
+				print "SEARCHING IN LIBPATH; TRYING", p
 				if os.path.exists(p):
 					break
 			else:
@@ -139,11 +147,18 @@ def embed_dependencies(binary,
 			orig.append(e)
 			todo.extend(otool(p))
 		
-	
-	assert all(e.startswith("/") for e in done)
+	assert all(e.startswith("/") for e in done), "embed_dependencies() is broken, some path in this list is not absolute: %s" % (done,)
 	return sorted(zip(orig, done))
 
 
+
+def change_id(binary, id):
+	"there is no way to "
+	return system("install_name_tool -id '%s' '%s'" % (id,  binary))
+
+def change_ref(binary, orig, new):
+	assert orig in otool(binary), "change_ref: '%s' not in otool -L '%s', the change will fail." % (orig, binary) #since install_name_tool(1) always fails silently, there's *no* way to tell if it worked or not; try to catch the one bad case we know of manually (and expensively)
+	return system("install_name_tool -change '%s' '%s' '%s'" % (orig, new, binary))
 
 #but what are we *really* doing here? The overall goal?
 #I'm looking for

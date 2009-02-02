@@ -1,27 +1,6 @@
-import os
-import sys
 
 Import('env')
 
-#Get the platform/OS that we're building on:
-if os.name == 'nt':
-	print 'Platform: Windows'
-	platform = 'win32'
-elif sys.platform == 'linux2':
-	print 'Platform: Linux'
-	platform = 'linux'
-elif sys.platform == 'darwin':
-	print 'Platform: OS X'
-	platform = 'osx'
-else:
-	print 'Platform: Unknown (assuming Linux-like)'
-	platform = 'linux'
-
 capslib = env.SharedLibrary('caps', ['Compress.cc', 'Phaser.cc', 'Reverb.cc'])
 
-if platform == 'win32':
-	capslib_tgt = env.Install("../../../../dist/ladpsa_plugins/", capslib)
-	env.Alias('install', capslib_tgt)
-elif platform == 'osx':
-	capslib_tgt = env.Install("../../../../Mixxx.app/ladspa_plugins", capslib)
-	env.Alias('install', capslib_tgt)
+Return('capslib')
