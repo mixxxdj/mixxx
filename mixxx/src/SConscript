@@ -866,8 +866,8 @@ if int(flags_ladspa):
                             dlgladspa.cpp
                             ladspa/ladspapresetslot.cpp
                             """)
-        plugins += SConscript(File('#lib/ladspa/SConscript'))
-        env.Alias('plugins', plugins)
+		plugins += SConscript(File('#lib/ladspa/SConscript'))
+		env.Alias('plugins', plugins)
 	print "LADSPA support... enabled"
 	build_flags += 'ladspa '
 else:
@@ -935,9 +935,9 @@ if int(flags_script):
 	elif platform == 'linux':
 		env.Append(LIBS = 'QtScript')
 	elif platform == 'osx':
-	     #XXX put in logic here to add a -framework QtScript
-	     #env.Append(
-	     pass
+		#XXX put in logic here to add a -framework QtScript
+		#env.Append(
+		pass
 	print "MixxxScript Studio... enabled"
 
 	build_flags += 'script '
@@ -965,9 +965,9 @@ if int(flags_midiscript):
 	elif platform == 'linux':
 		env.Append(LIBS = 'QtScript')
 	elif platform == 'osx':
-	     #XXX put in logic here to add a -framework QtScript
-	     #env.Append(
-	     pass
+		#XXX put in logic here to add a -framework QtScript
+		#env.Append(
+		pass
 	print "MIDI Scripting... enabled"
 
 	build_flags += 'midiscript '
@@ -1239,13 +1239,13 @@ if platform == 'osx':
 	
 	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
 	qt_plugins = [("iconengines", e) for e in ["libqsvgicon.dylib"]] + \
-		     [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] #Left out libqmng and libqtiff to save space.
+			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] #Left out libqmng and libqtiff to save space.
 	
 	bundle = env.App("Mixxx", [mixxx_bin, 'osx/application.icns',
 		Dir('skins/'), Dir('midi/'), Dir('keyboard/'),
 		Dir('ladspa_presets'), Dir('doc/'), Dir('promo/')],
 		 PLUGINS=plugins,
-		    #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
+			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
 		 ,
 		 STRIP=True,
