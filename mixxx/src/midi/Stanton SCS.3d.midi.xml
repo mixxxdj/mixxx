@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset version="1.6.5">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
     <info>
         <name>Stanton SCS.3d</name>
         <author>Sean M. Pappalardo</author>

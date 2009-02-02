@@ -8,7 +8,7 @@ crashTest.deck = 1;  // Currently active virtual deck
 crashTest.deckSignals = [    ["CurrentChannel", "rate", "crashTest.pitchLEDs"],
                                 ["CurrentChannel", "rateRange", "crashTest.pitchSliderLED"],
                                 ["CurrentChannel", "volume", "crashTest.gainLEDs"],
-                                ["CurrentChannel", "play", "crashTest.playLED"],
+//                                 ["CurrentChannel", "play", "crashTest.playLED"],
                                 ["CurrentChannel", "cue_default", "crashTest.cueLED"],
                                 ["CurrentChannel", "back", "crashTest.B13LED"],
                                 ["CurrentChannel", "fwd", "crashTest.B14LED"],

@@ -16,8 +16,8 @@
             <control>
                 <group>[Master]</group>
                 <key>crashTest.swapSignals</key>
-                <miditype>Ctrl</miditype>
-                <midino>0x32</midino>
+                <miditype>Key</miditype>
+                <midino>0x2A</midino>
                 <midichan>1</midichan>
                 <options>
                     <Script-Binding/>
@@ -26,8 +26,8 @@
             <control>
                 <group>[Master]</group>
                 <key>crashTest.rewind</key>
-                <miditype>Ctrl</miditype>
-                <midino>0x33</midino>
+                <miditype>Key</miditype>
+                <midino>0x30</midino>
                 <midichan>1</midichan>
                 <options>
                     <Script-Binding/>
@@ -36,8 +36,8 @@
             <control>
                 <group>[Master]</group>
                 <key>crashTest.ffwd</key>
-                <miditype>Ctrl</miditype>
-                <midino>0x34</midino>
+                <miditype>Key</miditype>
+                <midino>0x32</midino>
                 <midichan>1</midichan>
                 <options>
                     <Script-Binding/>

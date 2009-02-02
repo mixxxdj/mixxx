@@ -1,1 +1,0 @@
-See http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format for the latest docs on the controller file format.
