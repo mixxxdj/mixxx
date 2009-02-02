@@ -17,6 +17,8 @@
 #include <QtGui>
 #include <QDebug>
 #include "midiinputmappingtablemodel.h"
+#include "midichanneldelegate.h"
+#include "miditypedelegate.h"
 #include "dlgprefmidibindings.h"
 #include "widget/wwidget.h"
 #include "configobject.h"
@@ -48,6 +50,12 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
     m_pInputMappingTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     m_pInputMappingTableView->verticalHeader()->hide();
 
+    //Set up the cool item delegates for the mapping tables
+    m_pMidiChannelDelegate = new MidiChannelDelegate();
+    m_pMidiTypeDelegate = new MidiTypeDelegate();
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDITYPE, m_pMidiTypeDelegate);
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
+
     // Connect buttons to slots
     connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
     connect(btnGroupLearn, SIGNAL(clicked()), this, SLOT(slotGroupLearnToggle()));
@@ -63,6 +71,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
     //delete m_pMidiConfig;
+    delete m_pMidiChannelDelegate;
 }
 
 /* loadPreset(QString)

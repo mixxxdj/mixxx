@@ -22,6 +22,10 @@
 #include "configobject.h"
 #include "midiobject.h"
 
+//Forward declarations
+class MidiChannelDelegate;
+class MidiTypeDelegate;
+
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
 public:
@@ -54,6 +58,8 @@ private:
     bool groupLearning;
     int currentGroupRow;
     MidiObject &m_rMidi;
+    MidiChannelDelegate* m_pMidiChannelDelegate;
+    MidiTypeDelegate* m_pMidiTypeDelegate;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
 };
