@@ -188,15 +188,15 @@ bool MidiInputMappingTableModel::removeRows(int row, int count, const QModelInde
 {
     beginRemoveRows(parent, row, row+count);
 
-     //This might be super slow, but that's the price of using a map/hash table.
-     //Also note that QMaps are always sorted by key, whereas QHashes are not sorted and rearrange themselves.
-     QList<MidiCommand> keys = m_pMapping->keys();
-     for (int i = row; i < row+count; i++) {
-         MidiCommand command = keys.at(row);
-         m_pMapping->take(command); //Remove the control from the map
-     }
+    //This might be super slow, but that's the price of using a map/hash table.
+    //Also note that QMaps are always sorted by key, whereas QHashes are not sorted and rearrange themselves.
+    QList<MidiCommand> keys = m_pMapping->keys();
+    for (int i = row; i < row+count; i++) {
+        MidiCommand command = keys.at(i);
+        m_pMapping->take(command); //Remove the control from the map
+    }
 
-     //TODO: Should probably handle an invalid selection and return false.
+    //TODO: Should probably handle an invalid selection and return false.
 
     endRemoveRows();
 

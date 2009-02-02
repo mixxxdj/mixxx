@@ -97,7 +97,7 @@
            </widget>
           </item>
           <item row="2" column="0" colspan="4" >
-           <widget class="QTableView" name="pInputMappingTableView" />
+           <widget class="QTableView" name="m_pInputMappingTableView" />
           </item>
          </layout>
         </widget>
@@ -117,7 +117,7 @@
           <item row="0" column="0" >
            <widget class="QPushButton" name="btnAddBinding" >
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(200, 255, 200);</string>
+             <string notr="true" />
             </property>
             <property name="text" >
              <string>Add Control</string>
@@ -137,7 +137,7 @@
           <item row="1" column="0" >
            <widget class="QPushButton" name="btnRemoveBinding" >
             <property name="styleSheet" >
-             <string notr="true" >background-color: rgb(255, 200, 200);</string>
+             <string notr="true" />
             </property>
             <property name="text" >
              <string>Remove Control</string>
