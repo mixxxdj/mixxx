@@ -1,5 +1,10 @@
-<?xml version="1.0"?>
-<MixxxMIDIPreset version="1.6.5">
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+    <info>
+        <name>Hercules DJ Console Mk2</name>
+        <author>Unknown</author>
+        <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
+    </info>
   <controller id="Hercules DJ Console Mk2 MIDI">
     <controls>
       <control>

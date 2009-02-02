@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
-<MixxxMIDIPreset version="1.6.5">
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
 <controller id="Akai MPD24 MIDI 1">
   <controls>
-<control>
+    <control>
       <group>[Master]</group>
       <key>crossfader</key>
       <miditype>Ctrl</miditype>

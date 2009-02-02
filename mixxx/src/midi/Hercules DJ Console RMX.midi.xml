@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset version="1.6.5" >
+<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.6.2+">
     <info>
         <name>Hercules DJ Console RMX</name>
         <author>Garth Dahlstrom</author>
         <description>This is a complete mapping for a Hercules DJ Console RMX. Requires scripting.</description>
     </info>
-    <controller id="Hercules DJ Console RMX MIDI" >
+    <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>
             <file functionprefix="HerculesRMX">
                 <filename>Hercules-DJ-Console-RMX-scripts.js</filename>
