@@ -30,6 +30,7 @@
 class MixxxApp;
 class TrackInfoObject;
 class BpmScheme;
+class AnalyserQueue;
 
 /**
   *@author Micah Lee
@@ -57,6 +58,7 @@ public slots:
     void slotArtistChanged(const QString & artist);
     void slotCommentChanged();
     void slotBpmSchemeChanged(int ndx);
+    void slotComplete(TrackInfoObject *tio);
 
 signals:
     void closeDlg();
@@ -66,7 +68,7 @@ public:
     // Inherited methods from BpmReceiver.
     void setProgress(TrackInfoObject *tio, int progress);
     void setComplete(TrackInfoObject *tio, bool failed, float returnBpm);
-
+    
 protected:
     bool eventFilter(QObject *, QEvent *);
     void loadTrackInfo();
@@ -80,6 +82,7 @@ protected:
 
 private:
     MixxxApp *m_pMixxx;
+    AnalyserQueue *m_pAnalyserQueue;
     TrackInfoObject *m_CurrentTrack;
     TrackPlaylist *m_TrackPlaylist;
     QTime *m_Time;

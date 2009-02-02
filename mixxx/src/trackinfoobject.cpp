@@ -41,7 +41,7 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDetector * bpmDetector) 
+TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) 
 	: m_sFilename(sFile), m_sFilepath(sPath),
 	m_chordData() {
     m_sArtist = "";
@@ -69,8 +69,6 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_fCuePoint = 0.0f;
 
     m_dVisualResampleRate = 0;
-
-    m_BpmDetector = bpmDetector;
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
@@ -102,7 +100,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     //qDebug() << "done constructing  TrackInfoObject....";
 }
 
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDetector)
+TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 	: m_chordData() {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sFilepath = XmlParse::selectNodeQString(nodeHeader, "Filepath");
@@ -126,8 +124,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDe
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
-
-    m_BpmDetector = bpmDetector;
 
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
@@ -413,30 +409,6 @@ QString TrackInfoObject::getLocation() const
     QString qLocation = m_sFilepath + "/" + m_sFilename;
     m_qMutex.unlock();
     return qLocation;
-}
-
-void TrackInfoObject::sendToBpmQueue()
-{
-    if(m_BpmDetector)
-    {
-        m_BpmDetector->enqueue(this);
-    }
-}
-
-void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver)
-{
-    if(m_BpmDetector)
-    {
-        m_BpmDetector->enqueue(this, pBpmReceiver);
-    }
-}
-
-void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver, BpmScheme* pScheme)
-{
-    if(m_BpmDetector)
-    {
-        m_BpmDetector->enqueue(this, pScheme, pBpmReceiver);
-    }
 }
 
 float TrackInfoObject::getBpm() const

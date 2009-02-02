@@ -245,15 +245,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
 
-    // Initialize Bpm detection queue
-    m_pBpmDetector = new BpmDetector(config);
-
     if (pSplash)
         pSplash->showMessage("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
-    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, config,
-		buffer1, buffer2, m_pBpmDetector, AnalyserQueue::createDefaultAnalyserQueue(config));
+    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")),
+                         view,
+                         config,
+                         buffer1,
+                         buffer2,
+                         AnalyserQueue::createDefaultAnalyserQueue(config));
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals
@@ -698,7 +699,7 @@ void MixxxApp::slotiPodToggle(bool toggle) {
 
 //       qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
 
-       TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName, m_pBpmDetector );
+       TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName);
        pTrack->setBpm(song->BPM);
        pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
 //       pTrack->setHeaderParsed(true);

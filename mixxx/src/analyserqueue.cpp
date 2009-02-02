@@ -13,7 +13,11 @@
 #include "analyserbpm.h"
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
-		m_tioq(), m_qm(), m_qwait(), m_exit(false) {
+                                 m_tioq(),
+                                 m_qm(),
+                                 m_qwait(),
+                                 m_exit(false)
+{
 
 }
 
@@ -22,19 +26,19 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 }
 
 TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
-		m_qm.lock();
+    m_qm.lock();
 
-		if (m_tioq.isEmpty()) {
-			m_qwait.wait(&m_qm);
-		}
+    if (m_tioq.isEmpty()) {
+        m_qwait.wait(&m_qm);
+    }
 
-		TrackInfoObject* tio = m_tioq.dequeue();
+    TrackInfoObject* tio = m_tioq.dequeue();
 
-		m_qm.unlock();
+    m_qm.unlock();
 
-		Q_ASSERT(tio != NULL);
+    Q_ASSERT(tio != NULL);
 
-		return tio;
+    return tio;
 }
 
 void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource) {
@@ -42,6 +46,9 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 	// CHANGING THIS WILL BREAK TONALANALYSER!!!!
 	const int ANALYSISBLOCKSIZE = 2*32768;
 
+    int totalSamples = pSoundSource->length();
+    int processedSamples = 0;
+    
 	SAMPLE data16[ANALYSISBLOCKSIZE];
     CSAMPLE samples[ANALYSISBLOCKSIZE];
 
@@ -73,8 +80,17 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 			it.next()->process(samples, read);
 		}
 
+        // emit progress updates to whoever cares
+        processedSamples += read;
+        int progress = processedSamples*100/totalSamples;
+        emit(trackProgress(tio, progress));
+
 	} while(read == ANALYSISBLOCKSIZE);
 
+}
+
+void AnalyserQueue::stop() {
+    m_exit = true;
 }
 
 void AnalyserQueue::run() {
@@ -102,6 +118,7 @@ void AnalyserQueue::run() {
 			itf.next()->finalise(next);
 		}
 
+        emit(trackFinished(next));
 	}
 }
 
@@ -110,6 +127,18 @@ void AnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
 	m_tioq.enqueue(tio);
 	m_qwait.wakeAll();
 	m_qm.unlock();
+}
+
+AnalyserQueue* AnalyserQueue::createAnalyserQueue(QList<Analyser*> analysers) {
+    AnalyserQueue* ret = new AnalyserQueue();
+    
+    QListIterator<Analyser*> it(analysers);
+    while(it.hasNext()) {
+        ret->addAnalyser(it.next());
+    }
+    
+	ret->start(QThread::IdlePriority);
+	return ret;
 }
 
 AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config) {
@@ -127,10 +156,16 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 	return ret;
 }
 
-AnalyserQueue::~AnalyserQueue() {
-		QListIterator<Analyser*> it(m_aq);
+AnalyserQueue* AnalyserQueue::createBPMAnalyserQueue(ConfigObject<ConfigValue> *_config) {
+	AnalyserQueue* ret = new AnalyserQueue();
+    ret->addAnalyser(new AnalyserBPM(_config));
+	return ret;
+}
 
-		while (it.hasNext()) {
-			delete it.next();
-		}
+AnalyserQueue::~AnalyserQueue() {
+    QListIterator<Analyser*> it(m_aq);
+    
+    while (it.hasNext()) {
+        delete it.next();
+    }
 }
