@@ -866,8 +866,8 @@ if int(flags_ladspa):
                             dlgladspa.cpp
                             ladspa/ladspapresetslot.cpp
                             """)
-		plugins += SConscript(File('#lib/ladspa/SConscript'))
-		env.Alias('plugins', plugins)
+	plugins += SConscript(File('#lib/ladspa/SConscript'))
+	env.Alias('plugins', plugins)
 	print "LADSPA support... enabled"
 	build_flags += 'ladspa '
 else:
