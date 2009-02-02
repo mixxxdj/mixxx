@@ -39,7 +39,6 @@ class WIPodTracksModel;
 class WPlaylistListModel;
 class WTreeList;
 class ControlObjectThreadMain;
-class WaveSummary;
 class BpmDetector;
 class QSortFilterProxyModel;
 class QDirModel;
@@ -62,7 +61,7 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, AnalyserQueue* eaq);
+    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, BpmDetector *pBpmDetector, AnalyserQueue* eaq);
     ~Track();
     /** Read xml file */
     void readXML(QString location);
@@ -241,8 +240,6 @@ private:
      ControlObjectThreadMain *m_pLoadSelectedTrackCh1, *m_pLoadSelectedTrackCh2, *m_pLoadSelectedIntoFirstStopped, *m_pSelectNextTrack, *m_pSelectPrevTrack, *m_pSelectTrackKnob, *m_pSelectNextPlaylist, *m_pSelectPrevPlaylist;
     /** Pointer to ControlObject for play position */
     ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
-    /** Pointer to waveform summary generator */
-    WaveSummary *m_pWaveSummary;
 
     /** Pointer to ControlObject for Ch1 and Ch2 visual resample rate */
     ControlObjectThreadMain *m_pVisualResampleCh1, *m_pVisualResampleCh2;
