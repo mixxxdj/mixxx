@@ -136,8 +136,8 @@ void WTrackTableView::setup(QDomNode node)
     if (!WWidget::selectNode(node, "FgColor").isNull())
     {
         fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-	if (m_pTable)
-	   m_pTable->setForegroundColor(WSkinColor::getCorrectColor(fgc));
+    if (m_pTable)
+       m_pTable->setForegroundColor(WSkinColor::getCorrectColor(fgc));
     }
 
 
@@ -146,22 +146,22 @@ void WTrackTableView::setup(QDomNode node)
     {
         QColor r1;
         r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-	r1 = WSkinColor::getCorrectColor(r1);
+    r1 = WSkinColor::getCorrectColor(r1);
         QColor r2;
         r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-	r2 = WSkinColor::getCorrectColor(r2);
+    r2 = WSkinColor::getCorrectColor(r2);
 
-	// For now make text the inverse of the background so it's readable
-	// In the future this should be configurable from the skin with this
-	// as the fallback option
-	QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-	//QColor text(255, 255, 255);
+    // For now make text the inverse of the background so it's readable
+    // In the future this should be configurable from the skin with this
+    // as the fallback option
+    QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
+    //QColor text(255, 255, 255);
 
         setAlternatingRowColors ( true );
         QPalette Rowpalette = palette();
         Rowpalette.setColor(QPalette::Base, r1);
         Rowpalette.setColor(QPalette::AlternateBase, r2);
-	Rowpalette.setColor(QPalette::Text, text);
+    Rowpalette.setColor(QPalette::Text, text);
 
         setPalette(Rowpalette);
     }
@@ -219,13 +219,13 @@ void WTrackTableView::sortColumn(int col, bool ascending, bool)
 
 void WTrackTableView::repaintEverything() {
 
-	// Hack ahoy:
-	// This invalidates everything in a way i thought reset() would
-	// Why exactly it works isn't clear but i suspect it's some subtlety with the filtering
-	if (m_pTable) {
-		setSearchSource(m_pTable);
+    // Hack ahoy:
+    // This invalidates everything in a way i thought reset() would
+    // Why exactly it works isn't clear but i suspect it's some subtlety with the filtering
+    if (m_pTable) {
+        setSearchSource(m_pTable);
         qDebug() << "FIXME: repaintEverything switches table model and shouldn't do that when viewing the playlist model in " << __FILE__ ": " << __LINE__;
-	}
+    }
 }
 
 void WTrackTableView::sortByColumn(int col)
@@ -281,7 +281,7 @@ void WTrackTableView::sortByColumn(int col)
             m_pTable->m_pTrackPlaylist->sortByComment(ascending);
             break;
         }
-	slotFilter();
+    slotFilter();
     }
 */
     return QTableView::sortByColumn(col);
@@ -292,27 +292,28 @@ void WTrackTableView::sortByColumn(int col)
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 {
     if (m_iTableMode == TABLE_MODE_BROWSE) {
-        QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
+//         QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
+        QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index.sibling(index.row(),0));
         if (m_pDirModel->isDir(temp_dirindex)) //Double-clicking on a directory in browse mode
         {
             m_dirindex = temp_dirindex;
-            setRootIndex(index);				//Browse to that directory
+            setRootIndex(index.sibling(index.row(),0));     //Browse to that directory
             m_pDirFilter->setIndex(m_dirindex);
         }
         else //Double-clicking on a file in browse mode
         {
-        	//Send the song to the first player that's not playing.
-			while (!m_selectedDirTrackNames.isEmpty()) {
-				m_selectedDirTrackNames.pop_back();
-			}
+            //Send the song to the first player that's not playing.
+            while (!m_selectedDirTrackNames.isEmpty()) {
+                m_selectedDirTrackNames.pop_back();
+            }
 
-    		m_selectedDirTrackNames.append(m_pDirModel->filePath(temp_dirindex));
+            m_selectedDirTrackNames.append(m_pDirModel->filePath(temp_dirindex));
 
-			if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-		        this->slotLoadPlayer1();
-		    else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-		        this->slotLoadPlayer2();
-		}
+            if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+                this->slotLoadPlayer1();
+            else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+                this->slotLoadPlayer2();
+        }
         return;
     }
     else if (m_iTableMode == TABLE_MODE_LIBRARY ||
@@ -324,17 +325,17 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
         QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
         TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->at(temp_sindex.row());
 
-		//Show the BPM tap/track editor dialog.
-		//showBPMTapDlg(pTrackInfoObject);
+        //Show the BPM tap/track editor dialog.
+        //showBPMTapDlg(pTrackInfoObject);
 
-		//Send the song to the first player that's not playing.
-		while (!m_selectedTrackInfoObjects.isEmpty()) {
-		    m_selectedTrackInfoObjects.pop_back();
-		}
+        //Send the song to the first player that's not playing.
+        while (!m_selectedTrackInfoObjects.isEmpty()) {
+            m_selectedTrackInfoObjects.pop_back();
+        }
 
-		m_selectedTrackInfoObjects.append(pTrackInfoObject);
+        m_selectedTrackInfoObjects.append(pTrackInfoObject);
 
-		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+        if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
             this->slotLoadPlayer1();
         else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
             this->slotLoadPlayer2();
@@ -342,17 +343,17 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
     }
     else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
-    	qDebug() << "FIXME: Half-assed slotMouseDoubleClicked implementation in" << __FILE__ << "at line" << __LINE__;
+        qDebug() << "FIXME: Half-assed slotMouseDoubleClicked implementation in" << __FILE__ << "at line" << __LINE__;
 
         //FIXME: Make m_pSearchFilter  work with a WPlaylistListModel.
-		//QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
-		//TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
-		//qDebug() << index.row() << temp_sindex.row();
+        //QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+        //TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
+        //qDebug() << index.row() << temp_sindex.row();
 
-		qDebug() << index.row();
-		TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(index.row());
+        qDebug() << index.row();
+        TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(index.row());
 
-		m_pTrack->slotShowPlaylist(selectedPlaylist);
+        m_pTrack->slotShowPlaylist(selectedPlaylist);
     }
 }
 
@@ -384,8 +385,8 @@ QDirModel* WTrackTableView::getDirModel()
 
 void WTrackTableView::slotShowBPMTapDlg()
 {
-	Q_ASSERT(m_selectedTrackInfoObjects.count() > 0);
-	slotShowBPMTapDlg(m_selectedTrackInfoObjects.at(0));
+    Q_ASSERT(m_selectedTrackInfoObjects.count() > 0);
+    slotShowBPMTapDlg(m_selectedTrackInfoObjects.at(0));
 }
 
 void WTrackTableView::slotShowBPMTapDlg(TrackInfoObject* pTrackInfoObject)
@@ -416,14 +417,14 @@ QString WTrackTableView::getNextTrackBrowseMode(TrackInfoObject* current)
 
     //Increment the index to get the NEXT track...
     do {
-    	temp_index = temp_index.sibling(temp_index.row()+1, 0);
+        temp_index = temp_index.sibling(temp_index.row()+1, 0);
     } while (temp_index.isValid() && m_pDirModel->isDir(temp_index));
 
     //If we broke out of the loop due to an invalid index, decrement to get a valid one.
     //This happens at the end if you seek forwards in NEXT mode with the last song in a directory.
     if (!temp_index.isValid())
     {
-    	temp_index = temp_index.sibling(temp_index.row()-1, 0);
+        temp_index = temp_index.sibling(temp_index.row()-1, 0);
     }
 
     qNextTrackName = m_pDirModel->filePath(temp_index);
@@ -441,14 +442,14 @@ QString WTrackTableView::getPrevTrackBrowseMode(TrackInfoObject* current)
 
     //Decrement the index to get the NEXT track...
     do {
-    	temp_index = temp_index.sibling(temp_index.row()-1, 0);
+        temp_index = temp_index.sibling(temp_index.row()-1, 0);
     } while (temp_index.isValid() && m_pDirModel->isDir(temp_index));
 
     //If we broke out of the loop due to an invalid index, increment to get a valid one.
     //This happens at the end if you seek backwards in NEXT mode with the first song in a directory.
     if (!temp_index.isValid())
     {
-    	temp_index = temp_index.sibling(temp_index.row()+1, 0);
+        temp_index = temp_index.sibling(temp_index.row()+1, 0);
     }
 
     qNextTrackName = m_pDirModel->filePath(temp_index);
@@ -460,7 +461,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
     //index = indexAt(event->pos());
 
-	bool isFolder = false;
+    bool isFolder = false;
 
     //Get the indices of the selected rows.
     m_selectedIndices = this->selectionModel()->selectedRows();
@@ -486,7 +487,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     for (int i = 0; i < m_selectedIndices.count(); i++)
     {
-    	QModelIndex index = m_selectedIndices.at(i);
+        QModelIndex index = m_selectedIndices.at(i);
 
         //Browse mode menu (using the QDirModel)
         if (m_iTableMode == TABLE_MODE_BROWSE)
@@ -495,10 +496,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
             if (!m_pDirModel->isDir(temp_dirindex)) {
                 m_selectedDirTrackNames.append(m_pDirModel->filePath(temp_dirindex));
             }
-			else
-			{
-				isFolder = true;
-			}
+            else
+            {
+                isFolder = true;
+            }
         }
         else if (m_iTableMode == TABLE_MODE_LIBRARY ||
                  m_iTableMode == TABLE_MODE_PLAYQUEUE ||
@@ -533,49 +534,49 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_iTableMode == TABLE_MODE_PROMO ||
         m_iTableMode == TABLE_MODE_IPOD)
     {
-    	//Add the "Player 1" action
+        //Add the "Player 1" action
         menu.addAction(Player1Act);
 
         //Add the "Player 2" action
         menu.addAction(Player2Act);
 
         //Add the "Add to Playlist" menu.
-		menu.addMenu(&addToPlaylists);
+        menu.addMenu(&addToPlaylists);
 
-		//Fill the "Add to... playlists" menu with the names of the playlists
-		for (int i = 0; i < PlaylistActs.size(); i++)
-		{
-			addToPlaylists.addAction(PlaylistActs.at(i));
-		}
+        //Fill the "Add to... playlists" menu with the names of the playlists
+        for (int i = 0; i < PlaylistActs.size(); i++)
+        {
+            addToPlaylists.addAction(PlaylistActs.at(i));
+        }
 
         menu.addAction(PropertiesAct);
     }
 
-	//Show the "Rename..." option for the playlists view.
-	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
-	{
-		menu.addAction(RenamePlaylistAct);
-	}
+    //Show the "Rename..." option for the playlists view.
+    if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+    {
+        menu.addAction(RenamePlaylistAct);
+    }
 
     //Gray out some stuff if multiple songs were selected.
     if (m_selectedIndices.count() != 1)
     {
-		Player1Act->setEnabled(false);
-		Player2Act->setEnabled(false);
-		PropertiesAct->setEnabled(false);
+        Player1Act->setEnabled(false);
+        Player2Act->setEnabled(false);
+        PropertiesAct->setEnabled(false);
     }
     else
     {
-		Player1Act->setEnabled(true);
-		Player2Act->setEnabled(true);
-		PropertiesAct->setEnabled(true);
+        Player1Act->setEnabled(true);
+        Player2Act->setEnabled(true);
+        PropertiesAct->setEnabled(true);
     }
 
     //Gray out player 1 and/or player 2 if those players are playing.
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-    	Player1Act->setEnabled(false);
+        Player1Act->setEnabled(false);
     if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-    	Player2Act->setEnabled(false);
+        Player2Act->setEnabled(false);
 
     //For every mode but promo mode, show the "Remove" menu item
     if (m_iTableMode != TABLE_MODE_PROMO && m_iTableMode != TABLE_MODE_IPOD)
@@ -593,18 +594,18 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     //Gray out "Remove" in BROWSE mode
     if (m_iTableMode == TABLE_MODE_BROWSE)
-	{
+    {
         RemoveAct->setEnabled(false);
-		PropertiesAct->setEnabled(false);
+        PropertiesAct->setEnabled(false);
 
         if (isFolder)
-		{
-			Player1Act->setEnabled(false);
-			Player2Act->setEnabled(false);
-		}
+        {
+            Player1Act->setEnabled(false);
+            Player2Act->setEnabled(false);
+        }
     }
     else
-    	RemoveAct->setEnabled(true);
+        RemoveAct->setEnabled(true);
 
     menu.exec(event->globalPos());
 }
@@ -623,11 +624,11 @@ void WTrackTableView::createActions()
     RemoveAct = new QAction(tr("Remove"),this);
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-	PropertiesAct = new QAction(tr("Properties..."), this);
-	connect(PropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
+    PropertiesAct = new QAction(tr("Properties..."), this);
+    connect(PropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
 
-	RenamePlaylistAct = new QAction(tr("Rename..."), this);
-	connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
+    RenamePlaylistAct = new QAction(tr("Rename..."), this);
+    connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
 
     CopyToLibraryAct = new QAction(tr("Copy to Library"), this);
     connect(CopyToLibraryAct, SIGNAL(triggered()), this, SLOT(slotCopyToLibrary()));
@@ -635,31 +636,31 @@ void WTrackTableView::createActions()
     VisitWebsiteAct = new QAction(tr("Visit Website..."), this);
     connect(VisitWebsiteAct, SIGNAL(triggered()), this, SLOT(slotVisitWebsite()));
 
-	//Create all the "send to->playlist" actions.
-	if (m_pTrack)
-		updatePlaylistActions();
+    //Create all the "send to->playlist" actions.
+    if (m_pTrack)
+        updatePlaylistActions();
 
 }
 
 /** Shows the "Rename Playlist" input dialog */
 void WTrackTableView::slotShowPlaylistRename()
 {
-	bool ok;
+    bool ok;
 
-	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+    if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
         for (int i = 0; i < m_selectedPlaylists.count(); i++)
         {
 
-     		QString text = QInputDialog::getText(this, tr("Rename Playlist"),
+             QString text = QInputDialog::getText(this, tr("Rename Playlist"),
                                           tr("Rename ") + m_selectedPlaylists.at(i)->getName() + " to:",
                                           QLineEdit::Normal,
                                           m_selectedPlaylists.at(i)->getName(), &ok);
-     		if (ok && !text.isEmpty())
-         		m_selectedPlaylists.at(i)->setListName(text);
+             if (ok && !text.isEmpty())
+                 m_selectedPlaylists.at(i)->setListName(text);
 
 
-        	//m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
+            //m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
         }
 
         //Update the right-click menu with the new name(s) of the playlist(s).
@@ -669,52 +670,52 @@ void WTrackTableView::slotShowPlaylistRename()
 
 void WTrackTableView::updatePlaylistActions()
 {
-	QAction* cur_action = NULL;
+    QAction* cur_action = NULL;
 
-	//Clear and free any existing playlist QActions
-	while (!PlaylistActs.isEmpty())
-	{
-		cur_action = PlaylistActs.takeLast();
-		delete cur_action;
-	}
+    //Clear and free any existing playlist QActions
+    while (!PlaylistActs.isEmpty())
+    {
+        cur_action = PlaylistActs.takeLast();
+        delete cur_action;
+    }
 
-	//Get the list of playlists
-	TrackPlaylistList* playlists = m_pTrack->getPlaylists();
+    //Get the list of playlists
+    TrackPlaylistList* playlists = m_pTrack->getPlaylists();
 
-	//Make sure it's not NULL
-	Q_ASSERT(playlists != NULL);
+    //Make sure it's not NULL
+    Q_ASSERT(playlists != NULL);
 
-	//Make sure it's not empty (QLists can be strange sometimes when they're empty)
-	if (playlists->isEmpty())
-	{
-		qDebug() << "No playlists, returning";
-		return;
-	}
+    //Make sure it's not empty (QLists can be strange sometimes when they're empty)
+    if (playlists->isEmpty())
+    {
+        qDebug() << "No playlists, returning";
+        return;
+    }
 
-	QString qPlaylistName;
-	QAction* sendToPlaylistAction;
+    QString qPlaylistName;
+    QAction* sendToPlaylistAction;
 
-	//Create a send-to action for each playlist.
-	for (int i = 0; i < playlists->count(); i++)
-	{
-		if (playlists->at(i) != NULL)
-		{
-			qPlaylistName = playlists->at(i)->getName();
-			//qDebug() << "Iterated:" << qPlaylistName;
+    //Create a send-to action for each playlist.
+    for (int i = 0; i < playlists->count(); i++)
+    {
+        if (playlists->at(i) != NULL)
+        {
+            qPlaylistName = playlists->at(i)->getName();
+            //qDebug() << "Iterated:" << qPlaylistName;
 
-			//Create a new action for this playlist
-			sendToPlaylistAction = new QAction(qPlaylistName, this);
-			sendToPlaylistAction->setData(QVariant((qlonglong)playlists->at(i)));
-			PlaylistActs.append(sendToPlaylistAction);
+            //Create a new action for this playlist
+            sendToPlaylistAction = new QAction(qPlaylistName, this);
+            sendToPlaylistAction->setData(QVariant((qlonglong)playlists->at(i)));
+            PlaylistActs.append(sendToPlaylistAction);
 
-			//Connect this action to some sendtoplaylist(name) action.
-			connect(sendToPlaylistAction, SIGNAL(triggered()), this, SLOT(slotSendToPlaylist()));
-		}
-		else
-		{
-			qDebug() << "NULL playlist detected in" << __FILE__ << "at line:" << __LINE__;
-		}
-	}
+            //Connect this action to some sendtoplaylist(name) action.
+            connect(sendToPlaylistAction, SIGNAL(triggered()), this, SLOT(slotSendToPlaylist()));
+        }
+        else
+        {
+            qDebug() << "NULL playlist detected in" << __FILE__ << "at line:" << __LINE__;
+        }
+    }
 
 
 }
@@ -731,8 +732,8 @@ void WTrackTableView::selectNext()
 
     // Create a row selection if none exists
     if (c.row() == -1) {
-	selectRow(0);
-	c = currentIndex();
+    selectRow(0);
+    c = currentIndex();
     }
     // Advance to next position
     setCurrentIndex(c.child(c.row()+1, c.column()));
@@ -779,33 +780,33 @@ void WTrackTableView::slotSendToPlayqueue()
     else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
         for (int i = 0; i < m_selectedPlaylists.count(); i++) {
-        	m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
+            m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
         }
     }
     else //Library mode, etc.
     {
-    	for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
-        	m_pTrack->slotSendToPlayqueue(m_selectedTrackInfoObjects.at(i));
+        for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
+            m_pTrack->slotSendToPlayqueue(m_selectedTrackInfoObjects.at(i));
         }
     }
 }
 
 void WTrackTableView::slotSendToPlaylist()
 {
-	TrackPlaylist* playlist;
-	int playlist_ptr;
+    TrackPlaylist* playlist;
+    int playlist_ptr;
 
-	//This is terrible, but necessary. We look back at the sender that sent the signal, try to cast it to a QAction,
-	//then look at the QAction's "data" member to get the pointer to the playlist.
-	if (QAction *act = qobject_cast<QAction *>(sender())) {
-    	playlist_ptr = act->data().toInt();
-    	playlist = (TrackPlaylist*)playlist_ptr;
+    //This is terrible, but necessary. We look back at the sender that sent the signal, try to cast it to a QAction,
+    //then look at the QAction's "data" member to get the pointer to the playlist.
+    if (QAction *act = qobject_cast<QAction *>(sender())) {
+        playlist_ptr = act->data().toInt();
+        playlist = (TrackPlaylist*)playlist_ptr;
     }
-	else
-	{
-		qDebug() << "FIXME: slotSendToPlaylist() is only implemented for QActions in" << __FILE__ "on line:" << __LINE__;
-		return;
-	}
+    else
+    {
+        qDebug() << "FIXME: slotSendToPlaylist() is only implemented for QActions in" << __FILE__ "on line:" << __LINE__;
+        return;
+    }
 
     if (m_iTableMode == TABLE_MODE_BROWSE) //Browse mode
     {
@@ -815,13 +816,13 @@ void WTrackTableView::slotSendToPlaylist()
     }
     else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
-		qDebug() << "FIXME: Trying to send a playlist to a playlist... (did you code something incorrectly?)";
-		qDebug() << __FILE__ ":" << __LINE__;
+        qDebug() << "FIXME: Trying to send a playlist to a playlist... (did you code something incorrectly?)";
+        qDebug() << __FILE__ ":" << __LINE__;
     }
     else //Library mode, etc.
     {
-    	for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
-        	m_pTrack->slotSendToPlaylist(playlist, m_selectedTrackInfoObjects.at(i));
+        for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
+            m_pTrack->slotSendToPlaylist(playlist, m_selectedTrackInfoObjects.at(i));
         }
     }
 }
@@ -833,23 +834,23 @@ void WTrackTableView::slotRemove()
 
     if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
-    	for (int i = 0; i < m_selectedIndices.count(); i++)
-    	{
-    		QModelIndex index = m_selectedIndices.at(i);
-        	m_pTrack->getPlaylists()->removeAt(index.row());
+        for (int i = 0; i < m_selectedIndices.count(); i++)
+        {
+            QModelIndex index = m_selectedIndices.at(i);
+            m_pTrack->getPlaylists()->removeAt(index.row());
 
-        	//FIXME: The approach above probably won't work when sorting is fixed in the
-        	//		 playlists view.
-        	//		 Something like this may or may not work instead:
-        	//m_pTrack->getPlaylists()->removeAll(m_pTrack->getPlaylistByIndex(index.row()));
+            //FIXME: The approach above probably won't work when sorting is fixed in the
+            //         playlists view.
+            //         Something like this may or may not work instead:
+            //m_pTrack->getPlaylists()->removeAll(m_pTrack->getPlaylistByIndex(index.row()));
         }
 
-		updatePlaylistActions(); //Update the right-click menu's list of playlists.
-		repaintEverything(); //For good luck
+        updatePlaylistActions(); //Update the right-click menu's list of playlists.
+        repaintEverything(); //For good luck
     }
     else if (m_iTableMode == TABLE_MODE_BROWSE)
     {
-    	qDebug() << "FIXME (?): Removing a song in browse mode is unimplented in" << __FILE__ << "on line" << __LINE__;
+        qDebug() << "FIXME (?): Removing a song in browse mode is unimplented in" << __FILE__ << "on line" << __LINE__;
     }
     else //Library mode, play queue mode, etc.
     {
@@ -857,10 +858,10 @@ void WTrackTableView::slotRemove()
         //prevents the model indices from changing as we remove rows.
         for (int i = m_selectedIndices.count() - 1; i >= 0 ; i--)
         {
-        	QModelIndex index = m_selectedIndices.at(i);
+            QModelIndex index = m_selectedIndices.at(i);
             QModelIndex filteredIndex = m_pSearchFilter->mapToSource(index);
-        	m_pTable->removeRow(filteredIndex.row());
-        	//qDebug() << "Removed row" << index.row() - i;
+            m_pTable->removeRow(filteredIndex.row());
+            //qDebug() << "Removed row" << index.row() - i;
         }
     }
 }
@@ -902,10 +903,10 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
 
 /** Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view */
 void WTrackTableView::dropEvent(QDropEvent * event)
-{	
+{    
     if (event->mimeData()->hasUrls()) {
-		QList<QUrl> urls(event->mimeData()->urls());
-		QUrl url;
+        QList<QUrl> urls(event->mimeData()->urls());
+        QUrl url;
 
         //Handle drag-and-drop unless we're on a weird
         //playlist like the promo tracks or ipod one.
