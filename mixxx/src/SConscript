@@ -395,7 +395,6 @@ sources = Split("""
                 parser.cpp
                 parserpls.cpp
                 parserm3u.cpp
-                wavesummary.cpp
 
                 bpm/bpmdetector.cpp
                 bpm/bpmdetect.cpp

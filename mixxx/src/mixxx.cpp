@@ -36,7 +36,6 @@
 #include "trackcollection.h"
 #include "trackinfoobject.h"
 #include "mixxxmenuplaylists.h"
-#include "wavesummary.h"
 #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
 
@@ -230,9 +229,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         config->Save();
     }
 
-    // Initialize wavefrom summary generation
-    m_pWaveSummary = new WaveSummary(config);
-
     // Intialize default BPM system values
     if(config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).length()<1)
     {
@@ -257,7 +253,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, config,
-		buffer1, buffer2, m_pWaveSummary, m_pBpmDetector, AnalyserQueue::createDefaultAnalyserQueue(config));
+		buffer1, buffer2, m_pBpmDetector, AnalyserQueue::createDefaultAnalyserQueue(config));
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals
@@ -412,7 +408,6 @@ MixxxApp::~MixxxApp()
     delete prefDlg;
 
     //   delete m_pBpmDetector;
-    //   delete m_pWaveSummary;
 
     delete frame;
 

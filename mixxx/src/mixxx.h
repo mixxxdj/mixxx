@@ -70,7 +70,6 @@ class WVisual;
 class Track;
 class TrackInfoObject;
 class PlayerProxy;
-class WaveSummary;
 class BpmDetector;
 class QSplashScreen;
 class ScriptEngine;
@@ -146,8 +145,6 @@ class MixxxApp : public QMainWindow
      * changing the view class.
      */
     MixxxView *view;
-    /** Pointer to waveform summary generator */
-    WaveSummary *m_pWaveSummary;
     /** Pointer to the bpm detector */
     BpmDetector *m_pBpmDetector;
 

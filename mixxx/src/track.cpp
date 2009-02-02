@@ -53,7 +53,6 @@
 #include "configobject.h"
 #include "analyserqueue.h"
 #include "trackimporter.h"
-#include "wavesummary.h"
 #include "bpm/bpmdetector.h"
 #include "playerinfo.h"
 #include "defs_promo.h"
@@ -80,7 +79,7 @@
 
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, 
 			 EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
-			 WaveSummary * pWaveSummary, BpmDetector * pBpmDetector, AnalyserQueue* analyserQueue)
+			 BpmDetector * pBpmDetector, AnalyserQueue* analyserQueue)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -89,7 +88,6 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pActivePopupPlaylist = 0;
     m_pTrackPlayer1 = 0;
     m_pTrackPlayer2 = 0;
-    m_pWaveSummary = pWaveSummary;
     m_pBpmDetector = pBpmDetector;
     m_pConfig = config;
     m_iLibraryIdx = 0;   //FIXME: Deprecated, can safely remove.
@@ -971,11 +969,9 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
     if (m_pTrackPlayer1->getBpmConfirm()== false || m_pTrackPlayer1->getBpm() == 0.)
         m_pTrackPlayer1->sendToBpmQueue();
 
-	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
-
-    // Generate waveform summary
+    // This has to happen before the AnalyserQueue works on the track.
     m_pTrackPlayer1->setVisualResampleRate(m_pVisualResampleCh1->get());
-    m_pWaveSummary->enqueue(m_pTrackPlayer1);
+	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
     // Set waveform summary display
     m_pTrackPlayer1->setOverviewWidget(m_pView->m_pOverviewCh1);
@@ -1065,11 +1061,9 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
     if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)
         m_pTrackPlayer2->sendToBpmQueue();
 
-    m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
-
-    // Generate waveform summary
+    // This has to happen before the AnalyserQueue works on the track.
     m_pTrackPlayer2->setVisualResampleRate(m_pVisualResampleCh2->get());
-    m_pWaveSummary->enqueue(m_pTrackPlayer2);
+    m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
     // Set waveform summary display
     m_pTrackPlayer2->setOverviewWidget(m_pView->m_pOverviewCh2);
@@ -1432,11 +1426,6 @@ void Track::slotBatchBPMDetection()
         processed++;
         // TODO: convert the qDebug statement to a status dialog box.
         qDebug() << "Track #"<< i << "= Batch job #"<< processed << ":" << cur_track->getTitle() << "by" << cur_track->getArtist() << "has WaveSummary: false -- has BPM value:" << (cur_track->getBpm() > 0) << " ("<< m_pBpmDetector->queueCount() << "tracks in the BPM Detect Queue )";
-        // Open sound file
-        SoundSourceProxy * pSoundSource = new SoundSourceProxy(cur_track);
-	m_pWaveSummary->waveformSummaryGen(cur_track, pSoundSource, false);
-        delete pSoundSource;
-        pSoundSource = NULL;
 
         // Batch Process BPM
         if (cur_track->getBpm() == 0) {

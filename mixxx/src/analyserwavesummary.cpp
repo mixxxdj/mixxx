@@ -4,6 +4,7 @@
 #include "trackinfoobject.h"
 #include "analyserwavesummary.h"
 
+// Taken from the old wavesummary.cpp code
 #ifndef WAVESUMMARYCONSTANTS
 const int kiBlockSize = 2048;
 const int kiBeatBlockNo = 1000;
@@ -13,12 +14,12 @@ const float kfFeatureStepSize = 0.01f;
 #define WAVESUMMARYCONSTANTS
 #endif
 
-
 AnalyserWavesummary::AnalyserWavesummary() {
     m_pData = NULL;
 }
 
 void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
+    // Check if the preview has already been generated
     Q3MemArray<char> *p = tio->getWaveSummary();
     if(p != NULL && p->size() > 0) {
         return;
@@ -26,9 +27,12 @@ void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int t
     
     m_pData = new Q3MemArray<char>(kiSummaryBufferSize);
 
+    // Zero the array
     for (int i=0; i<m_pData->size(); i++)
         m_pData->at(i) = 0;
 
+    // The stride length is the number of samples that correspond
+    // to one "line" (3 entries) in the data buffer. 
     m_iStrideLength = (int)ceilf((float)totalSamples/((float)kiSummaryBufferSize/3.));
     if(m_iStrideLength%2 != 0)
         m_iStrideLength--;
@@ -40,10 +44,12 @@ void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int t
 }
 
 void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
+    // Check if processing is disabled.
     if(m_pData == NULL)
         return;
 
     //qDebug() << "AnalyserWavesummary::process() processing " << iLen << " samples";
+    
     for(int i=0; i<iLen; i++) {
         if(m_iBufferPos >= m_iStrideLength) {
             m_pData->at(m_iCurPos) = (int)(m_fMin*127);
