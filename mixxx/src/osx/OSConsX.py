@@ -22,8 +22,8 @@ from SCons.Script import *
 import otool
 
 #Dev info:
+#http://doc.trolltech.com/qq/qq09-mac-deployment.html
 #http://www.scons.org/wiki/MacOSX (not very featureful, but the tip about resource forks might be important (wait did I say important? I meant out of date. see CpMac(1)) 
-
 
 #oooh, you can use warnings! just call "warn()"
 
@@ -225,35 +225,24 @@ def build_app(target, source, env):
 	for ref, path in otool.embed_dependencies(str(binary)): #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
 		locals[ref] = (path, embed_lib(path))
 	
-	plugins_l = [] #XXX bad name
+	plugins_l = [] #XXX bad name #list of tuples (source, embed) of plugins to stick under the plugins/ dir
 	for p in env['PLUGINS']: #build any neccessary dirs for plugins (siiiigh)
-		if type(p) == tuple:
-			Execute(Mkdir(os.path.join(str(plugins), str(p[0]))))
-			
-			embedded_p = os.path.join(str(plugins), str(p[0]), os.path.basename(str(p[1])))
-			p = p[1] #source
-		else:
-			embedded_p = os.path.join(str(plugins), os.path.basename(str(p)))
-			p = p #redundant; for clarity
-			
-			
-		#this is
-		#embed_deps += otool.embed_dependencies(str(p))
-		#embed_deps.uniq!(lambda ref,path: key = ref)
-		#written out procedurally, since I don't have a convenient uniq! at my beck and call
-		
-		plugins_l.append(  (p, embedded_p)  )
-		
+		embedded_p = os.path.join(str(plugins), os.path.basename(str(p)))			
+		plugins_l.append(  (str(p), embedded_p)  )
+	
+	for subdir, p in env['QT_HACK']:
+			Execute(Mkdir(os.path.join(str(plugins), subdir)))
+			embedded_p = os.path.join(str(plugins), subdir, os.path.basename(str(p)))
+			plugins_l.append( (p, embedded_p) )
+	
+	print "Scanning plugins for new dependencies:"
+	for p, ep in plugins_l:
 		print "Scanning plugin", p
-		for ref, path in otool.embed_dependencies(str(p)):
-			print p, ":", ref, path
+		for ref, path in otool.embed_dependencies(p):
 			if ref not in locals:
-				print "New ref found, adding"
 				locals[ref] = path, embed_lib(path)
 			else:
 				assert path == locals[ref][0], "Path '%s' is not '%s'" % (path, locals[ref][0])
-		print "Post loop"
-	print "post post loop"
 	
 	#we really should have a libref-to-abspath function somewhere... right now it's inline in embed_dependencies()
 	#better yet, make a Frameworks type that you say Framework("QtCore") and then can use that as a dependency

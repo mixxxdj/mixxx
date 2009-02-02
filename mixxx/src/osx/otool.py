@@ -84,8 +84,16 @@ def otool(binary):
 
 def dependencies(binary):
 	l = otool(binary)
+	
+	#sometimes otool -L outputs the -id field, as the first row, which is not what we are trying to ask for here. Strip it out.
+	#XXX this is NOT strictly correct; IF there is a library with the exact same filename as this library
+	#AND we depend on it AND it happens to be the first in the loadlist, then this will break mysteriously
+	#there might be a combination of flags to otool that avoids this, or something, but bah
+	#it seems that dylibs have -id's, and program binaries do not. but I don't want to rely on that since I haven't an Apple doc proclaiming it, and anyway to tell the two apart requires other otool trickery that I just don't trust.
+	#This will work in probably every library that exists in reality, so it's "ok"
 	if os.path.basename(l[0]) == os.path.basename(binary):
-		print "Removing -id field result %s from %s" % (l.pop(0), binary)
+		id = l.pop(0)
+		print "Removing -id field result %s from %s" % (id, binary)
 	return l
 
 
@@ -111,7 +119,7 @@ def embed_dependencies(binary,
 	"Note: sometimes Mach-O binaries depend on themselves. Deal with it."
 	#"ignore_missing means whether to ignore if we can't load a binary for examination (e.g. if you have references to plugins) XXX is the list"
 	#binary = os.path.abspath(binary)
-	todo = otool(binary)
+	todo = dependencies(binary)
 	done = []
 	orig = []
 	#aaah this code is so bad. it can be factored but i can't can't can't so TODO: REFACTOR
@@ -145,7 +153,7 @@ def embed_dependencies(binary,
 		if p not in done and not any(p.startswith(P) for P in SYSTEM):
 			done.append(p)
 			orig.append(e)
-			todo.extend(otool(p))
+			todo.extend(dependencies(p))
 		
 	assert all(e.startswith("/") for e in done), "embed_dependencies() is broken, some path in this list is not absolute: %s" % (done,)
 	return sorted(zip(orig, done))
@@ -157,7 +165,7 @@ def change_id(binary, id):
 	return system("install_name_tool -id '%s' '%s'" % (id,  binary))
 
 def change_ref(binary, orig, new):
-	assert orig in otool(binary), "change_ref: '%s' not in otool -L '%s', the change will fail." % (orig, binary) #since install_name_tool(1) always fails silently, there's *no* way to tell if it worked or not; try to catch the one bad case we know of manually (and expensively)
+	assert orig in dependencies(binary), "change_ref: '%s' not in otool -L '%s', the change will fail." % (orig, binary) #since install_name_tool(1) always fails silently, there's *no* way to tell if it worked or not; try to catch the one bad case we know of manually (and expensively)
 	return system("install_name_tool -change '%s' '%s' '%s'" % (orig, new, binary))
 
 #but what are we *really* doing here? The overall goal?
