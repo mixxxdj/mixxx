@@ -53,7 +53,6 @@ private:
     bool singleLearning;
     bool groupLearning;
     int currentGroupRow;
-    QTableView* m_pInputMappingTableView;
     MidiObject &m_rMidi;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;

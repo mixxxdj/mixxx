@@ -42,11 +42,11 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
 
     //Tell the input mapping table widget which data model it should be viewing
     //(note that m_pInputMappingTableView is defined in the .ui file!)
-    pInputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiInputMappingTableModel());
+    m_pInputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiInputMappingTableModel());
 
-    pInputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    pInputMappingTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    pInputMappingTableView->verticalHeader()->hide();
+    m_pInputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_pInputMappingTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_pInputMappingTableView->verticalHeader()->hide();
 
     // Connect buttons to slots
     connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
