@@ -16,7 +16,6 @@
  ***************************************************************************/
 #include <QtGui>
 #include <QDebug>
-#include "midiinputmappingtableview.h"
 #include "midiinputmappingtablemodel.h"
 #include "dlgprefmidibindings.h"
 #include "widget/wwidget.h"
@@ -41,20 +40,13 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
     singleLearning = false;
     groupLearning = false;
 
-    //Replace the placeholder QTableView widget (from the Qt Designer) with our
-    //custom InputMappingTableView widget.
-    int tablePosX, tablePosY, tableRowSpan, tableColSpan;
-    int tablePosIndex = ((QGridLayout*)groupBoxLearning->layout())->indexOf(inputMappingTablePlaceholder);
-    ((QGridLayout*)groupBoxLearning->layout())->getItemPosition(tablePosIndex,
-                                                                 &tablePosX, &tablePosY,
-                                                                 &tableRowSpan, &tableColSpan);
-    groupBoxLearning->layout()->removeWidget(inputMappingTablePlaceholder);
-    delete inputMappingTablePlaceholder; //Delete placeholder widget (just a regular QTableView from the designer)
-    m_pInputMappingTableView = new MidiInputMappingTableView(this);
-    ((QGridLayout*)groupBoxLearning->layout())->addWidget(m_pInputMappingTableView, tablePosX, tablePosY, tableRowSpan, tableColSpan);
-
     //Tell the input mapping table widget which data model it should be viewing
-    m_pInputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiInputMappingTableModel());
+    //(note that m_pInputMappingTableView is defined in the .ui file!)
+    pInputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiInputMappingTableModel());
+
+    pInputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    pInputMappingTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    pInputMappingTableView->verticalHeader()->hide();
 
     // Connect buttons to slots
     connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
@@ -108,7 +100,7 @@ void DlgPrefMidiBindings::slotRemoveBinding()
 			while (it.hasPrevious())
 			{
 				curIndex = it.previous();
-				tableModel->removeRow(curIndex.row());			 
+				tableModel->removeRow(curIndex.row());
 			}
 		}
 	}
@@ -133,7 +125,7 @@ void DlgPrefMidiBindings::slotApply() {
  */
 void DlgPrefMidiBindings::singleLearn(ConfigValueMidi *value, QString device) {
     //m_pInputMappingTableView->model()->
-    
+
 }
 
 /* groupLearn(ConfigValueMidi *, QString)
@@ -218,7 +210,13 @@ void DlgPrefMidiBindings::slotClear() {
             "Are you sure you want to clear all bindings?",
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
         return;
-    m_rMidi.getMidiMapping()->clearPreset();
+
+    //Remove all the rows from the data model (ie. the MIDI mapping).
+    MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
+    if (tableModel) {
+        tableModel->removeRows(0, tableModel->rowCount());
+    }
+
 }
 
 
@@ -227,7 +225,7 @@ void DlgPrefMidiBindings::slotClear() {
  */
 void DlgPrefMidiBindings::slotAddBinding() {
     // TODO: This function is going to be totally broken.
-    
+
     bool ok = true;
 
     QStringList selectionList;
@@ -262,11 +260,11 @@ void DlgPrefMidiBindings::slotAddBinding() {
     if (!ok) return;
 
     // At this stage we have enough information to create a blank, learnable binding
-    m_rMidi.getMidiMapping()->addInputControl((MidiType)miditype.toInt(), midino.toInt(), midichan.toInt(), 
+    m_rMidi.getMidiMapping()->addInputControl((MidiType)miditype.toInt(), midino.toInt(), midichan.toInt(),
                                               group, key, (MidiOption)option.toInt());
                         //FUCK! The "option" thing above will be garbage when converted to an int, since it's
                         //        some string describing the midi option in words, not a string number like "2".
-                                              
+
     //tblBindings->selectRow(tblBindings->rowCount() - 1); // Focus the row just added
 }
 
