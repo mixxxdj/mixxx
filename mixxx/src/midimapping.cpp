@@ -25,6 +25,8 @@
 #include "midiledhandler.h"
 #include "configobject.h"
 
+#define REQUIRED_MAPPING_FILE "midi-mappings-scripts.js"
+
 QMutex MidiMapping::m_rowMutex;
 QMutex MidiMapping::m_outputRowMutex;
 
@@ -108,7 +110,7 @@ void MidiMapping::loadPreset(QDomElement root) {
         QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
 
         // Default currently required file
-        addScriptFile("midi-mappings-scripts.js","");
+        addScriptFile(REQUIRED_MAPPING_FILE,"");
 
         // Look for additional ones
         while (!scriptFile.isNull()) {
@@ -147,16 +149,19 @@ void MidiMapping::loadPreset(QDomElement root) {
         m_pScriptEngine->clearCode();   // Start from scratch
 
         if (!scriptError) {
-            while (!m_pScriptFileNames.isEmpty()) {
-                m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(m_pScriptFileNames.takeFirst()));
+            QListIterator<QString> it(m_pScriptFileNames);
+            while (it.hasNext()) {
+                QString curScriptFileName = it.next();
+                m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(curScriptFileName));
             }
 
             m_pScriptEngine->evaluateScript();
             if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiMapping: Script code evaluated successfully";
 
             // Call each script's init function if it exists
-            while (!m_pScriptFunctionPrefixes.isEmpty()) {
-                QString initName = m_pScriptFunctionPrefixes.takeFirst();
+            QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
+            while (prefixIt.hasNext()) {
+                QString initName = prefixIt.next();
                 if (initName!="") {
                     initName.append(".init");
                     qDebug() << "MidiMapping: Executing" << initName;
@@ -374,6 +379,31 @@ void MidiMapping::clearPreset() {
  void MidiMapping::buildDomElement() {
      clearPreset(); // Create blank document
 
+     const QString wtfbbqdevicename = "foobar";
+#ifdef __MIDISCRIPT__
+      //This sucks, put this code inside MidiScriptEngine instead of here,
+      // and just ask MidiScriptEngine to spit it out for us.
+     qDebug() << "Writing script block!";
+     for (int i = 0; i < m_pScriptFileNames.count(); i++) {
+         qDebug() << "writing script block for" << m_pScriptFileNames[i];
+          QString filename = m_pScriptFileNames[i];
+          if (filename != REQUIRED_MAPPING_FILE) { //Don't need to write anything for the required mapping file.
+              QString functionPrefix = m_pScriptFunctionPrefixes[i];
+              //and now for the worst XML code since... WWidget...
+              QDomDocument sucksBalls;
+              QDomElement scriptFile = sucksBalls.createElement("file");
+              scriptFile.setAttribute("functionprefix", functionPrefix);
+              QDomElement scriptFileName = sucksBalls.createElement("filename");
+              QDomText scriptFileNameText = sucksBalls.createTextNode(filename);
+              scriptFileName.appendChild(scriptFileNameText);
+              scriptFile.appendChild(scriptFileName);
+
+              //Add the XML dom element to the right spot in the XML document.
+              addMidiScriptInfo(scriptFile, wtfbbqdevicename);
+          }
+     }
+#endif
+
     //Iterate over all of the command/control pairs in the input mapping
      QMapIterator<MidiCommand, MidiControl> it(m_inputMapping);
      while (it.hasNext()) {
@@ -389,7 +419,7 @@ void MidiMapping::clearPreset() {
          it.value().serializeToXML(controlNode);
 
           //Add the control node we just created to the XML document in the proper spot
-         addControl(controlNode, "foobar"); //FIXME: Remove this device shit until we have multiple device support.
+         addControl(controlNode, wtfbbqdevicename); //FIXME: Remove this device shit until we have multiple device support.
      }
 /*
     //TODO: Rewrite this code when we reimplement output mapping stuff.
@@ -477,6 +507,33 @@ void MidiMapping::addControl(QDomElement &control, QString device) {
         controller.appendChild(controls);
     }
     controls.appendChild(control);
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: This code sucks, temporary hack
+   Input:   QDomElement control, QString device
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiMapping::addMidiScriptInfo(QDomElement &scriptFile, QString device) {
+    QDomDocument nodeMaker;
+    //Add control to correct device tag - find the correct tag
+    QDomElement controller = m_Bindings.firstChildElement("controller");
+    while (controller.attribute("id","") != device && !controller.isNull()) {
+        controller = controller.nextSiblingElement("controller");
+    }
+    if (controller.isNull()) {
+        // No tag was found - create it
+        controller = nodeMaker.createElement("controller");
+        controller.setAttribute("id", device);
+        m_Bindings.appendChild(controller);
+    }
+    // Check for controls tag
+    QDomElement scriptfiles = controller.firstChildElement("scriptfiles");
+    if (scriptfiles.isNull()) {
+        scriptfiles = nodeMaker.createElement("scriptfiles");
+        controller.appendChild(scriptfiles);
+    }
+    scriptfiles.appendChild(scriptFile);
 }
 
 /* -------- ------------------------------------------------------
