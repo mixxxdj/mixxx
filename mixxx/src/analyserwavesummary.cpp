@@ -28,7 +28,7 @@ void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int t
     m_pData = new Q3MemArray<char>(kiSummaryBufferSize);
 
     // Zero the array
-    for (int i=0; i<m_pData->size(); i++)
+    for (unsigned int i=0; i<m_pData->size(); i++)
         m_pData->at(i) = 0;
 
     // The stride length is the number of samples that correspond

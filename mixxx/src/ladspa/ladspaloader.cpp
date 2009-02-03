@@ -76,12 +76,12 @@ const LADSPAPlugin * LADSPALoader::getByIndex(uint index)
     return NULL;
 }
 
-LADSPAPlugin * LADSPALoader::getByLabel(const char * label)
+LADSPAPlugin * LADSPALoader::getByLabel(QString label)
 {
     // TODO: trie or hash map
     for (unsigned int i = 0; i < m_PluginCount; i++)
     {
-        if (strcmp (m_Plugins[i]->getLabel(), label) == 0)
+      if (QString::compare(m_Plugins[i]->getLabel(), label) == 0)
         {
             return m_Plugins[i];
         }

@@ -79,7 +79,7 @@ LADSPAInstance * LADSPAPlugin::instantiate(int slot)
     return NULL;
 }
 
-const char * LADSPAPlugin::getLabel()
+const QString LADSPAPlugin::getLabel()
 {
-    return m_pDescriptor->Label;
+  return QString(m_pDescriptor->Label);
 }

@@ -714,26 +714,15 @@ if platform == 'win32':
 #===================================================
 
 #SoundTouch
-env.Append(CPPPATH=['../../lib/soundtouch']) #Needed two ../../'s because we're compiling from "src/.obj"
-sources += Split("""engine/enginebufferscalest.cpp ../../lib/soundtouch/SoundTouch.cpp ../../lib/soundtouch/TDStretch.cpp ../../lib/soundtouch/RateTransposer.cpp ../../lib/soundtouch/AAFilter.cpp ../../lib/soundtouch/FIFOSampleBuffer.cpp ../../lib/soundtouch/FIRFilter.cpp """)
+#XXX this should be done with a subsconscript
+env.Append(CPPPATH=['#lib/soundtouch'])
+sources += Split("""engine/enginebufferscalest.cpp #lib/soundtouch/SoundTouch.cpp #lib/soundtouch/TDStretch.cpp #lib/soundtouch/RateTransposer.cpp #lib/soundtouch/AAFilter.cpp
+		#lib/soundtouch/FIFOSampleBuffer.cpp #lib/soundtouch/FIRFilter.cpp """)
 if platform == 'win32':
 	sources += Split("""../../lib/soundtouch/cpu_detect_x86_win.cpp ../../lib/soundtouch/mmx_win.cpp ../../lib/soundtouch/sse_win.cpp ../../lib/soundtouch/3dnow_win.cpp""")
 else:
 	sources += Split("""../../lib/soundtouch/cpu_detect_x86_gcc.cpp""")
 
-#RubberBand for time stretching
-
-#env.Append(CPPPATH=['../../lib/rubberband/src']) #Needed two ../../'s because we're compiling from "src/.obj"
-#env.Append(CPPPATH=['../../lib/rubberband/rubberband']) #Needed two ../../'s because we're compiling from "src/.obj"
-#env.Append(CXXFLAGS=['-DFFTW_DOUBLE_ONLY'])
-#sources += Split("""enginebufferscalerubberband.cpp
-#					../../lib/rubberband/src/AudioCurve.cpp ../../lib/rubberband/src/ConstantAudioCurve.cpp
-#					../../lib/rubberband/src/FFT.cpp ../../lib/rubberband/src/PercussiveAudioCurve.cpp
-#					../../lib/rubberband/src/HighFrequencyAudioCurve.cpp ../../lib/rubberband/src/Resampler.cpp
-#					../../lib/rubberband/src/RubberBandStretcher.cpp ../../lib/rubberband/src/SpectralDifferenceAudioCurve.cpp
-#					../../lib/rubberband/src/StretchCalculator.cpp ../../lib/rubberband/src/StretcherChannelData.cpp
-#					../../lib/rubberband/src/StretcherImpl.cpp ../../lib/rubberband/src/StretcherProcess.cpp
-#					../../lib/rubberband/src/sysutils.cpp ../../lib/rubberband/src/Thread.cpp""")
 
 #KissFFT
 env.Append(CPPPATH=['../../lib/kissfft'])
