@@ -54,13 +54,6 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 
 	int read = 0;
 
-    // FIXME: Duplicate mono stuff to stereo for analysis
-	//Q_ASSERT(tio->getChannels() == 2);
-	if (tio->getChannels() != 2) {
-        qDebug() << "FIXME: Engine analysis requires songs to be in stereo.";
-        return;
-    }
-    
     do {
 		read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
 
@@ -68,7 +61,6 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 		if (read == 0) {
 			break;
 		}
-
 
 		for (int i = 0; i < read; i++) {
 			samples[i] = ((float)data16[i])/32767.0f;
