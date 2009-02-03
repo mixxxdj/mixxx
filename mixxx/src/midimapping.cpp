@@ -35,7 +35,7 @@ static QString toHex(QString numberStr) {
 MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(midi_object) {
 //     m_pMidiObject = midi_object;
     m_pScriptEngine = midi_object.getMidiScriptEngine();
-    
+
     m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(&m_inputMapping);
 }
 
@@ -62,10 +62,10 @@ void MidiMapping::loadInitialPreset() {
     // Try to read in the current XML bindings file, one from the command line, or create one if nothing is available
     QStringList commandLineArgs = QApplication::arguments();
     int loadXML = commandLineArgs.indexOf("--loadXMLfile");
-    
+
 //     QMutexLocker lockRows(&m_rowMutex);
 //     QMutexLocker lockOutputRows(&m_outputRowMutex);
-    
+
     if (loadXML!=-1) {
         qDebug() << "MidiMapping: Loading custom MIDI mapping file:" << commandLineArgs.at(loadXML+1);
         loadPreset(commandLineArgs.at(loadXML+1));
@@ -78,6 +78,7 @@ void MidiMapping::loadInitialPreset() {
  * Overloaded function for convenience
  */
 void MidiMapping::loadPreset(QString path) {
+    qDebug() << "MidiMapping: Loading MIDI XML from" << path;
     loadPreset(WWidget::openXMLFile(path, "controller"));
 }
 
@@ -86,12 +87,12 @@ void MidiMapping::loadPreset(QString path) {
  */
 void MidiMapping::loadPreset(QDomElement root) {
     //qDebug() << QString("MidiMapping: loadPreset() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    
+
     QMutexLocker lockRows(&m_rowMutex);
     QMutexLocker lockOutputRows(&m_outputRowMutex);
 
     if (root.isNull()) return;
-    
+
     // For each controller in the DOM
     m_Bindings = root;
     QDomElement controller = m_Bindings.firstChildElement("controller");
@@ -100,38 +101,39 @@ void MidiMapping::loadPreset(QDomElement root) {
         // Get deviceid
         QString device = controller.attribute("id","");
         qDebug() << device << " settings found" << endl;
-        
+
 #ifdef __MIDISCRIPT__
+
         // Get a list of MIDI script files to load
         QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
-        
+
         // Default currently required file
         addScriptFile("midi-mappings-scripts.js","");
-        
+
         // Look for additional ones
         while (!scriptFile.isNull()) {
-        
+
             QString functionPrefix = scriptFile.attribute("functionprefix","");
             QString filename = WWidget::selectNodeQString(scriptFile, "filename");
             addScriptFile(filename, functionPrefix);
-        
+
             scriptFile = scriptFile.nextSiblingElement("file");
         }
 
         // Load Script files
         ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
-        
+
         // Individually load & evaluate script files in the QList to check for errors
         // so line numbers will be accurate per file (for syntax errors at least) to make troubleshooting much easier
         bool scriptError = false;
-        
+
         for (int i=0; i<m_pScriptFileNames.size(); i++) {
             m_pScriptEngine->clearCode();   // So line numbers will be correct
-            
+
             QString filename = m_pScriptFileNames.at(i);
             qDebug() << "MidiMapping: Loading & testing MIDI script" << filename;
             m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(filename));
-            
+
             m_pScriptEngine->evaluateScript();
             if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiMapping: Success";
             else {
@@ -140,18 +142,18 @@ void MidiMapping::loadPreset(QDomElement root) {
                 scriptError = true;
             }
         }
-        
+
         qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
         m_pScriptEngine->clearCode();   // Start from scratch
-        
+
         if (!scriptError) {
             while (!m_pScriptFileNames.isEmpty()) {
                 m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(m_pScriptFileNames.takeFirst()));
             }
-            
+
             m_pScriptEngine->evaluateScript();
             if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiMapping: Script code evaluated successfully";
-        
+
             // Call each script's init function if it exists
             while (!m_pScriptFunctionPrefixes.isEmpty()) {
                 QString initName = m_pScriptFunctionPrefixes.takeFirst();
@@ -172,18 +174,19 @@ void MidiMapping::loadPreset(QDomElement root) {
         bool scriptGood = m_pScriptEngine->isGood();
         QStringList scriptFunctions;
         if (scriptGood) scriptFunctions = m_pScriptEngine->getFunctionList();
+
 #endif
 
 
         QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
-        
+
         //Itearate through each <control> block in the XML
         while (!control.isNull()) {
-            
+
             //Unserialize these objects from the XML
             MidiCommand midiCommand(control);
             MidiControl midiControl(control);
-                        
+
             //Add to the input mapping.
             m_inputMapping.insert(midiCommand, midiControl);
             control = control.nextSiblingElement("control");
@@ -236,7 +239,7 @@ void MidiMapping::loadPreset(QDomElement root) {
 
             // Assemble a QList of QHashes here for dlgprefmidibindings to pick up when it's ready
             QHash<QString, QString> parameters;
-            
+
             parameters["device"]=device;
             parameters["group"]=group;
             parameters["key"]=key;
@@ -247,7 +250,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             parameters["max"]=max;
             parameters["on"]=on;
             parameters["off"]=off;
-            
+
             if (parameters["outputType"]!="#comment") m_addOutputRowParams << parameters;
 //             addOutputRow(outputType, group, key, min, max, toHex(status), toHex(midino), device, on, off);
 
@@ -304,7 +307,7 @@ QList<QHash<QString,QString> > * MidiMapping::getOutputRowParams() {
    -------- ------------------------------------------------------ */
 void MidiMapping::deleteRowParams() {
 // TODO: need to delete lists elements
-//    delete m_addRowParams; 
+//    delete m_addRowParams;
 //    delete m_addOutputRowParams;
 }
 
@@ -375,27 +378,27 @@ void MidiMapping::clearPreset() {
      QMapIterator<MidiCommand, MidiControl> it(m_inputMapping);
      while (it.hasNext()) {
          it.next();
-         QDomElement controlNode;    
+         QDomElement controlNode;
          QDomDocument nodeMaker;
 
-         //Create <control> block 
+         //Create <control> block
          controlNode = nodeMaker.createElement("control");
-         
+
          //Save the MidiCommand and MidiControl objects as XML
          it.key().serializeToXML(controlNode);
          it.value().serializeToXML(controlNode);
-      
+
           //Add the control node we just created to the XML document in the proper spot
-         addControl(controlNode, "foobar"); //FIXME: Remove this device shit until we have multiple device support.              
+         addControl(controlNode, "foobar"); //FIXME: Remove this device shit until we have multiple device support.
      }
 /*
     //TODO: Rewrite this code when we reimplement output mapping stuff.
- 
+
      for (int y = 0; y < m_pTblOutputBindings.rowCount(); y++) {
          // For each row
          QString outputType = ((QComboBox*)m_pTblOutputBindings.cellWidget(y,0))->currentText().trimmed();
          QString device = m_pTblOutputBindings.item(y,3)->text().trimmed();
- 
+
          QHash<QString, QString> outputMapping;
          QString controlKey = ((QComboBox*)m_pTblOutputBindings.cellWidget(y,1))->currentText().trimmed();
          if (controlKey.isEmpty()
@@ -406,7 +409,7 @@ void MidiMapping::clearPreset() {
              qDebug() << "MIDI Output Row"<<y+1<<"was dropped during save because it contains invalid values.";
              continue; // Invalid mapping, skip it.
          }
-         
+
          outputMapping["group"] = controlKey.trimmed().split(' ').at(0).trimmed();
          outputMapping["key"] = controlKey.trimmed().split(' ').at(1).trimmed();
          outputMapping["status"] = m_pTblOutputBindings.item(y,2)->text().trimmed().split(' ').at(0).trimmed();
@@ -416,7 +419,7 @@ void MidiMapping::clearPreset() {
          outputMapping["maximum"] = m_pTblOutputBindings.item(y,5)->text().trimmed();
          outputMapping["on"] = m_pTblOutputBindings.item(y,6)->text().trimmed();
          outputMapping["off"] = m_pTblOutputBindings.item(y,7)->text().trimmed();
- 
+
          // Clean up any optional values
          if (outputMapping["maximum"].isEmpty()) {
              if (!outputMapping["minimum"].isEmpty()) {
@@ -429,12 +432,12 @@ void MidiMapping::clearPreset() {
              outputMapping.remove("on");
              outputMapping.remove("off");
          }
- 
+
          // Generate output XML
          QDomText text;
          QDomDocument nodeMaker;
          QDomElement output = nodeMaker.createElement(outputType);
- 
+
          // TODO: make these output in a more human friendly order
          foreach (QString tagName, outputMapping.keys()) {
              QDomElement tagNode = nodeMaker.createElement(tagName);
@@ -442,11 +445,11 @@ void MidiMapping::clearPreset() {
              tagNode.appendChild(text);
              output.appendChild(tagNode);
          }
- 
+
          addOutput(output, device);
      }
  */
- 
+
  }
 
 /* -------- ------------------------------------------------------
@@ -510,10 +513,10 @@ bool MidiMapping::addInputControl(MidiType midiType, int midiNo, int midiChannel
                                   MidiOption midiOption)
 {
     //TODO: Check if mapping already exists for this MidiCommand.
-    
+
     //Add to the input mapping.
     m_inputMapping.insert(MidiCommand(midiType, midiNo, midiChannel),
-                          MidiControl(controlObjectGroup, controlObjectKey, 
+                          MidiControl(controlObjectGroup, controlObjectKey,
                                        midiOption));
 }
 
@@ -537,7 +540,7 @@ MidiControl* MidiMapping::getInputMidiControl(MidiCommand command)
         qDebug() << "Midi Channel:" << command.getMidiChannel();
         return NULL;
     }
-    
+
     MidiControl* control = &(m_inputMapping[command]);
     return control;
 }
@@ -626,7 +629,7 @@ double MidiMapping::ComputeValue(MidiOption midioption, double _prevmidivalue, d
         if (distance < 0.)
             _newmidivalue = -_newmidivalue;
         */
-        
+
         // qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
     }
     else if (midioption == MIDI_OPT_HERC_JOG)

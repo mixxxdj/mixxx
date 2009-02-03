@@ -10,7 +10,7 @@ MidiCommand::MidiCommand(MidiType miditype, int midino, int midichannel)
     m_midiChannel = midichannel;
 }
 
-/** Constructor that unserializes a MidiCommand object from a <control> node block in our 
+/** Constructor that unserializes a MidiCommand object from a <control> node block in our
     MIDI mapping XML file.
 */
 MidiCommand::MidiCommand(QDomElement& controlNode)
@@ -21,7 +21,7 @@ MidiCommand::MidiCommand(QDomElement& controlNode)
     QString midiNo = controlNode.firstChildElement("midino").text();
     QString midiChan = controlNode.firstChildElement("midichan").text();
     bool ok;
-    
+
     if (midiType == "Key")
         m_midiType = MIDI_KEY;
     else if (midiType == "Ctrl")
@@ -32,7 +32,7 @@ MidiCommand::MidiCommand(QDomElement& controlNode)
         qDebug() << "Warning: Unknown miditype" << midiType << "in" << __FILE__;
         m_midiType = MIDI_KEY;
     }
-    
+
     //Use hex conversions
     m_midiNo = midiNo.toInt(&ok, 16);
     m_midiChannel = midiChan.toInt(&ok, 16);
@@ -43,7 +43,7 @@ void MidiCommand::serializeToXML(QDomElement& controlNode) const
     QDomText text;
     QDomDocument nodeMaker;
     QDomElement tagNode;
-         
+
     //Midi type
     tagNode = nodeMaker.createElement("miditype");
     QString strMidiType;
@@ -61,19 +61,19 @@ void MidiCommand::serializeToXML(QDomElement& controlNode) const
     text = nodeMaker.createTextNode(strMidiType);
     tagNode.appendChild(text);
     controlNode.appendChild(tagNode);
-    
+
     //Midi no
     tagNode = nodeMaker.createElement("midino");
     text = nodeMaker.createTextNode(QString("0x%1").arg(this->getMidiNo(), 0, 16)); //Base 16
     tagNode.appendChild(text);
     controlNode.appendChild(tagNode);
-    
+
     //Midi channel
     tagNode = nodeMaker.createElement("midichan");
     text = nodeMaker.createTextNode(QString("0x%1").arg(this->getMidiChannel(), 0, 16)); //Base 16
     tagNode.appendChild(text);
-    controlNode.appendChild(tagNode); 
-    
+    controlNode.appendChild(tagNode);
+
 }
 
 /** MidiControl constructor */
@@ -85,18 +85,19 @@ MidiControl::MidiControl(QString controlobject_group, QString controlobject_valu
     m_midiOption = midioption;
 }
 
-/** Constructor that unserializes a MidiControl object from a <control> node block in our 
+/** Constructor that unserializes a MidiControl object from a <control> node block in our
     MIDI mapping XML file.
 */
 MidiControl::MidiControl(QDomElement& controlNode)
 {
     QDomElement groupNode = controlNode.firstChildElement("group");
     QDomElement keyNode = controlNode.firstChildElement("key");
-    
+
     m_strCOGroup = groupNode.text();
     m_strCOValue = keyNode.text();
 
     QDomElement optionsNode = controlNode.firstChildElement("options");
+
     // At the moment, use one element, in future iterate through options
     QString strMidiOption;
     if (optionsNode.hasChildNodes()) {
@@ -104,7 +105,7 @@ MidiControl::MidiControl(QDomElement& controlNode)
     } else {
         strMidiOption = "Normal";
     }
-    
+
     if (strMidiOption == "Normal")
         m_midiOption = MIDI_OPT_NORMAL;
     else if (strMidiOption == "Invert")
@@ -140,16 +141,16 @@ void MidiControl::serializeToXML(QDomElement& controlNode) const
     QDomText text;
     QDomDocument nodeMaker;
     QDomElement tagNode;
-         
+
     //Control object group
     tagNode = nodeMaker.createElement("group");
     text = nodeMaker.createTextNode(this->getControlObjectGroup());
     tagNode.appendChild(text);
     controlNode.appendChild(tagNode);
-    
+
     //Control object value
     tagNode = nodeMaker.createElement("key"); //WTF worst name ever
-    text = nodeMaker.createTextNode(this->getControlObjectValue()); 
+    text = nodeMaker.createTextNode(this->getControlObjectValue());
     tagNode.appendChild(text);
     controlNode.appendChild(tagNode);
 
@@ -185,8 +186,8 @@ void MidiControl::serializeToXML(QDomElement& controlNode) const
         strMidiOption = "Unknown";
         qDebug() << "Warning: Unknown midioption in" << __FILE__;
     }
-    
+
     QDomElement singleOption = nodeMaker.createElement(strMidiOption);
     optionsNode.appendChild(singleOption);
-    controlNode.appendChild(tagNode);    
+    controlNode.appendChild(optionsNode);
 }
