@@ -45,18 +45,18 @@ MidiObject::MidiObject()
 #ifdef __MIDISCRIPT__
     //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     m_pScriptEngine = new MidiScriptEngine();
-    
+
     m_pScriptEngine->start();
     // Wait for the m_pScriptEngine to initialize
     while(!m_pScriptEngine->isReady()) ;
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
-    
+
     m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
     m_pMidiMapping = new MidiMapping(*this);
     m_pMidiMapping->loadInitialPreset();
 #endif
-    
+
 }
 
 /* -------- ------------------------------------------------------
@@ -168,9 +168,9 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
 
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
-    
+
 //     qDebug() << "MidiObject::receive() miditype: " << (int)category << " ch: " << (int)channel << ", ctrl: " << (int)control << ", val: " << (int)value;
-    
+
     MidiType type = MIDI_EMPTY;
     switch (category) {
     case NOTE_OFF:
@@ -200,9 +200,9 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     else {
 //         qDebug() << "MidiObject: " << midiControl->getControlObjectGroup() << midiControl->getControlObjectValue();
     }
-        
+
     ConfigKey configKey(midiControl->getControlObjectGroup(), midiControl->getControlObjectValue());
-       
+
     if (midiLearn) {
         emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
         return; // Don't pass on controls when in dialog
@@ -217,23 +217,26 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     // Custom MixxxScript (QtScript) handler
     if (midiControl->getMidiOption() == MIDI_OPT_SCRIPT) {
 //         qDebug() << "MidiObject: Calling script function" << configKey.item;
-        
+
         if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, category)) {
             qDebug() << "MidiObject: Invalid script function" << configKey.item;
         }
         return;
     }
 #endif
-    
+
     ControlObject * p = ControlObject::getControl(configKey);
-    
-    double newValue = (double)value;
-    m_pMidiMapping->ComputeValue(midiControl->getMidiOption(), p->GetMidiValue(), newValue);
-    // qDebug() << "value coming out ComputeValue: " << newValue;
 
-    ControlObject::sync();
+    if (p) //Only pass values on to valid ControlObjects.
+    {
+        double newValue = (double)value;
+        m_pMidiMapping->ComputeValue(midiControl->getMidiOption(), p->GetMidiValue(), newValue);
+        // qDebug() << "value coming out ComputeValue: " << newValue;
 
-    p->queueFromMidi(category, newValue);
+        ControlObject::sync();
+
+        p->queueFromMidi(category, newValue);
+    }
 
     return;
 }
