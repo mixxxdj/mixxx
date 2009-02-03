@@ -7,9 +7,7 @@
     </info>
     <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>
-            <file functionprefix="HerculesRMX">
-                <filename>Hercules-DJ-Console-RMX-scripts.js</filename>
-            </file>
+            <file filename="Hercules-DJ-Console-RMX-scripts.js" functionprefix="HerculesRMX"/>
         </scriptfiles>
         <controls>
             <control>

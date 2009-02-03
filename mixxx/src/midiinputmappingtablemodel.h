@@ -35,4 +35,4 @@ class MidiInputMappingTableModel : public QAbstractTableModel
 
 };
 
-#endif _MIDIINPUTMAPPINGTABLEMODEL_H_
+#endif
