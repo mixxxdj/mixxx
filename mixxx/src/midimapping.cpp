@@ -26,6 +26,7 @@
 #include "configobject.h"
 
 #define REQUIRED_MAPPING_FILE "midi-mappings-scripts.js"
+#define XML_SCHEMA_VERSION "1"
 
 QMutex MidiMapping::m_rowMutex;
 QMutex MidiMapping::m_outputRowMutex;
@@ -165,13 +166,7 @@ void MidiMapping::loadPreset(QDomElement root) {
                 if (initName!="") {
                     initName.append(".init");
                     qDebug() << "MidiMapping: Executing" << initName;
-    //                 QScriptValue scriptFunction = m_pScriptEngine->execute(initName);
                     if (!m_pScriptEngine->execute(initName)) qWarning() << "MidiMapping: No" << initName << "function in script";
-    //                 if (!scriptFunction.isFunction()) qWarning() << "MidiMapping: No" << initName << "function in script";
-    //                 else {
-    //                     scriptFunction.call(QScriptValue());
-    //                     m_pScriptEngine->checkException();
-    //                 }
                 }
             }
         }
@@ -366,7 +361,7 @@ void MidiMapping::applyPreset() {
  */
 void MidiMapping::clearPreset() {
     // Create a new blank DomNode
-    QString blank = "<MixxxMIDIPreset version=\"" + QString(VERSION) + "\">\n"
+    QString blank = "<MixxxMIDIPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\" mixxxVersion=\"" + QString(VERSION) + "+\">\n"
     "</MixxxMIDIPreset>\n";
     QDomDocument doc("Bindings");
     doc.setContent(blank);
@@ -383,21 +378,18 @@ void MidiMapping::clearPreset() {
 #ifdef __MIDISCRIPT__
       //This sucks, put this code inside MidiScriptEngine instead of here,
       // and just ask MidiScriptEngine to spit it out for us.
-     qDebug() << "Writing script block!";
+     qDebug() << "MidiMapping: Writing script block!";
      for (int i = 0; i < m_pScriptFileNames.count(); i++) {
-         qDebug() << "writing script block for" << m_pScriptFileNames[i];
+         qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
           QString filename = m_pScriptFileNames[i];
           if (filename != REQUIRED_MAPPING_FILE) { //Don't need to write anything for the required mapping file.
               QString functionPrefix = m_pScriptFunctionPrefixes[i];
               //and now for the worst XML code since... WWidget...
               QDomDocument sucksBalls;
               QDomElement scriptFile = sucksBalls.createElement("file");
+              scriptFile.setAttribute("filename", filename);
               scriptFile.setAttribute("functionprefix", functionPrefix);
-              QDomElement scriptFileName = sucksBalls.createElement("filename");
-              QDomText scriptFileNameText = sucksBalls.createTextNode(filename);
-              scriptFileName.appendChild(scriptFileNameText);
-              scriptFile.appendChild(scriptFileName);
-
+              
               //Add the XML dom element to the right spot in the XML document.
               addMidiScriptInfo(scriptFile, wtfbbqdevicename);
           }
