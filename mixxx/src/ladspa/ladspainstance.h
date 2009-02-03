@@ -22,7 +22,7 @@ class LADSPAInstance
 {
 public:
     LADSPAInstance(const LADSPA_Descriptor * descriptor, int slot);
-    ~LADSPAInstance();
+    virtual ~LADSPAInstance();
 
     virtual void process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize) = 0;
     virtual void connect(unsigned long port, LADSPA_Data * buffer) = 0;
@@ -34,6 +34,7 @@ public:
     float getWet();
 
     bool remove;
+
 
 private:
     const LADSPA_Descriptor * m_pDescriptor;

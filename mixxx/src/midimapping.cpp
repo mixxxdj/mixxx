@@ -575,6 +575,7 @@ bool MidiMapping::addInputControl(MidiType midiType, int midiNo, int midiChannel
     m_inputMapping.insert(MidiCommand(midiType, midiNo, midiChannel),
                           MidiControl(controlObjectGroup, controlObjectKey,
                                        midiOption));
+    return true; //XXX is this right? should this be returning whether the add happened successfully?
 }
 
 void MidiMapping::removeInputMapping(MidiType midiType, int midiNo, int midiChannel)

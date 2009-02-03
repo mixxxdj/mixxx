@@ -108,9 +108,9 @@ void MessageToLogfile( QtMsgType type, const char * msg )
         break;
     case QtWarningMsg:
         Log << "Warning: " << msg << "\n";
-        a->lock();
+        //a->lock(); //this doesn't do anything in Qt4
         QMessageBox::warning(0, "Mixxx", msg);
-        a->unlock();
+        //a->unlock();
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", msg );
@@ -171,7 +171,7 @@ int main(int argc, char * argv[])
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
     // .qm files are stored in the base project directory.
-    tor.load( QString("mixxx.") + QTextCodec::locale(), "." );
+    tor.load( QString("mixxx.") + QLocale::system().name(), "." );
     a->installTranslator( &tor );
 
     // Check if one of the command line arguments is "--no-visuals"
@@ -244,7 +244,9 @@ int main(int argc, char * argv[])
 
     MixxxApp * mixxx=new MixxxApp(a, args, pSplash);
     
-    a->setMainWidget(mixxx);
+
+    //a->setMainWidget(mixxx);
+    a -> connect( a, SIGNAL(lastWindowClosed()), a, SLOT(quit()) );
 
 
     qDebug() << "Displaying mixxx";

@@ -20,7 +20,7 @@ public:
     ~LADSPALoader();
         
     const LADSPAPlugin * getByIndex(uint index);
-    LADSPAPlugin * getByLabel(const char * label);
+    LADSPAPlugin * getByLabel(QString label);
 
 private:
     LADSPAPluginVector m_Plugins;

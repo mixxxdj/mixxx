@@ -133,7 +133,7 @@ QStringList * MidiObject::getConfigList(QString path)
     // Get list of available midi configurations
     QDir dir(path);
     dir.setFilter(QDir::Files);
-    dir.setNameFilter("*.midi.xml *.MIDI.XML");
+    dir.setNameFilters(QString("*.midi.xml *.MIDI.XML").split(' ')); //there should be a way to pass Qt::CaseInsensitive here..
 
     //const QFileInfoList *list = dir.entryInfoList();
     //if (dir.entryInfoList().empty())
@@ -273,7 +273,7 @@ void MidiObject::sendSysexMsg(QList<int> data, unsigned int length) {
     unsigned char * sysexMsg;
     sysexMsg = new unsigned char [length];
 
-    for (int i=0; i<length; i++) {
+    for (unsigned int i=0; i<length; i++) {
         sysexMsg[i] = data.at(i);
 //         qDebug() << "sysexMsg" << i << "=" << sysexMsg[i] << ", data=" << data.at(i);
     }
