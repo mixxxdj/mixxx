@@ -116,7 +116,7 @@ void MidiMapping::loadPreset(QDomElement root) {
         while (!scriptFile.isNull()) {
 
             QString functionPrefix = scriptFile.attribute("functionprefix","");
-            QString filename = WWidget::selectNodeQString(scriptFile, "filename");
+            QString filename = scriptFile.attribute("filename","");
             addScriptFile(filename, functionPrefix);
 
             scriptFile = scriptFile.nextSiblingElement("file");

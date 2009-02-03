@@ -7,9 +7,7 @@
     </info>
     <controller id="SCS.3d MIDI 1" port="Port">
         <scriptfiles>
-            <file functionprefix="StantonSCS3d">
-                <filename>Stanton-SCS3d-scripts.js</filename>
-            </file>
+            <file filename="Stanton-SCS3d-scripts.js" functionprefix="StantonSCS3d"/>
         </scriptfiles>
         
         <controls>
