@@ -9,7 +9,7 @@
 TonalAnalyser::TonalAnalyser() :
 		m_ce() {
 
-
+    m_bCanRun = true;
 	m_ce.filterInertia( 0.7 );
 	m_ce.enableTunning( true );
 	m_ce.enablePeakWindowing( true );
@@ -18,6 +18,8 @@ TonalAnalyser::TonalAnalyser() :
 }
 
 void TonalAnalyser::finalise(TrackInfoObject* tio) {
+    if(!m_bCanRun)
+        return;
 
 	CLAM::DiscontinuousSegmentation segmentation = m_ce.segmentation();
 
@@ -40,10 +42,17 @@ void TonalAnalyser::finalise(TrackInfoObject* tio) {
 
 void TonalAnalyser::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
 	m_time = 0;
+    if(tio->getChannels() == 1) {
+        m_bCanRun = false;
+    } else
+        m_bCanRun = true;
 }
 
 void TonalAnalyser::process(const CSAMPLE *pIn, const int iLen) {
 
+    if(!m_bCanRun)
+        return;
+    
 	m_time += (iLen/2)/44100.0f;
 
 	CSAMPLE* mono = new CSAMPLE[32768];

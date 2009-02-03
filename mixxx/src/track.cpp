@@ -965,12 +965,16 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
     if(!m_pTrackPlayer1->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer1);
 
-    // This has to happen before the AnalyserQueue works on the track.
-    m_pTrackPlayer1->setVisualResampleRate(m_pVisualResampleCh1->get());
-	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
-
     // Set waveform summary display
     m_pTrackPlayer1->setOverviewWidget(m_pView->m_pOverviewCh1);
+    
+    // This has to happen before the AnalyserQueue works on the track.
+    m_pTrackPlayer1->setVisualResampleRate(m_pVisualResampleCh1->get());
+
+    // Queue the track for BPM/Waveform/Wavesummary/etc. analysis
+	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
+
+    
 
     // Set control for beat start position for use in EngineTemporal and
     // VisualTemporalBuffer. HACK.
@@ -1054,12 +1058,14 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
     if(!m_pTrackPlayer2->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer2);
 
-    // This has to happen before the AnalyserQueue works on the track.
-    m_pTrackPlayer2->setVisualResampleRate(m_pVisualResampleCh2->get());
-    m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
-
     // Set waveform summary display
     m_pTrackPlayer2->setOverviewWidget(m_pView->m_pOverviewCh2);
+    
+    // This has to happen before the AnalyserQueue works on the track.
+    m_pTrackPlayer2->setVisualResampleRate(m_pVisualResampleCh2->get());
+
+    // Queue the track for BPM/Waveform/Wavesummary/etc. analysis
+    m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
     // Set control for beat start position for use in EngineTemporal and
     // VisualTemporalBuffer. HACK.
@@ -1099,7 +1105,6 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
         m_pView->m_pTextCh2->setText(m_pTrackPlayer2->getInfo());
 
     emit(newTrackPlayer2(m_pTrackPlayer2));
-
 
 }
 

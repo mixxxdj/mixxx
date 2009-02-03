@@ -14,7 +14,7 @@ public:
 
 private:
 	float m_time;
-
+	bool m_bCanRun;
 	Simac::ChordExtractor m_ce;
 };
 

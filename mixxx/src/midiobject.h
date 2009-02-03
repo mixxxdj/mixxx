@@ -47,7 +47,7 @@ typedef enum {
 
 class MidiObject : public QThread
 {
-                Q_OBJECT
+  Q_OBJECT
 
 public:
     MidiObject();
