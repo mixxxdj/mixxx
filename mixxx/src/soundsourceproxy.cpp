@@ -138,7 +138,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 }
 
 
-int SoundSourceProxy::getSrate()
+unsigned int SoundSourceProxy::getSrate()
 {
     return m_pSoundSource->getSrate();
 }

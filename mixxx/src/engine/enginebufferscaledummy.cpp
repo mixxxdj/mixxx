@@ -50,7 +50,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, unsigned long buf_size, f
         iBaseLength = READBUFFERSIZE;	//Length of the base buffer
     }
 		
-	long baseplaypos = ((long)playpos) % iBaseLength; // Playpos wraps within the base buffer
+	unsigned long baseplaypos = ((long)playpos) % iBaseLength; // Playpos wraps within the base buffer
 													  // This is the position within base
 
 	long numSamplesToCopy = buf_size; // If we can copy a whole chunk
