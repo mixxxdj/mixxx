@@ -15,8 +15,10 @@
 *                                                                         *
 ***************************************************************************/
 
+
+#include <QtGui>
 #include <QtDebug>
-#include <qtooltip.h>
+
 #include "wwidget.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
@@ -35,13 +37,26 @@ WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidge
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
     connect(this, SIGNAL(valueChangedRightUp(double)), this, SLOT(slotReEmitValueUp(double)));
 
-	setFocusPolicy(Qt::ClickFocus);
+    setFocusPolicy(Qt::ClickFocus);
     setBackgroundMode(Qt::NoBackground);
 }
 
 WWidget::~WWidget()
 {
 }
+
+
+bool WWidget::event(QEvent *event)
+{
+  if(event->type() == QEvent::ToolTip)
+    {
+      QHelpEvent *tooltip = static_cast<QHelpEvent *>(event);
+      QToolTip::showText(tooltip->globalPos(), m_Tooltip);
+      //http://doc.trolltech.com/4.3/widgets-tooltips-sortingbox-cpp.html suggests you should use QToolTip::hideText in certain cases; it works well enough on OS X with just this code though...
+    }
+  return QWidget::event(event);
+}
+
 
 void WWidget::setKeyboardConfig(ConfigObject<ConfigValueKbd> * pKbdConfigObject)
 {
@@ -52,12 +67,12 @@ void WWidget::setup(QDomNode node)
 {
     // Set position
     QString pos = selectNodeQString(node, "Pos");
-    int x = pos.left(pos.find(",")).toInt();
-    int y = pos.mid(pos.find(",")+1).toInt();
+    int x = pos.left(pos.indexOf(",")).toInt();
+    int y = pos.mid(pos.indexOf(",")+1).toInt();
     move(x,y);
 
     // Get tooltip
-    QString strTooltip = selectNodeQString(node, "Tooltip");
+    m_Tooltip = selectNodeQString(node, "Tooltip");
 
     // For each connection
     QDomNode con = selectNode(node, "Connection");
@@ -67,8 +82,8 @@ void WWidget::setup(QDomNode node)
         QString key = selectNodeQString(con, "ConfigKey");
 
         ConfigKey configKey;
-        configKey.group = key.left(key.find(","));
-        configKey.item = key.mid(key.find(",")+1);
+        configKey.group = key.left(key.indexOf(","));
+        configKey.item = key.mid(key.indexOf(",")+1);
 
         // Check that the control exists
         ControlObject * control = ControlObject::getControl(configKey);
@@ -87,15 +102,15 @@ void WWidget::setup(QDomNode node)
         {
             // Get properties from XML, or use defaults
             bool bEmitOnDownPress = true;
-            if (selectNodeQString(con, "EmitOnDownPress").contains("false",false))
+            if (selectNodeQString(con, "EmitOnDownPress").contains("false",Qt::CaseInsensitive))
                 bEmitOnDownPress = false;
 
             Qt::ButtonState state = Qt::NoButton;
             if (!selectNode(con, "ButtonState").isNull())
             {
-                if (selectNodeQString(con, "ButtonState").contains("LeftButton"))
+	      if (selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
                     state = Qt::LeftButton;
-                else if (selectNodeQString(con, "ButtonState").contains("RightButton"))
+	      else if (selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive))
                     state = Qt::RightButton;
             }
 
@@ -104,15 +119,11 @@ void WWidget::setup(QDomNode node)
 
             // Add keyboard shortcut info to tooltip string
             QString shortcut = QString(" (%1)").arg(m_spKbdConfigObject->getValueString(configKey));
-            if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !strTooltip.contains(shortcut,false))
-                strTooltip += shortcut;
+            if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !m_Tooltip.contains(shortcut,Qt::CaseInsensitive))
+                m_Tooltip += shortcut;
         }
         con = con.nextSibling();
     }
-
-    // Set tooltip if it exists
-    if (strTooltip != "")
-        QToolTip::add( this, strTooltip );
 
 }
 
@@ -199,12 +210,12 @@ QDomElement WWidget::openXMLFile(QString path, QString name)
     QFile file(path);
     if (!file.open(IO_ReadOnly))
     {
-        qDebug() << "Could not open xml file:" << file.name();
+        qDebug() << "Could not open xml file:" << file.fileName();
         return QDomElement();
     }
     if (!doc.setContent(&file))
     {
-        qWarning() << "Error parsing xml file:" << file.name();
+        qWarning() << "Error parsing xml file:" << file.fileName();
         file.close();
         return QDomElement();
     }
