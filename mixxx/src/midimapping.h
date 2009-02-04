@@ -40,59 +40,76 @@ typedef QMap<MidiCommand, MidiControl> MidiInputMapping;
 
 class MidiMapping : public QObject
 {
+    Q_OBJECT
+    
     public:
-        /** Constructor also loads & applies the default XML MIDI mapping file */
-        MidiMapping(MidiObject &midi_object);
-        ~MidiMapping();
+    /** Constructor also loads & applies the default XML MIDI mapping file */
+    MidiMapping(MidiObject &midi_object);
+    ~MidiMapping();
 
-        void loadInitialPreset();
-        void loadPreset(QString path);
-        void loadPreset(QDomElement root);
+    void loadInitialPreset();
+    void loadPreset(QString path);
+    void loadPreset(QDomElement root);
 
-        MidiInputMapping* getInputMapping();
-        QList<QHash<QString,QString> >* getOutputRowParams();
-        void deleteRowParams();
+    MidiInputMapping* getInputMapping();
+    QList<QHash<QString,QString> >* getOutputRowParams();
+    void deleteRowParams();
 
-        void savePreset(QString path = BINDINGS_PATH);
-        void applyPreset();
-        void clearPreset();
-        void buildDomElement();
+    void savePreset(QString path = BINDINGS_PATH);
+    void applyPreset();
+    void clearPreset();
+    void buildDomElement();
 
-        void addControl(QDomElement& control, QString device);
-        void addOutput(QDomElement& output, QString device);
-        void addMidiScriptInfo(QDomElement &scriptFile, QString device); //Sucks
+    void addControl(QDomElement& control, QString device);
+    void addOutput(QDomElement& output, QString device);
+    void addMidiScriptInfo(QDomElement &scriptFile, QString device); //Sucks
 
-        bool addInputControl(MidiType midiType, int midiNo, int midiChannel,
-                                  QString controlObjectGroup, QString controlObjectKey,
-                                  MidiOption midiOption);
-        void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
-        MidiInputMappingTableModel* getMidiInputMappingTableModel();
-        MidiControl* getInputMidiControl(MidiCommand command);
+    bool addInputControl(MidiType midiType, int midiNo, int midiChannel,
+                         QString controlObjectGroup, QString controlObjectKey,
+                         MidiOption midiOption);
+    void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
+    MidiInputMappingTableModel* getMidiInputMappingTableModel();
+    //MidiControl* getInputMidiControl(MidiCommand command);
 
-        double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
+    double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
 
+	// MIDI Input Mapping Modifiers
+	int numInputMidiCommands();
+	bool isInputIndexValid(int index);
+    bool isMidiCommandMapped(MidiCommand command);
+	MidiCommand getInputMidiCommand(int index);
+	MidiControl getInputMidiControl(int index);
+	MidiControl getInputMidiControl(MidiCommand command);
+	void setInputMidiMapping(MidiCommand command, MidiControl control);
+	void clearInputMidiMapping(int index);
+	void clearInputMidiMapping(MidiCommand command);
+	void clearInputMidiMapping(int index, int count);
 
-    private:
+signals:
+    void inputMappingChanged();
+    void inputMappingChanged(int startIndex, int endIndex);
+
+private:
 #ifdef __MIDISCRIPT__
-        /** Adds a script file name and function prefix to the list to be loaded */
-        void addScriptFile(QString filename, QString functionprefix);
+    /** Adds a script file name and function prefix to the list to be loaded */
+    void addScriptFile(QString filename, QString functionprefix);
 
-        QList<QString> m_pScriptFileNames;
-        QList<QString> m_pScriptFunctionPrefixes;
-        MidiScriptEngine *m_pScriptEngine;
+    QList<QString> m_pScriptFileNames;
+    QList<QString> m_pScriptFunctionPrefixes;
+    MidiScriptEngine *m_pScriptEngine;
 #endif
-        QDomElement m_Bindings;
-        MidiObject &m_rMidiObject;
-        MidiInputMapping m_inputMapping;
-        QList<QHash<QString,QString> > m_addOutputRowParams;
+    QDomElement m_Bindings;
+    MidiObject &m_rMidiObject;
+    MidiInputMapping m_inputMapping;
+    QList<QHash<QString,QString> > m_addOutputRowParams;
 
-        MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
+    MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
 
-        /** To prevent an object from accessing the QLists before we're done building them */
-        static QMutex m_rowMutex;
-        static QMutex m_outputRowMutex;
-        QWaitCondition m_rowsReady;
-        QWaitCondition m_outputRowsReady;
+    /** To prevent an object from accessing the QLists before we're done building them */
+    static QMutex m_rowMutex;
+    static QMutex m_outputRowMutex;
+    QWaitCondition m_rowsReady;
+    QWaitCondition m_outputRowsReady;
 };
 
 #endif
