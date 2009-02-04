@@ -3,6 +3,10 @@
 
 #include "analyser.h"
 #include "configobject.h"
+#include "bpm/bpmdetect.h"
+
+
+#define BPM_NUM_SAMPLES 32768 //16384; //8192;                         
 
 class BpmDetect;
 
@@ -19,7 +23,12 @@ private:
     BpmDetect *m_pDetector;
     int m_iMinBpm, m_iMaxBpm;
     bool m_bProcessEntireSong;
-    
+
+    //this is the buffer that process() uses; we create it here to avoid:
+    // a) smashing the function stack
+    // b) using malloc, which is slow for a tight-loop member like process()
+    soundtouch::SAMPLETYPE samples[BPM_NUM_SAMPLES];
+
 };
 
 #endif

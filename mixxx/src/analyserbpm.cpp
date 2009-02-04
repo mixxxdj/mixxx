@@ -28,22 +28,21 @@ void AnalyserBPM::initialise(TrackInfoObject* tio, int sampleRate, int totalSamp
     }
 }
 
+
+
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
+
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {
         return;
     }
     //qDebug() << "AnalyserBPM::process() processing " << iLen << " samples";
 
-    // We can't feed too many samples to the BPM Detector at once,
-    // because it crashes when you give it too many.
-    const int numSamples = 32768; //16384; //8192;
-    soundtouch::SAMPLETYPE samples[numSamples];
     
     int cur = 0;
     int remaining = iLen;
     while(remaining > 0) {
-        int read = math_min(remaining, numSamples);
+        int read = math_min(remaining, BPM_NUM_SAMPLES);
         memcpy(samples, &pIn[cur], sizeof(float)*read);
         /*for(int i=0; i<read; i++) {
             samples[i] = pIn[cur+i];
