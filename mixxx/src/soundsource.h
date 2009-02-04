@@ -41,7 +41,7 @@ public:
     virtual long unsigned length() = 0;
     static float str2bpm( QString sBpm );
     static int ParseHeader(TrackInfoObject *);
-    virtual int getSrate();
+    virtual unsigned int getSrate();
     /** Return a list of cue points stored in the file */
     virtual Q3ValueList<long> *getCuePoints();
     /** Returns filename */
@@ -49,7 +49,7 @@ public:
 
 protected:
     /** Sample rate of the file */
-    int SRATE;
+    unsigned int SRATE;
     /** File name */
     QString m_qFilename;
 };

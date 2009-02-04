@@ -41,7 +41,7 @@ SoundSource::~SoundSource()
 {
 }
 
-int SoundSource::getSrate()
+unsigned int SoundSource::getSrate()
 {
     return SRATE;
 }

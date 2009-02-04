@@ -28,7 +28,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
-    unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
+    unsigned int tmp = file.read(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
         qDebug() << "MAD: ERR reading mp3-file: " << qFilename << "\nRead only " << tmp << "bytes, but wanted" << inputbuf_len << "bytes";
 
@@ -409,7 +409,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 //     qDebug() << "Decoding";
     int no = 0;
-    int frames = 0;
+    unsigned int frames = 0;
     while (Total_samples_decoded < samples_wanted)
     {
         // qDebug() << "no " << Total_samples_decoded;
@@ -496,7 +496,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
     // mad-dev post in 2002-25-Jan on how to use libid3 by Rob Leslie
     // http://www.mars.org/mailman/public/mad-dev/2002-January/000439.html
-    id3_file * fh = id3_file_open(qstrdup(location.local8Bit()), ID3_FILE_MODE_READONLY);
+    id3_file * fh = id3_file_open(qstrdup(location.toLocal8Bit()), ID3_FILE_MODE_READONLY);
     if (fh!=0)
     {
         id3_tag * tag = id3_file_tag(fh);
@@ -564,7 +564,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     unsigned long bitrate = 0;
     unsigned long bytesperframe = 0;
     bool constantbitrate = true;
-    int frames = 0;
+    unsigned int frames = 0;
 
     // Number of bytes to read at a time to determine duration
     const unsigned int READLENGTH = 5000;
@@ -572,7 +572,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     const unsigned int DESIRED_FRAMES = 10;
     while(frames < DESIRED_FRAMES) {
 
-        unsigned int readbytes = file.readBlock(inputbuf, READLENGTH);
+        unsigned int readbytes = file.read(inputbuf, READLENGTH);
         if(readbytes != READLENGTH) {
             qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
             if(readbytes == -1) {
@@ -664,7 +664,7 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
             id3_utf16_t * framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
             if (strlen>0)
-                str->setUnicodeCodes((ushort *)framestr,strlen);
+                str->setUtf16((ushort *)framestr,strlen);
             free(framestr);
         }
     }

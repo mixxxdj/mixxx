@@ -41,7 +41,7 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
     static int ParseHeader(TrackInfoObject *p);
-    int getSrate();
+    unsigned int getSrate();
     Q3ValueList<long> *getCuePoints();
     /** Returns filename */
     QString getFilename();
