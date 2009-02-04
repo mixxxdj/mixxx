@@ -287,7 +287,6 @@ finally:
 sources = Split("""
                 
                 input.cpp
-                mixxxmenuplaylists.cpp
                 trackplaylistlist.cpp
                 mixxxkeyboard.cpp
                 configobject.cpp
