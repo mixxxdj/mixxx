@@ -4,7 +4,10 @@
 #include "midimapping.h"
 #include "midiinputmappingtablemodel.h"
 
-MidiInputMappingTableModel::MidiInputMappingTableModel(MidiMapping* mapping) : QAbstractTableModel()
+MidiInputMappingTableModel::MidiInputMappingTableModel(MidiMapping* mapping) :
+    QAbstractTableModel(),
+    m_pMapping(NULL)
+                                                                               
 {
     setMapping(mapping); //Save the mapping
 }
