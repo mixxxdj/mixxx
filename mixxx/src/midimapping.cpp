@@ -39,10 +39,112 @@ MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(mid
 //     m_pMidiObject = midi_object;
     m_pScriptEngine = midi_object.getMidiScriptEngine();
 
-    m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(&m_inputMapping);
+    m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(this);
 }
 
 MidiMapping::~MidiMapping() {
+}
+
+/* ============================== MIDI Input Mapping Modifiers */
+
+/*
+ * Return the total number of current input mappings.
+ */ 
+int MidiMapping::numInputMidiCommands() {
+    return m_inputMapping.size();
+}
+
+/*
+ * Return true if the index corresponds to an input mapping key.
+ */ 
+bool MidiMapping::isInputIndexValid(int index) {
+    if(index < 0 || index >= numInputMidiCommands()) {
+        return false;
+    }
+    return true;
+}
+
+bool MidiMapping::isMidiCommandMapped(MidiCommand command) {
+    return m_inputMapping.contains(command);
+}
+
+/*
+ * Lookup the MidiCommand corresponding to a given index.
+ */
+MidiCommand MidiMapping::getInputMidiCommand(int index) {
+    if(!isInputIndexValid(index)) {
+        return MidiCommand(); // do something bad.
+    }
+    return m_inputMapping.keys().at(index);
+}
+
+/*
+ * Lookup the MidiControl mapped to a given MidiCommand (by index).
+ */
+MidiControl MidiMapping::getInputMidiControl(int index) {
+    if(!isInputIndexValid(index)) {
+        return MidiControl(); // do something bad.
+    }
+    MidiCommand key = m_inputMapping.keys().at(index);
+    return m_inputMapping.value(key);
+}
+
+/*
+ * Lookup the MidiControl mapped to a given MidiCommand.
+ */
+MidiControl MidiMapping::getInputMidiControl(MidiCommand command) {
+    if(!m_inputMapping.contains(command)) {
+        return MidiControl(); // do something bad.
+    }
+    return m_inputMapping.value(command);
+}
+
+/*
+ * Set a MidiCommand -> MidiControl mapping, replacing an existing one
+ * if necessary.
+ */
+void MidiMapping::setInputMidiMapping(MidiCommand command, MidiControl control) {
+    // If the command is already in the mapping, it will be replaced
+    m_inputMapping.insert(command,control);
+    emit(inputMappingChanged());
+}
+
+/*
+ * Clear a specific mapping for a MidiCommand by index.
+ */
+void MidiMapping::clearInputMidiMapping(int index) {
+    if(!isInputIndexValid(index)) {
+        return;
+    }
+    MidiCommand key = m_inputMapping.keys().at(index);
+    m_inputMapping.remove(key);
+    emit(inputMappingChanged());
+    //emit(inputMappingChanged(index, numInputMidiCommands()-1));
+}
+
+/*
+ * Clear a specific mapping for a MidiCommand.
+ */
+void MidiMapping::clearInputMidiMapping(MidiCommand command) {
+    int changed = m_inputMapping.remove(command);
+    if(changed > 0)
+        emit(inputMappingChanged());
+}
+
+/*
+ * Clears a range of input mappings. (This really only exists so that
+ * a caller can atomically remove a range of rows)
+ *
+ */
+void MidiMapping::clearInputMidiMapping(int index, int count) {
+    QList<MidiCommand> keys = m_inputMapping.keys();
+    int changed = 0;
+    for(int i=index; i < index+count; i++) {
+        MidiCommand command = keys.at(i);
+        changed += m_inputMapping.remove(command);
+    }
+    if(changed > 0)
+        emit(inputMappingChanged());
 }
 
 #ifdef __MIDISCRIPT__
@@ -581,7 +683,7 @@ MidiInputMappingTableModel* MidiMapping::getMidiInputMappingTableModel()
 }
 
 //Used by MidiObject to query what control matches a given MIDI command.
-MidiControl* MidiMapping::getInputMidiControl(MidiCommand command)
+/*MidiControl* MidiMapping::getInputMidiControl(MidiCommand command)
 {
     if (!m_inputMapping.contains(command)) {
         qDebug() << "Warning: unbound MIDI command";
@@ -593,7 +695,7 @@ MidiControl* MidiMapping::getInputMidiControl(MidiCommand command)
 
     MidiControl* control = &(m_inputMapping[command]);
     return control;
-}
+    }*/
 
 // BJW: Note: _prevmidivalue is not the previous MIDI value. It's the
 // current controller value, scaled to 0-127 but only in the case of pots.

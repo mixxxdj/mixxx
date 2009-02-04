@@ -193,15 +193,16 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     //m_pMidiMappingtype,control,channel));
 //     qDebug() << "MidiObject: type:" << (int)type << "control:" << (int)control << "channel:" << (int)channel;
     MidiCommand inputCommand(type, control, channel);
-    MidiControl* midiControl = m_pMidiMapping->getInputMidiControl(inputCommand);
-    //If there was no control bound to that MIDI command, return;
-    if (!midiControl)
-        return;
-    else {
-//         qDebug() << "MidiObject: " << midiControl->getControlObjectGroup() << midiControl->getControlObjectValue();
-    }
 
-    ConfigKey configKey(midiControl->getControlObjectGroup(), midiControl->getControlObjectValue());
+    if (!m_pMidiMapping->isMidiCommandMapped(inputCommand))
+        return;
+
+    MidiControl midiControl = m_pMidiMapping->getInputMidiControl(inputCommand);
+//         qDebug() << "MidiObject: " << midiControl.getControlObjectGroup() << midiControl.getControlObjectValue();
+
+    //If there was no control bound to that MIDI command, return;
+
+    ConfigKey configKey(midiControl.getControlObjectGroup(), midiControl.getControlObjectValue());
 
     if (midiLearn) {
         emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
@@ -215,7 +216,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
-    if (midiControl->getMidiOption() == MIDI_OPT_SCRIPT) {
+    if (midiControl.getMidiOption() == MIDI_OPT_SCRIPT) {
 //         qDebug() << "MidiObject: Calling script function" << configKey.item;
 
         if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, category)) {
@@ -230,7 +231,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (p) //Only pass values on to valid ControlObjects.
     {
         double newValue = (double)value;
-        m_pMidiMapping->ComputeValue(midiControl->getMidiOption(), p->GetMidiValue(), newValue);
+        m_pMidiMapping->ComputeValue(midiControl.getMidiOption(), p->GetMidiValue(), newValue);
         // qDebug() << "value coming out ComputeValue: " << newValue;
 
         ControlObject::sync();
