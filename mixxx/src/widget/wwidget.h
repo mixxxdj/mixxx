@@ -67,6 +67,7 @@ signals:
     void valueChangedRightDown(double);
     void valueChangedRightUp(double);
 protected:
+    bool event(QEvent*);
     /** Value/state of widget */
     double m_fValue;
     /** Is true if widget is off */
@@ -77,6 +78,8 @@ protected:
 private:
     /** Variable containing the path to the pixmaps */
     static QString m_qPath;
+    /** stashes the tooltip text **/
+    QString m_Tooltip;
     /** Property used when connecting to ControlObject */
     bool m_bEmitOnDownPress;
     /** Property used when connecting to ControlObject */
