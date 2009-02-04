@@ -279,7 +279,6 @@ void MidiMapping::loadPreset(QDomElement root) {
 
 #endif
 
-
         QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
         //Itearate through each <control> block in the XML
@@ -288,9 +287,18 @@ void MidiMapping::loadPreset(QDomElement root) {
             //Unserialize these objects from the XML
             MidiCommand midiCommand(control);
             MidiControl midiControl(control);
-
+#ifdef __MIDISCRIPT__
+            // Verify script functions are loaded
+            if (scriptGood && midiControl.getMidiOption()==MIDI_OPT_SCRIPT && scriptFunctions.indexOf(midiControl.getControlObjectValue())==-1) {
+                // Need some way to signal to the dialog that this control will not be bound instead of just dying
+                qCritical() << "Error: Function" << midiControl.getControlObjectValue() << "was not found in loaded scripts.";
+            } else {
+#endif
             //Add to the input mapping.
             m_inputMapping.insert(midiCommand, midiControl);
+#ifdef __MIDISCRIPT__
+            }
+#endif
             control = control.nextSiblingElement("control");
         }
 
