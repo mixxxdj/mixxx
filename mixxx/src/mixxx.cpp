@@ -35,7 +35,6 @@
 #include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"
-#include "mixxxmenuplaylists.h"
 #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
 
