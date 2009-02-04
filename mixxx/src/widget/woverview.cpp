@@ -50,8 +50,8 @@ void WOverview::setup(QDomNode node)
 
     // Size
     QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.find(",")).toInt();
-    int y = size.mid(size.find(",")+1).toInt();
+    int x = size.left(size.indexOf(",")).toInt();
+    int y = size.mid(size.indexOf(",")+1).toInt();
     setFixedSize(x,y);
 
     // Set constants for line drawing
@@ -70,7 +70,11 @@ void WOverview::setup(QDomNode node)
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
-    setBackgroundColor(WSkinColor::getCorrectColor(c));
+    
+    QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
+    palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
+    this->setPalette(palette);
+    
 
     // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
     if(m_pScreenBuffer != NULL) {
@@ -87,7 +91,7 @@ void WOverview::setup(QDomNode node)
     }
     
     m_pScreenBuffer = new QPixmap(this->size());
-    m_pScreenBuffer->fill(this->backgroundColor());
+    m_pScreenBuffer->fill(this->palette().color(QPalette::Background));
     
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);

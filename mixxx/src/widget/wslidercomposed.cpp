@@ -57,7 +57,7 @@ void WSliderComposed::setup(QDomNode node)
     QString pathHandle = getPath(selectNodeQString(node, "Handle"));
     QString pathHorizontal = selectNodeQString(node, "Horizontal");
     bool h = false;
-    if (pathHorizontal.contains("true",false))
+    if (pathHorizontal.contains("true",Qt::CaseInsensitive))
         h = true;
     setPixmaps(h, pathSlider, pathHandle);
 
