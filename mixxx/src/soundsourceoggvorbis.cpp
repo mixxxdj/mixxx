@@ -155,13 +155,8 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
         // read samples into buffer
         ret = ov_read(&vf, pRead+index, needed, OV_ENDIAN_ARG, 2, 1, &current_section);
         
-        // if eof (ret==0) or error(ret<0) we fill the rest with zero
         if (ret <= 0) {
-            while (needed > 0) {
-                pRead[index] = 0;
-                index++;
-                needed--;
-            }
+	  return 0;
         }
     }
 
