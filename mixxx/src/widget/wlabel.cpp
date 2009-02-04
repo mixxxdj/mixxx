@@ -53,8 +53,8 @@ void WLabel::setup(QDomNode node)
 
     // Size
     QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.find(",")).toInt();
-    int y = size.mid(size.find(",")+1).toInt();
+    int x = size.left(size.indexOf(",")).toInt();
+    int y = size.mid(size.indexOf(",")+1).toInt();
     setFixedSize(x,y);
 
     // Alignment
@@ -77,7 +77,7 @@ void WLabel::move(int x, int y)
     m_pLabel->move(x,y);
 }
 
-void WLabel::setAlignment(int i)
+void WLabel::setAlignment(Qt::Alignment i)
 {
     m_pLabel->setAlignment(i);
 }
