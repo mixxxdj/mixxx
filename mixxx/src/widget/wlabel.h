@@ -35,7 +35,7 @@ public:
     void setup(QDomNode node);
     void move(int, int);
     void setFixedSize(int, int);
-    void setAlignment(int);
+    void setAlignment(Qt::Alignment);
     void setConstFactor(double);
 
 protected:
