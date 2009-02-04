@@ -11,6 +11,7 @@ AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
     m_pDetector = NULL;
 }
 
+
 void AnalyserBPM::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
@@ -76,4 +77,5 @@ void AnalyserBPM::finalise(TrackInfoObject *tio) {
     // Cleanup the BPM detector
     delete m_pDetector;
     m_pDetector = NULL;
+
 } 

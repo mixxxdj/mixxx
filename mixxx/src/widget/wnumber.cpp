@@ -54,10 +54,10 @@ void WNumber::setup(QDomNode node)
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
 
-    // Size
+    // Size //XXX this code is repeated, it should be in a parsing class
     QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.find(",")).toInt();
-    int y = size.mid(size.find(",")+1).toInt();
+    int x = size.left(size.indexOf(",")).toInt();
+    int y = size.mid(size.indexOf(",")+1).toInt();
     setFixedSize(x,y);
 
     // FWI: Begin of font size patch                                                    // FWI
@@ -86,8 +86,8 @@ void WNumber::setup(QDomNode node)
     }
 
     QString pos = selectNodeQString(node, "Pos");
-    int px = pos.left(pos.find(",")).toInt();
-    int py = pos.mid(pos.find(",")+1).toInt();
+    int px = pos.left(pos.indexOf(",")).toInt();
+    int py = pos.mid(pos.indexOf(",")+1).toInt();
     move(px,py);
     m_pLabel->show();
 }

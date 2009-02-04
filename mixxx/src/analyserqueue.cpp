@@ -47,6 +47,7 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 	const int ANALYSISBLOCKSIZE = 2*32768;
 
     int totalSamples = pSoundSource->length();
+    //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
     
 	SAMPLE data16[ANALYSISBLOCKSIZE];
@@ -69,16 +70,18 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 		QListIterator<Analyser*> it(m_aq);
 
 		while (it.hasNext()) {
-			it.next()->process(samples, read);
+			Analyser* an =  it.next();
+			//qDebug() << typeid(*an).name() << ".process()";
+			an->process(samples, read);
+			//qDebug() << "Done " << typeid(*an).name() << ".process()";
 		}
 
         // emit progress updates to whoever cares
         processedSamples += read;
         int progress = processedSamples*100/totalSamples;
         emit(trackProgress(tio, progress));
-
+	
 	} while(read == ANALYSISBLOCKSIZE);
-
 }
 
 void AnalyserQueue::stop() {
@@ -158,6 +161,10 @@ AnalyserQueue::~AnalyserQueue() {
     QListIterator<Analyser*> it(m_aq);
     
     while (it.hasNext()) {
-        delete it.next();
+        Analyser* an = it.next();
+	qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
+	delete an;
+
+
     }
 }
