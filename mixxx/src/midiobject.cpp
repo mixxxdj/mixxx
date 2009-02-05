@@ -192,18 +192,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
 
     //m_pMidiMappingtype,control,channel));
 //     qDebug() << "MidiObject: type:" << (int)type << "control:" << (int)control << "channel:" << (int)channel;
-    MidiCommand inputCommand(type, control, channel);
-
-    if (!m_pMidiMapping->isMidiCommandMapped(inputCommand))
-        return;
-
-    MidiControl midiControl = m_pMidiMapping->getInputMidiControl(inputCommand);
-//         qDebug() << "MidiObject: " << midiControl.getControlObjectGroup() << midiControl.getControlObjectValue();
-
-    //If there was no control bound to that MIDI command, return;
-
-    ConfigKey configKey(midiControl.getControlObjectGroup(), midiControl.getControlObjectValue());
-
+    
     if (midiLearn) {
         emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
         return; // Don't pass on controls when in dialog
@@ -213,6 +202,18 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         emit(debugInfo(new ConfigValueMidi(type,control,channel), value, device));
         return; // Don't pass on controls when in dialog
     }
+    
+    MidiCommand inputCommand(type, control, channel);
+
+    //If there was no control bound to that MIDI command, return;
+    if (!m_pMidiMapping->isMidiCommandMapped(inputCommand))
+        return;
+
+    MidiControl midiControl = m_pMidiMapping->getInputMidiControl(inputCommand);
+//         qDebug() << "MidiObject: " << midiControl.getControlObjectGroup() << midiControl.getControlObjectValue();
+
+    ConfigKey configKey(midiControl.getControlObjectGroup(), midiControl.getControlObjectValue());
+
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
