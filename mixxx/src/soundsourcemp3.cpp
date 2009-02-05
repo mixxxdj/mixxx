@@ -30,7 +30,13 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.read(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qDebug() << "MAD: ERR reading mp3-file: " << qFilename << "\nRead only " << tmp << "bytes, but wanted" << inputbuf_len << "bytes";
+        qDebug() << "MAD: ERR reading mp3-file: "
+                 << qFilename
+                 << "\nRead only "
+                 << tmp
+                 << "bytes, but wanted"
+                 << inputbuf_len
+                 << "bytes";
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -62,7 +68,11 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
                 }
             }
 
-            qDebug() << "MAD: ERR decoding header " << currentframe << ": " << mad_stream_errorstr(&Stream) << " (len=" << mad_timer_count(filelength,MAD_UNITS_MILLISECONDS) << ")";
+            qDebug() << "MAD: ERR decoding header "
+                     << currentframe << ": "
+                     << mad_stream_errorstr(&Stream)
+                     << " (len=" << mad_timer_count(filelength,MAD_UNITS_MILLISECONDS)
+                     << ")";
             continue;
         }
 
