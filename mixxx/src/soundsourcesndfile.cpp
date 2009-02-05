@@ -73,7 +73,10 @@ long SoundSourceSndFile::seek(long filepos)
 
 /*
    read <size> samples into <destination>, and return the number of
-   samples actually read.
+   samples actually read. A sample is a single float representing a
+   sample on one channel of the audio. In the case of a monaural file
+   then size/2 samples are read from the mono file, and they are
+   doubled into stereo.
  */
 unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination)
 {
@@ -83,34 +86,48 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
         if (channels==2)
         {
             unsigned long no = sf_read_short(fh, dest, size);
+
+            // rryan 2/2009 This code used to lie and say we read
+            // 'size' samples no matter what. I left this array
+            // zeroing code here in case the Reader doesn't check
+            // against this.
             for (unsigned long i=no; i<size; ++i)
                 dest[i] = 0;
-            return size;
+
+            return no;
         }
-        else
+        else if(channels==1)
         {
-            // If the file is not in stereo, make the returned buffer so.
-            int readNo = sf_read_short(fh, buffer, channels*size/2);
-            int j=0;
-            for (int i=0; i<readNo*channels; i+=channels)
-            {
-                dest[j] = buffer[i];
-                ++j;
-                if (channels>1)
-                    dest[j] = buffer[i+1];
-                else
-                    dest[j] = buffer[i];
-                ++j;
+            // We are not dealing with a stereo file. Read fewer
+            // samples than requested and double them because we
+            // pretend to every reader that all files are in stereo.
+            int readNo = sf_read_short(fh, dest, size/2);
+
+            // readNo*2 is strictly less than available buffer space
+
+            // rryan 2/2009
+            // Mini-proof of the below:
+            // size = 20, destination is a 20 element array 0-19
+            // readNo = 10 (or less, but 10 in this case)
+            // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
+            // so the first iteration touches the very ends of destination
+            // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
+            
+            for(int i=(readNo-1); i>=0; i--) {
+                dest[i*2]     = dest[i];
+                dest[(i*2)+1] = dest[i];
             }
-            return 2*readNo/channels;
+
+            // We doubled the readNo bytes we read into stereo.
+            return readNo * 2;
+        } else {
+            // We do not support music with more than 2 channels.
+            return 0;
         }
     }
-    else
-    {
-        for (unsigned int i=0; i<size; i++)
-            ((SAMPLE *)destination)[i] = 0;
-    }
-    return size;
+
+    // The file has errors or is not open. Tell the truth and return 0.
+    return 0;
 }
 
 int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )

@@ -26,9 +26,6 @@
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
 #endif
-#ifdef __AUDIOFILE__
-#include "soundsourceaudiofile.h"
-#endif
 #ifdef __FFMPEGFILE__
 #include "soundsourceffmpeg.h"
 #endif
@@ -45,18 +42,18 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename) : SoundSource(qFilename)
 #endif
     if (qFilename.toLower().endsWith(".mp3"))
         m_pSoundSource = new SoundSourceMp3(qFilename);
+    else if (qFilename.toLower().endsWith(".ogg"))
+        m_pSoundSource = new SoundSourceOggVorbis(qFilename);
 #ifdef __M4A__
     else if (qFilename.toLower().endsWith(".m4a"))
         m_pSoundSource = new SoundSourceM4A(qFilename);
 #endif
-    else if (qFilename.toLower().endsWith(".ogg"))
-        m_pSoundSource = new SoundSourceOggVorbis(qFilename);
-    else
 #ifdef __SNDFILE__
+    else if (qFilename.toLower().endsWith(".wav") ||
+	     qFilename.toLower().endsWith(".aif") ||
+	     qFilename.toLower().endsWith(".aiff") ||
+	     qFilename.toLower().endsWith(".flac"))
         m_pSoundSource = new SoundSourceSndFile(qFilename);
-#endif
-#ifdef __AUDIOFILE__
-        m_pSoundSource = new SoundSourceAudioFile(qFilename);
 #endif
 }
 
@@ -71,21 +68,19 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack) : SoundSource(pTrac
 
     if (qFilename.toLower().endsWith(".mp3"))
 	m_pSoundSource = new SoundSourceMp3(qFilename);
+    else if (qFilename.toLower().endsWith(".ogg"))
+	m_pSoundSource = new SoundSourceOggVorbis(qFilename);
 #ifdef __M4A__
     else if (qFilename.toLower().endsWith(".m4a"))
 	m_pSoundSource = new SoundSourceM4A(qFilename);
 #endif
-    else if (qFilename.toLower().endsWith(".ogg"))
-	m_pSoundSource = new SoundSourceOggVorbis(qFilename);
-    else
-    {
 #ifdef __SNDFILE__
+    else if (qFilename.toLower().endsWith(".wav") ||
+	     qFilename.toLower().endsWith(".aif") ||
+	     qFilename.toLower().endsWith(".aiff") ||
+	     qFilename.toLower().endsWith(".flac"))
 	m_pSoundSource = new SoundSourceSndFile(qFilename);
 #endif
-#ifdef __AUDIOFILE__
-	m_pSoundSource = new SoundSourceAudioFile(qFilename);
-#endif
-    }
 
     if(getSrate()) pTrack->setDuration(length()/(2*getSrate()));
     else pTrack->setDuration(0);
@@ -119,19 +114,18 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 #endif
     if (qFilename.toLower().endsWith(".mp3"))
 	return SoundSourceMp3::ParseHeader(p);
+    else if (qFilename.toLower().endsWith(".ogg"))
+	return SoundSourceOggVorbis::ParseHeader(p);
 #ifdef __M4A__
     else if (qFilename.toLower().endsWith(".m4a"))
 	return SoundSourceM4A::ParseHeader(p);
 #endif
-    else if (qFilename.toLower().endsWith(".ogg"))
-	return SoundSourceOggVorbis::ParseHeader(p);
-    else if (qFilename.toLower().endsWith(".wav") || qFilename.toLower().endsWith(".aif") ||
-	     qFilename.toLower().endsWith(".aiff") || qFilename.toLower().endsWith(".flac"))
 #ifdef __SNDFILE__
+    else if (qFilename.toLower().endsWith(".wav") ||
+	     qFilename.toLower().endsWith(".aif") ||
+	     qFilename.toLower().endsWith(".aiff") ||
+	     qFilename.toLower().endsWith(".flac"))
 	return SoundSourceSndFile::ParseHeader(p);
-#endif
-#ifdef __AUDIOFILE__
-    return SoundSourceAudioFile::ParseHeader(p);
 #endif
 
     return ERR;
