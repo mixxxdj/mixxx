@@ -145,7 +145,23 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // sample on the left and right channel. If the stream is stereo,
     // then ov_read interleaves the samples into the full length of
     // the buffer. 
-    needed = size*channels;
+    //needed = size*channels;
+
+    // The above comment is wrong.
+    if(channels == 2) {
+        // size is the maximum space we have in destination, so only
+        // read that many samples.
+        needed = size;
+    } else if(channels == 1) {
+        // We will read size/2 samples and double them into
+        // stereo. size is the maximum space we have in destination,
+        // so respect that.
+        needed = size/2;
+    } else {
+        // We don't support files with more than 2 channels.
+        qDebug() << "SoundSourceOggVorbis :: Mixxx does not support audio with more than two audio channels.";
+        return 0;
+    }
 
     // loop until requested number of samples has been retrieved
     while (needed > 0) {
@@ -156,22 +172,42 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
         ret = ov_read(&vf, pRead+index, needed, OV_ENDIAN_ARG, 2, 1, &current_section);
         
         if (ret <= 0) {
-	  return 0;
+            // An error or EOF occured, break out and return what we have sofar.
+            break;
         }
     }
 
     // convert into stereo if file is mono
     if (channels == 1) {
+        /*
         // index should always be divisible by two because it's
         // counting bytes when our word size is 2
         for(int i=(index/2); i>0; i--) {
             dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
         }
+        */
+
+        
+        // rryan 2/2009
+        // Mini-proof of the below:
+        // size = 20, destination is a 20 element array 0-19
+        // readNo = 10 (or less, but 10 in this case)
+        // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
+        // so the first iteration touches the very ends of destination
+        // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
+        
+        for(int i=(index-1); i>=0; i--) {
+            dest[i*2]     = dest[i];
+            dest[(i*2)+1] = dest[i];
+        }
+
+        // We doubled the index bytes we read into stereo.
+        return index*2;
     }
 
     // return the number of samples in buffer
-    return (index / channels);
+    return index;
 }
 
 /*

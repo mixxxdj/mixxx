@@ -319,10 +319,15 @@ bool SoundSourceFFmpeg::readInput(){
  */
 unsigned SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destination)
 {
+
+    qDebug() << "This code has a bug! It needs fixing before you use it.";
     char * dest = (char *) destination;
     char * src = NULL;
     int index = 0;
     int outsize = 0;
+
+    // rryan 2/2009 This is wrong! read()'s semantics are that
+    // destination has only 'size' free items.
     int needed = size*2; //*channels;
 
     lock();

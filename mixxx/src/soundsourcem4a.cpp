@@ -66,24 +66,45 @@ long SoundSourceM4A::seek(long filepos){
 
 unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destination){
 	if (filelength ==-1) return -1; // Abort if file did not load.
-	// We want to read a total of "size" samples, and the mp4_read() function wants to
-	// know how many bytes we want to decode. One sample is 16-bits = 2 bytes here, so we
-	// multiply size by 2 to get the number of bytes we want to decode.
+	// We want to read a total of "size" samples, and the mp4_read()
+	// function wants to know how many bytes we want to decode. One
+	// sample is 16-bits = 2 bytes here, so we multiply size by 2 to
+	// get the number of bytes we want to decode.
+
+    // rryan 2/2009 Can M4A files be non-stereo? If so, we need to
+    // replicate logic here similar to in other areas.
+    
 	int total_bytes_to_decode = size * 2;
 	int total_bytes_decoded = 0;
 	int num_samples_req = 4096;
 	do {
 		if (total_bytes_decoded + num_samples_req > total_bytes_to_decode)
 			num_samples_req = total_bytes_to_decode - total_bytes_decoded;
-		total_bytes_decoded += mp4_read(&ipd, (char *)&destination[total_bytes_decoded/2], num_samples_req);
+
+        int numRead = mp4_read(&ipd,
+                               (char *)&destination[total_bytes_decoded/2],
+                               num_samples_req);
+        if(numRead <= 0)
+            break;
+		total_bytes_decoded += numRead;
 	} while (total_bytes_decoded < total_bytes_to_decode);
-	// Tell us about it only if we end up decoding a different value then what we expect.
-	if (total_bytes_decoded % (size * 2)) qDebug() << "MP4READ: total_bytes_decoded:" << total_bytes_decoded << "size:" << size;
-	return total_bytes_decoded/2; //There are two bytes in a 16-bit sample, so divide by 2.
+    
+	// Tell us about it only if we end up decoding a different value
+	// then what we expect.
+    
+	if (total_bytes_decoded % (size * 2))
+        qDebug() << "MP4READ: total_bytes_decoded:"
+                 << total_bytes_decoded
+                 << "size:"
+                 << size;
+    
+    //There are two bytes in a 16-bit sample, so divide by 2.
+	return total_bytes_decoded/2;
 }
 
 inline long unsigned SoundSourceM4A::length(){
-     if (filelength == -1) return -1;
+     if (filelength == -1)
+         return -1;
      return channels * mp4_duration(&ipd) * SRATE;
 }
 
@@ -120,7 +141,9 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
    Track->setHeaderParsed(true);
    Track->setType("m4a");
 
-   int trackId = MP4FindTrackId(mp4file, 0); // We are only interested in first track for the initial dev iteration
+   // We are only interested in first track for the initial dev iteration
+   int trackId = MP4FindTrackId(mp4file, 0);
+   
    Track->setDuration(MP4ConvertFromTrackDuration(mp4file, trackId, MP4GetTrackDuration(mp4file, trackId), MP4_SECS_TIME_SCALE));
    Track->setBitrate(MP4GetTrackBitRate(mp4file, trackId)/1000);
    Track->setChannels(2); // FIXME: hard-coded to 2 channels - real value is not available until faacDecInit2 is called
