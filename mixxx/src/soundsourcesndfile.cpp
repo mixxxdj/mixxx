@@ -37,12 +37,6 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilenam
 
     channels = info->channels;
 
-    // Buffer only used when opening a non-stereo file
-    if (channels!=2)
-        buffer = new SAMPLE[MAX_BUFFER_LEN];
-    else
-        buffer = 0;
-
     filelength = 2*info->frames; // File length with two interleaved channels
     SRATE =  info->samplerate;
 }
@@ -52,9 +46,7 @@ SoundSourceSndFile::~SoundSourceSndFile()
     if (filelength > 0)
         sf_close(fh);
     delete info;
-    if (buffer)
-        delete [] buffer;
-};
+}
 
 long SoundSourceSndFile::seek(long filepos)
 {
