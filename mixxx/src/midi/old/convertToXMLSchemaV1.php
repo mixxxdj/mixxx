@@ -68,7 +68,7 @@ function convert_xml($file)
         
         foreach($oldControl->children() as $k => $v) {
             if (($k == "midino") || ($k == "midichan"))
-                $v = sprintf("0x%02x", $v);
+                $v = sprintf("0x%02x", (integer)$v);
             
             $control->addChild($k, $v);
         }
