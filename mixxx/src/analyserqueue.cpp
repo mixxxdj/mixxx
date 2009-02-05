@@ -162,7 +162,7 @@ AnalyserQueue::~AnalyserQueue() {
     
     while (it.hasNext()) {
         Analyser* an = it.next();
-	qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
+	//qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
 	delete an;
 
 
