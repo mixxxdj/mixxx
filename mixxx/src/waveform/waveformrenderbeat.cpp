@@ -40,17 +40,17 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
 }
 
 void WaveformRenderBeat::slotUpdateBpm(double v) {
-    qDebug() << "WaveformRenderBeat :: BPM = " << v;
+    //qDebug() << "WaveformRenderBeat :: BPM = " << v;
     m_dBpm = v;
 }
 
 void WaveformRenderBeat::slotUpdateBeatFirst(double v) {
-    qDebug() << "WaveformRenderBeat :: beatFirst = " << v;
+    //qDebug() << "WaveformRenderBeat :: beatFirst = " << v;
     m_dBeatFirst = v;
 }
 
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
-    qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
+    //qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
     m_iNumSamples = (int)samples;
 }
 
@@ -81,7 +81,7 @@ void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
     m_dSamplesPerDownsample = n;
     m_dSamplesPerPixel = double(f)/z;
     
-    qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
+    //qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
 
 }
 
