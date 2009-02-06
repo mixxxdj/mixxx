@@ -19,7 +19,6 @@
 
 #include <QEvent>
 #include <QtScript>
-#include <QMutex>
 #include "../configobject.h"
 #include "../midiobject.h"
 
@@ -83,13 +82,12 @@ class MidiScriptEngine : public QThread {
     Q_OBJECT
 
 public:
-    MidiScriptEngine();
+    MidiScriptEngine(MidiObject* midi_object);
     ~MidiScriptEngine();
 
     bool event(QEvent* e);
 
     QScriptValue engineGlobalObject;
-    QScriptEngine *getEngine();
 
     void clearCode();
     bool loadScript(QString filepath);
@@ -114,8 +112,8 @@ public:
 
     public slots:
     void slotValueChanged(double value);
+    
 protected:
-    QMutex m_mutex;
     void run();
 
 private:
@@ -126,8 +124,9 @@ private:
     QString m_lastFilepath;
     QString m_scriptCode;
     bool m_scriptGood;
-    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    MidiObject *m_pMidiObject;
     QHash<ConfigKey, QString> m_connectedControls;
+//     QHash<ConfigKey, ControlObjectThread*> m_controlCache;   // For qScriptConnect code
 };
 #endif
 
