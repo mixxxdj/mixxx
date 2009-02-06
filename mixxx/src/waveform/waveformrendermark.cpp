@@ -36,12 +36,12 @@ WaveformRenderMark::WaveformRenderMark(const char *group, ConfigKey key, Wavefor
 }
 
 void WaveformRenderMark::slotUpdateMarkPoint(double v) {
-    qDebug() << "WaveformRenderMark :: MarkPoint = " << v;
+    //qDebug() << "WaveformRenderMark :: MarkPoint = " << v;
     m_iMarkPoint = (int)v;
 }
 
 void WaveformRenderMark::slotUpdateTrackSamples(double samples) {
-    qDebug() << "WaveformRenderMark :: samples = " << int(samples);
+    //qDebug() << "WaveformRenderMark :: samples = " << int(samples);
     m_iNumSamples = (int)samples;
 }
 
