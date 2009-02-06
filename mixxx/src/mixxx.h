@@ -86,7 +86,7 @@ class MixxxApp : public QMainWindow
 
   public:
     /** Construtor. files is a list of command line arguments */
-    MixxxApp(QApplication *app, struct CmdlineArgs args, QSplashScreen *pSplash);
+    MixxxApp(QApplication *app, struct CmdlineArgs args);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */

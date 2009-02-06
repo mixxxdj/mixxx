@@ -99,6 +99,7 @@ void MessageOutput( QtMsgType type, const char * msg )
 
 QFile Logfile; // global logfile variable
 
+
 void MessageToLogfile( QtMsgType type, const char * msg )
 {
     Q3TextStream Log( &Logfile );
@@ -126,30 +127,82 @@ void MessageToLogfile( QtMsgType type, const char * msg )
 }
 
 
+/* Debug message handler which outputs to both a logfile and a
+ * and prepends the thread the message came from too.
+ *
+ *
+ */
+void MessageHandler( QtMsgType type, const char * input )
+{
+    QMutex m; //for locking around the warning box
+    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
+    QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
+    const char* s = ba.constData();
+    
+    
+    if(!Logfile.isOpen())
+    {
+    Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
+     
+#ifdef QT3_SUPPORT
+    Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+#else
+    Logfile.open(IO_WriteOnly | IO_Translate);
+#endif
+    }
+      
+    Q3TextStream Log( &Logfile );	
+    
+    switch ( type ) {
+    case QtDebugMsg:
+#ifdef __WIN32__  //wtf? -kousu 2/2009
+        if (strstr(input, "doneCurrent")) {
+            break;
+        }
+#endif
+        fprintf( stderr, "Debug: %s\n", s );
+        Log << "Debug: " << s << "\n";
+        break;
+    case QtWarningMsg:
+        m.lock();
+        fprintf( stderr, "Warning: %s\n", s);
+        Log << "Warning: " << s << "\n";
+        QMessageBox::warning(0, "Mixxx", s);
+        m.unlock();
+        break;
+    case QtCriticalMsg:
+        fprintf( stderr, "Critical: %s\n", s );
+        Log << "Critical: " << s << "\n";
+        QMessageBox::critical(0, "Mixxx", s);
+        exit(-1);
+        break; //NOTREACHED(?)
+    case QtFatalMsg:
+        fprintf( stderr, "Fatal: %s\n", s );
+        Log << "Fatal: " << s << "\n";
+        QMessageBox::critical(0, "Mixxx", s);
+        abort();
+        break; //NOTREACHED
+    }
+    Logfile.flush();
+}
+
+
 int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
 
 
+//it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
+	
+
 #ifdef __WIN32__
-    // For windows write all debug messages to a logfile:
-    Logfile.setName( "mixxx.log" );
-  #ifndef QT3_SUPPORT
-    Logfile.open(IO_WriteOnly | IO_Translate);
-  #else
-    Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-  #endif
   #ifdef DEBUGCONSOLE
     InitDebugConsole();
-    qInstallMsgHandler( MessageOutput );
-  #else
-    qInstallMsgHandler( MessageToLogfile );
   #endif
-#else
-    // For others, write to the console:
-    qInstallMsgHandler( MessageOutput );
 #endif
+    qInstallMsgHandler( MessageHandler );
 
+    QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
 
@@ -157,15 +210,6 @@ int main(int argc, char * argv[])
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
-
-    // Show splash
-    QSplashScreen * pSplash = 0;
-    /*
-       QPixmap pixmap("splash.png");
-       pSplash = new QSplashScreen(pixmap);
-       pSplash->show();
-       pSplash->message("Loading...",Qt::AlignLeft|Qt::AlignBottom);
-     */
 
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
@@ -184,7 +228,6 @@ int main(int argc, char * argv[])
     struct CmdlineArgs args;
     args.bStartInFullscreen = false; //Initialize vars
 
-    QString qLogFileName = "";
     for (int i=0; i<argc; ++i)
     {
         if (argv[i]==QString("-f") || argv[i]==QString("--f"))
@@ -242,7 +285,7 @@ int main(int argc, char * argv[])
      QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 #endif
 
-    MixxxApp * mixxx=new MixxxApp(a, args, pSplash);
+    MixxxApp * mixxx=new MixxxApp(a, args);
     
 
     //a->setMainWidget(mixxx);
@@ -252,15 +295,13 @@ int main(int argc, char * argv[])
     qDebug() << "Displaying mixxx";
     mixxx->show();
 
-    if (pSplash)
-    {
-        pSplash->finish(mixxx);
-        delete pSplash;
-    }
-
     qDebug() << "Running Mixxx";
     int result = a->exec();
     delete mixxx;
+    
+    if(Logfile.isOpen())
+	Logfile.close();
+    
     //delete plugin_paths;
     return result;
 }

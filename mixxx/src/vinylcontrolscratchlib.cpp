@@ -112,6 +112,9 @@ void VinylControlScratchlib::AnalyseSamples(short * samples, size_t size)
 
 void VinylControlScratchlib::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("VinylControlScratchlib %1").arg(++id));
+    
     int iTPS = 0;               // Timecodes per second
     dVinylPosition  = 0.0f;
     dVinylPitch             = 0.0f;

@@ -158,6 +158,9 @@ void MidiObjectPortMidi::devClose(QString device)
 
 void MidiObjectPortMidi::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("MidiObjectPortMidi %1").arg(++id));
+    
     qDebug() << QString("MidiObjectPortMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
     MidiObject::run();

@@ -62,7 +62,7 @@ extern "C" void crashDlg()
 }
 
 
-MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
+MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
 
@@ -134,17 +134,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
 
-
-    if (pSplash)
-        pSplash->showMessage("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
-
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
-
-
-    if (pSplash)
-        pSplash->showMessage("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Sample rate used by Player object
     ControlObject * sr = new ControlObject(ConfigKey("[Master]","samplerate"));
@@ -174,9 +166,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     soundmanager = new SoundManager(config, master);
     soundmanager->queryDevices();
-
-    if (pSplash)
-        pSplash->showMessage("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Find path of skin
     QString qSkinPath = getSkinPath();
@@ -243,9 +232,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     {
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
-
-    if (pSplash)
-        pSplash->showMessage("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")),

@@ -16,6 +16,7 @@ enum MidiInputTableIndices {
 
 class MidiInputMappingTableModel : public QAbstractTableModel
 {
+Q_OBJECT
 public:
     MidiInputMappingTableModel(MidiMapping* mapping);
     ~MidiInputMappingTableModel();

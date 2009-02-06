@@ -32,6 +32,8 @@ HerculesLinux::~HerculesLinux()
 
 void HerculesLinux::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("HerculesLinux %1").arg(++id));
 	clear_leds();
     while (1)
     {

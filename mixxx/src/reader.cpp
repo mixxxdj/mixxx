@@ -51,7 +51,7 @@ Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause, ConfigObject<Confi
 
 Reader::~Reader()
 {
-    if (running())
+    if (isRunning())
         stop();
 
     delete readerwave;
@@ -237,8 +237,11 @@ void Reader::newtrack()
 
 void Reader::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("Reader %1").arg(++id));
+
     //qDebug() << "Reader running...";
-#ifdef __APPLE__
+#ifdef __APPLE__ //why is this ifdef here and not inside rtThread()? -kousu 2/2009
     rtThread();
 #endif
 

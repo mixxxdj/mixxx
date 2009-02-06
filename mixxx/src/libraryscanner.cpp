@@ -42,6 +42,8 @@ LibraryScanner::~LibraryScanner()
 
 void LibraryScanner::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
     //Start scanning the library.
