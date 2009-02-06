@@ -38,9 +38,6 @@ class SoundSourceOggVorbis : public SoundSource {
   unsigned long filelength;
   OggVorbis_File vf;
   int current_section;
-  unsigned long ret, needed, index;
-  SAMPLE* dest;
-  char* pRead;
 };
 
 #endif

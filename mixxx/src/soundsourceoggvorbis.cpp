@@ -47,8 +47,6 @@
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) 
 : SoundSource(qFilename)
-, dest (0)
-, pRead(0)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
 
@@ -134,10 +132,10 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 
     Q_ASSERT(size%2==0);
     
-    pRead  = (char*) destination;
-    dest   = (SAMPLE*) destination;
+    char *pRead  = (char*) destination;
+    SAMPLE *dest   = (SAMPLE*) destination;
     
-    index  = ret = 0;
+    unsigned int index=0,ret=0,needed=0;
 
     // 'needed' is size of buffer in bytes. 'size' is size in SAMPLEs,
     // which is 2 bytes.  If the stream is mono, we read 'size' bytes,

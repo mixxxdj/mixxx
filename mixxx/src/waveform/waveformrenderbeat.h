@@ -6,6 +6,8 @@
 #include <QColor>
 #include <QVector>
 
+#include "renderobject.h"
+
 class QDomNode;
 class QPainter;
 class QPaintEvent;
@@ -16,12 +18,12 @@ class WaveformRenderer;
 class TrackInfoObject;
 class SoundSourceProxy;
 
-class WaveformRenderBeat : public QObject {
+class WaveformRenderBeat : public RenderObject {
     Q_OBJECT
 public:
+    WaveformRenderBeat(const char *group, WaveformRenderer *parent);
     void resize(int w, int h);
     void setup(QDomNode node);
-    WaveformRenderBeat(const char *group, WaveformRenderer *parent);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackInfoObject *pTrack);
 

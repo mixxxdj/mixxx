@@ -12,8 +12,10 @@
 #include <time.h>
 
 #include "waveformrenderer.h"
+#include "waveformrenderbackground.h"
 #include "waveformrenderbeat.h"
 #include "waveformrendermark.h"
+#include "waveformrendersignal.h"
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "controlobjectthreadmain.h"
@@ -25,31 +27,31 @@
 #define DEFAULT_PIXELS_PER_SECOND 100
 
 WaveformRenderer::WaveformRenderer(const char* group) :
-m_iWidth(0),
-m_iHeight(0),
-m_iNumSamples(0),
-bgColor(0,0,0),
-signalColor(255,255,255),
-colorMarker(255,255,255),
-colorBeat(255,255,255),
-colorCue(255,255,255),
-m_lines(0),
-m_iSubpixelsPerPixel(DEFAULT_SUBPIXELS_PER_PIXEL),
-m_iPixelsPerSecond(DEFAULT_PIXELS_PER_SECOND),
-m_pImage(),
-m_dPlayPos(0),
-m_dPlayPosOld(-1),
-m_iPlayPosTime(-1),
-m_iPlayPosTimeOld(-1),
-m_pTrack(NULL),
-m_backgroundPixmap(),
-m_bRepaintBackground(true),
-QObject()
+    m_iWidth(0),
+    m_iHeight(0),
+    m_iNumSamples(0),
+    bgColor(0,0,0),
+    signalColor(255,255,255),
+    colorMarker(255,255,255),
+    colorBeat(255,255,255),
+    colorCue(255,255,255),
+    m_lines(0),
+    m_iSubpixelsPerPixel(DEFAULT_SUBPIXELS_PER_PIXEL),
+    m_iPixelsPerSecond(DEFAULT_PIXELS_PER_SECOND),
+    m_pImage(),
+    m_dPlayPos(0),
+    m_dPlayPosOld(-1),
+    m_iPlayPosTime(-1),
+    m_iPlayPosTimeOld(-1),
+    m_pTrack(NULL),
+    QObject()
 {
     m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"visual_playposition")));
     if(m_pPlayPos != NULL)
         connect(m_pPlayPos, SIGNAL(valueChanged(double)), this, SLOT(slotUpdatePlayPos(double)));
 
+    m_pRenderBackground = new WaveformRenderBackground(group, this);
+    m_pRenderSignal = new WaveformRenderSignal(group, this);
     m_pRenderBeat = new WaveformRenderBeat(group, this);
     m_pRenderCue = new WaveformRenderMark(group, ConfigKey(group, "cue_point"), this);
 
@@ -85,6 +87,14 @@ WaveformRenderer::~WaveformRenderer() {
         delete m_pPlayPos;
     m_pPlayPos = NULL;
 
+    if(m_pRenderBackground)
+        delete m_pRenderBackground;
+    m_pRenderBackground = NULL;
+    
+    if(m_pRenderSignal)
+        delete m_pRenderSignal;
+    m_pRenderSignal = NULL;
+    
     if(m_pRenderBeat)
         delete m_pRenderBeat;
     m_pRenderBeat = NULL;
@@ -118,11 +128,9 @@ void WaveformRenderer::resize(int w, int h) {
 
     setupControlObjects();
 
-    // Need to repaint the background if we've been resized.
-    m_backgroundPixmap.resize(w,h);
-    m_bRepaintBackground = true;
-
     // Notify children that we've been resized
+    m_pRenderBackground->resize(w,h);
+    m_pRenderSignal->resize(w,h);
     m_pRenderBeat->resize(w,h);
     m_pRenderCue->resize(w,h);
 }
@@ -200,8 +208,9 @@ void WaveformRenderer::setup(QDomNode node) {
     colorCue.setNamedColor(WWidget::selectNodeQString(node, "CueColor"));
     colorCue = WSkinColor::getCorrectColor(colorCue);
 
+    m_pRenderBackground->setup(node);
+    m_pRenderSignal->setup(node);
     m_pRenderBeat->setup(node);
-
     m_pRenderCue->setup(node);
 }
 
@@ -296,55 +305,6 @@ bool WaveformRenderer::fetchWaveformFromTrack() {
 
     return true;
 }
-    
-
-
-void WaveformRenderer::drawSignalLines(QPainter *pPainter,double playpos, double rateAdjust) {
-    
-    if(m_pSampleBuffer == NULL) {
-        return;
-    }
-
-    int iCurPos = 0;
-    if(m_dPlayPos != -1) {
-        iCurPos = (int)(playpos*m_iNumSamples);
-    }
-        
-    if((iCurPos % 2) != 0)
-        iCurPos--;
-
-    pPainter->save();
-
-    double subpixelsPerPixel = m_iSubpixelsPerPixel * (1.0 + rateAdjust);
-    
-    int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
-
-    pPainter->scale(1.0/subpixelsPerPixel,m_iHeight*0.40);
-
-    // If the array is not large enough, expand it.
-    // Amortize the cost of this by requesting a factor of 2 more.
-    if(m_lines.size() < subpixelWidth) {
-        m_lines.resize(2*subpixelWidth);
-    }
-    
-    int halfw = subpixelWidth/2;
-    for(int i=0;i<subpixelWidth;i++) {
-        // Start at curPos minus half the waveform viewer
-        int thisIndex = iCurPos+2*(i-halfw);
-        if(thisIndex >= 0 && (thisIndex+1) < m_iNumSamples) {
-            float sampl = (*m_pSampleBuffer)[thisIndex];
-            float sampr = (*m_pSampleBuffer)[thisIndex+1];
-            m_lines[i] = QLineF(i,-sampr,i,sampl);
-        } else {
-            m_lines[i] = QLineF(0,0,0,0);
-        }
-    }
-
-    // Only draw lines that we have provided
-    pPainter->drawLines(m_lines.data(), subpixelWidth);
-
-    pPainter->restore();
-}
 
 void WaveformRenderer::drawSignalPixmap(QPainter *pPainter) {
 
@@ -393,28 +353,6 @@ void WaveformRenderer::drawSignalPixmap(QPainter *pPainter) {
 
 }
 
-
-void WaveformRenderer::generateBackgroundPixmap() {
-    QLinearGradient linearGrad(QPointF(0,0), QPointF(0,m_iHeight));
-    linearGrad.setColorAt(0.0, bgColor);
-    linearGrad.setColorAt(0.5, bgColor.light(180));
-    linearGrad.setColorAt(1.0, bgColor);
-      
-    // linearGrad.setColorAt(0.0, Qt::black);
-    // linearGrad.setColorAt(0.3, bgColor);
-    // linearGrad.setColorAt(0.7, bgColor);
-    // linearGrad.setColorAt(1.0, Qt::black);
-    QBrush brush(linearGrad);
-
-    QPainter newPainter;
-    newPainter.begin(&m_backgroundPixmap);
-    newPainter.fillRect(m_backgroundPixmap.rect(), brush);
-    newPainter.end();
-    
-    m_bRepaintBackground = false;
-}
-
-
 void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     double playposadjust = 0;
 
@@ -445,22 +383,19 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     */
 
     double playpos = m_dPlayPos;
-    
-    if(m_bRepaintBackground) {
-        generateBackgroundPixmap();
-    }
 
-    // Paint the background
-    pPainter->drawPixmap(m_backgroundPixmap.rect(), m_backgroundPixmap, pEvent->rect());
+    // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
+    double rateAdjust = math_min(0.99, m_dRate * m_dRateRange);
 
-    pPainter->setPen(signalColor);
-    
-    
     if(m_pSampleBuffer == NULL) {
         fetchWaveformFromTrack();
         if(m_pSampleBuffer != NULL)
             qDebug() << "Received waveform from track";
     }
+
+    m_pRenderBackground->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+
+    pPainter->setPen(signalColor);
 
     // Translate our coordinate frame from (0,0) at top left
     // to (0,0) at left, center. All the subrenderers expect this.
@@ -472,11 +407,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     // Draw the center horizontal line under the signal.
     pPainter->drawLine(QLine(0,0,m_iWidth,0));
 
-    // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
-    double rateAdjust = math_min(0.99, m_dRate * m_dRateRange);
-    
-    // Draw the signal
-    drawSignalLines(pPainter,playpos,rateAdjust);
+    m_pRenderSignal->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
 
     // Draw various markers.
     m_pRenderBeat->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);

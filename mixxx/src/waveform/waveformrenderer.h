@@ -12,6 +12,8 @@
 class TrackInfoObject;
 class ControlObjectThreadMain;
 class QDomNode;
+class WaveformRenderBackground;
+class WaveformRenderSignal;
 class WaveformRenderBeat;
 class WaveformRenderMark;
 class ControlObject;
@@ -24,7 +26,6 @@ public:
 
     void resize(int w, int h);
     void draw(QPainter* pPainter, QPaintEvent *pEvent);
-    void drawSignalLines(QPainter*, double playpos, double rateAdjust);
     void drawSignalPixmap(QPainter* p);
     void newTrack(TrackInfoObject *pTrack);
     void setup(QDomNode node);
@@ -37,7 +38,6 @@ public slots:
     void slotUpdateRateRange(double rate);
 
 private:
-    void generateBackgroundPixmap();
     void setupControlObjects();
     bool fetchWaveformFromTrack();
     int m_iWidth, m_iHeight;
@@ -49,8 +49,6 @@ private:
 
     QVector<float> *m_pSampleBuffer;
     QVector<QLineF> m_lines;
-    QPixmap m_backgroundPixmap;
-    bool m_bRepaintBackground;
     QPixmap *m_pPixmap;
     QImage m_pImage;
 
@@ -60,6 +58,8 @@ private:
     
     ControlObject *m_pCOVisualResample;
 
+    WaveformRenderBackground *m_pRenderBackground;
+    WaveformRenderSignal *m_pRenderSignal;
     WaveformRenderBeat *m_pRenderBeat;
     WaveformRenderMark *m_pRenderCue;
 

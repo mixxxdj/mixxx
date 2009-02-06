@@ -423,8 +423,11 @@ sources = Split("""
                 widget/wglwaveformviewer.cpp
                 waveformviewerfactory.cpp
                 waveform/waveformrenderer.cpp
+		waveform/waveformrenderbackground.cpp
+		waveform/waveformrendersignal.cpp
+		waveform/waveformrendermark.cpp	
                 waveform/waveformrenderbeat.cpp
-                waveform/waveformrendermark.cpp
+                
                 
                 imginvert.cpp
                 imgloader.cpp

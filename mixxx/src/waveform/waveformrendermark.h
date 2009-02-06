@@ -11,19 +11,19 @@ class QPainter;
 class QPaintEvent;
 
 #include "configobject.h"
-
+#include "renderobject.h"
 
 class ConfigKey;
 class ControlObjectThreadMain;
 class WaveformRenderer;
 class TrackInfoObject;
 
-class WaveformRenderMark : public QObject {
+class WaveformRenderMark : public RenderObject {
     Q_OBJECT
 public:
+    WaveformRenderMark(const char *group, ConfigKey key, WaveformRenderer *parent);
     void resize(int w, int h);
     void setup(QDomNode node);
-    WaveformRenderMark(const char *group, ConfigKey key, WaveformRenderer *parent);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackInfoObject *pTrack);
 
