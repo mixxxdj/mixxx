@@ -178,6 +178,9 @@ if os.name == 'nt':
 elif sys.platform == 'linux2':
 	print 'Platform: Linux'
 	platform = 'linux'
+elif 'bsd' in sys.platform:
+	print 'Platform: BSD'
+	platform = 'bsd'
 elif sys.platform == 'darwin':
 	print 'Platform: OS X'
 	platform = 'osx'
@@ -188,12 +191,12 @@ else:
 Export('platform')
 
 #Figure out what the QT path is
-if platform == 'linux':
-	default_qtdir = '/usr/share/qt4'
-elif platform == 'osx':
-	default_qtdir = '/usr/local/Trolltech/Qt-4.3.2/'
-elif platform == 'win32':
-	default_qtdir = 'C:\\qt\\4.3.0'
+#XXX this should be a dict lookup, not an ifelse tree
+default_qtdir = {'linux': '/usr/share/qt4',
+		'bsd': '/usr/local/lib/qt4',
+		'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
+		'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
+
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', default_qtdir)
@@ -213,7 +216,7 @@ else:
 #and on Windows where all the paths are set in the shell.
 if platform == 'linux':
 	env = Environment(tools=['default','qt4'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
- 	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
+	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 if platform == 'osx':
 	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['../', './', 'osx'], ENV = os.environ)
@@ -464,7 +467,8 @@ elif platform == 'win32':
 elif platform == 'osx':
 	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
 	env.Append(CXXFLAGS = '-D__COREMIDI__')
-
+elif platform == 'bsd':
+	print 'Warning: Mixxx has no support for BSD midi (yet).' #uuuuhhhh not a very good solution
 
 #Set up the library path on Windows:
 if platform == 'win32':
@@ -472,6 +476,9 @@ if platform == 'win32':
 	env.Append(LIBPATH='../../../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 #'/subsystem:windows',
+elif platform == 'bsd':
+	env.Append(CXXFLAGS='-I/usr/local/include')
+	env.Append(LIBPATH='/usr/local/lib/')
 
 #Check for dependencies if we're not doing a clean...
 
@@ -482,7 +489,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
-	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C') and not (platform == 'win32' and conf.CheckLib(['portaudio'])):
+	if not (conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C') or (platform == 'win32' and conf.CheckLib(['portaudio']))):
 		print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 		Exit(1)
 
@@ -517,7 +524,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	
 
 	#Platform-specific checks for Linux and Win32...
-	if platform == 'linux' or platform == 'win32':
+	if platform in ('linux', 'bsd', 'win32'):
 		#Check for libsndfile
 		#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
 		if not conf.CheckLib(['sndfile', 'libsndfile']):
@@ -635,7 +642,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 
 #Declare the flags for Mixxx's config/track listing files:
-if platform == 'linux':
+if platform in ('linux', 'bsd'):
 	env.Append(CXXFLAGS = '-DTEMPORAL -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 	env.Append(CXXFLAGS = '-DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
 elif platform == 'osx':

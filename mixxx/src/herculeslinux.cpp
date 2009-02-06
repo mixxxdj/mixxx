@@ -228,6 +228,10 @@ void HerculesLinux::closedev() {}
 
 
 void HerculesLinux::run() {
+
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("HerculesLinux %1").arg(++id));
+    
     #ifdef __THOMAS_HERC__
     double l;
     double r;

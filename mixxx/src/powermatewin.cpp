@@ -66,6 +66,9 @@ bool PowerMateWin::opendev()
 
 void PowerMateWin::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("PowerMateWin %1").arg(++id));
+    
     char * pBuffer = new char[6];
     for (int i=0; i<6; i++)
         pBuffer[i] = 0;

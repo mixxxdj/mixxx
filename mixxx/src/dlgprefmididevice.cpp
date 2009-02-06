@@ -59,7 +59,7 @@ DlgPrefMidiDevice::DlgPrefMidiDevice(QWidget *parent, MidiObject *midi, ConfigOb
     connect(comboMidiRxEnable, SIGNAL(currentIndexChanged(int)), this, SLOT(slotUpdateEnabled()));
     connect(comboMidiTxEnable, SIGNAL(currentIndexChanged(int)), this, SLOT(slotUpdateEnabled()));
     // Connect load preset button
-    connect(btnLoadDefaults, SIGNAL(clicked()), this, SLOT(slotLoadPreset()));
+    //connect(btnLoadDefaults, SIGNAL(clicked()), this, SLOT(slotLoadPreset())); //slot doesn't exist yet so shut up Mixxx at boot time with a comment
 			
     tblDebug->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 

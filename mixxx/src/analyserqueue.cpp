@@ -90,6 +90,8 @@ void AnalyserQueue::stop() {
 
 void AnalyserQueue::run() {
 
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
 	while (!m_exit) {
 
 		TrackInfoObject* next = dequeueNextBlocking();

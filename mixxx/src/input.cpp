@@ -54,6 +54,9 @@ Input::~Input()
 
 void Input::run()
 {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("Input %1").arg(++id));
+    
     while (1)
         getNextEvent();
 }

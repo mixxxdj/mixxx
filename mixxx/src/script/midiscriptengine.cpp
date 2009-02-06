@@ -112,6 +112,9 @@ bool MidiScriptEngine::event(QEvent* e) {
    Output: -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::run() {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("MidiScriptEngine %1").arg(++id));
+
   //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     // Create the MidiScriptEngine
