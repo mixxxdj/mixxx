@@ -36,7 +36,7 @@ static QString toHex(QString numberStr) {
 }
 
 MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(midi_object) {
-//     m_pMidiObject = midi_object;
+
     m_pScriptEngine = midi_object.getMidiScriptEngine();
 
     m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(this);

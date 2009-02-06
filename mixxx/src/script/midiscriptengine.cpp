@@ -22,10 +22,6 @@
 #include "../controlobject.h"
 #include "../controlobjectthread.h"
 
-#include <QMutexLocker>
-
-// QMutex MidiScriptEngine::m_mutex;
-
 ExecuteEvent::ExecuteEvent(QString function) :
     QEvent(EXECUTE_EVENT_TYPE),
     m_function(function),
@@ -50,16 +46,10 @@ ExecuteEvent::ExecuteEvent(QString function,
 {
 }
 
-
-
-/* -------- ------------------------------------------------------
-   Purpose: Open script file, read into QString
-   Input:   Path to script file
-   Output:  -
-   -------- ------------------------------------------------------ */
-MidiScriptEngine::MidiScriptEngine() :
+MidiScriptEngine::MidiScriptEngine(MidiObject* midi_object) :
     m_pEngine(NULL)
 {
+    m_pMidiObject = midi_object;
     // rryan 1/30 commented -- now started after the object is moveToThread'd
     // Start the thread.
     //start();
@@ -127,6 +117,7 @@ void MidiScriptEngine::run() {
     // 'engine'.
     engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
+    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiObject));
     
     // Run the Qt event loop indefinitely 
     exec();
@@ -180,7 +171,6 @@ void MidiScriptEngine::clearCode() {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::evaluateScript() {
-//     QMutexLocker locker(&m_mutex);  //Prevent more than one thread using the ScriptEngine at a time
 //    qDebug() << QString("MidiScriptEngine: AllEval Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     
     if(m_pEngine == NULL) {
@@ -233,7 +223,6 @@ bool MidiScriptEngine::execute(QString function, char channel, QString device, c
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function) {
-//     QMutexLocker locker(&m_mutex);  //Prevent more than one thread using the ScriptEngine at a time
   // qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
@@ -260,7 +249,6 @@ bool MidiScriptEngine::safeExecute(QString function) {
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, char channel, QString device, char control, char value,  MidiCategory category) {
-//     QMutexLocker locker(&m_mutex);  //Prevent more than one thread using the ScriptEngine at a time
 //     qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
@@ -333,15 +321,6 @@ bool MidiScriptEngine::isGood() {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::isReady() {
     return m_pEngine != NULL;
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Return a pointer to the script engine for Global Object access
-   Input:   -
-   Output:  m_pEngine QScriptEngine
-   -------- ------------------------------------------------------ */
-QScriptEngine * MidiScriptEngine::getEngine() {
-    return m_pEngine;
 }
 
 /* -------- ------------------------------------------------------
@@ -440,9 +419,6 @@ void MidiScriptEngine::trigger(QString group, QString name) {
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
     ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
     
-//     qDebug() << QString("MidiScriptEngine: Connect: ControlObject Thread ID=%1").arg(cobj->thread()->currentThreadId(),0,16);
-    
-//     QMutexLocker locker(&m_mutex);  // Prevent more than one thread using the ScriptEngine at a time
     //   qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {

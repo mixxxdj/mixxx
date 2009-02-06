@@ -44,15 +44,14 @@ MidiObject::MidiObject()
 
 #ifdef __MIDISCRIPT__
     //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    m_pScriptEngine = new MidiScriptEngine();
+    m_pScriptEngine = new MidiScriptEngine(this);
 
     m_pScriptEngine->start();
     // Wait for the m_pScriptEngine to initialize
     while(!m_pScriptEngine->isReady()) ;
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
-
-    m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
+//     m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
     m_pMidiMapping = new MidiMapping(*this);
     m_pMidiMapping->loadInitialPreset();
 #endif
