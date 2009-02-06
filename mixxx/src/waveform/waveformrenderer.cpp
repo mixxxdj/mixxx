@@ -35,7 +35,6 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     colorMarker(255,255,255),
     colorBeat(255,255,255),
     colorCue(255,255,255),
-    m_lines(0),
     m_iSubpixelsPerPixel(DEFAULT_SUBPIXELS_PER_PIXEL),
     m_iPixelsPerSecond(DEFAULT_PIXELS_PER_SECOND),
     m_pImage(),
@@ -124,7 +123,6 @@ void WaveformRenderer::slotUpdateRateRange(double v) {
 void WaveformRenderer::resize(int w, int h) {
     m_iWidth = w;
     m_iHeight = h;
-    m_lines.resize(w*m_iSubpixelsPerPixel);
 
     setupControlObjects();
 
@@ -427,7 +425,9 @@ void WaveformRenderer::newTrack(TrackInfoObject* pTrack) {
     m_iNumSamples = 0;
     m_dPlayPos = 0;
     m_dPlayPosOld = 0;
-    
+
+    m_pRenderBackground->newTrack(pTrack);
+    m_pRenderSignal->newTrack(pTrack);
     m_pRenderBeat->newTrack(pTrack);
     m_pRenderCue->newTrack(pTrack);
 }
