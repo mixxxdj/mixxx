@@ -48,7 +48,6 @@ private:
     double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange;
 
     QVector<float> *m_pSampleBuffer;
-    QVector<QLineF> m_lines;
     QPixmap *m_pPixmap;
     QImage m_pImage;
 
