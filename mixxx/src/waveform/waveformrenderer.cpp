@@ -43,6 +43,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_iPlayPosTime(-1),
     m_iPlayPosTimeOld(-1),
     m_pTrack(NULL),
+    m_pSampleBuffer(NULL),
     QObject()
 {
     m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"visual_playposition")));
