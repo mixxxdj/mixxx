@@ -145,23 +145,15 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // sample on the left and right channel. If the stream is stereo,
     // then ov_read interleaves the samples into the full length of
     // the buffer. 
-    //needed = size*channels;
 
-    // The above comment is wrong.
-    if(channels == 2) {
-        // size is the maximum space we have in destination, so only
-        // read that many samples.
-        needed = size;
-    } else if(channels == 1) {
-        // We will read size/2 samples and double them into
-        // stereo. size is the maximum space we have in destination,
-        // so respect that.
-        needed = size/2;
-    } else {
-        // We don't support files with more than 2 channels.
-        qDebug() << "SoundSourceOggVorbis :: Mixxx does not support audio with more than two audio channels.";
-        return 0;
-    }
+    // ov_read speaks bytes, we speak words.  needed is the bytes to
+    // read, not words to read.
+
+    // size is the maximum space in words that we have in
+    // destination. For stereo files, read the full buffer (size*2
+    // bytes). For mono files, only read half the buffer (size bytes),
+    // and we will double the buffer to be in stereo later. 
+    needed = size * channels;
 
     // loop until requested number of samples has been retrieved
     while (needed > 0) {
@@ -179,16 +171,6 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 
     // convert into stereo if file is mono
     if (channels == 1) {
-        /*
-        // index should always be divisible by two because it's
-        // counting bytes when our word size is 2
-        for(int i=(index/2); i>0; i--) {
-            dest[i*2]     = dest[i];
-            dest[(i*2)+1] = dest[i];
-        }
-        */
-
-        
         // rryan 2/2009
         // Mini-proof of the below:
         // size = 20, destination is a 20 element array 0-19
@@ -196,18 +178,17 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
         // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
         // so the first iteration touches the very ends of destination
         // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
+
+        // index is the total bytes read, so index/2 is the total words read
         
-        for(int i=(index-1); i>=0; i--) {
+        for(int i=(index/2-1); i>=0; i--) {
             dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
         }
-
-        // We doubled the index bytes we read into stereo.
-        return index*2;
     }
 
-    // return the number of samples in buffer
-    return index;
+    // index is the total bytes read, so the words read is index/2
+    return index / 2;
 }
 
 /*
