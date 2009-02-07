@@ -2,7 +2,7 @@ function scratchTest() {}
 
 // ----------   Global variables    ----------
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-scratchTest.scratch = { "time":0.0, "track":0.0, "trackInitial":0.0, "slider":0, "scratch":0.0, "revtime":0.3, "alpha":0.1, "beta":0.02 };
+scratchTest.scratch = { "time":0.0, "track":0.0, "trackInitial":0.0, "slider":0, "scratch":0.0, "revtime":0.8, "alpha":0.1, "beta":0.1 };
 scratchTest.deck = 1;  // Currently active virtual deck
 scratchTest.modifier = { };  // Held-button modifiers
 
@@ -69,7 +69,7 @@ scratchTest.scratchSlider = function (channel, device, control, value) {   // Ma
     var newTime = new Date()/1000;
     var dt = newTime - scratchTest.scratch["time"];
     scratchTest.scratch["time"] = newTime;
-    print("dt="+dt);
+//     print("dt="+dt);
 
     // predicted_p = p + dt * pitch; // Where "pitch" = 1.0 for regular speed, i.e. the "scratch" control.
     var predicted_p = engine.getValue("[Channel"+scratchTest.deck+"]","playposition") * engine.getValue("[Channel"+scratchTest.deck+"]","duration") + dt * scratchTest.scratch["scratch"];
@@ -78,7 +78,7 @@ scratchTest.scratchSlider = function (channel, device, control, value) {   // Ma
     // p += rx * ALPHA;
     scratchTest.scratch["track"] += rx * scratchTest.scratch["alpha"];
     // v += rx * BETA / dt;
-    scratchTest.scratch["scratch"] += rx * scratchTest.scratch["beta"] / dt;
+    scratchTest.scratch["scratch"] = rx * scratchTest.scratch["beta"] / dt;
     
     print("Ideal position="+ideal+", Predicted position="+predicted_p + ", New track pos=" + scratchTest.scratch["track"] + ", New scratch val=" + scratchTest.scratch["scratch"]);
     
@@ -93,6 +93,8 @@ scratchTest.scratchEnable = function (channel, device, control, value, category)
         // Store scratch info the point it was touched
         scratchTest.scratch["time"] = new Date()/1000;   // Current time in seconds
         scratchTest.scratch["trackInitial"] = scratchTest.scratch["track"] = engine.getValue("[Channel"+scratchTest.deck+"]","playposition") * engine.getValue("[Channel"+scratchTest.deck+"]","duration");    // Current position in seconds
+        if (engine.getValue("[Channel"+scratchTest.deck+"]","play") > 0) scratchTest.scratch["scratch"] = -1.0;   // Stop the deck
+        else scratchTest.scratch["scratch"] = 0.0;
 //         scratchTest.scratch["track"] = 1.0; // for asantoni's algorithm
         
         print("Initial: time=" + scratchTest.scratch["time"] + "s, track=" + scratchTest.scratch["track"] + "s");
