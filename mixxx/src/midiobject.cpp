@@ -51,7 +51,6 @@ MidiObject::MidiObject()
     while(!m_pScriptEngine->isReady()) ;
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
-//     m_pScriptEngine->engineGlobalObject.setProperty("midi", m_pScriptEngine->getEngine()->newQObject(this));
     m_pMidiMapping = new MidiMapping(*this);
     m_pMidiMapping->loadInitialPreset();
 #endif
