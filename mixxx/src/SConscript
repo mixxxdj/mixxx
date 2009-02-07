@@ -1126,13 +1126,13 @@ else:
 binary_files = mixxx_bin;
 
 #Skins
-skin_files = glob.glob('../skins/*')
+skin_files = glob.glob('../../res/skins/*')
 
 #MIDI mappings
-midimappings_files = glob.glob('../midi/*')
+midimappings_files = glob.glob('../../res/midi/*')
 
 #Keyboard mapping(s)
-keyboardmappings_files = glob.glob('../keyboard/*')
+keyboardmappings_files = glob.glob('../../res/keyboard/*')
 
 #Promo tracks
 promotracks_files = glob.glob('../../promo/*')
