@@ -82,7 +82,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
-    setWindowIcon(QIcon(":icon.svg"));
+    setWindowIcon(QIcon(":/images/icon.svg"));
 
     //Reset pointer to players
     soundmanager = 0;
