@@ -18,8 +18,8 @@
     <file>images/preferences/vinyl.png</file>
     <file>images/preferences/broadcast.svg</file>
     <file>images/preferences/broadcast.png</file>
-    <file>mixxx-icon.png</file>
-    <file>iconsmall.png</file>
-    <file>icon.svg</file>
+    <file>images/mixxx-icon.png</file>
+    <file>images/iconsmall.png</file>
+    <file>images/icon.svg</file>
 </qresource>
 </RCC>

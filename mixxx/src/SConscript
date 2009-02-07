@@ -712,8 +712,8 @@ env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgaboutdlg.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
-env.Qrc('mixxx.qrc')
-sources += Split(""" qrc_mixxx.cc """)
+env.Qrc('../../res/mixxx.qrc')
+sources += Split(""" ../../res/qrc_mixxx.cc """)
 
 if platform == 'win32':
 	env.RES('mixxx.rc')
@@ -1146,13 +1146,13 @@ docs_files += glob.glob('../../README')
 docs_files += glob.glob('../../Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = glob.glob('../mixxx.desktop')
+dotdesktop_files = glob.glob('../../res/images/mixxx.desktop')
 
 #Icon file for menu entry
-icon_files = glob.glob('../mixxx-icon.png')
+icon_files = glob.glob('../../res/images/mixxx-icon.png')
 
 #Images for preferences dialog
-image_files = glob.glob('../images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
+image_files = glob.glob('../../res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
 dll_files = glob.glob('../../../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
