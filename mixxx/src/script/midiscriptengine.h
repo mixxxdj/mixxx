@@ -19,63 +19,11 @@
 
 #include <QEvent>
 #include <QtScript>
-#include "../configobject.h"
-#include "../midiobject.h"
-
-const QEvent::Type EXECUTE_EVENT_TYPE = QEvent::Type(QEvent::User + 128);
-
-class ExecuteEvent : public QEvent {
-    public:
-    ExecuteEvent(QString function);
-    ExecuteEvent(QString function,
-                 char channel,
-                 QString device,
-                 char control,
-                 char value,
-                 MidiCategory category);
-
-    inline bool isSimple() {
-        return m_bSimple;
-    }
-    
-    inline QString function() {
-        return m_function;
-    }
-    
-    inline char channel() {
-        return m_channel;
-    }
-    
-    inline QString device() {
-        return m_device;;
-    }
-    
-    inline char control() {
-        return m_control;
-    }
-    
-    inline char value() {
-        return m_value;
-    }
-    
-    inline MidiCategory category() {
-        return m_category;
-    }
-
-private:
-    bool m_bSimple;
-    QString m_function;
-    char m_channel;
-    QString m_device;
-    char m_control;
-    char m_value;
-    MidiCategory m_category;
-};
-
+#include "configobject.h"
+#include "midiobject.h"
 
 //Forward declaration(s)
 class ControlObjectThread;
-// class MidiObject;
 
 class MidiScriptEngine : public QThread {
 
@@ -85,48 +33,66 @@ public:
     MidiScriptEngine(MidiObject* midi_object);
     ~MidiScriptEngine();
 
-    bool event(QEvent* e);
+    // Returns true if the MidiScriptEngine is ready for use.
+    bool isReady() {
+        return m_pEngine != NULL;
+    }
 
-    QScriptValue engineGlobalObject;
+    bool hasErrors(QString filename);
+    const QStringList getErrors(QString filename);
 
-    void clearCode();
-    bool loadScript(QString filepath);
-    QString getResult();
-    QString getLastFilepath();
+    // Evaluate a script file
+    bool evaluate(QString filepath);
+    // Execute a particular function
+    bool execute(QString function); 
+    // Execute a particular function with all the data
+    bool execute(QString function, char channel,
+                 QString device, char control,
+                 char value, MidiCategory category); 
 
-    void evaluateScript();  // The whole thing
-    bool isGood();  // The whole thing
-    bool isReady();
-    
-    bool execute(QString function); // A particular function
-    bool execute(QString function, char channel, QString device, char control, char value, MidiCategory category); // A particular function with all the data
-    
-    QStringList getFunctionList();
-    
-    bool checkException();  // The most recent operation
+    // Lookup registered script functions
+    QStringList getScriptFunctions();
 
+    /* DO NOT CALL DIRECTLY,
+       SHOULD ONLY BE CALLED FROM WITHIN SCRIPTS */
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
-    Q_INVOKABLE bool connectControl(QString group, QString name, QString function, bool disconnect = false);
+    Q_INVOKABLE bool connectControl(QString group, QString name,
+                                    QString function, bool disconnect = false);
     Q_INVOKABLE void trigger(QString group, QString name);
 
-    public slots:
+public slots:
     void slotValueChanged(double value);
     
+signals:
+    void sigEvaluate(QString filename);
+    void sigExecute(QString function);
+    void sigExecute(QString function, char channel,
+                    QString device, char control,
+                    char value, MidiCategory category);
+                                                      
+private slots:
+    bool safeEvaluate(QString filename);
+    bool safeExecute(QString function);
+    bool safeExecute(QString function, char channel,
+                     QString device, char control,
+                     char value, MidiCategory category);
+
 protected:
     void run();
 
 private:
-    bool safeExecute(QString function, char channel, QString device, char control, char value, MidiCategory category);
-    bool safeExecute(QString function);
-    QScriptEngine *m_pEngine;
-    QScriptValue m_scriptFunction;
-    QString m_lastFilepath;
-    QString m_scriptCode;
-    bool m_scriptGood;
+    void generateScriptFunctions(QString code);
+    bool checkException();
+
     MidiObject *m_pMidiObject;
     QHash<ConfigKey, QString> m_connectedControls;
-//     QHash<ConfigKey, ControlObjectThread*> m_controlCache;   // For qScriptConnect code
+    QScriptEngine *m_pEngine;
+    QStringList m_scriptFunctions;
+    QMap<QString,QStringList> m_scriptErrors;
+    
+//     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 };
+
 #endif
 

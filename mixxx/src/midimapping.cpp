@@ -228,54 +228,32 @@ void MidiMapping::loadPreset(QDomElement root) {
         // Load Script files
         ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
 
-        // Individually load & evaluate script files in the QList to check for errors
-        // so line numbers will be accurate per file (for syntax errors at least) to make troubleshooting much easier
-        bool scriptError = false;
-
-        for (int i=0; i<m_pScriptFileNames.size(); i++) {
-            m_pScriptEngine->clearCode();   // So line numbers will be correct
-
-            QString filename = m_pScriptFileNames.at(i);
-            qDebug() << "MidiMapping: Loading & testing MIDI script" << filename;
-            m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(filename));
-
-            m_pScriptEngine->evaluateScript();
-            if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiMapping: Success";
-            else {
-                // This is only included for completeness since checkException should pop a qCritical() itself if there's a problem
-                qCritical() << "MidiMapping: Failure evaluating MIDI script" << filename;
-                scriptError = true;
-            }
-        }
-
         qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
-        m_pScriptEngine->clearCode();   // Start from scratch
 
-        if (!scriptError) {
-            QListIterator<QString> it(m_pScriptFileNames);
-            while (it.hasNext()) {
-                QString curScriptFileName = it.next();
-                m_pScriptEngine->loadScript(m_pConfig->getConfigPath().append("midi/").append(curScriptFileName));
+        QListIterator<QString> it(m_pScriptFileNames);
+        while (it.hasNext()) {
+            QString curScriptFileName = it.next();
+            m_pScriptEngine->evaluate(m_pConfig->getConfigPath().append("midi/").append(curScriptFileName));
+
+            if(m_pScriptEngine->hasErrors(curScriptFileName)) {
+                qDebug() << "Errors occured while loading " << curScriptFileName;
             }
+            
+        }
 
-            m_pScriptEngine->evaluateScript();
-            if (!m_pScriptEngine->checkException() && m_pScriptEngine->isGood()) qDebug() << "MidiMapping: Script code evaluated successfully";
-
-            // Call each script's init function if it exists
-            QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
-            while (prefixIt.hasNext()) {
-                QString initName = prefixIt.next();
-                if (initName!="") {
-                    initName.append(".init");
-                    qDebug() << "MidiMapping: Executing" << initName;
-                    if (!m_pScriptEngine->execute(initName)) qWarning() << "MidiMapping: No" << initName << "function in script";
-                }
+        // Call each script's init function if it exists
+        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
+        while (prefixIt.hasNext()) {
+            QString initName = prefixIt.next();
+            if (initName!="") {
+                initName.append(".init");
+                qDebug() << "MidiMapping: Executing" << initName;
+                if (!m_pScriptEngine->execute(initName))
+                    qWarning() << "MidiMapping: No" << initName << "function in script";
             }
         }
 
-        bool scriptGood = m_pScriptEngine->isGood();
-        QStringList scriptFunctions;
-        if (scriptGood) scriptFunctions = m_pScriptEngine->getFunctionList();
+        QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
 
 #endif
 
@@ -289,7 +267,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             MidiControl midiControl(control);
 #ifdef __MIDISCRIPT__
             // Verify script functions are loaded
-            if (scriptGood && midiControl.getMidiOption()==MIDI_OPT_SCRIPT && scriptFunctions.indexOf(midiControl.getControlObjectValue())==-1) {
+            if (midiControl.getMidiOption()==MIDI_OPT_SCRIPT && scriptFunctions.indexOf(midiControl.getControlObjectValue())==-1) {
                 // Need some way to signal to the dialog that this control will not be bound instead of just dying
                 qCritical() << "Error: Function" << midiControl.getControlObjectValue() << "was not found in loaded scripts.";
             } else {
