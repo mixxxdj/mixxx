@@ -23,7 +23,8 @@ StantonSCS3d.modeSurface = { "fx":"S3+S5", "eq":"S3+S5", "loop":"Buttons", "trig
 StantonSCS3d.surface = { "C1":0x00, "S5":0x01, "S3":0x02, "S3+S5":0x03, "Buttons":0x04 };
 StantonSCS3d.sysex = [0xF0, 0x00, 0x01, 0x60];  // Preamble for all SysEx messages for this device
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-StantonSCS3d.scratch = { "time":0.0, "track":0.0, "trackInitial":0.0, "slider":0, "scratch":0.0, "revtime":0.3, "alpha":0.1, "beta":0.02 };
+StantonSCS3d.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0 };
+// StantonSCS3d.scratch = { "time":0.0, "track":0.0, "trackInitial":0.0, "slider":0, "scratch":0.0, "revtime":3.6, "alpha":0.1, "beta":1.0 };
 // Multiple cue points:
 StantonSCS3d.triggerPoints1 = { 0x48:-0.1, 0x4A:-0.1, 0x4C:-0.1, 0x4E:-0.1, 0x4F:-0.1, 0x51:-0.1, 0x53:-0.1, 0x55:-0.1 };
 StantonSCS3d.triggerPoints2 = { 0x48:-0.1, 0x4A:-0.1, 0x4C:-0.1, 0x4E:-0.1, 0x4F:-0.1, 0x51:-0.1, 0x53:-0.1, 0x55:-0.1 }; 
@@ -612,8 +613,8 @@ StantonSCS3d.S4relative = function (channel, device, control, value) {
 StantonSCS3d.S3absolute = function (channel, device, control, value) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     switch (currentMode) {
-        case "fx": absoluteSlider("[Flanger]","lfoDepth",value,0,1); break;
-        case "eq": absoluteEQ("[Channel"+StantonSCS3d.deck+"]","filterLow",value); break;
+        case "fx": script.absoluteSlider("[Flanger]","lfoDepth",value,0,1); break;
+        case "eq": script.absoluteEQ("[Channel"+StantonSCS3d.deck+"]","filterLow",value); break;
     }
 }
 
@@ -627,17 +628,10 @@ StantonSCS3d.S4absolute = function (channel, device, control, value) {
         return;
     }
     switch (currentMode) {
-        case "fx": absoluteSlider("[Flanger]","lfoDelay",value,50,10000); break;
-        case "eq": absoluteEQ("[Channel"+StantonSCS3d.deck+"]","filterMid",value); break;
-        case "vinyl":   // Make scratching sound good
+        case "fx": script.absoluteSlider("[Flanger]","lfoDelay",value,50,10000); break;
+        case "eq": script.absoluteEQ("[Channel"+StantonSCS3d.deck+"]","filterMid",value); break;
+        case "vinyl":   // Scratching
 //         break;
-                // Skip if the track start position hasn't been set yet
-                if (StantonSCS3d.scratch["track"] == 0.0) break;
-                // If the slider start position hasn't been set yet, set it
-                if (StantonSCS3d.scratch["slider"] == 0) {
-                    StantonSCS3d.scratch["slider"] = value;
-                    print("Initial slider="+StantonSCS3d.scratch["slider"]);
-                    }
                 // Set slider lights
                 var add = StantonSCS3d.Peak7(value,-1,128);
                 var byte1 = 0xB0 + (StantonSCS3d.temp["channel"]-1);
@@ -645,61 +639,10 @@ StantonSCS3d.S4absolute = function (channel, device, control, value) {
                 midi.sendShortMsg(byte1,0x0C,add,StantonSCS3d.temp["device"]); //S3 LEDs
                 midi.sendShortMsg(byte1,0x0E,add,StantonSCS3d.temp["device"]); //S5 LEDs
                 
-//                 value -= StantonSCS3d.scratch["slider"];  // Relative to start position to maintain accuracy
-//                 // Formula goes here
-// //                 if (value > 64.) { value -= 128.; }
-//                 value = StantonSCS3d.scratch["track"]-value/100000;
-
-                // http://en.wikipedia.org/wiki/Alpha_beta_filter
-                
-                // ------------ My attempt:  -------------
-                // 1: xhat(k) = xhat(k-1) + dT*v(k-1)
-                // 2: vhat(k) = vhat(k-1)
-                // 3: rhat(k) = x(k) - xhat(k)
-                // 4: xhat(k) = xhat(k) + alpha * r[hat](k)
-                // 5: vhat(k) = vhat(k) + (beta / dT) * r[hat](k)
-                // 6: ahat(k) = ahat(k) + (gamma / [2*dT^2]) * r[hat](k)
-                
-//                 var newTime = new Date()/1000;
-//                 var dt = newTime - StantonSCS3d.scratch["time"];
-//                 StantonSCS3d.scratch["time"] = newTime;
-//                 
-// //                 Project state estimates x and v using equations 1 and 2
-//                 StantonSCS3d.scratch["track"] = StantonSCS3d.scratch["track"] + dt * StantonSCS3d.scratch["scratch"];
-//                 StantonSCS3d.scratch["scratch"] = StantonSCS3d.scratch["scratch"];
-// //                 Obtain a current measurement of the output value
-// //                 Compute the residual r using equation 3
-//                 var r = engine.getValue("[Channel"+StantonSCS3d.deck+"]","playposition") * engine.getValue("[Channel"+StantonSCS3d.deck+"]","duration") - StantonSCS3d.scratch["track"];
-// //                 Correct the state estimates using equations 4 and 5
-//                 StantonSCS3d.scratch["track"] = StantonSCS3d.scratch["track"] + StantonSCS3d.scratch["alpha"] * r;
-//                 StantonSCS3d.scratch["scratch"] = StantonSCS3d.scratch["scratch"] + (StantonSCS3d.scratch["beta"] / dt) * r;
-// //                 Send updated x and optionally v as the filter outputs
-// //                 engine.setValue("[Channel"+StantonSCS3d.deck+"]","playposition",StantonSCS3d.scratch["track"]);
-//                 engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",StantonSCS3d.scratch["scratch"]);
-                // -------------------------
-                
-                // ------------- Mark's attempt ------------------------
-                // ideal position = (initial_p + (y - x) / 128 * 1.8)
-                var ideal = (StantonSCS3d.scratch["trackInitial"] + (value - StantonSCS3d.scratch["slider"]) / 128 * StantonSCS3d.scratch["revtime"]);
-                
-                var newTime = new Date()/1000;
-                var dt = newTime - StantonSCS3d.scratch["time"];
-                StantonSCS3d.scratch["time"] = newTime;
-                print("dt="+dt);
-
-                // predicted_p = p + dt * pitch; // Where "pitch" = 1.0 for regular speed, i.e. the "scratch" control.
-                var predicted_p = engine.getValue("[Channel"+StantonSCS3d.deck+"]","playposition") * engine.getValue("[Channel"+StantonSCS3d.deck+"]","duration") + dt * StantonSCS3d.scratch["scratch"];
-                // rx = where_finger_corresponds_to - predicted_p;
-                var rx = ideal - predicted_p;
-                // p += rx * ALPHA;
-                StantonSCS3d.scratch["track"] += rx * StantonSCS3d.scratch["alpha"];
-                // v += rx * BETA / dt;
-                StantonSCS3d.scratch["scratch"] += rx * StantonSCS3d.scratch["beta"] / dt;
-                
-//                 print("Ideal position="+ideal+", Predicted position="+predicted_p + ", New track pos=" + StantonSCS3d.scratch["track"] + ", New scratch val=" + StantonSCS3d.scratch["scratch"]);
-                
-//                 engine.setValue("[Channel"+StantonSCS3d.deck+"]","playposition",StantonSCS3d.scratch["track"]);
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",StantonSCS3d.scratch["scratch"]);
+                // Call global scratch slider function
+                print("StantonSCS3d: Calling scratch.slider");
+                var newScratchValue = scratch.slider(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",newScratchValue);
             break;
     }
 }
@@ -707,21 +650,16 @@ StantonSCS3d.S4absolute = function (channel, device, control, value) {
 StantonSCS3d.S5absolute = function (channel, device, control, value) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     switch (currentMode) {
-        case "fx": absoluteSlider("[Flanger]","lfoPeriod",value,50000,2000000); break;
-        case "eq": absoluteEQ("[Channel"+StantonSCS3d.deck+"]","filterHigh",value); break;
+        case "fx": script.absoluteSlider("[Flanger]","lfoPeriod",value,50000,2000000); break;
+        case "eq": script.absoluteEQ("[Channel"+StantonSCS3d.deck+"]","filterHigh",value); break;
     }
 }
 
-absoluteEQ = function (group, key, value) { // To go in the global functions
-    // Used to control an EQ setting (0..1..4) from an absolute control (0-127)
-    if (value<=64) engine.setValue(group, key, value/64);
-    else engine.setValue(group, key, 1+(value-63)/(21+1/3));
-}
-
-absoluteSlider = function (group, key, value, low, high) { // To go in the global functions
-    // Used to control a generic setting (low..high) from an absolute control (0..127)
-    if (value==127) engine.setValue(group, key, high);
-    else engine.setValue(group, key, ((high-low)/127)*value);
+StantonSCS3d.C1touch = function (channel, device, control, value, category) {
+    var byte1 = 0xB0 + (channel-1);
+    if (category == (0x80 + channel-1)) {    // If button up
+        midi.sendShortMsg(byte1,0x62,0x00,StantonSCS3d.temp["device"]); // Turn off C1 lights
+    }
 }
 
 StantonSCS3d.S3touch = function () {
@@ -747,13 +685,7 @@ StantonSCS3d.S4touch = function (channel, device, control, value, category) {
     if (category != (0x80 + channel-1)) {    // If button down
         switch (currentMode) {
             case "vinyl":   // Store scratch info the point it was touched
-                StantonSCS3d.scratch["time"] = new Date()/1000;   // Current time in seconds
-                StantonSCS3d.scratch["trackInitial"] = StantonSCS3d.scratch["track"] = engine.getValue("[Channel"+StantonSCS3d.deck+"]","playposition") * engine.getValue("[Channel"+StantonSCS3d.deck+"]","duration");    // Current position in seconds
-//                 StantonSCS3d.scratch["track"] = 1.0; // for asantoni's algorithm
-                
-//                 print("Initial: time=" + StantonSCS3d.scratch["time"] + "s, track=" + StantonSCS3d.scratch["track"] + "s");
-            
-    //             engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",0); // pause playback
+                scratch.enable(StantonSCS3d.deck);
                 break;
             case "loop":
                 StantonSCS3d.S4buttonLights(true); break;
@@ -769,18 +701,11 @@ StantonSCS3d.S4touch = function (channel, device, control, value, category) {
     // If button up
     switch (currentMode) {
         case "vinyl":   // Reset the triggers
-            StantonSCS3d.scratch["track"] = 0.0;
-            StantonSCS3d.scratch["trackInitial"] = 0.0;
-            StantonSCS3d.scratch["slider"] = 0;
-            StantonSCS3d.scratch["time"] = 0.0;
-            StantonSCS3d.scratch["scratch"] = 0.0;
+            scratch.disable(StantonSCS3d.deck);
             var byte1a = 0xB0 + (StantonSCS3d.temp["channel"]-1);
             midi.sendShortMsg(byte1a,0x01,0x00,StantonSCS3d.temp["device"]); //S4 LEDs off
             midi.sendShortMsg(byte1a,0x0C,0x00,StantonSCS3d.temp["device"]); //S3 LEDs off
             midi.sendShortMsg(byte1a,0x0E,0x00,StantonSCS3d.temp["device"]); //S5 LEDs off
-            print("Scratch values CLEARED");
-//             engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1); // resume playback
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",0.0); // disable scratching
             break;
         case "loop":
         case "trig":
@@ -836,7 +761,9 @@ StantonSCS3d.C1relative = function (channel, device, control, value, category) {
 StantonSCS3d.C1absolute = function (channel, device, control, value, category) {
     // Light the LEDs
     var byte1 = 0xB0 + (channel-1);
-//     midi.sendShortMsg(byte1,0x5c,color,StantonSCS3d.temp["device"]);
+    var light = Math.floor(value/8)+1;
+//     print("light="+light);
+    midi.sendShortMsg(byte1,0x62,light,StantonSCS3d.temp["device"]);
 }
 
 // ----------   Surface buttons  ----------
