@@ -197,6 +197,16 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>    <!--    C1 touch    -->
+                <group>[Master]</group>
+                <key>StantonSCS3d.C1touch</key>
+                <miditype>Key</miditype>
+                <midino>0x62</midino>
+                <midichan>1</midichan>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
             <control>    <!--    S3 Absolute    -->
                 <group>[Master]</group>
                 <key>StantonSCS3d.S3absolute</key>

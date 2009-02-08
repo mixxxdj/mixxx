@@ -2,7 +2,7 @@ function scratchTest() {}
 
 // ----------   Global variables    ----------
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-scratchTest.scratch = { "time":0.0, "track":0.0, "trackInitial":0.0, "slider":0, "scratch":0.0, "revtime":0.3, "alpha":0.1, "beta":0.02 };
+scratchTest.scratch = { "revtime":3.6, "alpha":1.0, "beta":1.0};
 scratchTest.deck = 1;  // Currently active virtual deck
 scratchTest.modifier = { };  // Held-button modifiers
 
@@ -14,7 +14,21 @@ scratchTest.init = function () {   // called when the MIDI device is opened & se
     print("ScratchTest: Init successful");
 }
 
-scratchTest.scratchSlider = function (channel, device, control, value) {   // Make scratching with a slider sound good
+scratchTest.scratchEnable = function (channel, device, control, value, category) {
+    if (category != (0x80 + channel-1)) scratch.enable(scratchTest.deck);
+    else scratch.disable(scratchTest.deck);
+}
+
+scratchTest.scratchSlider = function (channel, device, control, value) {
+    var newScratchValue = scratch.slider(scratchTest.deck, value, scratchTest.scratch["revtime"], scratchTest.scratch["alpha"], scratchTest.scratch["beta"]);
+    engine.setValue("[Channel"+scratchTest.deck+"]","scratch",newScratchValue);
+}
+
+// FUNCTIONS BELOW THIS LINE ARE NO LONGER USED. See midi-mappings-scripts.js "scratch()"
+// Here for reference only
+// -------------STOP-----------------------------------------------------------------------------------------
+
+scratchTest.scratchSliderOLD = function (channel, device, control, value) {   // Make scratching with a slider sound good
     // Slider is expected to return absolute position values (0-127)
     
     // Skip if the scratchEnable button isn't being held down
@@ -62,6 +76,7 @@ scratchTest.scratchSlider = function (channel, device, control, value) {   // Ma
 //     engine.setValue("[Channel"+scratchTest.deck+"]","scratch",scratchTest.scratch["scratch"]);
     // -------------------------
     
+
     // ------------- [Radio]Mark's attempt ------------------------
     // ideal position = (initial_p + (y - x) / 128 * 1.8)
     var ideal = (scratchTest.scratch["trackInitial"] + (value - scratchTest.scratch["slider"]) / 128 * scratchTest.scratch["revtime"]);
@@ -69,35 +84,49 @@ scratchTest.scratchSlider = function (channel, device, control, value) {   // Ma
     var newTime = new Date()/1000;
     var dt = newTime - scratchTest.scratch["time"];
     scratchTest.scratch["time"] = newTime;
-    print("dt="+dt);
+//     print("dt="+dt);
 
     // predicted_p = p + dt * pitch; // Where "pitch" = 1.0 for regular speed, i.e. the "scratch" control.
     var predicted_p = engine.getValue("[Channel"+scratchTest.deck+"]","playposition") * engine.getValue("[Channel"+scratchTest.deck+"]","duration") + dt * scratchTest.scratch["scratch"];
     // rx = where_finger_corresponds_to - predicted_p;
     var rx = ideal - predicted_p;
     // p += rx * ALPHA;
-    scratchTest.scratch["track"] += rx * scratchTest.scratch["alpha"];
+//     scratchTest.scratch["track"] += rx * scratchTest.scratch["alpha"];   // Don't need this so why waste the CPU time?
     // v += rx * BETA / dt;
-    scratchTest.scratch["scratch"] += rx * scratchTest.scratch["beta"] / dt;
+//     scratchTest.scratch["scratch"] += rx * (scratchTest.scratch["beta"] / dt);   // This doesn't work well
+    scratchTest.scratch["scratch"] = rx * scratchTest.scratch["beta"];
     
-    print("Ideal position="+ideal+", Predicted position="+predicted_p + ", New track pos=" + scratchTest.scratch["track"] + ", New scratch val=" + scratchTest.scratch["scratch"]);
+    print("Ideal position="+ideal+", Predicted position="+predicted_p + ", New scratch val=" + scratchTest.scratch["scratch"]);
     
-//     engine.setValue("[Channel"+scratchTest.deck+"]","playposition",scratchTest.scratch["track"]);
+//     var newPos = scratchTest.scratch["track"]/engine.getValue("[Channel"+scratchTest.deck+"]","duration");
+//     engine.setValue("[Channel"+scratchTest.deck+"]","playposition",newPos);
     engine.setValue("[Channel"+scratchTest.deck+"]","scratch",scratchTest.scratch["scratch"]);
+    
+
+//      Pegasus_RPG: A fair approximation to the derivative is the difference in two successive values divided by the difference in the corresponding times. If you set your velocity to that, the position would evolve roughly correctly (but gradually wander from the desired value).
+
+//      Pegasus_RPG: One thing you could try is to work out the difference between the true position and the desired position, and set the velocity proportional to that difference (in the direction that moves true to desired). The constant of proportionality would have to be set by trial and error.
+    
+    
 }
 
 
-scratchTest.scratchEnable = function (channel, device, control, value, category) {
+scratchTest.scratchEnableOLD = function (channel, device, control, value, category) {
     if (category != (0x80 + channel-1)) {    // If button down
         scratchTest.modifier["scratch"] = 1;   // Set the "scratch" button modifier flag
         // Store scratch info the point it was touched
         scratchTest.scratch["time"] = new Date()/1000;   // Current time in seconds
         scratchTest.scratch["trackInitial"] = scratchTest.scratch["track"] = engine.getValue("[Channel"+scratchTest.deck+"]","playposition") * engine.getValue("[Channel"+scratchTest.deck+"]","duration");    // Current position in seconds
+        // Stop the deck motion. This means we have to pause it if playing
+        if (engine.getValue("[Channel"+scratchTest.deck+"]","play") > 0) {
+            scratchTest.scratch["play"]=true;
+//             engine.setValue("[Channel"+scratchTest.deck+"]","play",0);   // pause playback
+        }
+        else scratchTest.scratch["play"]=false;
+        scratchTest.scratch["scratch"] = 0.0;
 //         scratchTest.scratch["track"] = 1.0; // for asantoni's algorithm
         
         print("Initial: time=" + scratchTest.scratch["time"] + "s, track=" + scratchTest.scratch["track"] + "s");
-    
-//         engine.setValue("[Channel"+scratchTest.deck+"]","play",0); // pause playback
         return;
     }
     // If button up,
@@ -113,8 +142,8 @@ scratchTest.scratchEnable = function (channel, device, control, value, category)
     midi.sendShortMsg(byte1a,0x0C,0x00,scratchTest.temp["device"]); //S3 LEDs off
     midi.sendShortMsg(byte1a,0x0E,0x00,scratchTest.temp["device"]); //S5 LEDs off
     print("Scratch values CLEARED");
-//     engine.setValue("[Channel"+scratchTest.deck+"]","play",1); // resume playback
     engine.setValue("[Channel"+scratchTest.deck+"]","scratch",0.0); // disable scratching
+    if (scratchTest.scratch["play"]) engine.setValue("[Channel"+scratchTest.deck+"]","play",1); // resume playback
 }
 
 scratchTest.Peak7 = function (value, low, high) {
