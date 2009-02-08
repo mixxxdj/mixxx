@@ -104,12 +104,6 @@ private:
     QList<QHash<QString,QString> > m_addOutputRowParams;
 
     MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
-
-    /** To prevent an object from accessing the QLists before we're done building them */
-    static QMutex m_rowMutex;
-    static QMutex m_outputRowMutex;
-    QWaitCondition m_rowsReady;
-    QWaitCondition m_outputRowsReady;
 };
 
 #endif
