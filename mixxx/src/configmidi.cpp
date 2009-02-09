@@ -13,6 +13,7 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
+#include "configmidi.h"
 
 ConfigObject::ConfigOption * ConfigObject::set(ConfigKey * k, ConfigValue * v)
 {
