@@ -4,8 +4,13 @@ import glob
 import SCons
 import shutil
 
+#TODO:
+#-figure out what files actually need what defines and write separate builder lines for them (so that changing a #define doesn't cause a rebuild of everything)
+#-
+#-
+
 # BIG FAT WARNING:
-# Make sure you use TABS for indentation, NOT spaces! (Python doesn't like spaces, be forewarned!)
+# Make sure you use TABS for indentation, NOT spaces! (Python likes spaces well enough, but would much prefer to share tea time with tabs)
 #
 #   ####       ####  ##########  #####    #####  #####    #####  #####    #####
 #   ######   ######     ####      #####  #####    #####  #####    #####  #####
@@ -33,42 +38,6 @@ def getSVNRevision(): # GPL code taken from http://trac.zeitherrschaft.org/zzub/
 			return rev
 	return ""
 
-#Checks for OpenGL on all three platforms
-def CheckOpenGL():
-	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and not conf.CheckCHeader('GL/gl.h'):
-		print 'Did not find OpenGL development files, exiting!'
-		Exit(1)
-
-	if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
-		print 'Did not find GLU development files, exiting!'
-		Exit(1)
-	#Workaround for SCONS not detecting frameworks on OS X
-	if platform == 'osx':
-		env.Append(LINKFLAGS = '-framework OpenGL')
-
-	return
-
-#Checks for OGG/Vorbis on all three platforms
-def CheckOggVorbis():
-	#Check for Ogg and Vorbis on Linux, OS X, and Win32
-	if not conf.CheckLib('vorbisfile'):
-		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
-		Exit(1)
-
-	if not conf.CheckLib('vorbis'):
-		print 'Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers, exiting!'
-		Exit(1)
-
-	if not conf.CheckLib('ogg'):
-		print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
-		Exit(1)
-
-# This function is here for historical reasons. It used to be easiest to build
-# Mixxx on OS X using the Vorbis and OGG "frameworks", and so this function
-# used to have some OS X-specific stuff in it. If you're building on OS X now
-# though, just install libvorbis and libogg from source.
-
-	return
 
 #Check for FFMPEG support
 def CheckFFMPEG(conf, sources):
@@ -87,7 +56,7 @@ def CheckFFMPEG(conf, sources):
 				#Grabs the libs and cflags for ffmpeg
 				env.ParseConfig('pkg-config libavcodec --silence-errors --cflags --libs')
 				env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs')
-				env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
+				env.Append(CPPDEFINES = '__FFMPEGFILE__')
 		else:
 			# aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
 			env.Append(LIBS = 'avcodec')
@@ -104,7 +73,7 @@ def CheckFFMPEG(conf, sources):
 			env.Append(LIBS = 'vorbis')
 			env.Append(LIBS = 'm')
 			env.Append(LIBS = 'ogg')
-			env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
+			env.Append(CPPDEFINES= '__FFMPEGFILE__')
 		sources += Split("""soundsourceffmpeg.cpp """)
 		print "Not working FFMPEG support... enabled"
 	else:
@@ -129,29 +98,6 @@ def CheckForPKG( context, name, version="" ):
 		ret = context.TryAction( "pkg-config --atleast-version=%s '%s'" % (version,name) )[0]
 		context.Result( ret )
 	return ret
-	
-
-def flatten(x):
-	"""flatten(sequence) -> list
-
-	Returns a single, flat list which contains all elements retrieved
-	from the sequence and all recursively contained sub-sequences
-	(iterables).
-
-	Examples:
-	>>> [1, 2, [3,4], (5,6)]
-	[1, 2, [3, 4], (5, 6)]
-	>>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, MyVector(8,9,10)])
-	[1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
-
-	result = []
-	for el in x:
-		#if isinstance(el, (list, tuple)):
-		if hasattr(el, "__iter__"):
-			result.extend(flatten(el))
-		else:
-			result.append(el)
-	return result
 
 def getFlags(env, argflag, default=0):
 	"""
@@ -172,13 +118,14 @@ def getFlags(env, argflag, default=0):
 ###### MAIN LINE ######
 #######################
 #Get the platform/OS that we're building on:
-if os.name == 'nt':
+
+if os.name == 'nt': #XXX why doesn't tis use sys.platform?
 	print 'Platform: Windows'
 	platform = 'win32'
 elif sys.platform == 'linux2':
 	print 'Platform: Linux'
 	platform = 'linux'
-elif 'bsd' in sys.platform:
+elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
 	print 'Platform: BSD'
 	platform = 'bsd'
 elif sys.platform == 'darwin':
@@ -211,18 +158,21 @@ else:
 	print "QT path: " + flags_qtdir
 
 
+
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
 #The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
 #and on Windows where all the paths are set in the shell.
-if platform == 'linux':
-	env = Environment(tools=['default','qt4'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
+if platform in ('linux', 'bsd'):
+	env = Environment(tools=['default','qt4'], toolpath=['../', './'], QTDIR=flags_qtdir, ENV = os.environ)
 	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
-if platform == 'osx':
+elif platform == 'osx':
 	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['../', './', 'osx'], ENV = os.environ)
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
+else:
+	raise Exception("Unknown platform, didn't make a env variable. Crashing")
 
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
@@ -274,15 +224,12 @@ if os.environ.has_key('CXXFLAGS'):
 if os.environ.has_key('CCFLAGS'):
 	env.Append(CCFLAGS = SCons.Util.CLVar(os.environ['CCFLAGS']))
 
+
 ### embed SVN version into build
-build_rev = getSVNRevision()
-### Old way - causes everything to be rebuilt each time the SVN ver moves. :(
-#if build_rev != '':
-# 	env.Append(CXXFLAGS = '-DBUILD_REV=\\"' + build_rev + '\\"')
 ### Put version info into a file, so it doesn't force a rebuild of everything :)
 f = open("../.mixxx_version.svn","w")
 try:
-	f.write('#define BUILD_REV "' + build_rev + '"\n')
+	f.write('#define BUILD_REV "' + getSVNRevision() + '"\n')
 finally:
 	f.close()
 
@@ -360,6 +307,8 @@ sources = Split("""
                 midicommand.cpp
                 mixxx.cpp
                 mixxxview.cpp
+                
+                soundsource.cpp
                 soundsourcemp3.cpp
                 soundsourceoggvorbis.cpp
 
@@ -434,7 +383,6 @@ sources = Split("""
                 imgcolor.cpp
                 
                 trackinfoobject.cpp
-                soundsource.cpp
                 midiledhandler.cpp
                 sounddevice.cpp
                 soundmanager.cpp
@@ -450,9 +398,6 @@ sources = Split("""
                 
                 segmentation.cpp
                 """)
-
-#Crap we don't use anymore:
-#playerportaudio.cpp player.cpp playerproxy.cpp
 
 #Compile platform specific hardware support
 if platform == 'linux':
@@ -479,9 +424,14 @@ if platform == 'win32':
 	env.Append(LIBPATH='../../../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 #'/subsystem:windows',
-elif platform == 'bsd':
-	env.Append(CXXFLAGS='-I/usr/local/include')
-	env.Append(LIBPATH='/usr/local/lib/')
+
+#BSD hacks
+#XXX todo: move these into their proper places
+if platform == 'bsd':
+	env.Append(CPPPATH=['/usr/include', '/usr/local/include', '/usr/X11R6/include/'])
+	env.Append(LIBPATH=['/usr/lib/', '/usr/local/lib', '/usr/X11R6/lib'])
+	env.Append(LIBS='pthread')
+	env.Append(LIBS=['ogg', 'vorbis']) #why do we need to do this on OpenBSD and not on Linux? if we don't then CheckLib("vorbisfile") fails
 
 #Check for dependencies if we're not doing a clean...
 
@@ -492,23 +442,41 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
-	if not (conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C') or (platform == 'win32' and conf.CheckLib(['portaudio']))):
-		print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
-		Exit(1)
+#XXX all these Exit(1) calls should be turned into a list of libs to look for
+if not conf.CheckLib('portaudio'):
+	print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
+	Exit(1)
+	
+if not conf.CheckLib(['mad','libmad']):
+	print 'Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!'
+	Exit(1)
 
-	if not conf.CheckLib(['mad','libmad']):
-		print 'Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!'
-		Exit(1)
-
-	if not conf.CheckLib(['id3tag','libid3tag-release']):
-		print 'Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!'
-		Exit(1)
+if not conf.CheckLib(['id3tag','libid3tag-release']):
+	print 'Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!'
+	Exit(1)
 
 	#Check for Ogg and Vorbis
-	CheckOggVorbis()
+	if not conf.CheckLib('vorbisfile'):
+		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
+		Exit(1)
 
-	#Check for OpenGL (it's messy to do it for all three platforms)
-	CheckOpenGL()
+	if not conf.CheckLib('vorbis'):
+		print 'Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('ogg'):
+		print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
+		Exit(1)
+
+	## Check for OpenGL (it's messy to do it for all three platforms)
+	## XXX this should *NOT* have hardcoded paths like this
+	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and not conf.CheckCHeader('GL/gl.h'):
+		print 'Did not find OpenGL development files, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
+		print 'Did not find GLU development files, exiting!'
+		Exit(1)
 	
 	#Check if FFMPEG was enabled
 	CheckFFMPEG(conf, sources)
@@ -523,7 +491,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		#	print "Did not find porttime or it\'s development headers, exiting!"
 		#	Exit(1)
 		sources += Split("""midiobjectportmidi.cpp """); 
-		env.Append(CXXFLAGS = '-D__PORTMIDI__')
+		env.Append(CPPDEFINES = '__PORTMIDI__')
 	
 
 	#Platform-specific checks for Linux and Win32...
@@ -534,7 +502,8 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			print "Did not find libsndfile or it\'s development headers, exiting!"
 			Exit(1)
 		else:
-			env.Append(CXXFLAGS = '-D__SNDFILE__')
+			env.Append(LIBS='sndfile') #XXX is this necessary?
+			env.Append(CPPDEFINES = '__SNDFILE__')
 			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
 			# libsndfile = env.SharedLibrary(
 			# "libsndfile",
@@ -597,10 +566,10 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 				print "Did not find libdjconsole or it\'s development headers, exiting!"
 				Exit(1)
 			env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
-			env.Append(CXXFLAGS = '-D__LIBDJCONSOLE__')
+			env.Append(CPPDEFINES = '__LIBDJCONSOLE__')
 		elif int(flags_djconsole_legacy):
 			# legacy support can not be enabled if libDJConsole support is enabled via djconsole=1
-			env.Append(CXXFLAGS = '-D__DJCONSOLE_LEGACY__')
+			env.Append(CPPDEFINES = '__DJCONSOLE_LEGACY__')
 
 		#Another check for PortAudio-v19
 		env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
@@ -614,56 +583,78 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			print "Did not find libsndfile or it\'s development headers, exiting!"
 			Exit(1)
 		else:
-			env.Append(CXXFLAGS = '-D__SNDFILE__')
+			env.Append(CPPDEFINES='__SNDFILE__')
 			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
 			# libsndfile = env.SharedLibrary(
 			# "libsndfile",
 			# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
+			
+		env.Append(CXXFLAGS='-framework OpenGL')
 
 		#Check for QT4 (framework)
-		if not os.path.exists('/Library/Frameworks/QtCore.framework/Versions/4/Headers/QtCore'):
-			print 'Did not find QT4 framework, going to look for libs instead (use qtdir flag)...'
-		else:
-			env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
-			env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
-						'/Library/Frameworks/QtOpenGL.framework/Headers/',
-						'/Library/Frameworks/Qt3Support.framework/Headers/',
-						'/Library/Frameworks/QtGui.framework/Headers/',
-						'/Library/Frameworks/QtXml.framework/Headers/',
-						'/Library/Frameworks/QtXml.framework/Headers/',
-						'/Library/Frameworks/QtScript.framework/Headers/'])
+		env.Append(CXXFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
+		#env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
+		#			'/Library/Frameworks/QtOpenGL.framework/Headers/',
+		#			'/Library/Frameworks/Qt3Support.framework/Headers/',
+		#			'/Library/Frameworks/QtGui.framework/Headers/',
+		#			'/Library/Frameworks/QtXml.framework/Headers/',
+		#			'/Library/Frameworks/QtXml.framework/Headers/',
+		#			'/Library/Frameworks/QtScript.framework/Headers/'])
 			
 		#Check for CoreMIDI
 		if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
 			print 'Did not find CoreMIDI framework, exiting! (Please install it)'
 			Exit(1)
 		else:
-			env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere...
+			env.Append(CXXFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
 
 
 	env = conf.Finish()
 
 
 #Declare the flags for Mixxx's config/track listing files:
+#The quotes are necessary, since these are used directly in C code as strings
 if platform in ('linux', 'bsd'):
-	env.Append(CXXFLAGS = '-DTEMPORAL -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
-	env.Append(CXXFLAGS = '-DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
-elif platform == 'osx':
-	env.Append(CXXFLAGS = '-DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	_mixxx_files = {'BPMSCHEME_FILE':'.mixxxbpmscheme.xml', 'SETTINGS_FILE':'.mixxx.cfg', 'TRACK_FILE':'.mixxxtrack.xml'}
+elif platform == 'osx': #right now this is the same as linux and bsd, but these files should really go in ~/Library/Applicationsomething like the rest of OS X apps do
+	_mixxx_files = {'BPMSCHEME_FILE': '.mixxxbpmscheme.xml', 'SETTINGS_FILE':'.mixxx.cfg', 'TRACK_FILE':'.mixxxtrack.xml'}
 elif platform == 'win32':
-	env.Append(CXXFLAGS = '-D__WIN32__ -DBPMSCHEME_FILE=\\"mixxxbpmschemes.xml\\" -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
+	_mixxx_files = {'BPMSCHEME_FILE': 'mixxxbpmscheme.xml', 'SETTINGS_FILE':'mixxx.cfg', 'TRACK_FILE':'mixxxtrack.xml'}
+_mixxx_files = dict((k, r'\"' + _mixxx_files[k] + r'\"') for k in _mixxx_files) #escape the filepaths, so that they wind up as C-strings to the C-compiler (the \s are so the shell doesn't eat the ")
+env.Append(CPPDEFINES=_mixxx_files)
+del _mixxx_files #safety net
 
-#... and yes, we need to double-escape those quotes
-env.Append(CXXFLAGS = '-D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
+# say where to find resources on Unix
+# XXX we should replace this with a RESOURCES_PATH and covers Win and OS X too
+if platform in ('linux', 'bsd'):
+	env.Append(CPPDEFINES={'UNIX_SHARE_PATH': r'\"' + os.path.join(ARGUMENTS.get('prefix', '/usr/local'),'share/mixxx') + r'\"'})
+
+
+#declare platform specific flags? though we shouldn't really need these, the compilers should Just Know...
+#on __APPLE__ it works like that. probably we just need to look into what the default __platform__ #defines are and search and replace in the code
+if platform == 'linux':
+	env.Append(CPPDEFINES='__LINUX__')
+elif platform == 'bsd':
+	env.Append(CPPDEFINES='__BSD__')
+elif platform == 'win32':
+	env.Append(CPPDEFINES='__WIN32__')
+	
+if platform in ('linux', 'bsd', 'osx'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
+	env.Append(CPPDEFINES='__UNIX__')
+
+env.Append(CPPDEFINES = '__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 
-if platform == 'linux':
-	env.Append(LIBS = 'Qt3Support');
-	env.Append(LIBS = 'QtXml');
-	env.Append(LIBS = 'QtGui');
-	env.Append(LIBS = 'QtCore');
-	env.Append(LIBS = 'QtOpenGL');
+if platform in ('linux', 'bsd'):
+	env.Append(LIBS = 'Qt3Support')
+	env.Append(LIBS = 'QtXml')
+	env.Append(LIBS = 'QtGui')
+	env.Append(LIBS = 'QtCore')
+	env.Append(LIBS = 'QtOpenGL')
+	env.Append(LIBS = 'QtScript')
+	env.Append(LIBS = 'sndfile') #? we shouldn't have to do this...
+	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
 
 if platform == 'win32':
 	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
@@ -681,19 +672,25 @@ if platform == 'win32':
 	env.Append(LIBS = 'winspool')
 	env.Append(LIBS = 'shell32')
 
-env.Append(CXXFLAGS = '-DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
+env.Append(CPPDEFINES = ['QT3_SUPPORT', 'QT3_SUPPORT_WARNINGS', 'QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
-env.Append(CXXFLAGS = '-I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGL -I$QTDIR/include/Qt')
+if platform in ('linux','bsd'):
+	env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
+			    '$QTDIR/include/QtCore',
+			    '$QTDIR/include/QtGui',
+			    '$QTDIR/include/QtXml',
+			    '$QTDIR/include/QtOpenGL',
+			    '$QTDIR/include/Qt'])
 
-if not platform == 'linux':
-	env.Append(CXXFLAGS = '-I"$VCINSTALLDIR/include/atl"')
-
-if not platform == 'win32':
-	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g -D_REENTRANT """)) # omghax
-	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g -Wl,-rpath,$QTDIR/lib"""))
 if platform == 'win32':
-	env.Append(CXXFLAGS = '-DWIN32') #for soundtouch
-	env.Append(CCFLAGS  = '-DWIN32') #for soundtouch
+	env.Append(CPPPATH="$VCINSTALLDIR/include/atl")
+
+if platform == 'win32':
+	env.Append(CPPDEFINES = 'WIN32') #for soundtouch
+else:
+	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g """)) # omghax
+	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g -Wl,-rpath,$QTDIR/lib"""))
+	env.Append(CPPDEFINES = "_REENTRANT")
 
 #Uic these guys (they're moc'd automatically after this) - Generates the code for the QT UI forms
 env.Uic4('dlgpreferencesdlg.ui')
@@ -742,15 +739,17 @@ sources += Split("""../../lib/kissfft/kiss_fft.c""")
 #sources += Split("""engine/enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
 
 #fidlib (for EQs)
+#XXX this should be a SharedLib() line
 env.Append(CPPPATH='../../lib/fidlib-0.9.9/')
 sources += Split("""../../lib/fidlib-0.9.9/fidlib.c """)
-#Platform-specific compile/link flags needed for fidlib
-if platform == 'linux' or platform == 'osx':
-	env.Append(CCFLAGS = '-DT_LINUX')
-elif platform == 'win32':
-	env.Append(CCFLAGS = '-DT_MSVC')
-	env.Append(CXXFLAGS = '-DT_MSVC')
+
+## Platform-specific compile/link flags needed for fidlib
+if platform == 'win32':
+	env.Append(CPPDEFINES = 'T_MSVC')
+	#env.Append(CXXFLAGS = '-DT_MSVC') #is this still needed?
 	env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib', '/nodefaultlib:LIBCMTD.lib'])
+else:
+	env.Append(CPPDEFINES = 'T_LINUX') #so maybe "T_LINUX" isn't really accurate for an else case, but the only platforms really in existence are Unix and Win right now, and that's all we're targetting
 
 
 #Parse command-line build flags
@@ -758,19 +757,6 @@ build_flags = ""
 
 print "\nFeatures Summary:\n================"
 
-#Python/lua scripting
-#flags_script = ARGUMENTS.get('script', 0) #Default value is 0
-#if int(flags_script):
-#	env.Append(CXXFLAGS = '-D__SCRIPT__ -D__LUA__ -D__PYTHON__')
-#	sources += Split("""script/*.cpp script/lua/*.cpp script/python/*.cpp""")
-#	env.ParseConfig('python-config --include --ldflags')
-#	env.Append(LIBS = 'lua')
-#	env.Append(LIBS = 'lualib')
-#	env.Append(LIBS = 'tulua')
-#	print "Python and Lua scripting... enabled"
-#else:
-#	print "Python and Lua scripting... disabled"
- #TODO: FINISH THIS!
 
 #Hercules support through libdjconsole on Linux
 #(handled somewhere else above this in the file...
@@ -785,7 +771,7 @@ else:
 #High quality EQs
 flags_hifieq = getFlags(env, 'hifieq', 1)
 if int(flags_hifieq) == 0:
-	env.Append(CXXFLAGS = '-D__LOFI__ -D__NO_INTTYPES__') #Enables old crappy EQs
+	env.Append(CPPDEFINES = ['__LOFI__', '__NO_INTTYPES__']) #Enables old crappy EQs
 	print "High quality EQs... disabled"
 else:
 	print "High quality EQs... enabled"
@@ -794,7 +780,7 @@ else:
 #Experimental IPOD support
 flags_ipod = getFlags(env, 'ipod', 0)
 if int(flags_ipod):
-	env.Append(CXXFLAGS = '-D__IPOD__')
+	env.Append(CPPDEFINES = '__IPOD__')
 
 	if platform == 'win32':
 		env.Append(LIBS = 'gpod');
@@ -824,7 +810,7 @@ if int(flags_shoutcast):
 #TODO: check for libshout
 	env.Append(LIBS = 'shout');
 	env.Append(LIBS = 'vorbisenc');
-	env.Append(CXXFLAGS = '-D__SHOUTCAST__')
+	env.Append(CPPDEFINES = '__SHOUTCAST__')
 	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encodervorbis.cpp """ )
 	env.Uic4('dlgprefshoutcastdlg.ui')
 	print "Shoutcast support... enabled"
@@ -836,7 +822,7 @@ else:
 flags_ladspa = 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
-	env.Append(CXXFLAGS = '-D__LADSPA__')
+	env.Append(CPPDEFINES = '__LADSPA__')
 	sources += Split("""engine/engineladspa.cpp
                             ladspa/ladspaloader.cpp
                             ladspa/ladspalibrary.cpp
@@ -863,7 +849,7 @@ else:
 #Vinyl Control
 flags_vinylcontrol = getFlags(env, 'vinylcontrol', 1)
 if int(flags_vinylcontrol):
-	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
+	env.Append(CPPDEFINES = '__VINYLCONTROL__')
 	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp vinylcontrolsignalwidget.cpp engine/enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='../../lib/xwax')
 	if platform == 'win32':
@@ -906,7 +892,7 @@ if int(flags_m4a):
 	print "Apple M4A audio file support... enabled"
 #	env.ParseConfig('pkg-config libmp4v2-dev --silence-errors --cflags --libs') # no pkg-config data for libmp4v2-dev
 #	FIXME: should do conf.CheckCHeader('mp4.h') or something...
-	env.Append(CXXFLAGS = '-D__M4A__')
+	env.Append(CPPDEFINES = '__M4A__')
 	build_flags += 'm4a '
 	sources += Split("""soundsourcem4a.cpp m4a/mp4-mixxx.cpp""");  # MP4/M4A Support
 	env.Append(LIBS = 'libmp4v2')
@@ -936,8 +922,8 @@ if int(flags_script):
 			script/macrolist.cpp script/trackrecorder.cpp
 			script/sdatetime.cpp script/signalrecorder.cpp
 			script/macrolistitem.cpp script/qtscriptinterface.cpp""")
-	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
-	env.Append(CXXFLAGS = '-D__SCRIPT__')
+	env.Append(CPPPATH = '$QTDIR/include/QtScript')
+	env.Append(CPPDEFINES = '__SCRIPT__')
 	
 	env.Uic4('script/scriptstudio.ui')
 else:
@@ -959,8 +945,8 @@ if int(flags_midiscript):
 
 	build_flags += 'midiscript '
 	sources += Split("""script/midiscriptengine.cpp""")
-	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
-	env.Append(CXXFLAGS = '-D__MIDISCRIPT__')
+	env.Append(CPPPATH = '$QTDIR/include/QtScript')
+	env.Append(CPPDEFINES = '__MIDISCRIPT__')
 else:
 	flags_midiscript = 0
 	print "MIDI Scripting... disabled"
@@ -1024,7 +1010,7 @@ if not platform == 'win32':
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
 flags_msvshacks = getFlags(env, 'msvshacks', 0)
 if int(flags_msvshacks):
-	env.Append(CXXFLAGS = '-D__MSVS2005__')
+	env.Append(CPPDEFINES = '__MSVS2005__')
 	print "MSVS 2005 hacks... enabled"
 	build_flags += 'msvshacks '
 else:
@@ -1046,7 +1032,7 @@ if platform == 'win32' or platform == 'linux':
 else:
 	flags_cmetrics = getFlags(env, 'cmetrics', 0) # Off on OS X for now...
 if int(flags_cmetrics):
-	env.Append(CXXFLAGS = '-D__C_METRICS__')
+	env.Append(CPPDEFINES = '__C_METRICS__')
 	if platform == 'win32':
 		env.Append(LIBS = 'cmetrics')
 	else:
@@ -1103,10 +1089,10 @@ if 'msvc' in COMMAND_LINE_TARGETS:
 	#debugenv.Prepend(LINKFLAGS = ['/DEBUG','/PDB:dist/mixxx.pdb']) # Generate MS VC Program Debug Database
 	#debugenv.Append(CXXFLAGS = '/ZI')
 
-	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Debug', runfile = '../dist/mixxx')
+	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = sources, incs = includes, variant = 'Debug', runfile = '../dist/mixxx')
 
 	# Reenable this once bug in scons is fixed...
-	#msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Release', runfile = '../dist/mixxx')
+	#msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = sources, incs = includes, variant = 'Release', runfile = '../dist/mixxx')
 
 	env.Alias('msvc', msvc)
 
@@ -1164,7 +1150,7 @@ if int(flags_script):
 if int(flags_midiscript):
 	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
 
-if platform == 'linux':
+if platform in ('linux', 'bsd'):
 	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
 	if not os.path.exists(flags_prefix):
 		print "Error: Prefix path does not exist!"
