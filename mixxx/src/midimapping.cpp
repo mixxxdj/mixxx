@@ -19,7 +19,8 @@
 
 #include <qapplication.h>
 #include "widget/wwidget.h"    // FIXME: This should be xmlparse.h
-#include "midicommand.h"
+#include "mixxxcontrol.h"
+#include "midimessage.h"
 #include "midiinputmappingtablemodel.h"
 #include "midimapping.h"
 #include "midiledhandler.h"
@@ -47,7 +48,7 @@ MidiMapping::~MidiMapping() {
 /*
  * Return the total number of current input mappings.
  */ 
-int MidiMapping::numInputMidiCommands() {
+int MidiMapping::numInputMidiMessages() {
     return m_inputMapping.size();
 }
 
@@ -55,74 +56,74 @@ int MidiMapping::numInputMidiCommands() {
  * Return true if the index corresponds to an input mapping key.
  */ 
 bool MidiMapping::isInputIndexValid(int index) {
-    if(index < 0 || index >= numInputMidiCommands()) {
+    if(index < 0 || index >= numInputMidiMessages()) {
         return false;
     }
     return true;
 }
 
-bool MidiMapping::isMidiCommandMapped(MidiCommand command) {
+bool MidiMapping::isMidiMessageMapped(MidiMessage command) {
     return m_inputMapping.contains(command);
 }
 
 /*
- * Lookup the MidiCommand corresponding to a given index.
+ * Lookup the MidiMessage corresponding to a given index.
  */
-MidiCommand MidiMapping::getInputMidiCommand(int index) {
+MidiMessage MidiMapping::getInputMidiMessage(int index) {
     if(!isInputIndexValid(index)) {
-        return MidiCommand(); // do something bad.
+        return MidiMessage(); // do something bad.
     }
     return m_inputMapping.keys().at(index);
 }
 
 /*
- * Lookup the MidiControl mapped to a given MidiCommand (by index).
+ * Lookup the MixxxControl mapped to a given MidiMessage (by index).
  */
-MidiControl MidiMapping::getInputMidiControl(int index) {
+MixxxControl MidiMapping::getInputMixxxControl(int index) {
     if(!isInputIndexValid(index)) {
-        return MidiControl(); // do something bad.
+        return MixxxControl(); // do something bad.
     }
-    MidiCommand key = m_inputMapping.keys().at(index);
+    MidiMessage key = m_inputMapping.keys().at(index);
     return m_inputMapping.value(key);
 }
 
 /*
- * Lookup the MidiControl mapped to a given MidiCommand.
+ * Lookup the MixxxControl mapped to a given MidiMessage.
  */
-MidiControl MidiMapping::getInputMidiControl(MidiCommand command) {
+MixxxControl MidiMapping::getInputMixxxControl(MidiMessage command) {
     if(!m_inputMapping.contains(command)) {
-        return MidiControl(); // do something bad.
+        return MixxxControl(); // do something bad.
     }
     return m_inputMapping.value(command);
 }
 
 /*
- * Set a MidiCommand -> MidiControl mapping, replacing an existing one
+ * Set a MidiMessage -> MixxxControl mapping, replacing an existing one
  * if necessary.
  */
-void MidiMapping::setInputMidiMapping(MidiCommand command, MidiControl control) {
+void MidiMapping::setInputMidiMapping(MidiMessage command, MixxxControl control) {
     // If the command is already in the mapping, it will be replaced
     m_inputMapping.insert(command,control);
     emit(inputMappingChanged());
 }
 
 /*
- * Clear a specific mapping for a MidiCommand by index.
+ * Clear a specific mapping for a MidiMessage by index.
  */
 void MidiMapping::clearInputMidiMapping(int index) {
     if(!isInputIndexValid(index)) {
         return;
     }
-    MidiCommand key = m_inputMapping.keys().at(index);
+    MidiMessage key = m_inputMapping.keys().at(index);
     m_inputMapping.remove(key);
     emit(inputMappingChanged());
-    //emit(inputMappingChanged(index, numInputMidiCommands()-1));
+    //emit(inputMappingChanged(index, numInputMidiMessages()-1));
 }
 
 /*
- * Clear a specific mapping for a MidiCommand.
+ * Clear a specific mapping for a MidiMessage.
  */
-void MidiMapping::clearInputMidiMapping(MidiCommand command) {
+void MidiMapping::clearInputMidiMapping(MidiMessage command) {
     int changed = m_inputMapping.remove(command);
     if(changed > 0)
         emit(inputMappingChanged());
@@ -134,10 +135,10 @@ void MidiMapping::clearInputMidiMapping(MidiCommand command) {
  *
  */
 void MidiMapping::clearInputMidiMapping(int index, int count) {
-    QList<MidiCommand> keys = m_inputMapping.keys();
+    QList<MidiMessage> keys = m_inputMapping.keys();
     int changed = 0;
     for(int i=index; i < index+count; i++) {
-        MidiCommand command = keys.at(i);
+        MidiMessage command = keys.at(i);
         changed += m_inputMapping.remove(command);
     }
     if(changed > 0)
@@ -254,17 +255,17 @@ void MidiMapping::loadPreset(QDomElement root) {
         while (!control.isNull()) {
 
             //Unserialize these objects from the XML
-            MidiCommand midiCommand(control);
-            MidiControl midiControl(control);
+            MidiMessage midiMessage(control);
+            MixxxControl mixxxControl(control);
 #ifdef __MIDISCRIPT__
             // Verify script functions are loaded
-            if (midiControl.getMidiOption()==MIDI_OPT_SCRIPT && scriptFunctions.indexOf(midiControl.getControlObjectValue())==-1) {
+            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT && scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
                 // Need some way to signal to the dialog that this control will not be bound instead of just dying
-                qCritical() << "Error: Function" << midiControl.getControlObjectValue() << "was not found in loaded scripts.";
+                qCritical() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts.";
             } else {
 #endif
             //Add to the input mapping.
-            m_inputMapping.insert(midiCommand, midiControl);
+            m_inputMapping.insert(midiMessage, mixxxControl);
 #ifdef __MIDISCRIPT__
             }
 #endif
@@ -465,7 +466,7 @@ void MidiMapping::clearPreset() {
 #endif
 
     //Iterate over all of the command/control pairs in the input mapping
-     QMapIterator<MidiCommand, MidiControl> it(m_inputMapping);
+     QMapIterator<MidiMessage, MixxxControl> it(m_inputMapping);
      while (it.hasNext()) {
          it.next();
          QDomElement controlNode;
@@ -474,7 +475,7 @@ void MidiMapping::clearPreset() {
          //Create <control> block
          controlNode = nodeMaker.createElement("control");
 
-         //Save the MidiCommand and MidiControl objects as XML
+         //Save the MidiMessage and MixxxControl objects as XML
          it.key().serializeToXML(controlNode);
          it.value().serializeToXML(controlNode);
 
@@ -629,18 +630,18 @@ bool MidiMapping::addInputControl(MidiType midiType, int midiNo, int midiChannel
                                   QString controlObjectGroup, QString controlObjectKey,
                                   MidiOption midiOption)
 {
-    //TODO: Check if mapping already exists for this MidiCommand.
+    //TODO: Check if mapping already exists for this MidiMessage.
 
     //Add to the input mapping.
-    m_inputMapping.insert(MidiCommand(midiType, midiNo, midiChannel),
-                          MidiControl(controlObjectGroup, controlObjectKey,
+    m_inputMapping.insert(MidiMessage(midiType, midiNo, midiChannel),
+                          MixxxControl(controlObjectGroup, controlObjectKey,
                                        midiOption));
     return true; //XXX is this right? should this be returning whether the add happened successfully?
 }
 
 void MidiMapping::removeInputMapping(MidiType midiType, int midiNo, int midiChannel)
 {
-    m_inputMapping.remove(MidiCommand(midiType, midiNo, midiChannel));
+    m_inputMapping.remove(MidiMessage(midiType, midiNo, midiChannel));
 }
 
 MidiInputMappingTableModel* MidiMapping::getMidiInputMappingTableModel()
@@ -649,7 +650,7 @@ MidiInputMappingTableModel* MidiMapping::getMidiInputMappingTableModel()
 }
 
 //Used by MidiObject to query what control matches a given MIDI command.
-/*MidiControl* MidiMapping::getInputMidiControl(MidiCommand command)
+/*MixxxControl* MidiMapping::getInputMixxxControl(MidiMessage command)
 {
     if (!m_inputMapping.contains(command)) {
         qDebug() << "Warning: unbound MIDI command";
@@ -659,7 +660,7 @@ MidiInputMappingTableModel* MidiMapping::getMidiInputMappingTableModel()
         return NULL;
     }
 
-    MidiControl* control = &(m_inputMapping[command]);
+    MixxxControl* control = &(m_inputMapping[command]);
     return control;
     }*/
 

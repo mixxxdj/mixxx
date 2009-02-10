@@ -59,31 +59,7 @@ StantonSCS3d.temp = { "channel":1, "device":"SCS.3d MIDI 1" };
 
 // ----------   Functions   ----------
 
-/*
-StantonSCS3d.signalsInit = function () {    // We don't need this anymore! :)
-    // Signal connections work fine at the beginning
-    // Seems like they all need to be initialized by being connected to something here first in order to use them later
-    var ChannelKeys = ["play", "cue_default", "beatsync", "bpm", "volume", "rate", "rateRange", "pfl", "playposition", "back", "fwd", "reverse", "filterLow", "filterMid", "filterHigh", "flanger"];
-    for (i=0; i<ChannelKeys.length; i++) {
-        for (j=1; j<=2; j++) {  // Number of decks
-            engine.connectControl("[Channel"+j+"]",ChannelKeys[i],"nop");    // Connect the signal ("nop" is defined in the default script file)
-            engine.connectControl("[Channel"+j+"]",ChannelKeys[i],"nop",true);   // Disconnect it
-        }
-    }
-    
-    var Groups = [ "[Flanger]" ];
-    var Keys = [ ["lfoDepth", "lfoDelay", "lfoPeriod"] ];
-    for (i=0; i<Groups.length; i++) {
-        for (j=0; j<Keys[i].length; j++) {
-            engine.connectControl(Groups[i],Keys[i][j],"nop");    // Connect the signal ("nop" is defined in the default script file)
-            engine.connectControl(Groups[i],Keys[i][j],"nop",true);   // Disconnect it
-        }
-    }
-}
-*/
-
 StantonSCS3d.init = function () {   // called when the MIDI device is opened & set up
-//     StantonSCS3d.signalsInit();
     
     var CC = 0xB0 + (StantonSCS3d.temp["channel"]-1);
     var No = 0x90 + (StantonSCS3d.temp["channel"]-1);
@@ -115,11 +91,11 @@ StantonSCS3d.connectSurfaceSignals = function (disconnect) {
         // If connecting a signal, cause it to fire (by setting it to the same value) to update the LEDs
 //         if (!disconnect) engine.setValue(group,signalList[i][1],engine.getValue(group,signalList[i][1]));
         if (!disconnect) {
-// //             engine.trigger(group,signalList[i][1]); // This is what should be used but it can segfault due to ControlObject::queueFromThread()
+            engine.trigger(group,signalList[i][1]);
 //             // Workaround:
-            var command = signalList[i][2]+"("+engine.getValue(group,signalList[i][1])+")";
-//             print("StantonSCS3d: command="+command);
-            eval(command);
+//             var command = signalList[i][2]+"("+engine.getValue(group,signalList[i][1])+")";
+// //             print("StantonSCS3d: command="+command);
+//             eval(command);
         }
 //         if (disconnect) print("StantonSCS3d: "+group+","+signalList[i][1]+" disconnected from "+signalList[i][2]);
 //         else print("StantonSCS3d: "+group+","+signalList[i][1]+" connected to "+signalList[i][2]);
@@ -156,12 +132,11 @@ StantonSCS3d.connectDeckSignals = function (disconnect) {
                 case "beatsync":
                 case "bpm": break;
                 default:    // Cause the signal to fire to update LEDs
-//                         engine.setValue(group,name,engine.getValue(group,name));
-//                         engine.trigger(group,name);  // This should be used but it can segfault due to slotSet
+                        engine.trigger(group,name);
 //                     Workaround:
-                        var command = signalList[i][2]+"("+engine.getValue(group,name)+")";
-//                         print("StantonSCS3d: command="+command);
-                        eval(command);
+//                         var command = signalList[i][2]+"("+engine.getValue(group,name)+")";
+// //                         print("StantonSCS3d: command="+command);
+//                         eval(command);
                         break;
             }
         }
@@ -302,28 +277,32 @@ StantonSCS3d.tapButton = function (channel, device, control, value, category) {
 
 StantonSCS3d.B11 = function (channel, device, control, value, category) {
     var byte1 = 0x90 + (channel-1);
-    if (category != (0x80 + channel-1)) {    // If button down
+    if (category == (0x90 + channel-1)) {    // If button down
         StantonSCS3d.modifier["B11"]=1;   // Set button modifier flag
+        if (currentMode != "fx")
+            midi.sendShortMsg(byte1,control,0x01,StantonSCS3d.temp["device"]); // Make button red
     }
     else {
         StantonSCS3d.modifier["B11"]=0;   // Clear button modifier flag
+        if (currentMode != "fx")
+            midi.sendShortMsg(byte1,control,0x02,StantonSCS3d.temp["device"]); // Make button blue
     }
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     switch (currentMode) {
         case "fx":
-//                 if (category != (0x80 + channel-1))     // If button down
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","reverse",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","reverse"));
-                break;
-        case "vinyl":
-                if (category != (0x80 + channel-1)) {    // If button down
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","pfl",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","pfl"));
-                }
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","reverse",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","reverse"));
                 break;
         case "vinyl2":
                 if (category != (0x80 + channel-1)) {    // If button down
                     engine.setValue("[Playlist]","SelectPrevPlaylist",1);
                 }
                 else engine.setValue("[Playlist]","SelectPrevPlaylist",0);
+                break;
+        case "vinyl":
+        default:
+                if (category != (0x80 + channel-1)) {    // If button down
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","pfl",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","pfl"));
+                }
                 break;
     }
 }
@@ -333,7 +312,7 @@ StantonSCS3d.B12 = function (channel, device, control, value, category) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (category != (0x80 + channel-1)) {    // If button down
         StantonSCS3d.modifier["B12"]=1;   // Set button modifier flag
-        if (currentMode == "vinyl" || StantonSCS3d.modifier["Deck"]==1)
+        if (currentMode != "fx" || StantonSCS3d.modifier["Deck"]==1)
             midi.sendShortMsg(byte1,control,0x01,StantonSCS3d.temp["device"]); // Make button red
         if (StantonSCS3d.modifier["Deck"]==1) {
             engine.setValue("[Master]","crossfader",0.0); // Reset cross-fader to center
@@ -343,7 +322,7 @@ StantonSCS3d.B12 = function (channel, device, control, value, category) {
     }
     else {  // If button up
         StantonSCS3d.modifier["B12"]=0;   // Clear button modifier flag
-        if (currentMode == "vinyl" || StantonSCS3d.modifier["Deck"]==1)
+        if (currentMode != "fx" || StantonSCS3d.modifier["Deck"]==1)
             midi.sendShortMsg(byte1,control,0x02,StantonSCS3d.temp["device"]); // Make button blue
     }
     switch (currentMode) {
@@ -351,7 +330,14 @@ StantonSCS3d.B12 = function (channel, device, control, value, category) {
                 if (category != (0x80 + channel-1))     // If button down
                     engine.setValue("[Channel"+StantonSCS3d.deck+"]","flanger",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","flanger"));
                 break;
+        case "vinyl2":
+                if (category != (0x80 + channel-1)) {    // If button down
+                    engine.setValue("[Playlist]","SelectNextPlaylist",1);
+                }
+                else engine.setValue("[Playlist]","SelectNextPlaylist",0);
+                break;
         case "vinyl":
+        default:
                 if (category != (0x80 + channel-1)) {    // If button down
                     var currentRange = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange");
                     switch (true) {
@@ -371,12 +357,6 @@ StantonSCS3d.B12 = function (channel, device, control, value, category) {
                     // Set the pitch slider to the same value to update the screen display
                     engine.setValue("[Channel"+StantonSCS3d.deck+"]","rate",engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate"));
                 }
-                break;
-        case "vinyl2":
-                if (category != (0x80 + channel-1)) {    // If button down
-                    engine.setValue("[Playlist]","SelectNextPlaylist",1);
-                }
-                else engine.setValue("[Playlist]","SelectNextPlaylist",0);
                 break;
     }
 }
