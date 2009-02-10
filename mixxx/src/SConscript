@@ -628,8 +628,7 @@ del _mixxx_files #safety net
 # say where to find resources on Unix
 # XXX we should replace this with a RESOURCES_PATH and covers Win and OS X too
 if platform in ('linux', 'bsd'):
-	env.Append(CPPDEFINES={'UNIX_SHARE_PATH': r'\"' + os.path.join(ARGUMENTS.get('prefix', '/usr/local'),'share/mixxx') + r'\"'})
-
+	env.Append(CPPDEFINES=[('UNIX_SHARE_PATH': r'\"' + os.path.join(ARGUMENTS.get('prefix', '/usr/local'),'share/mixxx') + r'\"')])
 
 #declare platform specific flags? though we shouldn't really need these, the compilers should Just Know...
 #on __APPLE__ it works like that. probably we just need to look into what the default __platform__ #defines are and search and replace in the code
