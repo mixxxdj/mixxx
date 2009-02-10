@@ -11,11 +11,13 @@
 
 #include <time.h>
 
+#include "mathstuff.h"
 #include "waveformrenderer.h"
 #include "waveformrenderbackground.h"
 #include "waveformrenderbeat.h"
 #include "waveformrendermark.h"
 #include "waveformrendersignal.h"
+#include "waveformrendersignalpixmap.h"
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "controlobjectthreadmain.h"
@@ -23,10 +25,31 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 
+#define INTERPOLATION 0
+
 #define DEFAULT_SUBPIXELS_PER_PIXEL 4
 #define DEFAULT_PIXELS_PER_SECOND 100
 
+void WaveformRenderer::run() {
+    double msecs_old = 0, msecs_elapsed = 0;
+
+    while(!m_bQuit) {
+        
+        if(m_iLatency != 0 && m_dPlayPos != -1 && m_dPlayPosOld != -1 && m_iNumSamples != 0) {
+            QTime now = QTime::currentTime();
+            double msecs_elapsed = m_playPosTime.msecsTo(now);
+            double timeratio = double(msecs_elapsed) / m_iLatency;
+            double adjust = (m_dPlayPos - m_dPlayPosOld) * math_min(1.0f, timeratio);
+            m_dPlayPosAdjust = adjust;
+        }
+        
+        QThread::msleep(6);
+    }
+    
+}
+
 WaveformRenderer::WaveformRenderer(const char* group) :
+    QThread(),
     m_iWidth(0),
     m_iHeight(0),
     m_iNumSamples(0),
@@ -44,14 +67,22 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_iPlayPosTimeOld(-1),
     m_pTrack(NULL),
     m_pSampleBuffer(NULL),
-    QObject()
+    m_dPlayPosAdjust(0),
+    m_iDupes(0),
+    m_bQuit(false)
 {
     m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"visual_playposition")));
     if(m_pPlayPos != NULL)
         connect(m_pPlayPos, SIGNAL(valueChanged(double)), this, SLOT(slotUpdatePlayPos(double)));
 
+
+    m_pLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
+    if(m_pLatency != NULL)
+        connect(m_pLatency, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateLatency(double)));
+    
     m_pRenderBackground = new WaveformRenderBackground(group, this);
     m_pRenderSignal = new WaveformRenderSignal(group, this);
+    m_pRenderSignalPixmap = new WaveformRenderSignalPixmap(group, this);
     m_pRenderBeat = new WaveformRenderBeat(group, this);
     m_pRenderCue = new WaveformRenderMark(group, ConfigKey(group, "cue_point"), this);
 
@@ -67,10 +98,17 @@ WaveformRenderer::WaveformRenderer(const char* group) :
         connect(m_pRateRange, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateRateRange(double)));
     }
 
+    if(0)
+        start();
+
 }
 
 
 WaveformRenderer::~WaveformRenderer() {
+    // Wait for the thread to quit
+    m_bQuit = true;
+    QThread::wait();
+    
     if(m_pCOVisualResample)
         delete m_pCOVisualResample;
     m_pCOVisualResample = NULL;
@@ -90,6 +128,10 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pRenderBackground)
         delete m_pRenderBackground;
     m_pRenderBackground = NULL;
+
+    if(m_pRenderSignalPixmap)
+        delete m_pRenderSignalPixmap;
+    m_pRenderSignalPixmap = NULL;
     
     if(m_pRenderSignal)
         delete m_pRenderSignal;
@@ -107,9 +149,15 @@ WaveformRenderer::~WaveformRenderer() {
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {
     m_iPlayPosTimeOld = m_iPlayPosTime;
+    m_playPosTimeOld = m_playPosTime;
     m_dPlayPosOld = m_dPlayPos;    
     m_dPlayPos = v;
     m_iPlayPosTime = clock();
+    m_playPosTime = QTime::currentTime();
+
+
+    m_iDupes = 0;
+    m_dPlayPosAdjust = 0;
 }
 
 void WaveformRenderer::slotUpdateRate(double v) {
@@ -120,6 +168,9 @@ void WaveformRenderer::slotUpdateRateRange(double v) {
     m_dRateRange = v;
 }
 
+void WaveformRenderer::slotUpdateLatency(double v) {
+    m_iLatency = v;
+}
 
 void WaveformRenderer::resize(int w, int h) {
     m_iWidth = w;
@@ -130,6 +181,7 @@ void WaveformRenderer::resize(int w, int h) {
     // Notify children that we've been resized
     m_pRenderBackground->resize(w,h);
     m_pRenderSignal->resize(w,h);
+    m_pRenderSignalPixmap->resize(w,h);
     m_pRenderBeat->resize(w,h);
     m_pRenderCue->resize(w,h);
 }
@@ -209,6 +261,7 @@ void WaveformRenderer::setup(QDomNode node) {
 
     m_pRenderBackground->setup(node);
     m_pRenderSignal->setup(node);
+    m_pRenderSignalPixmap->setup(node);
     m_pRenderBeat->setup(node);
     m_pRenderCue->setup(node);
 }
@@ -358,9 +411,11 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     if(m_iWidth == 0 || m_iHeight == 0)
         return;
 
+    
     /*
     if(m_dPlayPos != -1 && m_dPlayPosOld != -1 && m_iNumSamples != 0) {
-        double latency = ControlObject::getControl(ConfigKey("[Master]","latency"))->get();
+        static double elatency = ControlObject::getControl(ConfigKey("[Master]","latency"))->get();
+        double latency = elatency;
         latency *= 4;
         latency *= CLOCKS_PER_SEC / 1000.0;
         
@@ -372,16 +427,23 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
         if(timeratio > 1.0)
             timeratio = 1.0;
 
+        double timerun = m_iPlayPosTime - m_iPlayPosTimeOld;
+
         
         playposadjust = ((m_dPlayPos*m_iNumSamples) - (m_dPlayPosOld*m_iNumSamples)) * timeelapsed;
         playposadjust /= (latency*m_iNumSamples);
+
+        //qDebug() << m_dPlayPos - m_dPlayPosOld << " " << timerun;
 
         //qDebug() << "ppold " << m_dPlayPosOld << " pp " << m_dPlayPos << " timeratio " << timeratio;
         //qDebug() << "timee" << timeelapsed <<  "playpoadj" << playposadjust;
     }
     */
+    m_iDupes++;
 
-    double playpos = m_dPlayPos;
+    double playpos = m_dPlayPos + m_dPlayPosAdjust;
+
+    //qDebug() << m_dPlayPosAdjust;
 
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     double rateAdjust = math_min(0.99, m_dRate * m_dRateRange);
@@ -396,6 +458,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     pPainter->setPen(signalColor);
 
+    //m_pRenderSignalPixmap->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
     // Translate our coordinate frame from (0,0) at top left
     // to (0,0) at left, center. All the subrenderers expect this.
     pPainter->translate(0.0,m_iHeight/2.0);
@@ -407,6 +470,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     pPainter->drawLine(QLine(0,0,m_iWidth,0));
 
     m_pRenderSignal->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    
 
     // Draw various markers.
     m_pRenderBeat->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
@@ -429,6 +493,7 @@ void WaveformRenderer::newTrack(TrackInfoObject* pTrack) {
 
     m_pRenderBackground->newTrack(pTrack);
     m_pRenderSignal->newTrack(pTrack);
+    m_pRenderSignalPixmap->newTrack(pTrack);
     m_pRenderBeat->newTrack(pTrack);
     m_pRenderCue->newTrack(pTrack);
 }
