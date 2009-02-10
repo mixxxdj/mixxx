@@ -175,6 +175,7 @@ void MidiObjectALSASeq::devOpen(QString device)
     int iDirtyCount = 0;
 
     unsigned int uiAlsaFlags;
+    m_deviceName = device;
 
     //Look for input ports only.
     uiAlsaFlags = SND_SEQ_PORT_CAP_READ  | SND_SEQ_PORT_CAP_SUBS_READ;
@@ -244,9 +245,9 @@ void MidiObjectALSASeq::devOpen(QString device)
 
 }
 
-void MidiObjectALSASeq::devClose(QString device)
+void MidiObjectALSASeq::devClose()
 {
-
+	qDebug() << "FIXME/WTFBBQ: There's no devClose implementation in MidiObjectALSASeq...";
 }
 
 void MidiObjectALSASeq::run()

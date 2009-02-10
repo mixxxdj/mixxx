@@ -37,11 +37,16 @@ QStringList controKeyOptionChoices;
 
 const QStringList outputTypeChoices = (QStringList() << "light");
 
-DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefMidiBindingsDlg(), m_rMidi(midi) {
+DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QString deviceName,
+										 ConfigObject<ConfigValue> *pConfig) :  
+							QWidget(parent), Ui::DlgPrefMidiBindingsDlg(), m_rMidi(midi) {
     setupUi(this);
     m_pConfig = pConfig;
     singleLearning = false;
     groupLearning = false;
+    m_deviceName = deviceName;
+    
+    labelDeviceName->setText(m_deviceName);
 
     //Tell the input mapping table widget which data model it should be viewing
     //(note that m_pInputMappingTableView is defined in the .ui file!)
@@ -76,6 +81,9 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, Conf
     connect(btnClearBindings, SIGNAL(clicked()), this, SLOT(slotClear()));
     connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
     connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
+    
+    //Connect the activate button. One day this will be replaced with an "Enabled" checkbox.
+    connect(btnActivateDevice, SIGNAL(clicked()), this, SLOT(slotEnableDevice()));
 
     m_rMidi.disableMidiLearn();
 }
@@ -241,6 +249,14 @@ void DlgPrefMidiBindings::slotClear() {
         tableModel->removeRows(0, tableModel->rowCount());
     }
 
+}
+
+void DlgPrefMidiBindings::slotEnableDevice()
+{
+	//Just tell MidiObject to close the old device and open this device
+	m_rMidi.devClose();
+	m_rMidi.devOpen(m_deviceName);  
+	m_pConfig->set(ConfigKey("[Midi]","Device"), m_deviceName);
 }
 
 

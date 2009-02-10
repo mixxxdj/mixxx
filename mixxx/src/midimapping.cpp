@@ -413,7 +413,7 @@ void MidiMapping::applyPreset() {
         QString deviceId = controller.attribute("id","");
 
         qDebug() << "MidiMapping: Processing MIDI Control Bindings for" << deviceId;
-        MidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
+        //MidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
 
         qDebug() << "MidiMapping: Processing MIDI Output Bindings for" << deviceId;
         MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_rMidiObject, deviceId);
@@ -421,8 +421,6 @@ void MidiMapping::applyPreset() {
         // Next device
         controller = controller.nextSiblingElement("controller");
     }
-    // TODO: replace with multiple controller supported call and move into above loop
-    m_rMidiObject.setMidiConfig(MidiConfig);
 }
 
 /* clearPreset()

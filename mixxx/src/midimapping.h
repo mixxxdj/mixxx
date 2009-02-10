@@ -23,6 +23,8 @@
 #include "midiobject.h"
 #include "midimessage.h"
 #include "mixxxcontrol.h"
+#include "midiinputmapping.h"
+#include "midioutputmapping.h"
 #include <QTableWidget>
 
 #ifdef __MIDISCRIPT__
@@ -31,10 +33,6 @@
 
 //Forward declarations
 class MidiInputMappingTableModel;
-
-
-//Type definitions
-typedef QMap<MidiMessage, MixxxControl> MidiInputMapping;
 
 
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")

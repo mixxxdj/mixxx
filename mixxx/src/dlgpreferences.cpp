@@ -27,8 +27,6 @@
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
-//#include "dlgprefmidi.h"
-#include "dlgprefmididevice.h"
 #include "dlgprefmidibindings.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
@@ -50,6 +48,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                MidiObject * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
+    m_pMidiObject = midi;
 
     setupUi(this);
 
@@ -58,13 +57,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     m_pTrack = track;
 
     createIcons();
-    //contentsWidget->setCurrentRow(0);
+    //contentsTreeWidget->setCurrentRow(0);
 
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, config);
- //   wmidi  = new DlgPrefMidi(this, config);
-    wmidiDevice  = new DlgPrefMidiDevice(this, midi, config);
-    wmidiBindings  = new DlgPrefMidiBindings(this, *midi, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     weq = new DlgPrefEQ(this, config);
@@ -78,16 +74,12 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     wshoutcast = new DlgPrefShoutcast(this, config);
 #endif
 
-    //pagesWidget = new QStackedWidget;
     while (pagesWidget->count() > 0)
     {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
 
     pagesWidget->addWidget(wsound);
-    //pagesWidget->addWidget(wmidi);
-    pagesWidget->addWidget(wmidiDevice);
-    pagesWidget->addWidget(wmidiBindings);
     pagesWidget->addWidget(wplaylist);
     pagesWidget->addWidget(wcontrols);
     pagesWidget->addWidget(weq);
@@ -101,15 +93,25 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wshoutcast);
 #endif
 
+	//TODO: For each MIDI device, create a MIDI dialog.
+	QList<QString>* deviceList = midi->getDeviceList();
+	QListIterator<QString> it(*deviceList);
+	while (it.hasNext())
+	{
+		QString curDeviceName = it.next();
+		DlgPrefMidiBindings* midiDlg = new DlgPrefMidiBindings(this, *midi, curDeviceName, config);
+		wmidiBindingsForDevice.append(midiDlg);
+	    pagesWidget->addWidget(midiDlg);
+    	connect(this, SIGNAL(showDlg()), midiDlg, SLOT(slotUpdate()));
+    	connect(buttonBox, SIGNAL(accepted()), midiDlg, SLOT(slotApply()));
+	}
+
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
 
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
-//    connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wmidiDevice,	SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wmidiBindings, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), weq,       SLOT(slotUpdate()));
@@ -131,9 +133,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                                                                  //connect for wsound...
 #endif
     connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
-//    connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wmidiDevice,	SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wmidiBindings,	SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
@@ -154,110 +153,173 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
 DlgPreferences::~DlgPreferences()
 {
+	while (!wmidiBindingsForDevice.isEmpty())
+		delete wmidiBindingsForDevice.takeLast();
 }
 
 void DlgPreferences::createIcons()
-{
-    QListWidgetItem * soundButton = new QListWidgetItem(contentsWidget);
-    soundButton->setIcon(QIcon(":/images/preferences/soundhardware.png"));
-    soundButton->setText(tr("Sound Hardware"));
-    soundButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    soundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+{	
+    m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pSoundButton->setIcon(0, QIcon(":/images/preferences/soundhardware.png"));
+    m_pSoundButton->setText(0, tr("Sound Hardware"));
+    m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 /*
-    QListWidgetItem * midiButton = new QListWidgetItem(contentsWidget);
-    midiButton->setIcon(QIcon(":/images/preferences/controllers.png"));
+    QTreeWidgetItem * midiButton = new QTreeWidgetItem(contentsTreeWidget);
+    midiButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
     midiButton->setText(tr("Input Controllers"));
     midiButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 */
-    QListWidgetItem * midiDeviceButton = new QListWidgetItem(contentsWidget);
-    midiDeviceButton->setIcon(QIcon(":/images/preferences/controllers.png"));
-    midiDeviceButton->setText(tr("MIDI Device Selection"));
-    midiDeviceButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    midiDeviceButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pMIDITreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/controllers.png"));
+    m_pMIDITreeItem->setText(0, tr("MIDI Controllers"));
+    m_pMIDITreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pMIDITreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * midiBindingsButton = new QListWidgetItem(contentsWidget);
-    midiBindingsButton->setIcon(QIcon(":/images/preferences/controllers.png"));
-    midiBindingsButton->setText(tr("MIDI Bindings"));
-    midiBindingsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	QList<QString>* deviceList = m_pMidiObject->getDeviceList();
+	QListIterator<QString> it(*deviceList);
+	while (it.hasNext())
+	{
+	    QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(m_pMIDITreeItem, QTreeWidgetItem::Type);
+	    midiBindingsButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
+	    midiBindingsButton->setText(0, it.next());
+	    midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+	    midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+	    m_midiBindingsButtons.append(midiBindingsButton);
+	}
+/*
+    QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(m_pMIDITreeItem, QTreeWidgetItem::Type);
+    midiBindingsButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
+    midiBindingsButton->setText(0, tr("MIDI Bindings"));
+    midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+*/
 
-    QListWidgetItem * playlistButton = new QListWidgetItem(contentsWidget);
-    playlistButton->setIcon(QIcon(":/images/preferences/library.png"));
-    playlistButton->setText(tr("Library and Playlists"));
-    playlistButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    playlistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pPlaylistButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/library.png"));
+    m_pPlaylistButton->setText(0, tr("Library and Playlists"));
+    m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * controlsButton = new QListWidgetItem(contentsWidget);
-    controlsButton->setIcon(QIcon(":/images/preferences/interface.png"));
-    controlsButton->setText(tr("Interface"));
-    controlsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    controlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+   	m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControlsButton->setIcon(0, QIcon(":/images/preferences/interface.png"));
+    m_pControlsButton->setText(0, tr("Interface"));
+    m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * eqButton = new QListWidgetItem(contentsWidget);
-    eqButton->setIcon(QIcon(":/images/preferences/generic.png"));
-    eqButton->setText(tr("Equalizers"));
-    eqButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    eqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pEqButton->setIcon(0, QIcon(":/images/preferences/generic.png"));
+    m_pEqButton->setText(0, tr("Equalizers"));
+    m_pEqButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * crossfaderButton = new QListWidgetItem(contentsWidget);
-    crossfaderButton->setIcon(QIcon(":/images/preferences/generic.png"));
-    crossfaderButton->setText(tr("Crossfader"));
-    crossfaderButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    crossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pCrossfaderButton->setIcon(0, QIcon(":/images/preferences/generic.png"));
+    m_pCrossfaderButton->setText(0, tr("Crossfader"));
+    m_pCrossfaderButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pCrossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * recordingButton = new QListWidgetItem(contentsWidget);
-    recordingButton->setIcon(QIcon(":/images/preferences/recording.png"));
-    recordingButton->setText(tr("Recording"));
-    recordingButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    recordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pRecordingButton->setIcon(0, QIcon(":/images/preferences/recording.png"));
+    m_pRecordingButton->setText(0, tr("Recording"));
+    m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * bpmdetectButton = new QListWidgetItem(contentsWidget);
-    bpmdetectButton->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
-    bpmdetectButton->setText(tr("BPM Detection"));
-    bpmdetectButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    bpmdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pBPMdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBPMdetectButton->setIcon(0, QIcon(":/images/preferences/bpmdetect.png"));
+    m_pBPMdetectButton->setText(0, tr("BPM Detection"));
+    m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 #ifdef __VINYLCONTROL__
-    QListWidgetItem * vinylcontrolButton = new QListWidgetItem(contentsWidget);
+    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
     //instead...
-    vinylcontrolButton->setIcon(QIcon(":/images/preferences/vinyl.png"));
-    vinylcontrolButton->setText(tr("Vinyl Control"));
-    vinylcontrolButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    vinylcontrolButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/vinyl.png"));
+    m_pVinylControlButton->setText(0, tr("Vinyl Control"));
+    m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
 #ifdef __SHOUTCAST__
-    QListWidgetItem * shoutcastButton = new QListWidgetItem(contentsWidget);
-    shoutcastButton->setIcon(QIcon(":/images/preferences/broadcast.png"));
-    shoutcastButton->setText(tr("Live Broadcasting"));
-    shoutcastButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    shoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pShoutcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pShoutcastButton->setIcon(0, QIcon(":/images/preferences/broadcast.png"));
+    m_pShoutcastButton->setText(0, tr("Live Broadcasting"));
+    m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
-    connect(contentsWidget,
-            SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
+    connect(contentsTreeWidget,
+            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
+            this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
 }
 
-void DlgPreferences::changePage(QListWidgetItem * current, QListWidgetItem * previous)
+void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
     if (!current)
         current = previous;
 
-    pagesWidget->setCurrentIndex(contentsWidget->row(current));
+	if (current == m_pSoundButton)
+   		pagesWidget->setCurrentWidget(wsound);
+   	else if (current == m_pPlaylistButton)
+   		pagesWidget->setCurrentWidget(wplaylist);
+   	else if (current == m_pControlsButton)
+   		pagesWidget->setCurrentWidget(wcontrols);
+   	else if (current == m_pEqButton)
+   		pagesWidget->setCurrentWidget(weq);
+   	else if (current == m_pCrossfaderButton)
+   		pagesWidget->setCurrentWidget(wcrossfader);
+   	else if (current == m_pRecordingButton)
+   		pagesWidget->setCurrentWidget(wrecord);
+   	else if (current == m_pBPMdetectButton)
+   		pagesWidget->setCurrentWidget(wbpm);
+#ifdef __VINYLCONTROL__
+   	else if (current == m_pVinylControlButton)
+   		pagesWidget->setCurrentWidget(wvinylcontrol);
+#endif
+#ifdef __SHOUTCAST__
+   	else if (current == m_pShoutcastButton)
+   		pagesWidget->setCurrentWidget(wshoutcast);
+#endif
+
+   	//Handle selection of midi device items
+   	else if (m_midiBindingsButtons.indexOf(current) >= 0)
+   	{
+   		int index = m_midiBindingsButtons.indexOf(current);
+   		pagesWidget->setCurrentWidget(wmidiBindingsForDevice.value(index));
+   	}
+   	
+   	//If the root "MIDI Device" item is clicked, select the first MIDI device instead.
+   	else if (current == m_pMIDITreeItem)
+   	{
+   		if (wmidiBindingsForDevice.count() > 0) //Require at least 1 MIDI device
+   		{
+   			//Expand the MIDI subtree
+   			contentsTreeWidget->setItemExpanded(m_pMIDITreeItem, true);
+   			
+   			/*
+   			* FIXME: None of the following works right, for some reason. - Albert Feb 9/09 
+   			*/
+   			
+   			//Select the first MIDI device
+   			//contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
+   			/*
+   			foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
+   			{
+   				contentsTreeWidget->setItemSelected(item, false);
+   			}*/
+   			//contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
+   			
+   		}
+   	}
+   
 }
 
 void DlgPreferences::showVinylControlPage()
 {
 #ifdef __VINYLCONTROL__
     pagesWidget->setCurrentWidget(wvinylcontrol);
-
-    for (int i = 0; i < contentsWidget->count(); i++)
-    {
-        if (contentsWidget->item(i)->text() == tr("Vinyl Control"))
-            contentsWidget->setCurrentRow(i);
-    }
+	contentsTreeWidget->setCurrentItem(m_pVinylControlButton);
 #endif
 }
 

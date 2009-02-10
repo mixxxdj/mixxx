@@ -31,7 +31,7 @@ public:
     MidiObjectWin();
     ~MidiObjectWin();
     void devOpen(QString device);
-    void devClose(QString device);
+    void devClose();
     void handleMidi(char channel, char midicontrol, char midivalue, QString device);
     void sendShortMsg(unsigned int word);
     virtual void updateDeviceList();

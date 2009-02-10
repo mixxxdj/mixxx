@@ -260,9 +260,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
-    // Initialise midi
+    // Initialise MIDI and open the MIDI device
     MidiDeviceHandler * midiHandler = new MidiDeviceHandler();
     midi = midiHandler->getMidiPtr();
+    QString midiDevice = config->getValueString(ConfigKey("[Midi]","Device"));
+    if (midiDevice != "")
+    	midi->devOpen(midiDevice);
 
     // Initialize preference dialog
     prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, midi, config);

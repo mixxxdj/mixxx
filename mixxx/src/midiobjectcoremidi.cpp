@@ -64,6 +64,8 @@ MidiObjectCoreMidi::~MidiObjectCoreMidi()
 
 void MidiObjectCoreMidi::devOpen(QString device)
 {
+	m_deviceName = device;
+		
     // Select device
 	MIDIEndpointRef ref = getEndpoint(device);
 	if (!ref) return;
@@ -88,12 +90,11 @@ void MidiObjectCoreMidi::devClose(MIDIEndpointRef ref) {
 	MIDIPortDisconnectSource(midiPort, ref);
 }
 
-void MidiObjectCoreMidi::devClose(QString device)
+void MidiObjectCoreMidi::devClose()
 {
 	// Find the endpoint associated with the device
-	MIDIEndpointRef ref = getEndpoint(device);
-	devClose(ref);
-	openDevices.remove(device);
+	devClose(currentMidiEndpoint);
+	openDevices.clear();
 }
 
 void MidiObjectCoreMidi::stop()
