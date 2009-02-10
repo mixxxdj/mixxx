@@ -58,10 +58,14 @@ def InstallDir(target, source, env): #XXX this belongs not in this module
 	files = filter(lambda f: isinstance(f, SCons.Node.FS.File), contents)
 	folders = filter(lambda f: isinstance(f, SCons.Node.FS.Dir), contents)
 	#print map(str, folders)
+	name = os.path.basename(str(source))
 	
-	nodes = env.Install(Dir(os.path.join(str(target), str(source))), files)
+	#install the files local to this
+	nodes = env.Install(Dir(os.path.join(str(target), name)), files)
+	
+	#now recursively install the subfolders
 	for f in folders:
-		nodes+=InstallDir(target, f, env)
+		nodes+=InstallDir(Dir(os.path.join(str(target), name)), f, env)
 	return nodes
 
 #okay, this works. It could be done better (make better use of SCons's declarativity, look at http://frungy.org/~tpot/weblog/2008/05/02#scons-rpm2 for ideas)
@@ -363,12 +367,9 @@ def emit_app(target, source, env):
       #further: we should support generating document associations
       	
 	for i in resources:
-		print "RESOURCE: ", i
 		if isinstance(i, SCons.Node.FS.Dir):
 			#source+=
-			InstallDir(Dir(bundle), i, env) #this is what we use now, but ideally Mixxx would be coded to use the Resources/ to store all it's resource files
-			#InstallDir(env['APP_RESOURCES'], i, env) #this is what we are aiming for
-			#so we use both! heh....
+			InstallDir(env['APP_RESOURCES'], i, env)
 		elif isinstance(i, SCons.Node.FS.File):
 			env.Install(env['APP_RESOURCES'], i)
 	
