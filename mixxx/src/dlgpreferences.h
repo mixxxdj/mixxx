@@ -35,8 +35,6 @@ class PlayerProxy;
 class SoundManager;
 class Track;
 class DlgPrefSound;
-class DlgPrefMidi;
-class DlgPrefMidiDevice;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
 class DlgPrefControls;
@@ -64,7 +62,7 @@ public:
 public slots:
     void slotUpdate();
     void slotApply();
-    void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+    void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
 signals:
     void closeDlg();
@@ -73,9 +71,7 @@ protected:
     bool eventFilter(QObject *, QEvent *);
 private:
     DlgPrefSound *wsound;
-    DlgPrefMidi *wmidi;
-    DlgPrefMidiDevice *wmidiDevice;
-    DlgPrefMidiBindings *wmidiBindings;
+    QList<DlgPrefMidiBindings*> wmidiBindingsForDevice;
     DlgPrefPlaylist *wplaylist;
     DlgPrefControls *wcontrols;
     DlgPrefEQ *weq;
@@ -85,9 +81,22 @@ private:
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefShoutcast *wshoutcast;
 
+	QTreeWidgetItem* m_pSoundButton;    
+	QTreeWidgetItem* m_pPlaylistButton;    
+	QTreeWidgetItem* m_pControlsButton;    
+	QTreeWidgetItem* m_pEqButton;    
+	QTreeWidgetItem* m_pCrossfaderButton;    
+	QTreeWidgetItem* m_pRecordingButton;    
+	QTreeWidgetItem* m_pBPMdetectButton;    
+	QTreeWidgetItem* m_pVinylControlButton;    
+	QTreeWidgetItem* m_pShoutcastButton;    
+    QTreeWidgetItem* m_pMIDITreeItem;
+    QList<QTreeWidgetItem*> m_midiBindingsButtons;
+
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
     Track* m_pTrack;
+    MidiObject* m_pMidiObject;
 };
 
 #endif

@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>732</width>
-    <height>804</height>
+    <width>500</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -151,6 +151,15 @@
          <string>Load/Import Default Bindings</string>
         </property>
        </widget>
+       <zorder>label_5</zorder>
+       <zorder>labelDeviceName</zorder>
+       <zorder>labelDeviceStatus</zorder>
+       <zorder>label_6</zorder>
+       <zorder>label_7</zorder>
+       <zorder>labelPresetAvailable</zorder>
+       <zorder>btnLoadDefaults</zorder>
+       <zorder>groupBox</zorder>
+       <zorder>tblDebug</zorder>
       </widget>
      </item>
      <item>

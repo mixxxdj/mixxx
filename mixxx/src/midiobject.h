@@ -56,7 +56,7 @@ public:
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
         virtual void updateDeviceList() {};
-    virtual void devClose(QString) = 0;
+    virtual void devClose() = 0;
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
@@ -108,6 +108,11 @@ protected:
 
     int fd, count, size, no;
     Q3PtrVector<ControlObject> controlList;
+    
+    /** Name of the currently opened MIDI device. Ignore the other device strings. 
+        This is a temp hack to deal with the weak multiple device support in MidiObject-based
+        classes. */
+    QString m_deviceName;
 
     /** List of available midi devices */
     QStringList devices;
@@ -116,7 +121,6 @@ protected:
     /** List of available midi configurations. Initialized upon call to getConfigList() */
     QStringList configs;
     /** Pointer to midi config object*/
-    ConfigObject<ConfigValueMidi> *m_pMidiConfig;
 
     // Pointer to device dialog (for debug output)
     DlgPrefMidiDevice *dlgDevice;

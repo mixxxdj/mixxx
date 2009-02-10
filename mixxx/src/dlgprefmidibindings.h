@@ -30,7 +30,8 @@ class MidiNoDelegate;
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
 public:
-    DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, ConfigObject<ConfigValue> *pConfig);
+    DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QString deviceName,
+    					ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefMidiBindings();
 
 
@@ -46,6 +47,7 @@ public slots:
     void slotAddBinding();
 //    void slotChangeBinding();
 //    void slotAdvancedOptions();
+	void slotEnableDevice();
     void singleLearn(ConfigValueMidi *value, QString device);
     void groupLearn(ConfigValueMidi *value, QString device);
 
@@ -65,6 +67,7 @@ private:
     QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
+    QString m_deviceName;
 };
 
 #endif /*DLGPREFMIDIBINDINGS_H_*/

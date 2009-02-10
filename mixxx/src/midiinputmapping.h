@@ -1,7 +1,7 @@
 
 #include <QtCore>
 
-class MidiInputMapping : public QMap<MidiCommand, MidiControl>
+class MidiInputMapping : public QMap<MidiMessage, MixxxControl>
 {
 	public:
 		MidiInputMapping() {};

@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "qapplication.h"
+#include <QtCore>
 #include "input.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

@@ -29,7 +29,7 @@ public:
     MidiObjectNull();
     ~MidiObjectNull();
     void devOpen(QString device);
-    void devClose(QString device);
+    void devClose();
 };
 
 #endif

@@ -62,8 +62,10 @@ void MidiObjectWin::updateDeviceList() {
 }
 
 void MidiObjectWin::devOpen(QString device)
-{
-    if (openDevices.contains(device)) return;
+{	
+    if (openDevices.contains(device)) 
+    	return;
+    
     // Select device. If not found, select default (first in list).
     unsigned int i;
     MIDIINCAPS info;
@@ -92,6 +94,8 @@ void MidiObjectWin::devOpen(QString device)
         return;
     }
 
+	m_deviceName = device;
+
     // Add device and handle to list
     handles.insert(device, handle);
 
@@ -104,13 +108,13 @@ void MidiObjectWin::devOpen(QString device)
         qDebug() << "Error starting midi.";
 }
 
-void MidiObjectWin::devClose(QString device)
+void MidiObjectWin::devClose()
 {
-    HMIDIIN handle = handles.value(device);
+    HMIDIIN handle = handles.value(m_deviceName);
     midiInReset(handle);
     midiInClose(handle);
-    handles.remove(device);
-    openDevices.remove(device);
+    handles.remove(m_deviceName);
+    openDevices.remove(m_deviceName);
 }
 
 void MidiObjectWin::stop()

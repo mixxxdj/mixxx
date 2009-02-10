@@ -29,6 +29,6 @@ void MidiObjectNull::devOpen(QString)
 {
 }
 
-void MidiObjectNull::devClose(QString)
+void MidiObjectNull::devClose()
 {
 }

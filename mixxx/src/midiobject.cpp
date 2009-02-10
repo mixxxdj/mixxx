@@ -36,7 +36,6 @@
    -------- ------------------------------------------------------ */
 MidiObject::MidiObject()
 {
-    m_pMidiConfig = 0;
     no = 0;
     requestStop = false;
     midiLearn = false;
@@ -81,14 +80,9 @@ void MidiObject::run()
 }
 #endif
 
-void MidiObject::setMidiConfig(ConfigObject<ConfigValueMidi> * pMidiConfig)
-{
-    m_pMidiConfig = pMidiConfig;
-}
-
 void MidiObject::reopen(QString device)
 {
-    devClose(device);
+    devClose();
     devOpen(device);
 }
 

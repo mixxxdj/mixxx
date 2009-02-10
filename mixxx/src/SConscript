@@ -254,7 +254,6 @@ sources = Split("""
 
                 dlgpreferences.cpp
                 dlgprefsound.cpp
-                dlgprefmididevice.cpp
                 dlgprefmidibindings.cpp
                 dlgprefplaylist.cpp
                 dlgprefcontrols.cpp
@@ -609,9 +608,7 @@ if platform == 'osx':
 	else:
 		env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
 
-		
 env = conf.Finish()
-
 
 #Declare the flags for Mixxx's config/track listing files:
 #The quotes are necessary, since these are used directly in C code as strings

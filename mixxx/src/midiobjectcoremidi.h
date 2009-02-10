@@ -38,7 +38,7 @@ public:
     MidiObjectCoreMidi();
     ~MidiObjectCoreMidi();
     void devOpen(QString device);
-    void devClose(QString device);
+    void devClose();
     void devClose(MIDIEndpointRef ref);
     void handleMidi(const MIDIPacketList *packets, QString device);
     void makeDeviceList();
