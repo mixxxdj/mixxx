@@ -86,7 +86,6 @@ scratch.disable = function (currentDeck) {
    Output:  New value for the "scratch" control
    -------- ------------------------------------------------------ */
 scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
-    print("Scratch Slider Called");
     // Skip if the track start position hasn't been set yet
     if (scratch.variables["initialTrackPos"] == 0.0) return;
     // If the slider start value hasn't been set yet, set it

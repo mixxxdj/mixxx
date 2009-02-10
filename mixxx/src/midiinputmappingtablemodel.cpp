@@ -44,8 +44,8 @@ QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) co
          //This might be super slow, but that's the price of using a map/hash table.
          //Also note that QMaps are always sorted by key, whereas QHashes are not sorted and rearrange themselves.
          
-         MidiCommand command = m_pMapping->getInputMidiCommand(index.row());
-         MidiControl control = m_pMapping->getInputMidiControl(command);
+         MidiMessage command = m_pMapping->getInputMidiMessage(index.row());
+         MixxxControl control = m_pMapping->getInputMixxxControl(command);
 
          switch (index.column())
          {
@@ -93,8 +93,8 @@ bool MidiInputMappingTableModel::setData(const QModelIndex &index, const QVarian
                                          int role)
 {
     if (index.isValid() && role == Qt::EditRole) {
-        MidiCommand command = m_pMapping->getInputMidiCommand(index.row());
-        MidiControl control = m_pMapping->getInputMidiControl(command);
+        MidiMessage command = m_pMapping->getInputMidiMessage(index.row());
+        MixxxControl control = m_pMapping->getInputMixxxControl(command);
         
         switch (index.column())
             {
@@ -136,7 +136,7 @@ int MidiInputMappingTableModel::rowCount(const QModelIndex& parent) const
 {
     if (parent != QModelIndex()) //Some weird thing for table-based models.
         return 0;
-    return m_pMapping->numInputMidiCommands();
+    return m_pMapping->numInputMidiMessages();
 }
 
 int MidiInputMappingTableModel::columnCount(const QModelIndex& parent) const

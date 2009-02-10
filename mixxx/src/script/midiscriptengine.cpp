@@ -306,17 +306,8 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::trigger(QString group, QString name) {
-//     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
-//     pot->sync();    // This doesn't work
-//     pot->update();   // This sometimes segfaults
-//     qDebug() << "MidiScriptEngine: Running in thread" << this->thread();
     ControlObjectThread *cot = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, name)));
-//     qDebug() << "MidiScriptEngine: cot in thread" << cot->thread();
-//     cot->emitValueChanged();    // This doesn't work.
-    cot->slotSet(cot->get());   // This sometimes segfaults
-//     cot->setExtern(cot->get()); // This doesn't work
-//     cot->update();  // This doesn't work either.
-//     qDebug() << "MidiScriptEngine: Made it past SlotSet";
+    cot->slotSet(cot->get());
     delete cot;
 }
 
@@ -471,6 +462,7 @@ bool MidiScriptEngine::hasErrors(QString filename) {
     // TODO(rryan) add locking!
     if(m_scriptErrors.contains(filename))
         return true;
+    else return false;
 }
 
 /*

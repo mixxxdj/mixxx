@@ -21,7 +21,8 @@
 #define MIDIMAPPING_H
 
 #include "midiobject.h"
-#include "midicommand.h"
+#include "midimessage.h"
+#include "mixxxcontrol.h"
 #include <QTableWidget>
 
 #ifdef __MIDISCRIPT__
@@ -33,7 +34,7 @@ class MidiInputMappingTableModel;
 
 
 //Type definitions
-typedef QMap<MidiCommand, MidiControl> MidiInputMapping;
+typedef QMap<MidiMessage, MixxxControl> MidiInputMapping;
 
 
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
@@ -69,20 +70,20 @@ class MidiMapping : public QObject
                          MidiOption midiOption);
     void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
-    //MidiControl* getInputMidiControl(MidiCommand command);
+    //MixxxControl* getInputMixxxControl(MidiMessage command);
 
     double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
 
 	// MIDI Input Mapping Modifiers
-	int numInputMidiCommands();
+	int numInputMidiMessages();
 	bool isInputIndexValid(int index);
-    bool isMidiCommandMapped(MidiCommand command);
-	MidiCommand getInputMidiCommand(int index);
-	MidiControl getInputMidiControl(int index);
-	MidiControl getInputMidiControl(MidiCommand command);
-	void setInputMidiMapping(MidiCommand command, MidiControl control);
+    bool isMidiMessageMapped(MidiMessage command);
+	MidiMessage getInputMidiMessage(int index);
+	MixxxControl getInputMixxxControl(int index);
+	MixxxControl getInputMixxxControl(MidiMessage command);
+	void setInputMidiMapping(MidiMessage command, MixxxControl control);
 	void clearInputMidiMapping(int index);
-	void clearInputMidiMapping(MidiCommand command);
+	void clearInputMidiMapping(MidiMessage command);
 	void clearInputMidiMapping(int index, int count);
 
 signals:

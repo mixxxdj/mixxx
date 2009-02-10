@@ -203,21 +203,21 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         return; // Don't pass on controls when in dialog
     }
     
-    MidiCommand inputCommand(type, control, channel);
+    MidiMessage inputCommand(type, control, channel);
 
     //If there was no control bound to that MIDI command, return;
-    if (!m_pMidiMapping->isMidiCommandMapped(inputCommand))
+    if (!m_pMidiMapping->isMidiMessageMapped(inputCommand))
         return;
 
-    MidiControl midiControl = m_pMidiMapping->getInputMidiControl(inputCommand);
-//         qDebug() << "MidiObject: " << midiControl.getControlObjectGroup() << midiControl.getControlObjectValue();
+    MixxxControl mixxxControl = m_pMidiMapping->getInputMixxxControl(inputCommand);
+//         qDebug() << "MidiObject: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
 
-    ConfigKey configKey(midiControl.getControlObjectGroup(), midiControl.getControlObjectValue());
+    ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
 
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
-    if (midiControl.getMidiOption() == MIDI_OPT_SCRIPT) {
+    if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
 //         qDebug() << "MidiObject: Calling script function" << configKey.item;
 
         if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, category)) {
@@ -232,7 +232,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (p) //Only pass values on to valid ControlObjects.
     {
         double newValue = (double)value;
-        m_pMidiMapping->ComputeValue(midiControl.getMidiOption(), p->GetMidiValue(), newValue);
+        m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), newValue);
         // qDebug() << "value coming out ComputeValue: " << newValue;
 
         ControlObject::sync();
