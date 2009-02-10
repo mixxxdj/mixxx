@@ -63,8 +63,7 @@ void rtThread()
     if (theError != KERN_SUCCESS)
         qDebug() << "Can't do thread_policy_set";
 #endif
-#ifdef __UNIX__
-#ifndef __APPLE__
+#ifdef __LINUX__
     // Try to set realtime priority on the current executing thread. This should be used in time-critical
     // producer threads.
     struct sched_param schp;
@@ -79,7 +78,7 @@ void rtThread()
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
         qDebug() << "Not possible to give audio producer thread high prioriy.";
 #endif
-#endif
+//#XXX FIXME: write versions of this function appropriate for BSD and OS X
 #ifdef __WIN32__
 //    HANDLE h = GetCurrentThread();
 //    SetThreadPriority(h,THREAD_PRIORITY_BELOW_NORMAL);

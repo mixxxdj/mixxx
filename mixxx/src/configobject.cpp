@@ -665,7 +665,7 @@ QString ConfigObject<ValueType>::getConfigPath()
     // On Windows and Mac it is always (and only) app dir.
     //
     QString qConfigPath;
-#ifdef __LINUX__
+#ifdef __UNIX__
     // On Linux, check if the path is stored in the configuration database.
     if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
         qConfigPath = getValueString(ConfigKey("[Config]","Path"));

@@ -294,7 +294,9 @@ void DlgPrefBpm::loadBpmSchemes()
     QFile scheme(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
     if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()<1) || (!scheme.exists()))
     {
-        config->set(ConfigKey("[BPM]","SchemeFile"), QDir::homePath().append("/").append(BPMSCHEME_FILE));
+        config->set(ConfigKey("[BPM]","SchemeFile"), QDir::homePath().append("/").append(
+			BPMSCHEME_FILE
+		));
         config->Save();
     }
     

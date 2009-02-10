@@ -11,6 +11,9 @@ License: 2-clause BSD (XXX put a proper notice here)
 
 
 Please email me with questions/comments/patches!
+
+TODO:
+-add a CheckFramework() call that looks for a framework (and maybe adds to CXXFLAGS||CPPATH||LINKFLAGS if found)
 """
 
 
