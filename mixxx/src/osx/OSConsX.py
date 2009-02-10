@@ -363,6 +363,7 @@ def emit_app(target, source, env):
       #further: we should support generating document associations
       	
 	for i in resources:
+		print "RESOURCE: ", i
 		if isinstance(i, SCons.Node.FS.Dir):
 			#source+=
 			InstallDir(Dir(bundle), i, env) #this is what we use now, but ideally Mixxx would be coded to use the Resources/ to store all it's resource files

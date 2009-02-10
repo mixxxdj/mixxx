@@ -73,7 +73,7 @@ def CheckFFMPEG(conf, sources):
 			env.Append(LIBS = 'vorbis')
 			env.Append(LIBS = 'm')
 			env.Append(LIBS = 'ogg')
-			env.Append(CPPDEFINES= '__FFMPEGFILE__')
+			env.Append(CPPDEFINES = '__FFMPEGFILE__')
 		sources += Split("""soundsourceffmpeg.cpp """)
 		print "Not working FFMPEG support... enabled"
 	else:
@@ -436,9 +436,9 @@ if platform == 'bsd':
 	env.Append(LIBS=['ogg', 'vorbis']) #why do we need to do this on OpenBSD and not on Linux? if we don't then CheckLib("vorbisfile") fails
 
 #Check for dependencies if we're not doing a clean...
-
 if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
 	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
+
 
 #TODO: Add all of the other configure checks as custom_tests properly.
 	
@@ -457,172 +457,171 @@ if not conf.CheckLib(['id3tag','libid3tag-release']):
 	print 'Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!'
 	Exit(1)
 
-	#Check for Ogg and Vorbis
-	if not conf.CheckLib('vorbisfile'):
-		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
-		Exit(1)
+#Check for Ogg and Vorbis
+if not conf.CheckLib('vorbisfile'):
+	print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
+	Exit(1)
 
-	if not conf.CheckLib('vorbis'):
-		print 'Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers, exiting!'
-		Exit(1)
+if not conf.CheckLib('vorbis'):
+	print 'Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers, exiting!'
+	Exit(1)
 
-	if not conf.CheckLib('ogg'):
-		print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
-		Exit(1)
+if not conf.CheckLib('ogg'):
+	print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
+	Exit(1)
 
-	## Check for OpenGL (it's messy to do it for all three platforms)
-	## XXX this should *NOT* have hardcoded paths like this
-	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and not conf.CheckCHeader('GL/gl.h'):
-		print 'Did not find OpenGL development files, exiting!'
-		Exit(1)
+## Check for OpenGL (it's messy to do it for all three platforms)
+## XXX this should *NOT* have hardcoded paths like this
+if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and not conf.CheckCHeader('GL/gl.h'):
+	print 'Did not find OpenGL development files, exiting!'
+	Exit(1)
 
-	if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
-		print 'Did not find GLU development files, exiting!'
+if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
+	print 'Did not find GLU development files, exiting!'
+	Exit(1)
+	
+#Check if FFMPEG was enabled
+CheckFFMPEG(conf, sources)
+
+#PortMidi backend support
+flags_portmidi = getFlags(env, 'portmidi', 0)
+if int(flags_portmidi):
+	if not conf.CheckLib(['portmidi', 'libportmidi']):
+		print "Did not find portmidi or it\'s development headers, exiting!"
+		Exit(1)
+	#if not conf.CheckLib(['porttime', 'libporttime']):
+	#	print "Did not find porttime or it\'s development headers, exiting!"
+	#	Exit(1)
+	sources += Split("""midiobjectportmidi.cpp """); 
+	env.Append(CPPDEFINES = '__PORTMIDI__')
+
+#Platform-specific checks for Linux and Win32...
+if platform in ('linux', 'bsd', 'win32'):
+	#Check for libsndfile
+	#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
+	if not conf.CheckLib(['sndfile', 'libsndfile']):
+		print "Did not find libsndfile or it\'s development headers, exiting!"
+		Exit(1)
+	else:
+		#env.Append(LIBS='sndfile') #XXX is this necessary?
+		env.Append(CPPDEFINES = '__SNDFILE__')
+		sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
+		# libsndfile = env.SharedLibrary(
+		# "libsndfile",
+		# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
+
+#Platform-specific checks for Linux...
+if platform == 'linux':
+	#Check for g++ (yeah, SCONS is a bit dumb here)
+	if os.system("which g++ > /dev/null"): #Checks for non-zero return code
+		print "Did not find gcc/g++, exiting!"
 		Exit(1)
 	
-	#Check if FFMPEG was enabled
-	CheckFFMPEG(conf, sources)
-
-	#PortMidi backend support
-	flags_portmidi = getFlags(env, 'portmidi', 0)
-	if int(flags_portmidi):
-		if not conf.CheckLib(['portmidi', 'libportmidi']):
-			print "Did not find portmidi or it\'s development headers, exiting!"
-			Exit(1)
-		#if not conf.CheckLib(['porttime', 'libporttime']):
-		#	print "Did not find porttime or it\'s development headers, exiting!"
-		#	Exit(1)
-		sources += Split("""midiobjectportmidi.cpp """); 
-		env.Append(CPPDEFINES = '__PORTMIDI__')
-	
-
-	#Platform-specific checks for Linux and Win32...
-	if platform in ('linux', 'bsd', 'win32'):
-		#Check for libsndfile
-		#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
-		if not conf.CheckLib(['sndfile', 'libsndfile']):
-			print "Did not find libsndfile or it\'s development headers, exiting!"
-			Exit(1)
-		else:
-			env.Append(LIBS='sndfile') #XXX is this necessary?
-			env.Append(CPPDEFINES = '__SNDFILE__')
-			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
-			# libsndfile = env.SharedLibrary(
-			# "libsndfile",
-			# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
-
-	#Platform-specific checks for Linux...
-	if platform == 'linux':
-		#Check for g++ (yeah, SCONS is a bit dumb here)
-		if os.system("which g++ > /dev/null"): #Checks for non-zero return code
-			print "Did not find gcc/g++, exiting!"
-			Exit(1)
+	#Check for pkg-config
+	if not conf.CheckForPKGConfig('0.15.0'):
+		print 'pkg-config >= 0.15.0 not found.'
+		Exit(1)
 		
-		#Check for pkg-config
-		if not conf.CheckForPKGConfig('0.15.0'):
-			print 'pkg-config >= 0.15.0 not found.'
-			Exit(1)
-		
-		#Check for QT >= 4.3	
-		if not conf.CheckForPKG('QtCore', '4.3'):
-			print 'QT >= 4.3 not found.'
-			Exit(1)
-		else:
-			#Grabs the QT4 include paths
-			"""
-			env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
-			env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
-			env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
-			env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
-			env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
-			env.ParseConfig('pkg-config QtScript --silence-errors --cflags --libs')
-			"""
-			#Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
-			#(This hopefully respects our qtdir=blah flag while linking now.)
-			"""
-			env.EnableQt4Modules([
-			'QtCore',
-			'QtGui',
-			'QtOpenGL',
-			'Qt3Support',
-			'QtXml',
-			'QtSvg',
-			#'QtUiTools',
-			#'QtDesigner',
-			#'QtWebKit',
-			],
-			debug=False,
-			)
-			"""
+	#Check for QT >= 4.3	
+	if not conf.CheckForPKG('QtCore', '4.3'):
+		print 'QT >= 4.3 not found.'
+		Exit(1)
+	else:
+		#Grabs the QT4 include paths
+		"""
+		env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
+		env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
+		env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
+		env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
+		env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
+		env.ParseConfig('pkg-config QtScript --silence-errors --cflags --libs')
+		"""
+		#Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
+		#(This hopefully respects our qtdir=blah flag while linking now.)
+		"""
+		env.EnableQt4Modules([
+		'QtCore',
+		'QtGui',
+		'QtOpenGL',
+		'Qt3Support',
+		'QtXml',
+		'QtSvg',
+		#'QtUiTools',
+		#'QtDesigner',
+		#'QtWebKit',
+		],
+		debug=False,
+		)
+		"""
 
-		#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
-		if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
-			print "Did not find libasound (aka. libasound2), exiting!"
-			Exit(1)
-
+	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
+	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
+		print "Did not find libasound (aka. libasound2), exiting!"
+		Exit(1)
         #Check for libdjconsole, if it was passed as a flag
-		flags_djconsole = getFlags(env, 'djconsole', 0)
-		flags_djconsole_legacy = getFlags(env, 'djconsole_legacy', 0)
-		if int(flags_djconsole):
-			if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
-				print "Did not find libdjconsole or it\'s development headers, exiting!"
-				Exit(1)
-			env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
-			env.Append(CPPDEFINES = '__LIBDJCONSOLE__')
-		elif int(flags_djconsole_legacy):
-			# legacy support can not be enabled if libDJConsole support is enabled via djconsole=1
-			env.Append(CPPDEFINES = '__DJCONSOLE_LEGACY__')
+	flags_djconsole = getFlags(env, 'djconsole', 0)
+	flags_djconsole_legacy = getFlags(env, 'djconsole_legacy', 0)
+	if int(flags_djconsole):
+		if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
+			print "Did not find libdjconsole or it\'s development headers, exiting!"
+			Exit(1)
+		env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
+		env.Append(CPPDEFINES = '__LIBDJCONSOLE__')
+	elif int(flags_djconsole_legacy):
+		# legacy support can not be enabled if libDJConsole support is enabled via djconsole=1
+		env.Append(CPPDEFINES = '__DJCONSOLE_LEGACY__')
 
-		#Another check for PortAudio-v19
-		env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
+	#Another check for PortAudio-v19 # why? -kousu
+	env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
 		#If the above line looks like magic, it's because it really is. (Read about ParseConfig, it's nifty)
 
-	#Platform-specific checks for OS X
-	if platform == 'osx':
-	#Check for libsndfile
-		#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
-		if not conf.CheckLib(['sndfile', 'libsndfile']):
-			print "Did not find libsndfile or it\'s development headers, exiting!"
-			Exit(1)
-		else:
-			env.Append(CPPDEFINES='__SNDFILE__')
-			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
-			# libsndfile = env.SharedLibrary(
-			# "libsndfile",
-			# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
+#Platform-specific checks for OS X
+if platform == 'osx':
+	#Check for libsndfile #XXX why is this platform-specific?
+	#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
+	if not conf.CheckLib(['sndfile', 'libsndfile']):
+		print "Did not find libsndfile or it\'s development headers, exiting!"
+		Exit(1)
+	else:
+		env.Append(CPPDEFINES='__SNDFILE__')
+		sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
+		# libsndfile = env.SharedLibrary(
+		# "libsndfile",
+		# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
+	
+	env.Append(CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
+	env.Append(LINKFLAGS='-framework OpenGL')
+	
+	#Check for QT4 (framework)
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
+				'/Library/Frameworks/QtOpenGL.framework/Headers/',
+				'/Library/Frameworks/Qt3Support.framework/Headers/',
+				'/Library/Frameworks/QtGui.framework/Headers/',
+				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtScript.framework/Headers/'])
 			
-		env.Append(CXXFLAGS='-framework OpenGL')
+	#Check for CoreMIDI
+	if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
+		print 'Did not find CoreMIDI framework, exiting! (Please install it)'
+		Exit(1)
+	else:
+		env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
 
-		#Check for QT4 (framework)
-		env.Append(CXXFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
-		#env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
-		#			'/Library/Frameworks/QtOpenGL.framework/Headers/',
-		#			'/Library/Frameworks/Qt3Support.framework/Headers/',
-		#			'/Library/Frameworks/QtGui.framework/Headers/',
-		#			'/Library/Frameworks/QtXml.framework/Headers/',
-		#			'/Library/Frameworks/QtXml.framework/Headers/',
-		#			'/Library/Frameworks/QtScript.framework/Headers/'])
-			
-		#Check for CoreMIDI
-		if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
-			print 'Did not find CoreMIDI framework, exiting! (Please install it)'
-			Exit(1)
-		else:
-			env.Append(CXXFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
-
-
-	env = conf.Finish()
+		
+env = conf.Finish()
 
 
 #Declare the flags for Mixxx's config/track listing files:
 #The quotes are necessary, since these are used directly in C code as strings
 if platform in ('linux', 'bsd'):
-	_mixxx_files = {'BPMSCHEME_FILE':'.mixxxbpmscheme.xml', 'SETTINGS_FILE':'.mixxx.cfg', 'TRACK_FILE':'.mixxxtrack.xml'}
+	_mixxx_files = [('BPMSCHEME_FILE','.mixxxbpmscheme.xml'), ('SETTINGS_FILE', '.mixxx.cfg'), ('TRACK_FILE', '.mixxxtrack.xml')]
 elif platform == 'osx': #right now this is the same as linux and bsd, but these files should really go in ~/Library/Applicationsomething like the rest of OS X apps do
-	_mixxx_files = {'BPMSCHEME_FILE': '.mixxxbpmscheme.xml', 'SETTINGS_FILE':'.mixxx.cfg', 'TRACK_FILE':'.mixxxtrack.xml'}
+	_mixxx_files = [('BPMSCHEME_FILE', '.mixxxbpmscheme.xml'), ('SETTINGS_FILE', '.mixxx.cfg'), ('TRACK_FILE', '.mixxxtrack.xml')]
 elif platform == 'win32':
-	_mixxx_files = {'BPMSCHEME_FILE': 'mixxxbpmscheme.xml', 'SETTINGS_FILE':'mixxx.cfg', 'TRACK_FILE':'mixxxtrack.xml'}
-_mixxx_files = dict((k, r'\"' + _mixxx_files[k] + r'\"') for k in _mixxx_files) #escape the filepaths, so that they wind up as C-strings to the C-compiler (the \s are so the shell doesn't eat the ")
+	_mixxx_files = [('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
+_mixxx_files = [(k, r'\"' + v + r'\"') for k,v in _mixxx_files] #escape the filepaths, so that they wind up as C-strings to the C-compiler (the \s are so the shell doesn't eat the ")
 env.Append(CPPDEFINES=_mixxx_files)
 del _mixxx_files #safety net
 
@@ -641,7 +640,7 @@ elif platform == 'bsd':
 elif platform == 'win32':
 	env.Append(CPPDEFINES='__WIN32__')
 	
-if platform in ('linux', 'bsd', 'osx'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
+if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')
 
 env.Append(CPPDEFINES = '__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
@@ -1217,8 +1216,9 @@ if platform == 'osx':
 			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] #Left out libqmng and libqtiff to save space.
 	
 	bundle = env.App("Mixxx", [mixxx_bin, 'osx/application.icns',
-		Dir('../res/skins/'), Dir('../res/midi/'), Dir('../res/keyboard/'),
-		Dir('../res/ladspa_presets'), Dir('../res/doc/'), Dir('../res/promo/')],
+		Dir('#res/skins/'),
+		Dir('#res/midi/'), Dir('#res/keyboard/'),
+		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/')],
 		 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
 			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
