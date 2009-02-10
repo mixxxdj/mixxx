@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QVector>
+#include <QTime>
+#include <QThread>
 
 #include "defs.h"
 
@@ -14,11 +16,12 @@ class ControlObjectThreadMain;
 class QDomNode;
 class WaveformRenderBackground;
 class WaveformRenderSignal;
+class WaveformRenderSignalPixmap;
 class WaveformRenderBeat;
 class WaveformRenderMark;
 class ControlObject;
 
-class WaveformRenderer : public QObject {
+class WaveformRenderer : public QThread {
     Q_OBJECT
 public:
     WaveformRenderer(const char* group);
@@ -33,9 +36,13 @@ public:
     int getSubpixelsPerPixel();
     int getPixelsPerSecond();
 public slots:
+    void slotUpdateLatency(double latency);
     void slotUpdatePlayPos(double playpos);
     void slotUpdateRate(double rate);
     void slotUpdateRateRange(double rate);
+    
+protected:
+    void run();
 
 private:
     void setupControlObjects();
@@ -45,12 +52,18 @@ private:
     int m_iNumSamples;
 
     int m_iPlayPosTime, m_iPlayPosTimeOld;
+    QTime m_playPosTime, m_playPosTimeOld;
     double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange;
+    int m_iDupes;
+    double m_dPlayPosAdjust;
+    int m_iLatency;
+    
 
     QVector<float> *m_pSampleBuffer;
     QPixmap *m_pPixmap;
     QImage m_pImage;
 
+    ControlObjectThreadMain *m_pLatency;
     ControlObjectThreadMain *m_pPlayPos;
     ControlObjectThreadMain *m_pRate;
     ControlObjectThreadMain *m_pRateRange;
@@ -59,12 +72,15 @@ private:
 
     WaveformRenderBackground *m_pRenderBackground;
     WaveformRenderSignal *m_pRenderSignal;
+    WaveformRenderSignalPixmap *m_pRenderSignalPixmap;
     WaveformRenderBeat *m_pRenderBeat;
     WaveformRenderMark *m_pRenderCue;
 
     const int m_iSubpixelsPerPixel;
     const int m_iPixelsPerSecond;
     TrackInfoObject *m_pTrack;
+
+    bool m_bQuit;
     
 };
 
