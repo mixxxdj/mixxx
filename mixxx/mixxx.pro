@@ -1,4 +1,4 @@
-CONFIG += ladspa alsaseqmidi
+CONFIG += link_pkgconfig ladspa alsaseqmidi
 DEFINES += __PORTAUDIO__ \
     __SNDFILE__ \
     BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
@@ -446,10 +446,9 @@ unix {
             HEADERS += src/midiobjectoss.h
             SOURCES += src/midiobjectoss.cpp
         }
-        LIBS += -lasound \
-            `pkg-config --libs portaudio-2.0` \
-            `pkg-config --libs jack`
-        CCFLAGS += `pkg-config --cflags portaudio-2.0`
+        LIBS += -lasound
+        PKGCONFIG += portaudio-2.0 \
+            jack
     }
 #    CXXFLAGS += -DX
 }
@@ -651,21 +650,21 @@ CONFIG(ffmpeg) {
     DEFINES += __FFMPEGFILE__
     HEADERS += src/soundsourceffmpeg.h
     SOURCES += src/soundsourceffmpeg.cpp
-    LIBS += `pkg-config libavcodec --silence-errors --cflags --libs` \
-        `pkg-config libavformat --silence-errors --cflags --libs` \
-        avcodec \
-        avformat \
-        z \
-        a52 \
-        dts \
-        gsm \
-        dc1394_control \
-        dl \
-        vorbisenc \
-        raw1394 \
-        avutil \
-        vorbis \
-        m \
-        ogg
+    PKGCONFIG += libavcodec  \
+            libavformat
+    LIBS += -lavcodec \
+        -lavformat \
+        -lz \
+        -la52 \
+        -ldts \
+        -lgsm \
+        -ldc1394_control \
+        -ldl \
+        -lvorbisenc \
+        -lraw1394 \
+        -lavutil \
+        -lvorbis \
+        -lm \
+        -logg
 }
 
