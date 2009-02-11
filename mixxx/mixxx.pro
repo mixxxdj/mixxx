@@ -1,6 +1,9 @@
-CONFIG += ladspa
+CONFIG += ladspa alsaseqmidi
 DEFINES += __PORTAUDIO__ \
-    __SNDFILE__
+    __SNDFILE__ \
+    BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
+    SETTINGS_FILE=\\\".mixxx.cfg\\\" \
+    TRACK_FILE=\\\".mixxxtrack.xml\\\"
 TEMPLATE = app
 TARGET = mixxx
 QT += core \
@@ -13,12 +16,32 @@ QT += core \
     script \
     qt3support
 DESTDIR = bin
-UI_DIR = bin\ui
-RCC_DIR = bin\rcc
-MOC_DIR = bin\moc
-OBJECTS_DIR = bin\obj
+UI_DIR = bin/ui
+RCC_DIR = bin/rcc
+MOC_DIR = bin/moc
+OBJECTS_DIR = bin/obj
+
+HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
+    $$UI_DIR/ui_dlgbpmschemedlg.h \
+    $$UI_DIR/ui_dlgbpmtapdlg.h \
+    $$UI_DIR/ui_dlgprefbpmdlg.h \
+    $$UI_DIR/ui_dlgprefcontrolsdlg.h \
+    $$UI_DIR/ui_dlgprefcrossfaderdlg.h \
+    $$UI_DIR/ui_dlgprefeqdlg.h \
+    $$UI_DIR/ui_dlgpreferencesdlg.h \
+    $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
+#    $$UI_DIR/ui_dlgprefmididevicedlg.h \
+#    $$UI_DIR/ui_dlgprefmididlg.h \
+    $$UI_DIR/ui_dlgprefplaylistdlg.h \
+    $$UI_DIR/ui_dlgprefrecorddlg.h \
+    $$UI_DIR/ui_dlgprefshoutcastdlg.h \
+    $$UI_DIR/ui_dlgprefsounddlg.h \
+    $$UI_DIR/ui_dlgprefvinyldlg.h
+
 INCLUDEPATH += src \
-    lib/soundtouch
+    lib/soundtouch \
+    lib/kissfft \
+    $$UI_DIR
 #    src/configmidi.h \
 HEADERS += src/analyser.h \
     src/analyserbpm.h \
@@ -51,18 +74,14 @@ HEADERS += src/analyser.h \
     src/engine/enginemaster.h \
     src/engine/engineobject.h \
     src/engine/enginepregain.h \
-    src/engine/engineshoutcast.h \
     src/engine/enginesidechain.h \
-    src/engine/enginespectralback.h \
+#    src/engine/enginespectralback.h \
     src/engine/enginespectralfwd.h \
     src/engine/enginetemporal.h \
     src/engine/enginevinylsoundemu.h \
     src/engine/enginevolume.h \
     src/engine/enginevumeter.h \
     src/engine/enginexfader.h \
-    src/recording/defs_recording.h \
-    src/recording/enginerecord.h \
-    src/recording/writeaudiofile.h \
     src/waveform/glwaveformrenderer.h \
     src/waveform/renderobject.h \
     src/waveform/waveformrenderbackground.h \
@@ -72,7 +91,7 @@ HEADERS += src/analyser.h \
     src/waveform/waveformrendersignal.h \
     src/waveform/waveformrendersignalpixmap.h \
     src/widget/wabstractcontrol.h \
-    src/widget/wcombobox.h \
+#    src/widget/wcombobox.h \
     src/widget/wdisplay.h \
     src/widget/wglwaveformviewer.h \
     src/widget/wknob.h \
@@ -89,7 +108,7 @@ HEADERS += src/analyser.h \
     src/widget/wslider.h \
     src/widget/wslidercomposed.h \
     src/widget/wstatuslight.h \
-    src/widget/wvinylcontrolindicator.h \
+#    src/widget/wvinylcontrolindicator.h \
     src/widget/wvisualsimple.h \
     src/widget/wvumeter.h \
     src/widget/wwaveformviewer.h \
@@ -109,7 +128,7 @@ HEADERS += src/analyser.h \
     src/controlobjectthreadwidget.h \
     src/controlpotmeter.h \
     src/controlpushbutton.h \
-    src/controlrotary.h \
+#    src/controlrotary.h \
     src/controlttrotary.h \
     src/defs.h \
     src/defs_audiofiles.h \
@@ -125,14 +144,11 @@ HEADERS += src/analyser.h \
     src/dlgprefcrossfader.h \
     src/dlgprefeq.h \
     src/dlgpreferences.h \
-    src/dlgprefmidi.h \
+#    src/dlgprefmidi.h \
     src/dlgprefmidibindings.h \
-    src/dlgprefmididevice.h \
+#    src/dlgprefmididevice.h \
     src/dlgprefplaylist.h \
-    src/dlgprefrecord.h \
-    src/dlgprefshoutcast.h \
     src/dlgprefsound.h \
-    src/encodervorbis.h \
     src/fakemonitor.h \
     src/hercules.h \
     src/herculeslinux.h \
@@ -147,15 +163,13 @@ HEADERS += src/analyser.h \
     src/mathstuff.h \
     src/midichanneldelegate.h \
     src/mididevicehandler.h \
-    src/midiinputmapping.h \
+#    src/midiinputmapping.h \
     src/midiinputmappingtablemodel.h \
     src/midiledhandler.h \
     src/midimapping.h \
     src/midinodelegate.h \
     src/midiobject.h \
     src/midiobjectnull.h \
-    src/midiobjectoss.h \
-    src/midiobjectportmidi.h \
     src/midioutputmapping.h \
     src/miditypedelegate.h \
     src/mixxx.h \
@@ -163,23 +177,23 @@ HEADERS += src/analyser.h \
     src/mixxxkeyboard.h \
     src/mixxxview.h \
     src/monitor.h \
-    src/mouse.h \
-    src/mouselinux.h \
-    src/mousewin.h \
+#    src/mouse.h \
+#    src/mouselinux.h \
+#    src/mousewin.h \
     src/parser.h \
     src/parserm3u.h \
     src/parserpls.h \
     src/peaklist.h \
     src/playerinfo.h \
-    src/powermate.h \
-    src/powermatelinux.h \
-    src/powermatewin.h \
+#    src/powermate.h \
+#    src/powermatelinux.h \
+#    src/powermatewin.h \
     src/probabilityvector.h \
     src/proxymodel.h \
     src/reader.h \
     src/readerevent.h \
     src/readerextract.h \
-    src/readerextractbeat.h \
+#    src/readerextractbeat.h \
     src/readerextractfft.h \
     src/readerextracthfc.h \
     src/readerextractwave.h \
@@ -190,8 +204,6 @@ HEADERS += src/analyser.h \
     src/sounddeviceportaudio.h \
     src/soundmanager.h \
     src/soundsource.h \
-    src/soundsourceffmpeg.h \
-    src/soundsourcem4a.h \
     src/soundsourcemp3.h \
     src/soundsourceoggvorbis.h \
     src/soundsourceproxy.h \
@@ -211,7 +223,7 @@ HEADERS += src/analyser.h \
     src/wtracktablemodel.h \
     src/wtracktableview.h \
     src/xmlparse.h
-#    src/configmidi.cpp \
+
 SOURCES += src/analyserbpm.cpp \
     src/analyserqueue.cpp \
     src/analyserwaveform.cpp \
@@ -241,17 +253,14 @@ SOURCES += src/analyserbpm.cpp \
     src/engine/enginemaster.cpp \
     src/engine/engineobject.cpp \
     src/engine/enginepregain.cpp \
-    src/engine/engineshoutcast.cpp \
     src/engine/enginesidechain.cpp \
-    src/engine/enginespectralback.cpp \
+#    src/engine/enginespectralback.cpp \
     src/engine/enginespectralfwd.cpp \
     src/engine/enginetemporal.cpp \
     src/engine/enginevinylsoundemu.cpp \
     src/engine/enginevolume.cpp \
     src/engine/enginevumeter.cpp \
     src/engine/enginexfader.cpp \
-    src/recording/enginerecord.cpp \
-    src/recording/writeaudiofile.cpp \
     src/waveform/glwaveformrenderer.cpp \
     src/waveform/renderobject.cpp \
     src/waveform/waveformrenderbackground.cpp \
@@ -261,7 +270,7 @@ SOURCES += src/analyserbpm.cpp \
     src/waveform/waveformrendersignal.cpp \
     src/waveform/waveformrendersignalpixmap.cpp \
     src/widget/wabstractcontrol.cpp \
-    src/widget/wcombobox.cpp \
+#    src/widget/wcombobox.cpp \
     src/widget/wdisplay.cpp \
     src/widget/wglwaveformviewer.cpp \
     src/widget/wknob.cpp \
@@ -278,7 +287,7 @@ SOURCES += src/analyserbpm.cpp \
     src/widget/wslider.cpp \
     src/widget/wslidercomposed.cpp \
     src/widget/wstatuslight.cpp \
-    src/widget/wvinylcontrolindicator.cpp \
+#    src/widget/wvinylcontrolindicator.cpp \
     src/widget/wvisualsimple.cpp \
     src/widget/wvumeter.cpp \
     src/widget/wwaveformviewer.cpp \
@@ -297,7 +306,7 @@ SOURCES += src/analyserbpm.cpp \
     src/controlobjectthreadwidget.cpp \
     src/controlpotmeter.cpp \
     src/controlpushbutton.cpp \
-    src/controlrotary.cpp \
+#    src/controlrotary.cpp \
     src/controlttrotary.cpp \
     src/dlgabout.cpp \
     src/dlgbpmscheme.cpp \
@@ -308,14 +317,11 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgprefcrossfader.cpp \
     src/dlgprefeq.cpp \
     src/dlgpreferences.cpp \
-    src/dlgprefmidi.cpp \
+#    src/dlgprefmidi.cpp \
     src/dlgprefmidibindings.cpp \
-    src/dlgprefmididevice.cpp \
+#    src/dlgprefmididevice.cpp \
     src/dlgprefplaylist.cpp \
-    src/dlgprefrecord.cpp \
-    src/dlgprefshoutcast.cpp \
     src/dlgprefsound.cpp \
-    src/encodervorbis.cpp \
     src/fakemonitor.cpp \
     src/hercules.cpp \
     src/herculeslinux.cpp \
@@ -330,43 +336,38 @@ SOURCES += src/analyserbpm.cpp \
     src/mathstuff.cpp \
     src/midichanneldelegate.cpp \
     src/mididevicehandler.cpp \
-    src/midiinputmapping.cpp \
+#    src/midiinputmapping.cpp \
     src/midiinputmappingtablemodel.cpp \
     src/midiledhandler.cpp \
     src/midimapping.cpp \
     src/midinodelegate.cpp \
     src/midiobject.cpp \
-    src/midiobjectalsaseq.cpp \
-    src/midiobjectcoremidi.cpp \
     src/midiobjectnull.cpp \
-    src/midiobjectoss.cpp \
-    src/midiobjectportmidi.cpp \
-    src/midiobjectwin.cpp \
     src/miditypedelegate.cpp \
     src/mixxx.cpp \
     src/mixxxcontrol.h \
     src/mixxxkeyboard.cpp \
     src/mixxxview.cpp \
     src/monitor.cpp \
-    src/mouse.cpp \
-    src/mouselinux.cpp \
-    src/mousewin.cpp \
+#    src/mouse.cpp \
+#    src/mouselinux.cpp \
+#    src/mousewin.cpp \
     src/parser.cpp \
     src/parserm3u.cpp \
     src/parserpls.cpp \
     src/peaklist.cpp \
     src/playerinfo.cpp \
-    src/powermate.cpp \
-    src/powermatelinux.cpp \
-    src/powermatewin.cpp \
+#    src/powermate.cpp \
+#    src/powermatelinux.cpp \
+#    src/powermatewin.cpp \
     src/probabilityvector.cpp \
     src/proxymodel.cpp \
     src/reader.cpp \
     src/readerevent.cpp \
     src/readerextract.cpp \
-    src/readerextractbeat.cpp \
-    src/readerextractfft.cpp \
-    src/readerextracthfc.cpp \
+#    src/readerextractbeat.cpp \
+#    src/readerextractfft.cpp \
+#    src/readerextracthfc.cpp \
     src/readerextractwave.cpp \
     src/rotary.cpp \
     src/rtthread.cpp \
@@ -375,8 +376,6 @@ SOURCES += src/analyserbpm.cpp \
     src/sounddeviceportaudio.cpp \
     src/soundmanager.cpp \
     src/soundsource.cpp \
-    src/soundsourceffmpeg.cpp \
-    src/soundsourcem4a.cpp \
     src/soundsourcemp3.cpp \
     src/soundsourceoggvorbis.cpp \
     src/soundsourceproxy.cpp \
@@ -406,33 +405,53 @@ FORMS += src/dlgaboutdlg.ui \
     src/dlgprefeqdlg.ui \
     src/dlgpreferencesdlg.ui \
     src/dlgprefmidibindingsdlg.ui \
-    src/dlgprefmididevicedlg.ui \
-    src/dlgprefmididlg.ui \
+    #src/dlgprefmididevicedlg.ui \
+#    src/dlgprefmididlg.ui \
     src/dlgprefplaylistdlg.ui \
-    src/dlgprefrecorddlg.ui \
-    src/dlgprefshoutcastdlg.ui \
     src/dlgprefsounddlg.ui \
     src/dlgprefvinyldlg.ui
 RESOURCES += res/mixxx.qrc
+HEADERS += src/recording/defs_recording.h \
+    src/recording/enginerecord.h \
+    src/recording/writeaudiofile.h \
+    src/dlgprefrecord.h
+SOURCES += src/recording/enginerecord.cpp \
+    src/recording/writeaudiofile.cpp \
+    src/dlgprefrecord.cpp
+FORMS += src/dlgprefrecorddlg.ui
 unix { 
-    DEFINES += BPMSCHEME_FILE=".mixxxbpmscheme.xm" \
-        SETTINGS_FILE=".mixxx.cfg" \
-        TRACK_FILE=".mixxxtrack.xml"
     !macx { 
         DEFINES += __LINUX__ \
-            __ALSASEQMIDI__ \
             TEMPORAL \
-            __UNIX__ \
-            UNIX_SHARE_PATH="/usr/local/share/mixxx"
-        HEADERS += src/midiobjectalsaseq.h
-        SOURCES += src/midiobjectalsaseq.cpp
+            __UNIX__
+
+        # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
+        isEmpty( PREFIX ) {
+            PREFIX = /usr/local
+        }
+        UNIX_SHARE_PATH = $${PREFIX}/share/mixxx
+        DEFINES += UNIX_SHARE_PATH=\\\"$$UNIX_SHARE_PATH\\\"
+        CONFIG(alsaseqmidi) {
+            DEFINES += __ALSASEQMIDI__
+            HEADERS += src/midiobjectalsaseq.h
+            SOURCES += src/midiobjectalsaseq.cpp
+        }
+        CONFIG(portmidi) {
+            DEFINES += __PORTMIDI__
+            HEADERS += src/midiobjectportmidi.h
+            SOURCES += src/midiobjectportmidi.cpp
+        }
+        CONFIG(ossmidi) {
+            DEFINES += __OSSMIDI__
+            HEADERS += src/midiobjectoss.h
+            SOURCES += src/midiobjectoss.cpp
+        }
         LIBS += -lasound \
             `pkg-config --libs portaudio-2.0` \
             `pkg-config --libs jack`
         CCFLAGS += `pkg-config --cflags portaudio-2.0`
     }
-    CXXFLAGS += -DX -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\ \
-        ...
+#    CXXFLAGS += -DX
 }
 macx { 
     DEFINES += __COREMIDI__
@@ -566,10 +585,12 @@ CONFIG(tonal) {
 }
 CONFIG(m4a) { 
     DEFINES += __M4A__
-    HEADERS += src/m4a/comment.h \
+    HEADERS += src/soundsourcem4a.h \
+        src/m4a/comment.h \
         src/m4a/ip.h \
         src/m4a/sf.h
-    SOURCES += src/m4a/mp4-mixxx.cpp
+    SOURCES += src/soundsourcem4a.cpp \
+        src/m4a/mp4-mixxx.cpp
     LIBS += libmp4v2 \
         libfaad
 }
@@ -600,3 +621,51 @@ CONFIG(cmetrics):DEFINES += __C_METRICS__ \
     server='metrics.mixxx.org'
 !CONFIG(hifieq):CXXFLAGS += -D__LOFI__ \
     -D__NO_INTTYPES__
+CONFIG(shoutcast) {
+    DEFINES += __SHOUTCAST__
+    HEADERS += src/dlgprefshoutcast.h \
+        src/encodervorbis.h \
+        src/engine/engineshoutcast.h
+    SOURCES += src/dlgprefshoutcast.cpp \
+        src/encodervorbis.cpp \
+        src/engine/engineshoutcast.cpp
+    LIBS += shout \
+        vorbisenc
+    FORMS += src/dlgprefshoutcastdlg.ui
+}
+
+# CONFIG(record) {
+#    DEFINES += __RECORD__
+#    HEADERS += src/recording/defs_recording.h \
+#        src/recording/enginerecord.h \
+#        src/recording/writeaudiofile.h \
+#        src/dlgprefrecord.h
+#    SOURCES += src/recording/enginerecord.cpp \
+#        src/recording/writeaudiofile.cpp \
+#        src/dlgprefrecord.cpp
+#    LIBS +=
+#    FORMS += src/dlgprefrecorddlg.ui
+#}
+
+CONFIG(ffmpeg) {
+    DEFINES += __FFMPEGFILE__
+    HEADERS += src/soundsourceffmpeg.h
+    SOURCES += src/soundsourceffmpeg.cpp
+    LIBS += `pkg-config libavcodec --silence-errors --cflags --libs` \
+        `pkg-config libavformat --silence-errors --cflags --libs` \
+        avcodec \
+        avformat \
+        z \
+        a52 \
+        dts \
+        gsm \
+        dc1394_control \
+        dl \
+        vorbisenc \
+        raw1394 \
+        avutil \
+        vorbis \
+        m \
+        ogg
+}
+
