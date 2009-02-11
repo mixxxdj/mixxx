@@ -31,7 +31,7 @@ public:
     ~MidiObjectALSASeq();
     int getClientPortsList(void);
     void devOpen(QString device);
-    void devClose(QString device);
+    void devClose();
     void sendShortMsg(unsigned int word);
     void sendSysexMsg(unsigned char data[], unsigned int length);
 protected:
