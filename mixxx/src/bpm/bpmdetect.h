@@ -77,7 +77,7 @@ email                : snipexv@gmail.com
 #include "STTypes.h"
 #include "FIFOSampleBuffer.h"
 
-#ifdef __WIN32__
+#ifdef _MSC_VER
 typedef signed char int8_t;
 typedef unsigned char uint8_t;
 typedef short int16_t;
