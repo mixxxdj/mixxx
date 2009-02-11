@@ -138,7 +138,7 @@ def embed_dependencies(binary,
 			
 			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
 				p = os.path.abspath(os.path.join(P, e))
-				print "SEARCHING IN LIBPATH; TRYING", p
+				#print "SEARCHING IN LIBPATH; TRYING", p
 				if os.path.exists(p):
 					break
 			else:
