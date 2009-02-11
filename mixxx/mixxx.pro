@@ -19,12 +19,12 @@ MOC_DIR = bin\moc
 OBJECTS_DIR = bin\obj
 INCLUDEPATH += src \
     lib/soundtouch
+#    src/configmidi.h \
 HEADERS += src/analyser.h \
     src/analyserbpm.h \
     src/analyserqueue.h \
     src/analyserwaveform.h \
     src/analyserwavesummary.h \
-    src/configmidi.h \
     src/configobject.h \
     src/controlbeat.h \
     src/controlevent.h \
@@ -70,6 +70,7 @@ HEADERS += src/analyser.h \
     src/waveform/waveformrenderer.h \
     src/waveform/waveformrendermark.h \
     src/waveform/waveformrendersignal.h \
+    src/waveform/waveformrendersignalpixmap.h \
     src/widget/wabstractcontrol.h \
     src/widget/wcombobox.h \
     src/widget/wdisplay.h \
@@ -145,8 +146,8 @@ HEADERS += src/analyser.h \
     src/libraryscannerdlg.h \
     src/mathstuff.h \
     src/midichanneldelegate.h \
-    src/midicommand.h \
     src/mididevicehandler.h \
+    src/midiinputmapping.h \
     src/midiinputmappingtablemodel.h \
     src/midiledhandler.h \
     src/midimapping.h \
@@ -155,8 +156,10 @@ HEADERS += src/analyser.h \
     src/midiobjectnull.h \
     src/midiobjectoss.h \
     src/midiobjectportmidi.h \
+    src/midioutputmapping.h \
     src/miditypedelegate.h \
     src/mixxx.h \
+    src/mixxxcontrol.h \
     src/mixxxkeyboard.h \
     src/mixxxview.h \
     src/monitor.h \
@@ -208,11 +211,11 @@ HEADERS += src/analyser.h \
     src/wtracktablemodel.h \
     src/wtracktableview.h \
     src/xmlparse.h
+#    src/configmidi.cpp \
 SOURCES += src/analyserbpm.cpp \
     src/analyserqueue.cpp \
     src/analyserwaveform.cpp \
     src/analyserwavesummary.cpp \
-    src/configmidi.cpp \
     src/configobject.cpp \
     src/controlbeat.cpp \
     src/controlevent.cpp \
@@ -256,6 +259,7 @@ SOURCES += src/analyserbpm.cpp \
     src/waveform/waveformrenderer.cpp \
     src/waveform/waveformrendermark.cpp \
     src/waveform/waveformrendersignal.cpp \
+    src/waveform/waveformrendersignalpixmap.cpp \
     src/widget/wabstractcontrol.cpp \
     src/widget/wcombobox.cpp \
     src/widget/wdisplay.cpp \
@@ -325,8 +329,8 @@ SOURCES += src/analyserbpm.cpp \
     src/libraryscannerdlg.cpp \
     src/mathstuff.cpp \
     src/midichanneldelegate.cpp \
-    src/midicommand.cpp \
     src/mididevicehandler.cpp \
+    src/midiinputmapping.cpp \
     src/midiinputmappingtablemodel.cpp \
     src/midiledhandler.cpp \
     src/midimapping.cpp \
@@ -340,6 +344,7 @@ SOURCES += src/analyserbpm.cpp \
     src/midiobjectwin.cpp \
     src/miditypedelegate.cpp \
     src/mixxx.cpp \
+    src/mixxxcontrol.h \
     src/mixxxkeyboard.cpp \
     src/mixxxview.cpp \
     src/monitor.cpp \
@@ -417,7 +422,8 @@ unix {
         DEFINES += __LINUX__ \
             __ALSASEQMIDI__ \
             TEMPORAL \
-            __UNIX__
+            __UNIX__ \
+            UNIX_SHARE_PATH="/usr/local/share/mixxx"
         HEADERS += src/midiobjectalsaseq.h
         SOURCES += src/midiobjectalsaseq.cpp
         LIBS += -lasound \
