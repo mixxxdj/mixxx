@@ -39,7 +39,7 @@ MidiObjectWin::MidiObjectWin() : MidiObject()
 MidiObjectWin::~MidiObjectWin()
 {
     // Close devices and delete buffer
-	while (openDevices.count() > 0) devClose(openDevices.takeFirst());
+//    while (openDevices.count() > 0) devClose(openDevices.takeFirst());
 }
 
 void MidiObjectWin::updateDeviceList() {
@@ -127,7 +127,7 @@ void MidiObjectWin::run()
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiObjectWin %1").arg(++id));
     
-    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+//    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
     // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
     MidiObject::run();
 }

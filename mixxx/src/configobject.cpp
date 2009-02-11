@@ -678,9 +678,13 @@ QString ConfigObject<ValueType>::getConfigPath()
 #endif
 #ifdef __WIN32__
     // On Windows, set the config dir relative to the application dir
-    char* str = new char[200];
-    GetModuleFileName(NULL, str, 200);
-    qConfigPath = QFileInfo(str).dirPath();
+//    char* str = new char[200];
+//    GetModuleFileName(NULL, str, 200);
+//    qConfigPath = QFileInfo(str).dirPath();
+      wchar_t str[MAX_PATH];
+      GetModuleFileName(0, str, MAX_PATH);
+      std::wstring path(str);
+      qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
 #endif
 #ifdef __APPLE__
     // Set the path relative to the bundle directory

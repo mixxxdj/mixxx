@@ -1,5 +1,5 @@
 CONFIG += link_pkgconfig ladspa alsaseqmidi
-DEFINES += __PORTAUDIO__ \
+DEFINES += __PORTAUDIO__ \    
     __SNDFILE__ \
     BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
     SETTINGS_FILE=\\\".mixxx.cfg\\\" \
@@ -30,7 +30,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
-#    $$UI_DIR/ui_dlgprefmididevicedlg.h \
+    $$UI_DIR/ui_dlgprefmididevicedlg.h \
 #    $$UI_DIR/ui_dlgprefmididlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
@@ -59,7 +59,7 @@ HEADERS += src/analyser.h \
     src/engine/enginebufferscaledummy.h \
     src/engine/enginebufferscalelinear.h \
     src/engine/enginebufferscalereal.h \
-    src/engine/enginebufferscalesrc.h \
+#    src/engine/enginebufferscalesrc.h \
     src/engine/enginebufferscalest.h \
     src/engine/enginechannel.h \
     src/engine/engineclipping.h \
@@ -70,7 +70,6 @@ HEADERS += src/analyser.h \
     src/engine/enginefilteriir.h \
     src/engine/enginefilterrbj.h \
     src/engine/engineflanger.h \
-    src/engine/engineladspa.h \
     src/engine/enginemaster.h \
     src/engine/engineobject.h \
     src/engine/enginepregain.h \
@@ -138,7 +137,6 @@ HEADERS += src/analyser.h \
     src/dlgabout.h \
     src/dlgbpmscheme.h \
     src/dlgbpmtap.h \
-    src/dlgladspa.h \
     src/dlgprefbpm.h \
     src/dlgprefcontrols.h \
     src/dlgprefcrossfader.h \
@@ -150,14 +148,13 @@ HEADERS += src/analyser.h \
     src/dlgprefplaylist.h \
     src/dlgprefsound.h \
     src/fakemonitor.h \
-    src/hercules.h \
-    src/herculeslinux.h \
+#    src/hercules.h \
+#    src/herculeslinux.h \
     src/imgcolor.h \
     src/imginvert.h \
     src/imgloader.h \
     src/imgsource.h \
     src/input.h \
-    src/ladspaview.h \
     src/libraryscanner.h \
     src/libraryscannerdlg.h \
     src/mathstuff.h \
@@ -239,7 +236,7 @@ SOURCES += src/analyserbpm.cpp \
     src/engine/enginebufferscaledummy.cpp \
     src/engine/enginebufferscalelinear.cpp \
     src/engine/enginebufferscalereal.cpp \
-    src/engine/enginebufferscalesrc.cpp \
+#    src/engine/enginebufferscalesrc.cpp \
     src/engine/enginebufferscalest.cpp \
     src/engine/enginechannel.cpp \
     src/engine/engineclipping.cpp \
@@ -250,7 +247,6 @@ SOURCES += src/analyserbpm.cpp \
     src/engine/enginefilteriir.cpp \
     src/engine/enginefilterrbj.cpp \
     src/engine/engineflanger.cpp \
-    src/engine/engineladspa.cpp \
     src/engine/enginemaster.cpp \
     src/engine/engineobject.cpp \
     src/engine/enginepregain.cpp \
@@ -312,7 +308,6 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgabout.cpp \
     src/dlgbpmscheme.cpp \
     src/dlgbpmtap.cpp \
-    src/dlgladspa.cpp \
     src/dlgprefbpm.cpp \
     src/dlgprefcontrols.cpp \
     src/dlgprefcrossfader.cpp \
@@ -324,14 +319,13 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgprefplaylist.cpp \
     src/dlgprefsound.cpp \
     src/fakemonitor.cpp \
-    src/hercules.cpp \
-    src/herculeslinux.cpp \
-    src/herculeslinuxlegacy.cpp \
+#    src/hercules.cpp \
+#    src/herculeslinux.cpp \
+#    src/herculeslinuxlegacy.cpp \
     src/imgcolor.cpp \
     src/imginvert.cpp \
     src/imgloader.cpp \
     src/input.cpp \
-    src/ladspaview.cpp \
     src/libraryscanner.cpp \
     src/libraryscannerdlg.cpp \
     src/mathstuff.cpp \
@@ -405,16 +399,17 @@ SOURCES += lib/soundtouch/SoundTouch.cpp \
     lib/soundtouch/RateTransposer.cpp \
     lib/soundtouch/AAFilter.cpp \
     lib/soundtouch/FIFOSampleBuffer.cpp \
-    lib/soundtouch/FIRFilter.cpp
-win32 {
-    SOURCES += lib/soundtouch/cpu_detect_x86_win.cpp
-}
-!win32 {
-    SOURCES += lib/soundtouch/cpu_detect_x86_gcc.cpp
-}
+    lib/soundtouch/FIRFilter.cpp \
+    lib/soundtouch/cpu_detect_x86_gcc.cpp
 
 # Fidlib
 SOURCES += lib/fidlib-0.9.9/fidlib.c
+win32 {
+    DEFINES += T_MINGW
+}
+!win32 {
+    DEFINES += T_LINUX
+}
 
 # kissfft
 SOURCES += lib/kissfft/kiss_fft.c
@@ -428,7 +423,7 @@ FORMS += src/dlgaboutdlg.ui \
     src/dlgprefeqdlg.ui \
     src/dlgpreferencesdlg.ui \
     src/dlgprefmidibindingsdlg.ui \
-    #src/dlgprefmididevicedlg.ui \
+    src/dlgprefmididevicedlg.ui \
 #    src/dlgprefmididlg.ui \
     src/dlgprefplaylistdlg.ui \
     src/dlgprefsounddlg.ui \
@@ -442,12 +437,11 @@ SOURCES += src/recording/enginerecord.cpp \
     src/recording/writeaudiofile.cpp \
     src/dlgprefrecord.cpp
 FORMS += src/dlgprefrecorddlg.ui
-unix { 
+unix {
     !macx { 
         DEFINES += __LINUX__ \
             TEMPORAL \
             __UNIX__ \
-            T_LINUX # for fidlib
 
         # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
         isEmpty( PREFIX ) {
@@ -495,21 +489,23 @@ win32 {
     DEFINES += __WINMIDI__
     HEADERS += src/midiobjectwin.h
     SOURCES += src/midiobjectwin.cpp
-    LIBS += WinMM \
-        ogg_static \
-        vorbis_static \
-        vorbisfile_static \
-        imm32 \
-        wsock32 \
-        delayimp \
-        winspool \
-        shell32
-    CXXFLAGS += -DWIN32
-    CCFLAGS += -DWIN32
+    LIBS += ../mixxx-winlib/sndfile.dll \
+        ../mixxx-winlib/portaudio.dll \
+        ../mixxx-winlib/mad.lib \
+        ../mixxx-winlib/libid3tag.a \
+        ../mixxx-winlib/vorbisfile.dll \
+        ../mixxx-winlib/vorbis.dll \
+        ../mixxx-winlib/libfftw3-3.dll \
+        ../mixxx-winlib/ogg.dll \
+        $$(WINDIR)/System32/WinMM.dll
+    INCLUDEPATH += ../mixxx-winlib
 }
 CONFIG(ladspa) { 
     DEFINES += __LADSPA__
-    HEADERS += src/ladspa/ladspacontrol.h \
+    HEADERS += src/engine/engineladspa.h \
+        src/dlgladspa.h \
+        src/ladspaview.h \
+        src/ladspa/ladspacontrol.h \
         src/ladspa/ladspainstance.h \
         src/ladspa/ladspainstancemono.h \
         src/ladspa/ladspainstancestereo.h \
@@ -521,7 +517,10 @@ CONFIG(ladspa) {
         src/ladspa/ladspapresetknob.h \
         src/ladspa/ladspapresetmanager.h \
         src/ladspa/ladspapresetslot.h
-    SOURCES += src/ladspa/ladspacontrol.cpp \
+    SOURCES += src/engine/engineladspa.cpp \
+        src/dlgladspa.cpp \
+        src/ladspaview.cpp \
+        src/ladspa/ladspacontrol.cpp \
         src/ladspa/ladspainstance.cpp \
         src/ladspa/ladspainstancemono.cpp \
         src/ladspa/ladspainstancestereo.cpp \
@@ -533,7 +532,9 @@ CONFIG(ladspa) {
         src/ladspa/ladspapresetknob.cpp \
         src/ladspa/ladspapresetmanager.cpp \
         src/ladspa/ladspapresetslot.cpp
-    INCLUDEPATH += 
+    win32{
+        INCLUDEPATH += lib\ladspa
+    }
 }
 CONFIG(script) { 
     DEFINES += __MIDISCRIPT__
