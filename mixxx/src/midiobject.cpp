@@ -157,13 +157,13 @@ QStringList MidiObject::getOpenDevices()
    -------- ------------------------------------------------------ */
 void MidiObject::receive(MidiCategory category, char channel, char control, char value, QString device)
 {
-    // qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
+    //qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
     // if (!RxEnabled[device]) return;
 
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
 
-//     qDebug() << "MidiObject::receive() miditype: " << (int)category << " ch: " << (int)channel << ", ctrl: " << (int)control << ", val: " << (int)value;
+     qDebug() << "MidiObject::receive() miditype: " << (int)category << " ch: " << (int)channel << ", ctrl: " << (int)control << ", val: " << (int)value;
 
     MidiType type = MIDI_EMPTY;
     switch (category) {
