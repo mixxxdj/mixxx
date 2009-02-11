@@ -167,6 +167,7 @@ HEADERS += src/analyser.h \
     src/midiinputmappingtablemodel.h \
     src/midiledhandler.h \
     src/midimapping.h \
+    src/midimessage.h \
     src/midinodelegate.h \
     src/midiobject.h \
     src/midiobjectnull.h \
@@ -340,12 +341,13 @@ SOURCES += src/analyserbpm.cpp \
     src/midiinputmappingtablemodel.cpp \
     src/midiledhandler.cpp \
     src/midimapping.cpp \
+    src/midimessage.cpp \
     src/midinodelegate.cpp \
     src/midiobject.cpp \
     src/midiobjectnull.cpp \
     src/miditypedelegate.cpp \
     src/mixxx.cpp \
-    src/mixxxcontrol.h \
+    src/mixxxcontrol.cpp \
     src/mixxxkeyboard.cpp \
     src/mixxxview.cpp \
     src/monitor.cpp \
@@ -396,6 +398,27 @@ SOURCES += src/analyserbpm.cpp \
     src/wtracktableview.cpp \
     src/xmlparse.cpp \
     src/main.cpp
+
+# Soundtouch
+SOURCES += lib/soundtouch/SoundTouch.cpp \
+    lib/soundtouch/TDStretch.cpp \
+    lib/soundtouch/RateTransposer.cpp \
+    lib/soundtouch/AAFilter.cpp \
+    lib/soundtouch/FIFOSampleBuffer.cpp \
+    lib/soundtouch/FIRFilter.cpp
+win32 {
+    SOURCES += lib/soundtouch/cpu_detect_x86_win.cpp
+}
+!win32 {
+    SOURCES += lib/soundtouch/cpu_detect_x86_gcc.cpp
+}
+
+# Fidlib
+SOURCES += lib/fidlib-0.9.9/fidlib.c
+
+# kissfft
+SOURCES += lib/kissfft/kiss_fft.c
+
 FORMS += src/dlgaboutdlg.ui \
     src/dlgbpmschemedlg.ui \
     src/dlgbpmtapdlg.ui \
@@ -423,7 +446,8 @@ unix {
     !macx { 
         DEFINES += __LINUX__ \
             TEMPORAL \
-            __UNIX__
+            __UNIX__ \
+            T_LINUX # for fidlib
 
         # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
         isEmpty( PREFIX ) {
@@ -448,7 +472,11 @@ unix {
         }
         LIBS += -lasound
         PKGCONFIG += portaudio-2.0 \
-            jack
+            jack \
+            id3tag \
+            mad \
+            vorbisfile \
+            sndfile
     }
 #    CXXFLAGS += -DX
 }
