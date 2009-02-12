@@ -500,7 +500,7 @@ win32 {
         ../mixxx-winlib/vorbis.dll \
         ../mixxx-winlib/libfftw3-3.dll \
         ../mixxx-winlib/ogg.dll \
-        $$(WINDIR)/System32/WinMM.dll
+        -lwinmm
     INCLUDEPATH += ../mixxx-winlib
 }
 CONFIG(ladspa) { 
