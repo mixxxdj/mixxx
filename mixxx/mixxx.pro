@@ -494,7 +494,7 @@ win32 {
     SOURCES += src/midiobjectwin.cpp
     LIBS += ../mixxx-winlib/sndfile.dll \
         ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/mad.lib \
+        ../mixxx-winlib/libmad.a \
         ../mixxx-winlib/libid3tag.a \
         ../mixxx-winlib/vorbisfile.dll \
         ../mixxx-winlib/vorbis.dll \
