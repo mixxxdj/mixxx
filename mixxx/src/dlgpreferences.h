@@ -62,6 +62,7 @@ public:
 public slots:
     void onShow();
     void onHide();
+    void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
@@ -71,6 +72,8 @@ signals:
 protected:
     bool eventFilter(QObject *, QEvent *);
 private:
+    void destroyMidiWidgets();
+    void setupMidiWidgets();
     DlgPrefSound *wsound;
     QList<DlgPrefMidiBindings*> wmidiBindingsForDevice;
     DlgPrefPlaylist *wplaylist;

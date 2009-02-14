@@ -226,13 +226,12 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
 
     if (p) //Only pass values on to valid ControlObjects.
     {
-        double newValue = (double)value;
-        m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), newValue);
-        // qDebug() << "value coming out ComputeValue: " << newValue;
-
-        ControlObject::sync();
-
-        p->queueFromMidi(category, newValue);
+      double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
+      //qDebug() << "value coming out ComputeValue: " << newValue;
+      
+      ControlObject::sync();
+      
+      p->queueFromMidi(category, newValue);
     }
 
     return;
