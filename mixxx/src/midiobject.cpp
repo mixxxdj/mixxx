@@ -116,6 +116,7 @@ void MidiObject::remove(ControlObject * c)
 QStringList * MidiObject::getDeviceList()
 {
     updateDeviceList();
+    qDebug() << "getting midi device list, size " << devices.size() << " and: " << devices.join(", ");
     return &devices;
 }
 

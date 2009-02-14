@@ -60,7 +60,8 @@ public:
     ~DlgPreferences();
     void createIcons();
 public slots:
-    void slotUpdate();
+    void onShow();
+    void onHide();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
