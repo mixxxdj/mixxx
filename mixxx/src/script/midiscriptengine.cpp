@@ -63,6 +63,10 @@ MidiScriptEngine::~MidiScriptEngine() {
     
 }
 
+bool MidiScriptEngine::isReady() {
+    return m_pEngine != NULL;
+}
+
 
 /* -------- ------------------------------------------------------
    Purpose: Create the MidiScriptEngine object (so it is owned in this
