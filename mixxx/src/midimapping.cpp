@@ -736,6 +736,7 @@ double MidiMapping::ComputeValue(MidiOption midioption, double _prevmidivalue, d
     }
     else if (midioption == MIDI_OPT_SPREAD64)
     {
+       qDebug() << "MIDI_OPT_SPREAD64";
         // BJW: Spread64: Distance away from centre point (aka "relative CC")
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
         // but with added sensitivity adjustment. This formula is still experimental.
