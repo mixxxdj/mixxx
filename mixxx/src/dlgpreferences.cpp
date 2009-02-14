@@ -93,13 +93,15 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wshoutcast);
 #endif
 
+    setupMidiWidgets();
+
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
 
     // Connections
-    connect(this, SIGNAL(showDlg()), this,      SLOT(onShow()));
-    connect(this, SIGNAL(closeDlg()), this,      SLOT(onHide()));
+    connect(this, SIGNAL(showDlg()), this,      SLOT(slotShow()));
+    connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
     connect(m_pMidiObject, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
@@ -144,6 +146,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
 DlgPreferences::~DlgPreferences()
 {
+  destroyMidiWidgets();
 }
 
 void DlgPreferences::createIcons()
@@ -314,17 +317,14 @@ bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
     return QWidget::eventFilter(o,e);
 }
 
-void DlgPreferences::onHide()
+void DlgPreferences::slotHide()
 {
-  destroyMidiWidgets();
 }
 
 
-void DlgPreferences::onShow()
+void DlgPreferences::slotShow()
 {
   //m_pMixxx->releaseKeyboard();
-  
-  setupMidiWidgets();
 }
 
 void DlgPreferences::rescanMidi()

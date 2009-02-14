@@ -98,14 +98,12 @@ void MidiObjectCoreMidi::devOpen(QString device)
   
   // Should follow selected device !!!!
   openDevices.append(device);
-  qDebug() << "devOpen() succeded";
 }
 
 void MidiObjectCoreMidi::devClose(MIDIEndpointRef ref) {
   if (!ref) return;
   
   MIDIPortDisconnectSource(midiPort, ref);
-  qDebug() << "MidiObjectCoreMidi::devClose(MIDIEndpointRef) succeeded";
 }
 
 void MidiObjectCoreMidi::devClose()
@@ -122,7 +120,7 @@ void MidiObjectCoreMidi::stop()
 
 void MidiObjectCoreMidi::run()
 {
-  qDebug() << "starting MidiObjectCoreMidi thread";
+  qDebug() << "starting MidiObjectCoreMidi thread"; //XXX why is this never run????
   unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
   QThread::currentThread()->setObjectName(QString("MidiObjectCoreMidi %1").arg(++id));
   
@@ -191,7 +189,7 @@ void MidiObjectCoreMidi::notification_handler(const MIDINotification *message)
 	
   case kMIDIMsgPropertyChanged: //MIDIObjectPropertyChangeNotification
     //qDebug() << "kMIDIMsgPropertyChanged";
-    notification_property_handler((MIDIObjectPropertyChangeNotification*)message);
+    //notification_property_handler((MIDIObjectPropertyChangeNotification*)message);
     break;
     
     /*

@@ -60,8 +60,8 @@ public:
     ~DlgPreferences();
     void createIcons();
 public slots:
-    void onShow();
-    void onHide();
+    void slotShow();
+    void slotHide();
     void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
