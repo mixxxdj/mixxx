@@ -93,6 +93,7 @@ public:
     MidiMapping *getMidiMapping();
 
     signals:
+    void devicesChanged();
     void midiEvent(ConfigValueMidi *value, QString device);
     void debugInfo(ConfigValueMidi *event, char value, QString device);
 

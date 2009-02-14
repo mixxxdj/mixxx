@@ -100,6 +100,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(onShow()));
     connect(this, SIGNAL(closeDlg()), this,      SLOT(onHide()));
+    connect(m_pMidiObject, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
+
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
@@ -314,7 +316,26 @@ bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
 
 void DlgPreferences::onHide()
 {
-  //qDebug() << "void DlgPreferences::onHide()";
+  destroyMidiWidgets();
+}
+
+
+void DlgPreferences::onShow()
+{
+  //m_pMixxx->releaseKeyboard();
+  
+  setupMidiWidgets();
+}
+
+void DlgPreferences::rescanMidi()
+{
+  destroyMidiWidgets();
+  setupMidiWidgets();
+}
+
+void DlgPreferences::destroyMidiWidgets()
+{
+//XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
   while (!wmidiBindingsForDevice.isEmpty())
     {
       DlgPrefMidiBindings* midiDlg = wmidiBindingsForDevice.takeLast();
@@ -322,7 +343,7 @@ void DlgPreferences::onHide()
       delete midiDlg;
     }
 
-  while(m_pMIDITreeItem->childCount() > 0) //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class with constructors and destructors
+  while(m_pMIDITreeItem->childCount() > 0) 
     {
       QTreeWidgetItem* midiBindingsButton = m_pMIDITreeItem->takeChild(0);
       //qDebug() << " Q|T|r\e\eWidgetItem point is " << midiBindingsButton;
@@ -330,15 +351,11 @@ void DlgPreferences::onHide()
       delete midiBindingsButton;
     }
   m_midiBindingsButtons.clear();
-  //qDebug() << "end onHide";
+
 }
 
-
-void DlgPreferences::onShow()
+void DlgPreferences::setupMidiWidgets()
 {
-//    m_pMixxx->releaseKeyboard();
-
-  //XXX it would be good if we could trigger this refreshing whenever the midi devices are changed, so that the list gets updated even while looking at the 
 
 	//TODO: For each MIDI device, create a MIDI dialog and put a little link to it in the treepane on the left
 	QList<QString>* deviceList = m_pMidiObject->getDeviceList();
@@ -365,7 +382,6 @@ void DlgPreferences::onShow()
 	  }
 	
 
-	//qDebug() << "end onShow";
 
 }
 

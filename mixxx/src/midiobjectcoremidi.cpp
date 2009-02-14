@@ -20,172 +20,99 @@
 
 
 
-void CoreMIDI_add_handler(const MIDIObjectAddRemoveNotification* message)
-{
-qDebug() << "CoreMIDI_add_handler: parent:" << message->parent << ", child: " << message->child;
-}
-
-void CoreMIDI_remove_handler(const MIDIObjectAddRemoveNotification* message)
-{
-qDebug() << "CoreMIDI_remove_handler: parent:" << message->parent << ", child: " << message->child;
-}
-
-
-void CoreMIDI_property_handler(const MIDIObjectPropertyChangeNotification* message)
-{
-
-char* buf = new char[CFStringGetLength(message->propertyName)+1];
-CFStringGetCString(message->propertyName, buf, CFStringGetLength(message->propertyName)+1, kCFStringEncodingASCII);
-
-qDebug() << "CoreMIDI property changed on object " << message->object << ", propertyName=" << buf;
-
-delete buf;
-
-}
-
-/* Callback to handle informational messages from CoreMIDI
- * such as "midi device added"/"midi device removed"
- * see http://developer.apple.com/DOCUMENTATION/MusicAudio/Reference/CACoreMIDIRef/MIDIServices/
+/* This is a wrapper function for MidiObjectCoreMidi::notification_handler
+ * needed because we cannot pass instance methods as callbacks, generally.
+ * see http://www.newty.de/fpt/callback.html#chapter3 for an example of the technique
+ * 
+ * Assumes that you have told CoreMIDI to use 'this' as the refCon payload.
  */
 void CoreMIDI_notification_handler(const MIDINotification *message, void *refCon)
 {
-MidiObjectCoreMidi* self = (MidiObjectCoreMidi*)refCon;
-qDebug() << "CoreMIDI_notification_handler id:" << message->messageID << " with size " << message->messageSize;
-
-	switch (message->messageID) {
-	case kMIDIMsgSetupChanged:
-		//qDebug() << "kMIDIMsgSetupChanged";
-		//ignored, since we handle all the other messages
-		break;
-	
-	/*
-	case kMIDIMsgObjectAdded: //MIDIObjectAddRemoveNotification
-		//qDebug() << "kMIDIMsgObjectAdded";
-		CoreMIDI_add_handler((MIDIObjectAddRemoveNotification*) message);
-		break;
-	
-	case kMIDIMsgObjectRemoved: //MIDIObjectAddRemoveNotification
-		//qDebug() << "kMIDIMsgObjectRemoved";
-		CoreMIDI_remove_handler((MIDIObjectAddRemoveNotification*)message);
-		break;
-	*/
-	
-	//hack?
-	case kMIDIMsgObjectAdded:
-	case kMIDIMsgObjectRemoved:
-		self->makeDeviceList();
-		break;
-	
-	case kMIDIMsgPropertyChanged: //MIDIObjectPropertyChangeNotification
-		//qDebug() << "kMIDIMsgPropertyChanged";
-		CoreMIDI_property_handler((MIDIObjectPropertyChangeNotification*)message);
-		break;
-	
-	/*
-	//these next two have to do with "persistent MIDI Thru connections"; not relevant to our interests, at this point
-	case kMIDIMsgThruConnectionsChanged:
-		qDebug() << "kMIDIMsgThruConnectionsChanged";
-		break;
-	
-	case kMIDIMsgSerialPortOwnerChanged:
-		qDebug() << "kMIDIMsgSerialPortOwnerChanged";
-		break;
-	*/
-	
-	case kMIDIMsgIOError:
-		//qDebug() << "kMIDIMsgIOError";
-		qDebug() << "CoreMIDI driver I/O error.";
-		break;
-	
-	default:
-		qDebug() << "Unknown CoreMIDI notification: " << message->messageID;
-		break;
-    }
-
+  MidiObjectCoreMidi* self = (MidiObjectCoreMidi*)refCon; //cast out of the voidptr
+  self->notification_handler(message);
 }
+
 
 MidiObjectCoreMidi::MidiObjectCoreMidi() : MidiObject()
 {
-    // Initialize CoreMidi
-    MIDIClientCreate(CFSTR("Mixxx"), CoreMIDI_notification_handler, this, &midiClient);
-    MIDIInputPortCreate(midiClient, CFSTR("Input port"), midi_read_proc, (void *)this, &midiPort);
-
-    // No default device opening
-    //currentMidiEndpoint = MIDIGetSource(0);
-    //MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
-
-    // Allocate buffer
-    buffer = new char[4096];
-    if (buffer == 0)
+  // Initialize CoreMidi
+  MIDIClientCreate(CFSTR("Mixxx"), CoreMIDI_notification_handler, this, &midiClient);
+  MIDIInputPortCreate(midiClient, CFSTR("Input port"), midi_read_proc, (void *)this, &midiPort);
+  
+  // No default device opening
+  //currentMidiEndpoint = MIDIGetSource(0);
+  //MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
+  
+  // Allocate buffer
+  buffer = new char[4096];
+  if (buffer == 0)
     {
-        qDebug() << "Error allocating MIDI buffer";
-        return;
+      qDebug() << "Error allocating MIDI buffer";
+      return;
     }
-
-    //Make list of devices
-    makeDeviceList();
-
-    // Open device
-/*
+  
+  //Make list of devices
+  makeDeviceList();
+  
+  // Open device
+  /*
     if (device_valid)
-        devOpen(device);
+    devOpen(device);
     else
-        if (devices.count()==0)
-            qDebug() << "CoreMidi: No MIDI devices available.";
-        else
-            devOpen(devices.first());
- */
+    if (devices.count()==0)
+    qDebug() << "CoreMidi: No MIDI devices available.";
+    else
+    devOpen(devices.first());
+  */
 }
 
 MidiObjectCoreMidi::~MidiObjectCoreMidi()
 {
-    // Close devices and delete buffer
-    for (unsigned int i=0; i<MIDIGetNumberOfSources(); i++)
+  // Close devices and delete buffer
+  for (unsigned int i=0; i<MIDIGetNumberOfSources(); i++)
     {
-        devClose(MIDIGetSource(i));
+      devClose(MIDIGetSource(i));
     }
-    delete [] buffer;
-    while (!persistentDeviceNames.empty()) delete persistentDeviceNames.takeFirst();
+  delete [] buffer;
+  while (!persistentDeviceNames.empty()) delete persistentDeviceNames.takeFirst();
 }
 
 void MidiObjectCoreMidi::devOpen(QString device)
 {
   qDebug() << "Opening MIDI device " << device;
-	m_deviceName = device;
-		
-    // Select device
-	MIDIEndpointRef ref = getEndpoint(device);
-	if (!ref) return;
-
-	// Add to list of active endpoints
-	currentMidiEndpoints.push_back(ref);
-
-	// We need a pointer that will be available
-	QString * persistentString = new QString(device);
-	// Keep track of the pointer for deletion later
-	persistentDeviceNames.append(persistentString);
-
-    MIDIPortConnectSource(midiPort, ref, persistentString);
-
-    // Should follow selected device !!!!
-    openDevices.append(device);
-    qDebug() << "devOpen() succeded";
+  m_deviceName = device;
+  
+  // Select device
+  MIDIEndpointRef ref = getEndpoint(device);
+  if (!ref) return;
+  
+  // Add to list of active endpoints
+  currentMidiEndpoints.push_back(ref);
+  
+  // We need a pointer that will be available
+  QString * persistentString = new QString(device);
+  // Keep track of the pointer for deletion later
+  persistentDeviceNames.append(persistentString);
+  
+  MIDIPortConnectSource(midiPort, ref, persistentString);
+  
+  // Should follow selected device !!!!
+  openDevices.append(device);
+  qDebug() << "devOpen() succeded";
 }
 
 void MidiObjectCoreMidi::devClose(MIDIEndpointRef ref) {
-	if (!ref) return;
-
-	MIDIPortDisconnectSource(midiPort, ref);
-	qDebug() << "MidiObjectCoreMidi::devClose(MIDIEndpointRef) succeeded";
+  if (!ref) return;
+  
+  MIDIPortDisconnectSource(midiPort, ref);
+  qDebug() << "MidiObjectCoreMidi::devClose(MIDIEndpointRef) succeeded";
 }
 
 void MidiObjectCoreMidi::devClose()
-{
-
-	// Find the endpoint associated with the device
-	devClose(currentMidiEndpoint);
-	openDevices.clear();
-	qDebug() << "MidiObjectCoreMidi::devClose() succeeded";
+{  
+  // Find the endpoint associated with the device
+  devClose(currentMidiEndpoint);
+  openDevices.clear();
 }
 
 void MidiObjectCoreMidi::stop()
@@ -195,14 +122,101 @@ void MidiObjectCoreMidi::stop()
 
 void MidiObjectCoreMidi::run()
 {
-    qDebug() << "starting MidiObjectCoreMidi thread";
-    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
-    QThread::currentThread()->setObjectName(QString("MidiObjectCoreMidi %1").arg(++id));
-    
-    //qDebug() << QString("MidiObjectCoreMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
-    MidiObject::run();
+  qDebug() << "starting MidiObjectCoreMidi thread";
+  unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+  QThread::currentThread()->setObjectName(QString("MidiObjectCoreMidi %1").arg(++id));
+  
+  //qDebug() << QString("MidiObjectCoreMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+  // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+  MidiObject::run();
 }
+
+void MidiObjectCoreMidi::notification_add_handler(const MIDIObjectAddRemoveNotification* message)
+{
+  qDebug() << "CoreMIDI_add_handler: parent:" << message->parent << ", child: " << message->child;
+}
+
+void MidiObjectCoreMidi::notification_remove_handler(const MIDIObjectAddRemoveNotification* message)
+{
+  qDebug() << "CoreMIDI_remove_handler: parent:" << message->parent << ", child: " << message->child;
+}
+
+
+void MidiObjectCoreMidi::notification_property_handler(const MIDIObjectPropertyChangeNotification* message)
+{
+  //unused
+  //throw "NotImplemented";
+  char* buf = new char[CFStringGetLength(message->propertyName)+1];
+  CFStringGetCString(message->propertyName, buf, CFStringGetLength(message->propertyName)+1, kCFStringEncodingASCII);
+  
+  qDebug() << "CoreMIDI property changed on object " << message->object << ", propertyName=" << buf;
+  
+  delete buf;
+  
+}
+
+/* Callback to handle informational messages from CoreMIDI
+ * such as "midi device added"/"midi device removed"
+ * see http://developer.apple.com/DOCUMENTATION/MusicAudio/Reference/CACoreMIDIRef/MIDIServices/
+ */
+void MidiObjectCoreMidi::notification_handler(const MIDINotification *message)
+{
+  //qDebug() << "CoreMIDI_notification_handler id:" << message->messageID << " with size " << message->messageSize;
+
+  switch (message->messageID) {
+  case kMIDIMsgSetupChanged:
+    //qDebug() << "kMIDIMsgSetupChanged";
+    //ignored, since we handle all the other messages
+    break;
+    
+    /*
+      case kMIDIMsgObjectAdded: //MIDIObjectAddRemoveNotification
+		//qDebug() << "kMIDIMsgObjectAdded";
+		notification_add_handler((MIDIObjectAddRemoveNotification*) message);
+		break;
+		
+      case kMIDIMsgObjectRemoved: //MIDIObjectAddRemoveNotification
+      ///qDebug() << "kMIDIMsgObjectRemoved";
+		notification_remove_handler((MIDIObjectAddRemoveNotification*)message);
+		break;
+    */
+    
+    //hack?
+  case kMIDIMsgObjectAdded:
+  case kMIDIMsgObjectRemoved:
+    //XXX it would be nice if we could handle add/remove separately, and we signalled "such and such" device was removed; then the prefs dialog (and anyone else listening) could be smart instead of being forced to rescan this->getDeviceList().
+    makeDeviceList();
+    emit(devicesChanged());
+    break;
+	
+  case kMIDIMsgPropertyChanged: //MIDIObjectPropertyChangeNotification
+    //qDebug() << "kMIDIMsgPropertyChanged";
+    notification_property_handler((MIDIObjectPropertyChangeNotification*)message);
+    break;
+    
+    /*
+    //these next two have to do with "persistent MIDI Thru connections"; not relevant to our interests, at this point
+    case kMIDIMsgThruConnectionsChanged:
+    qDebug() << "kMIDIMsgThruConnectionsChanged";
+		break;
+		
+		case kMIDIMsgSerialPortOwnerChanged:
+		qDebug() << "kMIDIMsgSerialPortOwnerChanged";
+		break;
+    */
+    
+  case kMIDIMsgIOError:
+		//qDebug() << "kMIDIMsgIOError";
+    qDebug() << "CoreMIDI driver I/O error.";
+    break;
+    
+  default:
+    qDebug() << "Unknown CoreMIDI notification: " << message->messageID;
+    break;
+  }
+  
+}
+
 
 void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString device)
 {
