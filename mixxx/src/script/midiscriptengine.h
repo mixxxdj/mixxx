@@ -33,11 +33,7 @@ public:
     MidiScriptEngine(MidiObject* midi_object);
     ~MidiScriptEngine();
 
-    // Returns true if the MidiScriptEngine is ready for use.
-    bool isReady() {
-        return m_pEngine != NULL;
-    }
-
+    bool isReady();
     bool hasErrors(QString filename);
     const QStringList getErrors(QString filename);
 
