@@ -93,7 +93,7 @@ def dependencies(binary):
 	#This will work in probably every library that exists in reality, so it's "ok"
 	if os.path.basename(l[0]) == os.path.basename(binary):
 		id = l.pop(0)
-		print "Removing -id field result %s from %s" % (id, binary)
+		#print "Removing -id field result %s from %s" % (id, binary)
 	return l
 
 
