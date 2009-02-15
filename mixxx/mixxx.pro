@@ -42,7 +42,6 @@ INCLUDEPATH += src \
 #    lib/soundtouch \
     lib/kissfft \
     $$UI_DIR
-#    src/configmidi.h \
 HEADERS += src/analyser.h \
     src/analyserbpm.h \
     src/analyserqueue.h \
@@ -394,16 +393,19 @@ SOURCES += src/analyserbpm.cpp \
     src/main.cpp
 
 # Soundtouch
-INCLUDEPATH += ../mixxx-winlib/soundtouch-1.4.0/include
-LIBS += ../mixxx-winlib/soundtouch-1.4.0/minGW-bin/libSoundTouch.a
-# INCLUDEPATH += lib/soundtouch
-# SOURCES += lib/soundtouch/SoundTouch.cpp \
-#    lib/soundtouch/TDStretch.cpp \
-#    lib/soundtouch/RateTransposer.cpp \
-#    lib/soundtouch/AAFilter.cpp \
-#    lib/soundtouch/FIFOSampleBuffer.cpp \
-#    lib/soundtouch/FIRFilter.cpp \
-#    lib/soundtouch/cpu_detect_x86_gcc.cpp
+win32 {
+    INCLUDEPATH += ../mixxx-winlib/soundtouch-1.4.0/include
+    LIBS += ../mixxx-winlib/soundtouch-1.4.0/minGW-bin/libSoundTouch.a
+} else {
+    INCLUDEPATH += lib/soundtouch
+    SOURCES += lib/soundtouch/SoundTouch.cpp \
+        lib/soundtouch/TDStretch.cpp \
+        lib/soundtouch/RateTransposer.cpp \
+        lib/soundtouch/AAFilter.cpp \
+        lib/soundtouch/FIFOSampleBuffer.cpp \
+        lib/soundtouch/FIRFilter.cpp \
+        lib/soundtouch/cpu_detect_x86_gcc.cpp
+}
 
 # Fidlib
 SOURCES += lib/fidlib-0.9.9/fidlib.c
