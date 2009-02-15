@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DlgAboutDlg</class>
- <widget class="QDialog" name="DlgAboutDlg" >
-  <property name="geometry" >
+ <widget class="QDialog" name="DlgAboutDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,11 +10,11 @@
     <height>322</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>About Mixxx</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
     <rect>
      <x>40</x>
      <y>280</y>
@@ -21,18 +22,18 @@
      <height>41</height>
     </rect>
    </property>
-   <property name="layoutDirection" >
+   <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
+   <property name="standardButtons">
     <set>QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QTextBrowser" name="textBrowser" >
-   <property name="geometry" >
+  <widget class="QTextBrowser" name="textBrowser">
+   <property name="geometry">
     <rect>
      <x>10</x>
      <y>100</y>
@@ -40,19 +41,20 @@
      <height>171</height>
     </rect>
    </property>
-   <property name="html" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+   <property name="html">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Credits go here&lt;/p>
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>&lt;/body>&lt;/html></string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif';&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif';&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
-   <property name="textInteractionFlags" >
+   <property name="textInteractionFlags">
     <set>Qt::NoTextInteraction</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label">
+   <property name="geometry">
     <rect>
      <x>20</x>
      <y>10</y>
@@ -60,15 +62,15 @@ p, li { white-space: pre-wrap; }
      <height>61</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string/>
    </property>
-   <property name="pixmap" >
-    <pixmap resource="mixxx.qrc" >:/mixxx-icon.png</pixmap>
+   <property name="pixmap">
+    <pixmap resource="../res/mixxx.qrc">:/images/mixxx-icon.png</pixmap>
    </property>
   </widget>
-  <widget class="QLabel" name="mixxx_label" >
-   <property name="geometry" >
+  <widget class="QLabel" name="mixxx_label">
+   <property name="geometry">
     <rect>
      <x>70</x>
      <y>10</y>
@@ -76,7 +78,7 @@ p, li { white-space: pre-wrap; }
      <height>61</height>
     </rect>
    </property>
-   <property name="font" >
+   <property name="font">
     <font>
      <family>Bitstream Vera Sans</family>
      <pointsize>31</pointsize>
@@ -84,15 +86,15 @@ p, li { white-space: pre-wrap; }
      <bold>true</bold>
     </font>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Mixxx</string>
    </property>
-   <property name="alignment" >
+   <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="version_label" >
-   <property name="geometry" >
+  <widget class="QLabel" name="version_label">
+   <property name="geometry">
     <rect>
      <x>130</x>
      <y>60</y>
@@ -100,15 +102,15 @@ p, li { white-space: pre-wrap; }
      <height>20</height>
     </rect>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>1.x.x</string>
    </property>
-   <property name="alignment" >
+   <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
     <rect>
      <x>20</x>
      <y>290</y>
@@ -116,19 +118,19 @@ p, li { white-space: pre-wrap; }
      <height>18</height>
     </rect>
    </property>
-   <property name="text" >
-    <string>&lt;a href="http://mixxx.sourceforge.net">Official Website&lt;/a></string>
+   <property name="text">
+    <string>&lt;a href=&quot;http://mixxx.sourceforge.net&quot;&gt;Official Website&lt;/a&gt;</string>
    </property>
-   <property name="openExternalLinks" >
+   <property name="openExternalLinks">
     <bool>true</bool>
    </property>
-   <property name="textInteractionFlags" >
+   <property name="textInteractionFlags">
     <set>Qt::LinksAccessibleByMouse</set>
    </property>
   </widget>
  </widget>
  <resources>
-  <include location="mixxx.qrc" />
+  <include location="../res/mixxx.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -137,11 +139,11 @@ p, li { white-space: pre-wrap; }
    <receiver>DlgAboutDlg</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -153,11 +155,11 @@ p, li { white-space: pre-wrap; }
    <receiver>DlgAboutDlg</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>
