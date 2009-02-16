@@ -1,4 +1,4 @@
-CONFIG += link_pkgconfig ladspa alsaseqmidi
+CONFIG += link_pkgconfig ladspa alsaseqmidi script
 DEFINES += __PORTAUDIO__ \    
     __SNDFILE__ \
     BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
@@ -544,8 +544,6 @@ CONFIG(ladspa) {
 CONFIG(script) { 
     DEFINES += __MIDISCRIPT__
     HEADERS += src/script/interp.h \
-        src/script/lua/luainterface.h \
-        src/script/lua/luarecorder.h \
         src/script/macro.h \
         src/script/macrolist.h \
         src/script/macrolistitem.h \
@@ -553,7 +551,6 @@ CONFIG(script) {
         src/script/numbercontrolevent.h \
         src/script/numberrecorder.h \
         src/script/playinterface.h \
-        src/script/python/pythoninterface.h \
         src/script/qtscriptinterface.h \
         src/script/recorder.h \
         src/script/scriptcontrolevent.h \
@@ -561,22 +558,19 @@ CONFIG(script) {
         src/script/scriptengine.h \
         src/script/scriptrecorder.h \
         src/script/scriptstudio.h \
-        src/script/scripttest.h \
+#        src/script/scripttest.h \
         src/script/sdatetime.h \
         src/script/signalrecorder.h \
         src/script/trackcontrolevent.h \
-        src/script/trackrecorder.h
-    SOURCES += src/script/lua/luainterface.cpp \
-        src/script/lua/luarecorder.cpp \
-        src/script/lua/tolua.cpp \
-        src/script/macro.cpp \
+        src/script/trackrecorder.h \
+        $$UI_DIR/ui_scriptstudio.h
+    SOURCES += src/script/macro.cpp \
         src/script/macrolist.cpp \
         src/script/macrolistitem.cpp \
         src/script/midiscriptengine.cpp \
         src/script/numbercontrolevent.cpp \
         src/script/numberrecorder.cpp \
         src/script/playinterface.cpp \
-        src/script/python/pythoninterface.cpp \
         src/script/qtscriptinterface.cpp \
         src/script/recorder.cpp \
         src/script/scriptcontrolevent.cpp \
@@ -584,12 +578,23 @@ CONFIG(script) {
         src/script/scriptengine.cpp \
         src/script/scriptrecorder.cpp \
         src/script/scriptstudio.cpp \
-        src/script/scripttest.cpp \
+#        src/script/scripttest.cpp \
         src/script/sdatetime.cpp \
         src/script/signalrecorder.cpp \
         src/script/trackcontrolevent.cpp \
         src/script/trackrecorder.cpp
     FORMS += src/script/scriptstudio.ui
+    # python support
+#    HEADERS += src/script/python/pythoninterface.h
+#    SOURCES += src/script/python/pythoninterface.cpp
+    # lua support
+#    HEADERS += src/script/lua/luainterface.h \
+#        src/script/lua/luarecorder.h
+
+#    SOURCES += src/script/lua/luainterface.cpp \
+#        src/script/lua/luarecorder.cpp \
+#        src/script/lua/tolua.cpp
+
 }
 CONFIG(tonal) { 
     DEFINES += 
