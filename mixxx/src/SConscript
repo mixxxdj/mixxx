@@ -359,13 +359,8 @@ sources = Split("""
                 bpm/bpmscheme.cpp
                 bpm/peakfinder.cpp
                 bpm/wavesegmentation.cpp
-                
-                soundsourceproxy.cpp
-                
-                powermate.cpp
-                hercules.cpp
-                mouse.cpp
 
+                soundsourceproxy.cpp
 
                 widget/wvisualsimple.cpp
                 widget/wwaveformviewer.cpp
@@ -401,8 +396,8 @@ sources = Split("""
                 """)
 
 #Compile platform specific hardware support
-if platform == 'linux':
-	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
+#if platform == 'linux':
+#	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
 #elif platform == 'win32':
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
