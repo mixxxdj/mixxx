@@ -14,7 +14,7 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-
+#include <qapplication.h>
 #include "configobject.h"
 #include <qdir.h>
 #include <QtDebug>
@@ -665,7 +665,16 @@ QString ConfigObject<ValueType>::getConfigPath()
     // On Windows it is always (and only) app dir.
     // On OS X it is the current directory and then the Resources/ dir in the app bundle
     //
-    QString qConfigPath;
+    QString qConfigPath; // TODO: this only changes once (on first load) during a run should make this a singleton.
+
+    // Try to read in the resource directory from the command line
+    QStringList commandLineArgs = QApplication::arguments();
+    int resourcePath = commandLineArgs.indexOf("--resourcePath");
+    if (resourcePath!=-1 && resourcePath + 1 < commandLineArgs.size()) {
+        qDebug() << "Setting qConfigPath from location in resourcePath commandline arg:" << commandLineArgs.at(resourcePath+1);
+        qConfigPath = commandLineArgs.at(resourcePath+1);
+    }
+    if (qConfigPath.isNull() || qConfigPath.isEmpty()) {
 #ifdef __UNIX__
     // On Linux, check if the path is stored in the configuration database.
     if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
@@ -693,6 +702,7 @@ QString ConfigObject<ValueType>::getConfigPath()
     qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
     qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
 #endif
+    }
     // If the directory does not end with a "/", add one
     if (!qConfigPath.endsWith("/"))
         qConfigPath.append("/");
