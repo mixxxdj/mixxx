@@ -44,8 +44,9 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 // Constructor
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    if (engine) pEngine = engine;
-    metaDataTitle = metaDataArtist = "";
+    if (engine)
+        pEngine = engine;
+    metaDataTitle = metaDataArtist = NULL;
     m_pConfig = _config;
 }
 
@@ -212,8 +213,10 @@ void EncoderVorbis::initStream()
         // add comment
         vorbis_comment_init(&vcomment);
         vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx/libvorbis");
-        if (metaDataArtist!="") vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
-        if (metaDataTitle!="") vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
+        if (metaDataArtist != NULL)
+            vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
+        if (metaDataTitle != NULL)
+            vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
 
         // set up the vorbis headers
         ogg_packet headerInit;
@@ -235,14 +238,31 @@ void EncoderVorbis::initStream()
 
 // TODO: reinit encoder when samplerate or quality is updated
 
-int EncoderVorbis::initEncoder()
+int EncoderVorbis::initEncoder(float quality)
+{
+    int ret;
+    vorbis_info_init(&vinfo);
+    
+    // initialize VBR quality based mode
+    unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    ret = vorbis_encode_init_vbr(&vinfo, 2, samplerate, quality);
+    
+    if (ret == 0) {
+        initStream();
+    } else {
+        ret = -1;
+    };
+    return ret;
+}
+
+int EncoderVorbis::initEncoder(int bitrate)
 {
     int ret;
     vorbis_info_init(&vinfo);
 
     // initialize VBR quality based mode
     unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
-    ret = vorbis_encode_init_vbr(&vinfo, 2, samplerate, 0.4);
+    ret = vorbis_encode_init(&vinfo, 2, samplerate, -1, bitrate*1000, -1);
 
     if (ret == 0) {
         initStream();
@@ -250,4 +270,9 @@ int EncoderVorbis::initEncoder()
         ret = -1;
     };
     return ret;
+}
+
+int EncoderVorbis::initEncoder()
+{
+    return this->initEncoder((float)0.4);
 }
