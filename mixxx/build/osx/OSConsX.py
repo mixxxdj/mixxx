@@ -74,11 +74,13 @@ def InstallDir(target, source, env): #XXX this belongs not in this module
 #BUG: scons doesn't track that it's built the .dmg. It decides it needs to build it every time "because it doesn't exist". Perhaps has to do with the lack s
 def build_dmg(target, source, env):
 	"takes the given source files, makes a temporary directory, copies them all there, and then packages that directory into a .dmg"
+	#TODO: make emit_dmg emit that we are making the Dmg that we are making
+	
 	#since we are building into a single .dmg, coerce target to point at the actual name 
 	assert len(target) == 1 
 	target = target[0]
 	
-	if os.path.exists(str(target)+".dmg"): #huhh? why do I have to say +.dmg here? I thought scons was supposed to handle that shit
+	if os.path.exists(str(target)+".dmg"): #huhh? why do I have to say +.dmg here? I thought scons was supposed to handle that
 		raise Exception(".dmg target already exists.")
 	
 	#if 'DMG_DIR' in env: .... etc fill me in please
@@ -89,7 +91,7 @@ def build_dmg(target, source, env):
 	os.mkdir(dmg)
 	for f in source:
 		print "Copying",f
-		a, b = str(f), os.path.join(dmg, str(f.path))
+		a, b = str(f), os.path.join(dmg, os.path.basename(str(f.path)))
 		if isinstance(f, SCons.Node.FS.Dir): #XXX there's a lot of cases that could throw this off, particularly if you try to pass in subdirs
 			copier = shutil.copytree
 		elif isinstance(f, SCons.Node.FS.File):
@@ -104,11 +106,12 @@ def build_dmg(target, source, env):
 			raise Exception("Error copying %s: " % (a,), e)
 	
 	if env['ICON']:
+		env['ICON'] = File(str(env['ICON'])) #make sure the given file is an icon; scons does this wrapping for us on sources and targets but not on environment vars (obviously, that would be stupid).
 		#XXX this doesn't seem to work, at least not on MacOS 10.5
 		#the MacFUSE people have solved it, though, see "._" in http://www.google.com/codesearch/p?hl=en#OXKFx3-7cSY/tags/macfuse-1.0.0/filesystems-objc/FUSEObjC/FUSEFileSystem.m&q=volumeicon
 		#appearently it requires making a special volume header file named "._$VOLNAME" with a binary blob in it
 		#But also the Qt4 dmg has a working icon, and it has no ._$VOLNAME file 
-		shutil.copy(env['ICON'], os.path.join(dmg, ".VolumeIcon.icns")) #XXX bug: will crash if not given an icon file
+		shutil.copy(str(env['ICON']), os.path.join(dmg, ".VolumeIcon.icns")) #XXX bug: will crash if not given an icon file
 		system('SetFile -a C "%s"' % dmg) #is there an sconsey way to declare this? Would be nice so that it could write what
 	
 	
@@ -157,7 +160,7 @@ def build_app(target, source, env):
 	#TODO: make it strip(1) the installed binary (saves about 1Mb)
 	
 	#EEEP: this code is pretty flakey because I can't figure out how to force; have asked the scons list about it
-	
+	 
 	
 	#This doesn't handle Frameworks correctly, only .dylibs
 	#useful to know: http://developer.apple.com/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253
@@ -286,6 +289,9 @@ def emit_app(target, source, env):
 	SIGNATURE - the bundle signature, a four byte code. If not specified uses the first four characters of the bundle name. 
 	PLUGINS - a list of files/folders to place in Contents/PlugIns (Adium uses Contents/PlugIns, Audacity uses plug-ins AND Contents/plug-ins..., Apple Mail uses Contents/PlugIns, so that's what we should stick with)
 	"""
+	
+	
+	#TODO: implement a FRAMEWORKS= arg, or maybe a Framework() builder so that we can declare "this app depends on these frameworks"; then look in env['FRAMEWORKS'] and env['LIBS'] and figure out the library dependencies *ahead of time* so that we can get scons to copy them (and so that we needn't redo their install_name's &c all the time)
 	
 	#bah, unless we decide to change the interface so you pass the app icon in as a separate param, then we *have* to change Mixxx to work properly with the Resources/ dir	
 	
