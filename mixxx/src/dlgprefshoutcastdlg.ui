@@ -49,6 +49,16 @@
           <string>Icecast 2</string>
          </property>
         </item>
+        <item>
+         <property name="text" >
+          <string>Shoutcast</string>
+         </property>
+        </item>
+        <item>
+         <property name="text" >
+          <string>Icecast 1</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="0" column="2" >
@@ -321,6 +331,31 @@ p, li { white-space: pre-wrap; }
             <string>128 kbps</string>
            </property>
           </item>
+          <item>
+           <property name="text" >
+            <string>112 kbps</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>96 kbps</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>80 kbps</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>64 kbps</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>48 kbps</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -345,6 +380,11 @@ p, li { white-space: pre-wrap; }
           <item>
            <property name="text" >
             <string>Ogg Vorbis</string>
+           </property>
+          </item>
+          <item>
+           <property name="text" >
+            <string>MP3</string>
            </property>
           </item>
          </widget>

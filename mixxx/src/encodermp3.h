@@ -1,8 +1,8 @@
-/***************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
+/****************************************************************************
+                   encodermp3.h  - mp3 encoder for mixxx
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
+                           (C) 2009 by Phillip Whelan (rewritten for mp3)
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,51 +14,42 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENCODERVORBIS_H
-#define ENCODERVORBIS_H
+#ifndef ENCODERMP3_H
+#define ENCODERMP3_H
 
 #include <QObject>
 #include "defs.h"
 #include "configobject.h"
 #include "encoder.h"
 
-#include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
+#include <lame/lame.h> // may be elsewhere on other distros besides Ubuntu
 
 class EngineAbstractRecord;
 class TrackInfoObject;
 
-class EncoderVorbis : public Encoder {
-    Q_OBJECT
+class EncoderMp3 : public Encoder {
 
 public:
-    EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
-    ~EncoderVorbis();
+    EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
+    ~EncoderMp3();
     int initEncoder();
     int initEncoder(float quality);
     int initEncoder(int bitrate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
 
-
-private slots:
-    void updateMetaData(TrackInfoObject *trackInfoObj);
-
 private:
-    int getSerial();
     void flushStream();
     void initStream();
-    void sendPackages();
-    bool metaDataHasChanged();
+    int bufferOutGrow(int size);
+    int bufferInGrow(int size);
 
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
-    ogg_stream_state oggs;    /* take physical pages, weld into logical stream
-                                 of packets */
-    ogg_page oggpage;         /* Ogg bitstream page: contains Vorbis packets */
-    ogg_packet oggpacket;     /* raw packet of data */
-    vorbis_block vblock;      /* local working space for packet-to-PCM */
-    vorbis_dsp_state vdsp;    /* central working space for packet-to-PCM */
-    vorbis_info vinfo;        /* stores all static vorbis bitstream settings */
-    vorbis_comment vcomment;  /* stores all user comments */
-
+    lame_global_flags *m_lameFlags;
+    unsigned char *m_bufferOut;
+    int m_bufferOutSize;
+    float *m_bufferIn[2];
+    int m_bufferInSize;
+    
     EngineAbstractRecord *pEngine;
     TrackInfoObject *m_pMetaData;
     char *metaDataTitle;

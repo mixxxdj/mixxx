@@ -141,9 +141,9 @@ Export('platform')
 #Figure out what the QT path is
 #XXX this should be a dict lookup, not an ifelse tree
 default_qtdir = {'linux': '/usr/share/qt4',
-		'bsd': '/usr/local/lib/qt4',
-		'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
+		 'bsd': '/usr/local/lib/qt4',
+		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
+		 'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
 
 
 #Read the qtdir flag, if it was set explicitly
@@ -803,8 +803,9 @@ if int(flags_shoutcast):
 #TODO: check for libshout
 	env.Append(LIBS = 'shout');
 	env.Append(LIBS = 'vorbisenc');
+	env.Append(LIBS = 'mp3lame');
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
-	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encodervorbis.cpp """ )
+	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp encodervorbis.cpp encodermp3.cpp""" )
 	env.Uic4('dlgprefshoutcastdlg.ui')
 	print "Shoutcast support... enabled"
 	build_flags += 'shoutcast '
