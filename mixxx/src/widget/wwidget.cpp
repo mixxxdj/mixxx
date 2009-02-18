@@ -28,8 +28,9 @@
 QString WWidget::m_qPath;
 ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
-WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidget(parent,name, flags|Qt::WStaticContents|Qt::WNoAutoErase|Qt::WResizeNoErase)
+WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidget(parent, name, flags)
 {
+    
     m_fValue = 0.;
     m_bOff = false;
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
@@ -37,6 +38,7 @@ WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidge
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
     connect(this, SIGNAL(valueChangedRightUp(double)), this, SLOT(slotReEmitValueUp(double)));
 
+    setAttribute(Qt::WA_StaticContents);
     setFocusPolicy(Qt::ClickFocus);
     setBackgroundMode(Qt::NoBackground);
 }
