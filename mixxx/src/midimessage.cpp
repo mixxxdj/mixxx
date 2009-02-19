@@ -33,9 +33,9 @@ MidiMessage::MidiMessage(QDomElement& controlNode)
         m_midiType = MIDI_KEY;
     }
 
-    //Use hex conversions
-    m_midiNo = midiNo.toInt(&ok, 16);
-    m_midiChannel = midiChan.toInt(&ok, 16);
+    //Use QString with toInt base of 0 to auto convert hex values
+    m_midiNo = midiNo.toInt(&ok, 0);
+    m_midiChannel = midiChan.toInt(&ok, 0);
 }
 
 void MidiMessage::serializeToXML(QDomElement& controlNode) const
