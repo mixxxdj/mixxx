@@ -175,14 +175,14 @@ else:
 #The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
 #and on Windows where all the paths are set in the shell.
 if platform in ('linux', 'bsd'):
-	env = Environment(tools=['default','qt4'], toolpath=['../', './'], QTDIR=flags_qtdir, ENV = os.environ)
+	env = Environment(tools=['default','qt4'], toolpath=['#build/'], QTDIR=flags_qtdir, ENV = os.environ)
 	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 elif platform == 'osx':
-	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['./', '#/build/osx/'], ENV = os.environ)
+	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['#build/', '#/build/osx/'], ENV = os.environ)
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
-	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
+	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['#build/'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
 
