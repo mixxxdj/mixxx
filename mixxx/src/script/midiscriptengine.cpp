@@ -404,7 +404,7 @@ void MidiScriptEngine::slotValueChanged(double value) {
 
     if(m_connectedControls.contains(key)) {
         QString function = m_connectedControls.value(key);
-        qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
+//         qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
 
         // Could branch to safeExecute from here, but for now do it this way.
         QScriptValue function_value = m_pEngine->evaluate(function);
