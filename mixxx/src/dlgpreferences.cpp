@@ -51,6 +51,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     m_pMidiObject = midi;
 
     setupUi(this);
+#if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
+    contentsTreeWidget->setHeaderHidden(true);
+#endif
 
     setWindowTitle(tr("Preferences"));
     config = _config;
