@@ -718,17 +718,19 @@ win32 {
             $$(QTDIR)/lib/QtCored4.dll \
             $$(QTDIR)/lib/QtGuid4.dll \
             $$(QTDIR)/lib/QtNetworkd4.dll \
-            $$(QTDIR)/lib/QtOpenGLd4.dll \
             $$(QTDIR)/lib/QtSqld4.dll \
-            $$(QTDIR)/lib/QtXmld4.dll
+            $$(QTDIR)/lib/QtXmld4.dll \
+            $$(QTDIR)/lib/QtOpenGLd4.dll \
+            $$(QTDIR)/lib/QtScriptd4.dll
     } else {
         DLLs += $$(QTDIR)/lib/Qt3Support4.dll \
             $$(QTDIR)/lib/QtCore4.dll \
             $$(QTDIR)/lib/QtGui4.dll \
             $$(QTDIR)/lib/QtNetwork4.dll \
-            $$(QTDIR)/lib/QtOpenGL4.dll \
             $$(QTDIR)/lib/QtSql4.dll \
-            $$(QTDIR)/lib/QtXml4.dll
+            $$(QTDIR)/lib/QtXml4.dll \
+            $$(QTDIR)/lib/QtOpenGL4.dll \
+            $$(QTDIR)/lib/QtScript4.dll
     }
     # mixxx-winlibs DLLs
     DLLs += ../mixxx-winlib/ogg.dll \
@@ -741,8 +743,10 @@ win32 {
         message( copying "$$replace(DLL, /,\)" -> "$$DESTDIR" ... )
         system( copy "$$replace(DLL, /,\)" "$$DESTDIR" )
     }
+    # create DESTDIR\testrun-mixxx.cmd to run mixxx using the workspace resource files.
+    !exists($$DESTDIR/testrun-mixxx.cmd):system( echo mixxx.exe --resourcePath %CD%\res>%CD%\\$$replace(DESTDIR, /,\)\testrun-mixxx.cmd )
 }
-
+error( stop )
 # .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
 message( Generating .mixxx_flags.svn with contents: $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"' )
 system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>.mixxx_flags.svn )
