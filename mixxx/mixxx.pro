@@ -744,9 +744,10 @@ win32 {
         system( copy "$$replace(DLL, /,\)" "$$DESTDIR" )
     }
     # create DESTDIR\testrun-mixxx.cmd to run mixxx using the workspace resource files.
-    !exists($$DESTDIR/testrun-mixxx.cmd):system( echo mixxx.exe --resourcePath %CD%\res>%CD%\\$$replace(DESTDIR, /,\)\testrun-mixxx.cmd )
+    #!exists($$DESTDIR/testrun-$$(TARGET).cmd):
+    system( echo $$TARGET --resourcePath %CD%\res>%CD%\\$$replace(DESTDIR, /,\)\testrun-$${TARGET}.cmd )
 }
-error( stop )
+
 # .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
 message( Generating .mixxx_flags.svn with contents: $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"' )
 system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>.mixxx_flags.svn )
