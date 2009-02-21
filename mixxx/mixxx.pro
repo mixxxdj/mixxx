@@ -1,4 +1,4 @@
-CONFIG += link_pkgconfig ladspa alsaseqmidi script
+CONFIG += debug link_pkgconfig ladspa alsaseqmidi script
 DEFINES += __PORTAUDIO__ \    
     __SNDFILE__ \
     BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
@@ -191,8 +191,8 @@ HEADERS += src/analyser.h \
     src/readerevent.h \
     src/readerextract.h \
 #    src/readerextractbeat.h \
-    src/readerextractfft.h \
-    src/readerextracthfc.h \
+#     src/readerextractfft.h \
+#     src/readerextracthfc.h \
     src/readerextractwave.h \
     src/rotary.h \
     src/rtthread.h \
@@ -707,3 +707,49 @@ CONFIG(ffmpeg) {
         -logg
 }
 
+# Copy Windows dependencies to DESTDIR.
+win32 {
+    !exists($$DESTDIR):system( mkdir $$DESTDIR )
+    # MinGW run-time
+    DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll
+    # Qt4 libraries
+    debug {
+        DLLs += $$(QTDIR)/lib/Qt3Supportd4.dll \
+            $$(QTDIR)/lib/QtCored4.dll \
+            $$(QTDIR)/lib/QtGuid4.dll \
+            $$(QTDIR)/lib/QtNetworkd4.dll \
+            $$(QTDIR)/lib/QtOpenGLd4.dll \
+            $$(QTDIR)/lib/QtSqld4.dll \
+            $$(QTDIR)/lib/QtXmld4.dll
+    } else {
+        DLLs += $$(QTDIR)/lib/Qt3Support4.dll \
+            $$(QTDIR)/lib/QtCore4.dll \
+            $$(QTDIR)/lib/QtGui4.dll \
+            $$(QTDIR)/lib/QtNetwork4.dll \
+            $$(QTDIR)/lib/QtOpenGL4.dll \
+            $$(QTDIR)/lib/QtSql4.dll \
+            $$(QTDIR)/lib/QtXml4.dll
+    }
+    # mixxx-winlibs DLLs
+    DLLs += ../mixxx-winlib/ogg.dll \
+        ../mixxx-winlib/sndfile.dll \
+        ../mixxx-winlib/vorbis.dll \
+        ../mixxx-winlib/vorbisfile.dll \
+        ../mixxx-winlib/portaudio.dll
+    # check if DLL exists at target, if not copy it there
+    for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {
+        message( copying "$$replace(DLL, /,\)" -> "$$DESTDIR" ... )
+        system( copy "$$replace(DLL, /,\)" "$$DESTDIR" )
+    }
+}
+
+# .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
+message( Generating .mixxx_flags.svn with contents: $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"' )
+system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>.mixxx_flags.svn )
+
+# .mixxx_version.svn
+BUILD_REV = $$system( svnversion )
+isEmpty( BUILD_REV ):BUILD_REV = Killroy was here
+BUILD_REV += - built via qmake/Qt Creator
+message( Generating .mixxx_version.svn with contents: $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"' )
+system( echo $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"'>.mixxx_version.svn )
