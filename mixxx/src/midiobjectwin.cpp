@@ -15,10 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "midiobjectwin.h"
-#include "midiledhandler.h"
 #include <QtCore>
 #include <QtDebug>
+#include "midiledhandler.h"
+#include "midiobjectwin.h"
+
 
 MidiObjectWin::MidiObjectWin() : MidiObject()
 {
@@ -162,4 +163,16 @@ void MidiObjectWin::sendShortMsg(unsigned int word) {
     // This checks your compiler isn't assigning some wierd type hopefully
     DWORD raw = word;
     midiOutShortMsg(outhandle, word);
+}
+
+void MidiObjectWin::sendSysexMsg(unsigned char data[], unsigned int length)
+{
+    MIDIHDR header;
+    memset (&header, 0, sizeof(header));
+    
+    header.lpData = (LPSTR)data;
+    header.dwBufferLength = DWORD(length);
+    header.dwBytesRecorded = DWORD(length);
+    
+    midiOutLongMsg(outhandle, &header, length);
 }
