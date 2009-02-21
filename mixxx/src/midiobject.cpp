@@ -28,6 +28,10 @@
 #include "script/midiscriptengine.h"
 #endif
 
+static QString toHex(QString numberStr) {
+    return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop
    Input:   None. Automatically selects default midi input sound
@@ -164,7 +168,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
 
-     qDebug() << "MidiObject::receive() miditype: " << (int)category << " ch: " << (int)channel << ", ctrl: " << (int)control << ", val: " << (int)value;
+    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)category)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
 
     MidiType type = MIDI_EMPTY;
     switch (category) {

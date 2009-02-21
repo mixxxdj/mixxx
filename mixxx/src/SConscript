@@ -242,7 +242,7 @@ if os.environ.has_key('CCFLAGS'):
 
 ### embed SVN version into build
 ### Put version info into a file, so it doesn't force a rebuild of everything :)
-f = open("../.mixxx_version.svn","w")
+f = open("../../.mixxx_version.svn","w")
 try:
 	f.write('#define BUILD_REV "' + getSVNRevision() + '"\n')
 finally:
@@ -1055,7 +1055,7 @@ else:
 	print "Case Metrics profiling... disabled"
 
 ### Put flags info into a file
-f = open("../.mixxx_flags.svn","w")
+f = open("../../.mixxx_flags.svn","w")
 try:
 	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
 finally:
