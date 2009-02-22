@@ -322,6 +322,7 @@ sources = Split("""
                 mixxxcontrol.cpp
                 mixxx.cpp
                 mixxxview.cpp
+                errordialog.cpp
                 
                 soundsource.cpp
                 soundsourcemp3.cpp
