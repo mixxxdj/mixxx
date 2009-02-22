@@ -219,7 +219,8 @@ HEADERS += src/analyser.h \
     src/wtracktablefilter.h \
     src/wtracktablemodel.h \
     src/wtracktableview.h \
-    src/xmlparse.h
+    src/xmlparse.h \
+    src/errordialog.h
 
 SOURCES += src/analyserbpm.cpp \
     src/analyserqueue.cpp \
@@ -390,7 +391,8 @@ SOURCES += src/analyserbpm.cpp \
     src/wtracktablemodel.cpp \
     src/wtracktableview.cpp \
     src/xmlparse.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/errordialog.cpp
 
 # Soundtouch
 win32 {
