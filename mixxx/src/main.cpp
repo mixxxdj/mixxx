@@ -31,6 +31,7 @@
 #include "mixxx.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
+#include "errordialog.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -68,6 +69,7 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
+ErrorDialog *dialogHelper = new ErrorDialog();   // allows threads to show error dialogs
 
 void qInitImages_mixxx();
 
@@ -167,19 +169,22 @@ void MessageHandler( QtMsgType type, const char * input )
         m.lock();
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
-        QMessageBox::warning(0, "Mixxx", s);
+//         QMessageBox::warning(0, "Mixxx", input);
+        dialogHelper->requestErrorDialog(0,input);
         m.unlock();
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-        QMessageBox::critical(0, "Mixxx", s);
+//         QMessageBox::critical(0, "Mixxx", input);
+        dialogHelper->requestErrorDialog(1,input);
         exit(-1);
         break; //NOTREACHED(?)
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-        QMessageBox::critical(0, "Mixxx", s);
+//         QMessageBox::critical(0, "Mixxx", input);
+        dialogHelper->requestErrorDialog(1,input);
         abort();
         break; //NOTREACHED
     }
