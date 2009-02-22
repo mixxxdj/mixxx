@@ -495,7 +495,8 @@ win32 {
     HEADERS += src/midiobjectwin.h
     SOURCES += src/midiobjectwin.cpp
     LIBS += ../mixxx-winlib/sndfile.dll \
-        ../mixxx-winlib/portaudio.dll \
+#        ../mixxx-winlib/portaudio.dll \
+        ../mixxx-winlib/portaudio-snapshot/minGW-bin/libportaudio-2.dll \
         ../mixxx-winlib/libmad.a \
         ../mixxx-winlib/libid3tag.a \
         ../mixxx-winlib/vorbisfile.dll \
@@ -734,10 +735,12 @@ win32 {
     }
     # mixxx-winlibs DLLs
     DLLs += ../mixxx-winlib/ogg.dll \
+#        ../mixxx-winlib/portaudio.dll \
+        ../mixxx-winlib/portaudio-snapshot/minGW-bin/libportaudio-2.dll \
         ../mixxx-winlib/sndfile.dll \
         ../mixxx-winlib/vorbis.dll \
-        ../mixxx-winlib/vorbisfile.dll \
-        ../mixxx-winlib/portaudio.dll
+        ../mixxx-winlib/vorbisfile.dll
+
     # check if DLL exists at target, if not copy it there
     for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {
         message( copying "$$replace(DLL, /,\)" -> "$$DESTDIR" ... )
