@@ -587,17 +587,6 @@ CONFIG(script) {
         src/script/trackcontrolevent.cpp \
         src/script/trackrecorder.cpp
     FORMS += src/script/scriptstudio.ui
-    # python support
-#    HEADERS += src/script/python/pythoninterface.h
-#    SOURCES += src/script/python/pythoninterface.cpp
-    # lua support
-#    HEADERS += src/script/lua/luainterface.h \
-#        src/script/lua/luarecorder.h
-
-#    SOURCES += src/script/lua/luainterface.cpp \
-#        src/script/lua/luarecorder.cpp \
-#        src/script/lua/tolua.cpp
-
 }
 CONFIG(tonal) { 
     DEFINES += 
