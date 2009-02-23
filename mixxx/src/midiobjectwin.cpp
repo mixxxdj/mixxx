@@ -174,5 +174,7 @@ void MidiObjectWin::sendSysexMsg(unsigned char data[], unsigned int length)
     header.dwBufferLength = DWORD(length);
     header.dwBytesRecorded = DWORD(length);
     
-    midiOutLongMsg(outhandle, &header, length);
+    midiOutPrepareHeader(outhandle, &header, sizeof(header));
+    midiOutLongMsg(outhandle, &header, sizeof(header));
+    midiOutUnprepareHeader(outhandle, &header, sizeof(header));
 }
