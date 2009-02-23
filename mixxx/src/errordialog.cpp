@@ -17,10 +17,12 @@
 
 #include "errordialog.h"
 #include <QMessageBox>
+#include <QtDebug>
+#include <QtCore>
 
 ErrorDialog::ErrorDialog() {
+    m_errorCondition=false;
     connect(this, SIGNAL(showErrorDialog(int, QString)), this, SLOT(errorDialog(int, QString)));
-    m_continue=false;
 }
 
 ErrorDialog::~ErrorDialog()
@@ -29,14 +31,39 @@ ErrorDialog::~ErrorDialog()
 
 void ErrorDialog::requestErrorDialog(int type, QString message) {
     emit (showErrorDialog(type, message));
-    while(!m_continue) ;
+    disconnect(this, SIGNAL(showErrorDialog(int, QString)), this, SLOT(errorDialog(int, QString))); // Avoid multiple dialogs until this one is acknowledged
 }
 
 void ErrorDialog::errorDialog(int type, QString message) {
+    QMessageBox msgBox;
+    msgBox.setText(message);
     switch (type) {
-        case 1: QMessageBox::critical(0, "Mixxx", message); break;
+        case 1:
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setWindowTitle("Mixxx - Critical error");
+            break;
         case 0:
-        default: QMessageBox::warning(0, "Mixxx", message); break;
+        default:
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setWindowTitle("Mixxx - Warning");
+            break;
     }
-    m_continue=true;
+    msgBox.exec();  // Block so the user can read it before exiting
+
+    if (type==1) {  // If critical/fatal, gracefully exit application if possible
+        m_errorCondition=true;
+        if (QCoreApplication::instance()) {
+            QCoreApplication::instance()->exit(-1);
+        }
+        else {
+            qDebug() << "QCoreApplication::instance() is NULL! Abruptly quitting...";
+            exit(-1);
+        }
+    }
+
+    connect(this, SIGNAL(showErrorDialog(int, QString)), this, SLOT(errorDialog(int, QString)));    // reconnect the signal
+}
+
+bool ErrorDialog::checkError() {
+    return m_errorCondition;
 }

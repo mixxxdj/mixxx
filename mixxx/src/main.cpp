@@ -178,7 +178,7 @@ void MessageHandler( QtMsgType type, const char * input )
         Log << "Critical: " << s << "\n";
 //         QMessageBox::critical(0, "Mixxx", input);
         dialogHelper->requestErrorDialog(1,input);
-        exit(-1);
+//         exit(-1);
         break; //NOTREACHED(?)
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
@@ -291,17 +291,20 @@ int main(int argc, char * argv[])
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);
-    
 
     //a->setMainWidget(mixxx);
     a -> connect( a, SIGNAL(lastWindowClosed()), a, SLOT(quit()) );
+    
+    int result = -1;
 
-
-    qDebug() << "Displaying mixxx";
-    mixxx->show();
-
-    qDebug() << "Running Mixxx";
-    int result = a->exec();
+    if (!dialogHelper->checkError()) {
+        qDebug() << "Displaying mixxx";
+        mixxx->show();
+    
+        qDebug() << "Running Mixxx";
+        result = a->exec();
+    }
+    
     delete mixxx;
     
     if(Logfile.isOpen())
