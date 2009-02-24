@@ -1074,7 +1074,7 @@ QString MixxxApp::getSkinPath() {
             qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
         else
         {
-            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineSmall"));
+            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineNetbook"));
             config->Save();
             qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
         }
