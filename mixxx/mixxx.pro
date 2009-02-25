@@ -397,7 +397,7 @@ SOURCES += src/analyserbpm.cpp \
 # Soundtouch
 win32 {
     INCLUDEPATH += ../mixxx-winlib/soundtouch-1.4.0/include
-    LIBS += ../mixxx-winlib/soundtouch-1.4.0/minGW-bin/libSoundTouch.a
+    LIBS += ../mixxx-winlib/soundtouch-1.4.0/mingw-bin/libSoundTouch.a
 } else {
     INCLUDEPATH += lib/soundtouch
     SOURCES += lib/soundtouch/SoundTouch.cpp \
@@ -496,9 +496,10 @@ win32 {
     DEFINES += __WINMIDI__
     HEADERS += src/midiobjectwin.h
     SOURCES += src/midiobjectwin.cpp
-    LIBS += ../mixxx-winlib/sndfile.dll \
+    LIBS += ../mixxx-winlib/libsndfile/mingw-bin/libsndfile-1.dll \
+#        ../mixxx-winlib/sndfile.dll \
 #        ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/portaudio-snapshot/minGW-bin/libportaudio-2.dll \
+        ../mixxx-winlib/portaudio-snapshot/mingw-bin/libportaudio-2.dll \
         ../mixxx-winlib/libmad.a \
         ../mixxx-winlib/libid3tag.a \
         ../mixxx-winlib/vorbisfile.dll \
@@ -727,8 +728,9 @@ win32 {
     # mixxx-winlibs DLLs
     DLLs += ../mixxx-winlib/ogg.dll \
 #        ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/portaudio-snapshot/minGW-bin/libportaudio-2.dll \
-        ../mixxx-winlib/sndfile.dll \
+        ../mixxx-winlib/portaudio-snapshot/mingw-bin/libportaudio-2.dll \
+        ../mixxx-winlib/libsndfile/mingw-bin/libsndfile-1.dll \
+#        ../mixxx-winlib/sndfile.dll \
         ../mixxx-winlib/vorbis.dll \
         ../mixxx-winlib/vorbisfile.dll
 
