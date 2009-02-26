@@ -1,7 +1,7 @@
 /***************************************************************************
-                          readerevent.h  -  description
+                          controleventmidi.h  -  description
                              -------------------
-    begin                : Mon Mar 3 2003
+    begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,35 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef READEREVENT_H
-#define READEREVENT_H
+#ifndef CONTROLEVENTMIDI_H
+#define CONTROLEVENTMIDI_H
 
 #include <qevent.h>
-#include "mixxxevent.h"
+#include "midiobject.h"
 
 /**
   *@author Tue & Ken Haste Andersen
+  *
+  * Event used in communication from MidiObject to ControlObject
+  *
   */
 
-class ReaderEvent : public QEvent
-{
-public:
-    ReaderEvent(int bpos, int blen, long int fspos, int bspos, int flen, int srate);
-    ~ReaderEvent();
-    int bufferPos() const;
-    int bufferLen() const;
-    int fileLen() const;
-    long int fileStartPos() const;
-    int bufferStartPos() const;
-    int srate() const;
-    
+class ControlEventMidi : public QEvent {
+public: 
+    ControlEventMidi(MidiCategory category, char channel, char control, char value);
+    ~ControlEventMidi();
+    MidiCategory category() const;
+    char channel() const;
+    char control() const;
+    char value() const;
 private:
-    int bufferPosition;
-    int bufferLength;
-    long int fileStartPosition;
-    int bufferStartPosition;
-    int fileLength;
-    int sampleRate;
+    MidiCategory mcategory;
+    char mchannel, mcontrol, mvalue;
 };
 
 #endif

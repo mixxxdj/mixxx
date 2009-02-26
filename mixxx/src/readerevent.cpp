@@ -16,10 +16,8 @@
 ***************************************************************************/
 
 #include "readerevent.h"
-//Added by qt3to4:
-#include <QCustomEvent>
 
-ReaderEvent::ReaderEvent(int bpos, int blen, long int fspos, int bspos, int flen, int srate) : QCustomEvent(10002), bufferPosition(bpos), bufferLength(blen), fileStartPosition(fspos), bufferStartPosition(bspos), fileLength(flen), sampleRate(srate)
+ReaderEvent::ReaderEvent(int bpos, int blen, long int fspos, int bspos, int flen, int srate) : QEvent(MIXXXEVENT_READER), bufferPosition(bpos), bufferLength(blen), fileStartPosition(fspos), bufferStartPosition(bspos), fileLength(flen), sampleRate(srate)
 {
 }
 

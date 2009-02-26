@@ -19,8 +19,8 @@
 #define CONTROLEVENT_H
 
 #include <qevent.h>
-//Added by qt3to4:
-#include <QCustomEvent>
+#include "mixxxevent.h"
+
 
 /**
   *@author Tue Haste Andersen
@@ -29,7 +29,7 @@
   *
   */
 
-class ControlEvent : public QCustomEvent {
+class ControlEvent : public QEvent {
 public: 
     ControlEvent(double dValue);
     ~ControlEvent();
