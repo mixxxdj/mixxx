@@ -178,7 +178,7 @@ def build_app(target, source, env):
 	plugins = Dir(os.path.join(str(contents), "PlugIns"))
 	
 	#installed_bin = source[-1] #env['APP_INSTALLED_BIN']
-	installed_bin = os.path.join(str(MacOS), os.path.basename(str(binary)).title())  #.title() to fit in better with the OS X style
+	installed_bin = os.path.join(str(MacOS), os.path.basename(str(binary)))
 	
 	strip = bool(env.get('STRIP',False))
 	
@@ -354,6 +354,7 @@ def emit_app(target, source, env):
 	#So, we use the first four characters of the app
 	env.Writer(File(os.path.join(str(contents),"PkgInfo")), [], DATA = "%s%s" % (bundle_type, bundle_signature))
 	
+	#.title() in the next line is used to make sure the titlebar on OS X has the capitalized name of the app
 	env.Plist(os.path.join(str(contents), "Info"), PLIST={'CFBundleExecutable': binary.name.title(), 'CFBundleIconFile': icon, 'CFBundlePackageType': bundle_type, 'CFBundleSignature': bundle_signature})
 	#NB: only need CFBundleExecutale if the binary name differs from the bundle name
 	#todo:   
