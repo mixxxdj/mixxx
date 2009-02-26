@@ -54,7 +54,6 @@ HEADERS += src/analyser.h \
     src/configobject.h \
     src/controlbeat.h \
     src/controlevent.h \
-    src/controleventengine.h \
     src/engine/engineabstractrecord.h \
     src/engine/enginebuffer.h \
     src/engine/enginebuffercue.h \
@@ -121,7 +120,6 @@ HEADERS += src/analyser.h \
     src/bpm/bpmscheme.h \
     src/bpm/peakfinder.h \
     src/bpm/wavesegmentation.h \
-    src/controleventmidi.h \
     src/controllogpotmeter.h \
     src/controlnull.h \
     src/controlobject.h \
@@ -233,7 +231,6 @@ SOURCES += src/analyserbpm.cpp \
     src/configobject.cpp \
     src/controlbeat.cpp \
     src/controlevent.cpp \
-    src/controleventengine.cpp \
     src/engine/enginebuffer.cpp \
     src/engine/enginebuffercue.cpp \
     src/engine/enginebufferscale.cpp \
@@ -298,7 +295,6 @@ SOURCES += src/analyserbpm.cpp \
     src/bpm/bpmscheme.cpp \
     src/bpm/peakfinder.cpp \
     src/bpm/wavesegmentation.cpp \
-    src/controleventmidi.cpp \
     src/controllogpotmeter.cpp \
     src/controlnull.cpp \
     src/controlobject.cpp \
