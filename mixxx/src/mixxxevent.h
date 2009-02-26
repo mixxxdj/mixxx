@@ -1,9 +1,8 @@
 /***************************************************************************
-                          controleventmidi.h  -  description
+                          mixxxevent.h  -  enum of custom Qt events
                              -------------------
-    begin                : Thu Feb 20 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
+    begin                : Wed Feb 25 2009
+    copyright            : (C) 2009 by nick@kousu.ca
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,30 +14,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLEVENTMIDI_H
-#define CONTROLEVENTMIDI_H
 
-#include <qevent.h>
-#include "midiobject.h"
+/*class MixxxEvent : QEvent
+{
 
-/**
-  *@author Tue & Ken Haste Andersen
-  *
-  * Event used in communication from MidiObject to ControlObject
-  *
-  */
+  enum Type
+  {
+    Control = QEvent::User+1,
+    Midi,
+    Reader,
+  };
 
-class ControlEventMidi : public QCustomEvent {
-public: 
-    ControlEventMidi(MidiCategory category, char channel, char control, char value);
-    ~ControlEventMidi();
-    MidiCategory category() const;
-    char channel() const;
-    char control() const;
-    char value() const;
-private:
-    MidiCategory mcategory;
-    char mchannel, mcontrol, mvalue;
-};
 
-#endif
+}*/
+
+//^ meh, take the short route (for now):
+#define MIXXXEVENT_CONTROL ((QEvent::Type)(QEvent::User+1))
+#define MIXXXEVENT_MIDI ((QEvent::Type)(QEvent::User+2))
+#define MIXXXEVENT_READER ((QEvent::Type)(QEvent::User+3))

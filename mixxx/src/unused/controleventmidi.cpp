@@ -17,7 +17,7 @@
 
 #include "controleventmidi.h"
 
-ControlEventMidi::ControlEventMidi(MidiCategory category, char channel, char control, char value) : QCustomEvent(10001), mcategory(category), mchannel(channel), mcontrol(control), mvalue(value)
+ControlEventMidi::ControlEventMidi(MidiCategory category, char channel, char control, char value) : QEvent(MixxxEvent::Midi), mcategory(category), mchannel(channel), mcontrol(control), mvalue(value)
 {
 };
 

@@ -16,10 +16,8 @@
 ***************************************************************************/
 
 #include "controlevent.h"
-//Added by qt3to4:
-#include <QCustomEvent>
 
-ControlEvent::ControlEvent(double dValue) : QCustomEvent(10000), m_dValue(dValue)
+ControlEvent::ControlEvent(double dValue) : QEvent(MIXXXEVENT_CONTROL), m_dValue(dValue)
 {
 }
 
