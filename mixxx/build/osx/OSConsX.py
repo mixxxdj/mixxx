@@ -354,7 +354,7 @@ def emit_app(target, source, env):
 	#So, we use the first four characters of the app
 	env.Writer(File(os.path.join(str(contents),"PkgInfo")), [], DATA = "%s%s" % (bundle_type, bundle_signature))
 	
-	env.Plist(os.path.join(str(contents), "Info"), PLIST={'CFBundleExecutable': binary.name, 'CFBundleIconFile': icon, 'CFBundlePackageType': bundle_type, 'CFBundleSignature': bundle_signature})
+	env.Plist(os.path.join(str(contents), "Info"), PLIST={'CFBundleExecutable': binary.name.title(), 'CFBundleIconFile': icon, 'CFBundlePackageType': bundle_type, 'CFBundleSignature': bundle_signature})
 	#NB: only need CFBundleExecutale if the binary name differs from the bundle name
 	#todo:   
 	"""Application Keys
