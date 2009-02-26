@@ -11,7 +11,7 @@ class MidiMessage
 {
     public:
         MidiMessage(MidiType miditype=MIDI_EMPTY, int midino=0, int midichannel=0);
-        MidiMessage(QDomElement& controlNode);
+        MidiMessage(QDomElement& parentNode);
         ~MidiMessage() {};
         void setMidiType(MidiType type) { m_midiType = type; };
         void setMidiNo(int midino) { m_midiNo = midino; };
@@ -19,7 +19,9 @@ class MidiMessage
         MidiType getMidiType() const { return m_midiType; } ;
         int getMidiNo() const { return m_midiNo; };
         int getMidiChannel() const { return m_midiChannel; };
-        void serializeToXML(QDomElement& controlNode) const;        
+        int getMidiByte2On() const { return m_midiByte2On; };
+        int getMidiByte2Off() const { return m_midiByte2Off; };
+        void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;        
         bool operator==(MidiMessage& other) {
             return ((m_midiType == other.getMidiType()) &&
                     (m_midiNo == other.getMidiNo()) &&
@@ -29,7 +31,14 @@ class MidiMessage
     private:
         MidiType m_midiType;
         int m_midiNo;
-        int m_midiChannel;        
+        int m_midiChannel;      
+        
+        /** These next parameters are used when sending this MidiMessage as output.
+            m_midiOn or m_midiOff is sent as "Byte 2" (third byte) in a MidiMessage depending
+            on whether we want to illuminate an LED or turn it off or whatever. */
+        int m_midiByte2On;  /** Sent as "Byte 2" in the MIDI message when we need to turn on an LED. */
+        int m_midiByte2Off; /** Sent as "Byte 2" in the MIDI message when we need to turn off an LED. */
+        
 };
 
 inline bool operator<(const MidiMessage &first, const MidiMessage &second)
