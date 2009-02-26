@@ -21,6 +21,10 @@ RCC_DIR = bin/rcc
 MOC_DIR = bin/moc
 OBJECTS_DIR = bin/obj
 
+CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
+    SOURCES += $$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp
+}
+
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgbpmschemedlg.h \
     $$UI_DIR/ui_dlgbpmtapdlg.h \
