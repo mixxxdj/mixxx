@@ -51,8 +51,6 @@ class MidiMapping : public QObject
     void loadPreset(QDomElement root);
 
     MidiInputMapping* getInputMapping();
-    QList<QHash<QString,QString> >* getOutputRowParams();
-    void deleteRowParams();
 
     void savePreset(QString path = BINDINGS_PATH);
     void applyPreset();
@@ -72,17 +70,17 @@ class MidiMapping : public QObject
 
     double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
 
-	// MIDI Input Mapping Modifiers
-	int numInputMidiMessages();
-	bool isInputIndexValid(int index);
+    // MIDI Input Mapping Modifiers
+    int numInputMidiMessages();
+    bool isInputIndexValid(int index);
     bool isMidiMessageMapped(MidiMessage command);
-	MidiMessage getInputMidiMessage(int index);
-	MixxxControl getInputMixxxControl(int index);
-	MixxxControl getInputMixxxControl(MidiMessage command);
-	void setInputMidiMapping(MidiMessage command, MixxxControl control);
-	void clearInputMidiMapping(int index);
-	void clearInputMidiMapping(MidiMessage command);
-	void clearInputMidiMapping(int index, int count);
+    MidiMessage getInputMidiMessage(int index);
+    MixxxControl getInputMixxxControl(int index);
+    MixxxControl getInputMixxxControl(MidiMessage command);
+    void setInputMidiMapping(MidiMessage command, MixxxControl control);
+    void clearInputMidiMapping(int index);
+    void clearInputMidiMapping(MidiMessage command);
+    void clearInputMidiMapping(int index, int count);
 
 signals:
     void inputMappingChanged();
@@ -100,8 +98,7 @@ private:
     QDomElement m_Bindings;
     MidiObject &m_rMidiObject;
     MidiInputMapping m_inputMapping;
-    QList<QHash<QString,QString> > m_addOutputRowParams;
-
+    MidiOutputMapping m_outputMapping;
     MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
 };
 

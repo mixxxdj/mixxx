@@ -9,20 +9,23 @@ MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_va
     m_strCOGroup = controlobject_group;
     m_strCOValue = controlobject_value;
     m_midiOption = midioption;
+    
+    m_thresholdMinimum = 0.0f;
+    m_thresholdMaximum = 1.0f;
 }
 
-/** Constructor that unserializes a MixxxControl object from a <control> node block in our
-    MIDI mapping XML file.
+/** Constructor that unserializes a MixxxControl object from a <control> or <output>
+    node block in our MIDI mapping XML file.
 */
-MixxxControl::MixxxControl(QDomElement& controlNode)
+MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
 {
-    QDomElement groupNode = controlNode.firstChildElement("group");
-    QDomElement keyNode = controlNode.firstChildElement("key");
+    QDomElement groupNode = parentNode.firstChildElement("group");
+    QDomElement keyNode = parentNode.firstChildElement("key");
 
     m_strCOGroup = groupNode.text();
     m_strCOValue = keyNode.text();
 
-    QDomElement optionsNode = controlNode.firstChildElement("options");
+    QDomElement optionsNode = parentNode.firstChildElement("options");
 
     // At the moment, use one element, in future iterate through options
     QString strMidiOption;
@@ -60,9 +63,25 @@ MixxxControl::MixxxControl(QDomElement& controlNode)
         m_midiOption = MIDI_OPT_NORMAL;
         qDebug() << "Warning: Unknown midioption" << strMidiOption << "in" << __FILE__;
     }
+    
+    //Parse threshold stuff, only used for output.
+    if (isOutputNode) {
+        
+        //TODO: Parse threshold stuff
+        QDomElement minNode = parentNode.firstChildElement("minimum");
+        QDomElement maxNode = parentNode.firstChildElement("maximum");
+        
+        bool ok = true;
+        m_thresholdMinimum = minNode.text().toFloat(&ok);
+        if (!ok)
+            m_thresholdMinimum = 0.0f;
+        m_thresholdMaximum = maxNode.text().toFloat(&ok);
+        if (!ok)
+            m_thresholdMaximum = 1.0f;
+    }
 }
 
-void MixxxControl::serializeToXML(QDomElement& controlNode) const
+void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) const
 {
     QDomText text;
     QDomDocument nodeMaker;
@@ -72,13 +91,13 @@ void MixxxControl::serializeToXML(QDomElement& controlNode) const
     tagNode = nodeMaker.createElement("group");
     text = nodeMaker.createTextNode(this->getControlObjectGroup());
     tagNode.appendChild(text);
-    controlNode.appendChild(tagNode);
+    parentNode.appendChild(tagNode);
 
     //Control object value
     tagNode = nodeMaker.createElement("key"); //WTF worst name ever
     text = nodeMaker.createTextNode(this->getControlObjectValue());
     tagNode.appendChild(text);
-    controlNode.appendChild(tagNode);
+    parentNode.appendChild(tagNode);
 
     //Midi option (slightly different format)
     QDomElement optionsNode = nodeMaker.createElement("options");
@@ -115,5 +134,20 @@ void MixxxControl::serializeToXML(QDomElement& controlNode) const
 
     QDomElement singleOption = nodeMaker.createElement(strMidiOption);
     optionsNode.appendChild(singleOption);
-    controlNode.appendChild(optionsNode);
+    parentNode.appendChild(optionsNode);
+
+    //If we're writing to an <output> block, write our threshold params
+    if (isOutputNode)
+    {
+        //TODO: Write threshold blocks
+        tagNode = nodeMaker.createElement("minimum");
+        text = nodeMaker.createTextNode(QString("%1").arg(this->getThresholdMinimum()));
+        tagNode.appendChild(text);
+        parentNode.appendChild(tagNode);
+
+        tagNode = nodeMaker.createElement("maximum");
+        text = nodeMaker.createTextNode(QString("%1").arg(this->getThresholdMaximum()));
+        tagNode.appendChild(text);
+        parentNode.appendChild(tagNode);
+    }
 }

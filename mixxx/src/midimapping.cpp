@@ -251,7 +251,7 @@ void MidiMapping::loadPreset(QDomElement root) {
 
         QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
-        //Itearate through each <control> block in the XML
+        //Iterate through each <control> block in the XML
         while (!control.isNull()) {
 
             //Unserialize these objects from the XML
@@ -259,7 +259,8 @@ void MidiMapping::loadPreset(QDomElement root) {
             MixxxControl mixxxControl(control);
 #ifdef __MIDISCRIPT__
             // Verify script functions are loaded
-            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT && scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
+            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT && 
+                    scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
                 // Need some way to signal to the dialog that this control will not be bound instead of just dying
                 qCritical() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts.";
             } else {
@@ -272,72 +273,26 @@ void MidiMapping::loadPreset(QDomElement root) {
             control = control.nextSiblingElement("control");
         }
 
-           qDebug() << "MidiMapping: Input parsed!";
+        qDebug() << "MidiMapping: Input parsed!";
 
-		//
-		//
-		//
-		//   Everything below this needs to get rewritten.
-		//
-		//
-		//
+        QDomElement output = controller.firstChildElement("outputs").firstChildElement("output");
 
-        QDomNode output = controller.namedItem("outputs").toElement().firstChild();
+        //Iterate through each <control> block in the XML
         while (!output.isNull()) {
-            QString outputType = output.nodeName();
-            QString group = WWidget::selectNodeQString(output, "group");
-            QString key = WWidget::selectNodeQString(output, "key");
+            //Unserialize these objects from the XML
+            MidiMessage midiMessage(output);
+            MixxxControl mixxxControl(output);
 
-            QString status = QString::number(WWidget::selectNodeInt(output, "status"));
-            QString midino = QString::number(WWidget::selectNodeInt(output, "midino"));
-
-            QString on = "0x7F";    // Compatible with Hercules and others
-            QString off = "0x00";
-            QString min = "";
-            QString max = "";
-
-            if(outputType == "light") {
-                if (!output.firstChildElement("on").isNull()) {
-                    on = WWidget::selectNodeQString(output, "on");
-                }
-                if (!output.firstChildElement("off").isNull()) {
-                    off = WWidget::selectNodeQString(output, "off");
-                }
-                if (!output.firstChildElement("threshold").isNull()) {
-                    min = WWidget::selectNodeQString(output, "threshold");
-                }
-                if (!output.firstChildElement("minimum").isNull()) {
-                    min = WWidget::selectNodeQString(output, "minimum");
-                }
-                if (!output.firstChildElement("maximum").isNull()) {
-                    max = WWidget::selectNodeQString(output, "maximum");
-                }
-            }
-            if (outputType!="#comment") qDebug() << "Loaded Output type:" << outputType << " -> " << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << device << "on/off:" << on << off;
-
-            // Assemble a QList of QHashes here for dlgprefmidibindings to pick up when it's ready
-            QHash<QString, QString> parameters;
-
-            parameters["device"]=device;
-            parameters["group"]=group;
-            parameters["key"]=key;
-            parameters["outputType"]=outputType;
-            parameters["status"]=toHex(status);
-            parameters["midino"]=toHex(midino);
-            parameters["min"]=min;
-            parameters["max"]=max;
-            parameters["on"]=on;
-            parameters["off"]=off;
-
-            if (parameters["outputType"]!="#comment") m_addOutputRowParams << parameters;
-//             addOutputRow(outputType, group, key, min, max, toHex(status), toHex(midino), device, on, off);
-
-            output = output.nextSibling();
+            //Add to the output mapping.
+            m_outputMapping.insert(mixxxControl, midiMessage);
+            
+            output = output.nextSiblingElement("output");
         }
-        qDebug() << "MidiMapping: Output rows ready!";
 
+        qDebug() << "MidiMapping: Output parsed!";        
         controller = controller.nextSiblingElement("controller");
     }
+    
 }   // END loadPreset(QDomElement)
 
 /* -------- ------------------------------------------------------
@@ -355,31 +310,6 @@ MidiInputMapping* MidiMapping::getInputMapping() {
     return &m_inputMapping;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Returns a reference to the QList of parameters for
-            dlgprefmidibinding's addOutputRow function.
-   Input:   -
-   Output:  Reference to QList of QHashes, each hash containing
-            a parameter by name
-   -------- ------------------------------------------------------ */
-QList<QHash<QString,QString> > * MidiMapping::getOutputRowParams() {
-//     qDebug() << QString("MidiMapping: getOutputRowParams() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    qDebug() << "MidiMapping: Getting outputRowParams";
-
-    return &m_addOutputRowParams;
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Frees the memory used by the row parameters QLists
-            when dlgprefmidibindings is done with them.
-   Input:   -
-   Output:  -
-   -------- ------------------------------------------------------ */
-void MidiMapping::deleteRowParams() {
-// TODO: need to delete lists elements
-//    delete m_addRowParams;
-//    delete m_addOutputRowParams;
-}
 
 /* savePreset(QString)
  * Given a path, saves the current table of bindings to an XML file.
@@ -401,7 +331,6 @@ void MidiMapping::savePreset(QString path) {
  * the LED handler.
  */
 void MidiMapping::applyPreset() {
-
 
     MidiLedHandler::destroyHandlers();
 
@@ -480,65 +409,24 @@ void MidiMapping::clearPreset() {
           //Add the control node we just created to the XML document in the proper spot
          addControl(controlNode, wtfbbqdevicename); //FIXME: Remove this device shit until we have multiple device support.
      }
-/*
-    //TODO: Rewrite this code when we reimplement output mapping stuff.
-
-     for (int y = 0; y < m_pTblOutputBindings.rowCount(); y++) {
-         // For each row
-         QString outputType = ((QComboBox*)m_pTblOutputBindings.cellWidget(y,0))->currentText().trimmed();
-         QString device = m_pTblOutputBindings.item(y,3)->text().trimmed();
-
-         QHash<QString, QString> outputMapping;
-         QString controlKey = ((QComboBox*)m_pTblOutputBindings.cellWidget(y,1))->currentText().trimmed();
-         if (controlKey.isEmpty()
-             || controlKey.trimmed().split(' ').count() < 2
-             || controlKey.indexOf("[") == -1
-             || controlKey.indexOf("]") == -1
-             || m_pTblOutputBindings.item(y,2)->text().trimmed().split(' ').count() < 2) {
-             qDebug() << "MIDI Output Row"<<y+1<<"was dropped during save because it contains invalid values.";
-             continue; // Invalid mapping, skip it.
-         }
-
-         outputMapping["group"] = controlKey.trimmed().split(' ').at(0).trimmed();
-         outputMapping["key"] = controlKey.trimmed().split(' ').at(1).trimmed();
-         outputMapping["status"] = m_pTblOutputBindings.item(y,2)->text().trimmed().split(' ').at(0).trimmed();
-         outputMapping["midino"] = m_pTblOutputBindings.item(y,2)->text().trimmed().split(' ').at(1).trimmed();
-         //        outputMapping["device"] = m_pTblOutputBindings.item(y,3)->text().trimmed();
-         outputMapping["minimum"] = m_pTblOutputBindings.item(y,4)->text().trimmed();
-         outputMapping["maximum"] = m_pTblOutputBindings.item(y,5)->text().trimmed();
-         outputMapping["on"] = m_pTblOutputBindings.item(y,6)->text().trimmed();
-         outputMapping["off"] = m_pTblOutputBindings.item(y,7)->text().trimmed();
-
-         // Clean up any optional values
-         if (outputMapping["maximum"].isEmpty()) {
-             if (!outputMapping["minimum"].isEmpty()) {
-                 outputMapping["threshold"] = outputMapping["minimum"];
-             }
-             outputMapping.remove("minimum");
-             outputMapping.remove("maximum");
-         }
-         if (outputMapping["on"].isEmpty() || outputMapping["off"].isEmpty()) {
-             outputMapping.remove("on");
-             outputMapping.remove("off");
-         }
-
-         // Generate output XML
-         QDomText text;
+     
+     //Iterate over all of the control/command pairs in the OUTPUT mapping
+     QMapIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
+     while (outIt.hasNext()) {
+         outIt.next();
+         QDomElement outputNode;
          QDomDocument nodeMaker;
-         QDomElement output = nodeMaker.createElement(outputType);
 
-         // TODO: make these output in a more human friendly order
-         foreach (QString tagName, outputMapping.keys()) {
-             QDomElement tagNode = nodeMaker.createElement(tagName);
-             text = nodeMaker.createTextNode(outputMapping.value(tagName));
-             tagNode.appendChild(text);
-             output.appendChild(tagNode);
-         }
+         //Create <output> block
+         outputNode = nodeMaker.createElement("output");
 
-         addOutput(output, device);
+         //Save the MidiMessage and MixxxControl objects as XML
+         outIt.key().serializeToXML(outputNode, true);
+         outIt.value().serializeToXML(outputNode, true);
+
+          //Add the control node we just created to the XML document in the proper spot
+         addOutput(outputNode, wtfbbqdevicename); //FIXME: Remove this device shit until we have multiple device support.
      }
- */
-
  }
 
 /* -------- ------------------------------------------------------
