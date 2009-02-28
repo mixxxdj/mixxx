@@ -51,7 +51,7 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
         m_midiOption = MIDI_OPT_BUTTON;
     else if (strMidiOption == "Switch")
         m_midiOption = MIDI_OPT_SWITCH;
-    else if (strMidiOption == "Hercjog")
+    else if (strMidiOption == "HercJog")
         m_midiOption = MIDI_OPT_HERC_JOG;
     else if (strMidiOption == "Spread64")
         m_midiOption = MIDI_OPT_SPREAD64;
@@ -120,7 +120,7 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
     else if (iMidiOption == MIDI_OPT_SWITCH)
         strMidiOption = "Switch";
     else if (iMidiOption == MIDI_OPT_HERC_JOG)
-        strMidiOption = "Hercjog";
+        strMidiOption = "HercJog";
     else if (iMidiOption == MIDI_OPT_SPREAD64)
         strMidiOption = "Spread64";
     else if (iMidiOption == MIDI_OPT_SELECTKNOB)
