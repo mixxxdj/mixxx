@@ -324,7 +324,10 @@ void MidiObjectALSASeq::run()
                 }
                 else
                 {
-                    qDebug() << "Midi Sequencer: unknown event";
+                    //qDebug() << "Midi Sequencer: unknown event";
+                    //You don't want this qDebug() enabled in a release version because
+                    //if Joe DJ has some MIDI device plugged in that spits out MIDI clock
+                    //signals, Mixxx will flood with these messages = hammer CPU.
                 }
             }
         }
