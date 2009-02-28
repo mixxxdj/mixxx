@@ -42,12 +42,18 @@ public slots:
     void slotGroupLearnToggle();
     void slotImportXML();
     void slotExportXML();
-    void slotClear();
+    void slotEnableDevice();
+    
+    //Input bindings
+    void slotClearAllInputBindings();
     void slotRemoveInputBinding();
-    void slotAddBinding();
-//    void slotChangeBinding();
-//    void slotAdvancedOptions();
-	void slotEnableDevice();
+    void slotAddInputBinding();
+    
+    //Output bindings 
+    void slotAddOutputBinding();
+    void slotClearAllOutputBindings();
+    void slotRemoveOutputBinding();
+
     void singleLearn(ConfigValueMidi *value, QString device);
     void groupLearn(ConfigValueMidi *value, QString device);
 
