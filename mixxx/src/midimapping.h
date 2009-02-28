@@ -33,7 +33,7 @@
 
 //Forward declarations
 class MidiInputMappingTableModel;
-
+class MidiOutputMappingTableModel;
 
 #define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
 
@@ -66,6 +66,7 @@ class MidiMapping : public QObject
                          MidiOption midiOption);
     void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
+    MidiOutputMappingTableModel* getMidiOutputMappingTableModel();
     //MixxxControl* getInputMixxxControl(MidiMessage command);
 
     double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
@@ -82,9 +83,23 @@ class MidiMapping : public QObject
     void clearInputMidiMapping(MidiMessage command);
     void clearInputMidiMapping(int index, int count);
 
+    // MIDI Output Mapping Modifiers
+    int numOutputMixxxControls();
+    bool isOutputIndexValid(int index);
+    bool isMixxxControlMapped(MixxxControl control);
+    MixxxControl getOutputMixxxControl(int index);
+    MidiMessage getOutputMidiMessage(int index);
+    MidiMessage getOutputMidiMessage(MixxxControl control);
+    void setOutputMidiMapping(MixxxControl control, MidiMessage command);
+    void clearOutputMidiMapping(int index);
+    void clearOutputMidiMapping(MixxxControl control);
+    void clearOutputMidiMapping(int index, int count);
+
 signals:
     void inputMappingChanged();
     void inputMappingChanged(int startIndex, int endIndex);
+    void outputMappingChanged();
+    void outputMappingChanged(int startIndex, int endIndex);
 
 private:
 #ifdef __MIDISCRIPT__
@@ -100,6 +115,7 @@ private:
     MidiInputMapping m_inputMapping;
     MidiOutputMapping m_outputMapping;
     MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
+    MidiOutputMappingTableModel* m_pMidiOutputMappingTableModel;
 };
 
 #endif

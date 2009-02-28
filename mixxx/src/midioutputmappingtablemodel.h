@@ -1,25 +1,27 @@
 
-#ifndef _MIDIINPUTMAPPINGTABLEMODEL_H_
-#define _MIDIINPUTMAPPINGTABLEMODEL_H_
+#ifndef _MIDIOUTPUTMAPPINGTABLEMODEL_H_
+#define _MIDIOUTPUTMAPPINGTABLEMODEL_H_
 
 #include "midimapping.h" //gives typedef for MidiInputMapping
 
-enum MidiInputTableIndices {
-    MIDIINPUTTABLEINDEX_MIDITYPE = 0,
-    MIDIINPUTTABLEINDEX_MIDINO,
-    MIDIINPUTTABLEINDEX_MIDICHANNEL,
-    MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP,
-    MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE,
-    MIDIINPUTTABLEINDEX_MIDIOPTION,
-    MIDIINPUTTABLEINDEX_NUMCOLS //Number of columns
+enum MidiOutputTableIndices {
+    MIDIOUTPUTTABLEINDEX_CONTROLOBJECTGROUP = 0,
+    MIDIOUTPUTTABLEINDEX_CONTROLOBJECTVALUE,
+    MIDIOUTPUTTABLEINDEX_THRESHOLDMIN,
+    MIDIOUTPUTTABLEINDEX_THRESHOLDMAX,
+    MIDIOUTPUTTABLEINDEX_MIDITYPE,
+    MIDIOUTPUTTABLEINDEX_MIDINO,
+    MIDIOUTPUTTABLEINDEX_MIDICHANNEL,
+    MIDIOUTPUTTABLEINDEX_MIDIOPTION,
+    MIDIOUTPUTTABLEINDEX_NUMCOLS //Number of columns
 };
 
-class MidiInputMappingTableModel : public QAbstractTableModel
+class MidiOutputMappingTableModel : public QAbstractTableModel
 {
 Q_OBJECT
 public:
-    MidiInputMappingTableModel(MidiMapping* mapping);
-    ~MidiInputMappingTableModel();
+    MidiOutputMappingTableModel(MidiMapping* mapping);
+    ~MidiOutputMappingTableModel();
     void setMapping(MidiMapping* mapping);
     QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -32,7 +34,7 @@ public:
     bool removeRows(int row, int count, const QModelIndex& parent=QModelIndex());
 
 public slots:
-    void slotInputMappingChanged();
+    void slotOutputMappingChanged();
 private:
     MidiMapping* m_pMapping;
     

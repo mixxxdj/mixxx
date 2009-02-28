@@ -22,6 +22,7 @@
 #include "mixxxcontrol.h"
 #include "midimessage.h"
 #include "midiinputmappingtablemodel.h"
+#include "midioutputmappingtablemodel.h"
 #include "midimapping.h"
 #include "midiledhandler.h"
 #include "configobject.h"
@@ -38,12 +39,15 @@ MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(mid
     m_pScriptEngine = midi_object.getMidiScriptEngine();
 #endif
     m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(this);
+    m_pMidiOutputMappingTableModel = new MidiOutputMappingTableModel(this);
 }
 
 MidiMapping::~MidiMapping() {
 }
 
-/* ============================== MIDI Input Mapping Modifiers */
+/* ============================== MIDI Input Mapping Modifiers 
+                                    (Part of QT MVC wrapper)
+*/
 
 /*
  * Return the total number of current input mappings.
@@ -144,6 +148,121 @@ void MidiMapping::clearInputMidiMapping(int index, int count) {
     if(changed > 0)
         emit(inputMappingChanged());
 }
+
+/*==== End of MIDI input mapping modifiers (part of QT MVC wrapper) */
+
+
+
+/* ============================== MIDI ***Output*** Mapping Modifiers 
+                                    (Part of QT MVC wrapper)
+*/
+
+/*
+ * Return the total number of current output mappings.
+ */ 
+int MidiMapping::numOutputMixxxControls() {
+    return m_outputMapping.size();
+}
+
+/*
+ * Return true if the index corresponds to an input mapping key.
+ */ 
+bool MidiMapping::isOutputIndexValid(int index) {
+    if(index < 0 || index >= numOutputMixxxControls()) {
+        return false;
+    }
+    return true;
+}
+
+bool MidiMapping::isMixxxControlMapped(MixxxControl control) {
+    return m_outputMapping.contains(control);
+}
+
+/*
+ * Lookup the MidiMessage corresponding to a given index.
+ */
+MixxxControl MidiMapping::getOutputMixxxControl(int index) {
+    if(!isOutputIndexValid(index)) {
+        return MixxxControl(); // do something bad.
+    }
+    return m_outputMapping.keys().at(index);
+}
+
+/*
+ * Lookup the MixxxControl mapped to a given MidiMessage (by index).
+ */
+MidiMessage MidiMapping::getOutputMidiMessage(int index) {
+    qDebug() << "getOutputMidiMessage" << index;
+    if(!isOutputIndexValid(index)) {
+        return MidiMessage(); // do something bad.
+    }
+    MixxxControl key = m_outputMapping.keys().at(index);
+    return m_outputMapping.value(key);
+}
+
+/*
+ * Lookup the MixxxControl mapped to a given MidiMessage.
+ */
+MidiMessage MidiMapping::getOutputMidiMessage(MixxxControl control) {
+    if(!m_outputMapping.contains(control)) {
+        return MidiMessage(); // do something bad.
+    }
+    return m_outputMapping.value(control);
+}
+
+/*
+ * Set a MidiMessage -> MixxxControl mapping, replacing an existing one
+ * if necessary.
+ */
+void MidiMapping::setOutputMidiMapping(MixxxControl control, MidiMessage command) {
+    // If the command is already in the mapping, it will be replaced
+    m_outputMapping.insert(control, command);
+    emit(outputMappingChanged());
+}
+
+/*
+ * Clear a specific mapping for a MidiMessage by index.
+ */
+void MidiMapping::clearOutputMidiMapping(int index) {
+    if(!isOutputIndexValid(index)) {
+        return;
+    }
+    qDebug() << m_outputMapping.size();
+    qDebug() << "MidiMapping: removing" << index;
+    MixxxControl key = m_outputMapping.keys().at(index);
+    m_outputMapping.remove(key);
+    qDebug() << m_outputMapping.size();
+    emit(outputMappingChanged());
+    //emit(inputMappingChanged(index, numInputMidiMessages()-1));
+}
+
+/*
+ * Clear a specific mapping for a MidiMessage.
+ */
+void MidiMapping::clearOutputMidiMapping(MixxxControl control) {
+    int changed = m_outputMapping.remove(control);
+    if(changed > 0)
+        emit(outputMappingChanged());
+}
+
+/*
+ * Clears a range of input mappings. (This really only exists so that
+ * a caller can atomically remove a range of rows)
+ *
+ */
+void MidiMapping::clearOutputMidiMapping(int index, int count) {
+    QList<MixxxControl> keys = m_outputMapping.keys();
+    int changed = 0;
+    for(int i=index; i < index+count; i++) {
+        MixxxControl control = keys.at(i);
+        changed += m_outputMapping.remove(control);
+    }
+    if(changed > 0)
+        emit(outputMappingChanged());
+}
+
+/*==== End of MIDI output mapping modifiers (part of QT MVC wrapper) */
+
 
 #ifdef __MIDISCRIPT__
 /* -------- ------------------------------------------------------
@@ -266,7 +385,10 @@ void MidiMapping::loadPreset(QDomElement root) {
             } else {
 #endif
             //Add to the input mapping.
-            m_inputMapping.insert(midiMessage, mixxxControl);
+            setInputMidiMapping(midiMessage, mixxxControl);
+            /*Old code: m_inputMapping.insert(midiMessage, mixxxControl);
+              Reason why this is bad: Don't want to access this directly because the 
+                                      model doesn't get notified about the update */
 #ifdef __MIDISCRIPT__
             }
 #endif
@@ -281,11 +403,14 @@ void MidiMapping::loadPreset(QDomElement root) {
         while (!output.isNull()) {
             //Unserialize these objects from the XML
             MidiMessage midiMessage(output);
-            MixxxControl mixxxControl(output);
+            MixxxControl mixxxControl(output, true);
 
             //Add to the output mapping.
-            m_outputMapping.insert(mixxxControl, midiMessage);
-            
+            setOutputMidiMapping(mixxxControl, midiMessage);            
+            /*Old code: m_outputMapping.insert(mixxxControl, midiMessage);
+              Reason why this is bad: Don't want to access this directly because the 
+                                      model doesn't get notified about the update */
+                                     
             output = output.nextSiblingElement("output");
         }
 
@@ -533,6 +658,11 @@ void MidiMapping::removeInputMapping(MidiType midiType, int midiNo, int midiChan
 MidiInputMappingTableModel* MidiMapping::getMidiInputMappingTableModel()
 {
     return m_pMidiInputMappingTableModel;
+}
+
+MidiOutputMappingTableModel* MidiMapping::getMidiOutputMappingTableModel()
+{
+    return m_pMidiOutputMappingTableModel;
 }
 
 //Used by MidiObject to query what control matches a given MIDI command.

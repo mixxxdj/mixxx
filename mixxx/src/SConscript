@@ -315,6 +315,7 @@ sources = Split("""
                 midiobjectnull.cpp
                 mididevicehandler.cpp
                 midiinputmappingtablemodel.cpp
+                midioutputmappingtablemodel.cpp
                 midichanneldelegate.cpp
                 miditypedelegate.cpp
                 midinodelegate.cpp

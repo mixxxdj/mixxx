@@ -16,6 +16,8 @@ class MixxxControl
         void setControlObjectGroup(QString controlobject_group) { m_strCOGroup = controlobject_group; };
         void setControlObjectValue(QString controlobject_value) { m_strCOValue = controlobject_value; };
         void setMidiOption(MidiOption midioption) { m_midiOption = midioption; };
+        void setThresholdMinimum(float min) { m_thresholdMinimum = min; };
+        void setThresholdMaximum(float max) { m_thresholdMaximum = max; };
         QString getControlObjectGroup() const { return m_strCOGroup; };
         QString getControlObjectValue() const { return m_strCOValue; };
         MidiOption getMidiOption() const { return m_midiOption; };

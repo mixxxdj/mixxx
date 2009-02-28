@@ -41,9 +41,20 @@ MidiMessage::MidiMessage(QDomElement& parentNode)
 
     //Use QString with toInt base of 0 to auto convert hex values
     m_midiNo = midiNo.toInt(&ok, 0);
+    if (!ok)
+        m_midiNo = 0x00;
+        
     m_midiChannel = midiChan.toInt(&ok, 0);
+    if (!ok)
+        m_midiChannel = 1;
+        
     m_midiByte2On = midiOn.toInt(&ok, 0);
+    if (!ok)
+        m_midiByte2On = 0x7F;
+    
     m_midiByte2Off = midiOff.toInt(&ok, 0);
+    if (!ok)
+        m_midiByte2Off = 0x00;
 }
 
 void MidiMessage::serializeToXML(QDomElement& parentNode, bool isOutputNode) const

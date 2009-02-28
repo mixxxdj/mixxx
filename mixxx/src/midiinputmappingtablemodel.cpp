@@ -184,13 +184,13 @@ QVariant MidiInputMappingTableModel::headerData(int section, Qt::Orientation ori
     return QVariant();
 }
 
-void MidiInputMappingTableModel::removeRow(int row, const QModelIndex& parent)
+bool MidiInputMappingTableModel::removeRow(int row, const QModelIndex& parent)
 {
     beginRemoveRows(parent, row, row);
-
     m_pMapping->clearInputMidiMapping(row);
-    
     endRemoveRows();
+    
+    return true;
 }
 
 bool MidiInputMappingTableModel::removeRows(int row, int count, const QModelIndex& parent)
