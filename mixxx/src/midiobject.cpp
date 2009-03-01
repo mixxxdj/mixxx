@@ -231,7 +231,13 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (p) //Only pass values on to valid ControlObjects.
     {
       double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
-      //qDebug() << "value coming out ComputeValue: " << newValue;
+      qDebug() << "value coming out ComputeValue: " << newValue;
+
+      // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi mapping is <button> we override the Midi 'category' appropriately.
+      switch (mixxxControl.getMidiOption()) {
+              case MIDI_OPT_BUTTON:
+              case MIDI_OPT_SWITCH: category = NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
+      }
       
       ControlObject::sync();
       
