@@ -23,7 +23,15 @@ MOC_DIR = bin/moc
 OBJECTS_DIR = bin/obj
 
 CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
-    SOURCES += $$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp
+    exists($$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp) {
+        message(found gdbmacros.cpp relative to QTDIR)
+        SOURCES += $$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp
+    } else {
+        exists($$(HOME)/qtcreator-0.9.2/share/qtcreator/gdbmacros/gdbmacros.cpp) {
+            message(found gdbmacros.cpp relative to $$(HOME)/qtcreator-0.9.2)
+            SOURCES += $$(HOME)/qtcreator-0.9.2/share/qtcreator/gdbmacros/gdbmacros.cpp
+        }
+    }
 }
 
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
