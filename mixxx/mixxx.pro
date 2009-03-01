@@ -1,5 +1,6 @@
 CONFIG += debug link_pkgconfig ladspa alsaseqmidi script
-DEFINES += __PORTAUDIO__ \    
+DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
+    __PORTAUDIO__ \
     __SNDFILE__ \
     BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
     SETTINGS_FILE=\\\".mixxx.cfg\\\" \
