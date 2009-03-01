@@ -2,7 +2,11 @@
 #define SCRIPT_SCRIPTSTUDIO_H
 
 // Has to be included with wierd path so that it finds this generated in .obj
-#include "script/ui_scriptstudio.h"
+#ifdef QMAKE
+    #include "ui_scriptstudio.h"
+#else
+    #include "script/ui_scriptstudio.h"
+#endif
 
 #include "scriptengine.h"
 
