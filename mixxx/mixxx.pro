@@ -45,6 +45,8 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
 INCLUDEPATH += src \
 #    lib/soundtouch \
     lib/kissfft \
+	lib/ladspa \
+	/sw/include \
     $$UI_DIR
 HEADERS += src/analyser.h \
     src/analyserbpm.h \
@@ -170,6 +172,7 @@ HEADERS += src/analyser.h \
     src/midiobject.h \
     src/midiobjectnull.h \
     src/midioutputmapping.h \
+	src/midioutputmappingtablemodel.h \
     src/miditypedelegate.h \
     src/mixxx.h \
     src/mixxxcontrol.h \
@@ -339,6 +342,7 @@ SOURCES += src/analyserbpm.cpp \
     src/midinodelegate.cpp \
     src/midiobject.cpp \
     src/midiobjectnull.cpp \
+	src/midioutputmappingtablemodel.cpp \
     src/miditypedelegate.cpp \
     src/mixxx.cpp \
     src/mixxxcontrol.cpp \
@@ -488,7 +492,15 @@ macx {
         -framework CoreAudio \
         -framework AudioToolbox \
         -framework AudioUnit \
-        -lportaudio
+		-L/sw/lib \
+        -lportaudio \
+		-lmad \
+		-lsndfile \
+		-logg \
+		-lvorbis \
+		-lvorbisfile \
+		-lfftw3 \
+		-lid3tag
     HEADERS += src/midiobjectcoremidi.h
     SOURCES += src/midiobjectcoremidi.cpp
 }
