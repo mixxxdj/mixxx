@@ -37,6 +37,7 @@ class Track;
 class DlgPrefSound;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
+class DlgPrefNoMidi;
 class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
@@ -77,6 +78,7 @@ private:
     DlgPrefSound *wsound;
     QList<DlgPrefMidiBindings*> wmidiBindingsForDevice;
     DlgPrefPlaylist *wplaylist;
+    DlgPrefNoMidi *wNoMidi;
     DlgPrefControls *wcontrols;
     DlgPrefEQ *weq;
     DlgPrefCrossfader *wcrossfader;
