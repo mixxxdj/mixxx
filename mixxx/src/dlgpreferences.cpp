@@ -29,6 +29,7 @@
 #include "dlgprefsound.h"
 #include "dlgprefmidibindings.h"
 #include "dlgprefplaylist.h"
+#include "dlgprefnomidi.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
@@ -76,6 +77,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #ifdef __SHOUTCAST__
     wshoutcast = new DlgPrefShoutcast(this, config);
 #endif
+    wNoMidi = new DlgPrefNoMidi(this, config);
 
     while (pagesWidget->count() > 0)
     {
@@ -96,6 +98,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wshoutcast);
 #endif
 
+    pagesWidget->addWidget(wNoMidi);
     setupMidiWidgets();
 
 
@@ -274,9 +277,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
    	}
    	
    	//If the root "MIDI Device" item is clicked, select the first MIDI device instead.
+   	//If there is no first MIDI device, display a page that says so (just so we don't not change the page)
    	else if (current == m_pMIDITreeItem)
    	{
-   		if (wmidiBindingsForDevice.count() > 0) //Require at least 1 MIDI device
+   		if (wmidiBindingsForDevice.count() > 0)
    		{
    			//Expand the MIDI subtree
    			contentsTreeWidget->setItemExpanded(m_pMIDITreeItem, true);
@@ -294,6 +298,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
    			}*/
    			//contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
    			
+   		}
+   		else
+   		{
+   			pagesWidget->setCurrentWidget(wNoMidi);
    		}
    	}
    
@@ -363,10 +371,10 @@ void DlgPreferences::setupMidiWidgets()
 	//TODO: For each MIDI device, create a MIDI dialog and put a little link to it in the treepane on the left
 	QList<QString>* deviceList = m_pMidiObject->getDeviceList();
 	QListIterator<QString> it(*deviceList);
-	//qDebug() << "onShow";
+	
 	while (it.hasNext())
 	  {
-	    QString curDeviceName = QString(it.next()); //make a copy of it.next() so that the original list getting freeed doesn't kill us
+	    QString curDeviceName = QString(it.next()); //make a copy of it.next() so that the original list getting freed doesn't kill us
 	    //qDebug() << "curDeviceName: " << curDeviceName;
 	    DlgPrefMidiBindings* midiDlg = new DlgPrefMidiBindings(this, *m_pMidiObject, curDeviceName, config);
 	    wmidiBindingsForDevice.append(midiDlg);
