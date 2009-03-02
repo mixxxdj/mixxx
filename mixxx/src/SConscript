@@ -525,7 +525,7 @@ if platform in ('linux', 'bsd', 'win32'):
 if platform == 'linux':
 	#Check for g++ (yeah, SCONS is a bit dumb here)
 	if os.system("which g++ > /dev/null"): #Checks for non-zero return code
-		print "Did not find gcc/g++, exiting!"
+		print "Did not find g++, exiting!"
 		Exit(1)
 	
 	#Check for pkg-config
