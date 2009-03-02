@@ -67,11 +67,36 @@ function convert_xml($file)
         $control = $controls->addChild("control");
         
         foreach($oldControl->children() as $k => $v) {
+            if ((($k == "options"))) {
+                $options = $control->addChild("options");
+                
+                foreach($v as $ko => $vo) {
+                    $options->addChild($ko, $vo);
+                }
+                
+                continue;
+            }
+            
             if ((($k == "midino") || ($k == "midichan")) && !preg_match('/0x\d*/', $v))
                 $v = sprintf("0x%02x", (integer)$v);
             
             $control->addChild($k, $v);
         }
+    }
+    
+    if ( isset($old->lights)) {
+        // Add outputs to the new XML file
+        $outputs = $new->controller->addChild("outputs");
+        
+        $lights = $old->lights->children();
+        
+        foreach ($lights as $light) {
+            $output = $outputs->addChild("output");
+            
+            foreach($light as $k => $v)
+                $output->addChild($k, $v);
+        }
+        
     }
     
     return indent($new);
