@@ -684,7 +684,7 @@ if platform == 'win32':
 
 env.Append(CPPDEFINES = ['QT3_SUPPORT', 'QT3_SUPPORT_WARNINGS', 'QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
-if platform in ('linux','bsd'):
+if platform in ('linux','bsd','win32'):
 	env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
