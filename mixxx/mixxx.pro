@@ -41,6 +41,7 @@ CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb wi
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgbpmschemedlg.h \
     $$UI_DIR/ui_dlgbpmtapdlg.h \
+    $$UI_DIR/ui_dlgmidilearning.h \
     $$UI_DIR/ui_dlgprefbpmdlg.h \
     $$UI_DIR/ui_dlgprefcontrolsdlg.h \
     $$UI_DIR/ui_dlgprefcrossfaderdlg.h \
@@ -154,6 +155,7 @@ HEADERS += src/analyser.h \
     src/dlgabout.h \
     src/dlgbpmscheme.h \
     src/dlgbpmtap.h \
+    src/dlgmidilearning.h \
     src/dlgprefbpm.h \
     src/dlgprefcontrols.h \
     src/dlgprefcrossfader.h \
@@ -325,6 +327,7 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgabout.cpp \
     src/dlgbpmscheme.cpp \
     src/dlgbpmtap.cpp \
+    src/dlgmidilearning.cpp \
     src/dlgprefbpm.cpp \
     src/dlgprefcontrols.cpp \
     src/dlgprefcrossfader.cpp \
@@ -442,6 +445,7 @@ SOURCES += lib/kissfft/kiss_fft.c
 FORMS += src/dlgaboutdlg.ui \
     src/dlgbpmschemedlg.ui \
     src/dlgbpmtapdlg.ui \
+    src/dlgmidilearning.ui \
     src/dlgprefbpmdlg.ui \
     src/dlgprefcontrolsdlg.ui \
     src/dlgprefcrossfaderdlg.ui \

@@ -68,6 +68,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi() : MidiObject()
 
 MidiObjectCoreMidi::~MidiObjectCoreMidi()
 {
+  shutdown(); // From parent MidiObject
   // Close devices and delete buffer
   for (unsigned int i=0; i<MIDIGetNumberOfSources(); i++)
     {
