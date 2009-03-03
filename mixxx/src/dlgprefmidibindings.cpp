@@ -39,14 +39,14 @@ QStringList controKeyOptionChoices;
 const QStringList outputTypeChoices = (QStringList() << "light");
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QString deviceName,
-										 ConfigObject<ConfigValue> *pConfig) :  
+										 ConfigObject<ConfigValue> *pConfig) :
 							QWidget(parent), Ui::DlgPrefMidiBindingsDlg(), m_rMidi(midi) {
     setupUi(this);
     m_pConfig = pConfig;
-    singleLearning = false;
-    groupLearning = false;
     m_deviceName = deviceName;
-    
+
+    m_pDlgMidiLearning = NULL;
+
     labelDeviceName->setText(m_deviceName);
 
     //Tell the input mapping table widget which data model it should be viewing
@@ -90,21 +90,18 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
     //Input bindings
-    connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
-    connect(btnGroupLearn, SIGNAL(clicked()), this, SLOT(slotGroupLearnToggle()));
+    connect(btnMidiLearnWizard, SIGNAL(clicked()), this, SLOT(slotShowMidiLearnDialog()));
     connect(btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllInputBindings()));
     connect(btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
     connect(btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotAddInputBinding()));
-    
+
     //Output bindings
     connect(btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllOutputBindings()));
     connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
     connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
-        
+
     //Connect the activate button. One day this will be replaced with an "Enabled" checkbox.
     connect(btnActivateDevice, SIGNAL(clicked()), this, SLOT(slotEnableDevice()));
-
-    m_rMidi.disableMidiLearn();
 }
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
@@ -142,65 +139,11 @@ void DlgPrefMidiBindings::slotApply() {
     m_rMidi.disableMidiLearn();
 }
 
-/*
- * singleLearn(ConfigValueMidi *, QString)
- * Sets the currently row(s) to the MIDI value and Device. Typically called by
- * the MIDI device handler. Prompts the user to confirm if more than one row is
- * selected.
- */
-void DlgPrefMidiBindings::singleLearn(ConfigValueMidi *value, QString device) {
-    //m_pInputMappingTableView->model()->
-
-}
-
-/* groupLearn(ConfigValueMidi *, QString)
- * A midi learn message has been received during group learn mode. Sets the
- * current row in the group to the given MIDI message, and waits to be called
- * again for the next row. If the end of the selection is reached, group learn
- * is disabled.
- */
-void DlgPrefMidiBindings::groupLearn(ConfigValueMidi *value, QString device) {
-
-}
-
-/* slotSingleLearnToggle()
- * The user has pressed the Single Learn toggle button. Enable or disable the
- * single learning mode and update the status accordingly.
- */
-void DlgPrefMidiBindings::slotSingleLearnToggle() {
-    // Toggle the status variable
-    singleLearning = !singleLearning;
-    if (singleLearning) {
-        // Enable MIDI Hook
-        m_rMidi.enableMidiLearn(this);
-        //labelStatus->setText("Single MIDI Learn: waiting...");
-        // Can't do group learning while single learning
-        btnGroupLearn->setEnabled(false);
-    } else {
-        // Disable MIDI Hook
-        m_rMidi.disableMidiLearn();
-        //labelStatus->setText("Single MIDI Learn disabled");
-        btnGroupLearn->setEnabled(true);
-    }
-}
-
-/* slotGroupLearnToggle()
- * The user has pressed the Group Learn button. Midi Learn is enabled, and the
- * status is updated, indicating Mixxx is waiting for a Message. */
-void DlgPrefMidiBindings::slotGroupLearnToggle() {
-    groupLearning = !groupLearning;
-    if (groupLearning) {
-        // Enable MIDI Hook
-        m_rMidi.enableMidiLearn(this);
-        //labelStatus->setText("Group MIDI Learn: waiting...");
-        // Can't do group learning while single learning
-        btnSingleLearn->setEnabled(false);
-    } else {
-        // Disable MIDI Hook
-        m_rMidi.disableMidiLearn();
-        //labelStatus->setText("Group MIDI Learn disabled");
-        btnSingleLearn->setEnabled(true);
-    }
+void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
+    //Note that DlgMidiLearning is set to delete itself on
+    //close using the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
+    m_pDlgMidiLearning = new DlgMidiLearning(this, m_rMidi.getMidiMapping());
+    m_pDlgMidiLearning->show();
 }
 
 /* slotImportXML()
@@ -231,7 +174,7 @@ void DlgPrefMidiBindings::slotEnableDevice()
 {
 	//Just tell MidiObject to close the old device and open this device
 	m_rMidi.devClose();
-	m_rMidi.devOpen(m_deviceName);  
+	m_rMidi.devOpen(m_deviceName);
 	m_pConfig->set(ConfigKey("[Midi]","Device"), m_deviceName);
 }
 
@@ -323,7 +266,7 @@ void DlgPrefMidiBindings::slotClearAllInputBindings() {
 
 void DlgPrefMidiBindings::slotAddOutputBinding() {
     qDebug() << "STUB: DlgPrefMidiBindings::slotAddOutputBinding()";
-    
+
     m_rMidi.getMidiMapping()->setOutputMidiMapping(MixxxControl(), MidiMessage());
 }
 
@@ -332,7 +275,7 @@ void DlgPrefMidiBindings::slotRemoveOutputBinding()
 	QModelIndexList selectedIndices = m_pOutputMappingTableView->selectionModel()->selectedRows();
 	if (selectedIndices.size() > 0)
 	{
-		MidiOutputMappingTableModel* tableModel = 
+		MidiOutputMappingTableModel* tableModel =
 		                    dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
 		if (tableModel) {
 			QModelIndex curIndex;

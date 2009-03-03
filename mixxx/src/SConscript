@@ -279,6 +279,7 @@ sources = Split("""
                 dlgabout.cpp
                 dlgprefeq.cpp
                 dlgprefcrossfader.cpp
+                dlgmidilearning.cpp
 
                 engine/enginebuffercue.cpp
                 engine/enginebuffer.cpp
@@ -718,6 +719,7 @@ env.Uic4('dlgbpmtapdlg.ui')
 env.Uic4('dlgprefvinyldlg.ui')
 env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgaboutdlg.ui')
+env.Uic4('dlgmidilearning.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('../../res/mixxx.qrc')

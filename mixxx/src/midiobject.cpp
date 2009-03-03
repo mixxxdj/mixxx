@@ -17,12 +17,11 @@
 #include <QtDebug>
 #include "midiobject.h"
 #include "midimapping.h"
+#include "midimessage.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include <algorithm>
 #include <signal.h>
-#include "dlgprefmididevice.h"
-#include "dlgprefmidibindings.h"
 
 #ifdef __MIDISCRIPT__
 #include "script/midiscriptengine.h"
@@ -42,8 +41,8 @@ MidiObject::MidiObject()
 {
     no = 0;
     requestStop = false;
-    midiLearn = false;
-    debug = false;
+    m_bMidiLearn = false;
+
 
 #ifdef __MIDISCRIPT__
     //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
@@ -57,6 +56,9 @@ MidiObject::MidiObject()
     m_pMidiMapping = new MidiMapping(*this);
 //     m_pMidiMapping->loadInitialPreset();
 #endif
+    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+    connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
+    connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 
 }
 
@@ -206,20 +208,12 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         type = MIDI_EMPTY;
     }
 
-    //m_pMidiMappingtype,control,channel));
-//     qDebug() << "MidiObject: type:" << (int)type << "control:" << (int)control << "channel:" << (int)channel;
-    
-    if (midiLearn) {
-        emit(midiEvent(new ConfigValueMidi(type,control,channel), device));
-        return; // Don't pass on controls when in dialog
-    }
-
-    if (debug) {
-        emit(debugInfo(new ConfigValueMidi(type,control,channel), value, device));
-        return; // Don't pass on controls when in dialog
-    }
-    
     MidiMessage inputCommand(type, control, channel);
+
+    if (m_bMidiLearn) {
+        emit(midiEvent(inputCommand));
+        return; // Don't process midi messages further when MIDI learning
+    }
 
     //If there was no control bound to that MIDI command, return;
     if (!m_pMidiMapping->isMidiMessageMapped(inputCommand))
@@ -255,9 +249,9 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
               case MIDI_OPT_BUTTON:
               case MIDI_OPT_SWITCH: category = NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
       }
-      
+
       ControlObject::sync();
-      
+
       p->queueFromMidi(category, newValue);
     }
 
@@ -308,49 +302,16 @@ void MidiObject::sendSysexMsg(unsigned char data[], unsigned int length) {
     qDebug() << "MIDI system exclusive message sending not yet implemented on this platform";
 }
 
-bool MidiObject::getRxStatus(QString device) {
-    return RxEnabled[device];
-}
-
-bool MidiObject::getTxStatus(QString device) {
-    return TxEnabled[device];
-}
-
-void MidiObject::setRxStatus(QString device, bool status) {
-    RxEnabled[device] = status;
-}
-
-void MidiObject::setTxStatus(QString device, bool status) {
-    TxEnabled[device] = status;
-}
-
-bool MidiObject::getDebugStatus() {
-    return debug;
-}
-
-void MidiObject::enableDebug(DlgPrefMidiDevice *dlgDevice) {
-    debug = true;
-    this->dlgDevice = dlgDevice;
-    connect(this, SIGNAL(debugInfo(ConfigValueMidi *, char, QString)), dlgDevice, SLOT(slotDebug(ConfigValueMidi *, char, QString)));
-}
-
-void MidiObject::disableDebug() {
-    debug = false;
-}
-
 bool MidiObject::getMidiLearnStatus() {
-    return midiLearn;
+    return m_bMidiLearn;
 }
 
-void MidiObject::enableMidiLearn(DlgPrefMidiBindings *dlgBindings) {
-    midiLearn = true;
-    this->dlgBindings = dlgBindings;
-    connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(singleLearn(ConfigValueMidi *, QString)));
-    connect(this, SIGNAL(midiEvent(ConfigValueMidi *, QString)), dlgBindings, SLOT(groupLearn(ConfigValueMidi *, QString)));
+void MidiObject::enableMidiLearn() {
+    m_bMidiLearn = true;
 }
 
 void MidiObject::disableMidiLearn() {
-    midiLearn = false;
+    m_bMidiLearn = false;
 }
 
 #ifdef __MIDISCRIPT__

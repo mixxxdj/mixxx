@@ -5,15 +5,18 @@
 /** MidiMessage constructor */
 MidiMessage::MidiMessage(MidiType miditype, int midino, int midichannel)
 {
+    //Register this class with QT so we can use this bad boy in signals/slots.
+    qRegisterMetaType<MidiMessage>("MidiMessage");
+
     m_midiType = miditype;
     m_midiNo = midino;
     m_midiChannel = midichannel;
-    
+
     m_midiByte2On = 0x7F; /** Defaults according to our MIDI XML spec on the wiki */
     m_midiByte2Off = 0x00;
 }
 
-/** Constructor that unserializes a MidiMessage object from a <control> or <output> 
+/** Constructor that unserializes a MidiMessage object from a <control> or <output>
     node block in our MIDI mapping XML file.
 */
 MidiMessage::MidiMessage(QDomElement& parentNode)
@@ -43,15 +46,15 @@ MidiMessage::MidiMessage(QDomElement& parentNode)
     m_midiNo = midiNo.toInt(&ok, 0);
     if (!ok)
         m_midiNo = 0x00;
-        
+
     m_midiChannel = midiChan.toInt(&ok, 0);
     if (!ok)
         m_midiChannel = 1;
-        
+
     m_midiByte2On = midiOn.toInt(&ok, 0);
     if (!ok)
         m_midiByte2On = 0x7F;
-    
+
     m_midiByte2Off = midiOff.toInt(&ok, 0);
     if (!ok)
         m_midiByte2Off = 0x00;
@@ -92,7 +95,7 @@ void MidiMessage::serializeToXML(QDomElement& parentNode, bool isOutputNode) con
     text = nodeMaker.createTextNode(QString("0x%1").arg(this->getMidiChannel(), 0, 16)); //Base 16
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
-    
+
     //If we're writing to an <output> node, include the <on> and <off> MIDI "Byte 2" info
     if (isOutputNode)
     {
@@ -101,11 +104,32 @@ void MidiMessage::serializeToXML(QDomElement& parentNode, bool isOutputNode) con
         text = nodeMaker.createTextNode(QString("0x%1").arg(this->getMidiByte2On(), 0, 16)); //Base 16
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
-    
+
         //Midi Byte 2 for to turn off LEDs
         tagNode = nodeMaker.createElement("off");
         text = nodeMaker.createTextNode(QString("0x%1").arg(this->getMidiByte2Off(), 0, 16)); //Base 16
         tagNode.appendChild(text);
-        parentNode.appendChild(tagNode);        
+        parentNode.appendChild(tagNode);
     }
+}
+
+QString MidiMessage::toString() const
+{
+    QString channel = "Channel: " + QString("%1").arg(this->getMidiChannel()) + "\n";
+    QString type = "Type: ";
+
+    if (this->getMidiType() == MIDI_KEY)
+        type += "Note/Key";
+    else if (this->getMidiType() == MIDI_CTRL)
+        type += "CC";
+    else if (this->getMidiType() == MIDI_PITCH)
+        type += "Pitch";
+    else
+        type += "Unknown";
+    type += "\n";
+
+    QString midino = "Number: " + QString("%1").arg(this->getMidiNo()) + "\n";
+
+    QString hooah = channel + type + midino;
+    return hooah;
 }

@@ -40,7 +40,7 @@ class MidiOutputMappingTableModel;
 class MidiMapping : public QObject
 {
     Q_OBJECT
-    
+
     public:
     /** Constructor also loads & applies the default XML MIDI mapping file */
     MidiMapping(MidiObject &midi_object);
@@ -64,6 +64,7 @@ class MidiMapping : public QObject
     bool addInputControl(MidiType midiType, int midiNo, int midiChannel,
                          QString controlObjectGroup, QString controlObjectKey,
                          MidiOption midiOption);
+    bool addInputControl(MidiMessage message, MixxxControl control);
     void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
     MidiOutputMappingTableModel* getMidiOutputMappingTableModel();
@@ -95,11 +96,19 @@ class MidiMapping : public QObject
     void clearOutputMidiMapping(MixxxControl control);
     void clearOutputMidiMapping(int index, int count);
 
+public slots:
+    void finishMidiLearn(MidiMessage message);
+    void beginMidiLearn(MixxxControl control);
+    void cancelMidiLearn();
+
 signals:
     void inputMappingChanged();
     void inputMappingChanged(int startIndex, int endIndex);
     void outputMappingChanged();
     void outputMappingChanged(int startIndex, int endIndex);
+    void midiLearningStarted();
+    void midiLearningFinished(MidiMessage);
+    void midiLearningFinished();
 
 private:
 #ifdef __MIDISCRIPT__
@@ -116,6 +125,7 @@ private:
     MidiOutputMapping m_outputMapping;
     MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
     MidiOutputMappingTableModel* m_pMidiOutputMappingTableModel;
+    MixxxControl m_controlToLearn;
 };
 
 #endif

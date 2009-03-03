@@ -19,6 +19,7 @@
 
 #include <QtGui>
 #include "ui_dlgprefmidibindingsdlg.h"
+#include "dlgmidilearning.h"
 #include "configobject.h"
 #include "midiobject.h"
 
@@ -38,24 +39,20 @@ public:
 public slots:
     void slotUpdate();
     void slotApply();
-    void slotSingleLearnToggle();
-    void slotGroupLearnToggle();
+    void slotShowMidiLearnDialog();
     void slotImportXML();
     void slotExportXML();
     void slotEnableDevice();
-    
+
     //Input bindings
     void slotClearAllInputBindings();
     void slotRemoveInputBinding();
     void slotAddInputBinding();
-    
-    //Output bindings 
+
+    //Output bindings
     void slotAddOutputBinding();
     void slotClearAllOutputBindings();
     void slotRemoveOutputBinding();
-
-    void singleLearn(ConfigValueMidi *value, QString device);
-    void groupLearn(ConfigValueMidi *value, QString device);
 
 private:
     void setRowBackground(int row, QColor color);
@@ -63,8 +60,6 @@ private:
     void savePreset(QString path);
     QStringList getControlKeyList();
 
-    bool singleLearning;
-    bool groupLearning;
     int currentGroupRow;
     MidiObject &m_rMidi;
     MidiChannelDelegate* m_pMidiChannelDelegate;
@@ -72,8 +67,8 @@ private:
     MidiNoDelegate* m_pMidiNoDelegate;
     QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */
     ConfigObject<ConfigValue> *m_pConfig;
-    ConfigObject<ConfigValueMidi> *m_pMidiConfig;
     QString m_deviceName;
+    DlgMidiLearning* m_pDlgMidiLearning;
 };
 
 #endif /*DLGPREFMIDIBINDINGS_H_*/
