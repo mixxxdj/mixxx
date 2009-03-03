@@ -629,6 +629,9 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     QFile file(filename);
+    if (!QDir(QFileInfo(file).absolutePath()).exists()) {
+        QDir().mkpath(QFileInfo(file).absolutePath());
+    }
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         qDebug() << "Could not write file" << filename << ", don't worry.";

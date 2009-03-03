@@ -626,11 +626,11 @@ env = conf.Finish()
 #Declare the flags for Mixxx's config/track listing files:
 #The quotes are necessary, since these are used directly in C code as strings
 if platform in ('linux', 'bsd'):
-	_mixxx_files = [('BPMSCHEME_FILE','.mixxxbpmscheme.xml'), ('SETTINGS_FILE', '.mixxx.cfg'), ('TRACK_FILE', '.mixxxtrack.xml')]
+        _mixxx_files = [('SETTINGS_PATH','.mixxx/'), ('BPMSCHEME_FILE','mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 elif platform == 'osx': #right now this is the same as linux and bsd, but these files should really go in ~/Library/Applicationsomething like the rest of OS X apps do
-	_mixxx_files = [('BPMSCHEME_FILE', '.mixxxbpmscheme.xml'), ('SETTINGS_FILE', '.mixxx.cfg'), ('TRACK_FILE', '.mixxxtrack.xml')]
+        _mixxx_files = [('SETTINGS_PATH','.mixxx/'), ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 elif platform == 'win32':
-	_mixxx_files = [('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
+        _mixxx_files = [('SETTINGS_PATH','Local Settings/Application Data/Mixxx/'), ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 _mixxx_files = [(k, r'\"' + v + r'\"') for k,v in _mixxx_files] #escape the filepaths, so that they wind up as C-strings to the C-compiler (the \s are so the shell doesn't eat the ")
 env.Append(CPPDEFINES=_mixxx_files)
 del _mixxx_files #safety net

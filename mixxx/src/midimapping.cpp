@@ -350,7 +350,7 @@ void MidiMapping::loadPreset(QDomElement root) {
         }
 
         // Load Script files
-        ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
+        ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
 
         qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
 
