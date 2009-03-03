@@ -2,9 +2,12 @@ CONFIG += debug link_pkgconfig ladspa alsaseqmidi script
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
-    BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
-    SETTINGS_FILE=\\\".mixxx.cfg\\\" \
-    TRACK_FILE=\\\".mixxxtrack.xml\\\"
+    SETTINGS_FILE=\\\"mixxx.cfg\\\" \
+    BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
+    TRACK_FILE=\\\"mixxxtrack.xml\\\"
+win32:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"" # Must include trailing / slash
+!win32:DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
+
 TEMPLATE = app
 TARGET = mixxx
 QT += core \
@@ -49,7 +52,8 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefshoutcastdlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
-    $$UI_DIR/ui_dlgprefvinyldlg.h
+    $$UI_DIR/ui_dlgprefvinyldlg.h \
+    $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \
 #    lib/soundtouch \
@@ -154,9 +158,9 @@ HEADERS += src/analyser.h \
     src/dlgprefcrossfader.h \
     src/dlgprefeq.h \
     src/dlgpreferences.h \
-#    src/dlgprefmidi.h \
     src/dlgprefmidibindings.h \
 #    src/dlgprefmididevice.h \
+    src/dlgprefnomidi.h \
     src/dlgprefplaylist.h \
     src/dlgprefsound.h \
     src/fakemonitor.h \
@@ -325,9 +329,9 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgprefcrossfader.cpp \
     src/dlgprefeq.cpp \
     src/dlgpreferences.cpp \
-#    src/dlgprefmidi.cpp \
     src/dlgprefmidibindings.cpp \
 #    src/dlgprefmididevice.cpp \
+    src/dlgprefnomidi.cpp \
     src/dlgprefplaylist.cpp \
     src/dlgprefsound.cpp \
     src/fakemonitor.cpp \
@@ -447,7 +451,9 @@ FORMS += src/dlgaboutdlg.ui \
 #    src/dlgprefmididlg.ui \
     src/dlgprefplaylistdlg.ui \
     src/dlgprefsounddlg.ui \
-    src/dlgprefvinyldlg.ui
+    src/dlgprefvinyldlg.ui \
+    src/dlgprefnomididlg.ui
+
 RESOURCES += res/mixxx.qrc
 HEADERS += src/recording/defs_recording.h \
     src/recording/enginerecord.h \
