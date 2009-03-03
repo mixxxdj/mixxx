@@ -43,6 +43,7 @@ protected:
     int m_client;
     int m_input;
     int m_queue;
+    bool m_run;
 };
 
 #endif

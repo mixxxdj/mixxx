@@ -73,6 +73,7 @@ MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject()
     // until reconfigured via the Preferences dialog!)
     //devOpen(device);
 
+    m_run = true;
     start();
 }
 
@@ -160,9 +161,15 @@ int MidiObjectALSASeq::getClientPortsList(void)
 
 MidiObjectALSASeq::~MidiObjectALSASeq()
 {
-    if (!snd_seq_free_queue(m_handle, m_queue))
+//     qDebug() << "In ~MidiObjectALSASeq()";
+    m_run = false;
+    wait();
+    
+    shutdown(); // From parent MidiObject
+    
+    if (snd_seq_free_queue(m_handle, m_queue) < 0)
         qDebug() << "snd_seq_free_queue failed";
-    if (!snd_seq_close(m_handle))
+    if (snd_seq_close(m_handle) < 0)
 	qDebug() << "snd_seq_close failed";
 }
 
@@ -255,8 +262,6 @@ void MidiObjectALSASeq::run()
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiObjectALSASeq %1").arg(++id));
     
-    qDebug() << QString("MidiObjectAlsaSeq: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
     MidiObject::run();
 
     struct pollfd * pfds;
@@ -266,7 +271,8 @@ void MidiObjectALSASeq::run()
     npfds = snd_seq_poll_descriptors_count(m_handle, POLLIN);
     pfds = (pollfd *)alloca(sizeof(*pfds) * npfds);
     snd_seq_poll_descriptors(m_handle, pfds, npfds, POLLIN);
-    while(true)
+//     while(true)
+    while(m_run)
     {
         rt = poll(pfds, npfds, 1000);
         if (rt < 0)
@@ -331,7 +337,7 @@ void MidiObjectALSASeq::run()
                 }
             }
         }
-        while (snd_seq_event_input_pending(m_handle, 0) > 0);
+        while (m_run && (snd_seq_event_input_pending(m_handle, 0) > 0));
     }
 }
 

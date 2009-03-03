@@ -51,12 +51,14 @@ class MidiObject : public QThread
 
 public:
     MidiObject();
-    ~MidiObject();
+    virtual ~MidiObject();
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
         virtual void updateDeviceList() {};
     virtual void devClose() = 0;
+    /** Delete MIDIMapping & stop script engine */
+    void shutdown();
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
