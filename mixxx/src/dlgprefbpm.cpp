@@ -291,15 +291,14 @@ void DlgPrefBpm::updateBpmEnabled()
 void DlgPrefBpm::loadBpmSchemes()
 {
     // Verify path for xml track file.
-    QFile scheme(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
-    if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()<1) || (!scheme.exists()))
-    {
-        config->set(ConfigKey("[BPM]","SchemeFile"), QDir::homePath().append("/").append(
-			BPMSCHEME_FILE
-		));
+    QString schemeFileName = config->getValueString(ConfigKey("[BPM]","SchemeFile"));
+    if (schemeFileName.trimmed().isEmpty() | !QFile(schemeFileName).exists() ) {
+        schemeFileName = QDir::homePath().append("/").append(SETTINGS_PATH).append(BPMSCHEME_FILE);
+        qDebug() << "BPM Scheme File ConfigKey not set or file missing... setting to"<< schemeFileName;
+        config->set(ConfigKey("[BPM]","SchemeFile"), schemeFileName);
         config->Save();
     }
-    
+
     QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
     qDebug() << "BpmSchemes::readXML" << location;
     

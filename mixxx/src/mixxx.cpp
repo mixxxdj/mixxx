@@ -89,9 +89,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pTrack = 0;
     prefDlg = 0;
     midi = 0;
-
     // Read the config file from home directory
-    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
+    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -213,7 +212,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
     if ((config->getValueString(ConfigKey("[Playlist]","Listfile")).length()<1) || (!trackfile.exists()))
     {
-        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homePath().append("/").append(TRACK_FILE));
+        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homePath().append("/").append(SETTINGS_PATH).append(TRACK_FILE));
         config->Save();
     }
 

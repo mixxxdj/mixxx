@@ -322,8 +322,15 @@ void DlgBpmTap::slotComplete(TrackInfoObject *tio) {
 void DlgBpmTap::loadBpmSchemes()
 {
     // Verify path for xml track file.
-    QFile scheme(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
-    if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()>0) && (scheme.exists()))
+    QString schemeFileName = config->getValueString(ConfigKey("[BPM]","SchemeFile"));
+    if (schemeFileName.trimmed().isEmpty() || !QFile(schemeFileName).exists()) {
+        schemeFileName = QDir::homePath().append("/").append(SETTINGS_PATH).append(BPMSCHEME_FILE);
+        qDebug() << "BPM Scheme File ConfigKey not set or file missing... setting to"<< schemeFileName;
+        config->set(ConfigKey("[BPM]","SchemeFile"), schemeFileName);
+        config->Save();
+    }
+    QFile scheme(schemeFileName);
+    if (scheme.exists())
     {   
         QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
         qDebug() << "BpmSchemes::readXML" << location;

@@ -212,6 +212,6 @@ void ScriptEngine::saveMacros() {
 }
 
 QFile* ScriptEngine::getMacroFile() {
-	QString path = QDir::home().absFilePath(".mixxxmacro.xml");
+        QString path = QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxmacro.xml");
 	return new QFile(path);
 }
