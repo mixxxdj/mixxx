@@ -53,6 +53,9 @@ MidiScriptEngine::~MidiScriptEngine() {
     // to signals.
     m_connectedControls.clear();
 
+    // Wait for the thread to terminate
+    wait();
+
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
     if(m_pEngine != NULL) {

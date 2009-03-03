@@ -65,6 +65,8 @@ MidiObjectOSS::MidiObjectOSS(QString device) : MidiObject(device)
 
 MidiObjectOSS::~MidiObjectOSS()
 {
+    stop();
+    shutdown(); // From parent MidiObject
     // Close device and delete buffer
     devClose();
     delete [] buffer;

@@ -39,8 +39,13 @@ MidiObjectWin::MidiObjectWin() : MidiObject()
 
 MidiObjectWin::~MidiObjectWin()
 {
+    shutdown(); // From parent MidiObject
     // Close devices and delete buffer
 //    while (openDevices.count() > 0) devClose(openDevices.takeFirst());
+    while (openDevices.count() > 0) {
+        openDevices.removeFirst();
+        devClose();
+    }
 }
 
 void MidiObjectWin::updateDeviceList() {
