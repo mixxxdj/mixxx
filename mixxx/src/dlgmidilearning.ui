@@ -1,0 +1,269 @@
+<ui version="4.0" >
+ <class>DlgMidiLearning</class>
+ <widget class="QDialog" name="DlgMidiLearning" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>366</width>
+    <height>271</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>MIDI Learning Wizard</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QStackedWidget" name="stackedWidget" >
+     <property name="currentIndex" >
+      <number>2</number>
+     </property>
+     <widget class="QWidget" name="page" >
+      <layout class="QGridLayout" name="gridLayout_2" >
+       <item row="0" column="0" colspan="3" >
+        <widget class="QLabel" name="label_2" >
+         <property name="font" >
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text" >
+          <string>Welcome to the MIDI Learning Wizard</string>
+         </property>
+         <property name="alignment" >
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3" >
+        <widget class="QLabel" name="label_3" >
+         <property name="text" >
+          <string>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</string>
+         </property>
+         <property name="wordWrap" >
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" >
+        <spacer name="horizontalSpacer" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>116</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1" >
+        <widget class="QPushButton" name="pushButtonBegin" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text" >
+          <string>Begin</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" >
+        <spacer name="horizontalSpacer_2" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>116</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_2" >
+      <widget class="QLabel" name="label" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>0</y>
+         <width>161</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Please tweak the control for:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonPrevious" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>70</x>
+         <y>150</y>
+         <width>80</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Previous</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonSkip" >
+       <property name="geometry" >
+        <rect>
+         <x>190</x>
+         <y>150</y>
+         <width>80</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Skip</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelMixxxControl" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>341</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font" >
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text" >
+        <string>Mixxx Control</string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelMappedTo" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>341</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Successfully mapped to: </string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>190</y>
+         <width>321</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Press spacebar to proceed or skip.</string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_3" >
+      <widget class="QLabel" name="label_4" >
+       <property name="geometry" >
+        <rect>
+         <x>60</x>
+         <y>30</y>
+         <width>54</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Congrats</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5" >
+       <property name="geometry" >
+        <rect>
+         <x>140</x>
+         <y>20</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>u r teh uber l33t</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7" >
+       <property name="geometry" >
+        <rect>
+         <x>20</x>
+         <y>60</y>
+         <width>301</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>You will be even l33ter if you go into dlgmidilearning.cpp and add the rest of the basic controls in Mixxx's GUI to the learning thing.</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8" >
+       <property name="geometry" >
+        <rect>
+         <x>20</x>
+         <y>130</y>
+         <width>281</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Also, I was too lazy to make spacebar actually work. Should be really easy, just set up a QShortcut or something.</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonFinish" >
+       <property name="geometry" >
+        <rect>
+         <x>100</x>
+         <y>200</y>
+         <width>141</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Finito!</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+  <zorder>buttonBox</zorder>
+  <zorder>stackedWidget</zorder>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

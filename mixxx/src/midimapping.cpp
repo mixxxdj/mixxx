@@ -58,20 +58,20 @@ MidiMapping::~MidiMapping() {
 #endif
 }
 
-/* ============================== MIDI Input Mapping Modifiers 
+/* ============================== MIDI Input Mapping Modifiers
                                     (Part of QT MVC wrapper)
 */
 
 /*
  * Return the total number of current input mappings.
- */ 
+ */
 int MidiMapping::numInputMidiMessages() {
     return m_inputMapping.size();
 }
 
 /*
  * Return true if the index corresponds to an input mapping key.
- */ 
+ */
 bool MidiMapping::isInputIndexValid(int index) {
     if(index < 0 || index >= numInputMidiMessages()) {
         return false;
@@ -166,20 +166,20 @@ void MidiMapping::clearInputMidiMapping(int index, int count) {
 
 
 
-/* ============================== MIDI ***Output*** Mapping Modifiers 
+/* ============================== MIDI ***Output*** Mapping Modifiers
                                     (Part of QT MVC wrapper)
 */
 
 /*
  * Return the total number of current output mappings.
- */ 
+ */
 int MidiMapping::numOutputMixxxControls() {
     return m_outputMapping.size();
 }
 
 /*
  * Return true if the index corresponds to an input mapping key.
- */ 
+ */
 bool MidiMapping::isOutputIndexValid(int index) {
     if(index < 0 || index >= numOutputMixxxControls()) {
         return false;
@@ -362,7 +362,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             if(m_pScriptEngine->hasErrors(curScriptFileName)) {
                 qDebug() << "Errors occured while loading " << curScriptFileName;
             }
-            
+
         }
 
         // Call each script's init function if it exists
@@ -391,7 +391,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             MixxxControl mixxxControl(control);
 #ifdef __MIDISCRIPT__
             // Verify script functions are loaded
-            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT && 
+            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
                     scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
                 // Need some way to signal to the dialog that this control will not be bound instead of just dying
                 qCritical() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts.";
@@ -400,7 +400,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             //Add to the input mapping.
             setInputMidiMapping(midiMessage, mixxxControl);
             /*Old code: m_inputMapping.insert(midiMessage, mixxxControl);
-              Reason why this is bad: Don't want to access this directly because the 
+              Reason why this is bad: Don't want to access this directly because the
                                       model doesn't get notified about the update */
 #ifdef __MIDISCRIPT__
             }
@@ -419,18 +419,18 @@ void MidiMapping::loadPreset(QDomElement root) {
             MixxxControl mixxxControl(output, true);
 
             //Add to the output mapping.
-            setOutputMidiMapping(mixxxControl, midiMessage);            
+            setOutputMidiMapping(mixxxControl, midiMessage);
             /*Old code: m_outputMapping.insert(mixxxControl, midiMessage);
-              Reason why this is bad: Don't want to access this directly because the 
+              Reason why this is bad: Don't want to access this directly because the
                                       model doesn't get notified about the update */
-                                     
+
             output = output.nextSiblingElement("output");
         }
 
-        qDebug() << "MidiMapping: Output parsed!";        
+        qDebug() << "MidiMapping: Output parsed!";
         controller = controller.nextSiblingElement("controller");
     }
-    
+
 }   // END loadPreset(QDomElement)
 
 /* -------- ------------------------------------------------------
@@ -523,7 +523,7 @@ void MidiMapping::clearPreset() {
               QDomElement scriptFile = sucksBalls.createElement("file");
               scriptFile.setAttribute("filename", filename);
               scriptFile.setAttribute("functionprefix", functionPrefix);
-              
+
               //Add the XML dom element to the right spot in the XML document.
               addMidiScriptInfo(scriptFile, wtfbbqdevicename);
           }
@@ -547,7 +547,7 @@ void MidiMapping::clearPreset() {
           //Add the control node we just created to the XML document in the proper spot
          addControl(controlNode, wtfbbqdevicename); //FIXME: Remove this device shit until we have multiple device support.
      }
-     
+
      //Iterate over all of the control/command pairs in the OUTPUT mapping
      QMapIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
      while (outIt.hasNext()) {
@@ -654,13 +654,19 @@ bool MidiMapping::addInputControl(MidiType midiType, int midiNo, int midiChannel
                                   QString controlObjectGroup, QString controlObjectKey,
                                   MidiOption midiOption)
 {
+    return addInputControl(MidiMessage(midiType, midiNo, midiChannel),
+                           MixxxControl(controlObjectGroup, controlObjectKey,
+                                        midiOption));
+}
+
+bool MidiMapping::addInputControl(MidiMessage message, MixxxControl control)
+{
     //TODO: Check if mapping already exists for this MidiMessage.
 
     //Add to the input mapping.
-    m_inputMapping.insert(MidiMessage(midiType, midiNo, midiChannel),
-                          MixxxControl(controlObjectGroup, controlObjectKey,
-                                       midiOption));
+    m_inputMapping.insert(message, control);
     return true; //XXX is this right? should this be returning whether the add happened successfully?
+
 }
 
 void MidiMapping::removeInputMapping(MidiType midiType, int midiNo, int midiChannel)
@@ -783,4 +789,39 @@ double MidiMapping::ComputeValue(MidiOption midioption, double _prevmidivalue, d
     }
 
     return _newmidivalue;
+}
+
+void MidiMapping::finishMidiLearn(MidiMessage message)
+{
+    //We've received a MidiMessage that should be mapped onto some control. When beginMidiLearn()
+    //was called, we were given the control that should be mapped, so let's connect the message
+    //to the saved control and thus "create" the mapping between the two.
+    addInputControl(message, m_controlToLearn);
+
+    //Reset the saved control.
+    m_controlToLearn = MixxxControl();
+
+    qDebug() << "MidiMapping: Learning finished!";
+
+    //Notify the prefs dialog that we've finished doing a MIDI learn.
+    emit(midiLearningFinished(message));
+    emit(midiLearningFinished());
+}
+
+void MidiMapping::beginMidiLearn(MixxxControl control)
+{
+    //Save the internal control we're supposed to map/remap. After this we have
+    //to wait for the user to push a button on their controller, which should
+    //give us a MidiMessage via finishMidiLearn().
+    m_controlToLearn = control;
+
+    qDebug() << "MidiMapping: Learning started!";
+
+    //Notify the MIDI device class that it should feed us the next MIDI message...
+    emit(midiLearningStarted());
+}
+
+void MidiMapping::cancelMidiLearn()
+{
+    m_controlToLearn = MixxxControl();
 }
