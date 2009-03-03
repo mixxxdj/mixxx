@@ -55,7 +55,7 @@ public:
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
-        virtual void updateDeviceList() {};
+    virtual void updateDeviceList() {};
     virtual void devClose() = 0;
     /** Delete MIDIMapping & stop script engine */
     void shutdown();

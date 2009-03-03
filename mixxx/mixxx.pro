@@ -5,7 +5,8 @@ DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptst
     SETTINGS_FILE=\\\"mixxx.cfg\\\" \
     BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
     TRACK_FILE=\\\"mixxxtrack.xml\\\"
-win32:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"" # Must include trailing / slash
+# win32:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"" # Must include trailing / slash
+win32:QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"\"" # The above line used to work, now it doesn't but this does.
 !win32:DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
 
 TEMPLATE = app
