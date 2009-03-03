@@ -449,15 +449,14 @@ if platform == 'bsd':
 	env.Append(LIBS=['ogg', 'vorbis']) #why do we need to do this on OpenBSD and not on Linux? if we don't then CheckLib("vorbisfile") fails
 
 #Check for dependencies if we're not doing a clean...
-if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
-	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
-
+#if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
+conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
 
 #TODO: Add all of the other configure checks as custom_tests properly.
 	
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
-#XXX all these Exit(1) calls should be turned into a list of libs to look for
+#XXX all these Exit(1) calls should be turned into a list of libs to look for and then a loop that does the exit if any(conf.CheckLib(lib) for lib in list)
 if not conf.CheckLib('portaudio'):
 	print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 	Exit(1)
