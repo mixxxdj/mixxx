@@ -162,25 +162,30 @@ BpmDetect::~BpmDetect()
 /// poor-man's anti-alias filtering, but it's not so critical in this kind of application
 /// (it'd also be difficult to design a high-quality filter with steep cut-off at very
 /// narrow band)
-int BpmDetect::decimate(SAMPLETYPE * dest, const SAMPLETYPE * src, int numsamples)
+unsigned int BpmDetect::decimate(SAMPLETYPE * dest, const SAMPLETYPE * src, int numsamples)
 {
-    int count, outcount;
+    unsigned int count, outcount;
     LONG_SAMPLETYPE out;
 
     assert(decimateBy != 0);
     outcount = 0;
+    
+    qDebug() << "we're going to have " << numsamples/decimateBy << "outputs after decimating because (" << numsamples << "," << decimateBy << ")";
+    
     for (count = 0; count < numsamples; count++)
     {
-//        qDebug() << "======"<< "count:"<< count << "numsamples:"<<numsamples << "outcount:"<< outcount << "decimateSum:"<< decimateSum << "decimateCount:"<< decimateCount;
+        //qDebug() << "======"<< "count:"<< count << "numsamples:"<<numsamples << "outcount:"<< outcount << "decimateSum:"<< decimateSum << "decimateCount:"<< decimateCount;
         decimateSum += src[count];
-
+        
         decimateCount++;
-        if (decimateCount >= decimateBy)
+        
+        if (count % decimateBy == 0)
         {
+        
             // Store every Nth sample only
             out = (LONG_SAMPLETYPE)(decimateSum / decimateBy);
             decimateSum = 0;
-            decimateCount = 0;
+            //decimateCount = 0;
 #ifdef INTEGER_SAMPLES
             // check ranges for sure (shouldn't actually be necessary)
             if (out > 32767)
@@ -192,10 +197,18 @@ int BpmDetect::decimate(SAMPLETYPE * dest, const SAMPLETYPE * src, int numsample
                 out = -32768;
             }
 #endif // INTEGER_SAMPLES
+
             dest[outcount] = (SAMPLETYPE)out;
             outcount++;
+            assert(outcount < DECIMATED_BLOCK_SAMPLES);
         }
     }
+    
+    
+    	qDebug() << "$$there are " << channels << " channels";
+    	qDebug() << "$$RMSVolumeAccu is " << RMSVolumeAccu;
+    	qDebug() << "$$outcount = " << outcount;
+    	
     return outcount;
 }
 
@@ -235,13 +248,14 @@ void BpmDetect::updateXCorr(int process_samples)
 // Calculates envelope of the sample data
 void BpmDetect::calcEnvelope(SAMPLETYPE * samples, int numsamples)
 {
+
     const float decay = 0.7f;               // decay constant for smoothing the envelope
     const float norm = (1 - decay);
 
     int i;
     LONG_SAMPLETYPE out;
     float val;
-
+    
     for (i = 0; i < numsamples; i++)
     {
         // calc average RMS volume
@@ -272,6 +286,9 @@ void BpmDetect::calcEnvelope(SAMPLETYPE * samples, int numsamples)
 void BpmDetect::inputSamples(SAMPLETYPE * samples, int numSamples)
 {
     SAMPLETYPE decimated[DECIMATED_BLOCK_SAMPLES];
+    
+    	qDebug() << "||there are " << channels << " channels";
+    	qDebug() << "||RMSVolumeAccu is " << RMSVolumeAccu;
 
     // convert from stereo to mono if necessary
     if (channels == 2)
@@ -284,9 +301,20 @@ void BpmDetect::inputSamples(SAMPLETYPE * samples, int numSamples)
         }
     }
 
+
+
+    	qDebug() << "--there are " << channels << " channels";
+    	qDebug() << "--RMSVolumeAccu is " << RMSVolumeAccu;
+
     // decimate
+    qDebug() << "--numSamples = " << numSamples;
     numSamples = decimate(decimated, samples, numSamples);
 
+    qDebug() << "@@numSamples = " << numSamples;
+    	qDebug() << "@@there are " << channels << " channels";
+    	qDebug() << "@@RMSVolumeAccu is " << RMSVolumeAccu;
+
+    
     // envelope new samples and add them to buffer
     calcEnvelope(decimated, numSamples);
     buffer->putSamples(decimated, numSamples);
