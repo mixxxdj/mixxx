@@ -179,7 +179,7 @@ QStringList MidiObject::getOpenDevices()
    Input:   Values as received from MIDI
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::receive(MidiCategory category, char channel, char control, char value, QString device)
+void MidiObject::receive(MidiCategory status, char channel, char control, char value, QString device)
 {
     //qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
     // if (!RxEnabled[device]) return;
@@ -187,10 +187,10 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
 
-    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)category)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
+    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
 
     MidiType type = MIDI_EMPTY;
-    switch (category) {
+    switch (status) {
     case NOTE_OFF:
         // BJW: Not clear why this is done.
         value = 1;
@@ -215,9 +215,12 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
         return; // Don't process midi messages further when MIDI learning
     }
 
-    //If there was no control bound to that MIDI command, return;
-    if (!m_pMidiMapping->isMidiMessageMapped(inputCommand))
-        return;
+    // Only check for a mapping if the status byte is one we know how to handle
+    if (type == MIDI_KEY || type == MIDI_CTRL) {
+        // If there was no control bound to that MIDI command, return;
+        if (!m_pMidiMapping->isMidiMessageMapped(inputCommand))
+            return;
+    }
 
     MixxxControl mixxxControl = m_pMidiMapping->getInputMixxxControl(inputCommand);
 //         qDebug() << "MidiObject: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
@@ -230,7 +233,7 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
 //         qDebug() << "MidiObject: Calling script function" << configKey.item;
 
-        if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, category)) {
+        if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, status)) {
             qDebug() << "MidiObject: Invalid script function" << configKey.item;
         }
         return;
@@ -244,15 +247,15 @@ void MidiObject::receive(MidiCategory category, char channel, char control, char
       double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
       qDebug() << "value coming out ComputeValue: " << newValue;
 
-      // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi mapping is <button> we override the Midi 'category' appropriately.
+      // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi mapping is <button> we override the Midi 'status' appropriately.
       switch (mixxxControl.getMidiOption()) {
               case MIDI_OPT_BUTTON:
-              case MIDI_OPT_SWITCH: category = NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
+              case MIDI_OPT_SWITCH: status = NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
       }
 
       ControlObject::sync();
 
-      p->queueFromMidi(category, newValue);
+      p->queueFromMidi(status, newValue);
     }
 
     return;
