@@ -385,7 +385,9 @@ MixxxApp::~MixxxApp()
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
-//    qDebug() << "delete midi";
+//     qDebug() << "delete midi";
+    qDebug() << "delete midi, " << qTime.elapsed();
+    delete midi;
 //    qDebug() << "delete midiconfig";
 
     qDebug() << "delete view, " << qTime.elapsed();

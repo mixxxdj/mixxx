@@ -55,7 +55,7 @@ MidiObject::MidiObject()
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
     m_pMidiMapping = new MidiMapping(*this);
-    m_pMidiMapping->loadInitialPreset();
+//     m_pMidiMapping->loadInitialPreset();
 #endif
 
 }
@@ -69,10 +69,25 @@ MidiObject::~MidiObject()
 {
 }
 
+/* -------- ------------------------------------------------------
+   Purpose: Deletes MIDI mapping and stops script engine, to be called
+            by the child destructor
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiObject::shutdown()
+{
+    qDebug() << "MidiObject: Deleting MidiMapping...";
+    delete m_pMidiMapping;
+#ifdef __MIDISCRIPT__
+    qDebug() << "MidiObject: Deleting MIDI script engine...";
+    delete m_pScriptEngine;
+#endif
+}
+
 #ifdef __MIDISCRIPT__
 /* -------- ------------------------------------------------------
-   Purpose: Allows the child MIDI thread to create the ScriptEngine
-            & load the script files
+   Purpose: Loads the script files & executes their init functions
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
@@ -81,6 +96,8 @@ void MidiObject::run()
 
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiObject %1").arg(++id));
+    
+    m_pMidiMapping->loadInitialPreset();    // Do this here so the script's init() function can run correctly
 }
 #endif
 
@@ -270,9 +287,8 @@ void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
     sendShortMsg(word);
 }
 
-void MidiObject::sendShortMsg(unsigned int /* word */) {
-    // This warning comes out rather frequently now we're using LEDs with VuMeters
-    // qDebug() << "MIDI message sending not implemented yet on this platform";
+void MidiObject::sendShortMsg(unsigned int word) {
+    qDebug() << "MIDI short message sending not yet implemented on this platform";
 }
 
 void MidiObject::sendSysexMsg(QList<int> data, unsigned int length) {

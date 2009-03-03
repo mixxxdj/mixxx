@@ -43,6 +43,19 @@ MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(mid
 }
 
 MidiMapping::~MidiMapping() {
+#ifdef __MIDISCRIPT__
+    // Call each script's shutdown function if it exists
+    QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
+    while (prefixIt.hasNext()) {
+        QString shutName = prefixIt.next();
+        if (shutName!="") {
+            shutName.append(".shutdown");
+            qDebug() << "MidiMapping: Executing" << shutName;
+            if (!m_pScriptEngine->execute(shutName))
+                qWarning() << "MidiMapping: No" << shutName << "function in script";
+        }
+    }
+#endif
 }
 
 /* ============================== MIDI Input Mapping Modifiers 
