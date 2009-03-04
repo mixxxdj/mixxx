@@ -31,9 +31,9 @@ CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb wi
         message(found gdbmacros.cpp relative to QTDIR)
         SOURCES += $$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp
     } else {
-        exists($$(HOME)/qtcreator-0.9.2/share/qtcreator/gdbmacros/gdbmacros.cpp) {
-            message(found gdbmacros.cpp relative to $$(HOME)/qtcreator-0.9.2)
-            SOURCES += $$(HOME)/qtcreator-0.9.2/share/qtcreator/gdbmacros/gdbmacros.cpp
+        exists($$(HOME)/qtcreator-1.0.0/share/qtcreator/gdbmacros/gdbmacros.cpp) {
+            message(found gdbmacros.cpp relative to $$(HOME)/qtcreator-1.0.0)
+            SOURCES += $$(HOME)/qtcreator-1.0.0/share/qtcreator/gdbmacros/gdbmacros.cpp
         }
     }
 }
