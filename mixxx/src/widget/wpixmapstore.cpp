@@ -46,7 +46,7 @@ QPixmap * WPixmapStore::getPixmap(const QString &fileName)
     if (loader != 0) {
         QImage * img = loader->getImage(fileName);
 
-        info->pixmap = new QPixmap(*img);
+        info->pixmap = new QPixmap(QPixmap::fromImage(*img)); //ack, hacky; there must be a better way (we're using pixmap pointers, but perhaps qt4 expects that you'll just copy?) --kousu 2009/03	
         // No longer need the original QImage (I hope...) - adam_d
         delete img;
     } else {
@@ -62,8 +62,9 @@ QPixmap * WPixmapStore::getPixmap(const QString &fileName)
 QPixmap * WPixmapStore::getPixmapNoCache(const QString& fileName) {
     if (loader != 0) {
         QImage * img = loader->getImage(fileName);
-        return new QPixmap(*img);
+        QPixmap r = QPixmap::fromImage(*img);
         delete img;
+        return new QPixmap(r); //ack, hacky; there must be a better way (we're using pixmap pointers, but perhaps qt4 expects that you'll just copy?) --kousu 2009/03
     } else {
         return new QPixmap(fileName);
     }

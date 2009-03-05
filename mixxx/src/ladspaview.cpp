@@ -19,8 +19,9 @@
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 
-LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
+LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
 {
+    setObjectName("LADSPA");
     m_pGridLayout = new QGridLayout();
     this->setLayout(m_pGridLayout);
 

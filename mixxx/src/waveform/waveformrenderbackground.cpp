@@ -30,7 +30,7 @@ void WaveformRenderBackground::resize(int w, int h) {
     m_iWidth = w;
     m_iHeight = h;
     // Need to repaint the background if we've been resized.
-    m_backgroundPixmap.resize(w,h);
+    m_backgroundPixmap = QPixmap(w,h);
     m_bRepaintBackground = true;
 }
 
