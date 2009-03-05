@@ -23,7 +23,7 @@ class WNumberRate : public WNumber
 {
     Q_OBJECT
 public:
-    WNumberRate(const char *group, QWidget *parent=0, const char *name=0);
+    WNumberRate(const char *group, QWidget *parent=0);
     ~WNumberRate();
     void setValue(double dValue);
 

@@ -30,7 +30,7 @@ class WLabel : public WWidget
 {
     Q_OBJECT
 public:
-    WLabel(QWidget *parent=0, const char *name=0);
+    WLabel(QWidget *parent=0);
     ~WLabel();
     void setup(QDomNode node);
     void move(int, int);

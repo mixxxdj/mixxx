@@ -77,7 +77,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
     if(!bVisualWaveform) {
         qDebug() << "WaveformViewerFactory :: Creating new simple waveform";
         // Preference is for simple or regular, for now just simple.
-        WVisualSimple *simple = new WVisualSimple(group,parent, 0);
+        WVisualSimple *simple = new WVisualSimple(group,parent);
         m_simpleViewers.append(simple);
         m_viewers.append(simple);
         ret = WAVEFORM_SIMPLE;
