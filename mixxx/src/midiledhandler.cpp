@@ -17,8 +17,9 @@ MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject & midi, do
     m_cobj = ControlObject::getControl(ConfigKey(group, key));
 
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
-    // Q_ASSERT(m_cobj);
-    Q_ASSERT_X(m_cobj, "MidiLedHandler", "Invalid config group: '" + group + "' name:'" + key + "'");
+    //Q_ASSERT(m_cobj);
+    QByteArray err_tmp = QString("Invalid config group: '%1', name: '%2'").arg(group).arg(key).toAscii();
+    Q_ASSERT_X(m_cobj, "MidiLedHandler", err_tmp);
 
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));

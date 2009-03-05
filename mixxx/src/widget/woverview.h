@@ -31,7 +31,7 @@ class WOverview : public WWidget
 {
     Q_OBJECT
 public:
-    WOverview(QWidget *pParent=0, const char *pName=0);
+    WOverview(QWidget *parent=NULL);
     ~WOverview();
     void setup(QDomNode node);
     void setData(Q3MemArray<char> *pWaveformSummary, Q3ValueList<long> *pSegmentation, long liSampleDuration);

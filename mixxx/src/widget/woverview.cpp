@@ -22,7 +22,7 @@
 #include "mathstuff.h"
 #include <qapplication.h>
 
-WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, pName)
+WOverview::WOverview(QWidget * parent) : WWidget(parent)
 {
     m_pWaveformSummary = 0;
     m_pSegmentation = 0;

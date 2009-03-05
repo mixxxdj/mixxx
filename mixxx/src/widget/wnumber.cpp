@@ -22,7 +22,7 @@
 //Added by qt3to4:
 #include <QLabel>
 
-WNumber::WNumber(QWidget * parent, const char * name ) : WWidget(parent,name)
+WNumber::WNumber(QWidget * parent) : WWidget(parent)
 {
     m_pLabel = new QLabel(parent);
     m_qsText = "";

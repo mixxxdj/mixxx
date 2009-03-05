@@ -340,7 +340,7 @@ void TrackInfoObject::parseFilename()
 {
     m_qMutex.lock();
 
-    if (m_sFilename.find('-') != -1)
+    if (m_sFilename.indexOf('-') != -1)
     {
         m_sArtist = m_sFilename.section('-',0,0).trimmed(); // Get the first part
         m_sTitle = m_sFilename.section('-',1,1); // Get the second part
@@ -363,7 +363,7 @@ void TrackInfoObject::parseFilename()
     m_sComment = QString("");
 
     // Find the type
-    m_sType = m_sFilename.section(".",-1).lower().trimmed();
+    m_sType = m_sFilename.section(".",-1).toLower().trimmed();
 
     m_qMutex.unlock();
 }

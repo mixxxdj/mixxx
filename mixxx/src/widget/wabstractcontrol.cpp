@@ -15,8 +15,8 @@
 
 #include "wabstractcontrol.h"
 
-WAbstractControl::WAbstractControl(QWidget *parent, const char *name, float defaultValue)
-    : WWidget(parent,name)
+WAbstractControl::WAbstractControl(QWidget *parent, float defaultValue)
+    : WWidget(parent)
 {
     m_fDefaultValue = defaultValue;
     m_bRightButtonPressed = false;

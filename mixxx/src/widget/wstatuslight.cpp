@@ -24,7 +24,7 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WStatusLight::WStatusLight(QWidget * parent, const char * name) : WWidget(parent,name)
+WStatusLight::WStatusLight(QWidget * parent) : WWidget(parent)
 {
     m_pPixmapBack = 0;
     m_pPixmapSL = 0;

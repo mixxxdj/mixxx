@@ -14,7 +14,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
 
-WNumberPos::WNumberPos(const char * group, QWidget * parent, const char * name) : WNumber(parent, name)
+WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
 {
     m_dDuration = 0.;
     m_dOldValue = 0.;

@@ -28,7 +28,7 @@
 QString WWidget::m_qPath;
 ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
-WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidget(parent, name, flags)
+WWidget::WWidget(QWidget * parent, Qt::WFlags flags) : QWidget(parent, flags)
 {
     
     m_fValue = 0.;
