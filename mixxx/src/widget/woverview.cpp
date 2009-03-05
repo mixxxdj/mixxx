@@ -134,7 +134,7 @@ void WOverview::redrawPixmap() {
         return;
 
     // Erase background
-    m_pScreenBuffer->fill(this->backgroundColor());
+    m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
     
     QPainter paint(m_pScreenBuffer);
 

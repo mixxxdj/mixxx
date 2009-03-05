@@ -88,7 +88,13 @@ void WVisualSimple::setup(QDomNode node)
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
-    setBackgroundColor(WSkinColor::getCorrectColor(c));
+    
+    //the simple view seems to look fine even if we never set a background colour at all
+    //but since the code used to do it, we'll continue to do it --kousu 2009/03
+    QPalette palette = this->palette();
+    //setBackgroundColor(WSkinColor::getCorrectColor(c));
+    palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
+    setPalette(palette);
 
     colorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     colorSignal = WSkinColor::getCorrectColor(colorSignal);
