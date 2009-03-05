@@ -40,7 +40,7 @@ WWidget::WWidget(QWidget * parent, Qt::WFlags flags) : QWidget(parent, flags)
 
     setAttribute(Qt::WA_StaticContents);
     setFocusPolicy(Qt::ClickFocus);
-    setBackgroundMode(Qt::NoBackground);
+    //setBackgroundMode(Qt::NoBackground); //this is deprecated, and commenting it out doesn't seem to change anything -kousu 2009/03
 }
 
 WWidget::~WWidget()

@@ -42,14 +42,20 @@ void WNumber::setup(QDomNode node)
     setNumDigits(selectNodeInt(node, "NumberOfDigits"));
 
     // Colors
+    QPalette palette = this->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    
     if(!WWidget::selectNode(node, "BgColor").isNull()) {
         m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+        //m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+        palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
         m_pLabel->setAutoFillBackground(true);
     }
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
-
+    //m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
+    palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
+    
+    setPalette(palette);
+    
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
