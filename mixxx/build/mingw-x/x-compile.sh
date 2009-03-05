@@ -5,6 +5,7 @@
 
 if [ -z "$QTDIR" ]; then
   read -p "Enter the mountpoint/path to your Windows QTDIR: " QTDIR
+  export QTDIR=$QTDIR
 fi
 
 cd `dirname $0`
