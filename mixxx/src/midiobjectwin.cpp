@@ -24,7 +24,6 @@
 MidiObjectWin::MidiObjectWin() : MidiObject()
 {
 	updateDeviceList();
-
     /*
        // Don't open the device yet, it gets opened via dlgprefmidi soon
        // This is how the ALSA one does it anyway... -Adam
@@ -112,6 +111,8 @@ void MidiObjectWin::devOpen(QString device)
     res = midiInStart(handle);
     if (res != MMSYSERR_NOERROR)
         qDebug() << "Error starting midi.";
+
+    MidiObject::run();  // Load the initial MIDI preset
 }
 
 void MidiObjectWin::devClose()
@@ -134,7 +135,7 @@ void MidiObjectWin::run()
     QThread::currentThread()->setObjectName(QString("MidiObjectWin %1").arg(++id));
     
 //    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+
     MidiObject::run();
 }
 

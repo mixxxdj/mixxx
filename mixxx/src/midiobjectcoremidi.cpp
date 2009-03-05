@@ -99,6 +99,8 @@ void MidiObjectCoreMidi::devOpen(QString device)
   
   // Should follow selected device !!!!
   openDevices.append(device);
+
+  MidiObject::run();  // Load the initial MIDI preset
 }
 
 void MidiObjectCoreMidi::devClose(MIDIEndpointRef ref) {
@@ -126,7 +128,7 @@ void MidiObjectCoreMidi::run()
   QThread::currentThread()->setObjectName(QString("MidiObjectCoreMidi %1").arg(++id));
   
   //qDebug() << QString("MidiObjectCoreMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-  // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+
   MidiObject::run();
 }
 
