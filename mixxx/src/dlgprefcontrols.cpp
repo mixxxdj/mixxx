@@ -340,7 +340,10 @@ void DlgPrefControls::slotSetRateDir(int)
 void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
-    textLabel->setText(tr("Restart Mixxx before the change of visuals will take effect."));
+    QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
+    //textLabel->setText(
+      tr("Restart Mixxx before the change of visuals will take effect.")
+      );
 }
 
 void DlgPrefControls::slotSetCueDefault(int)
@@ -376,7 +379,9 @@ void DlgPrefControls::slotSetTooltips(int)
     //to refresh it during each Tooltip event (I think), which is why we require a restart.
 
     
-    textLabel->setText(tr("Mixxx must be restarted before the changes will take effect."));
+    QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
+    //textLabel->setText(
+      tr("Mixxx must be restarted before the changes will take effect."));
     
 
 //    if (ComboBoxTooltips->currentIndex()==0)
