@@ -5,11 +5,16 @@ DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptst
     SETTINGS_FILE=\\\"mixxx.cfg\\\" \
     BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
     TRACK_FILE=\\\"mixxxtrack.xml\\\"
-# win32:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"" # Must include trailing / slash
-win32:win32-g++:QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"\"" # The above line used to work, now it doesn't but this does.
-# i586-mingw32msvc-g++
-win32:!win32-g++:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
-!win32:DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
+
+win32-g++ {
+  QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"\"" # Bit ugly, but you can thank MS-DOS shell for f-ing up the normal way of parsing.
+} else {
+  win32 { # i586-mingw32msvc-g++ -- cross compiling
+    DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
+  } else {
+    DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
+  }
+}
 
 TEMPLATE = app
 TARGET = mixxx
@@ -22,13 +27,20 @@ QT += core \
     opengl \
     script \
     qt3support
-DESTDIR = bin
-win32:!win32-g++:DESTDIR = bin-win32
-BINDIR = $$DESTDIR
-UI_DIR = $$BINDIR/ui
-RCC_DIR = $$BINDIR/rcc
-MOC_DIR = $$BINDIR/moc
-OBJECTS_DIR = $$BINDIR/obj
+
+unix {
+  win32 { # This should only happen when cross compiling...
+    DESTDIR = bin-win32
+  }
+} else {
+    DESTDIR = bin
+}
+
+BUILDDIR = $$DESTDIR
+UI_DIR = $$BUILDDIR/ui
+RCC_DIR = $$BUILDDIR/rcc
+MOC_DIR = $$BUILDDIR/moc
+OBJECTS_DIR = $$BUILDDIR/obj
 
 CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
     exists($$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp) {
