@@ -6,7 +6,9 @@ DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptst
     BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
     TRACK_FILE=\\\"mixxxtrack.xml\\\"
 # win32:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"" # Must include trailing / slash
-win32:QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"\"" # The above line used to work, now it doesn't but this does.
+win32:win32-g++:QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"\"" # The above line used to work, now it doesn't but this does.
+# i586-mingw32msvc-g++
+win32:!win32-g++:DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
 !win32:DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
 
 TEMPLATE = app
@@ -21,10 +23,12 @@ QT += core \
     script \
     qt3support
 DESTDIR = bin
-UI_DIR = bin/ui
-RCC_DIR = bin/rcc
-MOC_DIR = bin/moc
-OBJECTS_DIR = bin/obj
+win32:!win32-g++:DESTDIR = bin-win32
+BINDIR = $$DESTDIR
+UI_DIR = $$BINDIR/ui
+RCC_DIR = $$BINDIR/rcc
+MOC_DIR = $$BINDIR/moc
+OBJECTS_DIR = $$BINDIR/obj
 
 CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
     exists($$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp) {
@@ -432,10 +436,10 @@ win32 {
 
 # Fidlib
 SOURCES += lib/fidlib-0.9.9/fidlib.c
-win32 {
+win32-g++ {
     DEFINES += T_MINGW
 }
-!win32 {
+!win32-g++ {
     DEFINES += T_LINUX
 }
 
@@ -468,7 +472,7 @@ SOURCES += src/recording/enginerecord.cpp \
     src/recording/writeaudiofile.cpp \
     src/dlgprefrecord.cpp
 FORMS += src/dlgprefrecorddlg.ui
-unix {
+!win32:unix {
     !macx { 
         DEFINES += __LINUX__ \
             TEMPORAL \
@@ -503,7 +507,6 @@ unix {
             vorbisfile \
             sndfile
     }
-#    CXXFLAGS += -DX
 }
 macx { 
     DEFINES += __COREMIDI__
@@ -771,12 +774,11 @@ win32 {
 
     # check if DLL exists at target, if not copy it there
     for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {
-        message( copying "$$replace(DLL, /,\)" -> "$$DESTDIR" ... )
-        system( copy "$$replace(DLL, /,\)" "$$DESTDIR" )
+        message( copying "$$replace(DLL, /,$$DIR_SEPARATOR)" -> "$$DESTDIR" ... )
+        system( $$QMAKE_COPY "$$replace(DLL, /,$$DIR_SEPARATOR)" "$$DESTDIR" )
     }
     # create DESTDIR\testrun-mixxx.cmd to run mixxx using the workspace resource files.
-    #!exists($$DESTDIR/testrun-$$(TARGET).cmd):
-    system( echo $$TARGET --resourcePath %CD%\res>%CD%\\$$replace(DESTDIR, /,\)\testrun-$${TARGET}.cmd )
+    win32-g++:system( echo $$TARGET --resourcePath $$replace(PWD, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}res>$${PWD}$${DIR_SEPERATOR}$$replace(DESTDIR, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}testrun-$${TARGET}.cmd )
 }
 
 # .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
