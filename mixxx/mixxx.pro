@@ -1,4 +1,4 @@
-CONFIG += debug link_pkgconfig ladspa alsaseqmidi script
+CONFIG += debug link_pkgconfig ladspa alsaseqmidi script vinylcontrol
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -664,6 +664,8 @@ CONFIG(vinylcontrol) {
         src/vinylcontrolscratchlib.h \
         src/vinylcontrolsignalwidget.h \
         src/vinylcontrolxwax.h \
+        lib/scratchlib/DAnalyse.h \
+        lib/xwax/timecoder.h \
         src/engine/enginevinylcontrol.h \
         src/dlgprefvinyl.h
     SOURCES += src/vinylcontrol.cpp \
@@ -671,13 +673,14 @@ CONFIG(vinylcontrol) {
         src/vinylcontrolscratchlib.cpp \
         src/vinylcontrolsignalwidget.cpp \
         src/vinylcontrolxwax.cpp \
-        ../../lib/scratchlib/DAnalyse.cpp \
+        lib/scratchlib/DAnalyse.cpp \
         src/engine/enginevinylcontrol.cpp \
         src/dlgprefvinyl.cpp
-    CPPPATH += ../../lib/scratchlib \
-        ../../lib/xwax
-    win32:SOURCES += ../../lib/xwax/timecoder_win32.c
-    !win32:SOURCES += ../../lib/xwax/timecoder.c
+
+    INCLUDEPATH += lib/scratchlib \
+        lib/xwax
+    win32:SOURCES += lib/xwax/timecoder_win32.c
+    !win32:SOURCES += lib/xwax/timecoder.c
 }
 CONFIG(cmetrics):DEFINES += __C_METRICS__ \
     client='MIXXX' \
