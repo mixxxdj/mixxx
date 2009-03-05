@@ -38,7 +38,7 @@ void WLabel::setup(QDomNode node)
     WWidget::setup(node);
 
     // Colors
-    QPalette palette = this->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
     
     if(!WWidget::selectNode(node, "BgColor").isNull()) {
         m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -50,7 +50,7 @@ void WLabel::setup(QDomNode node)
     //m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor)); //deprecated
     palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
     
-    setPalette(palette);
+    m_pLabel->setPalette(palette);
 
     // Text
     if (!selectNode(node, "Text").isNull())

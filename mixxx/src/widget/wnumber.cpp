@@ -42,7 +42,7 @@ void WNumber::setup(QDomNode node)
     setNumDigits(selectNodeInt(node, "NumberOfDigits"));
 
     // Colors
-    QPalette palette = this->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
     
     if(!WWidget::selectNode(node, "BgColor").isNull()) {
         m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -54,7 +54,7 @@ void WNumber::setup(QDomNode node)
     //m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
     palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
     
-    setPalette(palette);
+    m_pLabel->setPalette(palette);
     
     // Text
     if (!selectNode(node, "Text").isNull())
