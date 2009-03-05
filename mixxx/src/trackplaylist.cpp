@@ -64,7 +64,7 @@ void TrackPlaylist::loadFromXMLNode(QDomNode node)
 {
     // Set name of playlist
     m_qName = XmlParse::selectNodeQString(node, "Name");
-    qDebug() << "playlist name" << m_qName.latin1();
+    qDebug() << "playlist name" << m_qName;
 
 	//Set comment for playlist
 	m_qComment = XmlParse::selectNodeQString(node, "Comment");

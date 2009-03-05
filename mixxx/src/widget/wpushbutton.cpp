@@ -25,7 +25,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-WPushButton::WPushButton(QWidget * parent, const char * name ) : WWidget(parent,name)
+WPushButton::WPushButton(QWidget * parent) : WWidget(parent)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;

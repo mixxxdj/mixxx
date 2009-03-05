@@ -197,9 +197,9 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     {
         //If there was no TrackTableView specified in the skin, give a warning.
         QMessageBox::warning(NULL, tr("Mixxx"),
-                             tr("You're using a skin that is incompatible with Mixxx " + QString(VERSION) + ", which "
+                             QString(tr("You're using a skin that is incompatible with Mixxx %1, which "
                              "will cause unexpected behaviour (eg. missing library).\nThis can happen if you're "
-                             "using a third-party skin or if you've incorrectly upgraded Mixxx."),
+                             "using a third-party skin or if you've incorrectly upgraded Mixxx.")).arg(VERSION),
                              QMessageBox::Ok, QMessageBox::Ok);
 
     }
@@ -834,7 +834,7 @@ void Track::slotDeletePlaylist(QString qName)
             m_pActivePlaylist = 0;
             bActivateOtherList = true;
         }
-        m_qPlaylists.remove(list);
+        m_qPlaylists.removeOne(list);
         delete list;
     }
 

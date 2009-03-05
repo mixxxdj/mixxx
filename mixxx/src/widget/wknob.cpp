@@ -24,8 +24,8 @@
 #include <QPainter>
 #include <QPaintEvent>
 
-WKnob::WKnob(QWidget * parent, const char * name, float defaultValue)
-    : WAbstractControl(parent,name,defaultValue)
+WKnob::WKnob(QWidget * parent, float defaultValue)
+    : WAbstractControl(parent, defaultValue)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;

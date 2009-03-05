@@ -47,11 +47,11 @@ bool SortFilterProxyModel::lessThan( const QModelIndex &left, const QModelIndex 
   QString leftStr = sourceModel()->data( left ).toString().trimmed().simplified().toLower().remove(QRegExp("^the "));;
   QString rightStr = sourceModel()->data( right ).toString().trimmed().simplified().toLower().remove(QRegExp("^the "));;
 
-  leftStr = leftStr.replace(QRegExp(invalidStartCharsExpr, QRegExp::RegExp2), "~~");
+  leftStr = leftStr.replace(QRegExp(invalidStartCharsExpr, Qt::CaseInsensitive, QRegExp::RegExp2), "~~");
   if (leftStr.contains(" - ")) { leftStr = "~"; }
   if (!leftStr.length()) { leftStr = "~~~"; }
 
-  rightStr = rightStr.replace(QRegExp(invalidStartCharsExpr, QRegExp::RegExp2), "~~");
+  rightStr = rightStr.replace(QRegExp(invalidStartCharsExpr, Qt::CaseInsensitive, QRegExp::RegExp2), "~~");
   if (rightStr.contains(" - ")) { rightStr = "~"; }
   if (!rightStr.length()) { rightStr = "~~~"; }
 

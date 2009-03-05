@@ -82,16 +82,12 @@ Q3MemArray<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, con
 #endif
     for (unsigned int i=0; i<s.length()/4; ++i)
     {
-        QChar c4 = s.at(i*4);
-        QChar c3 = s.at(i*4+1);
-        QChar c2 = s.at(i*4+2);
-        QChar c1 = s.at(i*4+3);
+        unsigned char c4 = s.at(i*4).toLatin1();
+        unsigned char c3 = s.at(i*4+1).toLatin1();
+        unsigned char c2 = s.at(i*4+2).toLatin1();
+        unsigned char c1 = s.at(i*4+3).toLatin1();
 
-#ifdef QT3_SUPPORT
-        long v = (long)((unsigned char)c1.latin1()) + (long)((unsigned char)c2.latin1())*0x100 + (long)((unsigned char)c3.latin1())*0x10000 + (long)((unsigned char)c4.latin1())*0x1000000;
-#else
-        long v = (long)((unsigned char)c1) + (long)((unsigned char)c2)*0x100 + (long)((unsigned char)c3)*0x10000 + (long)((unsigned char)c4)*0x1000000;
-#endif
+        long v = (long)(c1) + (long)(c2)*0x100 + (long)(c3)*0x10000 + (long)(c4)*0x1000000;
 
         data->at(i) = v;
     }
@@ -115,15 +111,11 @@ Q3MemArray<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, con
             s = node2cdata.data();
         }
     }
-#ifdef QT3_SUPPORT
+    
     Q3MemArray<char> *data = new Q3MemArray<char>(s.length());
     for (unsigned int i=0; i<s.length(); ++i)
-        data->at(i) = s.at(i).latin1();
-#else
-    Q3MemArray<char> *data = new Q3MemArray<char>(s.length());
-    for (unsigned int i=0; i<s.length(); ++i)
-        data->at(i) = (QChar)(s.at(i));
-#endif
+        data->at(i) = s.at(i).toLatin1();
+    
     return data;
 }
 

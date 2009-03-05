@@ -23,7 +23,7 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WDisplay::WDisplay(QWidget * parent, const char * name) : WWidget(parent,name)
+WDisplay::WDisplay(QWidget * parent) : WWidget(parent)
 {
     m_pPixmaps = 0;
     setPositions(0);

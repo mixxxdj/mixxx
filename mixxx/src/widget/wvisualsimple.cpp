@@ -29,7 +29,7 @@
 
 #include "waveform/waveformrenderer.h"
 
-WVisualSimple::WVisualSimple(const char* group, QWidget * pParent, const char * pName) : WWidget(pParent, pName)
+WVisualSimple::WVisualSimple(const char* group, QWidget * parent) : WWidget(parent)
 {
     m_pWaveformRenderer = new WaveformRenderer(group);
     setAcceptDrops(true);
@@ -67,8 +67,8 @@ void WVisualSimple::setup(QDomNode node)
     
     // Size
     QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.find(",")).toInt();
-    int y = size.mid(size.find(",")+1).toInt();
+    int x = size.left(size.indexOf(",")).toInt();
+    int y = size.mid(size.indexOf(",")+1).toInt();
     setFixedSize(x,y);
 
     m_pWaveformRenderer->resize(x,y);
