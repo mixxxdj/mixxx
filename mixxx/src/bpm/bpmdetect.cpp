@@ -170,7 +170,7 @@ unsigned int BpmDetect::decimate(SAMPLETYPE * dest, const SAMPLETYPE * src, int 
     assert(decimateBy != 0);
     outcount = 0;
     
-    qDebug() << "we're going to have " << numsamples/decimateBy << "outputs after decimating because (" << numsamples << "," << decimateBy << ")";
+    //qDebug() << "we're going to have " << numsamples/decimateBy << "outputs after decimating because (" << numsamples << "," << decimateBy << ")";
     
     for (count = 0; count < numsamples; count++)
     {
@@ -205,9 +205,9 @@ unsigned int BpmDetect::decimate(SAMPLETYPE * dest, const SAMPLETYPE * src, int 
     }
     
     
-    	qDebug() << "$$there are " << channels << " channels";
-    	qDebug() << "$$RMSVolumeAccu is " << RMSVolumeAccu;
-    	qDebug() << "$$outcount = " << outcount;
+    	//qDebug() << "$$there are " << channels << " channels";
+    	//qDebug() << "$$RMSVolumeAccu is " << RMSVolumeAccu; //<-- segfault happens here?
+    	//qDebug() << "$$outcount = " << outcount;
     	
     return outcount;
 }
@@ -287,8 +287,8 @@ void BpmDetect::inputSamples(SAMPLETYPE * samples, int numSamples)
 {
     SAMPLETYPE decimated[DECIMATED_BLOCK_SAMPLES];
     
-    	qDebug() << "||there are " << channels << " channels";
-    	qDebug() << "||RMSVolumeAccu is " << RMSVolumeAccu;
+    	//qDebug() << "||there are " << channels << " channels";
+    	//qDebug() << "||RMSVolumeAccu is " << RMSVolumeAccu; //<-- no segfault
 
     // convert from stereo to mono if necessary
     if (channels == 2)
@@ -303,16 +303,16 @@ void BpmDetect::inputSamples(SAMPLETYPE * samples, int numSamples)
 
 
 
-    	qDebug() << "--there are " << channels << " channels";
-    	qDebug() << "--RMSVolumeAccu is " << RMSVolumeAccu;
+    //qDebug() << "--there are " << channels << " channels";
+    //qDebug() << "--RMSVolumeAccu is " << RMSVolumeAccu; //<-- no segfault
 
     // decimate
-    qDebug() << "--numSamples = " << numSamples;
+    //qDebug() << "--numSamples = " << numSamples;
     numSamples = decimate(decimated, samples, numSamples);
 
-    qDebug() << "@@numSamples = " << numSamples;
-    	qDebug() << "@@there are " << channels << " channels";
-    	qDebug() << "@@RMSVolumeAccu is " << RMSVolumeAccu;
+    //qDebug() << "@@numSamples = " << numSamples;
+    //qDebug() << "@@there are " << channels << " channels"; //<-- decimate()-triggered segfault is here
+    //qDebug() << "@@RMSVolumeAccu is " << RMSVolumeAccu;
 
     
     // envelope new samples and add them to buffer
