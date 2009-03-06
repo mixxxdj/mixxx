@@ -315,7 +315,7 @@ void TrackPlaylist::addPath(QString qPath)
         // And then add all the files
 
         dir.setFilter(QDir::Files);
-        dir.setNameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split());
+        dir.setNameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" "));
         QListIterator<QFileInfo> it(dir.entryInfoList());          // create list iterator
         QFileInfo fi;   // pointer for traversing
 
