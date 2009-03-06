@@ -29,7 +29,10 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     stackedWidget->setCurrentIndex(0); //Ensure the first page is always shown regardless
                                        //of the last page shown when the .ui file was saved.
 
+    //Delete this dialog when its closed. We don't want any persistence.
     QWidget::setAttribute(Qt::WA_DeleteOnClose);
+
+    pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));    
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
     connect(pushButtonSkip, SIGNAL(clicked()), this, SLOT(next()));
