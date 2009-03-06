@@ -281,20 +281,20 @@ void Track::resizeColumnsForLibraryMode()
         double centa = m_pView->m_pTrackTableView->size().width()/100.;
         qDebug() << "Adjusting column widths: tracktable width =" << m_pView->m_pTrackTableView->size().width() <<" 1% of that is:"<< centa << " FIXME: this should be done when initalizing the skin.";
         m_pView->m_pTrackTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_ARTIST, 15 * centa);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, 40 * centa);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, (20/4.) * centa);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_LENGTH, (20/4.) * centa);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, (20/4.) * centa);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, (20/4.) * centa);
-        m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 25 * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::ARTIST, 15 * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::TITLE, 40 * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::TYPE, (20/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::LENGTH, (20/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::BITRATE, (20/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::BPM, (20/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::COMMENT, 25 * centa);
         if ( (20/4.) * centa <= 42 ) { // If we won't get enough percentage to display length, we have to make some adjustments...
           qDebug() << "Shrinking Title/Comment for small screen... ";
-          m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, 35);
-          m_pView->m_pTrackTableView->setColumnWidth(COL_LENGTH, 42);
-          m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, 33);
-          m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, 40);
-          m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, (60 * centa) - (35+42+33+40));
+          m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::TYPE, 35);
+          m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::LENGTH, 42);
+          m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::BITRATE, 33);
+          m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::BPM, 40);
+          m_pView->m_pTrackTableView->setColumnWidth(WTrackTableModel::TITLE, (60 * centa) - (35+42+33+40));
         }
 }
 
@@ -732,8 +732,8 @@ void Track::slotActivatePlaylist(int index)
        // Enable sorting mode -- optimize me if you can!
        // TODO: Restore sort column / sort order and restore view position.
        m_pView->m_pTrackTableView->setSortingEnabled(true);
-       m_pView->m_pTrackTableView->horizontalHeader()->setSortIndicator(COL_ARTIST, Qt::AscendingOrder);
-       m_pView->m_pTrackTableView->m_pSearchFilter->sort(COL_ARTIST);
+       m_pView->m_pTrackTableView->horizontalHeader()->setSortIndicator(WTrackTableModel::ARTIST, Qt::AscendingOrder);
+       m_pView->m_pTrackTableView->m_pSearchFilter->sort(WTrackTableModel::ARTIST);
     } else if (m_pView->m_pTrackTableView->getTableMode() != TABLE_MODE_PLAYQUEUE && index == TABLE_MODE_PLAYQUEUE) {
        // Disable sorting for play queue view, so tracks can be manually ordered using drag and drop...
        // TODO: Save sort  column / sort order from sortIndicator and save view position (see how the search filterbox saves position for example implementation)

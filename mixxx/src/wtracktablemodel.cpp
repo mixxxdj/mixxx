@@ -13,14 +13,14 @@ WTrackTableModel::WTrackTableModel(QObject * parent) : QAbstractTableModel(paren
     rowColors = false;
     m_pTrackPlaylist = NULL;
 
-    //setHeaderData(COL_SCORE,Qt::Horizontal, tr("**"));
-    setHeaderData(COL_TITLE,Qt::Horizontal, tr("Title"));
-    setHeaderData(COL_ARTIST,Qt::Horizontal, tr("Artist"));
-    setHeaderData(COL_TYPE,Qt::Horizontal, tr("Type"));
-    setHeaderData(COL_LENGTH,Qt::Horizontal, tr("Length"));
-    setHeaderData(COL_BITRATE,Qt::Horizontal, tr("kbit"));
-    setHeaderData(COL_BPM,Qt::Horizontal, tr("BPM"));
-    setHeaderData(COL_COMMENT,Qt::Horizontal, tr("Comment"));
+    //setHeaderData(WTrackTableModel::SCORE,Qt::Horizontal, tr("**"));
+    setHeaderData(WTrackTableModel::TITLE,Qt::Horizontal, tr("Title"));
+    setHeaderData(WTrackTableModel::ARTIST,Qt::Horizontal, tr("Artist"));
+    setHeaderData(WTrackTableModel::TYPE,Qt::Horizontal, tr("Type"));
+    setHeaderData(WTrackTableModel::LENGTH,Qt::Horizontal, tr("Length"));
+    setHeaderData(WTrackTableModel::BITRATE,Qt::Horizontal, tr("kbit"));
+    setHeaderData(WTrackTableModel::BPM,Qt::Horizontal, tr("BPM"));
+    setHeaderData(WTrackTableModel::COMMENT,Qt::Horizontal, tr("Comment"));
 }
 
 WTrackTableModel::~WTrackTableModel()
@@ -38,7 +38,7 @@ int WTrackTableModel::rowCount(const QModelIndex &parent) const
 
 int WTrackTableModel::columnCount(const QModelIndex &parent) const
 {
-    return 7;
+    return WTrackTableModel::COLUMN_COUNT;
 }
 
 QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
@@ -55,14 +55,14 @@ QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
-        //case COL_SCORE: return m_pTrackInfo->getScoreStr();
-        case COL_TITLE: return m_pTrackInfo->getTitle();
-        case COL_ARTIST: return m_pTrackInfo->getArtist();
-        case COL_TYPE: return m_pTrackInfo->getType();
-        case COL_LENGTH: return m_pTrackInfo->getDurationStr();
-        case COL_BITRATE: return m_pTrackInfo->getBitrateStr();
-        case COL_BPM: return m_pTrackInfo->getBpmStr();
-        case COL_COMMENT: return m_pTrackInfo->getComment();
+        //case WTrackTableModel::SCORE: return m_pTrackInfo->getScoreStr();
+        case WTrackTableModel::TITLE: return m_pTrackInfo->getTitle();
+        case WTrackTableModel::ARTIST: return m_pTrackInfo->getArtist();
+        case WTrackTableModel::TYPE: return m_pTrackInfo->getType();
+        case WTrackTableModel::LENGTH: return m_pTrackInfo->getDurationStr();
+        case WTrackTableModel::BITRATE: return m_pTrackInfo->getBitrateStr();
+        case WTrackTableModel::BPM: return m_pTrackInfo->getBpmStr();
+        case WTrackTableModel::COMMENT: return m_pTrackInfo->getComment();
 		default:
 			qDebug() << "index.column =" << index.column();
 			Q_ASSERT(FALSE);	//we should never get here
@@ -83,21 +83,21 @@ QVariant WTrackTableModel::headerData(int section, Qt::Orientation orientation, 
     {
         switch(section)
         {
-        //case COL_SCORE:
+        //case WTrackTableModel::SCORE:
         //    return QString("**");
-        case COL_TITLE:
+        case WTrackTableModel::TITLE:
             return QString("Title");
-        case COL_ARTIST:
+        case WTrackTableModel::ARTIST:
             return QString("Artist");
-        case COL_TYPE:
+        case WTrackTableModel::TYPE:
             return QString("Type");
-        case COL_LENGTH:
+        case WTrackTableModel::LENGTH:
             return QString("Length");
-        case COL_BITRATE:
+        case WTrackTableModel::BITRATE:
             return QString("kbit");
-        case COL_BPM:
+        case WTrackTableModel::BPM:
             return QString("BPM");
-        case COL_COMMENT:
+        case WTrackTableModel::COMMENT:
             return QString("Comment");
 		default:
 			//this is a nasty error for the user to see, but its better than a crash and should help with debugging
@@ -117,8 +117,8 @@ Qt::ItemFlags WTrackTableModel::flags(const QModelIndex &index) const
     defaultFlags |= Qt::ItemIsDragEnabled;
     switch(index.column())
     {
-      case COL_BPM: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-      case COL_COMMENT: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+      case WTrackTableModel::BPM: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+      case WTrackTableModel::COMMENT: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
     }
     return defaultFlags;
 }
@@ -132,8 +132,8 @@ bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, 
 
         switch(index.column())
         {
-        case COL_BPM: m_pTrackInfo->setBpm(value.toString().toFloat()); break;
-        case COL_COMMENT: m_pTrackInfo->setComment(value.toString()); break;
+        case WTrackTableModel::BPM: m_pTrackInfo->setBpm(value.toString().toFloat()); break;
+        case WTrackTableModel::COMMENT: m_pTrackInfo->setComment(value.toString()); break;
         }
         emit dataChanged(index, index);
         return true;

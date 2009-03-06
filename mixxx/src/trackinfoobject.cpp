@@ -257,14 +257,14 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     //qDebug() << "inserting.. " << pTableTrack->item(iRow;
 
     // Insert the elements into the table
-    pTableTrack->setItem(iRow, COL_SCORE, m_pTableItemScore);
-    pTableTrack->setItem(iRow, COL_TITLE, m_pTableItemTitle);
-    pTableTrack->setItem(iRow, COL_ARTIST, m_pTableItemArtist);
-    pTableTrack->setItem(iRow, COL_COMMENT, m_pTableItemComment);
-    pTableTrack->setItem(iRow, COL_TYPE, m_pTableItemType);
-    pTableTrack->setItem(iRow, COL_DURATION, m_pTableItemDuration);
-    pTableTrack->setItem(iRow, COL_BPM, m_pTableItemBpm);
-    pTableTrack->setItem(iRow, COL_BITRATE, m_pTableItemBitrate);
+    pTableTrack->setItem(iRow, WTrackTableModel::SCORE, m_pTableItemScore);
+    pTableTrack->setItem(iRow, WTrackTableModel::TITLE, m_pTableItemTitle);
+    pTableTrack->setItem(iRow, WTrackTableModel::ARTIST, m_pTableItemArtist);
+    pTableTrack->setItem(iRow, WTrackTableModel::COMMENT, m_pTableItemComment);
+    pTableTrack->setItem(iRow, WTrackTableModel::TYPE, m_pTableItemType);
+    pTableTrack->setItem(iRow, WTrackTableModel::DURATION, m_pTableItemDuration);
+    pTableTrack->setItem(iRow, WTrackTableModel::BPM, m_pTableItemBpm);
+    pTableTrack->setItem(iRow, WTrackTableModel::BITRATE, m_pTableItemBitrate);
 
     m_pTableTrack = pTableTrack;
 

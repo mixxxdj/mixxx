@@ -23,6 +23,8 @@
 #include <math.h>
 #include <algorithm>
 
+static CSAMPLE two_pi = (2.f*acos(-1.f));
+
 CSAMPLE besseli(CSAMPLE);
 int sign(CSAMPLE);
 int invmatrix(CSAMPLE *);

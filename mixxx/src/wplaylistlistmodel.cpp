@@ -8,18 +8,13 @@
 #include "trackplaylist.h"
 #include "trackplaylistlist.h"
 
-const int PL_COL_NAME=0;
-const int PL_COL_TYPE=1;
-const int PL_COL_LENGTH=2;
-const int PL_COL_COMMENT=3;
-
 WPlaylistListModel::WPlaylistListModel(QObject * parent) : QAbstractTableModel(parent)
 {
     rowColors = false;
-    setHeaderData(PL_COL_NAME,Qt::Horizontal, tr("Name"));
-    setHeaderData(PL_COL_TYPE,Qt::Horizontal, tr("Type"));
-    setHeaderData(PL_COL_LENGTH,Qt::Horizontal, tr("Length"));
-    setHeaderData(PL_COL_COMMENT,Qt::Horizontal, tr("Comment"));
+    setHeaderData(WPlaylistListModel::NAME,Qt::Horizontal, tr("Name"));
+    setHeaderData(WPlaylistListModel::TYPE,Qt::Horizontal, tr("Type"));
+    setHeaderData(WPlaylistListModel::LENGTH,Qt::Horizontal, tr("Length"));
+    setHeaderData(WPlaylistListModel::COMMENT,Qt::Horizontal, tr("Comment"));
 }
 
 WPlaylistListModel::~WPlaylistListModel()
@@ -37,7 +32,7 @@ int WPlaylistListModel::rowCount(const QModelIndex &parent) const
 
 int WPlaylistListModel::columnCount(const QModelIndex &parent) const
 {
-    return 4;
+    return WPlaylistListModel::COLUMN_COUNT;
 }
 
 QVariant WPlaylistListModel::data(const QModelIndex &index, int role) const
@@ -60,10 +55,10 @@ QVariant WPlaylistListModel::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
-        case PL_COL_NAME: return m_pPlaylist->getName();
-        case PL_COL_TYPE: return "type";
-        case PL_COL_LENGTH: return "duration";
-        case PL_COL_COMMENT: return m_pPlaylist->getComment();
+        case WPlaylistListModel::NAME: return m_pPlaylist->getName();
+        case WPlaylistListModel::TYPE: return "type";
+        case WPlaylistListModel::LENGTH: return "duration";
+        case WPlaylistListModel::COMMENT: return m_pPlaylist->getComment();
 		default: return "Error: WPlaylistListModel::data invalid index";
         }
     }
@@ -81,15 +76,13 @@ QVariant WPlaylistListModel::headerData(int section, Qt::Orientation orientation
     {
         switch(section)
         {
-        //case 0:
-        //    return QString("**");
-        case PL_COL_NAME:
+        case WPlaylistListModel::NAME:
             return QString("Name");
-        case PL_COL_TYPE:
+        case WPlaylistListModel::TYPE:
             return QString("Type");
-        case PL_COL_LENGTH:
+        case WPlaylistListModel::LENGTH:
             return QString("Length");
-        case PL_COL_COMMENT:
+        case WPlaylistListModel::COMMENT:
             return QString("Comment");
 		default:
 			//this is a nasty error for the user to see, but its better than a crash and should help with debugging
@@ -109,7 +102,7 @@ Qt::ItemFlags WPlaylistListModel::flags(const QModelIndex &index) const
     defaultFlags |= Qt::ItemIsDragEnabled;
     switch(index.column())
     {
-      case PL_COL_COMMENT: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+      case WPlaylistListModel::COMMENT: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
     }
     return defaultFlags;
 }
@@ -123,7 +116,7 @@ bool WPlaylistListModel::setData(const QModelIndex &index, const QVariant &value
 
         switch(index.column())
         {
-            case PL_COL_COMMENT: m_pPlaylist->setComment(value.toString()); break;
+            case WPlaylistListModel::COMMENT: m_pPlaylist->setComment(value.toString()); break;
         }
         emit dataChanged(index, index);
         return true;
