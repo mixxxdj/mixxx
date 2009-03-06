@@ -78,8 +78,8 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     // Sort Library by Artist on startup...
     setSortingEnabled ( true );
     horizontalHeader()->setSortIndicatorShown(true);
-    horizontalHeader()->setSortIndicator(COL_ARTIST, Qt::AscendingOrder);
-    m_pSearchFilter->sort(COL_ARTIST);
+    horizontalHeader()->setSortIndicator(WTrackTableModel::ARTIST, Qt::AscendingOrder);
+    m_pSearchFilter->sort(WTrackTableModel::ARTIST);
 
 
     /*
@@ -180,14 +180,14 @@ void WTrackTableView::setup(QDomNode node)
     /*
        typedef QMap<int,QString> ColMap;
        ColMap ColumnMap;
-       ColumnMap[COL_SCORE] = "ColWidthScore";
-       ColumnMap[COL_TITLE] = "ColWidthTitle";
-       ColumnMap[COL_ARTIST] = "ColWidthArtist";
-       ColumnMap[COL_COMMENT] = "ColWidthComment";
-       ColumnMap[COL_TYPE] = "ColWidthType";
-       ColumnMap[COL_DURATION] = "ColWidthDuration";
-       ColumnMap[COL_BITRATE] = "ColWidthBitrate";
-       ColumnMap[COL_BPM] = "ColWidthBpm";
+       ColumnMap[WTrackTableModel::SCORE] = "ColWidthScore";
+       ColumnMap[WTrackTableModel::TITLE] = "ColWidthTitle";
+       ColumnMap[WTrackTableModel::ARTIST] = "ColWidthArtist";
+       ColumnMap[WTrackTableModel::COMMENT] = "ColWidthComment";
+       ColumnMap[WTrackTableModel::TYPE] = "ColWidthType";
+       ColumnMap[WTrackTableModel::DURATION] = "ColWidthDuration";
+       ColumnMap[WTrackTableModel::BITRATE] = "ColWidthBitrate";
+       ColumnMap[WTrackTableModel::BPM] = "ColWidthBpm";
 
        QMapIterator<int,QString> i(ColumnMap);
        while (i.hasNext())
@@ -242,42 +242,42 @@ void WTrackTableView::sortByColumn(int col)
         switch(col)
         {
             // Score Column
-        case COL_SCORE:
+        case WTrackTableModel::SCORE:
             m_pTable->m_pTrackPlaylist->sortByScore(ascending);
             break;
 
             // Title
-        case COL_TITLE:
+        case WTrackTableModel::TITLE:
             m_pTable->m_pTrackPlaylist->sortByTitle(ascending);
             break;
 
             // Artist
-        case COL_ARTIST:
+        case WTrackTableModel::ARTIST:
             m_pTable->m_pTrackPlaylist->sortByArtist(ascending);
             break;
 
             // Type
-        case COL_TYPE:
+        case WTrackTableModel::TYPE:
             m_pTable->m_pTrackPlaylist->sortByType(ascending);
             break;
 
             // Duration
-        case COL_LENGTH:
+        case WTrackTableModel::LENGTH:
             m_pTable->m_pTrackPlaylist->sortByDuration(ascending);
             break;
 
             // Bitrate
-        case COL_BITRATE:
+        case WTrackTableModel::BITRATE:
             m_pTable->m_pTrackPlaylist->sortByBitrate(ascending);
             break;
 
             // BPM
-        case COL_BPM:
+        case WTrackTableModel::BPM:
             m_pTable->m_pTrackPlaylist->sortByBpm(ascending);
             break;
 
             // Comment
-        case COL_COMMENT:
+        case WTrackTableModel::COMMENT:
             m_pTable->m_pTrackPlaylist->sortByComment(ascending);
             break;
         }

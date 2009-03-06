@@ -18,6 +18,17 @@ public:
     WPlaylistListModel(QObject *parent=0);
     ~WPlaylistListModel();
 
+    typedef enum {
+        DISABLED = -1,
+        // Note: all disabled items must be set to disabled and must appear before the first non-disabled item.
+        NAME    ,
+        TYPE    ,
+        LENGTH  ,
+        COMMENT ,
+        COLUMN_COUNT // Note: COLUMN_COUNT must remain the last entry.
+    } TABLE_COLUMNS;
+
+
     void setPlaylistList(TrackPlaylistList *pPlaylists);
 	void setBackgroundColor(QColor bgColor);
 	void setForegroundColor(QColor fgColor);
