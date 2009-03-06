@@ -17,6 +17,7 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "engineflanger.h"
+#include "mathstuff.h"
 
 
 /*----------------------------------------------------------------
