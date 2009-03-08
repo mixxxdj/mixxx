@@ -1,4 +1,4 @@
-CONFIG += debug link_pkgconfig ladspa alsaseqmidi script vinylcontrol
+CONFIG += debug link_pkgconfig ladspa alsaseqmidi script vinylcontrol m4a
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -6,8 +6,8 @@ DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptst
     BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
     TRACK_FILE=\\\"mixxxtrack.xml\\\"
 
-win32-g++ {
-  QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\"\"" # Bit ugly, but you can thank MS-DOS shell for f-ing up the normal way of parsing.
+win32-g++ { # Bit ugly, but you can thank MS-DOS shell for f-ing up the normal way of parsing.
+    QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\\ Settings/Application\\ Data/Mixxx/\\\"\""
 } else {
   win32 { # i586-mingw32msvc-g++ -- cross compiling
     DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
@@ -670,8 +670,20 @@ CONFIG(m4a) {
         src/m4a/sf.h
     SOURCES += src/soundsourcem4a.cpp \
         src/m4a/mp4-mixxx.cpp
-    LIBS += libmp4v2 \
-        libfaad
+    win32{
+        INCLUDEPATH += ../mixxx-winlib/mp4v2/include \
+            ../mixxx-winlib/faad2/include
+        HEADERS += ../mixxx-winlib/mp4v2/include/mp4.h \
+            ../mixxx-winlib/mp4v2/include/mpeg4ip.h \
+            ../mixxx-winlib/mp4v2/include/mpeg4ip_version.h \
+            ../mixxx-winlib/mp4v2/include/mpeg4ip_win32.h
+        LIBS += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
+            ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
+#             ../mixxx-winlib/faad2/mingw-bin/libfaad.a
+    } else {
+        LIBS += libmp4v2 \
+            libfaad
+    }
 }
 CONFIG(vinylcontrol) { 
     DEFINES += __VINYLCONTROL__
@@ -756,6 +768,8 @@ win32 {
     !exists($$DESTDIR):system( mkdir $$DESTDIR )
     # MinGW run-time
     DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll
+    CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
+        ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
     # Qt4 libraries
     debug {
         DLLs += $$(QTDIR)/lib/Qt3Supportd4.dll \
