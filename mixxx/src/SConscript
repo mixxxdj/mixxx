@@ -41,10 +41,17 @@ def getSVNRevision(): # GPL code taken from http://trac.zeitherrschaft.org/zzub/
 
 
 def getMixxxVersion():
-	defs = File('#src/defs.h') #have to handle out-of-tree building :(
-	p = os.popen('grep -m 1 "#define VERSION" %s' % defs)
-	version = p.readline()
-	p.close()
+	defs = File('#src/defs.h') #have to handle out-of-tree building, that's why the '#' :(
+	#p = os.popen('grep -m 1 "#define VERSION" %s' % defs) #this is not cross-platform
+	#version = p.readline()
+	#p.close()
+	
+	for line in open(str(defs)).readlines():
+		if line.strip().startswith("#define VERSION"):
+			version = line
+			break
+	else:
+		raise ValueError("Version not found")
 	
 	#given "#define VERSION "...."" extract "....":
 	version = version.split()[-1].replace('"', '')

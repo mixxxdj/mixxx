@@ -134,8 +134,15 @@ bool WPlaylistListModel::removeRows(int row, int count, const QModelIndex &paren
     beginRemoveRows(QModelIndex(), row, row + count - 1);
 
     for (int r = 0; r < count; ++r)
+    {
+#if QT_VERSION >= 0x040400
         m_qPlaylists->removeOne(m_pPlaylist);
-
+#else
+	m_qPlaylists->removeAt(m_qPlaylists->indexOf(m_pPlaylist));
+#endif
+    }
+    
+    
     endRemoveRows();
     return true;
 }

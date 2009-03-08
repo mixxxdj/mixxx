@@ -834,7 +834,11 @@ void Track::slotDeletePlaylist(QString qName)
             m_pActivePlaylist = 0;
             bActivateOtherList = true;
         }
+#if QT_VERSION >= 0x040400
         m_qPlaylists.removeOne(list);
+#else
+	m_qPlaylists.removeAt(m_qPlaylists.indexOf(list));
+#endif
         delete list;
     }
 
