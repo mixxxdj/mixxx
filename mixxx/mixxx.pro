@@ -28,13 +28,11 @@ QT += core \
     script \
     qt3support
 
+DESTDIR = bin
 unix {
-  DESTDIR = bin
   win32 { # This should only happen when cross compiling...
     DESTDIR = bin-win32
   }
-} else {
-    DESTDIR = bin
 }
 
 BUILDDIR = $$DESTDIR
