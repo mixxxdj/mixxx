@@ -679,8 +679,8 @@ CONFIG(m4a) {
             ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
 #             ../mixxx-winlib/faad2/mingw-bin/libfaad.a
     } else {
-        LIBS += libmp4v2 \
-            libfaad
+        LIBS += -lmp4v2 \
+            -lfaad
     }
 }
 CONFIG(vinylcontrol) { 
