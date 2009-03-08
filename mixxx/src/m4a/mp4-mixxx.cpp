@@ -150,8 +150,11 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	}
 
 	/* init decoder according to mpeg-4 audio config */
-	if (faacDecInit2(priv->decoder, buf, buf_size, (uint32_t*) &priv->sample_rate, &priv->channels) < 0) {
-		free(buf);
+#ifdef __MINGW32__
+        if (faacDecInit2(priv->decoder, buf, buf_size, (long unsigned int*) &priv->sample_rate, &priv->channels) < 0) {
+#else
+        if (faacDecInit2(priv->decoder, buf, buf_size, (uint32_t*) &priv->sample_rate, &priv->channels) < 0) {
+#endif		free(buf);
 		goto out;
 	}
 
