@@ -763,7 +763,7 @@ CONFIG(ffmpeg) {
 
 # Copy Windows dependencies to DESTDIR.
 win32 {
-    !exists($$DESTDIR):system( mkdir $$DESTDIR )
+    !exists($$DESTDIR):system( mkdir $$replace(DESTDIR, /,$$DIR_SEPARATOR) )
     # MinGW run-time
     DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll
     CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
