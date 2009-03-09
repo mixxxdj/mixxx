@@ -82,7 +82,7 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
         emit(trackProgress(tio, progress));
 	
 	} while(read == ANALYSISBLOCKSIZE);
-    delete data16;
+    delete[] data16;
     delete[] samples;
 }
 
