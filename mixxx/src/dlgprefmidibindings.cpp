@@ -156,11 +156,15 @@ void DlgPrefMidiBindings::slotUpdate() {
     //Check if the device that this dialog is for is already enabled...
     if (m_rMidi.getOpenDevice() == m_deviceName)
     {
-        btnActivateDevice->setEnabled(false);
+        btnActivateDevice->setEnabled(false); //Disable activate button
+        toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
+        groupBoxPresets->setEnabled(true); //Enable presets group box.
     }
-    else
-        btnActivateDevice->setEnabled(true);
-
+    else {
+        btnActivateDevice->setEnabled(true); //Enable activate button
+        toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
+        groupBoxPresets->setEnabled(false); //Disable presets group box.
+    }
 }
 
 /* slotApply()
@@ -233,6 +237,8 @@ void DlgPrefMidiBindings::slotEnableDevice()
 	m_rMidi.devOpen(m_deviceName);
 	m_pConfig->set(ConfigKey("[Midi]","Device"), m_deviceName);
 	btnActivateDevice->setEnabled(false);
+	toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
+	groupBoxPresets->setEnabled(true); //Enable presets group box.
 	
 	//TODO: Should probably check if devOpen() actually succeeded.
 }
