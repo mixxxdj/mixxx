@@ -36,6 +36,7 @@ class MidiInputMappingTableModel;
 class MidiOutputMappingTableModel;
 
 #define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIBindings.xml")
+#define MIDI_MAPPING_EXTENSION ".midi.xml"
 
 class MidiMapping : public QObject
 {
