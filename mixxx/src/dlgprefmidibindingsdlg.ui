@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>538</width>
+    <width>598</width>
     <height>436</height>
    </rect>
   </property>
@@ -27,17 +27,57 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0" >
+    <widget class="QPushButton" name="btnActivateDevice" >
+     <property name="text" >
+      <string>Activate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <spacer name="horizontalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>303</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="2" >
+    <widget class="QLabel" name="label" >
+     <property name="text" >
+      <string>Load Preset:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="3" >
-    <widget class="QPushButton" name="btnImportXML" >
+    <widget class="QComboBox" name="comboBoxPreset" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4" >
+    <widget class="QPushButton" name="btnExportXML" >
      <property name="styleSheet" >
       <string notr="true" />
      </property>
      <property name="text" >
-      <string>Import</string>
+      <string>Export</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="4" >
+   <item row="2" column="0" colspan="5" >
     <widget class="QToolBox" name="toolBox" >
      <property name="frameShape" >
       <enum>QFrame::NoFrame</enum>
@@ -50,30 +90,14 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>520</width>
-        <height>292</height>
+        <width>574</width>
+        <height>280</height>
        </rect>
       </property>
       <attribute name="label" >
        <string>MIDI Input</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2" >
-       <item row="0" column="0" colspan="2" >
-        <widget class="QPushButton" name="btnMidiLearnWizard" >
-         <property name="styleSheet" >
-          <string notr="true" />
-         </property>
-         <property name="text" >
-          <string>MIDI Learning Wizard</string>
-         </property>
-         <property name="checkable" >
-          <bool>false</bool>
-         </property>
-         <property name="checked" >
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0" colspan="2" >
         <widget class="QTableView" name="m_pInputMappingTableView" />
        </item>
@@ -138,6 +162,22 @@
          </layout>
         </widget>
        </item>
+       <item row="0" column="0" colspan="2" >
+        <widget class="QPushButton" name="btnMidiLearnWizard" >
+         <property name="styleSheet" >
+          <string notr="true" />
+         </property>
+         <property name="text" >
+          <string>MIDI Learning Wizard</string>
+         </property>
+         <property name="checkable" >
+          <bool>false</bool>
+         </property>
+         <property name="checked" >
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="page_2" >
@@ -145,8 +185,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>520</width>
-        <height>286</height>
+        <width>574</width>
+        <height>280</height>
        </rect>
       </property>
       <attribute name="label" >
@@ -203,37 +243,16 @@
      </widget>
     </widget>
    </item>
-   <item row="1" column="1" >
-    <spacer name="horizontalSpacer" >
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0" >
-      <size>
-       <width>303</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" >
-    <widget class="QPushButton" name="btnActivateDevice" >
-     <property name="text" >
-      <string>Activate</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2" >
-    <widget class="QPushButton" name="btnExportXML" >
-     <property name="styleSheet" >
-      <string notr="true" />
-     </property>
-     <property name="text" >
-      <string>Export</string>
-     </property>
-    </widget>
-   </item>
   </layout>
+  <zorder>labelDeviceName</zorder>
+  <zorder>btnImportXML</zorder>
+  <zorder>toolBox</zorder>
+  <zorder>btnActivateDevice</zorder>
+  <zorder>btnExportXML</zorder>
+  <zorder>listWidget</zorder>
+  <zorder>comboBoxPreset</zorder>
+  <zorder>label</zorder>
+  <zorder>btnMidiLearnWizard</zorder>
  </widget>
  <resources/>
  <connections/>

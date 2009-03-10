@@ -169,9 +169,9 @@ QStringList * MidiObject::getConfigList(QString path)
     return &configs;
 }
 
-QStringList MidiObject::getOpenDevices()
+QString MidiObject::getOpenDevice()
 {
-    return openDevices;
+    return m_deviceName;
 }
 
 /* -------- ------------------------------------------------------
