@@ -40,7 +40,7 @@ public slots:
     void slotUpdate();
     void slotApply();
     void slotShowMidiLearnDialog();
-    void slotImportXML();
+    void slotLoadMidiMapping(const QString &name);
     void slotExportXML();
     void slotEnableDevice();
 
@@ -59,6 +59,7 @@ private:
     void loadPreset(QString path);
     void savePreset(QString path);
     QStringList getControlKeyList();
+    void enumeratePresets();
 
     int currentGroupRow;
     MidiObject &m_rMidi;

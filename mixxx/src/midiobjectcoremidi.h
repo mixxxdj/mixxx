@@ -43,6 +43,8 @@ public:
     void handleMidi(const MIDIPacketList *packets, QString device);
     void makeDeviceList();
     MIDIEndpointRef getEndpoint(QString device);
+    MIDIEndpointRef getDestinationEndpoint(QString device);
+    void sendShortMsg(unsigned int word);
 
     void notification_add_handler(const MIDIObjectAddRemoveNotification *message);
     void notification_remove_handler(const MIDIObjectAddRemoveNotification *message);
@@ -55,7 +57,9 @@ protected:
     char            *buffer;
     MIDIClientRef   midiClient;
     MIDIPortRef     midiPort;
+    MIDIPortRef     midiOutPort;
     MIDIEndpointRef currentMidiEndpoint;
+    MIDIEndpointRef currentMidiOutEndpoint;
     QList<MIDIEndpointRef> currentMidiEndpoints;
     QList<QString *> persistentDeviceNames;
 };
