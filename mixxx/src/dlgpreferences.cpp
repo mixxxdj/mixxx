@@ -274,6 +274,8 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
    	{
    		int index = m_midiBindingsButtons.indexOf(current);
    		pagesWidget->setCurrentWidget(wmidiBindingsForDevice.value(index));
+   		//Manually fire this slot since it doesn't work right...
+   		wmidiBindingsForDevice.value(index)->slotUpdate();
    	}
    	
    	//If the root "MIDI Device" item is clicked, select the first MIDI device instead.
@@ -391,9 +393,6 @@ void DlgPreferences::setupMidiWidgets()
 	    m_pMIDITreeItem->addChild(midiBindingsButton);
 	    m_midiBindingsButtons.append(midiBindingsButton);	    
 	  }
-	
-
-
 }
 
 void DlgPreferences::slotApply()

@@ -86,7 +86,6 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
 
     // Connect buttons to slots
-    connect(btnImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
     //Input bindings
@@ -102,6 +101,11 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
 
     //Connect the activate button. One day this will be replaced with an "Enabled" checkbox.
     connect(btnActivateDevice, SIGNAL(clicked()), this, SLOT(slotEnableDevice()));
+    
+    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadMidiMapping(const QString&)));
+    
+    //Load the list of presets into the presets combobox.
+    enumeratePresets();
 }
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
@@ -113,6 +117,29 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
     delete m_deleteMIDIInputRowAction;
 }
 
+void DlgPrefMidiBindings::enumeratePresets()
+{
+    comboBoxPreset->clear();
+    
+    //Insert a dummy "..." item at the top to try to make it less confusing.
+    //(For example, we don't want "Akai MPD24" showing up as the default item
+    // when a user has their controller plugged in)
+    comboBoxPreset->addItem("...");
+    
+    QString midiDirPath = m_pConfig->getConfigPath().append("midi/");
+    QDirIterator it(midiDirPath, QDirIterator::Subdirectories);
+    while (it.hasNext())
+    {
+        it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
+        QString curMapping = it.fileName();
+        if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
+        {
+            curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the .midi.xml
+            comboBoxPreset->addItem(curMapping);
+        }
+    }
+}
+
 /* loadPreset(QString)
  * Asks MidiMapping to load a set of MIDI bindings from an XML file
  */
@@ -122,9 +149,17 @@ void DlgPrefMidiBindings::loadPreset(QString path) {
 
 
 /* slotUpdate()
- * Called when the dialog is loaded.
+ * Called when the dialog is displayed.
  */
 void DlgPrefMidiBindings::slotUpdate() {
+
+    //Check if the device that this dialog is for is already enabled...
+    if (m_rMidi.getOpenDevice() == m_deviceName)
+    {
+        btnActivateDevice->setEnabled(false);
+    }
+    else
+        btnActivateDevice->setEnabled(true);
 
 }
 
@@ -149,15 +184,36 @@ void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
 /* slotImportXML()
  * Prompts the user for an XML preset and loads it.
  */
-void DlgPrefMidiBindings::slotImportXML() {
-    QString fileName = QFileDialog::getOpenFileName(this,
+void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
+    
+    /*QString fileName = QFileDialog::getOpenFileName(this,
             "Import Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
-            "Preset Files (*.xml)");
-    if (!fileName.isNull()) {
-        loadPreset(fileName);
+            "Preset Files (*.xml)");*/
+    
+    //TODO: Ask for confirmation if the MIDI tables aren't empty...
+    MidiMapping* mapping = m_rMidi.getMidiMapping();
+    if (mapping->numInputMidiMessages() > 0 ||
+        mapping->numOutputMixxxControls() > 0)
+    {
+         QMessageBox::StandardButton result = QMessageBox::question(this, "Overwrite existing mapping?", tr("Are you sure you'd like to load the " + name + " mapping?\n"
+                                                                      "This will overwrite your existing MIDI mapping."),  QMessageBox::Yes | QMessageBox::No);
+                              
+         if (result == QMessageBox::No) {
+            //Select the "..." item again in the combobox.
+            comboBoxPreset->setCurrentIndex(0);
+            return;                     
+         }
+    }
+    
+    QString filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
+    if (!filename.isNull()) {
+        loadPreset(filename);
         m_rMidi.getMidiMapping()->applyPreset();
     }
     m_pInputMappingTableView->update();
+    
+    //Select the "..." item again in the combobox.
+    comboBoxPreset->setCurrentIndex(0);
 }
 
 /* slotExportXML()
@@ -166,7 +222,7 @@ void DlgPrefMidiBindings::slotImportXML() {
 void DlgPrefMidiBindings::slotExportXML() {
     QString fileName = QFileDialog::getSaveFileName(this,
             "Export Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
-            "Preset Files (*.xml)");
+            "Preset Files (*.midi.xml)");
     if (!fileName.isNull()) m_rMidi.getMidiMapping()->savePreset(fileName);
 }
 
@@ -176,6 +232,9 @@ void DlgPrefMidiBindings::slotEnableDevice()
 	m_rMidi.devClose();
 	m_rMidi.devOpen(m_deviceName);
 	m_pConfig->set(ConfigKey("[Midi]","Device"), m_deviceName);
+	btnActivateDevice->setEnabled(false);
+	
+	//TODO: Should probably check if devOpen() actually succeeded.
 }
 
 void DlgPrefMidiBindings::slotAddInputBinding() {
