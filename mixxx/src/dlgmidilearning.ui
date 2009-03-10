@@ -16,7 +16,7 @@
    <item row="0" column="0" >
     <widget class="QStackedWidget" name="stackedWidget" >
      <property name="currentIndex" >
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="page" >
       <layout class="QGridLayout" name="gridLayout_2" >
@@ -165,62 +165,72 @@
       </layout>
      </widget>
      <widget class="QWidget" name="page_3" >
-      <widget class="QLabel" name="label_4" >
-       <property name="geometry" >
-        <rect>
-         <x>40</x>
-         <y>20</y>
-         <width>251</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font" >
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text" >
-        <string>MIDI learning complete!</string>
-       </property>
-       <property name="alignment" >
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_8" >
-       <property name="geometry" >
-        <rect>
-         <x>30</x>
-         <y>60</y>
-         <width>281</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+      <layout class="QGridLayout" name="gridLayout_4" >
+       <item row="0" column="0" colspan="3" >
+        <widget class="QLabel" name="label_4" >
+         <property name="font" >
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text" >
+          <string>MIDI learning complete!</string>
+         </property>
+         <property name="alignment" >
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3" >
+        <widget class="QLabel" name="label_8" >
+         <property name="text" >
+          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 &lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;">
 &lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This wizard can be re-run at any time.&lt;/p>
 &lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;br />Now go spin some beats!&lt;/p>&lt;/body>&lt;/html></string>
-       </property>
-       <property name="wordWrap" >
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonFinish" >
-       <property name="geometry" >
-        <rect>
-         <x>110</x>
-         <y>200</y>
-         <width>111</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Finito!</string>
-       </property>
-      </widget>
+         </property>
+         <property name="wordWrap" >
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" >
+        <spacer name="horizontalSpacer_3" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>109</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1" >
+        <widget class="QPushButton" name="pushButtonFinish" >
+         <property name="text" >
+          <string>Finito!</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" >
+        <spacer name="horizontalSpacer_4" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>109</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
