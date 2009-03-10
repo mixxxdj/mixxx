@@ -16,7 +16,7 @@
    <item row="0" column="0" >
     <widget class="QStackedWidget" name="stackedWidget" >
      <property name="currentIndex" >
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page" >
       <layout class="QGridLayout" name="gridLayout_2" >
@@ -170,54 +170,39 @@
         <rect>
          <x>40</x>
          <y>20</y>
-         <width>81</width>
-         <height>18</height>
+         <width>251</width>
+         <height>31</height>
         </rect>
        </property>
-       <property name="text" >
-        <string>Congrats</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_5" >
-       <property name="geometry" >
-        <rect>
-         <x>140</x>
-         <y>10</y>
-         <width>151</width>
-         <height>41</height>
-        </rect>
+       <property name="font" >
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
        </property>
        <property name="text" >
-        <string>u r teh uber l33t</string>
+        <string>MIDI learning complete!</string>
        </property>
-      </widget>
-      <widget class="QLabel" name="label_7" >
-       <property name="geometry" >
-        <rect>
-         <x>20</x>
-         <y>60</y>
-         <width>301</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>You will be even l33ter if you go into dlgmidilearning.cpp and add the rest of the basic controls in Mixxx's GUI to the learning thing.</string>
-       </property>
-       <property name="wordWrap" >
-        <bool>true</bool>
+       <property name="alignment" >
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="label_8" >
        <property name="geometry" >
         <rect>
-         <x>20</x>
-         <y>130</y>
+         <x>30</x>
+         <y>60</y>
          <width>281</width>
-         <height>61</height>
+         <height>71</height>
         </rect>
        </property>
        <property name="text" >
-        <string>Also, I was too lazy to make spacebar actually work. Should be really easy, just set up a QShortcut or something.</string>
+        <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;">
+&lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This wizard can be re-run at any time.&lt;/p>
+&lt;p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;br />Now go spin some beats!&lt;/p>&lt;/body>&lt;/html></string>
        </property>
        <property name="wordWrap" >
         <bool>true</bool>
@@ -226,10 +211,10 @@
       <widget class="QPushButton" name="pushButtonFinish" >
        <property name="geometry" >
         <rect>
-         <x>100</x>
-         <y>190</y>
-         <width>141</width>
-         <height>41</height>
+         <x>110</x>
+         <y>200</y>
+         <width>111</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="text" >
