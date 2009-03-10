@@ -18,7 +18,9 @@
 #include <QtCore>
 #include "midiobjectcoremidi.h"
 
-
+static QString toHex(QString numberStr) {
+    return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+}
 
 /* This is a wrapper function for MidiObjectCoreMidi::notification_handler
  * needed because we cannot pass instance methods as callbacks, generally.
@@ -38,7 +40,8 @@ MidiObjectCoreMidi::MidiObjectCoreMidi() : MidiObject()
   // Initialize CoreMidi
   MIDIClientCreate(CFSTR("Mixxx"), CoreMIDI_notification_handler, this, &midiClient);
   MIDIInputPortCreate(midiClient, CFSTR("Input port"), midi_read_proc, (void *)this, &midiPort);
-  
+  MIDIOutputPortCreate(midiClient, CFSTR("Output port"), &midiOutPort);
+
   // No default device opening
   //currentMidiEndpoint = MIDIGetSource(0);
   //MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
@@ -96,23 +99,26 @@ void MidiObjectCoreMidi::devOpen(QString device)
   persistentDeviceNames.append(persistentString);
   
   MIDIPortConnectSource(midiPort, ref, persistentString);
+  currentMidiOutEndpoint = getDestinationEndpoint(device);
   
   // Should follow selected device !!!!
   openDevices.append(device);
-
-  MidiObject::run();  // Load the initial MIDI preset
+	MidiObject::run();
 }
 
 void MidiObjectCoreMidi::devClose(MIDIEndpointRef ref) {
   if (!ref) return;
   
-  MIDIPortDisconnectSource(midiPort, ref);
+  if (currentMidiOutEndpoint != ref) {
+    MIDIPortDisconnectSource(midiPort, ref);
+  }
 }
 
 void MidiObjectCoreMidi::devClose()
 {  
   // Find the endpoint associated with the device
   devClose(currentMidiEndpoint);
+
   openDevices.clear();
 }
 
@@ -128,7 +134,7 @@ void MidiObjectCoreMidi::run()
   QThread::currentThread()->setObjectName(QString("MidiObjectCoreMidi %1").arg(++id));
   
   //qDebug() << QString("MidiObjectCoreMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-
+  // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
   MidiObject::run();
 }
 
@@ -277,8 +283,8 @@ void MidiObjectCoreMidi::makeDeviceList() {
 
 // Get an endpoint given a device name
 MIDIEndpointRef MidiObjectCoreMidi::getEndpoint(QString device) {
-	unsigned int i; // Unsigned because of comparison
-	for (i = 0; i < MIDIGetNumberOfSources(); i++)
+     unsigned int i; // Unsigned because of comparison
+     for (i = 0; i < MIDIGetNumberOfSources(); i++)
     {
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         CFStringRef name = EndpointName(endpoint, true);
@@ -291,6 +297,41 @@ MIDIEndpointRef MidiObjectCoreMidi::getEndpoint(QString device) {
     qDebug() << "CoreMIDI: Error finding device endpoint for \"" << device
 			<< "\"";
     return 0;
+}
+
+// Get a destination endpoint given a device name
+MIDIEndpointRef MidiObjectCoreMidi::getDestinationEndpoint(QString device) {
+        unsigned int i; // Unsigned because of comparison
+        for (i = 0; i < MIDIGetNumberOfDestinations(); i++)
+    {
+        MIDIEndpointRef endpoint = MIDIGetDestination(i);
+        CFStringRef name = EndpointName(endpoint, true);
+        if (CFStringGetCStringPtr(name,0) == device)
+        {
+            return endpoint;
+        }
+    }
+
+    qDebug() << "CoreMIDI: Error finding destination device endpoint for \"" << device
+                        << "\"";
+    return 0;
+}
+
+void MidiObjectCoreMidi::sendShortMsg(unsigned int word)
+{
+    char buf[512];
+	unsigned char msg[] = { word & 0xff, (word>>8) & 0xff, (word>>16) & 0xff};
+
+	MIDIPacketList *mpl = (MIDIPacketList*)buf;
+	MIDIPacket *pkt = MIDIPacketListInit(mpl);
+	pkt = MIDIPacketListAdd(mpl, sizeof(buf), pkt, 0, 3, msg);
+	if (pkt)
+	{
+                MIDISend(midiOutPort, currentMidiOutEndpoint, mpl);
+	}
+	
+	//qDebug() << "MidiObjectCoreMidi::sendShortMsg() " << toHex(QString::number((int)msg[0])) << toHex(QString::number((int)msg[1]))
+	// 		 << toHex(QString::number((int)msg[2]));
 }
 
 // C/C++ wrapper function

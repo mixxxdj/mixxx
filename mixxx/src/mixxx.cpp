@@ -1002,6 +1002,7 @@ void MixxxApp::slotHelpAbout()
 "quil0m80<br>"
 "Michael Pujos<br>"
 "Mark Glines<br>"
+"Mathieu Rene<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
