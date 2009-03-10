@@ -54,6 +54,69 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     m_controlsToBind.append(MixxxControl("[Channel1]", "play"));
     m_controlDescriptions.append("Play button for Player 1");
 
+    m_controlsToBind.append(MixxxControl("[Channel2]", "play"));
+    m_controlDescriptions.append("Play button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "back"));
+    m_controlDescriptions.append("Rewind button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "back"));
+    m_controlDescriptions.append("Rewind button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "fwd"));
+    m_controlDescriptions.append("Seek forwards button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "fwd"));
+    m_controlDescriptions.append("Seek forward button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "cue_default"));
+    m_controlDescriptions.append("Cue button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "cue_default"));
+    m_controlDescriptions.append("Cue button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "volume"));
+    m_controlDescriptions.append("Channel 1 volume");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "volume"));
+    m_controlDescriptions.append("Channel 2 volume");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "rate"));
+    m_controlDescriptions.append("Pitch control for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "rate"));
+    m_controlDescriptions.append("Pitch control for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "pfl"));
+    m_controlDescriptions.append("Headphone listen button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "pfl"));
+    m_controlDescriptions.append("Headphone listen button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "filterLow"));
+    m_controlDescriptions.append("Low EQ knob for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "filterLow"));
+    m_controlDescriptions.append("Low EQ knob for Channel 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "filterMid"));
+    m_controlDescriptions.append("Mid EQ knob for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "filterMid"));
+    m_controlDescriptions.append("Mid EQ knob for Channel 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "filterHigh"));
+    m_controlDescriptions.append("High EQ knob for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "filterHigh"));
+    m_controlDescriptions.append("High EQ knob for Channel 2");
+    
+    m_controlsToBind.append(MixxxControl("[Channel1]", "pregain"));
+    m_controlDescriptions.append("Gain for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "pregain"));
+    m_controlDescriptions.append("Gain for Channel 2");
+    
     //Should be same number of controls as descriptions.
     Q_ASSERT(m_controlsToBind.size() == m_controlDescriptions.size());
 
