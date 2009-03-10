@@ -36,6 +36,7 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
     connect(pushButtonSkip, SIGNAL(clicked()), this, SLOT(next()));
+    connect(pushButtonPrevious, SIGNAL(clicked()), this, SLOT(prev()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished(MidiMessage)), this, SLOT(controlMapped(MidiMessage)));
     connect(pushButtonFinish, SIGNAL(clicked()), this, SLOT(close()));
 
@@ -148,12 +149,30 @@ void DlgMidiLearning::next()
         labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
         pushButtonSkip->setText(tr("Skip"));
         labelMappedTo->setText("");
+        pushButtonPrevious->setEnabled(true);
     }
     else
     {
         //We've hit the end, show the congrats pane
         stackedWidget->setCurrentIndex(2);
     }
+}
+
+void DlgMidiLearning::prev()
+{
+    iCurrentControl--;
+    if (iCurrentControl >= 0)
+    {
+        m_pMidiMapping->beginMidiLearn(m_controlsToBind[iCurrentControl]);
+        labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
+        pushButtonSkip->setText(tr("Skip"));
+        labelMappedTo->setText("");
+        
+        //We've hit the start, don't let the user go back anymore.
+        if (iCurrentControl == 0)
+            pushButtonPrevious->setEnabled(false);
+    }
+
 }
 
 /** Gets called when a control has just been mapped successfully */
