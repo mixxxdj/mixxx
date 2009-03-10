@@ -12,12 +12,12 @@
   <property name="windowTitle" >
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" >
+  <layout class="QGridLayout" name="gridLayout_4" >
    <item row="0" column="0" >
     <widget class="QLabel" name="labelDeviceName" >
      <property name="font" >
       <font>
-       <pointsize>11</pointsize>
+       <pointsize>14</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -27,6 +27,68 @@
      </property>
     </widget>
    </item>
+   <item rowspan="2" row="0" column="1" >
+    <spacer name="horizontalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>115</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item rowspan="2" row="0" column="2" >
+    <widget class="QGroupBox" name="groupBoxPresets" >
+     <property name="title" >
+      <string/>
+     </property>
+     <property name="flat" >
+      <bool>true</bool>
+     </property>
+     <property name="checkable" >
+      <bool>false</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout" >
+      <item row="0" column="0" >
+       <widget class="QLabel" name="label" >
+        <property name="text" >
+         <string>Load Preset:</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" >
+       <widget class="QComboBox" name="comboBoxPreset" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" >
+       <widget class="QPushButton" name="btnExportXML" >
+        <property name="styleSheet" >
+         <string notr="true" />
+        </property>
+        <property name="text" >
+         <string>Export</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+     <zorder>label</zorder>
+     <zorder>comboBoxPreset</zorder>
+     <zorder>btnExportXML</zorder>
+     <zorder>btnMidiLearnWizard</zorder>
+    </widget>
+   </item>
    <item row="1" column="0" >
     <widget class="QPushButton" name="btnActivateDevice" >
      <property name="text" >
@@ -34,50 +96,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1" >
-    <spacer name="horizontalSpacer" >
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0" >
-      <size>
-       <width>303</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="2" >
-    <widget class="QLabel" name="label" >
-     <property name="text" >
-      <string>Load Preset:</string>
-     </property>
-     <property name="alignment" >
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3" >
-    <widget class="QComboBox" name="comboBoxPreset" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4" >
-    <widget class="QPushButton" name="btnExportXML" >
-     <property name="styleSheet" >
-      <string notr="true" />
-     </property>
-     <property name="text" >
-      <string>Export</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="5" >
+   <item row="2" column="0" colspan="3" >
     <widget class="QToolBox" name="toolBox" >
      <property name="frameShape" >
       <enum>QFrame::NoFrame</enum>
@@ -91,7 +110,7 @@
         <x>0</x>
         <y>0</y>
         <width>574</width>
-        <height>280</height>
+        <height>276</height>
        </rect>
       </property>
       <attribute name="label" >
@@ -134,6 +153,22 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="btnMidiLearnWizard" >
+            <property name="styleSheet" >
+             <string notr="true" />
+            </property>
+            <property name="text" >
+             <string>MIDI Learning Wizard</string>
+            </property>
+            <property name="checkable" >
+             <bool>false</bool>
+            </property>
+            <property name="checked" >
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_3" >
             <property name="orientation" >
              <enum>Qt::Horizontal</enum>
@@ -162,22 +197,6 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0" colspan="2" >
-        <widget class="QPushButton" name="btnMidiLearnWizard" >
-         <property name="styleSheet" >
-          <string notr="true" />
-         </property>
-         <property name="text" >
-          <string>MIDI Learning Wizard</string>
-         </property>
-         <property name="checkable" >
-          <bool>false</bool>
-         </property>
-         <property name="checked" >
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="page_2" >
@@ -186,7 +205,7 @@
         <x>0</x>
         <y>0</y>
         <width>574</width>
-        <height>280</height>
+        <height>276</height>
        </rect>
       </property>
       <attribute name="label" >
@@ -244,15 +263,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>labelDeviceName</zorder>
-  <zorder>btnImportXML</zorder>
-  <zorder>toolBox</zorder>
-  <zorder>btnActivateDevice</zorder>
-  <zorder>btnExportXML</zorder>
-  <zorder>listWidget</zorder>
-  <zorder>comboBoxPreset</zorder>
-  <zorder>label</zorder>
-  <zorder>btnMidiLearnWizard</zorder>
  </widget>
  <resources/>
  <connections/>

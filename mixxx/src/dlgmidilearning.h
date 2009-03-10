@@ -39,6 +39,7 @@ public:
 public slots:
     void begin();   /** Begin the MIDI learning phase */
     void next();    /** Ask to map the next control */
+    void prev();    /** Ask to map the previous control */
     void controlMapped(MidiMessage); /** Gets called when a control has just been mapped successfully */
 private:
     MidiMapping* m_pMidiMapping;
