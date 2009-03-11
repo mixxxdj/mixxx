@@ -1304,7 +1304,7 @@ def BuildRelease(target, source, env):
 
 	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
 		print "Now building installer..."
-		os.system('"c:/Program Files/NSIS/makensis.exe" Mixxx.nsi')
+		os.system('"c:/Program Files/NSIS/makensis.exe" /DBINDIR=dist Mixxx.nsi')
 	else:
 		print "Aborted building installer"
 
