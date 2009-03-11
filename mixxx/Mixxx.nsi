@@ -20,7 +20,7 @@
 	!ifndef BUILD_REV
 		!tempfile SVN_VERION_TMPFILE
 		!system 'svnversion > "${SVN_VERION_TMPFILE}"'
-		!searchparse /noerrors /file ${SVN_VERION_TMPFILE} "" BUILD_REV
+		!searchparse /noerrors /file ${SVN_VERION_TMPFILE} `` BUILD_REV `:`
 		!delfile "${SVN_VERION_TMPFILE}"
 	!endif
 	!define VERSION "SVN${BUILD_REV}-${NOW}"
