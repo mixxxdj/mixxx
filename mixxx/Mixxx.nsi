@@ -75,9 +75,6 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "${BINDIR}\mixxx.exe"
   File "${BINDIR}\*.dll"
-
-  ; We include the MSVC CRT manifest if it exists, otherwise we continue... MSVC builds need this, MinGW builds do not.
-  File /nonfatal "..\mixxx-winlib\Microsoft.VC80.CRT.manifest"
   
   ; And documentation, licence etc.
   File "Mixxx-Manual.pdf"
