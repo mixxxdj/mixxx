@@ -32,7 +32,9 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     //Delete this dialog when its closed. We don't want any persistence.
     QWidget::setAttribute(Qt::WA_DeleteOnClose);
 
-    pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));    
+    m_pSkipShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    connect(m_pSkipShortcut, SIGNAL(activated()), pushButtonSkip, SLOT(click()));
+    //pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));    
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
     connect(pushButtonSkip, SIGNAL(clicked()), this, SLOT(next()));
@@ -127,6 +129,8 @@ DlgMidiLearning::~DlgMidiLearning()
 {
     //If there was any ongoing learning, cancel it (benign if there wasn't).
     m_pMidiMapping->cancelMidiLearn();
+
+    delete m_pSkipShortcut;
 }
 
 void DlgMidiLearning::begin()
