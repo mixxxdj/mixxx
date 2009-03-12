@@ -713,7 +713,6 @@ else:
 env.Uic4('dlgpreferencesdlg.ui')
 env.Uic4('dlgprefsounddlg.ui')
 env.Uic4('dlgprefmidibindingsdlg.ui')
-env.Uic4('dlgprefmididevicedlg.ui')
 env.Uic4('dlgprefplaylistdlg.ui')
 env.Uic4('dlgprefnomididlg.ui')
 env.Uic4('dlgprefcontrolsdlg.ui')
