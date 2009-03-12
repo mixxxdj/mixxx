@@ -804,8 +804,8 @@ void MidiMapping::finishMidiLearn(MidiMessage message)
     qDebug() << "MidiMapping: Learning finished!";
 
     //Notify the prefs dialog that we've finished doing a MIDI learn.
-    emit(midiLearningFinished(message));
     emit(midiLearningFinished());
+    emit(midiLearningFinished(message));
 }
 
 void MidiMapping::beginMidiLearn(MixxxControl control)
