@@ -46,6 +46,7 @@ private:
     QList<MixxxControl> m_controlsToBind;
     QList<QString> m_controlDescriptions;
     int iCurrentControl; /** Used to iterate through the controls list */
+    QShortcut* m_pSkipShortcut;
 
 };
 
