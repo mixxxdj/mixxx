@@ -1,6 +1,25 @@
-#Build the SConscript file in /src, and make it us src/.obj for storing obj output.
-#SConscript(File('lib/ladspa/SConscript'), build_dir=Dir('lib/ladspa/.obj'), duplicate=0)
-SConscript(File('src/SConscript'), build_dir=Dir('src/.obj'), duplicate=0) 
+
+import sys, os
+
+if os.name == 'nt': #XXX why doesn't tis use sys.platform?
+   print 'Platform: Windows'
+   platform = 'win32'
+elif sys.platform == 'linux2':
+     print 'Platform: Linux'
+     platform = 'linux'
+elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
+     print 'Platform: BSD'
+     platform = 'bsd'
+elif sys.platform == 'darwin':
+     print 'Platform: OS X'
+     platform = 'osx'
+else:
+	print 'Platform: Unknown (assuming Linux-like)'
+	platform = 'linux'
+
+Export('platform')
+
+SConscript(File('src/SConscript'), build_dir=Dir('build_%s' % platform), duplicate=0) 
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", "#src/.obj/mixxx", Copy("$TARGET", "$SOURCE"))
 #hack for windows:
