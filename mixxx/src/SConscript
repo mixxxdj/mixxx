@@ -611,7 +611,7 @@ if platform == 'osx':
 	env.Append(CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
 	env.Append(LINKFLAGS='-framework OpenGL')
 	
-	#Check for QT4 (framework)
+	#QT4
 	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
@@ -620,6 +620,10 @@ if platform == 'osx':
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
+	
+	#Non-standard libpaths for fink and darwin ports
+	env.Append(LIBPATH = ['/sw/lib'])
+	env.Append(CPPPATH = ['/sw/include'])
 			
 	#Check for CoreMIDI
 	if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
