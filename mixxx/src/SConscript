@@ -136,25 +136,9 @@ def getFlags(env, argflag, default=0):
 
 ###### MAIN LINE ######
 #######################
-#Get the platform/OS that we're building on:
 
-if os.name == 'nt': #XXX why doesn't tis use sys.platform?
-	print 'Platform: Windows'
-	platform = 'win32'
-elif sys.platform == 'linux2':
-	print 'Platform: Linux'
-	platform = 'linux'
-elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
-	print 'Platform: BSD'
-	platform = 'bsd'
-elif sys.platform == 'darwin':
-	print 'Platform: OS X'
-	platform = 'osx'
-else:
-	print 'Platform: Unknown (assuming Linux-like)'
-	platform = 'linux'
 
-Export('platform')
+Import('platform')
 
 #Figure out what the QT path is
 #XXX this should be a dict lookup, not an ifelse tree
@@ -621,9 +605,13 @@ if platform == 'osx':
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 	
-	#Non-standard libpaths for fink and darwin ports
+	#Non-standard libpaths for fink and certain (most?) darwin ports
 	env.Append(LIBPATH = ['/sw/lib'])
 	env.Append(CPPPATH = ['/sw/include'])
+
+	#Non-standard libpaths for darwin ports
+	env.Append(LIBPATH = ['/opt/local/lib'])
+	env.Append(CPPPATH = ['/opt/local/include'])
 			
 	#Check for CoreMIDI
 	if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
