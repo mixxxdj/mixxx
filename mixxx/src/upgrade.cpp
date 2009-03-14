@@ -45,33 +45,36 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
         QString oldFilePath = oldLocation.arg(".mixxxtrack.xml");
         QString newFilePath = newLocation.arg("mixxxtrack.xml");
         QFile* oldFile = new QFile(oldFilePath);
-        if (oldFile->copy(newFilePath))
-            oldFile->remove();
-        else qWarning() << "Error" << oldFile->error() << "moving your library file" << oldFilePath << "to the new location" << newFilePath;
+        if (oldFile->exists()) {
+            if (oldFile->copy(newFilePath))
+                oldFile->remove();
+            else qWarning() << "Error" << oldFile->error() << "moving your library file" << oldFilePath << "to the new location" << newFilePath;
+        }
         delete oldFile;
         
         oldFilePath = oldLocation.arg(".mixxxbpmscheme.xml");
         newFilePath = newLocation.arg("mixxxbpmscheme.xml");
         oldFile = new QFile(oldFilePath);
-        if (oldFile->copy(newFilePath))
-            oldFile->remove();
-        else qWarning() << "Error" << oldFile->error() << "moving your settings file" << oldFilePath << "to the new location" << newFilePath;
+        if (oldFile->exists()) {
+            if (oldFile->copy(newFilePath))
+                oldFile->remove();
+            else qWarning() << "Error" << oldFile->error() << "moving your settings file" << oldFilePath << "to the new location" << newFilePath;
+        }
         delete oldFile;
         
         oldFilePath = oldLocation.arg(".MixxxMIDIBindings.xml");
         newFilePath = newLocation.arg("MixxxMIDIBindings.xml");
         oldFile = new QFile(oldFilePath);
-        QFileInfo* pre162MIDI = new QFileInfo(oldFilePath);
-        if (pre162MIDI->exists()) {
+        if (oldFile->exists()) {
             qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
-                QFile::remove(oldLocation.arg(".MixxxMIDIDevice.xml"));
-            }
-        else qWarning() << "Error" << oldFile->error() << "moving your MIDI mapping file" << oldFilePath << "to the new location" << newFilePath;
+            else qWarning() << "Error" << oldFile->error() << "moving your MIDI mapping file" << oldFilePath << "to the new location" << newFilePath;
+        }
         // Tidy up
-        delete pre162MIDI;
         delete oldFile;
+
+        QFile::remove(oldLocation.arg(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
         
         oldFilePath = oldLocation.arg(".mixxx.cfg");
         newFilePath = newLocation.arg("mixxx.cfg");
