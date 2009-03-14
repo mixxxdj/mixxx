@@ -54,7 +54,6 @@ MidiObject::MidiObject()
     m_pMidiMapping = new MidiMapping(*this);
 //     m_pMidiMapping->loadInitialPreset();
 #endif
-    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 
@@ -319,10 +318,13 @@ bool MidiObject::getMidiLearnStatus() {
 
 void MidiObject::enableMidiLearn() {
     m_bMidiLearn = true;
+    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+
 }
 
 void MidiObject::disableMidiLearn() {
     m_bMidiLearn = false;
+    disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
 }
 
 #ifdef __MIDISCRIPT__
