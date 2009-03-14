@@ -34,11 +34,12 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName) : SoundSource(qFileName)
 
 	// Copy QString to char[] buffer for mp4_open to read from later
 	ipd.filename = new char[ qFileName.length() + 1 ];
+        ipd.remote = false; // File is not an stream
 	strcpy(ipd.filename, qFileName);
 
 	int mp4_open_status = mp4_open(&ipd);
 	if (mp4_open_status != 0) {
-		// FIXME: Why the heck does the file fail to open more then half the time?!?!?
+                // The file was loading and failing iratically because ipd.remote was an in an uninitialized state, it needed to be set to false.
 		qDebug() << "SSM4A: failed to open MP4 file '" << qFileName << "' w/ status:" << mp4_open_status << " FIXME.";
 		return;
 	}
