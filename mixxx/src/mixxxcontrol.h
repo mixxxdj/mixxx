@@ -28,7 +28,8 @@ class MixxxControl
             return ((m_strCOGroup == other.getControlObjectGroup()) &&
                     (m_strCOValue == other.getControlObjectValue()) &&
                     (m_midiOption == other.getMidiOption()));
-        };     
+        };
+        bool isNull() { return (m_strCOGroup == "" && m_strCOValue == ""); };
     private:
         QString m_strCOGroup;
         QString m_strCOValue;

@@ -803,16 +803,19 @@ void MidiMapping::finishMidiLearn(MidiMessage message)
     //We've received a MidiMessage that should be mapped onto some control. When beginMidiLearn()
     //was called, we were given the control that should be mapped, so let's connect the message
     //to the saved control and thus "create" the mapping between the two.
-    addInputControl(message, m_controlToLearn);
-
-    //Reset the saved control.
-    m_controlToLearn = MixxxControl();
-
-    qDebug() << "MidiMapping: Learning finished!";
-
-    //Notify the prefs dialog that we've finished doing a MIDI learn.
-    emit(midiLearningFinished(message));
-    emit(midiLearningFinished()); //Tells MidiObject to stop feeding us messages.
+    if (!m_controlToLearn.isNull()) { //Ensure we've actually been told to learn a control. 
+                                      //Note the ! out front.
+        addInputControl(message, m_controlToLearn);
+    
+        //Reset the saved control.
+        m_controlToLearn = MixxxControl();
+    
+        qDebug() << "MidiMapping: Learning finished!";
+    
+        //Notify the prefs dialog that we've finished doing a MIDI learn.
+        emit(midiLearningFinished(message));
+        emit(midiLearningFinished()); //Tells MidiObject to stop feeding us messages.
+    }
 }
 
 void MidiMapping::beginMidiLearn(MixxxControl control)
