@@ -231,7 +231,7 @@ void MidiObjectCoreMidi::notification_handler(const MIDINotification *message)
 
 void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString device)
 {
-  qDebug() << "handleMidi("<<device<<")";
+    //qDebug() << "handleMidi("<<device<<")";
     const MIDIPacket * packet;
     //Byte message[256];
     int messageSize = 0;
@@ -379,7 +379,7 @@ void MidiObjectCoreMidi::sendSysexMsg(unsigned char data[], unsigned int length)
 // C/C++ wrapper function
 static void midi_read_proc(const MIDIPacketList * packets, void * refCon, void *connRefCon)
 {
-  qDebug() << "midi_read_proc";
+    //qDebug() << "midi_read_proc";
     MidiObjectCoreMidi * midi = (MidiObjectCoreMidi *)refCon;
     // Midi packets arrived, forward to handler with device name
     midi->handleMidi(packets, *((QString *)connRefCon));

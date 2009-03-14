@@ -187,7 +187,7 @@ void MidiObject::receive(MidiCategory status, char channel, char control, char v
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
 
-    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
+    //qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
 
     MidiType type = MIDI_EMPTY;
     switch (status) {
@@ -245,7 +245,6 @@ void MidiObject::receive(MidiCategory status, char channel, char control, char v
     if (p) //Only pass values on to valid ControlObjects.
     {
       double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
-      qDebug() << "value coming out ComputeValue: " << newValue;
 
       // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi mapping is <button> we override the Midi 'status' appropriately.
       switch (mixxxControl.getMidiOption()) {
