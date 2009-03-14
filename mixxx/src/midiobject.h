@@ -59,6 +59,7 @@ public:
     virtual void devClose() = 0;
     /** Delete MIDIMapping & stop script engine */
     void shutdown();
+    void restartScriptEngine();
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */

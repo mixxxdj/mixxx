@@ -321,6 +321,14 @@ void MidiMapping::loadPreset(QDomElement root) {
     //qDebug() << QString("MidiMapping: loadPreset() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
 
     if (root.isNull()) return;
+    
+    m_pMidiInputMappingTableModel->removeRows(0, m_pMidiInputMappingTableModel->rowCount());
+    m_pMidiOutputMappingTableModel->removeRows(0, m_pMidiOutputMappingTableModel->rowCount());
+    
+    m_rMidiObject.restartScriptEngine();
+    m_pScriptEngine = m_rMidiObject.getMidiScriptEngine();
+    m_pScriptFileNames.clear();
+    m_pScriptFunctionPrefixes.clear();
 
     // For each controller in the DOM
     m_Bindings = root;
@@ -341,7 +349,6 @@ void MidiMapping::loadPreset(QDomElement root) {
 
         // Look for additional ones
         while (!scriptFile.isNull()) {
-
             QString functionPrefix = scriptFile.attribute("functionprefix","");
             QString filename = scriptFile.attribute("filename","");
             addScriptFile(filename, functionPrefix);
@@ -350,14 +357,14 @@ void MidiMapping::loadPreset(QDomElement root) {
         }
 
         // Load Script files
-        ConfigObject<ConfigValue> *m_pConfig = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+        ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
 
         qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
 
         QListIterator<QString> it(m_pScriptFileNames);
         while (it.hasNext()) {
             QString curScriptFileName = it.next();
-            m_pScriptEngine->evaluate(m_pConfig->getConfigPath().append("midi/").append(curScriptFileName));
+            m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
 
             if(m_pScriptEngine->hasErrors(curScriptFileName)) {
                 qDebug() << "Errors occured while loading " << curScriptFileName;
