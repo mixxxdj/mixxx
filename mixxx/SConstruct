@@ -19,8 +19,13 @@ else:
 
 Export('platform')
 
-SConscript(File('src/SConscript'), build_dir=Dir('build_%s' % platform), duplicate=0) 
+build_dir = '%s_build' % platform
+
+SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
 #wtf doesn't this work on win32 (works on Linux, OS X):
-Command("mixxx", "#src/.obj/mixxx", Copy("$TARGET", "$SOURCE"))
+Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
 #hack for windows:
-Copy("mixxx", "#src/.obj/mixxx")
+Copy("mixxx", os.path.join(build_dir, "mixxx"))
+
+#on OS X, if the bundle has been built, copy it up:
+#Command("Mixxx.app", os.path.join(build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))
