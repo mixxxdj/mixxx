@@ -46,6 +46,10 @@ MidiObjectCoreMidi::MidiObjectCoreMidi() : MidiObject()
   //currentMidiEndpoint = MIDIGetSource(0);
   //MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
   
+  //Clear the sysex queue.
+  memset(m_sysexQueue, 0, sizeof(*m_sysexQueue) * COREMIDI_SYSEX_QUEUE_SIZE);
+  m_sysexQueueIdx = 0;
+
   // Allocate buffer
   buffer = new char[4096];
   if (buffer == 0)
@@ -327,12 +331,50 @@ void MidiObjectCoreMidi::sendShortMsg(unsigned int word)
 	pkt = MIDIPacketListAdd(mpl, sizeof(buf), pkt, 0, 3, msg);
 	if (pkt)
 	{
-                MIDISend(midiOutPort, currentMidiOutEndpoint, mpl);
+         MIDISend(midiOutPort, currentMidiOutEndpoint, mpl);
 	}
 	
 	//qDebug() << "MidiObjectCoreMidi::sendShortMsg() " << toHex(QString::number((int)msg[0])) << toHex(QString::number((int)msg[1]))
 	// 		 << toHex(QString::number((int)msg[2]));
 }
+
+/** Sends a MIDI sysex message through CoreMIDI. Copies the packet into a queue temporarily
+    because we can only tell OS X to send the packets asynchronously, or in other words, we
+    tell OS X we want to send a packet and then it sends it whenever it wants. Because of that,
+    we need to keep the packet around until it's sent by OS X, so we throw it in a queue and
+    hope it gets sent before the queue fills and wraps around to the same element. */
+void MidiObjectCoreMidi::sendSysexMsg(unsigned char data[], unsigned int length) {
+    
+    //Grab the next element in the ringbuffer/queue.
+    struct MIDISysexSendRequest* sysex = &m_sysexQueue[m_sysexQueueIdx];
+  
+    //Give a warning to developers if our queue overflowed. In that case, you should probably
+    //up the size of the queue. (This would happen if you fire sysex messages crazy fast.)
+    if (sysex->data != 0 && sysex->complete == false)
+        qDebug() << "Warning: MidiObjectCoreMIDI sysex queue overflowed.";
+    
+    //Delete old sysex packet from our queue,if it exists.
+    if (sysex->data)
+        delete [] sysex->data;
+
+    //Erase the rest of the struct.
+    memset(sysex, 0, sizeof(*sysex));
+
+    //Create our new packet, and copy over the bytes so we have them in our queue.
+    sysex->destination = currentMidiOutEndpoint;
+    sysex->data = new unsigned char[length];
+    memcpy((void*)sysex->data, data, length * sizeof(*data));
+    sysex->bytesToSend = length;
+
+    //Send the sysex request asynchronously. We need to stick the sysex messages in a queue
+    //so that when OS X actually decides to send them, the pointers (that we passed it) are 
+    //still valid.
+    MIDISendSysex(sysex);
+
+    //Increment and wrap (the queue is a ringbuffer)
+    m_sysexQueueIdx = (m_sysexQueueIdx+1)%COREMIDI_SYSEX_QUEUE_SIZE;
+}
+
 
 // C/C++ wrapper function
 static void midi_read_proc(const MIDIPacketList * packets, void * refCon, void *connRefCon)

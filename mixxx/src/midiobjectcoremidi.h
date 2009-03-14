@@ -29,6 +29,8 @@
 // #include <CoreMIDI/CoreMIDI.h>
 #include <CoreMIDI/MIDIServices.h>
 
+#define COREMIDI_SYSEX_QUEUE_SIZE 32 
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -45,6 +47,7 @@ public:
     MIDIEndpointRef getEndpoint(QString device);
     MIDIEndpointRef getDestinationEndpoint(QString device);
     void sendShortMsg(unsigned int word);
+    void sendSysexMsg(unsigned char data[], unsigned int length);
 
     void notification_add_handler(const MIDIObjectAddRemoveNotification *message);
     void notification_remove_handler(const MIDIObjectAddRemoveNotification *message);
@@ -62,6 +65,8 @@ protected:
     MIDIEndpointRef currentMidiOutEndpoint;
     QList<MIDIEndpointRef> currentMidiEndpoints;
     QList<QString *> persistentDeviceNames;
+    MIDISysexSendRequest m_sysexQueue[COREMIDI_SYSEX_QUEUE_SIZE];
+    unsigned int m_sysexQueueIdx;
 };
 
 static void midi_read_proc(const MIDIPacketList *packets, void *refCon, void *connRefCon);
