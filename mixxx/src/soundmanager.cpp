@@ -458,7 +458,7 @@ int SoundManager::setupDevices()
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
-    return 0;
+    return (iNumDevicesOpenedForOutput == 0);
 }
 
 void SoundManager::sync()
