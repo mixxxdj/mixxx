@@ -233,7 +233,7 @@ if os.environ.has_key('CCFLAGS'):
 	env.Append(CCFLAGS = SCons.Util.CLVar(os.environ['CCFLAGS']))
 
 
-env.Append(CPPDEFINES=[('BUILD_REV', '"' + getBZRRevision() + '"')])
+env.Append(CPPDEFINES=[('BUILD_REV', '"%s"' % getBZRRevision())])
 
 ### embed SVN version into build
 ### Put version info into a file, so it doesn't force a rebuild of everything :)
@@ -1067,12 +1067,14 @@ if int(flags_cmetrics):
 else:
 	print "Case Metrics profiling... disabled"
 
+env.Append(CPPDEFINES=[('BUILD_FLAGS', "'%s'" % build_flags)])
+
 ### Put flags info into a file
-f = open("#.mixxx_flags.svn","w")
-try:
-	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
-finally:
-	f.close()
+#f = open("#.mixxx_flags.svn","w")
+#try:
+#	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
+#finally:
+#	f.close()
 	
 # Print the build flags (useful if the flags have been cached, ie. if you just run "scons"
 # and want to see the flags that you used last time)
