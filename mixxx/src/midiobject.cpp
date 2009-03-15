@@ -51,9 +51,9 @@ MidiObject::MidiObject()
     m_pScriptEngine = NULL;
     restartScriptEngine();
 
+#endif
     m_pMidiMapping = new MidiMapping(*this);
 //     m_pMidiMapping->loadInitialPreset();
-#endif
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 
