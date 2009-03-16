@@ -44,6 +44,8 @@
 #include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
+#include "upgrade.cpp"
+
 #ifdef __IPOD__
 #include "wtracktableview.h"
 #include "gpod/itdb.h"
@@ -76,9 +78,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     #ifdef BUILD_FLAGS
       buildFlags = BUILD_FLAGS;
     #endif
-    if (buildRevision.trimmed().length() > 0)
+    if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+    }
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
@@ -89,8 +92,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pTrack = 0;
     prefDlg = 0;
     midi = 0;
-    // Read the config file from home directory
-    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    
+    // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
+    config = versionUpgrade();  // This static function is located in upgrade.cpp
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__

@@ -65,7 +65,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
-    $$UI_DIR/ui_dlgprefmididevicedlg.h \
+#    $$UI_DIR/ui_dlgprefmididevicedlg.h \
 #    $$UI_DIR/ui_dlgprefmididlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
@@ -469,7 +469,7 @@ FORMS += src/dlgaboutdlg.ui \
     src/dlgprefeqdlg.ui \
     src/dlgpreferencesdlg.ui \
     src/dlgprefmidibindingsdlg.ui \
-    src/dlgprefmididevicedlg.ui \
+#    src/dlgprefmididevicedlg.ui \
 #    src/dlgprefmididlg.ui \
     src/dlgprefplaylistdlg.ui \
     src/dlgprefsounddlg.ui \

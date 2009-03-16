@@ -676,7 +676,7 @@ StantonSCS3d.DeckChange = function (channel, device, control, value, category) {
         midi.sendShortMsg(0xB0+(channel-1),0x01,0x15+add,StantonSCS3d.temp["device"]);  // Show position on S4
         return;
     }
-    midi.sendShortMsg(0xB0+(channel-1),0x0C,0x00,StantonSCS3d.temp["device"]);  // Darken S4
+    midi.sendShortMsg(0xB0+(channel-1),0x01,0x00,StantonSCS3d.temp["device"]);  // Darken S4
     StantonSCS3d.modifier["Deck"]=0;   // Clear button modifier flag
     // If the button's been held down for over a second, stay on the current deck
     if (new Date() - StantonSCS3d.modifier["deckTime"]>1000)
