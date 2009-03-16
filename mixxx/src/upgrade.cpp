@@ -29,7 +29,12 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
 */
 
     QString oldLocation = QDir::homePath().append("/%1");
-    QFileInfo* pre162Config = new QFileInfo(oldLocation.arg(".%1").arg(SETTINGS_FILE));
+#ifdef __WIN32__
+    QFileInfo* pre162Config = new QFileInfo(oldLocation.arg("mixxx.cfg"));
+#else
+    QFileInfo* pre162Config = new QFileInfo(oldLocation.arg(".mixxx.cfg"));
+#endif
+
     if (pre162Config->exists()) {
     
         // Move the files to their new location
@@ -41,47 +46,76 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
         }
         
         newLocation.append("%1");
-        
+        QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
+
+#ifdef __WIN32__
+        QString oldFilePath = oldLocation.arg("mixxxtrack.xml");
+#else
         QString oldFilePath = oldLocation.arg(".mixxxtrack.xml");
+#endif
+
         QString newFilePath = newLocation.arg("mixxxtrack.xml");
         QFile* oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
-            else qWarning() << "Error" << oldFile->error() << "moving your library file" << oldFilePath << "to the new location" << newFilePath;
+            else {
+                if (oldFile->error()==14) qWarning() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qWarning() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            }
         }
         delete oldFile;
         
+#ifdef __WIN32__
+        oldFilePath = oldLocation.arg("mixxxbpmschemes.xml");
+#else
         oldFilePath = oldLocation.arg(".mixxxbpmscheme.xml");
+#endif
         newFilePath = newLocation.arg("mixxxbpmscheme.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
-            else qWarning() << "Error" << oldFile->error() << "moving your settings file" << oldFilePath << "to the new location" << newFilePath;
+            else {
+                if (oldFile->error()==14) qWarning() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qWarning() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            }
         }
         delete oldFile;
-        
+#ifdef __WIN32__
+        oldFilePath = oldLocation.arg("MixxxMIDIBindings.xml");
+#else
         oldFilePath = oldLocation.arg(".MixxxMIDIBindings.xml");
+#endif
         newFilePath = newLocation.arg("MixxxMIDIBindings.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
-            else qWarning() << "Error" << oldFile->error() << "moving your MIDI mapping file" << oldFilePath << "to the new location" << newFilePath;
+            else {
+                if (oldFile->error()==14) qWarning() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qWarning() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            }
         }
         // Tidy up
         delete oldFile;
 
         QFile::remove(oldLocation.arg(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
-        
+
+#ifdef __WIN32__
+        oldFilePath = oldLocation.arg("mixxx.cfg");
+#else
         oldFilePath = oldLocation.arg(".mixxx.cfg");
-        newFilePath = newLocation.arg("mixxx.cfg");
+#endif
+        newFilePath = newLocation.arg(SETTINGS_FILE);
         oldFile = new QFile(oldFilePath);
         if (oldFile->copy(newFilePath))
             oldFile->remove();
-        else qWarning() << "Error" << oldFile->error() << "moving your configuration file" << oldFilePath << "to the new location" << newFilePath;
+        else {
+                if (oldFile->error()==14) qWarning() << errorText.arg("configuration", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qWarning() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            }
         delete oldFile;
         
     }
