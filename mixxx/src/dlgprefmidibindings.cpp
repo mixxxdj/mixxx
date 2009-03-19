@@ -254,44 +254,46 @@ void DlgPrefMidiBindings::slotAddInputBinding() {
 
     bool ok = true;
 
-    QStringList selectionList;
-
-    QString device = QInputDialog::getItem(this, tr("1/6 Select Device"), tr("Select a device to control"), selectionList, 0, true, &ok);
+    QString controlGroup = QInputDialog::getItem(this, tr("Select Control Group"), tr("Select Control Group"), 
+                                                ControlGroupDelegate::getControlGroups(), 0, false,  &ok);
+    if (!ok) return;
+    
+    QStringList controlValues;
+    if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
+        controlGroup == CONTROLGROUP_CHANNEL2_STRING) {
+        controlValues = ControlValueDelegate::getChannelControlValues();
+    }
+    else if (controlGroup == CONTROLGROUP_MASTER_STRING)
+    {
+        controlValues = ControlValueDelegate::getMasterControlValues();
+    }
+    else if (controlGroup == CONTROLGROUP_PLAYLIST_STRING)
+    {
+        controlValues = ControlValueDelegate::getPlaylistControlValues();
+    }
+    else
+    {
+        qDebug() << "Unhandled ControlGroup in " << __FILE__;
+    }
+    
+        
+    QString controlValue = QInputDialog::getItem(this, tr("Select Control"), tr("Select Control"), 
+                                                 controlValues, 0, false,  &ok);
     if (!ok) return;
 
-    QString controlKey = QInputDialog::getItem(this, tr("2/6 Select Control Group + Key"), tr("Select Control Group + Key"), getControlKeyList(), 0, false,  &ok);
-    if (!ok) return;
-    QString group = controlKey.trimmed().split(" ").at(0).trimmed();
-    QString key = controlKey.trimmed().split(" ").at(1).trimmed();
 
-    selectionList = QStringList();
-    selectionList << "Ctrl" << "Key" << "Pitch";
-    QString miditype = QInputDialog::getItem(this, tr("3/6 Select MIDI Type"), tr("Select MIDI Type"), selectionList, 0, false,  &ok);
-    if (!ok) return;
+    MixxxControl mixxxControl(controlGroup, controlValue);
+    MidiMessage message(MIDI_KEY); //Just picking a default here.
 
-    QString midino = QString::number(QInputDialog::getInteger(this, tr("4/6 Select Midi No."), tr("Type in the MIDI number value"), 1, 0, 127, 1, &ok));
-    if (!ok) return;
-
-    QString midichan = QString::number(QInputDialog::getInteger(this, tr("5/6 Select Midi Channel"), tr("Type in the MIDI channel value (ch)"), 1, 0, 127, 1, &ok));
-    if (!ok) return;
-
-    //    selectionList = QStringList(getControlTypeList());
-    //    if (selectionList.size() == 0 && tblBindings->rowCount() > 0) { selectionList.append(tblBindings->item(tblBindings->rowCount() - 1,3)->text()); }
-    //    QString controltype = QInputDialog::getItem(this, tr("7/8 Select Control"), tr("Select a function of Mixxx to control"), selectionList, 0, true, &ok);
-    //        if (!ok) return;
-    QString controltype = "";
-
-    selectionList = QStringList(options);
-    QString option = QInputDialog::getItem(this, tr("6/6 Select Option"), tr("Select an optional behaviour modifier"), selectionList, 0, true, &ok);
-    if (!ok) return;
-
+    m_rMidi.getMidiMapping()->setInputMidiMapping(message, mixxxControl);
+/*
     // At this stage we have enough information to create a blank, learnable binding
     m_rMidi.getMidiMapping()->addInputControl((MidiType)miditype.toInt(), midino.toInt(), midichan.toInt(),
                                               group, key, (MidiOption)option.toInt());
                         //FUCK! The "option" thing above will be garbage when converted to an int, since it's
                         //        some string describing the midi option in words, not a string number like "2".
                         //Solution: Use a delegate class for the MIDI Option column
-
+*/
     //tblBindings->selectRow(tblBindings->rowCount() - 1); // Focus the row just added
 }
 
@@ -380,24 +382,4 @@ void DlgPrefMidiBindings::slotClearAllOutputBindings() {
     if (tableModel) {
         tableModel->removeRows(0, tableModel->rowCount());
     }
-}
-
-/* getControlKeyList()
- * Gets the list of control objects
- */
-QStringList DlgPrefMidiBindings::getControlKeyList() {
-    // midi/BindableConfigKeys.txt = grep "ConfigKey" *.cpp | grep \\[ | sed -e 's/.*ConfigKey("//g' | cut -d \) -f1 | sed -e 's/[",]/ /g' -e 's/ \+/ /g' | egrep -ve '[+:>]' | sort -u | egrep -e "\[Channel[12]\]|\[Master\]|\[Playlist\]" > midi/BindableConfigKeys.txt
-    if (controKeyOptionChoices.count() == 0) {
-        QFile input(m_pConfig->getConfigPath() + "midi/BindableConfigKeys.txt");
-
-        if (!input.open(QIODevice::ReadOnly)) return QStringList();
-
-        while (!input.atEnd()) {
-            QString line = input.readLine().trimmed();
-            if (line.isEmpty() || line.indexOf('#') == 0) continue; // ignore # hashed out comments
-            if (!line.isNull()) controKeyOptionChoices.append(line);
-        }
-        input.close();
-    }
-    return controKeyOptionChoices;
 }

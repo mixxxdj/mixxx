@@ -15,10 +15,10 @@
 #include <QComboBox>
 #include <QLabel>
 
-#define CONTROLGROUP_CHANNEL1_STRING tr("[Channel1]")
-#define CONTROLGROUP_CHANNEL2_STRING tr("[Channel2]")
-#define CONTROLGROUP_MASTER_STRING tr("[Master]")
-#define CONTROLGROUP_PLAYLIST_STRING tr("[Playlist]")
+#define CONTROLGROUP_CHANNEL1_STRING "[Channel1]"
+#define CONTROLGROUP_CHANNEL2_STRING "[Channel2]"
+#define CONTROLGROUP_MASTER_STRING   "[Master]"
+#define CONTROLGROUP_PLAYLIST_STRING "[Playlist]"
 
 class ControlGroupDelegate : public QItemDelegate
 {
@@ -37,8 +37,12 @@ public:
 
  void updateEditorGeometry(QWidget *editor,
      const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    /** This getter is used by the "Add Control" GUI */
+    static QStringList getControlGroups() { return m_controlGroups; };
 
 private:
+    static QStringList m_controlGroups;
+
 };
 
 #endif /* CONTROLGROUPDELEGATE_H_ */

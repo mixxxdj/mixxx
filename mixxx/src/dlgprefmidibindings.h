@@ -60,7 +60,6 @@ private:
     void setRowBackground(int row, QColor color);
     void loadPreset(QString path);
     void savePreset(QString path);
-    QStringList getControlKeyList();
     void enumeratePresets();
 
     int currentGroupRow;
