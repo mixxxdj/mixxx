@@ -12,9 +12,21 @@
 #include "controlvaluedelegate.h"
 #include "controlgroupdelegate.h"
 
+/** Static variable */
+QStringList ControlGroupDelegate::m_controlGroups;
+
 ControlGroupDelegate::ControlGroupDelegate(QObject *parent)
          : QItemDelegate(parent)
 {
+    //This QList is static, so it's shared across all objects of this class. We only want to
+    //fill it once then... 
+    if (m_controlGroups.isEmpty())
+    {
+        m_controlGroups.append(CONTROLGROUP_CHANNEL1_STRING);
+        m_controlGroups.append(CONTROLGROUP_CHANNEL2_STRING);
+        m_controlGroups.append(CONTROLGROUP_MASTER_STRING);
+        m_controlGroups.append(CONTROLGROUP_PLAYLIST_STRING);
+    }
 }
 
 void ControlGroupDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
