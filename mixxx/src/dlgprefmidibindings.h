@@ -27,6 +27,8 @@
 class MidiChannelDelegate;
 class MidiTypeDelegate;
 class MidiNoDelegate;
+class ControlGroupDelegate;
+class ControlValueDelegate;
 
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
@@ -66,6 +68,8 @@ private:
     MidiChannelDelegate* m_pMidiChannelDelegate;
     MidiTypeDelegate* m_pMidiTypeDelegate;
     MidiNoDelegate* m_pMidiNoDelegate;
+    ControlGroupDelegate* m_pControlGroupDelegate;
+    ControlValueDelegate* m_pControlValueDelegate;
     QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */
     ConfigObject<ConfigValue> *m_pConfig;
     QString m_deviceName;
