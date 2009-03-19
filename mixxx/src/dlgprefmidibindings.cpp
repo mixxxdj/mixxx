@@ -21,6 +21,8 @@
 #include "midichanneldelegate.h"
 #include "miditypedelegate.h"
 #include "midinodelegate.h"
+#include "controlgroupdelegate.h"
+#include "controlvaluedelegate.h"
 #include "dlgprefmidibindings.h"
 #include "widget/wwidget.h"
 #include "configobject.h"
@@ -69,11 +71,15 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pMidiChannelDelegate = new MidiChannelDelegate();
     m_pMidiTypeDelegate = new MidiTypeDelegate();
     m_pMidiNoDelegate = new MidiNoDelegate();
+    m_pControlGroupDelegate = new ControlGroupDelegate();
+    m_pControlValueDelegate = new ControlValueDelegate();
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDITYPE, m_pMidiTypeDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP, m_pControlGroupDelegate);
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE, m_pControlValueDelegate);
 
-    //Tell the output mapping table widget which data model it should be viewing
+    //Tell the output mapping table widget which data model it should be viewing 
     //(note that m_pOutputMappingTableView is defined in the .ui file!)
     m_pOutputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiOutputMappingTableModel());
     m_pOutputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
