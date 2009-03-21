@@ -20,6 +20,7 @@
 
 #include <qimage.h>
 #include <qcolor.h>
+#include <QDebug>
 
 class ImgSource {
 public:
@@ -53,13 +54,69 @@ public:
 
         QColor col;
 
-        for (int x = 0; x < i->width(); x++) {
-            for (int y = 0; y < i->height(); y++) {
-                QRgb pix = i->pixel(x, y);
-                col.setRgb(pix);
-                col = doColorCorrection(col);
-                i->setPixel(x, y, col.rgb());
-            }
+        int bytesPerPixel = 4;
+
+        switch(i->format()) {
+        case QImage::Format_Invalid:
+          bytesPerPixel = 0;
+          break;
+        case QImage::Format_Mono:
+        case QImage::Format_MonoLSB:
+        case QImage::Format_Indexed8:
+          bytesPerPixel = 1;
+          break;
+
+        case QImage::Format_RGB16:
+        case QImage::Format_RGB555:
+        case QImage::Format_RGB444:
+        case QImage::Format_ARGB4444_Premultiplied:
+          bytesPerPixel = 2;
+          break;
+
+        case QImage::Format_ARGB8565_Premultiplied:
+        case QImage::Format_RGB666:
+        case QImage::Format_ARGB6666_Premultiplied:
+        case QImage::Format_ARGB8555_Premultiplied:
+        case QImage::Format_RGB888:
+          bytesPerPixel = 3;
+          break;
+
+        case QImage::Format_ARGB32:
+        case QImage::Format_ARGB32_Premultiplied:
+        case QImage::Format_RGB32:
+        default:
+          bytesPerPixel = 4;
+          break;
+        }
+
+        //qDebug() << "ImgColorProcessor working on " 
+        //         << img << " bpp: " 
+        //         << bytesPerPixel << " format: " << i->format();
+
+        return i;
+
+        if(bytesPerPixel < 4) {
+          // Handling Indexed color or mono colors requires different logic
+          qDebug() << "ImgColorProcessor aborting on unsupported color format:" 
+                   << i->format();
+          return i;
+        }
+
+        for(int y = 0; y < i->height(); y++) {
+          QRgb *line = (QRgb*)i->scanLine(y);
+
+          if(line == NULL) {
+            // Image is invalid.
+            continue;
+          }
+
+          for(int x = 0; x < i->width(); x++) {
+            col.setRgb(*line);
+            col = doColorCorrection(col);
+            *line = col.rgb();
+            line++;
+          }
+          
         }
 
         return i;
