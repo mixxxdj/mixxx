@@ -806,6 +806,17 @@ win32 {
     win32-g++:system( echo $$TARGET --resourcePath $$replace(PWD, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}res>$${PWD}$${DIR_SEPERATOR}$$replace(DESTDIR, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}testrun-$${TARGET}.cmd )
 }
 
+win32 {
+    # Makefile target to build an NSIS Installer...
+    # TODO: either fix this to work in a cross-compile or make a seperate cross-compile NSIS target
+    # CMD Usage: C:/Qt/QtCreator/mingw/bin/mingw32-make -f Makefile.Debug nsis
+    # SH Usage: make -f Makefile.Debug nsis
+    nsis.target = nsis
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=$$BUILDDIR build\\\\nsis\\\\Mixxx.nsi
+    # nsis.depends =
+    QMAKE_EXTRA_UNIX_TARGETS += nsis
+}
+
 # .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
 message( Generating .mixxx_flags.svn with contents: $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"' )
 system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>.mixxx_flags.svn )
