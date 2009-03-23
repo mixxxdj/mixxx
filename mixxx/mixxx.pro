@@ -778,6 +778,8 @@ win32 {
             $$(QTDIR)/lib/QtXmld4.dll \
             $$(QTDIR)/lib/QtOpenGLd4.dll \
             $$(QTDIR)/lib/QtScriptd4.dll
+        # include GNU Debugger in debug distros
+        DLLs += $$(QTDIR)/../mingw/bin/gdb.exe
     } else {
         DLLs += $$(QTDIR)/lib/Qt3Support4.dll \
             $$(QTDIR)/lib/QtCore4.dll \
@@ -812,7 +814,8 @@ win32 {
     # CMD Usage: C:/Qt/QtCreator/mingw/bin/mingw32-make -f Makefile.Debug nsis
     # SH Usage: make -f Makefile.Debug nsis
     nsis.target = nsis
-    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=$$BUILDDIR build\\\\nsis\\\\Mixxx.nsi
+    exists($$BUILDDIR/gdb.exe):INCLUDE_GDB = -DINCLUDE_GDB
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=$$BUILDDIR $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
     # nsis.depends =
     QMAKE_EXTRA_UNIX_TARGETS += nsis
 }
