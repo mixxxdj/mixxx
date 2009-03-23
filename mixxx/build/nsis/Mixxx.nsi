@@ -74,6 +74,9 @@ Section "Mixxx (required)" SecMixxx
   
   ; Put binary files there
   File "${BINDIR}\mixxx.exe"
+  !ifdef INCLUDE_GDB
+    File "${BINDIR}\gdb.exe"
+  !endif
   File "${BINDIR}\*.dll"
   
   ; And documentation, licence etc.
@@ -116,6 +119,10 @@ Section "Start Menu Shortcuts" SecStartMenu
   CreateDirectory "$SMPROGRAMS\Mixxx"
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
+  !ifdef INCLUDE_GDB
+    CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx (inside GNU Debugger).lnk" "$INSTDIR\gdb.exe" "-silent --eval-command=run --args mixxx.exe" "$INSTDIR\mixxx.exe" 0
+  !endif
+
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   
@@ -126,7 +133,9 @@ Section "Desktop Shortcut" SecDesktop
 
   SetOutPath $INSTDIR
   CreateShortCut "$DESKTOP\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
-  
+  !ifdef INCLUDE_GDB
+    CreateShortCut "$DESKTOP\Mixxx (inside GNU Debugger).lnk" "$INSTDIR\gdb.exe" "-silent --eval-command=run --args mixxx.exe" "$INSTDIR\mixxx.exe" 0
+  !endif
 SectionEnd
 
 ;--------------------------------
@@ -159,5 +168,7 @@ Section "Uninstall"
   RMDir /r /REBOOTOK "$SMPROGRAMS\Mixxx"
 
   Delete "$DESKTOP\Mixxx.lnk"
-
+  !ifdef INCLUDE_GDB
+    Delete "$DESKTOP\Mixxx (inside GNU Debugger).lnk"
+  !endif
 SectionEnd
