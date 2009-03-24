@@ -51,7 +51,7 @@ scratch.enable = function (currentDeck) {
     }
     else scratch.variables["play"]=false;
     
-    print("MIDI Script: Scratch initial: time=" + scratch.variables["time"] + "s, track=" + scratch.variables["trackPos"] + "s");
+//     print("MIDI Script: Scratch initial: time=" + scratch.variables["time"] + "s, track=" + scratch.variables["trackPos"] + "s");
     return;
 }
 
@@ -71,7 +71,7 @@ scratch.disable = function (currentDeck) {
     scratch.variables["wrapCount"] = 0; // for wheel
     scratch.variables["time"] = 0.0;
     scratch.variables["scratch"] = 0.0;
-    print("MIDI Script: Scratch values CLEARED");
+//     print("MIDI Script: Scratch values CLEARED");
     engine.setValue("[Channel"+currentDeck+"]","scratch",0.0); // disable scratching
     if (scratch.variables["play"]) engine.setValue("[Channel"+currentDeck+"]","play",1); // resume playback
 }
@@ -92,7 +92,7 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // If the slider start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = sliderValue;
-        print("Initial slider="+scratch.variables["initialControlValue"]);
+//         print("Initial slider="+scratch.variables["initialControlValue"]);
         }
     return scratch.filter(currentDeck, sliderValue, revtime, alpha, beta);
 }
@@ -113,7 +113,7 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     // If the wheel start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
-        print("Initial wheel="+scratch.variables["initialControlValue"]);
+//         print("Initial wheel="+scratch.variables["initialControlValue"]);
         }
         
     // Take wrap around into account

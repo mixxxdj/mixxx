@@ -325,10 +325,12 @@ void MidiMapping::loadPreset(QDomElement root) {
     m_pMidiInputMappingTableModel->removeRows(0, m_pMidiInputMappingTableModel->rowCount());
     m_pMidiOutputMappingTableModel->removeRows(0, m_pMidiOutputMappingTableModel->rowCount());
     
+#ifdef __MIDISCRIPT__
     m_rMidiObject.restartScriptEngine();
     m_pScriptEngine = m_rMidiObject.getMidiScriptEngine();
     m_pScriptFileNames.clear();
     m_pScriptFunctionPrefixes.clear();
+#endif
 
     // For each controller in the DOM
     m_Bindings = root;
@@ -400,8 +402,20 @@ void MidiMapping::loadPreset(QDomElement root) {
             // Verify script functions are loaded
             if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
                     scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
-                // Need some way to signal to the dialog that this control will not be bound instead of just dying
-                qCritical() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts.";
+                
+                QString text;
+                // Why does this feel hacky?
+                switch (midiMessage.getMidiType()) {
+                    case MIDI_KEY: //These come from the MidiType enum (configobject.h)
+                        text = "Note/Key"; break;
+                    case MIDI_CTRL:
+                        text = "CC"; break;
+                    case MIDI_PITCH:
+                        text = "Pitch CC"; break;
+                    default:
+                        text = "Control number";
+                }
+                qWarning() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts." << text << midiMessage.getMidiNo() << "will not be bound. Please check the mapping and script files.";
             } else {
 #endif
             //Add to the input mapping.

@@ -86,8 +86,8 @@ void MidiScriptEngine::run() {
     // Create the MidiScriptEngine
     m_pEngine = new QScriptEngine();
 
-    qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
-    qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
+//     qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
+//     qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
 
     // Make this MidiScriptEngine instance available to scripts as
     // 'engine'.
@@ -248,7 +248,7 @@ QStringList MidiScriptEngine::getScriptFunctions() {
 
 void MidiScriptEngine::generateScriptFunctions(QString scriptCode) { 
 
-    QStringList functionList;
+//     QStringList functionList;
     QStringList codeLines = scriptCode.split("\n");
 
 //     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
@@ -268,12 +268,13 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
         if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
             QStringList field = line.split(" ");
             qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
-            functionList.append(field[0]);
+//             functionList.append(field[0]);
+            m_scriptFunctions.append(field[0]);
         }
         position = codeLines.indexOf(rx);
     }
 
-    m_scriptFunctions = functionList;
+//     m_scriptFunctions = functionList;
 }
 
 /* -------- ------------------------------------------------------
@@ -342,12 +343,12 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
 
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
-            qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
+//             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
             this->disconnect(cobj, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
             this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotValueChanged(double)));
             m_connectedControls.remove(cobj->getKey());
         } else {
-            qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
+//             qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
             connect(cobj, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
             connect(cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotValueChanged(double)));
             m_connectedControls.insert(cobj->getKey(), function);

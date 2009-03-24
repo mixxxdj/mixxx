@@ -43,6 +43,9 @@ MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject()
 
     //What the hell does creating a MIDI queue do?!
     //(Even if it fails, ALSA seq MIDI control will still work...)
+    //
+    // Doesn't look like it's actually used, since it is never started and the send events use _direct
+    //  See http://www.alsa-project.org/alsa-doc/alsa-lib/seq.html  - Sean
     m_queue = snd_seq_alloc_named_queue(m_handle, "Mixxx_queue");
     if (m_queue != 0)
     {

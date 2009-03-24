@@ -11,6 +11,7 @@ function StantonSCS3d() {}
 StantonSCS3d.pitchRanges = [ 0.08, 0.12, 0.5, 1.0 ];    // Pitch ranges for LED off, blue, purple, red
 StantonSCS3d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
 StantonSCS3d.spinningPlatter = true;    // Spinning platter LEDs
+StantonSCS3d.markHotCues = "blue";      // Choose red or blue LEDs for marking the stored positions in TRIG & LOOP modes
 
 // ----------   Other global variables    ----------
 
@@ -273,9 +274,12 @@ StantonSCS3d.gainRelative = function (channel, device, control, value) {
 StantonSCS3d.playButton = function (channel, device, control, value, category) {
     var byte1 = 0x90 + (channel-1);
     if (category != (0x80 + channel-1)) {    // If button down
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","play"));
+        StantonSCS3d.modifier["play"]=1;
+        if (StantonSCS3d.modifier["cue"]==1) engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
+        else engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !engine.getValue("[Channel"+StantonSCS3d.deck+"]","play"));
         return;
     }
+    StantonSCS3d.modifier["play"]=0;
 }
 
 StantonSCS3d.cueButton = function (channel, device, control, value, category) {
@@ -285,7 +289,7 @@ StantonSCS3d.cueButton = function (channel, device, control, value, category) {
         StantonSCS3d.modifier["cue"]=1;   // Set button modifier flag
         return;
     }
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
+    if (StantonSCS3d.modifier["play"]==0) engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
     StantonSCS3d.modifier["cue"]=0;   // Clear button modifier flag
 }
 
@@ -580,14 +584,19 @@ StantonSCS3d.modeButton = function (channel, control, category, modeName) {
                 }
                 if (modeName=="loop") break;
                 // Light the blue circle LEDs for any cues currently set
+                var marker;
                 for (i=0; i<redButtonLEDs.length; i++) {
                     if (StantonSCS3d.deck==1) {
                         if (StantonSCS3d.triggerPoints1[index][redButtonLEDs[i]] != -0.1) 
-                            midi.sendShortMsg(byte1,StantonSCS3d.buttonLEDs[redButtonLEDs[i]],0x01,StantonSCS3d.temp["device"]);
+                            if (StantonSCS3d.markHotCues == "red") marker = redButtonLEDs[i];
+                            else marker = StantonSCS3d.buttonLEDs[redButtonLEDs[i]];
+                            midi.sendShortMsg(byte1,marker,0x01,StantonSCS3d.temp["device"]);
                     }
                     else {
                         if (StantonSCS3d.triggerPoints2[index][redButtonLEDs[i]] != -0.1) 
-                            midi.sendShortMsg(byte1,StantonSCS3d.buttonLEDs[redButtonLEDs[i]],0x01,StantonSCS3d.temp["device"]);
+                            if (StantonSCS3d.markHotCues == "red") marker = redButtonLEDs[i];
+                            else marker = StantonSCS3d.buttonLEDs[redButtonLEDs[i]];
+                            midi.sendShortMsg(byte1,marker,0x01,StantonSCS3d.temp["device"]);
                     }
                 }
             break;
@@ -786,7 +795,7 @@ StantonSCS3d.S4absolute = function (channel, device, control, value) {
             midi.sendShortMsg(byte1,0x0E,add,StantonSCS3d.temp["device"]); //S5 LEDs
             
             // Call global scratch slider function
-            print("StantonSCS3d: Calling scratch.slider");
+//             print("StantonSCS3d: Calling scratch.slider");
             var newScratchValue = scratch.slider(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",newScratchValue);
             break;
@@ -940,34 +949,42 @@ StantonSCS3d.S4buttonLight = function (light) {     // Turn on/off button lights
 }
 
 StantonSCS3d.S4buttonLights = function (light, button) {     // Turn on/off button lights for multiple buttons
+    var marker;
     var byte1 = 0x90 + (StantonSCS3d.temp["channel"]-1);
     var color=0x00; // Off
     if (light) color=0x01;  // On
     
-    midi.sendShortMsg(byte1,button,color,StantonSCS3d.temp["device"]); // Turn on/off red button LED
+    // Turn on/off button LED
+    if (StantonSCS3d.markHotCues == "red") marker = StantonSCS3d.buttonLEDs[button];
+    else marker = button;
+    midi.sendShortMsg(byte1,marker,color,StantonSCS3d.temp["device"]);
     
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     var index = currentMode.charAt(currentMode.length-1);
     if (index != "2" && index != "3") index = "1";
     
-    // Don't extinguish the blue LED if a cue point is set on that button
+    // Don't extinguish the marker LED if a cue point is set on that button
     if (currentMode.substring(0,4) == "trig")
         if (!light && (StantonSCS3d.deck==1 && StantonSCS3d.triggerPoints1[index][button] != -0.1) ||
             (StantonSCS3d.deck==2 && StantonSCS3d.triggerPoints2[index][button] != -0.1)) return;
     
-    // Turn on/off corresponding circle LED
-    midi.sendShortMsg(byte1,StantonSCS3d.buttonLEDs[button],color,StantonSCS3d.temp["device"]);
+    // Turn on/off corresponding marker LED
+    if (StantonSCS3d.markHotCues == "red") marker = button;
+    else marker = StantonSCS3d.buttonLEDs[button];
+    midi.sendShortMsg(byte1,marker,color,StantonSCS3d.temp["device"]);
 }
 
 StantonSCS3d.C1relative = function (channel, device, control, value, category) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     switch (currentMode) {
         case "vinyl":
+            if (StantonSCS3d.modifier["Deck"]==1) return;   // ignore if the cross-fader is being adjusted
             var newValue=(value-64)*2;
-            print("C1="+value+", jog="+newValue);
+//             print("C1="+value+", jog="+newValue);
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","jog",newValue);
             break;
         case "vinyl3":
+            if (StantonSCS3d.modifier["Deck"]==1) return;   // ignore if the cross-fader is being adjusted
             if ((value-64)>0) {
                 engine.setValue("[Playlist]","SelectNextTrack",1);
             }
@@ -989,7 +1006,10 @@ StantonSCS3d.C1absolute = function (channel, device, control, value, category) {
             break;
         case "vinyl2":
             // Call global scratch wheel function
-            print("StantonSCS3d: Calling scratch.wheel");
+//             print("StantonSCS3d: Calling scratch.wheel");
+
+            // ignore if the cross-fader is being adjusted
+            if (StantonSCS3d.modifier["Deck"]==1 && ((value>52 && value<76) || (value>119 || value<10))) return;
             
             var newScratchValue = scratch.wheel(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
                 
@@ -1042,13 +1062,18 @@ StantonSCS3d.SurfaceButton = function (channel, device, control, value, category
         }
         return;
     }
-    midi.sendShortMsg(byte1,control,0x00,StantonSCS3d.temp["device"]); // Turn off red button LED
-    // Don't extinguish the blue LED if a cue point isn't set on that button
+    var marker;
+    if (StantonSCS3d.markHotCues == "red") marker = StantonSCS3d.buttonLEDs[control];
+    else marker = control;
+    midi.sendShortMsg(byte1,marker,0x00,StantonSCS3d.temp["device"]); // Turn off activated button LED
+    // Don't extinguish the marker LED if a cue point isn't set on that button
     if (currentMode.substring(0,4)=="trig") {
         if ((StantonSCS3d.deck==1 && StantonSCS3d.triggerPoints1[index][control] != -0.1) ||
             (StantonSCS3d.deck==2 && StantonSCS3d.triggerPoints2[index][control] != -0.1)) return;
     }
-    midi.sendShortMsg(byte1,StantonSCS3d.buttonLEDs[control],0x00,StantonSCS3d.temp["device"]);
+    if (StantonSCS3d.markHotCues == "red") marker = control;
+    else marker = StantonSCS3d.buttonLEDs[control];
+    midi.sendShortMsg(byte1,marker,0x00,StantonSCS3d.temp["device"]);
 }
 
 // Workarounds for not being able to map multiple buttons to the same Mixxx control:
