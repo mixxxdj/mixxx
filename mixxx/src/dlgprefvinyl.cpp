@@ -193,6 +193,9 @@ void DlgPrefVinyl::slotUpdate()
     else if (iMode == MIXXX_VCMODE_SCRATCH)
         ScratchMode->setChecked(true);
 
+    // Honour the Needle Skip Prevention setting.
+    NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "NeedleSkipPrevention") ).toInt() );
+
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
 }
@@ -302,6 +305,7 @@ void DlgPrefVinyl::slotApply()
 
     ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
     config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
+    config->set(ConfigKey("[VinylControl]","NeedleSkipPrevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
 
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !m_pSoundManager->setupDevices())
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None"|| (m_pSoundManager->setupDevices() != 0))

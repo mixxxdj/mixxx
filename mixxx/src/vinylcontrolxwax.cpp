@@ -40,17 +40,17 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     m_samples               = NULL;
     char * timecode  =  NULL;
     bShouldClose    = false;
-    m_bCDMode               = false;
+    m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
     
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
         timecode = (char*)"serato_2a";
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB)
+    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) 
         timecode = (char*)"serato_2b";
     else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
-        m_bCDMode = true;
+        m_bNeedleSkipPrevention = false;
     }
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
         timecode = (char*)"traktor_a";
@@ -213,7 +213,7 @@ void VinylControlXwax::run()
                     //If the position from the timecode is more than a few seconds off, resync the position.
                     if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && 
                         (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
-                        !m_bCDMode)
+                        m_bNeedleSkipPrevention)
                     {
                         syncPosition();
                     }
@@ -221,7 +221,7 @@ void VinylControlXwax::run()
                     //with CDJs, so there's no point in trying to prevent needle skips.
                     else if (fabs(dVinylPosition - filePosition - iLeadInTime) > 0.2 &&
                              (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
-                             m_bCDMode) //CD Mode
+                             (!m_bNeedleSkipPrevention)) 
                     {
                         syncPosition();
                     }
