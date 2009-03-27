@@ -432,8 +432,8 @@ elif platform == 'bsd':
 
 #Set up the library path on Windows:
 if platform == 'win32':
-	env.Append(CPPPATH=['../../../mixxx-winlib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
-	env.Append(LIBPATH='../../../mixxx-winlib')
+	env.Append(CPPPATH=['#/../mixxx-winlib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
+	env.Append(LIBPATH='#/../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 #'/subsystem:windows',
 
@@ -695,7 +695,7 @@ if platform in ('linux','bsd','win32'):
 			    '$QTDIR/include/Qt'])
 
 if platform == 'win32':
-	env.Append(CPPPATH="$VCINSTALLDIR/include/atl")
+	env.Append(CPPPATH=["$VCINSTALLDIR/include/atl", "C:/Program Files/Microsoft Platform SDK/Include/atl"])
 
 if platform == 'win32':
 	env.Append(CPPDEFINES = 'WIN32') #for soundtouch
@@ -761,6 +761,7 @@ if platform == 'win32':
 	env.Append(CPPDEFINES = 'T_MSVC')
 	#env.Append(CXXFLAGS = '-DT_MSVC') #is this still needed?
 	env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib', '/nodefaultlib:LIBCMTD.lib'])
+	env.Append(CXXFLAGS = '/Zc:wchar_t-') #Ugh, MSVC-only hack :( see http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
 else:
 	env.Append(CPPDEFINES = 'T_LINUX') #so maybe "T_LINUX" isn't really accurate for an else case, but the only platforms really in existence are Unix and Win right now, and that's all we're targetting
 
@@ -1069,7 +1070,7 @@ if int(flags_cmetrics):
 else:
 	print "Case Metrics profiling... disabled"
 
-env.Append(CPPDEFINES=[('BUILD_FLAGS', "'%s'" % build_flags)])
+#env.Append(CPPDEFINES=[('BUILD_FLAGS', "%s" % build_flags)])
 
 ### Put flags info into a file
 #f = open("#.mixxx_flags.svn","w")
@@ -1137,36 +1138,36 @@ else:
 binary_files = mixxx_bin;
 
 #Skins
-skin_files = glob.glob('#res/skins/*')
+skin_files = glob.glob(str(File('#/res/skins/*')))
 
 #MIDI mappings
-midimappings_files = glob.glob('#res/midi/*')
+midimappings_files = glob.glob(str(File('#res/midi/*')))
 
 #Keyboard mapping(s)
-keyboardmappings_files = glob.glob('#res/keyboard/*')
+keyboardmappings_files = glob.glob(str(File('#res/keyboard/*')))
 
 #Promo tracks
-promotracks_files = glob.glob('#promo/*')
+promotracks_files = glob.glob(str(File('#promo/*')))
 
 #LADSPA shizzle
-ladspapresets_files = glob.glob('#res/ladspa_presets/*')
+ladspapresets_files = glob.glob(str(File('#res/ladspa_presets/*')))
 
 #Documentation
-docs_files = glob.glob('#LICENSE')
-docs_files += glob.glob('#README')
-docs_files += glob.glob('#Mixxx-Manual.pdf')
+docs_files = glob.glob(str(File('#LICENSE')))
+docs_files += glob.glob(str(File('#README')))
+docs_files += glob.glob(str(File('#Mixxx-Manual.pdf')))
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = glob.glob('#res/images/mixxx.desktop') #XXX why is this in images/?
+dotdesktop_files = glob.glob(str(File('#res/images/mixxx.desktop'))) #XXX why is this in images/?
 
 #Icon file for menu entry
-icon_files = glob.glob('#res/images/mixxx-icon.png')
+icon_files = glob.glob(str(File('#res/images/mixxx-icon.png')))
 
 #Images for preferences dialog
-image_files = glob.glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
+image_files = glob.glob(str(File('#res/images/preferences/*')))  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
-dll_files = glob.glob('#/../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+dll_files = glob.glob(str(File('#/../mixxx-winlib/*.dll'))) # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
@@ -1255,15 +1256,15 @@ if platform == 'osx':
 	env.Alias('package', dmg)
 		
 if platform == 'win32':
-	skins = env.Install("../../dist/skins", skin_files)
-	midimappings = env.Install("../../dist/midi", midimappings_files)
-	keyboardmappings = env.Install("../../dist/keyboard", keyboardmappings_files)
-	ladspapresets = env.Install("../../dist/ladspa_presets", ladspapresets_files)
-	docs = env.Install("../../dist/doc/", docs_files)
-	promotracks = env.Install("../../dist/promo/", promotracks_files)
-	#icon = env.Install("../../dist", icon_files)
-	dlls = env.Install("../../dist/", dll_files)
-	binary = env.Install("../../dist/", binary_files)
+	skins = env.Install("#dist/skins", skin_files)
+	midimappings = env.Install("#dist/midi", midimappings_files)
+	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
+	ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
+	docs = env.Install("#dist/doc/", docs_files)
+	promotracks = env.Install("#dist/promo/", promotracks_files)
+	#icon = env.Install("#dist", icon_files)
+	dlls = env.Install("#dist/", dll_files)
+	binary = env.Install("#dist/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
