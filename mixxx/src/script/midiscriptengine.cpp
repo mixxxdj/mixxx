@@ -19,29 +19,13 @@
 #include <qapplication.h>
 
 #include "midiscriptengine.h"
-#include "../controlobject.h"
-#include "../controlobjectthread.h"
+#include "controlobject.h"
+#include "controlobjectthread.h"
 
 MidiScriptEngine::MidiScriptEngine(MidiObject* midi_object) :
-    m_pEngine(NULL)
+    m_pEngine(NULL),
+    m_pMidiObject(midi_object)
 {
-    m_pMidiObject = midi_object;
-    // rryan 1/30 commented -- now started after the object is moveToThread'd
-    // Start the thread.
-    //start();
-    qRegisterMetaType<MidiCategory>("MidiCategory");
-    
-    connect(this, SIGNAL(sigEvaluate(QString)),
-            this, SLOT(safeEvaluate(QString)),
-            Qt::BlockingQueuedConnection);
-
-    connect(this, SIGNAL(sigExecute(QString)),
-            this, SLOT(safeExecute(QString)),
-            Qt::BlockingQueuedConnection);
-    
-    connect(this, SIGNAL(sigExecute(QString,char,QString,char,char,MidiCategory)),
-            this, SLOT(safeExecute(QString,char,QString,char,char,MidiCategory)),
-            Qt::BlockingQueuedConnection);
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
@@ -67,7 +51,25 @@ MidiScriptEngine::~MidiScriptEngine() {
 }
 
 bool MidiScriptEngine::isReady() {
-    return m_pEngine != NULL;
+    m_scriptEngineLock.lock();
+    bool ret = m_pEngine != NULL;
+    m_scriptEngineLock.unlock();
+    return ret;
+}
+
+void MidiScriptEngine::initializeScriptEngine() {
+    // Create the MidiScriptEngine
+    m_pEngine = new QScriptEngine(this);
+    
+    //qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
+    //qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
+
+    // Make this MidiScriptEngine instance available to scripts as
+    // 'engine'.
+    QScriptValue engineGlobalObject = m_pEngine->globalObject();
+    engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
+    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiObject));
+
 }
 
 
@@ -83,18 +85,9 @@ void MidiScriptEngine::run() {
 
     //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
-    // Create the MidiScriptEngine
-    m_pEngine = new QScriptEngine(this);
-
-//     qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
-//     qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
-
-    // Make this MidiScriptEngine instance available to scripts as
-    // 'engine'.
-    QScriptValue engineGlobalObject = m_pEngine->globalObject();
-    engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
-    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiObject));
-
+    m_scriptEngineLock.lock();
+    initializeScriptEngine();
+    m_scriptEngineLock.unlock();
     emit(initialized());
     
     // Run the Qt event loop indefinitely 
@@ -108,10 +101,10 @@ void MidiScriptEngine::run() {
    Output:  -
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::evaluate(QString filepath) {
-    emit(sigEvaluate(filepath));
-    if(hasErrors(filepath))
-        return false;
-    return true;
+    m_scriptEngineLock.lock();
+    bool ret = safeEvaluate(filepath);
+    m_scriptEngineLock.unlock();
+    return ret;
 }
 
 /* -------- ------------------------------------------------------
@@ -120,8 +113,10 @@ bool MidiScriptEngine::evaluate(QString filepath) {
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function) {
-    emit(sigExecute(function));
-    return true;
+    m_scriptEngineLock.lock();
+    bool ret = safeExecute(function);
+    m_scriptEngineLock.unlock();
+    return ret;
 }
 
 /* -------- ------------------------------------------------------
@@ -129,11 +124,13 @@ bool MidiScriptEngine::execute(QString function) {
    Input:   Function name, channel #, device name, control #, value, category
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::execute(QString function, char channel, QString device, char control, char value,  MidiCategory category) {
-    emit(sigExecute(function,channel,
-                    device,control,
-                    value,category));
-    return true;
+bool MidiScriptEngine::execute(QString function, char channel,
+                               QString device, char control,
+                               char value,  MidiCategory category) {
+    m_scriptEngineLock.lock();
+    bool ret = safeExecute(function, channel, device, control, value, category);
+    m_scriptEngineLock.unlock();
+    return ret;
 }
 
 /* -------- ------------------------------------------------------
@@ -147,7 +144,7 @@ bool MidiScriptEngine::safeExecute(QString function) {
     if(m_pEngine == NULL) {
         return false;
     }
-    
+
     if (!m_pEngine->canEvaluate(function)) {
         qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
         return false;
@@ -160,6 +157,7 @@ bool MidiScriptEngine::safeExecute(QString function) {
 
     scriptFunction.call(QScriptValue());
     if (checkException()) return false;
+
     return true;
 }
 
@@ -245,7 +243,10 @@ bool MidiScriptEngine::checkException() {
    Output:  functionList QStringList
    -------- ------------------------------------------------------ */
 QStringList MidiScriptEngine::getScriptFunctions() {
-    return m_scriptFunctions;
+    m_scriptEngineLock.lock();
+    QStringList ret = m_scriptFunctions;
+    m_scriptEngineLock.unlock();
+    return ret;
 }
 
 void MidiScriptEngine::generateScriptFunctions(QString scriptCode) { 
@@ -402,9 +403,12 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
    fires off the appropriate script function.
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::slotValueChanged(double value) {
+    m_scriptEngineLock.lock();
+    
     ControlObject* sender = (ControlObject*)this->sender();
     if(sender == NULL) {
         qDebug() << "MidiScriptEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
+        m_scriptEngineLock.lock();
         return;
     }
     ConfigKey key = sender->getKey();
@@ -424,6 +428,8 @@ void MidiScriptEngine::slotValueChanged(double value) {
     } else {
         qDebug() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
+
+    m_scriptEngineLock.unlock();
 }
 
 /* -------- ------------------------------------------------------
@@ -432,7 +438,8 @@ void MidiScriptEngine::slotValueChanged(double value) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeEvaluate(QString filename) {
-    if(!isReady()) {
+    
+    if(m_pEngine == NULL) {
         return false;
     }
 
@@ -472,19 +479,22 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
  * Check whether a source file that was evaluated()'d has errors.
  */ 
 bool MidiScriptEngine::hasErrors(QString filename) {
-    // TODO(rryan) add locking!
-    if(m_scriptErrors.contains(filename))
-        return true;
-    else return false;
+    m_scriptEngineLock.lock();
+    bool ret = m_scriptErrors.contains(filename);
+    m_scriptEngineLock.unlock();
+    return ret;
 }
 
 /*
  * Get the errors for a source file that was evaluated()'d
  */ 
 const QStringList MidiScriptEngine::getErrors(QString filename) {
-    // TODO(rryan) add locking!
+    QStringList ret;
+    m_scriptEngineLock.lock();
     if(m_scriptErrors.contains(filename))
-        return m_scriptErrors.value(filename);
+        ret = m_scriptErrors.value(filename);
+    m_scriptEngineLock.unlock();
+    return ret;
 }
 
 
