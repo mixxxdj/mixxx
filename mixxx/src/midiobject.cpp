@@ -45,8 +45,6 @@ MidiObject::MidiObject()
 
 
 #ifdef __MIDISCRIPT__
-    //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-
     //Start the scripting engine.
     m_pScriptEngine = NULL;
     restartScriptEngine();
@@ -68,16 +66,44 @@ MidiObject::~MidiObject()
 {
 }
 
+#ifdef __MIDISCRIPT__
+
 void MidiObject::restartScriptEngine()
 {
-    delete m_pScriptEngine;
+
+    //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(QThread::currentThreadId(),0,16);
     
+    if(m_pScriptEngine) {
+        MidiScriptEngine *engine = m_pScriptEngine;
+        m_pScriptEngine = NULL;
+        delete engine;
+    }
+
     m_pScriptEngine = new MidiScriptEngine(this);
-    m_pScriptEngine->start();
-    // Wait for the m_pScriptEngine to initialize
-    while(!m_pScriptEngine->isReady()) ;
+    
     m_pScriptEngine->moveToThread(m_pScriptEngine);
+    
+    connect(m_pScriptEngine, SIGNAL(initialized()),
+            this, SLOT(slotScriptEngineReady()),
+            Qt::DirectConnection);
+
+    m_scriptEngineInitializedMutex.lock();
+    m_pScriptEngine->start();
+    // Wait until the script engine is initialized
+    m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+    m_scriptEngineInitializedMutex.unlock();
+    
 }
+
+void MidiObject::slotScriptEngineReady() {
+    // The lock prevents us from waking before the main thread is waiting on the
+    // condition.
+    m_scriptEngineInitializedMutex.lock();
+    m_scriptEngineInitializedCondition.wakeAll();
+    m_scriptEngineInitializedMutex.unlock();
+}
+
+#endif
 
 /* -------- ------------------------------------------------------
    Purpose: Deletes MIDI mapping and stops script engine, to be called

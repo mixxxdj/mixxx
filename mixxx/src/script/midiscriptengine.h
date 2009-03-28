@@ -61,6 +61,7 @@ public slots:
     void slotValueChanged(double value);
     
 signals:
+    void initialized();
     void sigEvaluate(QString filename);
     void sigExecute(QString function);
     void sigExecute(QString function, char channel,

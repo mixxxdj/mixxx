@@ -59,7 +59,6 @@ public:
     virtual void devClose() = 0;
     /** Delete MIDIMapping & stop script engine */
     void shutdown();
-    void restartScriptEngine();
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
@@ -79,6 +78,7 @@ public:
     bool getMidiLearnStatus();
 
 #ifdef __MIDISCRIPT__
+    void restartScriptEngine();
     MidiScriptEngine *getMidiScriptEngine();
 #endif
 
@@ -87,6 +87,10 @@ public:
 public slots:
     void enableMidiLearn();
     void disableMidiLearn();
+
+#ifdef __MIDISCRIPT__
+    void slotScriptEngineReady();
+#endif
 
 signals:
     void devicesChanged();
@@ -119,6 +123,8 @@ protected:
 
 #ifdef __MIDISCRIPT__
     MidiScriptEngine *m_pScriptEngine;
+    QMutex m_scriptEngineInitializedMutex;
+    QWaitCondition m_scriptEngineInitializedCondition;
 #endif
 
     /** Device MIDI mapping object */
