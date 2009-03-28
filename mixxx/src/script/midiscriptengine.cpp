@@ -61,7 +61,7 @@ MidiScriptEngine::~MidiScriptEngine() {
     if(m_pEngine != NULL) {
         QScriptEngine *engine = m_pEngine;
         m_pEngine = NULL;
-        delete engine;
+        engine->deleteLater();
     }
     
 }
@@ -81,10 +81,10 @@ void MidiScriptEngine::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiScriptEngine %1").arg(++id));
 
-  //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     // Create the MidiScriptEngine
-    m_pEngine = new QScriptEngine();
+    m_pEngine = new QScriptEngine(this);
 
 //     qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
 //     qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
@@ -94,6 +94,8 @@ void MidiScriptEngine::run() {
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
     engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiObject));
+
+    emit(initialized());
     
     // Run the Qt event loop indefinitely 
     exec();
@@ -140,7 +142,7 @@ bool MidiScriptEngine::execute(QString function, char channel, QString device, c
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function) {
-  // qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
         return false;
@@ -169,7 +171,7 @@ bool MidiScriptEngine::safeExecute(QString function) {
 bool MidiScriptEngine::safeExecute(QString function, char channel,
                                    QString device, char control,
                                    char value,  MidiCategory category) {
-//     qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
         return false;
@@ -283,6 +285,8 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
    Output:  The value
    -------- ------------------------------------------------------ */
 double MidiScriptEngine::getValue(QString group, QString name) {
+    //qDebug() << QString("----------------------------------MidiScriptEngine: GetValue Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+    
 //     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
     ControlObjectThread *cot = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, name)));
     if (cot == NULL) {
@@ -303,6 +307,7 @@ double MidiScriptEngine::getValue(QString group, QString name) {
 void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 //     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
 //     pot->queueFromThread(newValue);
+    //qDebug() << QString("----------------------------------MidiScriptEngine: SetValue Thread ID=%1").arg(QThread::currentThreadId(),0,16);
     ControlObjectThread *cot = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, name)));
     cot->slotSet(newValue);
     delete cot;
@@ -328,7 +333,7 @@ void MidiScriptEngine::trigger(QString group, QString name) {
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
     ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
     
-    //   qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
         return false;
@@ -404,7 +409,7 @@ void MidiScriptEngine::slotValueChanged(double value) {
     }
     ConfigKey key = sender->getKey();
 
-    //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
+    //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_connectedControls.contains(key)) {
         QString function = m_connectedControls.value(key);
