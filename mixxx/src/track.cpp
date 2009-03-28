@@ -978,14 +978,6 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
     // Queue the track for BPM/Waveform/Wavesummary/etc. analysis
 	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
-    
-
-    // Set control for beat start position for use in EngineTemporal and
-    // VisualTemporalBuffer. HACK.
-    ControlObject * p = ControlObject::getControl(ConfigKey("[Channel1]","temporalBeatFirst"));
-    if (p)
-        p->queueFromThread(m_pTrackPlayer1->getBeatFirst());
-
     // Set Engine file BPM and duration ControlObjects
     m_pTrackPlayer1->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));
     m_pTrackPlayer1->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel1]","duration")));
@@ -1070,12 +1062,6 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
 
     // Queue the track for BPM/Waveform/Wavesummary/etc. analysis
     m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
-
-    // Set control for beat start position for use in EngineTemporal and
-    // VisualTemporalBuffer. HACK.
-    ControlObject * p = ControlObject::getControl(ConfigKey("[Channel2]","temporalBeatFirst"));
-    if (p)
-        p->queueFromThread(m_pTrackPlayer2->getBeatFirst());
 
     // Set Engine file BPM ControlObject
     m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));

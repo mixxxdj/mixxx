@@ -27,7 +27,6 @@ class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
-class EngineTemporal;
 class ControlPushButton;
 
 /**
@@ -44,8 +43,6 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
 private:
-    EngineTemporal *m_pEngineTemporal;
-    EngineVolume *m_pEngineTemporalVolume;
 
     EnginePregain *pregain;
     EngineFilterBlock *filter;

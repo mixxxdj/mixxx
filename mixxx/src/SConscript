@@ -295,7 +295,6 @@ sources = Split("""
                 engine/engineflanger.cpp
                 engine/enginespectralfwd.cpp
                 engine/enginevumeter.cpp
-                engine/enginetemporal.cpp
                 engine/enginevinylsoundemu.cpp
                 engine/enginesidechain.cpp
                 engine/enginefilterbutterworth8.cpp
