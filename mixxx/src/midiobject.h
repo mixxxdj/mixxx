@@ -87,10 +87,7 @@ public:
 public slots:
     void enableMidiLearn();
     void disableMidiLearn();
-
-#ifdef __MIDISCRIPT__
     void slotScriptEngineReady();
-#endif
 
 signals:
     void devicesChanged();
