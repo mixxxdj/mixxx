@@ -38,10 +38,6 @@ EngineChannel::EngineChannel(const char * group)
 
     // PFL button
     pfl = new ControlPushButton(ConfigKey(group, "pfl"), true);
-
-    // Temporal filtering
-    m_pEngineTemporalVolume = new EngineVolume(ConfigKey(group, "temporalVolume"));
-    m_pEngineTemporal = new EngineTemporal(group, m_pEngineTemporalVolume);
 }
 
 EngineChannel::~EngineChannel()
@@ -50,8 +46,6 @@ EngineChannel::~EngineChannel()
     delete filter;
     delete clipping;
     delete pfl;
-    delete m_pEngineTemporalVolume;
-    delete m_pEngineTemporal;
 }
 
 ControlPushButton * EngineChannel::getPFL()
@@ -64,18 +58,8 @@ void EngineChannel::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     pregain->process(pIn, pOut, iBufferSize);
     filter->process(pOut, pOut, iBufferSize);
     clipping->process(pOut, pOut, iBufferSize);
-
-#ifdef TEMPORAL
-    // Temporal filtering
-    m_pEngineTemporal->process(pOut, pOut, iBufferSize);
-#endif
 }
 
 void EngineChannel::setEngineBuffer(EngineBuffer *pEngineBuffer) {
-
     Q_ASSERT(pEngineBuffer);
-#ifdef TEMPORAL
-    m_pEngineTemporal->setEngineBuffer(pEngineBuffer);
-#endif
-
 }
