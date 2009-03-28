@@ -86,7 +86,6 @@ void MidiObject::restartScriptEngine()
     connect(m_pScriptEngine, SIGNAL(initialized()),
             this, SLOT(slotScriptEngineReady()),
             Qt::DirectConnection);
-
     m_scriptEngineInitializedMutex.lock();
     m_pScriptEngine->start();
     // Wait until the script engine is initialized

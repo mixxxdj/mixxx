@@ -62,31 +62,29 @@ public slots:
     
 signals:
     void initialized();
-    void sigEvaluate(QString filename);
-    void sigExecute(QString function);
-    void sigExecute(QString function, char channel,
-                    QString device, char control,
-                    char value, MidiCategory category);
-                                                      
-private slots:
-    bool safeEvaluate(QString filename);
-    bool safeExecute(QString function);
-    bool safeExecute(QString function, char channel,
-                     QString device, char control,
-                     char value, MidiCategory category);
 
 protected:
     void run();
 
 private:
+    // Only call these with the scriptEngineLock
+    bool safeEvaluate(QString filepath);
+    bool safeExecute(QString function);
+    bool safeExecute(QString function, char channel, 
+                     QString device, char control, 
+                     char value, MidiCategory category);
+    void initializeScriptEngine();
+
     void generateScriptFunctions(QString code);
     bool checkException();
+    
 
     MidiObject *m_pMidiObject;
     QHash<ConfigKey, QString> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
     QMap<QString,QStringList> m_scriptErrors;
+    QMutex m_scriptEngineLock;
     
 //     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 };
