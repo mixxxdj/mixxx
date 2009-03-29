@@ -50,6 +50,14 @@ ControlObject::~ControlObject()
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_Key);
     m_sqCOHashMutex.unlock();
+
+    ControlObjectThread * obj;
+    m_qProxyListMutex.lock();
+    for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
+    {
+        obj->slotParentDead();
+    }
+    m_qProxyListMutex.unlock();
 }
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
