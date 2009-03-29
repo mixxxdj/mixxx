@@ -77,6 +77,8 @@ private:
 
     void generateScriptFunctions(QString code);
     bool checkException();
+
+    ControlObjectThread* getControlObjectThread(QString group, QString name);
     
 
     MidiObject *m_pMidiObject;
@@ -85,8 +87,7 @@ private:
     QStringList m_scriptFunctions;
     QMap<QString,QStringList> m_scriptErrors;
     QMutex m_scriptEngineLock;
-    
-//     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 };
 
 #endif
