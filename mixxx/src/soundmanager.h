@@ -91,11 +91,10 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<QString> m_samplerates;
         QString m_hostAPI;
-        CSAMPLE *m_pInterleavedBuffer; //Interleaved audio buffer containing all channels of audio
         //CSAMPLE *m_pMasterBuffer;
         //CSAMPLE *m_pHeadphonesBuffer;
-		CSAMPLE *m_pStreamBuffers[MAX_AUDIOSOURCE_TYPES];
-		short *m_pReceiverBuffers[MAX_AUDIORECEIVER_TYPES]; /** Audio received from input */
+        CSAMPLE *m_pStreamBuffers[MAX_AUDIOSOURCE_TYPES];
+        short *m_pReceiverBuffers[MAX_AUDIORECEIVER_TYPES]; /** Audio received from input */
 #ifdef __VINYLCONTROL__
         VinylControlProxy *m_VinylControl[2];
 #endif        
