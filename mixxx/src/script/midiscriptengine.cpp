@@ -47,6 +47,19 @@ MidiScriptEngine::~MidiScriptEngine() {
         m_pEngine = NULL;
         engine->deleteLater();
     }
+
+    // Free all the control object threads
+    QList<ConfigKey> keys = m_controlCache.keys();
+    QList<ConfigKey>::iterator it = keys.begin();
+    QList<ConfigKey>::iterator end = keys.end();
+    while(it != end) {
+        ConfigKey key = *it;
+        ControlObjectThread *cot = m_controlCache.take(key);
+        if(cot != NULL) {
+            delete cot;
+        }
+        it++;
+    }
     
 }
 
@@ -57,6 +70,9 @@ bool MidiScriptEngine::isReady() {
     return ret;
 }
 
+/*
+  WARNING: must hold the lock to call this
+ */
 void MidiScriptEngine::initializeScriptEngine() {
     // Create the MidiScriptEngine
     m_pEngine = new QScriptEngine(this);
@@ -280,24 +296,50 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 //     m_scriptFunctions = functionList;
 }
 
+ControlObjectThread* MidiScriptEngine::getControlObjectThread(QString group, QString name) {
+
+    ConfigKey key = ConfigKey(group, name);
+
+    ControlObjectThread *cot = NULL;
+    if(!m_controlCache.contains(key)) {
+        ControlObject *co = ControlObject::getControl(key);
+        if(co != NULL) {
+            cot = new ControlObjectThread(co);
+            m_controlCache.insert(key, cot);
+        }
+    } else {
+        cot = m_controlCache.value(key);
+    }
+
+    return cot;
+
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Returns the current value of a Mixxx control (for scripts)
    Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
    Output:  The value
    -------- ------------------------------------------------------ */
 double MidiScriptEngine::getValue(QString group, QString name) {
-    //qDebug() << QString("----------------------------------MidiScriptEngine: GetValue Thread ID=%1").arg(QThread::currentThreadId(),0,16);
     
-//     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
-    ControlObjectThread *cot = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, name)));
+
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+
+    //qDebug() << QString("----------------------------------MidiScriptEngine: GetValue Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+
+    ControlObjectThread *cot = getControlObjectThread(group, name);
     if (cot == NULL) {
         qDebug() << "MidiScriptEngine: Unknown control" << group << name;
         return 0.0;
     }
-//     return pot->get();
-    double temp = cot->get();
-    delete cot;
-    return temp;
+    
+    return cot->get();
 }
 
 /* -------- ------------------------------------------------------
@@ -306,12 +348,23 @@ double MidiScriptEngine::getValue(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
-//     ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
-//     pot->queueFromThread(newValue);
+
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+
     //qDebug() << QString("----------------------------------MidiScriptEngine: SetValue Thread ID=%1").arg(QThread::currentThreadId(),0,16);
-    ControlObjectThread *cot = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, name)));
-    cot->slotSet(newValue);
-    delete cot;
+    
+    ControlObjectThread *cot = getControlObjectThread(group, name);
+    
+    if(cot != NULL) {
+        cot->slotSet(newValue);
+    }
+    
 }
 
 /* -------- ------------------------------------------------------
@@ -333,8 +386,17 @@ void MidiScriptEngine::trigger(QString group, QString name) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
     ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
-    
+
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+
     //qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+
 
     if(m_pEngine == NULL) {
         return false;
@@ -350,52 +412,25 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
 //             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
-            this->disconnect(cobj, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
-            this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotValueChanged(double)));
+            this->disconnect(cobj, SIGNAL(valueChanged(double)),
+                             this, SLOT(slotValueChanged(double)));
+            this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
+                             this, SLOT(slotValueChanged(double)));
             m_connectedControls.remove(cobj->getKey());
         } else {
 //             qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
-            connect(cobj, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
-            connect(cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotValueChanged(double)));
+            connect(cobj, SIGNAL(valueChanged(double)),
+                    this, SLOT(slotValueChanged(double)),
+                    Qt::QueuedConnection);
+            connect(cobj, SIGNAL(valueChangedFromEngine(double)),
+                    this, SLOT(slotValueChanged(double)),
+                    Qt::QueuedConnection);
             m_connectedControls.insert(cobj->getKey(), function);
         }
         return true;
     }
 
     return false;
-    // The following code is not used now that we emulate qScriptConnect.
-    /*
-    if (!checkException() && slot.isFunction()) {    // If no problems,
-        // Do the deed
-        if (disconnect) {
-            //Get the saved ControlObjectThread pointer that we created when we connected the slot/signal.
-//             ControlObjectThread* cobj = m_controlCache.take(ConfigKey(group,name));
-            qScriptDisconnect(cobj, SIGNAL(valueChangedFromEngine(double)), QScriptValue(), slot);  // Needed for rate_temp*
-            if (qScriptDisconnect(cobj, SIGNAL(valueChanged(double)), QScriptValue(), slot))
-                qDebug() << "MidiScriptEngine:" << group << name << "valueChanged() disconnected from" << function;
-            else qDebug() << "MidiScriptEngine:" << group << name << "valueChanged() disconnect from" << function << "FAILED!";
-            
-//             delete cobj;
-        }
-        else {
-//             ControlObjectThread* cobj = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,name)));
-            
-            qScriptConnect(cobj, SIGNAL(valueChangedFromEngine(double)), QScriptValue(), slot); // Needed for rate_temp*
-            if (qScriptConnect(cobj, SIGNAL(valueChanged(double)), QScriptValue(), slot))
-                qDebug() << "MidiScriptEngine:" << group << name << "valueChanged() connected to" << function;
-            else qDebug() << "MidiScriptEngine:" << group << name << "valueChanged() connect to" << function << "FAILED!";
-            
-            //Save the ControlObjectThread pointer so we can disconnect this properly later.
-//             m_controlCache.insert(ConfigKey(group,name), cobj);
-        }
-        
-        return true;
-        
-    } else {
-        qWarning() << "MidiScriptEngine:" << group << name << "didn't connect/disconnect to/from" << function;
-        return false;
-        }
-    */
 }
 
 /* -------- ------------------------------------------------------
@@ -408,7 +443,7 @@ void MidiScriptEngine::slotValueChanged(double value) {
     ControlObject* sender = (ControlObject*)this->sender();
     if(sender == NULL) {
         qDebug() << "MidiScriptEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
-        m_scriptEngineLock.lock();
+        m_scriptEngineLock.unlock();
         return;
     }
     ConfigKey key = sender->getKey();
