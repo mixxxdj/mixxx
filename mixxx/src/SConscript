@@ -219,6 +219,7 @@ opts.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
 opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
 opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
+opts.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fogs asmlib, found at http://www.agner.org/optimize/', 0)
 opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 opts.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
@@ -1000,11 +1001,28 @@ if int(flags_optimize):
 		elif flags_optimize=='7':
 			print "  Athlon 3dnow/SSE/SSE2/SSE3 optimizations enabled (K8/Opteron/AMD64 w/ SSE3)."
 			env.Append(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='8':
+			print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
+			env.Append(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 else:
 	print "Optimizations... disabled"
 
-
-
+#Linking with ASMLIB
+flags_asmlib = getFlags(env, 'asmlib', 0)
+if int(flags_asmlib):
+	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... enabled"
+	env.Append(LIBPATH='#/../asmlib')
+	if platform == 'linux':
+		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+		env.Append(LIBS = '":alibelf32o.a"')
+	elif platform == 'osx':
+		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+		env.Append(LIBS = '":alibmac32o.a"')
+	elif platform == 'win32':
+		env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
+		env.Append(LIBS = 'alibcof32o')
+else:
+	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... disabled"
 
 # Profiling and Optimization
 if not platform == 'win32':
