@@ -108,9 +108,9 @@ SoundManager::~SoundManager()
 
     Pa_Terminate();
 
-    delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
-    delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
-    delete m_pReceiverBuffers[RECEIVER_MICROPHONE];
+    delete [] m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+    delete [] m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    delete [] m_pReceiverBuffers[RECEIVER_MICROPHONE];
 }
 
 /** Returns a list of all the devices we've enumerated through PortAudio.
