@@ -70,19 +70,23 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     //#include "../.mixxx_version.svn" // #define BUILD_REV = "<svn rev number>" //deprecated?
     QString buildRevision = "";
-    #ifdef BUILD_REV
-      buildRevision = BUILD_REV;
-    #endif
+#ifdef BUILD_REV
+    buildRevision = QString::number(BUILD_REV);
+#endif
     //#include "../.mixxx_flags.svn" // #define BUILD_FLAGS = "<flags>" //deprecated?
     QString buildFlags = "";
-    #ifdef BUILD_FLAGS
-      buildFlags = BUILD_FLAGS;
-    #endif
-    if (buildRevision.trimmed().length() > 0) {
-        if (buildFlags.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
-        else buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
-    }
+#ifdef BUILD_FLAGS
+    buildFlags = BUILD_FLAGS;
+#endif
+    
 
+    if (buildRevision.trimmed().length() > 0) {
+        if (buildFlags.trimmed().length() > 0)
+            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+        else
+            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+    }
+    
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
     setWindowIcon(QIcon(":/images/icon.svg"));
