@@ -84,11 +84,15 @@ bool ControlObject::disconnectControl(ConfigKey key)
 
 void ControlObject::addProxy(ControlObjectThread * pControlObjectThread)
 {
+    m_qProxyListMutex.lock();
     m_qProxyList.append(pControlObjectThread);
+    m_qProxyListMutex.unlock();
 }
 
 void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
+    m_qProxyListMutex.lock();
     m_qProxyList.removeRef(pControlObjectThread);
+    m_qProxyListMutex.unlock();
 }
 
 bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
@@ -96,14 +100,16 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
     ControlObjectThread * obj;
     bool bUpdateSuccess = true;
     // qDebug() << "updateProxies: Group" << m_Key.group << "/ Item" << m_Key.item;
+    m_qProxyListMutex.lock();
     for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
     {
         if (obj!=pProxyNoUpdate)
         {
             // qDebug() << "upd" << this->getKey().item;
-            bUpdateSuccess = obj->setExtern(m_dValue);
+            bUpdateSuccess = obj->setExtern(m_dValue); 
         }
     }
+    m_qProxyListMutex.unlock();
     return bUpdateSuccess;
 }
 

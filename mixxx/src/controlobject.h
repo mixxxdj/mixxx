@@ -124,6 +124,9 @@ protected:
 private:
     /** List of associated proxy objects */
     Q3PtrList<ControlObjectThread> m_qProxyList;
+    /** Mutex for the proxy list */
+    QMutex m_qProxyListMutex;
+
     /** Hash of ControlObject instantiations */
     static QHash<ConfigKey,ControlObject*> m_sqCOHash;
     /** Mutex guarding access to the ControlObject hash **/
