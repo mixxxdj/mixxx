@@ -28,6 +28,15 @@ WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
     m_pBpmControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm")));
+    
+    connect(m_pRateControl, SIGNAL(valueChanged(double)),
+            this, SLOT(setValue(double)));
+    connect(m_pRateDirControl, SIGNAL(valueChanged(double)),
+            this, SLOT(setValue(double)));
+    connect(m_pRateRangeControl, SIGNAL(valueChanged(double)),
+            this, SLOT(setValue(double)));
+    connect(m_pBpmControl, SIGNAL(valueChanged(double)),
+            this, SLOT(setValue(double)));
 
 }
 
@@ -42,10 +51,11 @@ WNumberBpm::~WNumberBpm()
 
 void WNumberBpm::setValue(double)
 {
-    if (m_bScaleBpm)
+    if (m_bScaleBpm) {
         WNumber::setValue(m_pBpmControl->get()*(1.+m_pRateControl->get()*m_pRateDirControl->get()*m_pRateRangeControl->get()));
-    else
+    } else {
         WNumber::setValue(m_pBpmControl->get());
+    }
 }
 
 void WNumberBpm::setScaleBpm(bool bScaleBpm)
