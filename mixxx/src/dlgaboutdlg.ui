@@ -56,7 +56,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>19</x>
      <y>10</y>
      <width>51</width>
      <height>61</height>
@@ -69,7 +69,23 @@ p, li { white-space: pre-wrap; }
     <pixmap resource="../res/mixxx.qrc">:/images/mixxx-icon.png</pixmap>
    </property>
   </widget>
-  <widget class="QLabel" name="mixxx_label">
+  <widget class="QLabel" name="mixxx_logo">
+   <property name="geometry">
+    <rect>
+     <x>71</x>
+     <y>14</y>
+     <width>161</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="../res/mixxx.qrc">:/images/mixxx_logo.png</pixmap>
+   </property>
+  </widget>
+<!--  <widget class="QLabel" name="mixxx_label">
    <property name="geometry">
     <rect>
      <x>70</x>
@@ -92,7 +108,7 @@ p, li { white-space: pre-wrap; }
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
-  </widget>
+  </widget>-->
   <widget class="QLabel" name="version_label">
    <property name="geometry">
     <rect>

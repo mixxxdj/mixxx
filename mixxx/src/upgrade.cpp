@@ -21,21 +21,21 @@
 // configuration and the location of the file may change between releases.
 static ConfigObject<ConfigValue>* versionUpgrade() {
 
-/*  Pre-1.6.2:
+/*  Pre-1.7.0:
 *
-*   Since we didn't store version numbers in the config file prior to 1.6.2,
+*   Since we didn't store version numbers in the config file prior to 1.7.0,
 *   we check to see if the user is upgrading if his config files are in the old location,
-*   since we moved them in 1.6.2. This code takes care of moving them.
+*   since we moved them in 1.7.0. This code takes care of moving them.
 */
 
     QString oldLocation = QDir::homePath().append("/%1");
 #ifdef __WIN32__
-    QFileInfo* pre162Config = new QFileInfo(oldLocation.arg("mixxx.cfg"));
+    QFileInfo* pre170Config = new QFileInfo(oldLocation.arg("mixxx.cfg"));
 #else
-    QFileInfo* pre162Config = new QFileInfo(oldLocation.arg(".mixxx.cfg"));
+    QFileInfo* pre170Config = new QFileInfo(oldLocation.arg(".mixxx.cfg"));
 #endif
 
-    if (pre162Config->exists()) {
+    if (pre170Config->exists()) {
     
         // Move the files to their new location
         QString newLocation = QDir::homePath().append("/").append(SETTINGS_PATH);
@@ -120,12 +120,12 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
         
     }
     // Tidy up
-    delete pre162Config;
-    // End pre-1.6.2 code
+    delete pre170Config;
+    // End pre-1.7.0 code
     
     
 /***************************************************************************
-*                           Post-1.6.2 upgrade code
+*                           Post-1.7.0 upgrade code
 *
 *   Add entries to the IF ladder below if anything needs to change from the
 *   previous to the current version. This allows for incremental upgrades
@@ -146,7 +146,7 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
     // Allows for incremental upgrades incase someone upgrades from a few versions prior
     // (I wish we could do a switch on a QString.)
     /*
-    // Examples, since we didn't store the version number prior to v1.6.2
+    // Examples, since we didn't store the version number prior to v1.7.0
     if (configVersion == "1.6.0") {
         qDebug() << "Upgrading from v1.6.0 to 1.6.1...";
         // Upgrade tasks here
@@ -154,19 +154,19 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.6.1"));
     }
     if (configVersion == "1.6.1") {
-        qDebug() << "Upgrading from v1.6.1 to 1.6.2...";
+        qDebug() << "Upgrading from v1.6.1 to 1.7.0...";
         // Upgrade tasks here
-        configVersion = "1.6.2";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.6.2"));
+        configVersion = "1.7.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.0"));
     }
     */
     
     // For the next release, if needed:
-//     if (configVersion == "1.6.2") {
-//         qDebug() << "Upgrading from v1.6.2 to 1.7.0...";
+//     if (configVersion == "1.7.1") {
+//         qDebug() << "Upgrading from v1.7.1 to 1.7.1...";
 //         // Upgrade tasks here
-//         configVersion = "1.7.0";
-//         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.0"));
+//         configVersion = "1.7.1";
+//         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.1"));
 //     }
 
     if (configVersion == VERSION) qDebug() << "At current version" << VERSION;

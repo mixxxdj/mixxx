@@ -61,7 +61,7 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString de
                 if (!light.firstChildElement("off").isNull()) {
                     off = (unsigned char)WWidget::selectNodeInt(light, "off");
                 }
-                if (!light.firstChildElement("threshold").isNull()) { //Deprecated as of 1.6.2
+                if (!light.firstChildElement("threshold").isNull()) { //Deprecated as of 1.7.0
                     min = WWidget::selectNodeFloat(light, "threshold");
                 }
                 if (!light.firstChildElement("minimum").isNull()) {
