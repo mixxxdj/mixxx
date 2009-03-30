@@ -53,7 +53,6 @@
 #include "configobject.h"
 #include "analyserqueue.h"
 #include "trackimporter.h"
-#include "bpm/bpmdetector.h"
 #include "playerinfo.h"
 #include "defs_promo.h"
 #include "soundsourceproxy.h"

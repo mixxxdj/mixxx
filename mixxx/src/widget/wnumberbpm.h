@@ -30,10 +30,14 @@ class WNumberBpm : public WNumber
 public:
     WNumberBpm(const char *group, QWidget *parent = 0);
     ~WNumberBpm();
+
+    /** Sets whether the display should scale bpm according to the current
+        playback rate */
+    static void setScaleBpm(bool);
+
+public slots:
     /** Sets the value */
     void setValue(double dValue);
-    /** Sets weather the display should scale bpm according to the current playback rate */
-    static void setScaleBpm(bool);
 
 private:
     /** Pointer to control object for rate */
