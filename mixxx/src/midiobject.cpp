@@ -249,7 +249,7 @@ void MidiObject::receive(MidiCategory status, char channel, char control, char v
     }
 
     // Only check for a mapping if the status byte is one we know how to handle
-    if (type == MIDI_KEY || type == MIDI_CTRL) {
+    if (type == MIDI_KEY || type == MIDI_CTRL || type == MIDI_PITCH) {
         // If there was no control bound to that MIDI command, return;
         if (!m_pMidiMapping->isMidiMessageMapped(inputCommand))
             return;
