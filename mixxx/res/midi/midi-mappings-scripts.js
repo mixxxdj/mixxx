@@ -37,7 +37,7 @@ script.pitch = function (channel, device, LSB, MSB, category) {
         return false;
     }
     var hexValue = (MSB << 7) | LSB;  // Construct the 14-bit number
-    intValue = parseInt("0x"+hexValue);
+    var intValue = parseInt("0x"+hexValue);
     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", combined="+hexValue+", as Int="+intValue);
     // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
     return (intValue-8192)/8192;
