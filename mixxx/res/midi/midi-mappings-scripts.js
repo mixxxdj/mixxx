@@ -13,10 +13,34 @@ script.absoluteSlider = function (group, key, value, low, high) {
     else engine.setValue(group, key, ((high-low)/127)*value);
 }
 
-// Used to control an EQ setting (0..1..4) from an absolute control (0-127)
+// Used to control an EQ setting (0..1..4) from an absolute control (0..127)
 script.absoluteEQ = function (group, key, value) {
     if (value<=64) engine.setValue(group, key, value/64);
     else engine.setValue(group, key, 1+(value-63)/(21+1/3));
+}
+
+// ----------------- Controller functions ---------------------
+
+/* -------- ------------------------------------------------------
+     script.Pitch
+   Purpose: Takes the value from a little-endian 14-bit MIDI pitch
+            wheel message and returns the value for a "rate" (pitch
+            slider) Mixxx control
+   Input:   standard parameters from MidiObject::receive()
+   Output:  Value for a "rate" control, or false if the input MIDI
+            message was not a Pitch message (0xE#)
+   -------- ------------------------------------------------------ */
+script.pitch = function (channel, device, LSB, MSB, category) {
+    script.debug(channel, device, LSB, MSB, category);
+    if (category != (0xE0 + channel-1)) {
+        print("Script.Pitch: Error, not a MIDI pitch command: "+category);
+        return false;
+    }
+    var hexValue = (MSB << 7) | LSB;  // Construct the 14-bit number
+    intValue = parseInt("0x"+hexValue);
+    print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", combined="+hexValue+", as Int="+intValue);
+    // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
+    return (intValue-8192)/8192;
 }
 
 // ----------------- Scratching functions ---------------------
@@ -25,7 +49,7 @@ function scratch() {}
 // See full details here: http://mixxx.org/wiki/doku.php/midi_scripting#available_common_functions
 
 // ----------   Variables    ----------
-scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":0.0, "initialControlValue":0, "scratch":0.0, "prevControlValue":0, "wrapCount":0 };
+scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0, "initialControlValue":0, "scratch":0.0, "prevControlValue":0, "wrapCount":0 };
 
 // ----------   Functions   ----------
 
@@ -65,7 +89,7 @@ scratch.enable = function (currentDeck) {
 scratch.disable = function (currentDeck) {
     // Reset the triggers
     scratch.variables["trackPos"] = 0.0;
-    scratch.variables["initialTrackPos"] = 0.0;
+    scratch.variables["initialTrackPos"] = -1.0;
     scratch.variables["initialControlValue"] = 0;
     scratch.variables["prevControlValue"] = 0;  // for wheel
     scratch.variables["wrapCount"] = 0; // for wheel
@@ -88,7 +112,7 @@ scratch.disable = function (currentDeck) {
    -------- ------------------------------------------------------ */
 scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // Skip if the track start position hasn't been set yet
-    if (scratch.variables["initialTrackPos"] == 0.0) return;
+    if (scratch.variables["initialTrackPos"] == -1.0) return 0;
     // If the slider start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = sliderValue;
@@ -109,7 +133,7 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
    -------- ------------------------------------------------------ */
 scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     // Skip if the track start position hasn't been set yet
-    if (scratch.variables["initialTrackPos"] == 0.0) return;
+    if (scratch.variables["initialTrackPos"] == -1.0) return 0;
     // If the wheel start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
