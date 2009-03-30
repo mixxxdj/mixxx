@@ -357,6 +357,12 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
         m_scriptEngineLock.unlock();
     }
 
+    if(isnan(newValue)) {
+        qDebug() << "Warning: script setting [" << group << "," << name
+                 << "] to NotANumber, ignoring.";
+        return;
+    }
+
     //qDebug() << QString("----------------------------------MidiScriptEngine: SetValue Thread ID=%1").arg(QThread::currentThreadId(),0,16);
     
     ControlObjectThread *cot = getControlObjectThread(group, name);

@@ -430,6 +430,11 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
 {
     //qDebug() << "seeking... " << change;
 
+    if(isnan(change) || change > 1.0 || change < 0.0) {
+        // This seek is ridiculous.
+        return;
+    }
+
     // If seeking, and in loop mode, disable loop
     if (buttonLoop->get())
     {
@@ -853,11 +858,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // qDebug() << "wheel " << wheel->get() << ", slider " << rateSlider->get() << ", range " << m_pRateRange->get() << ", dir " << m_pRateDir->get();
 
             // Apply scratch
-            if (m_pControlScratch->get()<0.)
-                rate = rate * (m_pControlScratch->get()-1.);
-            else if (m_pControlScratch->get()>0.)
-                rate = rate * (m_pControlScratch->get()+1.);
-
+            double scratch = m_pControlScratch->get();
+            if(!isnan(scratch)) {
+                if (scratch < 0.) {
+                    rate = rate * (scratch-1.);                
+                } else if (scratch > 0.) {
+                    rate = rate * (scratch+1.);
+                }
+            }
+                
             // Apply jog
             // FIXME: Sensitivity should be configurable separately?
             const double fact = m_pRateRange->get();
@@ -876,7 +885,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         {
             // Stopped. Wheel, jog and scratch controller all scrub through audio.
             double jogVal = m_pJog->get();
-            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(jogVal))*baserate; //*10.;
+
+            // Don't trust values from m_pControlScratch
+            double scratch = m_pControlScratch->get();
+            if(isnan(scratch)) {
+                scratch = 0.0;
+            }
+            
+            rate=(wheel->get()*40.+scratch+m_jogfilter->filter(jogVal))*baserate; //*10.;
             if(jogVal != 0.)
                 m_pJog->set(0.);
         }
