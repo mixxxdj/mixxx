@@ -21,7 +21,7 @@
 #include <QtCore>
 #include "defs.h"
 #include "configobject.h"
-#include "midimessage.h"
+#include "midimessage.h" //MOC doesn't like incomplete type definitions in signals. :(
 
 #ifdef __MIDISCRIPT__
 class MidiScriptEngine;     // Forward declaration

@@ -133,3 +133,13 @@ QString MidiMessage::toString() const
     QString hooah = channel + type + midino;
     return hooah;
 }
+
+uint qHash(const MidiMessage& key)
+{
+    if (key.getMidiType() == MIDI_PITCH) { 
+        //Ignore midino for pitch bend messages because those bits are actually part of the 14-bit pitch bend payload.
+        return (key.getMidiType() << 8) | (key.getMidiChannel() << 4); 
+    }
+    else
+        return (key.getMidiType() << 8) | (key.getMidiChannel() << 4) | key.getMidiNo();
+}

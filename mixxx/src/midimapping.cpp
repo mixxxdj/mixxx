@@ -552,7 +552,7 @@ void MidiMapping::clearPreset() {
 #endif
 
     //Iterate over all of the command/control pairs in the input mapping
-     QMapIterator<MidiMessage, MixxxControl> it(m_inputMapping);
+     QHashIterator<MidiMessage, MixxxControl> it(m_inputMapping);
      while (it.hasNext()) {
          it.next();
          QDomElement controlNode;
@@ -570,7 +570,7 @@ void MidiMapping::clearPreset() {
      }
 
      //Iterate over all of the control/command pairs in the OUTPUT mapping
-     QMapIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
+     QHashIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
      while (outIt.hasNext()) {
          outIt.next();
          QDomElement outputNode;

@@ -2,12 +2,13 @@
 /*      Stanton SCS.3d MIDI controller script vPre              */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.6.2                                 */
+/*      For Mixxx version 1.7.0                                 */
 /****************************************************************/
 
 function StantonSCS3d() {}
 
 // ----------   Customization variables ----------
+//      See http://mixxx.org/wiki/doku.php/stanton_scs.3d_mixxx_user_guide  for details
 StantonSCS3d.pitchRanges = [ 0.08, 0.12, 0.5, 1.0 ];    // Pitch ranges for LED off, blue, purple, red
 StantonSCS3d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
 StantonSCS3d.spinningPlatter = true;    // Spinning platter LEDs
