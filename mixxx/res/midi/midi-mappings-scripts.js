@@ -26,21 +26,20 @@ script.absoluteEQ = function (group, key, value) {
    Purpose: Takes the value from a little-endian 14-bit MIDI pitch
             wheel message and returns the value for a "rate" (pitch
             slider) Mixxx control
-   Input:   standard parameters from MidiObject::receive()
+   Input:   Least significant byte, most sig. byte, MIDI status byte
    Output:  Value for a "rate" control, or false if the input MIDI
             message was not a Pitch message (0xE#)
    -------- ------------------------------------------------------ */
-script.pitch = function (channel, device, LSB, MSB, category) {
-    script.debug(channel, device, LSB, MSB, category);
-    if (category != (0xE0 + channel-1)) {
-        print("Script.Pitch: Error, not a MIDI pitch command: "+category);
+script.pitch = function (LSB, MSB, status) {
+    if ((status & 0xF0) != 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
+        print("Script.Pitch: Error, not a MIDI pitch message: "+category);
         return false;
     }
-    var hexValue = (MSB << 7) | LSB;  // Construct the 14-bit number
-    var intValue = parseInt("0x"+hexValue);
-    print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", combined="+hexValue+", as Int="+intValue);
+    var value = (MSB << 7) | LSB;  // Construct the 14-bit number
     // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
-    return (intValue-8192)/8192;
+    var rate = (value-8192)/8191;
+//     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
+    return rate;
 }
 
 // ----------------- Scratching functions ---------------------

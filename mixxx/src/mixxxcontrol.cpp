@@ -156,3 +156,9 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
         parentNode.appendChild(tagNode);
     }
 }
+
+
+uint qHash(const MixxxControl& key)
+{
+    return (qHash(key.getControlObjectGroup() + key.getControlObjectValue()));
+}

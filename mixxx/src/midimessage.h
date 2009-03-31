@@ -23,7 +23,7 @@ class MidiMessage
         int getMidiByte2Off() const { return m_midiByte2Off; };
         void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
         QString toString() const;
-        bool operator==(MidiMessage& other) {
+        bool operator==(const MidiMessage& other) const {
             return ((m_midiType == other.getMidiType()) &&
                     (m_midiNo == other.getMidiNo()) &&
                     (m_midiChannel == other.getMidiChannel()));
@@ -42,12 +42,16 @@ class MidiMessage
 
 };
 
+/*
 inline bool operator<(const MidiMessage &first, const MidiMessage &second)
 {
      int firstval = (first.getMidiChannel() * 128) + (int)first.getMidiType() * (128*16) + first.getMidiNo();
      int secondval = (second.getMidiChannel() * 128) + (int)second.getMidiType() * (128*16) + second.getMidiNo();
      return firstval < secondval;
-}
+} */
+
+/** Hash function so we can use MidiMessage in a QHash table */
+uint qHash(const MidiMessage& key);
 
 inline QDataStream& operator<<(QDataStream & stream, const MidiMessage &first)
 {

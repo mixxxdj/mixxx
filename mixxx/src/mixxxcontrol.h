@@ -24,7 +24,7 @@ class MixxxControl
         float getThresholdMinimum() const { return m_thresholdMinimum; };
         float getThresholdMaximum() const { return m_thresholdMaximum; };
         void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
-        bool operator==(MixxxControl& other) {
+        bool operator==(const MixxxControl& other) const {
             return ((m_strCOGroup == other.getControlObjectGroup()) &&
                     (m_strCOValue == other.getControlObjectValue()) &&
                     (m_midiOption == other.getMidiOption()));
@@ -42,14 +42,8 @@ class MixxxControl
         float m_thresholdMaximum; 
 };
 
-inline bool operator<(const MixxxControl &first, const MixxxControl &second)
-{
-     //int firstval = (first.getMidiChannel() * 128) + (int)first.getMidiType() * (128*16) + first.getMidiNo();
-     //int secondval = (second.getMidiChannel() * 128) + (int)second.getMidiType() * (128*16) + second.getMidiNo();
-     //return firstval < secondval;
-     return ((first.getControlObjectGroup() + first.getControlObjectValue()) < 
-              (second.getControlObjectGroup() + second.getControlObjectValue()));
-}
+/** Hash function needed so we can use MixxxControl in a QHash table */
+uint qHash(const MixxxControl& key);
 
 /*
 QDebug operator<<(QDebug dbg, MixxxControl& control)
