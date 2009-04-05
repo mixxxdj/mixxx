@@ -54,6 +54,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_dBufferPlaypos = 0.;
     m_dAbsStartpos = 0.;
 
+    filepos_play = 0;
+    bufferpos_play = 0;
+
     // Set up temporary buffer for seeking and looping
     m_pTempBuffer = new float[kiTempLength];
     m_dTempFilePos = 0.;
@@ -1292,50 +1295,52 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
 
-            //
-            // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
-            // if playmode is next file: set next in playlistcontrol
-            //
+        }
 
-            // Update playpos slider and bpm display if necessary
-            m_iSamplesCalculated += iBufferSize;
-            if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE))
-            {
-                if (file_length_old!=0.)
-                {
-                    double f = math_max(0.,math_min(filepos_play,file_length_old));
-                    playposSlider->set(f/file_length_old);
 
-//                         qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
-                }
-                else
-                    playposSlider->set(0.);
-                if(filebpm != bpmControl->get())
-                    bpmControl->set(filebpm);
-                if(rate != rateEngine->get())
-                    rateEngine->set(rate);
+        //
+        // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
+        // if playmode is next file: set next in playlistcontrol
+        //
 
-                m_iSamplesCalculated = 0;
-
-            }
-
-            // Update buffer and abs position. These variables are not in the ControlObject
-            // framework because they need very frequent updates.
-            if (m_qPlayposMutex.tryLock())
-            {
-                m_dBufferPlaypos = bufferpos_play;
-                m_dAbsPlaypos = filepos_play;
-                m_dAbsStartpos = filepos_start;
-                m_qPlayposMutex.unlock();
-            }
-
-            // Update visual control object, this needs to be done more often than the bpm display and playpos slider
-            if(file_length_old != 0.) {
-                double f = math_max(0.,math_min(filepos_play, file_length_old));
-                visualPlaypos->set(f/file_length_old);
+        // Update playpos slider and bpm display if necessary
+        m_iSamplesCalculated += iBufferSize;
+        if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
+            
+            if (file_length_old!=0.) {
+                
+                double f = math_max(0.,math_min(filepos_play,file_length_old));
+                playposSlider->set(f/file_length_old);
+                
+                //qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
             } else {
-                visualPlaypos->set(0.);
+                playposSlider->set(0.);
             }
+            
+            if(filebpm != bpmControl->get())
+                bpmControl->set(filebpm);
+            if(rate != rateEngine->get())
+                rateEngine->set(rate);
+            
+            m_iSamplesCalculated = 0;
+        }
+
+        // Update buffer and abs position. These variables are not in the ControlObject
+        // framework because they need very frequent updates.
+        if (m_qPlayposMutex.tryLock()) {
+            
+            m_dBufferPlaypos = bufferpos_play;
+            m_dAbsPlaypos = filepos_play;
+            m_dAbsStartpos = filepos_start;
+            m_qPlayposMutex.unlock();
+        }
+
+        // Update visual control object, this needs to be done more often than the bpm display and playpos slider
+        if(file_length_old != 0.) {
+            double f = math_max(0.,math_min(filepos_play, file_length_old));
+            visualPlaypos->set(f/file_length_old);
+        } else {
+            visualPlaypos->set(0.);
         }
 
 //          qDebug() << "filepos_play " << filepos_play << ", len " << file_length_old << ", back " << backwards << ", play " << playButton->get();
