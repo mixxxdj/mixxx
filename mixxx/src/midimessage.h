@@ -24,11 +24,19 @@ class MidiMessage
         void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
         QString toString() const;
         bool operator==(const MidiMessage& other) const {
-            return ((m_midiType == other.getMidiType()) &&
+            if (this->getMidiType() == MIDI_PITCH) {
+                //Ignore midiNo for pitch messages because that byte is part of the message payload.
+                //(See the MIDI spec.)
+                return ((m_midiType == other.getMidiType()) &&
+                        (m_midiChannel == other.getMidiChannel()));
+            }
+            else {
+                return ((m_midiType == other.getMidiType()) &&
                     (m_midiNo == other.getMidiNo()) &&
                     (m_midiChannel == other.getMidiChannel()));
+            }
         };
-
+       
     private:
         MidiType m_midiType;
         int m_midiNo;

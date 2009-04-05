@@ -283,10 +283,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Clipping
     clipping->process(m_pMaster, m_pMaster, iBufferSize);
 
-    // Update VU meter (it does not return anything):
-    if (vumeter!=0)
-        vumeter->process(m_pMaster, m_pMaster, iBufferSize);
-
     // Add master to headphone
     for (int i=0; i<iBufferSize; i++)
         m_pHead[i] += m_pMaster[i]*cmaster_gain;
@@ -312,6 +308,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         m_pMaster[i  ] = m_pMaster[i  ]*balleft;
         m_pMaster[i+1] = m_pMaster[i+1]*balright;
     }
+
+    // moved here to take balance into account -elysion
+    // Update VU meter (it does not return anything):
+    if (vumeter!=0)
+        vumeter->process(m_pMaster, m_pMaster, iBufferSize);
+
 
     //Submit samples to the side chain to do shoutcasting, recording, etc.
     //(cpu intensive non-realtime tasks)
