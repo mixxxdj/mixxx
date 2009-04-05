@@ -147,8 +147,10 @@ Import('platform')
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
 		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		 'win32': os.environ['QTDIR']}[platform]	 #use the %QTDIR% env variable, since we have people set it in the wiki instructions already
+		}[platform]   # Can't do os.environ here because it breaks on other platforms
 
+if platform == 'win32':
+	default_qtdir = os.environ['QTDIR']	#use the %QTDIR% env variable, since we have people set it in the wiki instructions already
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', default_qtdir)
