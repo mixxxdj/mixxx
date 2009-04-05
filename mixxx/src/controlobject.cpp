@@ -114,7 +114,7 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
         if (obj!=pProxyNoUpdate)
         {
             // qDebug() << "upd" << this->getKey().item;
-            bUpdateSuccess = obj->setExtern(m_dValue); 
+            bUpdateSuccess = bUpdateSuccess && obj->setExtern(m_dValue); 
         }
     }
     m_qProxyListMutex.unlock();
