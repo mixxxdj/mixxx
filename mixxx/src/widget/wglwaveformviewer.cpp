@@ -119,6 +119,7 @@ void WGLWaveformViewer::timerEvent(QTimerEvent *qte) {
 
 
 void WGLWaveformViewer::initializeGL() {
+    QGLWidget::initializeGL();
     //qDebug() << "QGL initializeGL";
 
     /*
@@ -138,12 +139,15 @@ void WGLWaveformViewer::initializeGL() {
 }
 
 void WGLWaveformViewer::resizeGL(int w, int h) {
+    QGLWidget::resizeGL(w,h);
     //qDebug() << "QGL resizeGL " << w << " : " << h;
 
     //m_pWaveformRenderer->resize(w,h);    
 }
 
 void WGLWaveformViewer::paintGL() {
+    QGLWidget::paintGL();
+    
     //qDebug() << "QGL paintGL";
 
     //m_pWaveformRenderer->glDraw();
