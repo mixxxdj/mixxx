@@ -32,7 +32,7 @@ script.absoluteEQ = function (group, key, value) {
    -------- ------------------------------------------------------ */
 script.pitch = function (LSB, MSB, status) {
     if ((status & 0xF0) != 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
-        print("Script.Pitch: Error, not a MIDI pitch message: "+category);
+        print("Script.Pitch: Error, not a MIDI pitch message: "+status);
         return false;
     }
     var value = (MSB << 7) | LSB;  // Construct the 14-bit number

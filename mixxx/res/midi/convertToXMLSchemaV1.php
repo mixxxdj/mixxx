@@ -2,7 +2,7 @@
 <?php
 /***************************************************************************
  * This small script converts Mixxx MIDI Presets from the 1.6.X XML format *
- * to the new schema v1 format introduced in Mixxx 1.6.2.                  *
+ * to the new schema v1 format introduced in Mixxx 1.7.0.                  *
  *                                                                         *
  * The changes applied are thus:                                           *
  *    1) Add MixxxMIDIPreset tag                                           *
@@ -42,13 +42,13 @@ function convert_xml($file)
 
     // Create the file with default values
     $new = simplexml_load_string(
-    "<MixxxMIDIPreset schemaVersion=\"1\" mixxxVersion=\"1.6.2+\">
+    "<MixxxMIDIPreset schemaVersion=\"1\" mixxxVersion=\"1.7.0+\">
       <info>
         <name>{$file}</name>
         <author>Auto-converted by madjesta's PHP script</author>
         <description>Auto-conversion of the file {$file}</description>
       </info>
-      <controller id=\"".fileToControllerName($file)."\" port=\"Port\">
+      <controller id=\"".fileToControllerName($file)."\" port=\"\">
       </controller>
     </MixxxMIDIPreset>
     "
