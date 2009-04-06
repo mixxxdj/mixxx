@@ -44,7 +44,9 @@
 #include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
-#include "upgrade.cpp"
+#include "upgrade.cpp" //why is a .cpp included directly? -kousu 2009/03
+
+#include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
 #ifdef __IPOD__
 #include "wtracktableview.h"
@@ -67,19 +69,16 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-
-    //#include "../.mixxx_version.svn" // #define BUILD_REV = "<svn rev number>" //deprecated?
-    QString buildRevision = "";
-#ifdef BUILD_REV
-    buildRevision = QString::number(BUILD_REV);
-#endif
-    //#include "../.mixxx_flags.svn" // #define BUILD_FLAGS = "<flags>" //deprecated?
-    QString buildFlags = "";
-#ifdef BUILD_FLAGS
-    buildFlags = BUILD_FLAGS;
-#endif
     
-
+    QString buildRevision, buildFlags;
+    #ifdef BUILD_REV
+      buildRevision = BUILD_REV;
+    #endif
+    
+    #ifdef BUILD_FLAGS
+      buildFlags = BUILD_FLAGS;
+    #endif
+    
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
             buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
