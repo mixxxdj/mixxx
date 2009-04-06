@@ -26,14 +26,21 @@ StantonSCS3d.deck = 1;  // Currently active virtual deck
 StantonSCS3d.modifier = { };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS3d.state = { "pitchAbs":0, "tapTime":0.0, "jog":0 }; // Temporary state variables
 StantonSCS3d.tap = [];  // Tap sample values
-StantonSCS3d.modeSurface = { "fx":"S3+S5", "eq":"S3+S5", "loop":"Buttons", "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons", "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
+StantonSCS3d.modeSurface = { "fx":"S3+S5", "eq":"S3+S5", "loop":"Buttons", "loop2":"Buttons", "loop3":"Buttons", "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons", "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
 StantonSCS3d.surface = { "C1":0x00, "S5":0x01, "S3":0x02, "S3+S5":0x03, "Buttons":0x04 };
 StantonSCS3d.sysex = [0xF0, 0x00, 0x01, 0x60];  // Preamble for all SysEx messages for this device
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
 StantonSCS3d.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0 };
 StantonSCS3d.trackDuration = [0,0]; // Duration of the song on each deck (used for vinyl LEDs)
 StantonSCS3d.lastLight = [-1,-1]; // Last circle LED values
-// StantonSCS3d.scratch = { "time":0.0, "track":0.0, "trackInitial":0.0, "slider":0, "scratch":0.0, "revtime":3.6, "alpha":0.1, "beta":1.0 };
+StantonSCS3d.lastLoop = 0;  // Last-used loop LED
+// Pitch values for key change (LOOP) mode
+StantonSCS3d.pitchPoints = {    1:{ 0x48:-0.1998, 0x4A:-0.1665, 0x4C:-0.1332, 0x4E:-0.0999, 0x56:-0.0666, 0x58:-0.0333,
+                                    0x5A:0.0333, 0x5C:0.0666, 0x4F:0.0999, 0x51:0.1332, 0x53:0.1665, 0x55:0.1998 }, // 3.33% increments
+                                2:{ 0x48:-0.5, 0x4A:-0.4043, 0x4C:-0.2905, 0x4E:-0.1567, 0x56:-0.1058, 0x58:-0.0548, 
+                                    0x5A:0.06, 0x5C:0.12, 0x4F:0.181, 0x51:0.416, 0x53:0.688, 0x55:1.0 },  // Key changes
+                                3:{ 0x48:-0.4370, 0x4A:-0.3677, 0x4C:-0.3320, 0x4E:-0.2495, 0x56:-0.1567, 0x58:-0.0548, 
+                                    0x5A:0.12, 0x5C:0.263, 0x4F:0.338, 0x51:0.506, 0x53:0.688, 0x55:0.895 } };  // Notes
 // Multiple banks of multiple cue points:
 StantonSCS3d.triggerPoints1 = { 1:{ 0x48:-0.1, 0x4A:-0.1, 0x4C:-0.1, 0x4E:-0.1, 0x4F:-0.1, 0x51:-0.1, 0x53:-0.1, 
                                     0x55:-0.1, 0x56:-0.1, 0x58:-0.1, 0x5A:-0.1, 0x5C:-0.1 },
@@ -49,6 +56,7 @@ StantonSCS3d.triggerPoints2 = { 1:{ 0x48:-0.1, 0x4A:-0.1, 0x4C:-0.1, 0x4E:-0.1, 
                                     0x55:-0.1, 0x56:-0.1, 0x58:-0.1, 0x5A:-0.1, 0x5C:-0.1 } };
 StantonSCS3d.triggerS4 = 0xFF;
 
+
 // Signals to (dis)connect by mode: Group, Key, Function name
 StantonSCS3d.modeSignals = {"fx":[ ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDepthLEDs"],
                                    ["[Flanger]", "lfoDelay", "StantonSCS3d.FXDelayLEDs"],
@@ -60,6 +68,8 @@ StantonSCS3d.modeSignals = {"fx":[ ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDep
                                    ["CurrentChannel", "filterHigh", "StantonSCS3d.EQHighLEDs"],
                                    ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "loop":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
+                            "loop2":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
+                            "loop3":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "trig":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "trig2":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "trig3":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
@@ -558,11 +568,13 @@ StantonSCS3d.modeButton = function (channel, control, category, modeName) {
     StantonSCS3d.softButtonsColor(0x02);  // Make the soft buttons blue
     switch (currentMode) {    // Special recovery from certain modes
         case "loop":
+        case "loop2":
+        case "loop3":
         case "trig":
         case "trig2":
         case "trig3":
                 // If switching to loop or trig from either, skip this
-                if (modeName.substring(0,4)=="trig" || modeName=="loop") break;
+                if (modeName.substring(0,4)=="trig" || modeName.substring(0,4)=="loop") break;
                 var redButtonLEDs = [0x48, 0x4a, 0x4c, 0x4e, 0x4f, 0x51, 0x53, 0x55];
                 for (i=0; i<redButtonLEDs.length; i++)
                     midi.sendShortMsg(byte1,redButtonLEDs[i],0x40,StantonSCS3d.temp["device"]); // Set them to black
@@ -574,6 +586,9 @@ StantonSCS3d.modeButton = function (channel, control, category, modeName) {
         midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x01, StantonSCS3d.surface[StantonSCS3d.modeSurface[modeName]], 0xF7]),7);  // Configure surface if different
     switch (modeName) {    // Prep LEDs for certain modes
         case "loop":
+        case "loop2":
+        case "loop3":   engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",1.0);
+                        // Need 100% range for values to be correct
         case "trig":
         case "trig2":
         case "trig3":
@@ -583,13 +598,13 @@ StantonSCS3d.modeButton = function (channel, control, category, modeName) {
                 if (index != "2" && index != "3") index = "1";
                 
                 var redButtonLEDs = [0x48, 0x4a, 0x4c, 0x4e, 0x4f, 0x51, 0x53, 0x55, 0x56, 0x58, 0x5A, 0x5C];
-                if (currentMode.substring(0,4) != "trig" && currentMode != "loop") {
+                if (currentMode.substring(0,4) != "trig" && currentMode.substring(0,4) != "loop") {
                     for (i=0; i<redButtonLEDs.length; i++)
                         midi.sendShortMsg(byte1,redButtonLEDs[i],0x41,StantonSCS3d.temp["device"]); // Set them to red dim
 //                     for (i=0x56; i<=0x5c; i++)
 //                         midi.sendShortMsg(byte1,i,0x41,StantonSCS3d.temp["device"]); // Set center slider to red dim
                 }
-                if (modeName=="loop") break;
+                if (modeName.substring(0,4)=="loop") break;
                 // Light the blue circle LEDs for any cues currently set
                 var marker;
                 for (i=0; i<redButtonLEDs.length; i++) {
@@ -627,7 +642,25 @@ StantonSCS3d.EQ = function (channel, device, control, value, category) {
 }
 
 StantonSCS3d.Loop = function (channel, device, control, value, category) {
-    StantonSCS3d.modeButton(channel, control, category, "loop");
+    var mode;
+    var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
+    
+    switch (currentMode) {
+        case "loop":
+            if (category == (0x80 + channel-1)) mode = "loop2";
+            else mode = "loop";
+            break;
+        case "loop2":
+            if (category == (0x80 + channel-1)) mode = "loop3";
+            else mode = "loop2";
+            break;
+        case "loop3":
+            if (category == (0x80 + channel-1)) mode = "loop";
+            else mode = "loop3";
+            break;
+        default: mode = "loop";
+    }
+    StantonSCS3d.modeButton(channel, control, category, mode);
 }
 
 StantonSCS3d.Trig = function (channel, device, control, value, category) {
@@ -708,7 +741,7 @@ StantonSCS3d.DeckChange = function (channel, device, control, value, category) {
         StantonSCS3d.connectDeckSignals(true);    // Disconnect static signals
         StantonSCS3d.softButtonsColor(0x00);  // Darken the soft buttons
         if (StantonSCS3d.globalMode) newMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
-        if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"].substring(0,4) == "trig" || StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] == "loop")
+        if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"].substring(0,4) == "trig" || StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"].substring(0,4) == "loop")
             for (i=0x48; i<=0x5c; i++) midi.sendShortMsg(byte1,i,0x40,StantonSCS3d.temp["device"]); // Set surface LEDs to black
         if (StantonSCS3d.deck == 1) {
             print("StantonSCS3d: Switching to deck 2");
@@ -764,7 +797,9 @@ StantonSCS3d.DeckChange = function (channel, device, control, value, category) {
     switch (newMode) {    // Call the appropriate mode change function to set the control surface & connect signals on the now-current deck
         case "fx":      StantonSCS3d.FX(channel, device, StantonSCS3d.buttons["fx"], value, 0x80 + channel-1); break;
         case "eq":      StantonSCS3d.EQ(channel, device, StantonSCS3d.buttons["eq"], value, 0x80 + channel-1); break;
-        case "loop":    StantonSCS3d.Loop(channel, device, StantonSCS3d.buttons["loop"], value, 0x80 + channel-1); break;
+        case "loop":
+        case "loop2":
+        case "loop3":   StantonSCS3d.Loop(channel, device, StantonSCS3d.buttons["loop"], value, 0x80 + channel-1); break;
         case "trig":
         case "trig2":
         case "trig3":   StantonSCS3d.Trig(channel, device, StantonSCS3d.buttons["trig"], value, 0x80 + channel-1); break;
@@ -815,13 +850,26 @@ StantonSCS3d.S4absolute = function (channel, device, control, value) {
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",newScratchValue);
             break;
         case "loop":
+        case "loop2":
+        case "loop3":
             var button = 0x5C-2*Math.floor(value/32);
             if (StantonSCS3d.triggerS4==button) return; // prevent retriggering before releasing the button
             StantonSCS3d.S4buttonLights(false,StantonSCS3d.triggerS4);  // Clear the previous lights
             StantonSCS3d.triggerS4 = button;
             StantonSCS3d.S4buttonLights(true,button);
             
+            var index = currentMode.charAt(currentMode.length-1);
+            if (index != "2" && index != "3") index = "1";
+            
+//             if (StantonSCS3d.modifier[currentMode]==1) {
+//                 StantonSCS3d.pitchPoints[index][button] = -0.1;
+//                 break;
+//             }
+            if (StantonSCS3d.pitchPoints[index][button] == -0.1)
+                StantonSCS3d.pitchPoints[index][button] = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate");
+            else engine.setValue("[Channel"+StantonSCS3d.deck+"]","rate",StantonSCS3d.pitchPoints[index][button]); 
             break;
+            
         case "trig":
         case "trig2":
         case "trig3":
@@ -937,6 +985,8 @@ StantonSCS3d.S4touch = function (channel, device, control, value, category) {
             }
             break;
         case "loop":
+        case "loop2":
+        case "loop3":
         case "trig":
         case "trig2":
         case "trig3":
@@ -1058,7 +1108,18 @@ StantonSCS3d.SurfaceButton = function (channel, device, control, value, category
         midi.sendShortMsg(byte1,control,0x01,StantonSCS3d.temp["device"]); // Turn on button lights
         midi.sendShortMsg(byte1,StantonSCS3d.buttonLEDs[control],0x01,StantonSCS3d.temp["device"]);
         switch (currentMode) {
-            case "loop": break;
+            case "loop":
+            case "loop2":
+            case "loop3":
+                // Multiple pitch points
+    //             if (StantonSCS3d.modifier[currentMode]==1) {
+    //                 StantonSCS3d.pitchPoints[index][button] = -0.1;
+    //                 break;
+    //             }
+                if (StantonSCS3d.pitchPoints[index][control] == -0.1)
+                    StantonSCS3d.pitchPoints[index][control] = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate");
+                else engine.setValue("[Channel"+StantonSCS3d.deck+"]","rate",StantonSCS3d.pitchPoints[index][control]); 
+                break;
             case "trig":
             case "trig2":
             case "trig3":
