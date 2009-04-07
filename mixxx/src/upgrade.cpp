@@ -60,8 +60,8 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
             else {
-                if (oldFile->error()==14) qWarning() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qWarning() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
             }
         }
         delete oldFile;
@@ -77,8 +77,8 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
             else {
-                if (oldFile->error()==14) qWarning() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qWarning() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                if (oldFile->error()==14) qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
             }
         }
         delete oldFile;
@@ -94,8 +94,8 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
             else {
-                if (oldFile->error()==14) qWarning() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qWarning() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                if (oldFile->error()==14) qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
             }
         }
         // Tidy up
@@ -113,8 +113,8 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
         if (oldFile->copy(newFilePath))
             oldFile->remove();
         else {
-                if (oldFile->error()==14) qWarning() << errorText.arg("configuration", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qWarning() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                if (oldFile->error()==14) qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "The destination file already exists.";
+                else qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
             }
         delete oldFile;
         
@@ -162,8 +162,8 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
     */
     
     // For the next release, if needed:
-//     if (configVersion == "1.7.1") {
-//         qDebug() << "Upgrading from v1.7.1 to 1.7.1...";
+//     if (configVersion == "1.7.0") {
+//         qDebug() << "Upgrading from v1.7.0 to 1.7.1...";
 //         // Upgrade tasks here
 //         configVersion = "1.7.1";
 //         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.1"));
