@@ -23,7 +23,7 @@ StantonSCS3d.buttonLEDs = { 0x48:0x62, 0x4A:0x61, 0x4C:0x60, 0x4e:0x5f, 0x4f:0x6
                             0x56:0x64, 0x58:0x65, 0x5A:0x6C, 0x5C:0x5D }; // Maps surface buttons to corresponding circle LEDs
 StantonSCS3d.mode_store = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // Set vinyl mode on both decks
 StantonSCS3d.deck = 1;  // Currently active virtual deck
-StantonSCS3d.modifier = { };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
+StantonSCS3d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS3d.state = { "pitchAbs":0, "tapTime":0.0, "jog":0 }; // Temporary state variables
 StantonSCS3d.tap = [];  // Tap sample values
 StantonSCS3d.modeSurface = { "fx":"S3+S5", "eq":"S3+S5", "loop":"Buttons", "loop2":"Buttons", "loop3":"Buttons", "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons", "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
@@ -961,7 +961,8 @@ StantonSCS3d.S4touch = function (channel, device, control, value, category) {
                 break;
             case "vinyl3":
                 StantonSCS3d.S4buttonLight(true);
-                engine.setValue("[Playlist]","LoadSelectedIntoFirstStopped",1);
+//                 engine.setValue("[Playlist]","LoadSelectedIntoFirstStopped",1);
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","LoadSelectedTrack",1);
                 break;
         }
         return;
