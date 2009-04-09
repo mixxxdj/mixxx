@@ -283,8 +283,13 @@ void DlgPrefMidiBindings::slotAddInputBinding() {
 
 
     MixxxControl mixxxControl(controlGroup, controlValue);
-    MidiMessage message(MIDI_KEY); //Just picking a default here.
+    MidiMessage message(MIDI_KEY, 0); //Just picking a default here.
 
+    qDebug() << "FIXME: check if the default MidiMessage is already in the table, and pick the next midino up if it was. - Make Albert fix this!!!";
+    while (m_rMidi.getMidiMapping()->isMidiMessageMapped(message))
+    {
+        message.setMidiNo(message.getMidiNo() + 1);
+    }
     m_rMidi.getMidiMapping()->setInputMidiMapping(message, mixxxControl);
 /*
     // At this stage we have enough information to create a blank, learnable binding
