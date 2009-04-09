@@ -694,7 +694,7 @@ QString ConfigObject<ValueType>::getConfigPath()
 //    GetModuleFileName(NULL, str, 200);
 //    qConfigPath = QFileInfo(str).dirPath();
       wchar_t str[MAX_PATH];
-      GetModuleFileName(0, str, MAX_PATH);
+      GetModuleFileNameW(0, str, MAX_PATH);
       std::wstring path(str);
       qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
 #endif
