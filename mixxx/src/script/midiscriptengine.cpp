@@ -22,6 +22,14 @@
 #include "../controlobject.h"
 #include "../controlobjectthread.h"
 
+#ifdef _MSC_VER
+#include <float.h>  // for _isnan() on VC++
+#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+#else
+#include <math.h>  // for isnan() everywhere else
+#endif
+
+
 MidiScriptEngine::MidiScriptEngine(MidiObject* midi_object) :
     m_pEngine(NULL)
 {
