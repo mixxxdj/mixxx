@@ -69,7 +69,7 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *dialogHelper = new ErrorDialog();   // allows threads to show error dialogs
+ErrorDialog *dialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
 
 void qInitImages_mixxx();
 
@@ -205,6 +205,8 @@ int main(int argc, char * argv[])
     InitDebugConsole();
   #endif
 #endif
+   dialogHelper = new ErrorDialog(); 
+
     qInstallMsgHandler( MessageHandler );
 
     QThread::currentThread()->setObjectName("Main");

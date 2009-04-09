@@ -41,6 +41,14 @@ double EngineBuffer::m_dTempSmall = 0.001;
 double EngineBuffer::m_dPerm = 0.01;
 double EngineBuffer::m_dPermSmall = 0.001;
 
+#ifdef _MSC_VER
+#include <float.h>  // for _isnan() on VC++
+#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+#else
+#include <math.h>  // for isnan() everywhere else
+#endif
+
+
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config)
 {
     group = _group;
