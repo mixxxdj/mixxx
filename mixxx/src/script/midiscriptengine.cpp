@@ -145,14 +145,14 @@ bool MidiScriptEngine::execute(QString function) {
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
-   Input:   Function name, channel #, device name, control #, value, category
+   Input:   Function name, channel #, device name, control #, value, status
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function, char channel,
                                QString device, char control,
-                               char value,  MidiCategory category) {
+                               char value,  MidiStatusByte status) {
     m_scriptEngineLock.lock();
-    bool ret = safeExecute(function, channel, device, control, value, category);
+    bool ret = safeExecute(function, channel, device, control, value, status);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -192,7 +192,7 @@ bool MidiScriptEngine::safeExecute(QString function) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, char channel,
                                    QString device, char control,
-                                   char value,  MidiCategory category) {
+                                   char value,  MidiStatusByte status) {
     //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
@@ -216,7 +216,7 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
     args << QScriptValue(m_pEngine, device);
     args << QScriptValue(m_pEngine, control);
     args << QScriptValue(m_pEngine, value);
-    args << QScriptValue(m_pEngine, category);
+    args << QScriptValue(m_pEngine, status);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())

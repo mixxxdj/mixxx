@@ -246,12 +246,12 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString devi
                 continue; // Skip over realtime data?!?
             if ((packet->data[j] & 0x80) != 0 && messageSize > 0)
             {
-                MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+                MidiStatusByte midistatus = (MidiStatusByte)(buffer[0] & 0xF0);
                 char midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
                 char midicontrol = buffer[1];
                 char midivalue = buffer[2];
 
-                receive(midicategory, midichannel, midicontrol, midivalue, device);
+                receive(midistatus, midichannel, midicontrol, midivalue, device);
                 messageSize = 0;
             }
 
@@ -262,12 +262,12 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString devi
     }
     if (messageSize>0)
     {
-        MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+        MidiStatusByte midistatus = (MidiStatusByte)(buffer[0] & 0xF0);
         char midichannel = buffer[0] & 0x0F;  // The channel is stored in the lower 4 bits of the status byte received
         char midicontrol = buffer[1];
         char midivalue = buffer[2];
 
-        receive(midicategory, midichannel, midicontrol, midivalue, device);
+        receive(midistatus, midichannel, midicontrol, midivalue, device);
     }
 }
 

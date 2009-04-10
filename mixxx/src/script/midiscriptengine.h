@@ -44,7 +44,7 @@ public:
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
                  QString device, char control,
-                 char value, MidiCategory category); 
+                 char value, MidiStatusByte status); 
 
     // Lookup registered script functions
     QStringList getScriptFunctions();
@@ -72,7 +72,7 @@ private:
     bool safeExecute(QString function);
     bool safeExecute(QString function, char channel, 
                      QString device, char control, 
-                     char value, MidiCategory category);
+                     char value, MidiStatusByte status);
     void initializeScriptEngine();
 
     void generateScriptFunctions(QString code);

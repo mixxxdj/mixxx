@@ -48,8 +48,8 @@ QVariant MidiOutputMappingTableModel::data(const QModelIndex &index, int role) c
          
          switch (index.column())
          {
-             case MIDIOUTPUTTABLEINDEX_MIDITYPE:
-                 return command.getMidiType();
+             case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
+                 return command.getMidiStatusByte();
                  break;
 
              case MIDIOUTPUTTABLEINDEX_MIDINO:
@@ -105,8 +105,8 @@ bool MidiOutputMappingTableModel::setData(const QModelIndex &index, const QVaria
           
         switch (index.column())
             {
-                case MIDIOUTPUTTABLEINDEX_MIDITYPE:
-                    command.setMidiType((MidiType)value.toInt());
+                case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
+                    command.setMidiStatusByte((MidiStatusByte)value.toInt());
                     break;
                     
                 case MIDIOUTPUTTABLEINDEX_MIDINO:
@@ -168,8 +168,8 @@ QVariant MidiOutputMappingTableModel::headerData(int section, Qt::Orientation or
     {
         switch (section)
         {
-            case MIDIOUTPUTTABLEINDEX_MIDITYPE:
-                return QVariant(tr("Midi Type"));
+            case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
+                return QVariant(tr("Midi Status"));
                 break;
 
             case MIDIOUTPUTTABLEINDEX_MIDINO:

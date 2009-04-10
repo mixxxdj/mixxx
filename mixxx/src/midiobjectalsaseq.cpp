@@ -300,19 +300,19 @@ void MidiObjectALSASeq::run()
                     channel = ev->data.control.channel;
                     midicontrol = ev->data.control.param;
                     midivalue = ev->data.control.value;
-                    receive(CTRL_CHANGE, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
+                    receive(MIDI_STATUS_CC, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
                 } else if (ev->type == SND_SEQ_EVENT_NOTEON)
                 {
                     channel = ev->data.note.channel;
                     midicontrol = ev->data.note.note;
                     midivalue = ev->data.note.velocity;
-                    receive(NOTE_ON, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
+                    receive(MIDI_STATUS_NOTE_ON, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
                 } else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
                 {
                     channel = ev->data.note.channel;
                     midicontrol = ev->data.note.note;
                     midivalue = ev->data.note.velocity;
-                    receive(NOTE_OFF, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
+                    receive(MIDI_STATUS_NOTE_OFF, channel, midicontrol, midivalue, snd_seq_port_info_get_name(portInfo));
                 } else if (ev->type == SND_SEQ_EVENT_PITCHBEND)
                 {
                     channel = ev->data.control.channel;
@@ -325,7 +325,7 @@ void MidiObjectALSASeq::run()
                     midicontrol = temp & 0x7f;
                     midivalue = (temp >> 7) & 0x7f;
                     // qDebug() << "`-- Decooked to " << midicontrol << " " << midivalue;
-                    receive(PITCH_WHEEL, channel, midicontrol, midivalue, "TODO");
+                    receive(MIDI_STATUS_PITCH_BEND, channel, midicontrol, midivalue, "TODO");
                 } else if (ev->type == SND_SEQ_EVENT_NOTE)
                 {
                     //what is a note event (a combinaison of a note on and a note off?)

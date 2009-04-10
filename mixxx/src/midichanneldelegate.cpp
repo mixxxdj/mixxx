@@ -28,10 +28,15 @@ QWidget *MidiChannelDelegate::createEditor(QWidget *parent,
 void MidiChannelDelegate::setEditorData(QWidget *editor,
                                     const QModelIndex &index) const
 {
-    int value = index.model()->data(index, Qt::EditRole).toInt();
-
+    int channel = index.model()->data(index, Qt::EditRole).toInt();
+    
+    //Convert the channel to natural numbers (1-16). The actual MIDI messages
+    //address them as 0-15 as per the spec, but all user documentation for every
+    //MIDI device on the planet refers to the channels as 1-16.
+    channel++;
+    
     QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
-    spinBox->setValue(value);
+    spinBox->setValue(channel);
 }
 
 void MidiChannelDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
@@ -39,9 +44,9 @@ void MidiChannelDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
 {
     QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
     spinBox->interpretText();
-    int value = spinBox->value();
-
-    model->setData(index, value, Qt::EditRole);
+    int channel = spinBox->value();
+    channel--; //Convert the MIDI channel back into the 0-15 range.
+    model->setData(index, channel, Qt::EditRole);
 }
 
 void MidiChannelDelegate::updateEditorGeometry(QWidget *editor,
