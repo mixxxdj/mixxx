@@ -42,6 +42,12 @@ class MixxxControl
         float m_thresholdMaximum; 
 };
 
+inline bool operator<(const MixxxControl &first, const MixxxControl &second)
+{
+   return ((first.getControlObjectGroup() + first.getControlObjectValue()) < 
+            (second.getControlObjectGroup() + second.getControlObjectValue()));
+}
+  
 /** Hash function needed so we can use MixxxControl in a QHash table */
 uint qHash(const MixxxControl& key);
 

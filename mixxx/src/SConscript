@@ -319,7 +319,7 @@ sources = Split("""
                 midiinputmappingtablemodel.cpp
                 midioutputmappingtablemodel.cpp
                 midichanneldelegate.cpp
-                miditypedelegate.cpp
+                midistatusdelegate.cpp
                 midinodelegate.cpp
                 controlgroupdelegate.cpp
                 controlvaluedelegate.cpp

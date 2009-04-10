@@ -62,11 +62,11 @@ class MidiMapping : public QObject
     void addOutput(QDomElement& output, QString device);
     void addMidiScriptInfo(QDomElement &scriptFile, QString device); //Sucks
 
-    bool addInputControl(MidiType midiType, int midiNo, int midiChannel,
+    bool addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
                          QString controlObjectGroup, QString controlObjectKey,
                          MidiOption midiOption);
     bool addInputControl(MidiMessage message, MixxxControl control);
-    void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
+    void removeInputMapping(MidiStatusByte midiStatus, int midiNo, int midiChannel);
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
     MidiOutputMappingTableModel* getMidiOutputMappingTableModel();
     //MixxxControl* getInputMixxxControl(MidiMessage command);

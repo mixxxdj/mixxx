@@ -19,7 +19,7 @@
 #include "midiinputmappingtablemodel.h"
 #include "midioutputmappingtablemodel.h"
 #include "midichanneldelegate.h"
-#include "miditypedelegate.h"
+#include "midistatusdelegate.h"
 #include "midinodelegate.h"
 #include "controlgroupdelegate.h"
 #include "controlvaluedelegate.h"
@@ -69,11 +69,11 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
 
     //Set up the cool item delegates for the input mapping table
     m_pMidiChannelDelegate = new MidiChannelDelegate();
-    m_pMidiTypeDelegate = new MidiTypeDelegate();
+    m_pMidiStatusDelegate = new MidiStatusDelegate();
     m_pMidiNoDelegate = new MidiNoDelegate();
     m_pControlGroupDelegate = new ControlGroupDelegate();
     m_pControlValueDelegate = new ControlValueDelegate();
-    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDITYPE, m_pMidiTypeDelegate);
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP, m_pControlGroupDelegate);
@@ -87,7 +87,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pOutputMappingTableView->verticalHeader()->hide();
 
     //Set up the cool item delegates for the output mapping table
-    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDITYPE, m_pMidiTypeDelegate);
+    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
 
@@ -118,7 +118,7 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
     //delete m_pMidiConfig;
     delete m_pMidiChannelDelegate;
     delete m_pMidiNoDelegate;
-    delete m_pMidiTypeDelegate;
+    delete m_pMidiStatusDelegate;
 
     delete m_deleteMIDIInputRowAction;
 }
@@ -199,6 +199,8 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
     /*QString fileName = QFileDialog::getOpenFileName(this,
             "Import Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
             "Preset Files (*.xml)");*/
+    if (name == "...")
+        return;
     
     //TODO: Ask for confirmation if the MIDI tables aren't empty...
     MidiMapping* mapping = m_rMidi.getMidiMapping();
@@ -283,23 +285,13 @@ void DlgPrefMidiBindings::slotAddInputBinding() {
 
 
     MixxxControl mixxxControl(controlGroup, controlValue);
-    MidiMessage message(MIDI_KEY, 0); //Just picking a default here.
+    MidiMessage message;
 
-    qDebug() << "FIXME: check if the default MidiMessage is already in the table, and pick the next midino up if it was. - Make Albert fix this!!!";
     while (m_rMidi.getMidiMapping()->isMidiMessageMapped(message))
     {
         message.setMidiNo(message.getMidiNo() + 1);
     }
     m_rMidi.getMidiMapping()->setInputMidiMapping(message, mixxxControl);
-/*
-    // At this stage we have enough information to create a blank, learnable binding
-    m_rMidi.getMidiMapping()->addInputControl((MidiType)miditype.toInt(), midino.toInt(), midichan.toInt(),
-                                              group, key, (MidiOption)option.toInt());
-                        //FUCK! The "option" thing above will be garbage when converted to an int, since it's
-                        //        some string describing the midi option in words, not a string number like "2".
-                        //Solution: Use a delegate class for the MIDI Option column
-*/
-    //tblBindings->selectRow(tblBindings->rowCount() - 1); // Focus the row just added
 }
 
 void DlgPrefMidiBindings::slotRemoveInputBinding()

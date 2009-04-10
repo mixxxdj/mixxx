@@ -157,8 +157,6 @@ class MixxxApp : public QMainWindow
     MidiObject *midi;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
-    /** Pointer to active midi configuration */
-    ConfigObject<ConfigValueMidi> *midiconfig;
     /** Pointer to active keyboard configuration */
     ConfigObject<ConfigValueKbd> *kbdconfig;
     /** Pointer to track object */

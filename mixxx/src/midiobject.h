@@ -52,7 +52,6 @@ class MidiObject : public QThread
 public:
     MidiObject();
     virtual ~MidiObject();
-    void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
     virtual void updateDeviceList() {};
@@ -98,7 +97,7 @@ protected:
     void run();
 #endif
     void stop();
-    void receive(MidiCategory category, char channel, char control, char value, QString device);
+    void receive(MidiStatusByte status, char channel, char control, char value, QString device);
 
     bool requestStop;
     bool m_bMidiLearn;

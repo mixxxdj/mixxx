@@ -401,22 +401,11 @@ void MidiMapping::loadPreset(QDomElement root) {
 #ifdef __MIDISCRIPT__
             // Verify script functions are loaded
             if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
-                    scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
+                scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
                 
-                QString text;
-                // Why does this feel hacky?
-                switch (midiMessage.getMidiType()) {
-                    case MIDI_KEY: //These come from the MidiType enum (configobject.h)
-                        text = "Note/Key"; break;
-                    case MIDI_CTRL:
-                        text = "CC"; break;
-                    case MIDI_PITCH:
-                        text = "Pitch CC"; break;
-                    default:
-                        text = "Control number";
-                }
-                qWarning() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts." << text << midiMessage.getMidiNo() << "will not be bound. Please check the mapping and script files.";
-            } else {
+                    QString statusText = QString(midiMessage.getMidiStatusByte());
+                    qWarning() << "Error: Function" << mixxxControl.getControlObjectValue() << "was not found in loaded scripts." << "The MIDI Message with status byte" << statusText << midiMessage.getMidiNo() << "will not be bound. Please check the mapping and script files.";
+                } else {
 #endif
             //Add to the input mapping.
             setInputMidiMapping(midiMessage, mixxxControl);
@@ -495,13 +484,9 @@ void MidiMapping::applyPreset() {
 
     QDomElement controller = m_Bindings.firstChildElement("controller");
     // For each device
-    ConfigObject<ConfigValueMidi> * MidiConfig;
     while (!controller.isNull()) {
         // Device Outputs - LEDs
         QString deviceId = controller.attribute("id","");
-
-        qDebug() << "MidiMapping: Processing MIDI Control Bindings for" << deviceId;
-        //MidiConfig = new ConfigObject<ConfigValueMidi>(controller.namedItem("controls"));
 
         qDebug() << "MidiMapping: Processing MIDI Output Bindings for" << deviceId;
         MidiLedHandler::createHandlers(controller.namedItem("outputs").firstChild(), m_rMidiObject, deviceId);
@@ -671,11 +656,11 @@ void MidiMapping::addOutput(QDomElement &output, QString device) {
     outputs.appendChild(output);
 }
 
-bool MidiMapping::addInputControl(MidiType midiType, int midiNo, int midiChannel,
+bool MidiMapping::addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
                                   QString controlObjectGroup, QString controlObjectKey,
                                   MidiOption midiOption)
 {
-    return addInputControl(MidiMessage(midiType, midiNo, midiChannel),
+    return addInputControl(MidiMessage(midiStatus, midiNo, midiChannel),
                            MixxxControl(controlObjectGroup, controlObjectKey,
                                         midiOption));
 }
@@ -690,9 +675,9 @@ bool MidiMapping::addInputControl(MidiMessage message, MixxxControl control)
 
 }
 
-void MidiMapping::removeInputMapping(MidiType midiType, int midiNo, int midiChannel)
+void MidiMapping::removeInputMapping(MidiStatusByte midiStatus, int midiNo, int midiChannel)
 {
-    m_inputMapping.remove(MidiMessage(midiType, midiNo, midiChannel));
+    m_inputMapping.remove(MidiMessage(midiStatus, midiNo, midiChannel));
 }
 
 MidiInputMappingTableModel* MidiMapping::getMidiInputMappingTableModel()
@@ -710,7 +695,7 @@ MidiOutputMappingTableModel* MidiMapping::getMidiOutputMappingTableModel()
 {
     if (!m_inputMapping.contains(command)) {
         qDebug() << "Warning: unbound MIDI command";
-        qDebug() << "Midi Type:" << command.getMidiType();
+        qDebug() << "Midi Status:" << command.getMidiStatusByte();
         qDebug() << "Midi No:" << command.getMidiNo();
         qDebug() << "Midi Channel:" << command.getMidiChannel();
         return NULL;

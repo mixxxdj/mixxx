@@ -349,6 +349,9 @@ void DlgPreferences::rescanMidi()
 void DlgPreferences::destroyMidiWidgets()
 {
 //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
+
+  m_midiBindingsButtons.clear();
+  
   while (!wmidiBindingsForDevice.isEmpty())
     {
       DlgPrefMidiBindings* midiDlg = wmidiBindingsForDevice.takeLast();
@@ -363,8 +366,6 @@ void DlgPreferences::destroyMidiWidgets()
       m_pMIDITreeItem->removeChild(midiBindingsButton);
       delete midiBindingsButton;
     }
-  m_midiBindingsButtons.clear();
-
 }
 
 void DlgPreferences::setupMidiWidgets()
