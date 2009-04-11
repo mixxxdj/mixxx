@@ -243,7 +243,7 @@ void MidiObject::receive(MidiStatusByte status, char channel, char control, char
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
-         qDebug() << "MidiObject: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
+        // qDebug() << "MidiObject: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
 
         if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, status)) {
             qDebug() << "MidiObject: Invalid script function" << configKey.item;
