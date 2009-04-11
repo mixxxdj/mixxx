@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=Mixxx
 Comment=Create DJ mixes
-Exec=mixxx
+Exec=pasuspender mixxx
 Terminal=false
 Icon=mixxx-icon
 Type=Application
