@@ -262,6 +262,7 @@ void MidiObject::receive(MidiStatusByte status, char channel, char control, char
       switch (mixxxControl.getMidiOption()) {
               case MIDI_OPT_BUTTON:
               case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
+              default:
       }
 
       ControlObject::sync();
