@@ -27,6 +27,7 @@
 class MidiChannelDelegate;
 class MidiStatusDelegate;
 class MidiNoDelegate;
+class MidiOptionDelegate;
 class ControlGroupDelegate;
 class ControlValueDelegate;
 
@@ -67,6 +68,7 @@ private:
     MidiChannelDelegate* m_pMidiChannelDelegate;
     MidiStatusDelegate* m_pMidiStatusDelegate;
     MidiNoDelegate* m_pMidiNoDelegate;
+    MidiOptionDelegate* m_pMidiOptionDelegate;
     ControlGroupDelegate* m_pControlGroupDelegate;
     ControlValueDelegate* m_pControlValueDelegate;
     QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */

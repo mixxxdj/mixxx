@@ -4,6 +4,22 @@
 #include <QDebug>
 #include "configobject.h"
 
+typedef enum {
+    MIDI_OPT_NORMAL           = 0,
+    MIDI_OPT_INVERT           = 1,
+    MIDI_OPT_ROT64            = 2,
+    MIDI_OPT_ROT64_INV        = 3,
+    MIDI_OPT_ROT64_FAST       = 4,
+    MIDI_OPT_DIFF             = 5,
+    MIDI_OPT_BUTTON           = 6, // Button Down (!=00) and Button Up (00) events happen together
+    MIDI_OPT_SWITCH           = 7, // Button Down (!=00) and Button Up (00) events happen seperately
+    MIDI_OPT_HERC_JOG         = 8, // Generic hercules wierd range correction
+    MIDI_OPT_SPREAD64         = 9, // Accelerated difference from 64
+    MIDI_OPT_SELECTKNOB       = 10,// Relative knob which can be turned forever and outputs a signed value.
+    
+    MIDI_OPT_SCRIPT           = 50,// Maps a MIDI control to a custom MixxxScript function
+} MidiOption;
+
 /** Note: The hash table in the MIDI mapping class maps MidiCommands onto MixxxControls! */
 
 class MixxxControl
