@@ -187,7 +187,7 @@ void MidiObjectPortMidi::run()
 					int velocity = Pm_MessageData2(m_midiBuffer[i].message);
 									
 					//qDebug() << note;
-	                receive((MidiCategory)type, channel, note, velocity, m_strActiveDevice);
+	                receive((MidiCategory)type, channel, note, velocity);
 				}
 			}
 		}

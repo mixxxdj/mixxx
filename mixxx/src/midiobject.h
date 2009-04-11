@@ -69,7 +69,7 @@ public:
     QStringList *getConfigList(QString path);
 
     // Stuff for sending messages to control the device
-    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);
+    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     virtual void sendShortMsg(unsigned int word);
     virtual void sendSysexMsg(unsigned char data[], unsigned int length);
     Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
@@ -97,7 +97,7 @@ protected:
     void run();
 #endif
     void stop();
-    void receive(MidiStatusByte status, char channel, char control, char value, QString device);
+    void receive(MidiStatusByte status, char channel, char control, char value);
 
     bool requestStop;
     bool m_bMidiLearn;
