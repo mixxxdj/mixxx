@@ -251,7 +251,7 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString devi
                 char midicontrol = buffer[1];
                 char midivalue = buffer[2];
 
-                receive(midistatus, midichannel, midicontrol, midivalue, device);
+                receive(midistatus, midichannel, midicontrol, midivalue);
                 messageSize = 0;
             }
 
@@ -267,7 +267,7 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString devi
         char midicontrol = buffer[1];
         char midivalue = buffer[2];
 
-        receive(midistatus, midichannel, midicontrol, midivalue, device);
+        receive(midistatus, midichannel, midicontrol, midivalue);
     }
 }
 

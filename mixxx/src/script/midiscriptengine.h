@@ -41,10 +41,11 @@ public:
     bool evaluate(QString filepath);
     // Execute a particular function
     bool execute(QString function); 
+    // Execute a particular function with a data string (e.g. a device ID)
+    bool execute(QString function, QString data); 
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
-                 QString device, char control,
-                 char value, MidiStatusByte status); 
+                 char control, char value, MidiStatusByte status); 
 
     // Lookup registered script functions
     QStringList getScriptFunctions();
@@ -70,9 +71,9 @@ private:
     // Only call these with the scriptEngineLock
     bool safeEvaluate(QString filepath);
     bool safeExecute(QString function);
+    bool safeExecute(QString function, QString data);
     bool safeExecute(QString function, char channel, 
-                     QString device, char control, 
-                     char value, MidiStatusByte status);
+                     char control, char value, MidiStatusByte status);
     void initializeScriptEngine();
 
     void generateScriptFunctions(QString code);

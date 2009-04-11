@@ -212,7 +212,7 @@ QString MidiObject::getOpenDevice()
    Input:   Values as received from MIDI
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::receive(MidiStatusByte status, char channel, char control, char value, QString device)
+void MidiObject::receive(MidiStatusByte status, char channel, char control, char value)
 {
     //qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
 
@@ -245,7 +245,7 @@ void MidiObject::receive(MidiStatusByte status, char channel, char control, char
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
         // qDebug() << "MidiObject: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
 
-        if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, status)) {
+        if (!m_pScriptEngine->execute(configKey.item, channel, control, value, status)) {
             qDebug() << "MidiObject: Invalid script function" << configKey.item;
         }
         return;
@@ -262,7 +262,7 @@ void MidiObject::receive(MidiStatusByte status, char channel, char control, char
       switch (mixxxControl.getMidiOption()) {
               case MIDI_OPT_BUTTON:
               case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
-              default:
+              default: break;
       }
 
       ControlObject::sync();
@@ -290,8 +290,7 @@ void abortRead(int)
 #endif
 }
 
-void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device) {
-//    if (!TxEnabled[device]) { qDebug() << "Device:"<< device << "is not enabled for transmit."; return; }
+void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);

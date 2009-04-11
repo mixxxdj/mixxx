@@ -381,7 +381,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             if (initName!="") {
                 initName.append(".init");
                 qDebug() << "MidiMapping: Executing" << initName;
-                if (!m_pScriptEngine->execute(initName))
+                if (!m_pScriptEngine->execute(initName, device))
                     qWarning() << "MidiMapping: No" << initName << "function in script";
             }
         }
