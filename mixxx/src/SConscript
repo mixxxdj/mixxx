@@ -321,6 +321,7 @@ sources = Split("""
                 midichanneldelegate.cpp
                 midistatusdelegate.cpp
                 midinodelegate.cpp
+                midioptiondelegate.cpp
                 controlgroupdelegate.cpp
                 controlvaluedelegate.cpp
                 midimessage.cpp

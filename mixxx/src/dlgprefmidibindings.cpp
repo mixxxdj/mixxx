@@ -21,6 +21,7 @@
 #include "midichanneldelegate.h"
 #include "midistatusdelegate.h"
 #include "midinodelegate.h"
+#include "midioptiondelegate.h"
 #include "controlgroupdelegate.h"
 #include "controlvaluedelegate.h"
 #include "dlgprefmidibindings.h"
@@ -71,6 +72,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pMidiChannelDelegate = new MidiChannelDelegate();
     m_pMidiStatusDelegate = new MidiStatusDelegate();
     m_pMidiNoDelegate = new MidiNoDelegate();
+    m_pMidiOptionDelegate = new MidiOptionDelegate();
     m_pControlGroupDelegate = new ControlGroupDelegate();
     m_pControlValueDelegate = new ControlValueDelegate();
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
@@ -78,7 +80,8 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP, m_pControlGroupDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE, m_pControlValueDelegate);
-
+    m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDIOPTION, m_pMidiOptionDelegate);
+    
     //Tell the output mapping table widget which data model it should be viewing 
     //(note that m_pOutputMappingTableView is defined in the .ui file!)
     m_pOutputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiOutputMappingTableModel());
@@ -90,6 +93,8 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
+    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_CONTROLOBJECTGROUP, m_pControlGroupDelegate);
+    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_CONTROLOBJECTVALUE, m_pControlValueDelegate);
 
     // Connect buttons to slots
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
