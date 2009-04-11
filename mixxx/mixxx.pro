@@ -208,7 +208,8 @@ HEADERS += src/analyser.h \
     src/midiobjectnull.h \
     src/midioutputmapping.h \
 	src/midioutputmappingtablemodel.h \
-    src/miditypedelegate.h \
+#    src/miditypedelegate.h \
+    src/midistatusdelegate.h \
     src/mixxx.h \
     src/mixxxcontrol.h \
     src/mixxxkeyboard.h \
@@ -381,7 +382,8 @@ SOURCES += src/analyserbpm.cpp \
     src/midiobject.cpp \
     src/midiobjectnull.cpp \
 	src/midioutputmappingtablemodel.cpp \
-    src/miditypedelegate.cpp \
+#    src/miditypedelegate.cpp \
+    src/midistatusdelegate.cpp \
     src/mixxx.cpp \
     src/mixxxcontrol.cpp \
     src/mixxxkeyboard.cpp \
