@@ -102,7 +102,14 @@ bool MidiOutputMappingTableModel::setData(const QModelIndex &index, const QVaria
     if (index.isValid() && role == Qt::EditRole) {
         MixxxControl control = m_pMapping->getOutputMixxxControl(index.row());
         MidiMessage command = m_pMapping->getOutputMidiMessage(control);
-          
+        
+        //Now we actually need to remove the mapping we want to operate on,
+        //because otherwise if we change the status or channel bits, we'll
+        //end up inserting a new mapping instead of overwriting this one.
+        //(This is because the mapping datastructure is a hash table that
+        // hashes on the status byte.)
+        m_pMapping->clearOutputMidiMapping(control);
+                  
         switch (index.column())
             {
                 case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
