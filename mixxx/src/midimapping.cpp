@@ -816,6 +816,7 @@ void MidiMapping::finishMidiLearn(MidiMessage message)
         //Notify the prefs dialog that we've finished doing a MIDI learn.
         emit(midiLearningFinished(message));
         emit(midiLearningFinished()); //Tells MidiObject to stop feeding us messages.
+        emit(inputMappingChanged());
     }
 }
 
