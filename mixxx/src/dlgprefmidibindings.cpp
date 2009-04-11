@@ -93,8 +93,10 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
-    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_CONTROLOBJECTGROUP, m_pControlGroupDelegate);
-    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_CONTROLOBJECTVALUE, m_pControlValueDelegate);
+    //TODO: We need different delegates for the output table's CO group/value columns because we only list real input
+    //      controls, and for output we'd want to list a different set with stuff like "VUMeter" and other output controls.
+    //m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_CONTROLOBJECTGROUP, m_pControlGroupDelegate);
+    //m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_CONTROLOBJECTVALUE, m_pControlValueDelegate);
 
     // Connect buttons to slots
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));

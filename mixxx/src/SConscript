@@ -352,6 +352,7 @@ sources = Split("""
 		widget/wabstractcontrol.cpp
                 widget/wsearchlineedit.cpp
 		widget/wpixmapstore.cpp
+				widget/hexspinbox.cpp
                 
                 mathstuff.cpp
                 readerextract.cpp
