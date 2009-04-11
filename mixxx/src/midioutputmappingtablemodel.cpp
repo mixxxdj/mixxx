@@ -210,6 +210,8 @@ QVariant MidiOutputMappingTableModel::headerData(int section, Qt::Orientation or
 bool MidiOutputMappingTableModel::removeRow(int row, const QModelIndex& parent)
 {
     m_pMapping->clearOutputMidiMapping(row);
+    
+    return true;
 }
 
 bool MidiOutputMappingTableModel::removeRows(int row, int count, const QModelIndex& parent)
