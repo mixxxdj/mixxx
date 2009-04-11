@@ -4,11 +4,7 @@ nop = function () {}    // Only here so you don't get a syntax error on load
 
 function script() {}
 script.debug = function (channel, control, value, status) {
-    print("Script.Debug --- channel: " + channel + " control: " + control + " value: " + value+ " status: " + status);
-}
-
-script.debug = function (channel, device, control, value, status) {
-    print("Script.Debug --- channel: " + channel + " device (DEPRECATED): " + device + " control: " + control + " value: " + value+ " status: " + status);
+    print("Script.Debug --- channel: " + channel.toString(16) + " control: " + control.toString(16) + " value: " + value.toString(16) + " status: " + status.toString(16));
 }
 
 // Used to control a generic Mixxx control setting (low..high) from an absolute control (0..127)
