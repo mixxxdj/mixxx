@@ -3,7 +3,7 @@
 #include "midimessage.h"
 
 /** MidiMessage constructor */
-MidiMessage::MidiMessage(MidiStatusByte status, int midino, int8_t midichannel)
+MidiMessage::MidiMessage(MidiStatusByte status, int midino, char midichannel)
 {
     //Register this class with QT so we can use this bad boy in signals/slots.
     qRegisterMetaType<MidiMessage>("MidiMessage");

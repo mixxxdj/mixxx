@@ -417,9 +417,10 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config, " << qTime.elapsed();
     delete config;
 
-#ifdef __WIN32__
-    _exit(0);
-#endif
+// Why is this here? The (MSVC 2008) linker even complains about it.
+//#ifdef __WIN32__
+//    _exit(0);
+//#endif
 }
 
 /** initializes all QActions of the application */
