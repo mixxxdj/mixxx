@@ -14,6 +14,26 @@ MidiChannelDelegate::MidiChannelDelegate(QObject *parent)
 {
 }
 
+void MidiChannelDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
+                         const QModelIndex &index) const
+{
+    if (index.data().canConvert<int>()) {
+        int channel = index.data().value<int>();
+        //Convert to natural numbers (starts at 1 instead of 0.)
+        channel++;
+
+        if (option.state & QStyle::State_Selected)
+            painter->fillRect(option.rect, option.palette.highlight());
+
+        QString text = QString("%1").arg(channel);
+
+        painter->drawText(option.rect, text, QTextOption(Qt::AlignCenter));
+        //Note that Qt::AlignCenter does both vertical and horizontal alignment.
+    } else {
+        QItemDelegate::paint(painter, option, index);
+    }
+}
+
 QWidget *MidiChannelDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &/* option */,
         const QModelIndex &/* index */) const

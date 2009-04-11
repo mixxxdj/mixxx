@@ -24,17 +24,20 @@ void MidiStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
                          const QModelIndex &index) const
 {
     if (index.data().canConvert<int>()) {
-        int value = index.data().value<int>();
+        int status = index.data().value<int>();
+        
+        //Throw away the channel bits (low nibble).
+        status &= 0xF0;
 
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
 
         QString text;
-        if (value == MIDI_STATUS_NOTE_ON) //These come from the MidiStatusByte enum (midimessage.h)
+        if (status == MIDI_STATUS_NOTE_ON) //These come from the MidiStatusByte enum (midimessage.h)
             text = MIDISTATUS_STRING_NOTE;
-        else if (value == MIDI_STATUS_CC)
+        else if (status == MIDI_STATUS_CC)
             text = MIDISTATUS_STRING_CTRL;
-        else if (value == MIDI_STATUS_PITCH_BEND)
+        else if (status == MIDI_STATUS_PITCH_BEND)
             text = MIDISTATUS_STRING_PITCH;
         else
             text = tr("Unknown");
@@ -61,11 +64,14 @@ QWidget *MidiStatusDelegate::createEditor(QWidget *parent,
 void MidiStatusDelegate::setEditorData(QWidget *editor,
                                     const QModelIndex &index) const
 {
-    int value = index.model()->data(index, Qt::EditRole).toInt();
+    int status = index.model()->data(index, Qt::EditRole).toInt();
     int comboIdx = 0;
     
+    //Throw away the channel bits (low nibble).
+    status &= 0xF0;    
+    
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
-    switch (value)
+    switch (status)
     {
         case MIDI_STATUS_NOTE_ON:
             comboIdx = 0;

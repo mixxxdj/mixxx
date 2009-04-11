@@ -20,7 +20,8 @@ class MidiChannelDelegate : public QItemDelegate
 
 public:
     MidiChannelDelegate(QObject *parent = 0);
-
+ void paint(QPainter *painter, const QStyleOptionViewItem &option,
+                         const QModelIndex &index) const;
  QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                        const QModelIndex &index) const;
 

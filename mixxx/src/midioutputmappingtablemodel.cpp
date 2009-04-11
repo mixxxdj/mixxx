@@ -209,22 +209,12 @@ QVariant MidiOutputMappingTableModel::headerData(int section, Qt::Orientation or
 
 bool MidiOutputMappingTableModel::removeRow(int row, const QModelIndex& parent)
 {
-    return removeRows(row, 1, parent);
-    /*
-    beginRemoveRows(parent, row, row);
-    qDebug() << "MidiOutputMappingTableModel::removeRow()";
     m_pMapping->clearOutputMidiMapping(row);
-    endRemoveRows();
-    
-    qDebug() << "numRows:" << rowCount();
-    
-    return true;
-    */
 }
 
 bool MidiOutputMappingTableModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-    beginRemoveRows(parent, row, row+count-1);
+    beginRemoveRows(parent, row, row+count);
     qDebug() << "MidiOutputMappingTableModel::removeRows()";
 
     m_pMapping->clearOutputMidiMapping(row, count);

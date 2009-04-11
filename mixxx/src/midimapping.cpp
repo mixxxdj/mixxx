@@ -134,6 +134,7 @@ void MidiMapping::clearInputMidiMapping(int index) {
     MidiMessage key = m_inputMapping.keys().at(index);
     m_inputMapping.remove(key);
     emit(inputMappingChanged());
+    
     //emit(inputMappingChanged(index, numInputMidiMessages()-1));
 }
 
@@ -152,6 +153,7 @@ void MidiMapping::clearInputMidiMapping(MidiMessage command) {
  *
  */
 void MidiMapping::clearInputMidiMapping(int index, int count) {
+    
     QList<MidiMessage> keys = m_inputMapping.keys();
     int changed = 0;
     for(int i=index; i < index+count; i++) {

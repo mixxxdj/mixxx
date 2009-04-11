@@ -196,19 +196,19 @@ void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
  */
 void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
     
-    /*QString fileName = QFileDialog::getOpenFileName(this,
-            "Import Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
-            "Preset Files (*.xml)");*/
     if (name == "...")
         return;
     
-    //TODO: Ask for confirmation if the MIDI tables aren't empty...
+    //Ask for confirmation if the MIDI tables aren't empty...
     MidiMapping* mapping = m_rMidi.getMidiMapping();
     if (mapping->numInputMidiMessages() > 0 ||
         mapping->numOutputMixxxControls() > 0)
     {
-         QMessageBox::StandardButton result = QMessageBox::question(this, "Overwrite existing mapping?", tr("Are you sure you'd like to load the " + name + " mapping?\n"
-                                                                      "This will overwrite your existing MIDI mapping."),  QMessageBox::Yes | QMessageBox::No);
+         QMessageBox::StandardButton result = QMessageBox::question(this, 
+                tr("Overwrite existing mapping?"), 
+                tr("Are you sure you'd like to load the " + name + " mapping?\n"
+                   "This will overwrite your existing MIDI mapping."),  
+                   QMessageBox::Yes | QMessageBox::No);
                               
          if (result == QMessageBox::No) {
             //Select the "..." item again in the combobox.
@@ -251,11 +251,9 @@ void DlgPrefMidiBindings::slotEnableDevice()
 	//TODO: Should probably check if devOpen() actually succeeded.
 }
 
-void DlgPrefMidiBindings::slotAddInputBinding() {
-    // TODO: This function is totally broken.
-
+void DlgPrefMidiBindings::slotAddInputBinding() 
+{
     bool ok = true;
-
     QString controlGroup = QInputDialog::getItem(this, tr("Select Control Group"), tr("Select Control Group"), 
                                                 ControlGroupDelegate::getControlGroups(), 0, false,  &ok);
     if (!ok) return;
@@ -301,12 +299,13 @@ void DlgPrefMidiBindings::slotRemoveInputBinding()
 	{
 		MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
 		if (tableModel) {
+		
 			QModelIndex curIndex;
 			//The model indices are sorted so that we remove the rows from the table
             //in ascending order. This is necessary because if row A is above row B in
             //the table, and you remove row A, the model index for row B will change.
             //Sorting the indices first means we don't have to worry about this.
-            //qSort(selectedIndices);
+            qSort(selectedIndices);
 
             //Going through the model indices in descending order (see above comment for explanation).
 			QListIterator<QModelIndex> it(selectedIndices);
