@@ -652,6 +652,7 @@ elif platform == 'bsd':
 	env.Append(CPPDEFINES='__BSD__')
 elif platform == 'win32':
 	env.Append(CPPDEFINES='__WIN32__')
+	env.Append(CPPDEFINES='UNICODE')	# Need this on Windows until we have UTF16 support in Mixxx
 	
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')

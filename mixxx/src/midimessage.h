@@ -20,7 +20,7 @@ typedef enum {
   class MidiMessage
   {
       public:
-          MidiMessage(MidiStatusByte status=MIDI_STATUS_NOTE_ON, int midino=0, int8_t midichannel=0);
+          MidiMessage(MidiStatusByte status=MIDI_STATUS_NOTE_ON, int midino=0, char midichannel=0);
           MidiMessage(QDomElement& parentNode);
           ~MidiMessage() {};
           void setMidiStatusByte(MidiStatusByte status) { m_midiStatusByte = status; };
