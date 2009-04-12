@@ -36,7 +36,7 @@ void MidiLedHandler::controlChanged(double value) {
         lastStatus=m_byte2;
          if (m_byte2 != 0xff) {
             // qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
-            m_midi.sendShortMsg(m_status, m_midino, m_byte2, m_device);
+            m_midi.sendShortMsg(m_status, m_midino, m_byte2);
         }
     }
 }

@@ -83,10 +83,6 @@
        </widget>
       </item>
      </layout>
-     <zorder>label</zorder>
-     <zorder>comboBoxPreset</zorder>
-     <zorder>btnExportXML</zorder>
-     <zorder>btnMidiLearnWizard</zorder>
     </widget>
    </item>
    <item row="1" column="0" >
@@ -109,8 +105,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>574</width>
-        <height>276</height>
+        <width>580</width>
+        <height>287</height>
        </rect>
       </property>
       <attribute name="label" >
@@ -204,8 +200,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>574</width>
-        <height>276</height>
+        <width>580</width>
+        <height>287</height>
        </rect>
       </property>
       <attribute name="label" >
@@ -213,7 +209,11 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3" >
        <item row="0" column="0" >
-        <widget class="QTableView" name="m_pOutputMappingTableView" />
+        <widget class="QTableView" name="m_pOutputMappingTableView" >
+         <property name="enabled" >
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0" >
         <widget class="QGroupBox" name="groupBoxOutputs" >
@@ -223,6 +223,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout" >
           <item>
            <widget class="QPushButton" name="btnAddOutputBinding" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
             <property name="text" >
              <string>Add</string>
             </property>

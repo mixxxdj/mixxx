@@ -25,8 +25,9 @@
 
 //Forward declarations
 class MidiChannelDelegate;
-class MidiTypeDelegate;
+class MidiStatusDelegate;
 class MidiNoDelegate;
+class MidiOptionDelegate;
 class ControlGroupDelegate;
 class ControlValueDelegate;
 
@@ -65,8 +66,9 @@ private:
     int currentGroupRow;
     MidiObject &m_rMidi;
     MidiChannelDelegate* m_pMidiChannelDelegate;
-    MidiTypeDelegate* m_pMidiTypeDelegate;
+    MidiStatusDelegate* m_pMidiStatusDelegate;
     MidiNoDelegate* m_pMidiNoDelegate;
+    MidiOptionDelegate* m_pMidiOptionDelegate;
     ControlGroupDelegate* m_pControlGroupDelegate;
     ControlValueDelegate* m_pControlValueDelegate;
     QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */

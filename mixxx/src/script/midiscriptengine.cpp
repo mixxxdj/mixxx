@@ -22,6 +22,14 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 
+#ifdef _MSC_VER
+#include <float.h>  // for _isnan() on VC++
+#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+#else
+#include <math.h>  // for isnan() everywhere else
+#endif
+
+
 MidiScriptEngine::MidiScriptEngine(MidiObject* midi_object) :
     m_pEngine(NULL),
     m_pMidiObject(midi_object)
@@ -137,14 +145,26 @@ bool MidiScriptEngine::execute(QString function) {
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
-   Input:   Function name, channel #, device name, control #, value, category
+   Input:   Function name, data string (e.g. device ID)
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::execute(QString function, QString data) {
+    m_scriptEngineLock.lock();
+    bool ret = safeExecute(function, data);
+    m_scriptEngineLock.unlock();
+    return ret;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   Function name, channel #, control #, value, status
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function, char channel,
-                               QString device, char control,
-                               char value,  MidiCategory category) {
+                               char control, char value,
+                               MidiStatusByte status) {
     m_scriptEngineLock.lock();
-    bool ret = safeExecute(function, channel, device, control, value, category);
+    bool ret = safeExecute(function, channel, control, value, status);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -179,12 +199,45 @@ bool MidiScriptEngine::safeExecute(QString function) {
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
-   Input:   Function name, channel #, device name, control #, value, category
+   Input:   Function name, data string (e.g. device ID)
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QString function, QString data) {
+    //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+
+    if(m_pEngine == NULL) {
+        return false;
+    }
+    
+    if (!m_pEngine->canEvaluate(function)) {
+        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
+        return false;
+    }
+    
+    QScriptValue scriptFunction = m_pEngine->evaluate(function);
+    
+    if (checkException())
+        return false;
+    if (!scriptFunction.isFunction())
+        return false;
+
+    QScriptValueList args;
+    args << QScriptValue(m_pEngine, data);
+
+    scriptFunction.call(QScriptValue(), args);
+    if (checkException())
+        return false;
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   Function name, channel #, control #, value, status
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, char channel,
-                                   QString device, char control,
-                                   char value,  MidiCategory category) {
+                                   char control, char value,
+                                   MidiStatusByte status) {
     //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
@@ -205,10 +258,9 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
 
     QScriptValueList args;
     args << QScriptValue(m_pEngine, channel);
-    args << QScriptValue(m_pEngine, device);
     args << QScriptValue(m_pEngine, control);
     args << QScriptValue(m_pEngine, value);
-    args << QScriptValue(m_pEngine, category);
+    args << QScriptValue(m_pEngine, status);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())

@@ -139,13 +139,13 @@ void MidiObjectWin::run()
     MidiObject::run();
 }
 
-void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue, QString device)
+void MidiObjectWin::handleMidi(char status, char midicontrol, char midivalue)
 {
-    qDebug() << QString("midi miditype: %1 ch: %2, ctrl: %3, val: %4").arg(QString::number(channel& 240, 16).toUpper())
-       .arg(QString::number(channel&15, 16).toUpper())
-       .arg(QString::number(midicontrol, 16).toUpper())
-       .arg(QString::number(midivalue, 16).toUpper());
-    receive((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue, device); // void receive(MidiCategory category, char channel, char control, char value, QString device);
+	//qDebug() << QString("MIDI status: %1, ctrl: %2, val: %3")
+	//   .arg(QString::number(status & 255, 16).toUpper())
+ //      .arg(QString::number(midicontrol, 16).toUpper())
+ //      .arg(QString::number(midivalue, 16).toUpper());
+    receive((MidiStatusByte)(status & 255), status & 15, midicontrol, midivalue); // void receive(MidiStatusByte status, char channel, char control, char value);
 }
 
 // C/C++ wrapper function
@@ -154,9 +154,9 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
     MidiObjectWin * midi = (MidiObjectWin *)dwInstance;
     switch (wMsg) {
     case MIM_DATA:
-        qDebug() << "MIM_DATA";
-        midi->handleMidi(dwParam1 & 0x000000ff, (dwParam1 & 0x0000ff00) >> 8, (dwParam1 & 0x00ff0000) >> 16, midi->handles.key(hMidiIn));
-	qDebug() << "MIM_DATA done.";
+//        qDebug() << "MIM_DATA";
+        midi->handleMidi(dwParam1 & 0x000000ff, (dwParam1 & 0x0000ff00) >> 8, (dwParam1 & 0x00ff0000) >> 16);
+//	qDebug() << "MIM_DATA done.";
         break;
     case MIM_LONGDATA:
         qDebug() << "MIM_LONGDATA";

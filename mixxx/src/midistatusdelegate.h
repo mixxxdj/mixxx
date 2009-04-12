@@ -1,12 +1,12 @@
 /*
- * miditypedelegate.h
+ * midistatusdelegate.h
  *
  *  Created on: 1-Feb-2009
  *      Author: asantoni
  */
 
-#ifndef MIDITYPEDELEGATE_H_
-#define MIDITYPEDELEGATE_H_
+#ifndef MIDISTATUSDELEGATE_H_
+#define MIDISTATUSDELEGATE_H_
 
 #include <QItemDelegate>
 #include <QModelIndex>
@@ -15,12 +15,12 @@
 #include <QComboBox>
 #include <QLabel>
 
-class MidiTypeDelegate : public QItemDelegate
+class MidiStatusDelegate : public QItemDelegate
 {
  Q_OBJECT
 
 public:
-  MidiTypeDelegate(QObject *parent = 0);
+  MidiStatusDelegate(QObject *parent = 0);
 
  QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                        const QModelIndex &index) const;
@@ -36,4 +36,4 @@ public:
 private:
 };
 
-#endif /* MIDITYPEDELEGATE_H_ */
+#endif /* MIDISTATUSDELEGATE_H_ */
