@@ -112,8 +112,8 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecoder_submit(&timecoder, samples, size);
 
         //Update the input signal strength
-        timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX);
-        timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX);
+        timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX * 2.0f);
+        timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
 
         waitForNextInput.wakeAll();
         lockSamples.unlock();
