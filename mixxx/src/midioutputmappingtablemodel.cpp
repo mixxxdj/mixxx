@@ -48,8 +48,8 @@ QVariant MidiOutputMappingTableModel::data(const QModelIndex &index, int role) c
          
          switch (index.column())
          {
-             case MIDIOUTPUTTABLEINDEX_MIDITYPE:
-                 return command.getMidiType();
+             case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
+                 return command.getMidiStatusByte();
                  break;
 
              case MIDIOUTPUTTABLEINDEX_MIDINO:
@@ -102,11 +102,18 @@ bool MidiOutputMappingTableModel::setData(const QModelIndex &index, const QVaria
     if (index.isValid() && role == Qt::EditRole) {
         MixxxControl control = m_pMapping->getOutputMixxxControl(index.row());
         MidiMessage command = m_pMapping->getOutputMidiMessage(control);
-          
+        
+        //Now we actually need to remove the mapping we want to operate on,
+        //because otherwise if we change the status or channel bits, we'll
+        //end up inserting a new mapping instead of overwriting this one.
+        //(This is because the mapping datastructure is a hash table that
+        // hashes on the status byte.)
+        m_pMapping->clearOutputMidiMapping(control);
+                  
         switch (index.column())
             {
-                case MIDIOUTPUTTABLEINDEX_MIDITYPE:
-                    command.setMidiType((MidiType)value.toInt());
+                case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
+                    command.setMidiStatusByte((MidiStatusByte)value.toInt());
                     break;
                     
                 case MIDIOUTPUTTABLEINDEX_MIDINO:
@@ -168,8 +175,8 @@ QVariant MidiOutputMappingTableModel::headerData(int section, Qt::Orientation or
     {
         switch (section)
         {
-            case MIDIOUTPUTTABLEINDEX_MIDITYPE:
-                return QVariant(tr("Midi Type"));
+            case MIDIOUTPUTTABLEINDEX_MIDISTATUS:
+                return QVariant(tr("Midi Status"));
                 break;
 
             case MIDIOUTPUTTABLEINDEX_MIDINO:
@@ -209,22 +216,14 @@ QVariant MidiOutputMappingTableModel::headerData(int section, Qt::Orientation or
 
 bool MidiOutputMappingTableModel::removeRow(int row, const QModelIndex& parent)
 {
-    return removeRows(row, 1, parent);
-    /*
-    beginRemoveRows(parent, row, row);
-    qDebug() << "MidiOutputMappingTableModel::removeRow()";
     m_pMapping->clearOutputMidiMapping(row);
-    endRemoveRows();
-    
-    qDebug() << "numRows:" << rowCount();
     
     return true;
-    */
 }
 
 bool MidiOutputMappingTableModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-    beginRemoveRows(parent, row, row+count-1);
+    beginRemoveRows(parent, row, row+count);
     qDebug() << "MidiOutputMappingTableModel::removeRows()";
 
     m_pMapping->clearOutputMidiMapping(row, count);

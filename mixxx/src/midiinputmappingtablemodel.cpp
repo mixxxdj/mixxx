@@ -33,7 +33,7 @@ void MidiInputMappingTableModel::setMapping(MidiMapping* mapping)
 }
 
 QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) const
- {
+ {     
      if (!index.isValid())
          return QVariant();
 
@@ -41,24 +41,25 @@ QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) co
          return QVariant();
 
      if (role == Qt::DisplayRole || role == Qt::EditRole) {
-         //This might be super slow, but that's the price of using a map/hash table.
+         //This might be super slow, but that's the price of using a map/hash table (which give
+         //us super fast lookups when MidiMessages come in).
          //Also note that QMaps are always sorted by key, whereas QHashes are not sorted and rearrange themselves.
 
-         MidiMessage command = m_pMapping->getInputMidiMessage(index.row());
-         MixxxControl control = m_pMapping->getInputMixxxControl(command);
+         MidiMessage message = m_pMapping->getInputMidiMessage(index.row());
+         MixxxControl control = m_pMapping->getInputMixxxControl(message);
 
          switch (index.column())
          {
-             case MIDIINPUTTABLEINDEX_MIDITYPE:
-                 return command.getMidiType();
+             case MIDIINPUTTABLEINDEX_MIDISTATUS:
+                 return message.getMidiStatusByte();
                  break;
 
              case MIDIINPUTTABLEINDEX_MIDINO:
-                 return command.getMidiNo();
+                 return message.getMidiNo();
                  break;
 
              case MIDIINPUTTABLEINDEX_MIDICHANNEL:
-                 return command.getMidiChannel();
+                 return message.getMidiChannel();
                  break;
 
              case MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP:
@@ -93,21 +94,28 @@ bool MidiInputMappingTableModel::setData(const QModelIndex &index, const QVarian
                                          int role)
 {
     if (index.isValid() && role == Qt::EditRole) {
-        MidiMessage command = m_pMapping->getInputMidiMessage(index.row());
-        MixxxControl control = m_pMapping->getInputMixxxControl(command);
-
+        MidiMessage message = m_pMapping->getInputMidiMessage(index.row());
+        MixxxControl control = m_pMapping->getInputMixxxControl(message);
+        
+        //Now we actually need to remove the mapping we want to operate on,
+        //because otherwise if we change the status or channel bits, we'll
+        //end up inserting a new mapping instead of overwriting this one.
+        //(This is because the mapping datastructure is a hash table that
+        // hashes on the status byte.)
+        m_pMapping->clearInputMidiMapping(message);
+        
         switch (index.column())
             {
-                case MIDIINPUTTABLEINDEX_MIDITYPE:
-                    command.setMidiType((MidiType)value.toInt());
+                case MIDIINPUTTABLEINDEX_MIDISTATUS:
+                    message.setMidiStatusByte((MidiStatusByte)value.toInt());
                     break;
 
                 case MIDIINPUTTABLEINDEX_MIDINO:
-                    command.setMidiNo(value.toInt());
+                    message.setMidiNo(value.toInt());
                     break;
 
                 case MIDIINPUTTABLEINDEX_MIDICHANNEL:
-                    command.setMidiChannel(value.toInt());
+                    message.setMidiChannel(value.toInt());
                     break;
 
                 case MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP:
@@ -124,7 +132,7 @@ bool MidiInputMappingTableModel::setData(const QModelIndex &index, const QVarian
             };
 
         //Insert the updated control into the map.
-        m_pMapping->setInputMidiMapping(command, control);
+        m_pMapping->setInputMidiMapping(message, control);
 
         emit dataChanged(index, index);
         return true;
@@ -136,6 +144,7 @@ int MidiInputMappingTableModel::rowCount(const QModelIndex& parent) const
 {
     if (parent != QModelIndex()) //Some weird thing for table-based models.
         return 0;
+    
     return m_pMapping->numInputMidiMessages();
 }
 
@@ -153,8 +162,8 @@ QVariant MidiInputMappingTableModel::headerData(int section, Qt::Orientation ori
     {
         switch (section)
         {
-            case MIDIINPUTTABLEINDEX_MIDITYPE:
-                return QVariant(tr("Midi Type"));
+            case MIDIINPUTTABLEINDEX_MIDISTATUS:
+                return QVariant(tr("Midi Status Type"));
                 break;
 
             case MIDIINPUTTABLEINDEX_MIDINO:
@@ -186,9 +195,10 @@ QVariant MidiInputMappingTableModel::headerData(int section, Qt::Orientation ori
 
 bool MidiInputMappingTableModel::removeRow(int row, const QModelIndex& parent)
 {
-    beginRemoveRows(parent, row, row);
+    //DO NOT CALL beginRemoveRows()/endRemoveRows() in this function! You're ONLY supposed to
+    //do that for removeRows() (plural!!). It causes a bug if you do it here.
+    
     m_pMapping->clearInputMidiMapping(row);
-    endRemoveRows();
 
     return true;
 }

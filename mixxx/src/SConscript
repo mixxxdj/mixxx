@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 import sys
-import glob
 import SCons
 import shutil
 
@@ -27,6 +26,7 @@ import shutil
 #Useful functions
 #
 
+print "WE ARE IN:", os.getcwd()
 
 plugins = []
 
@@ -58,7 +58,6 @@ def getMixxxVersion():
 	#given "#define VERSION "...."" extract "....":
 	version = version.split()[-1].replace('"', '')
 	return version
-
 
 #Check for FFMPEG support
 def CheckFFMPEG(conf, sources):
@@ -143,17 +142,15 @@ def getFlags(env, argflag, default=0):
 Import('platform')
 
 #Figure out what the QT path is
-#XXX this should be a dict lookup, not an ifelse tree
+
+
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
 		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		}[platform]   # Can't do os.environ here because it breaks on other platforms
-
-if platform == 'win32':
-	default_qtdir = os.environ['QTDIR']	#use the %QTDIR% env variable, since we have people set it in the wiki instructions already
+		 'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
 
 #Read the qtdir flag, if it was set explicitly
-flags_qtdir = ARGUMENTS.get('qtdir', default_qtdir)
+flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
 if not os.path.exists(flags_qtdir) and platform != 'osx': #OS X doesn't have a qt path.
 	print "Error: QT path does not exist or QT4 is not installed."
 	print "Please specify your QT path by running 'scons qtdir=[path]'"
@@ -187,9 +184,9 @@ env['MIXXX_VERSION'] = getMixxxVersion() #should this be in the env?
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
 if not env.has_key('CACHEDIR'):
-	env['CACHEDIR'] = Dir('#cache/')
-if not os.path.isdir(str(env['CACHEDIR'])):
-	os.mkdir(str(env['CACHEDIR']))
+	env['CACHEDIR'] = str(Dir('#cache/'))
+if not os.path.isdir(env['CACHEDIR']):
+	os.mkdir(env['CACHEDIR'])
 
 ## Avoid spreading .sconsign files everywhere
 #env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
@@ -235,7 +232,14 @@ if os.environ.has_key('CCFLAGS'):
 	env.Append(CCFLAGS = SCons.Util.CLVar(os.environ['CCFLAGS']))
 
 
-env.Append(CPPDEFINES=[('BUILD_REV', '"%s"' % getBZRRevision())])
+#env.Append(CPPDEFINES=[('BUILD_REV', '"%s"' % getBZRRevision())]) #doing this forces a rebuild of everything whenever a commit happens -- not much fun
+## instead, embed BZR version into build
+## Put version info into a file, so it doesn't force a rebuild of everything :)
+f = open("build.h","w+")
+try:
+	f.write('#define BUILD_REV "' + getBZRRevision() + '"\n')
+finally:
+	f.close()
 
 ### embed SVN version into build
 ### Put version info into a file, so it doesn't force a rebuild of everything :)
@@ -315,8 +319,9 @@ sources = Split("""
                 midiinputmappingtablemodel.cpp
                 midioutputmappingtablemodel.cpp
                 midichanneldelegate.cpp
-                miditypedelegate.cpp
+                midistatusdelegate.cpp
                 midinodelegate.cpp
+                midioptiondelegate.cpp
                 controlgroupdelegate.cpp
                 controlvaluedelegate.cpp
                 midimessage.cpp
@@ -347,6 +352,7 @@ sources = Split("""
 		widget/wabstractcontrol.cpp
                 widget/wsearchlineedit.cpp
 		widget/wpixmapstore.cpp
+				widget/hexspinbox.cpp
                 
                 mathstuff.cpp
                 readerextract.cpp
@@ -648,6 +654,7 @@ elif platform == 'bsd':
 	env.Append(CPPDEFINES='__BSD__')
 elif platform == 'win32':
 	env.Append(CPPDEFINES='__WIN32__')
+	env.Append(CPPDEFINES='UNICODE')	# Need this on Windows until we have UTF16 support in Mixxx
 	
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')
@@ -1087,14 +1094,14 @@ if int(flags_cmetrics):
 else:
 	print "Case Metrics profiling... disabled"
 
-#env.Append(CPPDEFINES=[('BUILD_FLAGS', "%s" % build_flags)])
+#env.Append(CPPDEFINES=[('BUILD_FLAGS', "'%s'" % build_flags)])
 
 ### Put flags info into a file
-#f = open("#.mixxx_flags.svn","w")
-#try:
-#	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
-#finally:
-#	f.close()
+f = open("build.h","w+")
+try:
+	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
+finally:
+	f.close()
 	
 # Print the build flags (useful if the flags have been cached, ie. if you just run "scons"
 # and want to see the flags that you used last time)
@@ -1105,8 +1112,6 @@ print "================\n"
 #Save the options to cache
 opts.Save(cachefile, env)
 
-
-
 #Tell SCons to build Mixxx
 #=========================
 if platform == 'win32':
@@ -1114,10 +1119,11 @@ if platform == 'win32':
 else:
 	mixxx_bin = env.Program('mixxx', sources)
 
+
 #Set up the MSVC target to build a Visual Studio project/solution file
 if 'msvc' in COMMAND_LINE_TARGETS:
-	includes = glob.glob('src/*.h')
-	includes += glob.glob('src/visual/*.h')
+	includes = map(str, Glob('#src/*.h'))
+	includes += map(str, Glob('#src/visual/*.h'))
 	#Make the project file aware of any command-line arguments that were passed...
 	cmdargs = ""
 	for k in SCons.Script.ARGUMENTS:
@@ -1155,36 +1161,36 @@ else:
 binary_files = mixxx_bin;
 
 #Skins
-skin_files = glob.glob(str(File('#/res/skins/*')))
+skin_files = Glob('#res/skins/*')
 
 #MIDI mappings
-midimappings_files = glob.glob(str(File('#res/midi/*')))
+midimappings_files = Glob('#res/midi/*')
 
 #Keyboard mapping(s)
-keyboardmappings_files = glob.glob(str(File('#res/keyboard/*')))
+keyboardmappings_files = Glob('#res/keyboard/*')
 
 #Promo tracks
-promotracks_files = glob.glob(str(File('#promo/*')))
+promotracks_files = Glob('#promo/*')
 
 #LADSPA shizzle
-ladspapresets_files = glob.glob(str(File('#res/ladspa_presets/*')))
+ladspapresets_files = Glob('#res/ladspa_presets/*')
 
 #Documentation
-docs_files = glob.glob(str(File('#LICENSE')))
-docs_files += glob.glob(str(File('#README')))
-docs_files += glob.glob(str(File('#Mixxx-Manual.pdf')))
+docs_files = Glob('#LICENSE')
+docs_files += Glob('#README')
+docs_files += Glob('#Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = glob.glob(str(File('#res/images/mixxx.desktop'))) #XXX why is this in images/?
+dotdesktop_files = Glob('#res/images/mixxx.desktop') #XXX why is this in images/?
 
 #Icon file for menu entry
-icon_files = glob.glob(str(File('#res/images/mixxx-icon.png')))
+icon_files = Glob('#res/images/mixxx-icon.png')
 
 #Images for preferences dialog
-image_files = glob.glob(str(File('#res/images/preferences/*')))  # These are compiled in to the "mixxx" binary through mixxx.qrc
+image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
-dll_files = glob.glob(str(File('#/../mixxx-winlib/*.dll'))) # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+dll_files = Glob('#/../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
