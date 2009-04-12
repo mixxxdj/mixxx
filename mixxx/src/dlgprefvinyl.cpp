@@ -52,6 +52,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     m_vinylControlInput1R = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylControlInputR")));
     m_vinylControlInput2L = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlInputL")));
     m_vinylControlInput2R = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlInputR")));
+    
 
 
     m_signalWidget1.setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
@@ -77,23 +78,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
 
 	connect(ComboBoxDeviceDeck1,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck1Change()));
 	connect(ComboBoxDeviceDeck2,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck2Change()));
-
-    // Connect event handler
-    /*
-       connect(ComboBoxChannelsDeck1, SIGNAL(activated(int)), this, SLOT(ChannelsSlotApply()));
-       connect(ComboBoxChannelsDeck2, SIGNAL(activated(int)), this, SLOT(ChannelsSlotApply()));
-       connect(EnableRIAA,            SIGNAL(stateChanged(int)), this, SLOT(EnableRIAASlotApply()));
-       connect(AutoCalibration,	   SIGNAL(clicked()),		  this, SLOT(AutoCalibrationSlotApply()));
-       connect(LeadinTime,			   SIGNAL( lostFocus ()),	  this, SLOT(slotApply()));
-       connect(ComboBoxVinylType,	   SIGNAL(activated(int)),	  this, SLOT(VinylTypeSlotApply()));
-
-     */
-    // TODO: Enable this button; add two more text boxes for gain&precision; run the calibration test of Scratchlib
-    //AutoCalibration->setEnabled( FALSE );
-
-    // Disable output text box
-    //precision->setEnabled( FALSE );
-    //gain->setEnabled( FALSE );
 
     // Add vinyl types
     ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
@@ -141,8 +125,6 @@ void DlgPrefVinyl::slotClose()
 
 void DlgPrefVinyl::slotUpdate()
 {
-    qDebug() << "DlgPrefVinyl::slotUpdate()";
-
     // Get list of input devices, filtering by the current API.
     QList<SoundDevice *> devices = m_pSoundManager->getDeviceList(config->getValueString(ConfigKey("[Soundcard]","SoundApi")), false, true);
     QListIterator<SoundDevice *> device_it(devices);
