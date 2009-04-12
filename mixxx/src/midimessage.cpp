@@ -101,5 +101,5 @@ uint qHash(const MidiMessage& key)
         return key.getMidiStatusByte(); 
     }
     else
-        return (key.getMidiStatusByte() << 8) | key.getMidiNo();
+        return (key.getMidiByte2On() << 16) | (key.getMidiStatusByte() << 8) | key.getMidiNo();
 }
