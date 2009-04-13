@@ -1225,7 +1225,7 @@ docs_files += Glob('#README')
 docs_files += Glob('#Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = Glob('#res/images/mixxx.desktop') #XXX why is this in images/?
+dotdesktop_files = Glob('#src/mixxx.desktop') #XXX why is this in images/?
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
