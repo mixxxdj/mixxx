@@ -2,6 +2,19 @@
 
 nop = function () {}    // Only here so you don't get a syntax error on load
 
+// ----------------- Prototype enhancements ---------------------
+
+// Returns an ASCII byte array for the string
+String.prototype.toInt = function() {
+    var a = new Array();
+    for (var i = 0; i < this.length; i++) {
+        a[i] = this.charCodeAt(i);
+    }
+    return a;
+}
+
+// ----------------- Generic functions ---------------------
+
 function script() {}
 script.debug = function (channel, control, value, status) {
     print("Script.Debug --- channel: " + channel.toString(16) + " control: " + control.toString(16) + " value: " + value.toString(16) + " status: " + status.toString(16));
@@ -19,7 +32,16 @@ script.absoluteEQ = function (group, key, value) {
     else engine.setValue(group, key, 1+(value-63)/(21+1/3));
 }
 
-// ----------------- Controller functions ---------------------
+function secondstominutes(secs)
+{
+    var m = (secs / 60) | 0;
+
+   return (m < 10 ? "0" + m : m) 
+          + ":"
+          + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
+}
+
+// ----------------- Controller-specific functions ---------------------
 
 /* -------- ------------------------------------------------------
      script.Pitch

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0+">
     <info>
         <name>Stanton SCS.3d</name>
@@ -628,7 +628,7 @@
         </controls>
         
         <outputs>
-<!--            <light>         Play    
+<!--            <output>         Play    
                 <group>[Channel1]</group>
                 <key>play</key>
                 <status>0x90</status>
@@ -636,8 +636,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>
-            <light>      Flash near end of track 
+            </output>
+            <output>      Flash near end of track 
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0x90</status>
@@ -646,8 +646,8 @@
                 <off>0x00</off>
                 <minimum>0.9</minimum>
                 <maximum>0.99</maximum>
-            </light>-->
-<!--            <light>        Deck A    
+            </output>-->
+<!--            <output>        Deck A    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0x90</status>
@@ -655,8 +655,8 @@
                 <on>0x01</on>
                 <off>0x01</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        Cue    
+            </output>-->
+<!--            <output>        Cue    
                 <group>[Channel1]</group>
                 <key>cue_default</key>
                 <status>0x90</status>
@@ -664,8 +664,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>
-            <light>        Sync    
+            </output>
+            <output>        Sync    
                 <group>[Channel1]</group>
                 <key>beatsync</key>
                 <status>0x90</status>
@@ -673,8 +673,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>
-            <light>        Tap    
+            </output>
+            <output>        Tap    
                 <group>[Channel1]</group>
                 <key>bpm</key>
                 <status>0x90</status>
@@ -682,8 +682,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>    FX    
+            </output>-->
+<!--            <output>    FX    
                 <group>[Channel1]</group>
                 <key>flanger</key>
                 <status>0x90</status>
@@ -691,8 +691,8 @@
                 <on>0x01</on>
                 <off>0x02</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        EQ    
+            </output>-->
+<!--            <output>        EQ    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0x90</status>
@@ -700,8 +700,8 @@
                 <on>0x00</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        Loop    
+            </output>-->
+<!--            <output>        Loop    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0x90</status>
@@ -709,8 +709,8 @@
                 <on>0x00</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        Trig    
+            </output>-->
+<!--            <output>        Trig    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0x90</status>
@@ -718,8 +718,8 @@
                 <on>0x00</on>
                 <off>0x00</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        Vinyl init    
+            </output>-->
+<!--            <output>        Vinyl init    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0x90</status>
@@ -727,8 +727,8 @@
                 <on>0x03</on>
                 <off>0x03</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        Vinyl    
+            </output>-->
+<!--            <output>        Vinyl    
                 <group>[Channel1]</group>
                 <key>reverse</key>
                 <status>0x90</status>
@@ -736,16 +736,16 @@
                 <on>0x01</on>
                 <off>0x03</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        Deck    
+            </output>-->
+<!--            <output>        Deck    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0x90</status>
                 <midino>0x2A</midino>
                 <on>0x00</on>
                 <off>0x00</off>
-            </light>-->
-<!--            <light>        B11    Headphone cue    
+            </output>-->
+<!--            <output>        B11    Headphone cue    
                 <group>[Channel1]</group>
                 <key>pfl</key>
                 <status>0x90</status>
@@ -753,8 +753,8 @@
                 <on>0x01</on>
                 <off>0x02</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>        B12    Pitch range    
+            </output>-->
+<!--            <output>        B12    Pitch range    
                 <group>[Channel1]</group>
                 <key>rateRange</key>
                 <status>0x90</status>
@@ -762,8 +762,8 @@
                 <on>0x01</on>
                 <off>0x02</off>
                 <threshold>1</threshold>
-            </light>-->
-<!--            <light>        B13    
+            </output>-->
+<!--            <output>        B13    
                 <group>[Channel1]</group>
                 <key>back</key>
                 <status>0x90</status>
@@ -771,8 +771,8 @@
                 <on>0x01</on>
                 <off>0x02</off>
                 <threshold>0.1</threshold>
-            </light>
-            <light>        B14    
+            </output>
+            <output>        B14    
                 <group>[Channel1]</group>
                 <key>fwd</key>
                 <status>0x90</status>
@@ -780,9 +780,9 @@
                 <on>0x01</on>
                 <off>0x02</off>
                 <threshold>0.1</threshold>
-            </light>-->
+            </output>-->
     <!--    Gain slider    -->
-<!--            <light>        Init to full    
+<!--            <output>        Init to full    
                 <group>[Master]</group>
                 <key>samplerate</key>
                 <status>0xB0</status>
@@ -790,8 +790,8 @@
                 <on>0x28</on>
                 <off>0x28</off>
                 <threshold>0.1</threshold>
-            </light>-->
-<!--            <light>
+            </output>-->
+<!--            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -799,8 +799,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.01</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -808,8 +808,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.13</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -817,8 +817,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.26</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -826,8 +826,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.38</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -835,8 +835,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.50</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -844,8 +844,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.63</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -853,8 +853,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.75</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -862,8 +862,8 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>0.88</threshold>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>volume</key>
                 <status>0x90</status>
@@ -871,9 +871,9 @@
                 <on>0x01</on>
                 <off>0x00</off>
                 <threshold>1</threshold>
-            </light>-->
+            </output>-->
     <!--    Pitch slider    -->
-<!--            <light>
+<!--            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -882,8 +882,8 @@
                 <off>0xff</off>
                 <minimum>-1</minimum>
                 <maximum>-0.78</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -892,8 +892,8 @@
                 <off>0xff</off>
                 <minimum>-0.78</minimum>
                 <maximum>-0.56</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -902,8 +902,8 @@
                 <off>0xff</off>
                 <minimum>-0.56</minimum>
                 <maximum>-0.33</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -912,8 +912,8 @@
                 <off>0xff</off>
                 <minimum>-0.33</minimum>
                 <maximum>-0.11</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -922,8 +922,8 @@
                 <off>0xff</off>
                 <minimum>-0.11</minimum>
                 <maximum>0.11</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -932,8 +932,8 @@
                 <off>0xff</off>
                 <minimum>0.11</minimum>
                 <maximum>0.33</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -942,8 +942,8 @@
                 <off>0xff</off>
                 <minimum>0.33</minimum>
                 <maximum>0.56</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -952,8 +952,8 @@
                 <off>0xff</off>
                 <minimum>0.56</minimum>
                 <maximum>0.78</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -962,9 +962,9 @@
                 <off>0xff</off>
                 <minimum>0.78</minimum>
                 <maximum>1</maximum>
-            </light>-->
+            </output>-->
     <!--    Scratch slider S4    -->
-<!--            <light>
+<!--            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -973,8 +973,8 @@
                 <off>0xff</off>
                 <minimum>-1</minimum>
                 <maximum>-0.71</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -983,8 +983,8 @@
                 <off>0xff</off>
                 <minimum>-0.71</minimum>
                 <maximum>-0.43</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -993,8 +993,8 @@
                 <off>0xff</off>
                 <minimum>-0.43</minimum>
                 <maximum>-0.14</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -1003,8 +1003,8 @@
                 <off>0xff</off>
                 <minimum>-0.14</minimum>
                 <maximum>0.14</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -1013,8 +1013,8 @@
                 <off>0xff</off>
                 <minimum>0.14</minimum>
                 <maximum>0.43</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -1023,8 +1023,8 @@
                 <off>0xff</off>
                 <minimum>0.43</minimum>
                 <maximum>0.71</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>jog</key>
                 <status>0xB0</status>
@@ -1033,9 +1033,9 @@
                 <off>0xff</off>
                 <minimum>0.71</minimum>
                 <maximum>1</maximum>
-            </light>-->
+            </output>-->
     <!--    Slider S4 Vu    -->
-<!--            <light>
+<!--            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1044,8 +1044,8 @@
                 <off>0xff</off>
                 <minimum>0</minimum>
                 <maximum>0.14</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1054,8 +1054,8 @@
                 <off>0xff</off>
                 <minimum>0.14</minimum>
                 <maximum>0.29</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1064,8 +1064,8 @@
                 <off>0xff</off>
                 <minimum>0.29</minimum>
                 <maximum>0.43</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1074,8 +1074,8 @@
                 <off>0xff</off>
                 <minimum>0.43</minimum>
                 <maximum>0.57</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1084,8 +1084,8 @@
                 <off>0xff</off>
                 <minimum>0.57</minimum>
                 <maximum>0.71</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1094,8 +1094,8 @@
                 <off>0xff</off>
                 <minimum>0.71</minimum>
                 <maximum>0.86</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
@@ -1104,9 +1104,9 @@
                 <off>0xff</off>
                 <minimum>0.86</minimum>
                 <maximum>1</maximum>
-            </light>-->
+            </output>-->
     <!--    Circle C1    -->
-<!--            <light>
+<!--            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1115,8 +1115,8 @@
                 <off>0xff</off>
                 <minimum>0</minimum>
                 <maximum>0.06</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1125,8 +1125,8 @@
                 <off>0xff</off>
                 <minimum>0.06</minimum>
                 <maximum>0.13</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1135,8 +1135,8 @@
                 <off>0xff</off>
                 <minimum>0.13</minimum>
                 <maximum>0.19</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1145,8 +1145,8 @@
                 <off>0xff</off>
                 <minimum>0.19</minimum>
                 <maximum>0.25</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1155,8 +1155,8 @@
                 <off>0xff</off>
                 <minimum>0.25</minimum>
                 <maximum>0.31</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1165,8 +1165,8 @@
                 <off>0xff</off>
                 <minimum>0.31</minimum>
                 <maximum>0.38</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1175,8 +1175,8 @@
                 <off>0xff</off>
                 <minimum>0.38</minimum>
                 <maximum>0.44</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1185,8 +1185,8 @@
                 <off>0xff</off>
                 <minimum>0.44</minimum>
                 <maximum>0.5</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1195,8 +1195,8 @@
                 <off>0xff</off>
                 <minimum>0.5</minimum>
                 <maximum>0.56</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1205,8 +1205,8 @@
                 <off>0xff</off>
                 <minimum>0.56</minimum>
                 <maximum>0.63</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1215,8 +1215,8 @@
                 <off>0xff</off>
                 <minimum>0.63</minimum>
                 <maximum>0.69</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1225,8 +1225,8 @@
                 <off>0xff</off>
                 <minimum>0.69</minimum>
                 <maximum>0.75</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1235,8 +1235,8 @@
                 <off>0xff</off>
                 <minimum>0.75</minimum>
                 <maximum>0.81</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1245,8 +1245,8 @@
                 <off>0xff</off>
                 <minimum>0.81</minimum>
                 <maximum>0.88</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1255,8 +1255,8 @@
                 <off>0xff</off>
                 <minimum>0.88</minimum>
                 <maximum>0.94</maximum>
-            </light>
-            <light>
+            </output>
+            <output>
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <status>0xB0</status>
@@ -1265,7 +1265,7 @@
                 <off>0xff</off>
                 <minimum>0.94</minimum>
                 <maximum>1</maximum>
-            </light>-->
+            </output>-->
         </outputs>    
     </controller>
 </MixxxMIDIPreset> 
