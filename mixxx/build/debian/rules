@@ -65,6 +65,7 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 	mkdir -p $(CURDIR)/debian/tmp/usr
+	mkdir -p $(CURDIR)/debian/tmp/usr/share/applications
 	mkdir -p $(CURDIR)/debian/tmp/usr/share/mixxx
 	# Add here commands to install the package into debian/mixxx.
 	$(SCONS) $(MIXXX_SCONS_FLAGS) install
