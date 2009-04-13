@@ -992,6 +992,7 @@ void MixxxApp::slotHelpAbout()
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
 "Mathieu Rene<br>"
+"Phillip Whelan<br>"
 "Miko Kiiski<br>"
 "Navaho Gunleg<br>"
 
