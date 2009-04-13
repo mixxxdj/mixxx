@@ -105,7 +105,7 @@ binary-arch: build install
 #	dh_python
 #	dh_makeshlibs
 	dh_installdeb
-	dh_shlibdeps
+	dh_shlibdeps --ignore-missing-info #This command complains about libQtXml.so.4 as of Ubuntu 8.10 (Intrepid), unless I tell it to ignore missing info. I don't understand why - Albert 04/13/2009
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
