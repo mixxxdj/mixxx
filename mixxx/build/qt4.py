@@ -385,6 +385,7 @@ def enable_modules(self, modules, debug=False) :
 		'QtUiTools',
 		'QtDesigner',
 		'QtDBUS',
+		'QtScript',
 		]
 	pclessModules = [
 		'QtUiTools',

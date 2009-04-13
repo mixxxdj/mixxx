@@ -562,7 +562,7 @@ if platform == 'linux':
 		"""
 		#Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
 		#(This hopefully respects our qtdir=blah flag while linking now.)
-		"""
+		
 		env.EnableQt4Modules([
 		'QtCore',
 		'QtGui',
@@ -570,13 +570,14 @@ if platform == 'linux':
 		'Qt3Support',
 		'QtXml',
 		'QtSvg',
+		'QtScript',
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
 		],
 		debug=False,
 		)
-		"""
+		
 
 	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
