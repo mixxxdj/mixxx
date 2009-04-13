@@ -995,6 +995,7 @@ void MixxxApp::slotHelpAbout()
 "Phillip Whelan<br>"
 "Miko Kiiski<br>"
 "Navaho Gunleg<br>"
+"Gavin Pryke<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
