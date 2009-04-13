@@ -1402,7 +1402,7 @@ def BuildUbuntuPackage(target, source, env):
 	os.system('head -n 2 LICENSE')
 	print
 	print "Top line of debian/ubuntu changelog, check version:"
-	os.system('head -n 1 src/debian/changelog')
+	os.system('head -n 1 build/debian/changelog')
 	print
 
 	if ("yes" == "yes"):
@@ -1416,16 +1416,14 @@ def BuildUbuntuPackage(target, source, env):
 
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 		print "Exporting source tree from HEAD"
-		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + env['MIXXX_VERSION'])
+		os.system('bzr export ubuntu/mixxx-tree')
 		
-		print "Copying promo tracks dir"
-		os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
-	
-		#Remove the Natt skin to fix our 1.6.0 release, damn plagarism
-		print "Removing Natt skin..."
-		os.system('rm -rf ubuntu/mixxx-' + env['MIXXX_VERSION'] + '/src/skins/Natt')
+		#print "Copying promo tracks dir"
+		#os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
 
-		os.chdir('ubuntu')
+        #bzr exports the whole mixxx branch, including mixxx-winlib, etc. We just want the source:
+		os.chdir('ubuntu/mixxx-tree')
+		os.system('mv ' + 'mixxx ' + mixxx_dir);
 		
 		#Temporarily move the debian directory out of the source directory
 		#because it can't be included in the source tarball (which we create next).
@@ -1440,7 +1438,7 @@ def BuildUbuntuPackage(target, source, env):
 		#Move the debian directory into the right spot.
 		#os.system('mv debian mixxx-' + env['MIXXX_VERSION'])
 		os.system('rm -rf ' + mixxx_dir + '/debian')
-		os.system('mv ' + mixxx_dir + '/src/debian ' + mixxx_dir)
+		os.system('mv ' + mixxx_dir + '/build/debian ' + mixxx_dir)
 		
 		#Run pbuilder
 		os.chdir(mixxx_dir)

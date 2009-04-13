@@ -25,13 +25,6 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
-	#(cd src; QTDIR=/usr/share/qt3 ./configure --enable-jack)
-	#  still experimental
-	#  --enable-alsa
-	# hacky way to remove qmake generated -w!
-	#sed -i 's/ -w / /' src/Makefile
-
 	touch configure-stamp
 
 
