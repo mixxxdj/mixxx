@@ -5,39 +5,45 @@
 
 namespace {
 
-class ControlObjectTest : public testing::Test {
-protected:
+    class ControlObjectTest : public testing::Test {
+    protected:
+        
+        ControlObjectTest() {
+            qDebug() << "ControlObjectTest()";
+        }
+        
+        virtual void SetUp() {
+            qDebug() << "SetUp";
+            ck1 = ConfigKey("[Channel1]", "co1");
+            ck2 = ConfigKey("[Channel1]", "co2");
+            co1 = new ControlObject(ck1);
+            co2 = new ControlObject(ck2);
+        }
 
-    ControlObjectTest() {
-        qDebug() << "ControlObjectTest()";
-    }
+        virtual void TearDown() {
+            qDebug() << "TearDown";
+            if(co1) {
+                qDebug() << "Deleting " << co1;
+                delete co1;
+                co1 = NULL;
+            }
+            if(co2) {
+                qDebug() << "Deleting " << co2;
+                delete co2;
+                co2 = NULL;
+            }
+        }
 
-    virtual void SetUp() {
-        qDebug() << "SetUp";
-        ck1 = ConfigKey("[Channel1]", "co1");
-        ck2 = ConfigKey("[Channel1]", "co2");
-        co1 = new ControlObject(ck1);
-        co2 = new ControlObject(ck2);
-    }
+        ConfigKey ck1, ck2;
+        ControlObject *co1, *co2;
 
-    virtual void TearDown() {
-        qDebug() << "TearDown";
-        if(co1)
-            delete co1;
-        if(co2)
-            delete co2;
-    }
-
-    ConfigKey ck1, ck2;
-    ControlObject *co1, *co2;
-
-};
+    };
     
     TEST_F(ControlObjectTest, setGet) {
         co1->set(1.0f);
-        EXPECT_EQ(1.0f, co1->get());
+        EXPECT_DOUBLE_EQ(1.0f, co1->get());
         co2->set(2.0f);
-        EXPECT_EQ(2.0f, co2->get());
+        EXPECT_DOUBLE_EQ(2.0f, co2->get());
     }
 
     TEST_F(ControlObjectTest, getControl) {
@@ -51,12 +57,27 @@ protected:
     TEST_F(ControlObjectTest, connectControls) {
         ControlObject::connectControls(ck1, ck2);
         co1->set(1.0f);
-        EXPECT_EQ(1.0f, co1->get());
-        EXPECT_EQ(1.0f, co2->get());
+        EXPECT_DOUBLE_EQ(1.0f, co1->get());
+        EXPECT_DOUBLE_EQ(1.0f, co2->get());
         ControlObject::disconnectControl(ck1);
         co1->set(2.0f);
-        EXPECT_EQ(2.0f, co1->get());
-        EXPECT_EQ(1.0f, co2->get());
+        EXPECT_DOUBLE_EQ(2.0f, co1->get());
+        EXPECT_DOUBLE_EQ(1.0f, co2->get());
+    }
+
+    TEST_F(ControlObjectTest, syncDoesntCrash) {
+        co1->set(1.0f);
+        co2->set(2.0f);
+        ControlObject::sync();
+        co1->set(0.0f);
+        co2->set(1.0f);
+        delete co2;
+        co2 = NULL;
+        ControlObject::sync();
+        co1->set(0.0f);
+        delete co1;
+        co1 = NULL;
+        ControlObject::sync();
     }
     
 }
