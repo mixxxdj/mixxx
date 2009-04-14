@@ -143,15 +143,19 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Default Cue Behavior
     //
     
-    m_pControlCueDefault1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_simple")));
-    m_pControlCueDefault2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_simple")));
+    m_pControlCueDefault1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_mode")));
+    m_pControlCueDefault2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_mode")));
     
     // Set default value in config file and control objects, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).length() == 0) {
+    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"));
+    if(cueDefault.length() == 0) {
         m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(0));
-        m_pControlCueDefault1->slotSet(0);
-        m_pControlCueDefault1->slotSet(0);
+        cueDefault = "0";
     }
+    int cueDefaultValue = cueDefault.toInt();
+
+    m_pControlCueDefault1->slotSet(cueDefaultValue);
+    m_pControlCueDefault2->slotSet(cueDefaultValue);
     
     // Update combo box
     ComboBoxCueDefault->addItem("CDJ Mode");
