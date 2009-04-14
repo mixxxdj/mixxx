@@ -44,7 +44,7 @@
 #include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
-#include "upgrade.cpp" //why is a .cpp included directly? -kousu 2009/03
+#include "upgrade.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 

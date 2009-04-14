@@ -15,6 +15,15 @@ String.prototype.toInt = function() {
 
 // ----------------- Generic functions ---------------------
 
+function secondstominutes(secs)
+{
+    var m = (secs / 60) | 0;
+
+   return (m < 10 ? "0" + m : m) 
+          + ":"
+          + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
+}
+
 function script() {}
 script.debug = function (channel, control, value, status) {
     print("Script.Debug --- channel: " + channel.toString(16) + " control: " + control.toString(16) + " value: " + value.toString(16) + " status: " + status.toString(16));
@@ -26,22 +35,18 @@ script.absoluteSlider = function (group, key, value, low, high) {
     else engine.setValue(group, key, ((high-low)/127)*value);
 }
 
+// Used to control a non-linear setting (like EQs: 0..1..4) from an absolute control (0..127)
+script.absoluteNonLin = function (value, low, mid, high) {
+    if (value<=64) return value/(64/(mid-low));
+    else return 1+(value-63)/(64/(high-mid));
+}
+
 // Used to control an EQ setting (0..1..4) from an absolute control (0..127)
 script.absoluteEQ = function (group, key, value) {
     if (value<=64) engine.setValue(group, key, value/64);
     else engine.setValue(group, key, 1+(value-63)/(21+1/3));
+    print ("MIDI Script: script.absoluteEQ is deprecated. Use script.absoluteNonLin(value,0,1,4) instead and set the MixxxControl to its return value.");
 }
-
-function secondstominutes(secs)
-{
-    var m = (secs / 60) | 0;
-
-   return (m < 10 ? "0" + m : m) 
-          + ":"
-          + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
-}
-
-// ----------------- Controller-specific functions ---------------------
 
 /* -------- ------------------------------------------------------
      script.Pitch
@@ -63,6 +68,60 @@ script.pitch = function (LSB, MSB, status) {
 //     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
     return rate;
 }
+
+// bpm - Used for tapping the desired BPM for a deck
+function bpm() {}
+
+bpm.tapTime = 0.0;
+bpm.tap = [];   // Tap sample values
+
+/* -------- ------------------------------------------------------
+        bpm.tapButton
+   Purpose: Sets the bpm of the track on a deck by tapping the beats.
+            This only works if the track's original BPM value is correct.
+            Call this each time the tap button is pressed.
+   Input:   Mixxx deck to adjust
+   Output:  -
+   -------- ------------------------------------------------------ */
+bpm.tapButton = function(deck) {
+    var now = new Date()/1000;   // Current time in seconds
+    var tapDelta = now - bpm.tapTime;
+    bpm.tapTime=now;
+    if (tapDelta>2.0) { // reset if longer than two seconds between taps
+        bpm.tap=[];
+        return;
+    }
+    bpm.tap.push(60/tapDelta);
+    if (bpm.tap.length>8) bpm.tap.shift();  // Keep the last 8 samples for averaging
+    var sum = 0;
+    for (i=0; i<bpm.tap.length; i++) {
+        sum += bpm.tap[i];
+    }
+    var average = sum/bpm.tap.length;
+    
+    var fRateScale = average/engine.getValue("[Channel"+deck+"]","bpm");
+    
+    // Adjust the rate:
+    fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
+    
+    engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
+//     print("Script: BPM="+average);
+
+//         print("StantonSCS3d: BPM="+(60/tapDelta));
+//         var fRateScale = (60/tapDelta)/engine.getValue("[Channel"+deck+"]","bpm");
+//         fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
+//         bpm.tap.push(fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
+//         
+//         if (bpm.tap.length>8) bpm.tap.shift();
+//         var sum = 0;
+//         for (i=0; i<bpm.tap.length; i++) {
+//             sum += bpm.tap[i];
+//         }
+//         var average = sum/bpm.tap.length;
+//         
+//         engine.setValue("[Channel"+deck+"]","rate",average);
+}
+
 
 // ----------------- Scratching functions ---------------------
 function scratch() {}
