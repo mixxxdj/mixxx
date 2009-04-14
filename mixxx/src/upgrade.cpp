@@ -15,11 +15,15 @@
 *                                                                         *
 ***************************************************************************/
 
-/*  This file is to be #included in mixxx.cpp. It's separated for clarity.   */
+#include <QtCore>
+#include "defs.h"
+
+#include "configobject.h"
+#include "upgrade.h"
 
 // We return the ConfigObject here because we have to make changes to the
 // configuration and the location of the file may change between releases.
-static ConfigObject<ConfigValue>* versionUpgrade() {
+ConfigObject<ConfigValue>* versionUpgrade() {
 
 /*  Pre-1.7.0:
 *
@@ -147,27 +151,29 @@ static ConfigObject<ConfigValue>* versionUpgrade() {
     // (I wish we could do a switch on a QString.)
     /*
     // Examples, since we didn't store the version number prior to v1.7.0
-    if (configVersion == "1.6.0") {
+    if (configVersion.startsWith("1.6.0")) {
         qDebug() << "Upgrading from v1.6.0 to 1.6.1...";
-        // Upgrade tasks here
+        // Upgrade tasks go here
         configVersion = "1.6.1";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.6.1"));
     }
-    if (configVersion == "1.6.1") {
+    if (configVersion.startsWith("1.6.1")) {
         qDebug() << "Upgrading from v1.6.1 to 1.7.0...";
-        // Upgrade tasks here
+        // Upgrade tasks go here
         configVersion = "1.7.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.0"));
     }
     */
     
     // For the next release, if needed:
-//     if (configVersion == "1.7.0") {
-//         qDebug() << "Upgrading from v1.7.0 to 1.7.1...";
-//         // Upgrade tasks here
-//         configVersion = "1.7.1";
-//         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.1"));
-//     }
+    /*
+    if (configVersion.startsWith("1.7.0")) {
+        qDebug() << "Upgrading from v1.7.0 to" << VERSION <<"...";
+        // Upgrade tasks go here
+        configVersion = ConfigValue(VERSION);
+        config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+    }
+    */
 
     if (configVersion == VERSION) qDebug() << "At current version" << VERSION;
 

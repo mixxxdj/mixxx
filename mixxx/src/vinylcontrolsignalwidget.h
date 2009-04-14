@@ -35,6 +35,9 @@ private:
     QRectF m_signalRect[VINYLCONTROL_SIGTYPE_NUM];
     QBrush m_signalBrush[VINYLCONTROL_SIGTYPE_NUM];
     QPixmap *m_bg[VINYLCONTROL_SIGTYPE_NUM];
+    
+    QLinearGradient m_signalGradGood;
+    QLinearGradient m_signalGradBad;
 
     float m_fRMSvolumeSum[VINYLCONTROL_SIGTYPE_NUM];
     float m_fRMSvolume[VINYLCONTROL_SIGTYPE_NUM];

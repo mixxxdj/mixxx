@@ -330,6 +330,7 @@ sources = Split("""
                 mixxx.cpp
                 mixxxview.cpp
                 errordialog.cpp
+                upgrade.cpp
                 
                 soundsource.cpp
                 soundsourcemp3.cpp
@@ -562,7 +563,7 @@ if platform == 'linux':
 		"""
 		#Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
 		#(This hopefully respects our qtdir=blah flag while linking now.)
-		"""
+		
 		env.EnableQt4Modules([
 		'QtCore',
 		'QtGui',
@@ -570,13 +571,14 @@ if platform == 'linux':
 		'Qt3Support',
 		'QtXml',
 		'QtSvg',
+		'QtScript',
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
 		],
 		debug=False,
 		)
-		"""
+		
 
 	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
@@ -1224,7 +1226,7 @@ docs_files += Glob('#README')
 docs_files += Glob('#Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = Glob('#res/images/mixxx.desktop') #XXX why is this in images/?
+dotdesktop_files = Glob('#src/mixxx.desktop') #XXX why is this in images/?
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
@@ -1401,7 +1403,7 @@ def BuildUbuntuPackage(target, source, env):
 	os.system('head -n 2 LICENSE')
 	print
 	print "Top line of debian/ubuntu changelog, check version:"
-	os.system('head -n 1 src/debian/changelog')
+	os.system('head -n 1 build/debian/changelog')
 	print
 
 	if ("yes" == "yes"):
@@ -1415,16 +1417,14 @@ def BuildUbuntuPackage(target, source, env):
 
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 		print "Exporting source tree from HEAD"
-		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + env['MIXXX_VERSION'])
+		os.system('bzr export ubuntu/mixxx-tree')
 		
-		print "Copying promo tracks dir"
-		os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
-	
-		#Remove the Natt skin to fix our 1.6.0 release, damn plagarism
-		print "Removing Natt skin..."
-		os.system('rm -rf ubuntu/mixxx-' + env['MIXXX_VERSION'] + '/src/skins/Natt')
+		#print "Copying promo tracks dir"
+		#os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
 
-		os.chdir('ubuntu')
+        #bzr exports the whole mixxx branch, including mixxx-winlib, etc. We just want the source:
+		os.chdir('ubuntu/mixxx-tree')
+		os.system('mv ' + 'mixxx ' + mixxx_dir);
 		
 		#Temporarily move the debian directory out of the source directory
 		#because it can't be included in the source tarball (which we create next).
@@ -1439,7 +1439,7 @@ def BuildUbuntuPackage(target, source, env):
 		#Move the debian directory into the right spot.
 		#os.system('mv debian mixxx-' + env['MIXXX_VERSION'])
 		os.system('rm -rf ' + mixxx_dir + '/debian')
-		os.system('mv ' + mixxx_dir + '/src/debian ' + mixxx_dir)
+		os.system('mv ' + mixxx_dir + '/build/debian ' + mixxx_dir)
 		
 		#Run pbuilder
 		os.chdir(mixxx_dir)
