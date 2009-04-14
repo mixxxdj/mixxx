@@ -58,6 +58,57 @@ ControlObject::~ControlObject()
         obj->slotParentDead();
     }
     m_qProxyListMutex.unlock();
+
+
+    m_sqQueueMutexThread.lock();
+
+    QueueObjectThread * tobj = NULL;;
+    QueueObjectThread * thead = m_sqQueueThread.head();
+    
+    while(tobj != thead) {
+        tobj = m_sqQueueThread.dequeue();
+        if(tobj == NULL) {
+            Q_ASSERT(false);
+        } else if(tobj->pControlObject != this) {
+            m_sqQueueThread.enqueue(tobj);
+        } else {
+            delete tobj;
+        }
+    }
+    m_sqQueueMutexThread.unlock();
+
+    m_sqQueueMutexMidi.lock();
+    QueueObjectMidi * mobj = NULL;
+    QueueObjectMidi * mhead = m_sqQueueMidi.head();
+
+    while(mobj != mhead) {
+        mobj = m_sqQueueMidi.dequeue();
+        if (mobj == NULL) {
+            Q_ASSERT(false);
+        } else if (mobj->pControlObject != this) {
+            m_sqQueueMidi.enqueue(mobj);
+        } else {
+            delete mobj;
+        }
+    }
+    m_sqQueueMutexMidi.unlock();
+
+    // Remove this control object from the changes queue, since we're being
+    // deleted.
+    m_sqQueueMutexChanges.lock();
+    ControlObject * cobj = NULL;
+    int count = m_sqQueueChanges.count();
+    while(count > 0) {
+        cobj = m_sqQueueChanges.dequeue();
+        if(cobj == NULL) {
+            break;
+        } else if(cobj != this) {
+            m_sqQueueChanges.enqueue(cobj);
+        }
+        count--;
+    }
+    m_sqQueueMutexChanges.unlock();
+    
 }
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
