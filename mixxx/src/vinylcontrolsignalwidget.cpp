@@ -62,9 +62,16 @@ void VinylControlSignalWidget::setupWidget()
     //Initialize QPens
     QPen gridPen(Qt::green);
     QPen graphLinePen(Qt::white);
-    QPen signalPen(Qt::blue);
+    QPen signalPen(Qt::black);
 
-
+    m_signalGradGood = QLinearGradient(0, 0, 0, rect().height());
+    m_signalGradBad = QLinearGradient(0, 0, 0, rect().height());
+    m_signalGradGood.setColorAt(0, Qt::green);
+    m_signalGradGood.setColorAt(1, Qt::darkGreen);    
+    m_signalGradBad.setColorAt(0, Qt::red);
+    m_signalGradBad.setColorAt(1, Qt::darkRed);
+      
+            
     //QBrush signalBrush[VINYLCONTROL_SIGTYPE_NUM];
     //QPixmap bg1(this->width() / 3, this->height());
    /*
@@ -115,32 +122,47 @@ void VinylControlSignalWidget::updateSignalQuality(VinylControlSignalType type,
 
     const float ATTACK_SMOOTHING = .3;
     const float DECAY_SMOOTHING  = .1;//.16//.4
-
+    
     if (m_samplesCalculated[type] > 1)
     {
         float m_fRMSvolumePrev = m_fRMSvolume[type];
         float smoothFactor;
 
-        m_fRMSvolume[type] = value;//log10(m_fRMSvolumeSum/(samplesCalculated*1000)+1);
+        //Use a log10 here so that we display dB.
+        m_fRMSvolume[type] = log10(1+value*9); //log10(m_fRMSvolumeSum/(samplesCalculated*1000)+1);
         //Smooth the output
         smoothFactor = (m_fRMSvolumePrev > m_fRMSvolume[type]) ? DECAY_SMOOTHING : ATTACK_SMOOTHING;
         m_fRMSvolume[type] = m_fRMSvolumePrev + smoothFactor * (m_fRMSvolume[type] - m_fRMSvolumePrev);
 
-        QColor signalColour;
-        signalColour.setRed((int)(255 - m_fRMSvolume[type]*255));
-        signalColour.setGreen((int)m_fRMSvolume[type]*255);
-           QPainter painter(m_bg[type]);
-           painter.fillRect(m_bg[type]->rect(), QBrush(signalColour));
-           painter.setPen(Qt::black);
-           painter.setFont(QFont("Tahoma", 8));
-           painter.drawText(rect(), tr("OK")); //Draw the OK text
-           painter.end();
-           m_signalBrush[type].setTexture(*m_bg[type]);
-           m_signalRectItem[type]->setBrush(m_signalBrush[type]);
+        QPainter painter(m_bg[type]);
+
+        if (type == VINYLCONTROL_SIGQUALITY) 
+        {
+            if (m_fRMSvolume[type] >= 0.990f)
+                painter.fillRect(m_bg[type]->rect(), QBrush(m_signalGradGood));
+            else
+                painter.fillRect(m_bg[type]->rect(), QBrush(m_signalGradBad));
+        }
+        else //For the left/right channel signals.
+        {
+            if (m_fRMSvolume[type] < 0.90f && m_fRMSvolume[type] > 0.10f) //This is totally empirical.
+                painter.fillRect(m_bg[type]->rect(), QBrush(m_signalGradGood));
+            else
+                painter.fillRect(m_bg[type]->rect(), QBrush(m_signalGradBad));        
+        }
+            
+        painter.setPen(Qt::black);
+        painter.setFont(QFont("Tahoma", 8));
+        painter.drawText(QRect(4, 4, 50, 50), tr("OK!")); //Draw the OK text
+        painter.end();
+        
+        m_signalBrush[type].setTexture(*m_bg[type]);
+        m_signalRectItem[type]->setBrush(m_signalBrush[type]);
 
         int sizeY = this->height();
         m_signalRect[type].setHeight(-m_fRMSvolume[type] * sizeY); //The QGraphicsView coord system is upside down...
         m_signalRectItem[type]->setRect(m_signalRect[type]);
+        
 
         // Reset calculation:
         m_samplesCalculated[type] = 0;
