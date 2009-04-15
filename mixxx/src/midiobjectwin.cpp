@@ -111,8 +111,9 @@ void MidiObjectWin::devOpen(QString device)
     res = midiInStart(handle);
     if (res != MMSYSERR_NOERROR)
         qDebug() << "Error starting midi.";
-
+#ifdef __MIDISCRIPT__
     MidiObject::run();  // Load the initial MIDI preset
+#endif
 }
 
 void MidiObjectWin::devClose()
@@ -129,14 +130,15 @@ void MidiObjectWin::stop()
     MidiObject::stop();
 }
 
-void MidiObjectWin::run()
+void MidiObjectWin::run()	// This function never executes because we only use callbacks
 {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiObjectWin %1").arg(++id));
     
 //    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-
+#ifdef __MIDISCRIPT__
     MidiObject::run();
+#endif
 }
 
 void MidiObjectWin::handleMidi(char status, char midicontrol, char midivalue)

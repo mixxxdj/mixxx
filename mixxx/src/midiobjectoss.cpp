@@ -107,8 +107,10 @@ void MidiObjectOSS::run()
     QThread::currentThread()->setObjectName(QString("MidiObjectOSS %1").arg(++id));
     
     qDebug() << QString("MidiObjectOSS: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+
+#ifdef __MIDISCRIPT__
     MidiObject::run();
+#endif
 
     requestStop=false;
     while(requestStop==false)

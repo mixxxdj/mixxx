@@ -51,7 +51,9 @@ MidiObject::MidiObject()
 
 #endif
     m_pMidiMapping = new MidiMapping(*this);
-//     m_pMidiMapping->loadInitialPreset();
+#ifndef __MIDISCRIPT__
+     m_pMidiMapping->loadInitialPreset();	// Only do this here if NOT using MIDI scripting
+#endif
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 
@@ -93,16 +95,21 @@ void MidiObject::restartScriptEngine()
     m_scriptEngineInitializedMutex.unlock();
     
 }
+#endif
 
 void MidiObject::slotScriptEngineReady() {
+#ifdef __MIDISCRIPT__	// Can't ifdef slots in the .h file, so we just do the body.
+
     // The lock prevents us from waking before the main thread is waiting on the
     // condition.
     m_scriptEngineInitializedMutex.lock();
     m_scriptEngineInitializedCondition.wakeAll();
     m_scriptEngineInitializedMutex.unlock();
-}
 
 #endif
+}
+
+
 
 /* -------- ------------------------------------------------------
    Purpose: Deletes MIDI mapping and stops script engine, to be called
@@ -214,7 +221,7 @@ QString MidiObject::getOpenDevice()
    -------- ------------------------------------------------------ */
 void MidiObject::receive(MidiStatusByte status, char channel, char control, char value)
 {
-    //qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
+//    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
 
     MidiMessage inputCommand(status, control, channel);
 
