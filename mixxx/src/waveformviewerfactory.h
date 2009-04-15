@@ -11,6 +11,7 @@
 class WVisualSimple;
 class WWaveformViewer;
 class WGLWaveformViewer;
+class WaveformRenderer;
 
 enum WaveformViewerType {
     WAVEFORM_SIMPLE=0,
@@ -31,7 +32,7 @@ private:
     static QList<WGLWaveformViewer*> m_visualGLViewers;
 
 public:
-    static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QObject **target);
+    static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer *pWaveformRenderer);
     static void destroyWaveformViewer(QObject *pWaveformViewer);
     static WaveformViewerType getWaveformViewerType(QObject *pWaveformViewer);
     
