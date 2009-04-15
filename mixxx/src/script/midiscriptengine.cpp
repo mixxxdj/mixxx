@@ -431,9 +431,18 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::trigger(QString group, QString name) {
-    ControlObjectThread *cot = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, name)));
-    cot->slotSet(cot->get());
-    delete cot;
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+    
+    ControlObjectThread *cot = getControlObjectThread(group, name);
+    if(cot != NULL) {
+        cot->slotSet(cot->get());
+    }
 }
 
 /* -------- ------------------------------------------------------
