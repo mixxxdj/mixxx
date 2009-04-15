@@ -37,6 +37,7 @@
 #include "trackinfoobject.h"
 #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
+#include "waveform/waveformrenderer.h"
 
 #include "soundmanager.h"
 #include "defs_urls.h"
@@ -255,10 +256,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer2(QString)));
 
     // Ensure that visual receive updates when new tracks are loaded
-    if (view->m_pVisualCh1)
-        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pVisualCh1, SLOT(slotNewTrack(TrackInfoObject *)));
-    if (view->m_pVisualCh2)
-        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pVisualCh2, SLOT(slotNewTrack(TrackInfoObject *)));
+    if (view->m_pWaveformRendererCh1)
+        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
+    if (view->m_pWaveformRendererCh2)
+        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
 
 
 

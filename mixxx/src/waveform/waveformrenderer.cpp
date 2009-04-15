@@ -483,7 +483,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
 }
 
-void WaveformRenderer::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderer::slotNewTrack(TrackInfoObject* pTrack) {
 
     m_pTrack = pTrack;
     m_pSampleBuffer = NULL;

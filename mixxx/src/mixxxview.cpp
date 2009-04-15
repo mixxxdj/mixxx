@@ -44,6 +44,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
 #include "waveformviewerfactory.h"
+#include "waveform/waveformrenderer.h"
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
@@ -77,6 +78,10 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
 #endif
 #endif
+
+    m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
+    m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
+    
     // Default values for visuals
     //m_pTrackTable = 0;
     m_pTextCh1 = 0;
@@ -116,6 +121,28 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
 MixxxView::~MixxxView()
 {
     //m_qWidgetList.clear();
+
+    if(m_pVisualCh1) {
+	m_qWidgetList.remove(m_pVisualCh1);
+	delete m_pVisualCh1;
+	m_pVisualCh1 = NULL;
+    }
+    
+    if(m_pVisualCh2) {
+	m_qWidgetList.remove(m_pVisualCh2);
+	delete m_pVisualCh2;
+	m_pVisualCh2 = NULL;
+    }
+
+    if(m_pWaveformRendererCh1) {
+	delete m_pWaveformRendererCh1;
+	m_pWaveformRendererCh1 = NULL;
+    }
+    
+    if(m_pWaveformRendererCh2) {
+	delete m_pWaveformRendererCh2;
+	m_pWaveformRendererCh2 = NULL;
+    }
 }
 
 void MixxxView::checkDirectRendering()
@@ -437,12 +464,68 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
             }
+            else if (node.nodeName()=="Visual")
+            {
+		WaveformViewerType type;
+		
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+		    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
+		    m_qWidgetList.append(m_pVisualCh1);
 
+		    m_pVisualCh1->installEventFilter(m_pKeyboard);
 
+		    // Hook up [Channel1],wheel Control Object to the Visual Controller
+		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+		    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+			
+		    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+ 
+		    // Things to do whether the waveform was previously created or not
+		    if(type == WAVEFORM_GL) {
+			m_bVisualWaveform = true; // TODO : remove this crust
+			((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
+			// TODO rryan re-enable this later
+			/*
+			((WVisualWaveform*)m_pVisualCh1)->resetColors();
+			*/
+		    } else if (type == WAVEFORM_WIDGET) {
+			m_bVisualWaveform = true;
+			((WWaveformViewer *)m_pVisualCh1)->setup(node);
+		    } else if (type == WAVEFORM_SIMPLE) {
+			((WVisualSimple*)m_pVisualCh1)->setup(node);
+		    }
+		}
+		else if (WWidget::selectNodeInt(node, "Channel")==2)
+		{
+		    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
+		    m_qWidgetList.append(m_pVisualCh2);
+			
+		    m_pVisualCh2->installEventFilter(m_pKeyboard);
+			
+		    // Hook up [Channel1],wheel Control Object to the Visual Controller
+		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+		    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
 
-
-
-
+		    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+		    
+		    // Things to do whether the waveform was previously created or not
+		    if(type == WAVEFORM_GL) {
+			m_bVisualWaveform = true; // TODO : remove this crust
+			
+			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
+			// TODO rryan re-enable this later
+			/*
+			((WVisualWaveform*)m_pVisualCh2)->resetColors();
+			*/
+		    } else if (type == WAVEFORM_WIDGET) {
+			m_bVisualWaveform = true;
+			((WWaveformViewer *)m_pVisualCh2)->setup(node);
+		    } else if (type == WAVEFORM_SIMPLE) {
+			((WVisualSimple*)m_pVisualCh2)->setup(node);
+		    }
+		}
+            }
 
             /*############## PERSISTENT OBJECT ##############*/
             // persistent: m_pTextCh1, m_pTextCh2
@@ -509,81 +592,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
 
 
-            // persistent: m_pVisualCh1, m_pVisualCh2
-            else if (node.nodeName()=="Visual")
-            {
-		WaveformViewerType type;
-		
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-		    if(m_pVisualCh1 == NULL) {
-			type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1);
 
-			m_pVisualCh1->installEventFilter(m_pKeyboard);
-
-			// Hook up [Channel1],wheel Control Object to the Visual Controller
-			ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-			p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
-			
-			//ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-		    } else {
-			type = WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1);
-		    }
-
-		    // Things to do whether the waveform was previously created or not
-		    if(type == WAVEFORM_GL) {
-			m_bVisualWaveform = true; // TODO : remove this crust
-			((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
-			// TODO rryan re-enable this later
-			/*
-			((WVisualWaveform*)m_pVisualCh1)->resetColors();
-			*/
-		    } else if (type == WAVEFORM_WIDGET) {
-			m_bVisualWaveform = true;
-			((WWaveformViewer *)m_pVisualCh1)->setup(node);
-		    } else if (type == WAVEFORM_SIMPLE) {
-			((WVisualSimple*)m_pVisualCh1)->setup(node);
-		    }
-		    ((QWidget*)m_pVisualCh1)->show();
-		    ((QWidget*)m_pVisualCh1)->repaint();
-		    
-		}
-		else if (WWidget::selectNodeInt(node, "Channel")==2)
-		{
-		    if(m_pVisualCh2 == NULL) {
-			type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2);
-			
-			m_pVisualCh2->installEventFilter(m_pKeyboard);
-			
-			// Hook up [Channel1],wheel Control Object to the Visual Controller
-			ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-			p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
-
-			//ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-		    }  else {
-			type = WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2);
-		    }
-		    
-		    // Things to do whether the waveform was previously created or not
-		    if(type == WAVEFORM_GL) {
-			m_bVisualWaveform = true; // TODO : remove this crust
-			
-			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
-			// TODO rryan re-enable this later
-			/*
-			((WVisualWaveform*)m_pVisualCh2)->resetColors();
-			*/
-		    } else if (type == WAVEFORM_WIDGET) {
-			m_bVisualWaveform = true;
-			((WWaveformViewer *)m_pVisualCh2)->setup(node);
-		    } else if (type == WAVEFORM_SIMPLE) {
-			((WVisualSimple*)m_pVisualCh2)->setup(node);
-		    }
-		    ((QWidget*)m_pVisualCh2)->show();
-		    ((QWidget*)m_pVisualCh2)->repaint();
-		}
-		
-            }
 
 
 
@@ -795,6 +804,11 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
 
     // This isn't thread safe, does anything else hack on this object?
 
+    // Temporary hack since we keep these pointers around, but we have them on
+    // the widget list.
+    m_pVisualCh1 = NULL;
+    m_pVisualCh2 = NULL;
+    
     //remove all widget from the list (except permanent one)
     while (!m_qWidgetList.isEmpty()) {
         delete m_qWidgetList.takeFirst();
@@ -803,8 +817,6 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     //hide permanent widget
     if (m_pTextCh1) m_pTextCh1->hide();
     if (m_pTextCh2) m_pTextCh2->hide();
-    if (m_pVisualCh1) ((QWidget *)m_pVisualCh1)->hide();
-    if (m_pVisualCh2) ((QWidget *)m_pVisualCh2)->hide();
     if (m_pNumberPosCh1) m_pNumberPosCh1->hide();
     if (m_pNumberPosCh2) m_pNumberPosCh2->hide();
     if (m_pSliderRateCh1) m_pSliderRateCh1->hide();
@@ -825,8 +837,6 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
         obj = m_qWidgetList[i];
         ((QWidget *)obj)->show();
     }
-    if (m_pVisualCh1) ((QWidget *)m_pVisualCh1)->repaint();
-    if (m_pVisualCh2) ((QWidget *)m_pVisualCh2)->repaint();
 }
 
 
