@@ -264,8 +264,10 @@ void MidiObjectALSASeq::run()
 {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiObjectALSASeq %1").arg(++id));
-    
+
+#ifdef __MIDISCRIPT__
     MidiObject::run();
+#endif
 
     struct pollfd * pfds;
     int npfds;
