@@ -30,12 +30,12 @@ public:
     void resize(int w, int h);
     void draw(QPainter* pPainter, QPaintEvent *pEvent);
     void drawSignalPixmap(QPainter* p);
-    void newTrack(TrackInfoObject *pTrack);
     void setup(QDomNode node);
     void precomputePixmap();
     int getSubpixelsPerPixel();
     int getPixelsPerSecond();
 public slots:
+    void slotNewTrack(TrackInfoObject *pTrack);
     void slotUpdateLatency(double latency);
     void slotUpdatePlayPos(double playpos);
     void slotUpdateRate(double rate);

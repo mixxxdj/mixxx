@@ -15,10 +15,11 @@
 #include "waveform/waveformrenderer.h"
 
 
-WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) : QWidget(parent, f)
+WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) : QWidget(parent, f)
 {
 
-    m_pWaveformRenderer = new WaveformRenderer(group);
+    m_pWaveformRenderer = pWaveformRenderer;
+    Q_ASSERT(m_pWaveformRenderer);
 
     m_pGroup = group;
     
@@ -38,11 +39,6 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
 WWaveformViewer::~WWaveformViewer() {
     // Stop the timer we started
     killTimer(m_iTimerID);
-
-    if(m_pWaveformRenderer) {
-        delete m_pWaveformRenderer;
-        m_pWaveformRenderer = NULL;
-    }
 }
 
 void WWaveformViewer::setup(QDomNode node) {
@@ -93,16 +89,6 @@ void WWaveformViewer::timerEvent(QTimerEvent *qte) {
 }
 
 /** SLOTS **/
-
-void WWaveformViewer::slotNewTrack(TrackInfoObject *pTrack) {
-    qDebug() << "WWaveformViewer() << slotNewTrack() ";
-
-    if(m_pWaveformRenderer) {
-        m_pWaveformRenderer->newTrack(pTrack);
-    }
-    
-}
-
 
 bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     if(e->type() == QEvent::MouseButtonPress) {

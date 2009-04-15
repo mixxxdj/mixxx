@@ -50,6 +50,7 @@ class QGridLayout;
 class QTabWidget;
 class WTrackTableView;
 class DlgLADSPA; class LADSPAView;
+class WaveformRenderer;
 
 /**
  * This class provides an incomplete base for your application view.
@@ -74,6 +75,7 @@ public:
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
+    WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
     /** Pointer to absolute file position widgets */
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
     /** Pointer to rate slider widgets */
