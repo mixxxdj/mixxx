@@ -10,285 +10,389 @@
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x02</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Master]</group>
         <key>volume</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x79</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectNextTrack</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x41</midino>
-        <midichan>0x01</midichan>
+      </control>
+      <control>
+        <group>[Playlist]</group>
+        <key>SelectNextTrack</key>
+        <status>0x80</status>
+        <midino>0x41</midino>
+      </control>      
+      <control>
+        <group>[Playlist]</group>
+        <key>SelectPrevTrack</key>
+        <status>0x90</status>
+        <midino>0x42</midino>
       </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectPrevTrack</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x42</midino>
-        <midichan>0x01</midichan>
-      </control>
+      </control>      
       <control>
         <group>[Channel1]</group>
         <key>LoadSelectedTrack</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x43</midino>
-        <midichan>0x01</midichan>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0x80</status>
+        <midino>0x43</midino>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x37</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>play</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x37</midino>
-        <midichan>0x01</midichan>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
+        <key>reverse</key>
+        <status>0x90</status>
+        <midino>0x14</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>reverse</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x14</midino>
-        <midichan>0x01</midichan>
-      </control>
+      </control>      
       <control>
         <group>[Channel1]</group>
         <key>pregain</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x17</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x16</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_up_small</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x16</midino>
-        <midichan>0x01</midichan>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_perm_up_small</key>
+        <status>0x80</status>
+        <midino>0x16</midino>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_perm_down_small</key>
+        <status>0x90</status>
+        <midino>0x15</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_down_small</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x15</midino>
-        <midichan>0x01</midichan>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_simple</key>
+        <status>0x90</status>
+        <midino>0x3b</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_simple</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x3b</midino>
-        <midichan>0x01</midichan>
-      </control>
+      </control>      
       <control>
         <group>[Channel1]</group>
         <key>wheel</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x01</midino>
-        <midichan>0x01</midichan>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLow</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x12</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLowKill</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x12</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>filterLowKill</key>
+        <status>0x80</status>
+        <midino>0x12</midino>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
         <key>filterMid</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x11</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterMidKill</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x11</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>filterMidKill</key>
+        <status>0x80</status>
+        <midino>0x11</midino>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
         <key>filterHigh</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x10</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterHighKill</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x10</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>filterHighKill</key>
+        <status>0x80</status>
+        <midino>0x10</midino>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
         <key>volume</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x15</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>beatsync</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x3e</midino>
-        <midichan>0x01</midichan>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatsync</key>
+        <status>0x80</status>
+        <midino>0x3e</midino>
+      </control>      
+      <control>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x3f</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>pfl</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x3f</midino>
-        <midichan>0x01</midichan>
-      </control>
+      </control>      
       <control>
         <group>[Channel2]</group>
         <key>LoadSelectedTrack</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x44</midino>
-        <midichan>0x01</midichan>
+      </control>
+       <control>
+        <group>[Channel2]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0x80</status>
+        <midino>0x44</midino>
+      </control>     
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x36</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>play</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x36</midino>
-        <midichan>0x01</midichan>
+      </control>     
+      <control>
+        <group>[Channel2]</group>
+        <key>reverse</key>
+        <status>0x90</status>
+        <midino>0x24</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>reverse</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x24</midino>
-        <midichan>0x01</midichan>
-      </control>
+      </control>      
       <control>
         <group>[Channel2]</group>
         <key>pregain</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x27</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x26</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_up_small</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x26</midino>
-        <midichan>0x01</midichan>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_perm_up_small</key>
+        <status>0x80</status>
+        <midino>0x26</midino>
+      </control>      
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_perm_down_small</key>
+        <status>0x90</status>
+        <midino>0x25</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_down_small</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x25</midino>
-        <midichan>0x01</midichan>
+      </control>      
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_simple</key>
+        <status>0x90</status>
+        <midino>0x3a</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_simple</key>
-        <miditype>Key</miditype>
+        <status>0x80</status>
         <midino>0x3a</midino>
-        <midichan>0x01</midichan>
-      </control>
+      </control>      
       <control>
         <group>[Channel2]</group>
         <key>wheel</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x03</midino>
-        <midichan>0x01</midichan>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLow</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x22</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLowKill</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x22</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
+        <key>filterLowKill</key>
+        <status>0x80</status>
+        <midino>0x22</midino>
+      </control>      
+      <control>
+        <group>[Channel2]</group>
         <key>filterMid</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x21</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterMidKill</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x21</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
+        <key>filterMidKill</key>
+        <status>0x80</status>
+        <midino>0x21</midino>
+      </control>      
+      <control>
+        <group>[Channel2]</group>
         <key>filterHigh</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x20</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterHighKill</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x20</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
+        <key>filterHighKill</key>
+        <status>0x80</status>
+        <midino>0x20</midino>
+      </control>      
+      <control>
+        <group>[Channel2]</group>
         <key>volume</key>
-        <miditype>Ctrl</miditype>
+        <status>0xB0</status>
         <midino>0x25</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>beatsync</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x3d</midino>
-        <midichan>0x01</midichan>
       </control>
       <control>
         <group>[Channel2]</group>
+        <key>beatsync</key>
+        <status>0x80</status>
+        <midino>0x3d</midino>
+      </control>      
+      <control>
+        <group>[Channel2]</group>
         <key>pfl</key>
-        <miditype>Key</miditype>
+        <status>0x90</status>
         <midino>0x3c</midino>
-        <midichan>0x01</midichan>
       </control>
+       <control>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <status>0x80</status>
+        <midino>0x3c</midino>
+      </control>     
     </controls>
   </controller>
 </MixxxMIDIPreset>

@@ -10,7 +10,8 @@
 #include "midimessage.h"
 #include "midistatusdelegate.h"
 
-#define MIDISTATUS_STRING_NOTE tr("Note/Key")
+#define MIDISTATUS_STRING_NOTE_ON tr("Note On")
+#define MIDISTATUS_STRING_NOTE_OFF tr("Note Off")
 #define MIDISTATUS_STRING_CTRL tr("CC")
 #define MIDISTATUS_STRING_PITCH tr("Pitch CC")
 
@@ -34,7 +35,9 @@ void MidiStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
         QString text;
         if (status == MIDI_STATUS_NOTE_ON) //These come from the MidiStatusByte enum (midimessage.h)
-            text = MIDISTATUS_STRING_NOTE;
+            text = MIDISTATUS_STRING_NOTE_ON;
+        else if (status == MIDI_STATUS_NOTE_OFF)
+            text = MIDISTATUS_STRING_NOTE_OFF;
         else if (status == MIDI_STATUS_CC)
             text = MIDISTATUS_STRING_CTRL;
         else if (status == MIDI_STATUS_PITCH_BEND)
@@ -54,7 +57,8 @@ QWidget *MidiStatusDelegate::createEditor(QWidget *parent,
         const QModelIndex &/* index */) const
 {
     QComboBox *editor = new QComboBox(parent);
-    editor->addItem(MIDISTATUS_STRING_NOTE);
+    editor->addItem(MIDISTATUS_STRING_NOTE_ON);
+    editor->addItem(MIDISTATUS_STRING_NOTE_OFF);
     editor->addItem(MIDISTATUS_STRING_CTRL);
     editor->addItem(MIDISTATUS_STRING_PITCH);
 
@@ -76,11 +80,14 @@ void MidiStatusDelegate::setEditorData(QWidget *editor,
         case MIDI_STATUS_NOTE_ON:
             comboIdx = 0;
             break;
-        case MIDI_STATUS_CC:
+        case MIDI_STATUS_NOTE_OFF:
             comboIdx = 1;
             break;
-        case MIDI_STATUS_PITCH_BEND:
+        case MIDI_STATUS_CC:
             comboIdx = 2;
+            break;
+        case MIDI_STATUS_PITCH_BEND:
+            comboIdx = 3;
             break;
     }
     comboBox->setCurrentIndex(comboIdx);
@@ -94,8 +101,10 @@ void MidiStatusDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
     //comboBox->interpretText();
     //Get the text from the combobox and turn it into a MidiMessage integer.
     QString text = comboBox->currentText();
-    if (text == MIDISTATUS_STRING_NOTE) //These come from the MidiStatusByte enum (midimessage.h)
+    if (text == MIDISTATUS_STRING_NOTE_ON) //These come from the MidiStatusByte enum (midimessage.h)
         midiStatus = MIDI_STATUS_NOTE_ON;
+    else if (text == MIDISTATUS_STRING_NOTE_OFF)
+        midiStatus = MIDI_STATUS_NOTE_OFF;        
     else if (text == MIDISTATUS_STRING_CTRL)
         midiStatus = MIDI_STATUS_CC;
     else if (text == MIDISTATUS_STRING_PITCH)
