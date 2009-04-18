@@ -46,6 +46,13 @@
 
     <control>
       <group>[Channel1]</group>
+      <key>play</key>
+      <status>0x80</status>
+      <midino>48</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
       <key>back</key>
       <status>0x90</status>
       <midino>44</midino>
@@ -53,8 +60,22 @@
 
     <control>
       <group>[Channel1]</group>
+      <key>back</key>
+      <status>0x80</status>
+      <midino>44</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
       <key>fwd</key>
       <status>0x90</status>
+      <midino>45</midino>
+    </control>
+    
+    <control>
+      <group>[Channel1]</group>
+      <key>fwd</key>
+      <status>0x80</status>
       <midino>45</midino>
     </control>
 
@@ -67,8 +88,22 @@
 
     <control>
       <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>36</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
       <key>rate_temp_up</key>
       <status>0x90</status>
+      <midino>37</midino>
+    </control>
+    
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
       <midino>37</midino>
     </control>
 
@@ -95,6 +130,13 @@
 
     <control>
       <group>[Channel1]</group>
+      <key>pfl</key>
+      <status>0x80</status>
+      <midino>41</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
       <key>cue_default</key>
       <status>0x90</status>
       <midino>49</midino>
@@ -102,8 +144,22 @@
 
     <control>
       <group>[Channel1]</group>
+      <key>cue_default</key>
+      <status>0x80</status>
+      <midino>49</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
       <key>flanger</key>
       <status>0x90</status>
+      <midino>40</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>flanger</key>
+      <status>0x80</status>
       <midino>40</midino>
     </control>
 
@@ -144,8 +200,22 @@
 
     <control>
       <group>[Channel2]</group>
+      <key>play</key>
+      <status>0x80</status>
+      <midino>50</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
       <key>back</key>
       <status>0x90</status>
+      <midino>46</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>back</key>
+      <status>0x80</status>
       <midino>46</midino>
     </control>
 
@@ -158,6 +228,13 @@
 
     <control>
       <group>[Channel2]</group>
+      <key>fwd</key>
+      <status>0x80</status>
+      <midino>47</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
       <key>rate_temp_down</key>
       <status>0x90</status>
       <midino>38</midino>
@@ -165,8 +242,22 @@
 
     <control>
       <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>38</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
       <key>rate_temp_up</key>
       <status>0x90</status>
+      <midino>39</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
       <midino>39</midino>
     </control>
 
@@ -193,6 +284,13 @@
 
     <control>
       <group>[Channel2]</group>
+      <key>pfl</key>
+      <status>0x80</status>
+      <midino>42</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
       <key>cue_default</key>
       <status>0x90</status>
       <midino>51</midino>
@@ -200,8 +298,22 @@
 
     <control>
       <group>[Channel2]</group>
+      <key>cue_default</key>
+      <status>0x80</status>
+      <midino>51</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
       <key>flanger</key>
       <status>0x90</status>
+      <midino>43</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>flanger</key>
+      <status>0x80</status>
       <midino>43</midino>
     </control>
 

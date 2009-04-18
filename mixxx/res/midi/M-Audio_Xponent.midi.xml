@@ -12,113 +12,162 @@
     <control>
       <group>[Master]</group>
       <key>crossfader</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB2</status>
       <midino>7</midino>
-      <midichan>3</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Master]</group>
       <key>headMix</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB2</status>
       <midino>13</midino>
-      <midichan>3</midichan>
       <controltype>knob</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>transform</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>7</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>transform</key>
+      <status>0x80</status>
+      <midino>7</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>play</key>
+      <status>0x90</status>
+      <midino>36</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>play</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>36</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>cue_default</key>
+      <status>0x90</status>
+      <midino>35</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>cue_default</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>35</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>back</key>
+      <status>0x90</status>
+      <midino>33</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>back</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>33</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>fwd</key>
+      <status>0x90</status>
+      <midino>34</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>fwd</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>34</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>start</key>
+      <status>0x90</status>
+      <midino>28</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>start</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>28</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>end</key>
+      <status>0x90</status>
+      <midino>29</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>end</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>29</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>reverse</key>
+      <status>0x90</status>
+      <midino>19</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>reverse</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>19</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>cue_gotoandstop</key>
+      <status>0x90</status>
+      <midino>18</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>cue_gotoandstop</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>18</midino>
-      <midichan>1</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel1]</group>
       <key>volume</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>7</midino>
-      <midichan>1</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate</key>
-      <miditype>Pitch</miditype>
+      <status>0xE0</status>
       <midino>0</midino>
-      <midichan>1</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>wheel</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>22</midino>
-      <midichan>1</midichan>
       <controltype>wheel</controltype>
       <options>
         <spread64/>
@@ -132,209 +181,309 @@
     <control>
       <group>[Channel1]</group>
       <key>wheel_touch_sensor</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>22</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>wheel_touch_sensor</key>
+      <status>0x80</status>
+      <midino>22</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>wheel_touch_switch</key>
+      <status>0x90</status>
+      <midino>21</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>wheel_touch_switch</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>21</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>pfl</key>
+      <status>0x90</status>
+      <midino>20</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>pfl</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>20</midino>
-      <midichan>1</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel1]</group>
       <key>filterLow</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>8</midino>
-      <midichan>1</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterMid</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>9</midino>
-      <midichan>1</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterHigh</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>10</midino>
-      <midichan>1</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterLowKill</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>8</midino>
-      <midichan>1</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
+      <key>filterLowKill</key>
+      <status>0x80</status>
+      <midino>8</midino>
+      <controltype>fader</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
       <key>filterMidKill</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>9</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>filterMidKill</key>
+      <status>0x80</status>
+      <midino>9</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>filterHighKill</key>
+      <status>0x90</status>
+      <midino>10</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterHighKill</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>10</midino>
-      <midichan>1</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel1]</group>
       <key>pregain</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>11</midino>
-      <midichan>1</midichan>
       <controltype>knob</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>16</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
+      <midino>16</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x90</status>
+      <midino>17</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_down</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>17</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>beatsync</key>
+      <status>0x90</status>
+      <midino>2</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>beatsync</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>2</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel1]</group>
+      <key>loop</key>
+      <status>0x90</status>
+      <midino>42</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>loop</key>
-      <miditype>Key</miditype>
+      <status>0x80</status>
       <midino>42</midino>
-      <midichan>1</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>transform</key>
+      <status>0x91</status>
+      <midino>7</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>transform</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>7</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>play</key>
+      <status>0x91</status>
+      <midino>36</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>play</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>36</midino>
-      <midichan>2</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel2]</group>
       <key>cue_default</key>
-      <miditype>Key</miditype>
+      <status>0x91</status>
       <midino>35</midino>
-      <midichan>2</midichan>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>back</key>
-      <miditype>Key</miditype>
+      <status>0x91</status>
       <midino>33</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>back</key>
+      <status>0x81</status>
+      <midino>33</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>fwd</key>
+      <status>0x91</status>
+      <midino>34</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>fwd</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>34</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>start</key>
+      <status>0x91</status>
+      <midino>28</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>start</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>28</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>end</key>
+      <status>0x91</status>
+      <midino>29</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>end</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>29</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>reverse</key>
+      <status>0x91</status>
+      <midino>19</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>reverse</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>19</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>cue_gotoandstop</key>
+      <status>0x91</status>
+      <midino>18</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>cue_gotoandstop</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>18</midino>
-      <midichan>2</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel2]</group>
       <key>volume</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB1</status>
       <midino>7</midino>
-      <midichan>2</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate</key>
-      <miditype>Pitch</miditype>
+      <status>0xE1</status>
       <midino>0</midino>
-      <midichan>2</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>wheel</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB1</status>
       <midino>22</midino>
-      <midichan>2</midichan>
       <options>
         <spread64/>
         <sensitivity>30</sensitivity>
@@ -348,115 +497,171 @@
     <control>
       <group>[Channel2]</group>
       <key>wheel_touch_sensor</key>
-      <miditype>Key</miditype>
+      <status>0x91</status>
       <midino>22</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>wheel_touch_sensor</key>
+      <status>0x81</status>
+      <midino>22</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>wheel_touch_switch</key>
+      <status>0x91</status>
+      <midino>21</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>wheel_touch_switch</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>21</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>pfl</key>
+      <status>0x91</status>
+      <midino>20</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>pfl</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>20</midino>
-      <midichan>2</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel2]</group>
       <key>filterLow</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB1</status>
       <midino>8</midino>
-      <midichan>2</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterMid</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB1</status>
       <midino>9</midino>
-      <midichan>2</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterHigh</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB1</status>
       <midino>10</midino>
-      <midichan>2</midichan>
       <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterLowKill</key>
-      <miditype>Key</miditype>
+      <status>0x91</status>
       <midino>8</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>filterLowKill</key>
+      <status>0x81</status>
+      <midino>8</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>filterMidKill</key>
+      <status>0x91</status>
+      <midino>9</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterMidKill</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>9</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>filterHighKill</key>
+      <status>0x91</status>
+      <midino>10</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterHighKill</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>10</midino>
-      <midichan>2</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
     <control>
       <group>[Channel2]</group>
       <key>pregain</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB1</status>
       <midino>11</midino>
-      <midichan>2</midichan>
       <controltype>knob</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_up</key>
-      <miditype>Key</miditype>
+      <status>0x91</status>
       <midino>16</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_up</key>
+      <status>0x81</status>
+      <midino>16</midino>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x91</status>
+      <midino>17</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_down</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>17</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>beatsync</key>
+      <status>0x91</status>
+      <midino>2</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>beatsync</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>2</midino>
-      <midichan>2</midichan>
+      <controltype>button</controltype>
+    </control>    
+    <control>
+      <group>[Channel2]</group>
+      <key>loop</key>
+      <status>0x91</status>
+      <midino>42</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>loop</key>
-      <miditype>Key</miditype>
+      <status>0x81</status>
       <midino>42</midino>
-      <midichan>2</midichan>
       <controltype>button</controltype>
-    </control>
+    </control>    
   </controls>
 </controller>
 </MixxxMIDIPreset>

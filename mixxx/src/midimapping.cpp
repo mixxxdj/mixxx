@@ -807,6 +807,13 @@ void MidiMapping::finishMidiLearn(MidiMessage message)
     if (!m_controlToLearn.isNull()) { //Ensure we've actually been told to learn a control. 
                                       //Note the ! out front.
         addInputControl(message, m_controlToLearn);
+        
+        //If we caught a NOTE_ON message, add a binding for NOTE_OFF as well.
+        if (message.getMidiStatusByte() == MIDI_STATUS_NOTE_ON) {
+            MidiMessage noteOffMessage(message);
+            noteOffMessage.setMidiStatusByte(MIDI_STATUS_NOTE_OFF);
+            addInputControl(noteOffMessage, m_controlToLearn);
+        }
     
         //Reset the saved control.
         m_controlToLearn = MixxxControl();
