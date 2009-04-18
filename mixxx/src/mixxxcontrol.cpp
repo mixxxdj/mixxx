@@ -74,13 +74,19 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
         bool ok = false;
         if (!minNode.isNull()) {
             m_thresholdMinimum = minNode.text().toFloat(&ok);
+        } else {
+            ok = false;
         }
+
         if (!ok) //If not a float, or node wasn't defined
             m_thresholdMinimum = 0.0f;
             
         if (!maxNode.isNull()) {
             m_thresholdMaximum = maxNode.text().toFloat(&ok);
+        } else {
+            ok = false;
         }
+
         if (!ok) //If not a float, or node wasn't defined
             m_thresholdMaximum = 1.0f;
     }
