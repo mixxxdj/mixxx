@@ -738,17 +738,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="TableView")
             {
                 if (m_pTabWidget == 0) {
+
                     //Create the tab widget to store the various panes in (library, effects, etc.)
-                    m_pTabWidget = new QTabWidget(this);
+                    m_pTabWidget = new QStackedWidget(this);
 
                     //Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget();
+                    m_pTabWidgetLibraryPage = new QWidget(this);
                     //m_pTabWidgetEffectsPage = new QWidget();
-                    
                     //m_pDlgLADSPA = new DlgLADSPA(this);
+
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView; //m_pDlgLADSPA; 
-
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
       //              m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
@@ -765,11 +766,21 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                                                     1,    //Span 1 row
                                                     3,    //Span 3 cols
                                                     0);   //Default alignment
-                    //Add the library page to the tab widget.
-                    m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
 
+                    //Add the library page to the tab widget.
+                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);//, tr("Library"));
+                    
                     //Add the effects page to the tab widget.
-                    m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);//, tr("Effects"));      
+                    
+                    /*
+                    //XXX: Re-enable this to get the tab widget back, post 1.7.0 release.
+                    //Add the library page to the tab widget.
+                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage, tr("Library"));
+                    
+                    //Add the effects page to the tab widget.
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));   
+		    */             
                 }
                 
                 //Move the tab widget into position and size it properly.

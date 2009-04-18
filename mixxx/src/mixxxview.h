@@ -48,6 +48,7 @@ class QLineEdit;
 class QPushButton;
 class QGridLayout;
 class QTabWidget;
+class QStackedWidget;
 class WTrackTableView;
 class DlgLADSPA; class LADSPAView;
 class WaveformRenderer;
@@ -117,7 +118,7 @@ private:
     ConfigObject<ConfigValue> *m_pconfig;
 
     /** Tab widget, which contains several "pages" for different views */
-    QTabWidget* m_pTabWidget;
+    QStackedWidget* m_pTabWidget; //XXX: Temporarily turned this into a QStackedWidget instead of a QTabWidget to disable the tabs for 1.7.0 since LADSPA effects isn't finished.
     /** The widget containing the library/tracktable page */
     QWidget* m_pTabWidgetLibraryPage;
     /** The widget containing the effects/LADSPA page */
