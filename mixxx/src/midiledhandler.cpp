@@ -29,7 +29,13 @@ MidiLedHandler::~MidiLedHandler() {
 }
 
 void MidiLedHandler::controlChanged(double value) {
-
+    //Guh, the valueChangedFromEngine and valueChanged signals can occur simultaneously because we're
+    //using Qt::DirectConnection. We have to block by hand to prevent re-entrancy. We can't use 
+    //Qt::BlockingQueuedConnection because we don't have an event loop in some of the threads that
+    //create MidiLedHandlers. (The underlying code is messy - On first run, the LED handlers get created
+    //in the main thread, and then after you load a new binding, they get created from the Midi thread.)
+    // - Albert 04/19/2009
+    m_reentracyBlock.lock();
     unsigned char m_byte2 = m_off;
     if (value >= m_min && value <= m_max) { m_byte2 = m_on; }
 
@@ -40,6 +46,7 @@ void MidiLedHandler::controlChanged(double value) {
             m_midi.sendShortMsg(m_status, m_midino, m_byte2);
         }
     }
+    m_reentracyBlock.unlock();
 }
 
 void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString device) {
