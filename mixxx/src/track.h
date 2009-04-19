@@ -94,6 +94,8 @@ public:
 
     void resizeColumnsForLibraryMode();
 
+	void appShuttingDown();
+
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
@@ -255,6 +257,8 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
 
     int savedRowPosition;
+
+	int m_timerID;
 };
 
 #endif

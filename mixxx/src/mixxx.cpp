@@ -367,6 +367,7 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
+	m_pTrack->appShuttingDown();
 
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
