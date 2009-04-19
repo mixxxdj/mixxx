@@ -109,6 +109,8 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
     m_qPromoPlaylist.setTrackCollection(m_pTrackCollection);
 
+	m_timerID = 0;
+
 #ifdef __IPOD__
     m_qIPodPlaylist.setTrackCollection(m_pTrackCollection);
     m_qIPodPlaylist.setListName(PLAYLIST_NAME_IPOD);
@@ -183,7 +185,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 */
 
         savedRowPosition = 0;
-        startTimer(250);   // Update the TrackTableView filter a maximum of 4 times a second.
+        m_timerID = startTimer(250);   // Update the TrackTableView filter a maximum of 4 times a second.
 
 	// add EventFilter to do a selectAll text when the LineEditSearch gains focus
 	m_pView->m_pLineEditSearch-> installEventFilter(this);
@@ -273,6 +275,13 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
 Track::~Track()
 {
+}
+
+void Track::appShuttingDown() {
+	
+	if (m_timerID != 0) {
+		killTimer(m_timerID);
+	}
 }
 
 void Track::resizeColumnsForLibraryMode()
