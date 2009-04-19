@@ -96,7 +96,8 @@ QString MidiMessage::toString() const
 
 uint qHash(const MidiMessage& key)
 {
-    if (key.getMidiStatusByte() == MIDI_STATUS_PITCH_BEND) { 
+    //& with 0xF0 to ignore the channel bits for comparison purposes.
+    if ((key.getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND) { 
         //Ignore midino for pitch bend messages because those bits are actually part of the 14-bit pitch bend payload.
         return key.getMidiStatusByte(); 
     }

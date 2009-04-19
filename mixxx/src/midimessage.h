@@ -34,7 +34,8 @@ typedef enum {
           void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
           QString toString() const;
           bool operator==(const MidiMessage& other) const {
-            if (this->getMidiStatusByte() == MIDI_STATUS_PITCH_BEND) {
+            //Compare high bits, which ignores the channel
+            if ((this->getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND) {
                 //Ignore midiNo for pitch messages because that byte is part of the message payload.
                 //(See the MIDI spec.)
                 return (this->getMidiStatusByte() == other.getMidiStatusByte());
