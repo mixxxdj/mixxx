@@ -319,10 +319,12 @@ QString ConfigObject<ValueType>::getConfigPath()
 //    char* str = new char[200];
 //    GetModuleFileName(NULL, str, 200);
 //    qConfigPath = QFileInfo(str).dirPath();
-      wchar_t str[MAX_PATH];
-      GetModuleFileNameW(0, str, MAX_PATH);
-      std::wstring path(str);
-      qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
+//      wchar_t str[MAX_PATH];
+//      GetModuleFileNameW(0, str, MAX_PATH);
+//      std::wstring path(str);
+//	  QString pathqstr = QString::fromStdWString(path);
+//      qConfigPath = QFileInfo(pathqstr).dirPath();
+	  qConfigPath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
     // Set the path relative to the bundle directory
