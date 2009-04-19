@@ -904,6 +904,7 @@ if platform == 'win32':
 		print "MSVC Debugging... enabled"
 		build_flags += 'msvcdebug '
 	else:
+		env.Append(LINKFLAGS = '/subsystem:windows')
 		env.Append(CCFLAGS = '/MD') # required for sndfile w/ flac support on windows
 		print "MSVC Debugging... disabled"
 
