@@ -21,14 +21,15 @@ MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject & midi, do
     QByteArray err_tmp = QString("Invalid config group: '%1', name: '%2'").arg(group).arg(key).toAscii();
     Q_ASSERT_X(m_cobj, "MidiLedHandler", err_tmp);
 
-    connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
-    connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
+    connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)), Qt::DirectConnection);
+    connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)), Qt::DirectConnection);
 }
 
 MidiLedHandler::~MidiLedHandler() {
 }
 
 void MidiLedHandler::controlChanged(double value) {
+
     unsigned char m_byte2 = m_off;
     if (value >= m_min && value <= m_max) { m_byte2 = m_on; }
 
