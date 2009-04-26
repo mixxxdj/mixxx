@@ -118,8 +118,10 @@ int SoundDevicePortAudio::open()
 
 
     //Round to the nearest multiple of 4.
-    iLatencySamples -= (iLatencySamples % 4);
-    iLatencySamples += 4;
+    if (iLatencySamples % 4 != 0) {
+        iLatencySamples -= (iLatencySamples % 4);
+        iLatencySamples += 4;
+    }
 
     qDebug() << "iLatencySamples:" << iLatencySamples;
 
@@ -131,7 +133,7 @@ int SoundDevicePortAudio::open()
         iNumberOfBuffers = iLatencySamples / MIXXXPA_MAX_FRAME_SIZE;
 
     //Frame size...
-    unsigned int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
+    unsigned int iFramesPerBuffer = iLatencySamples/iNumberOfBuffers;
 
     //OSS is a bitch - It only likes power-of-two buffer sizes, so give it one.
     //Update: A patch has been pushed upstream to PortAudio for this that will elimate
