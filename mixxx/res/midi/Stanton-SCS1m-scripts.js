@@ -9,7 +9,7 @@ function StantonSCS1m() {}
 
 // ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/stanton_SCS.1m_mixxx_user_guide  for details
-StantonSCS1m.faderStart = false;
+StantonSCS1m.faderStart = true;
 
 // ----------   Other global variables    ----------
 StantonSCS1m.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
@@ -18,13 +18,13 @@ StantonSCS1m.swVersion = "1.7.0-b1";    // Mixxx version for display
 StantonSCS1m.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messages for this device
 StantonSCS1m.selectKnobMode = "browse"; // Current mode for the gray select knob
 StantonSCS1m.inSetup = false; // Flag for if the device is in setup mode
-// Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-StantonSCS1m.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0 };
+StantonSCS1m.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0 };  // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
 StantonSCS1m.trackDuration = [0,0]; // Duration of the song on each deck (used for vinyl LEDs)
 StantonSCS1m.lastLight = [-1,-1];   // Last circle LED values
 StantonSCS1m.lastTime = ["-99:99","-99:99"];    // Last time remaining values
 StantonSCS1m.lastColor = [0,0]; // Last color of display flash
 StantonSCS1m.displayFlash = [-1,-1];  // Temp storage for display flash timeouts
+StantonSCS1m.lastCrossFader = 0;  // Last value of the cross fader
 
 // ----------   Functions   ----------
 
@@ -71,6 +71,8 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel1]","duration","StantonSCS1m.durationChange1");
     engine.connectControl("[Channel2]","duration","StantonSCS1m.durationChange2");
     
+        // Faders
+    engine.connectControl("[Master]","crossfader","StantonSCS1m.crossFaderStart");
     
     // Set LCD text
     StantonSCS1m.initLCDs();
@@ -183,7 +185,20 @@ StantonSCS1m.encoderJog2 = function (channel, control, value, status) {
 
 StantonSCS1m.encoderJog = function (value,deck) {
     if (StantonSCS1m.checkInSetup()) return;
-    engine.setValue("[Channel"+deck+"]","jog",(value-64)*2);
+    engine.setValue("[Channel"+deck+"]","jog",(value-64)*4);
+}
+
+// ----------   Slot functions  ----------
+
+StantonSCS1m.crossFaderStart = function (value) {
+  if (!StantonSCS1m.faderStart) return;
+  if (StantonSCS1m.lastCrossFader==value) return;
+
+  if (value==-1.0) engine.setValue("[Channel2]","cue_default",0);
+  if (value==1.0) engine.setValue("[Channel1]","cue_default",0);
+  if (StantonSCS1m.lastCrossFader==-1.0) engine.setValue("[Channel2]","play",1);
+  if (StantonSCS1m.lastCrossFader==1.0) engine.setValue("[Channel1]","play",1);
+  StantonSCS1m.lastCrossFader=value;
 }
 
 // ----------   LED slot functions  ----------
@@ -330,3 +345,10 @@ StantonSCS1m.positionUpdates = function (value,deck) {
         }   // End flashing
     }
 }
+
+/* TODO:
+- Channel fader start
+- Cross- (& channel?) fader start assign buttons
+- Jog wheel scratching, control button
+- Pitch range change
+*/
