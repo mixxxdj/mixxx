@@ -132,6 +132,7 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
 
 void DlgPrefMidiBindings::enumeratePresets()
 {
+    QList<QString> presetsList;
     comboBoxPreset->clear();
     
     //Insert a dummy "..." item at the top to try to make it less confusing.
@@ -148,9 +149,12 @@ void DlgPrefMidiBindings::enumeratePresets()
         if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
         {
             curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the .midi.xml
-            comboBoxPreset->addItem(curMapping);
+            presetsList.append(curMapping);
         }
     }
+    //Sort in alphabetical order
+    qSort(presetsList);
+    comboBoxPreset->addItems(presetsList);
 }
 
 /* loadPreset(QString)
@@ -295,6 +299,8 @@ void DlgPrefMidiBindings::slotAddInputBinding()
     while (m_rMidi.getMidiMapping()->isMidiMessageMapped(message))
     {
         message.setMidiNo(message.getMidiNo() + 1);
+        if (message.getMidiNo() >= 127) //If the table is full, then overwrite something... 
+            break;
     }
     m_rMidi.getMidiMapping()->setInputMidiMapping(message, mixxxControl);
 }
