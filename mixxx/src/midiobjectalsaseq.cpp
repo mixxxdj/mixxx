@@ -64,6 +64,8 @@ MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject()
     snd_seq_port_info_set_name(pinfo, "Mixxx");
     m_input = snd_seq_create_port(m_handle, pinfo);
 
+    snd_seq_start_queue(m_handle, m_queue, NULL);
+
     if (m_input != 0)
     {
         qDebug() << "Creation of the input port failed";
@@ -357,21 +359,34 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     // qDebug() << "MIDI message send via alsa seq -- byte1:" << byte1 << "byte2:" << byte2 << "byte3:" << byte3;
 
     // Initialize the event structure
-    snd_seq_ev_set_direct(&ev);
+    snd_seq_ev_clear(&ev);
     snd_seq_ev_set_source(&ev, m_input);
 
-    // Send to all subscribers
-    snd_seq_ev_set_dest(&ev, SND_SEQ_ADDRESS_SUBSCRIBERS, 0);
+    snd_seq_real_time time;
+    time.tv_sec = time.tv_nsec = 0;
+    snd_seq_ev_schedule_real(&ev, m_queue, 1, &time);
+    //snd_seq_ev_set_direct(&ev);
 
+    // Send to all subscribers
+    //snd_seq_ev_set_dest(&ev, SND_SEQ_ADDRESS_SUBSCRIBERS, 0);
+    snd_seq_ev_set_subs(&ev);
+    
     // Decide which event type to choose
     switch ((byte1 & 0xf0)) {
     case 0x90:  // Note on/off
         snd_seq_ev_set_noteon(&ev, byte1&0xf, byte2, byte3);
-        snd_seq_event_output_direct(m_handle, &ev);
+        //snd_seq_event_output_direct(m_handle, &ev);
+        snd_seq_event_output(m_handle, &ev);
+        snd_seq_drain_output(m_handle);
         break;
     case 0xb0:  // Control Change
         snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
-        snd_seq_event_output_direct(m_handle, &ev);
+        //snd_seq_event_output_direct(m_handle, &ev);
+        snd_seq_event_output(m_handle, &ev);
+        snd_seq_drain_output(m_handle);
+        break;
+    default:
+        qDebug() << "Unhandled event type in sendShortMsg";
         break;
     }
 }
@@ -381,13 +396,21 @@ void MidiObjectALSASeq::sendSysexMsg(unsigned char data[], unsigned int length) 
     snd_seq_event_t ev;
 
     // Initialize the event structure
-    snd_seq_ev_set_direct(&ev);
+    snd_seq_ev_clear(&ev);
     snd_seq_ev_set_source(&ev, m_input);
 
-    // Send to all subscribers
-    snd_seq_ev_set_dest(&ev, SND_SEQ_ADDRESS_SUBSCRIBERS, 0);
+    snd_seq_real_time time;
+    time.tv_sec = time.tv_nsec = 0;
+    snd_seq_ev_schedule_real(&ev, m_queue, 1, &time);
+    //snd_seq_ev_set_direct(&ev);
 
+    // Send to all subscribers
+    //snd_seq_ev_set_dest(&ev, SND_SEQ_ADDRESS_SUBSCRIBERS, 0);
+    snd_seq_ev_set_subs(&ev);
+    
     // Do it
     snd_seq_ev_set_sysex(&ev,length,data);
-    snd_seq_event_output_direct(m_handle, &ev);
+    //snd_seq_event_output_direct(m_handle, &ev);
+    snd_seq_event_output(m_handle, &ev);
+    snd_seq_drain_output(m_handle);
 }

@@ -50,6 +50,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("transform");
         m_channelControlValues.append("volume");
         m_channelControlValues.append("wheel");
+        m_channelControlValues.append("jog");
     }
     if (m_masterControlValues.isEmpty())
     {
