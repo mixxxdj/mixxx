@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0">
     <info>
         <name>Hercules DJ Console Mk2</name>
-        <author>Unknown</author>
+        <author>Garth Dahlstrom</author>
         <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
     </info>
   <controller id="Hercules DJ Console Mk2 MIDI">
@@ -11,16 +11,14 @@
         <group>[Master]</group>
         <key>crossfader</key>
         <status>0xB0</status>
-        <midino>49</midino>
-        <controltype>fader</controltype>
+        <midino>0x31</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>play</key>
         <status>0xB0</status>
-        <midino>8</midino>
-        <controltype>button</controltype>
+        <midino>0x08</midino>
         <options>
           <Button/>
         </options>
@@ -29,8 +27,7 @@
         <group>[Channel1]</group>
         <key>cue_default</key>
         <status>0xB0</status>
-        <midino>9</midino>
-        <controltype>button</controltype>
+        <midino>0x09</midino>
         <options>
           <Button/>
         </options>
@@ -39,8 +36,7 @@
         <group>[Channel1]</group>
         <key>PrevTrack</key>
         <status>0xB0</status>
-        <midino>11</midino>
-        <controltype>button</controltype>
+        <midino>0x0B</midino>
         <options>
           <Button/>
         </options>
@@ -49,8 +45,7 @@
         <group>[Channel1]</group>
         <key>NextTrack</key>
         <status>0xB0</status>
-        <midino>12</midino>
-        <controltype>button</controltype>
+        <midino>0x0C</midino>
         <options>
           <Button/>
         </options>
@@ -59,16 +54,14 @@
         <group>[Channel1]</group>
         <key>volume</key>
         <status>0xB0</status>
-        <midino>50</midino>
-        <controltype>fader</controltype>
+        <midino>0x32</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate</key>
         <status>0xB0</status>
-        <midino>52</midino>
-        <controltype>fader</controltype>
+        <midino>0x34</midino>
         <options>
           <Diff/>
         </options>
@@ -77,8 +70,7 @@
         <group>[Channel1]</group>
         <key>wheel</key>
         <status>0xB0</status>
-        <midino>54</midino>
-        <controltype>wheel</controltype>
+        <midino>0x36</midino>
         <options>
           <HercJog/>
         </options>
@@ -87,8 +79,7 @@
         <group>[Channel1]</group>
         <key>pfl</key>
         <status>0xB0</status>
-        <midino>33</midino>
-        <controltype>button</controltype>
+        <midino>0x21</midino>
         <options>
           <Switch/>
         </options>
@@ -97,32 +88,28 @@
         <group>[Channel1]</group>
         <key>filterLow</key>
         <status>0xB0</status>
-        <midino>46</midino>
-        <controltype>fader</controltype>
+        <midino>0x2E</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterMid</key>
         <status>0xB0</status>
-        <midino>47</midino>
-        <controltype>fader</controltype>
+        <midino>0x2F</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterHigh</key>
         <status>0xB0</status>
-        <midino>48</midino>
-        <controltype>fader</controltype>
+        <midino>0x30</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLowKill</key>
         <status>0xB0</status>
-        <midino>15</midino>
-        <controltype>button</controltype>
+        <midino>0x0F</midino>
         <options>
           <Button/>
         </options>
@@ -131,8 +118,7 @@
         <group>[Channel1]</group>
         <key>filterMidKill</key>
         <status>0xB0</status>
-        <midino>14</midino>
-        <controltype>button</controltype>
+        <midino>0x0E</midino>
         <options>
           <Button/>
         </options>
@@ -141,8 +127,7 @@
         <group>[Channel1]</group>
         <key>filterHighKill</key>
         <status>0xB0</status>
-        <midino>13</midino>
-        <controltype>button</controltype>
+        <midino>0x0D</midino>
         <options>
           <Button/>
         </options>
@@ -151,38 +136,34 @@
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
         <status>0xB0</status>
-        <midino>19</midino>
-        <controltype>button</controltype>
+        <midino>0x13</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down</key>
         <status>0xB0</status>
-        <midino>20</midino>
-        <controltype>button</controltype>
+        <midino>0x14</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>beatsync</key>
         <status>0xB0</status>
-        <midino>10</midino>
-        <controltype>button</controltype>
+        <midino>0x0A</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>play</key>
         <status>0xB0</status>
-        <midino>2</midino>
-        <controltype>button</controltype>
+        <midino>0x02</midino>
         <options>
           <Button/>
         </options>
@@ -191,8 +172,7 @@
         <group>[Channel2]</group>
         <key>cue_default</key>
         <status>0xB0</status>
-        <midino>3</midino>
-        <controltype>button</controltype>
+        <midino>0x03</midino>
         <options>
           <Button/>
         </options>
@@ -201,8 +181,7 @@
         <group>[Channel2]</group>
         <key>PrevTrack</key>
         <status>0xB0</status>
-        <midino>5</midino>
-        <controltype>button</controltype>
+        <midino>0x05</midino>
         <options>
           <Button/>
         </options>
@@ -211,8 +190,7 @@
         <group>[Channel2]</group>
         <key>NextTrack</key>
         <status>0xB0</status>
-        <midino>6</midino>
-        <controltype>button</controltype>
+        <midino>0x06</midino>
         <options>
           <Button/>
         </options>
@@ -221,8 +199,7 @@
         <group>[Channel2]</group>
         <key>reverse</key>
         <status>0xB0</status>
-        <midino>1</midino>
-        <controltype>button</controltype>
+        <midino>0x01</midino>
         <options>
           <Switch/>
         </options>
@@ -231,16 +208,14 @@
         <group>[Channel2]</group>
         <key>volume</key>
         <status>0xB0</status>
-        <midino>51</midino>
-        <controltype>fader</controltype>
+        <midino>0x033</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate</key>
         <status>0xB0</status>
-        <midino>53</midino>
-        <controltype>fader</controltype>
+        <midino>0x35</midino>
         <options>
           <Diff/>
         </options>
@@ -249,8 +224,7 @@
         <group>[Channel2]</group>
         <key>wheel</key>
         <status>0xB0</status>
-        <midino>55</midino>
-        <controltype>wheel</controltype>
+        <midino>0x37</midino>
         <options>
           <HercJog/>
         </options>
@@ -259,8 +233,7 @@
         <group>[Channel2]</group>
         <key>pfl</key>
         <status>0xB0</status>
-        <midino>34</midino>
-        <controltype>button</controltype>
+        <midino>0x22</midino>
         <options>
           <Switch/>
         </options>
@@ -269,32 +242,28 @@
         <group>[Channel2]</group>
         <key>filterLow</key>
         <status>0xB0</status>
-        <midino>43</midino>
-        <controltype>fader</controltype>
+        <midino>0x2B</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterMid</key>
         <status>0xB0</status>
-        <midino>44</midino>
-        <controltype>fader</controltype>
+        <midino>0x2C</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterHigh</key>
         <status>0xB0</status>
-        <midino>45</midino>
-        <controltype>fader</controltype>
+        <midino>0x2D</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLowKill</key>
         <status>0xB0</status>
-        <midino>16</midino>
-        <controltype>button</controltype>
+        <midino>0x10</midino>
         <options>
           <Button/>
         </options>
@@ -303,8 +272,7 @@
         <group>[Channel2]</group>
         <key>filterMidKill</key>
         <status>0xB0</status>
-        <midino>17</midino>
-        <controltype>button</controltype>
+        <midino>0x11</midino>
         <options>
           <Button/>
         </options>
@@ -313,8 +281,7 @@
         <group>[Channel2]</group>
         <key>filterHighKill</key>
         <status>0xB0</status>
-        <midino>18</midino>
-        <controltype>button</controltype>
+        <midino>0x12</midino>
         <options>
           <Button/>
         </options>
@@ -323,38 +290,34 @@
         <group>[Channel2]</group>
         <key>rate_temp_up</key>
         <status>0xB0</status>
-        <midino>23</midino>
-        <controltype>button</controltype>
+        <midino>0x17</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_down</key>
         <status>0xB0</status>
-        <midino>24</midino>
-        <controltype>button</controltype>
+        <midino>0x18</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>beatsync</key>
         <status>0xB0</status>
-        <midino>4</midino>
-        <controltype>button</controltype>
+        <midino>0x04</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>reverse</key>
         <status>0xB0</status>
-        <midino>7</midino>
-        <controltype>button</controltype>
+        <midino>0x07</midino>
         <options>
           <Switch/>
         </options>
@@ -363,32 +326,28 @@
         <group>[Playlist]</group>
         <key>SelectPrevTrack</key>
         <status>0xB0</status>
-        <midino>22</midino>
-        <controltype>button</controltype>
+        <midino>0x16</midino>
         <options/>
       </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectNextTrack</key>
         <status>0xB0</status>
-        <midino>26</midino>
-        <controltype>button</controltype>
+        <midino>0x1A</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>LoadSelectedTrack</key>
         <status>0xB0</status>
-        <midino>27</midino>
-        <controltype>button</controltype>
+        <midino>0x1B</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>LoadSelectedTrack</key>
         <status>0xB0</status>
-        <midino>28</midino>
-        <controltype>button</controltype>
+        <midino>0x1C</midino>
         <options/>
       </control>
     </controls>
@@ -398,14 +357,14 @@
         <key>play</key>
         <status>0xB0</status>
         <midino>0x08</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>play</key>
         <status>0xB0</status>
         <midino>0x02</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
@@ -428,70 +387,72 @@
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
-        <threshold>0.4</threshold>
+        <minimum>0.4</minimum>
+        <maximum>1</maximum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x16</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0D</midino>
-        <threshold>0.6</threshold>
+        <minimum>0.6</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
-        <threshold>0.7</threshold>
+        <minimum>0.7</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0F</midino>
-        <threshold>0.8</threshold>
+        <minimum>0.8</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x04</midino>
-        <threshold>0.4</threshold>
+        <minimum>0.4</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x1A</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x12</midino>
-        <threshold>0.6</threshold>
+        <minimum>0.6</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x11</midino>
-        <threshold>0.7</threshold>
+        <minimum>0.7</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x10</midino>
-        <threshold>0.8</threshold>
+        <minimum>0.8</minimum>
       </output>
     </outputs>
   </controller>
