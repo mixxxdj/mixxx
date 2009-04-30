@@ -35,7 +35,7 @@ script.absoluteSlider = function (group, key, value, low, high) {
     else engine.setValue(group, key, ((high-low)/127)*value);
 }
 
-// Used to control a non-linear setting (like EQs: 0..1..4) from an absolute control (0..127)
+// Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control (0..127)
 script.absoluteNonLin = function (value, low, mid, high) {
     if (value<=64) return value/(64/(mid-low));
     else return 1+(value-63)/(64/(high-mid));
