@@ -437,6 +437,12 @@ elif platform == 'bsd':
 	print 'Warning: Mixxx has no support for BSD midi (yet).' #uuuuhhhh not a very good solution
 
 #Set up the library path on Windows:
+if platform == 'win64':
+	env.Append(CPPPATH=['#/../mixxx-win64lib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
+	env.Append(LIBPATH='#/../mixxx-win64lib')
+	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
+#'/subsystem:windows',
+
 if platform == 'win32':
 	env.Append(CPPPATH=['#/../mixxx-winlib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='#/../mixxx-winlib')
@@ -754,10 +760,11 @@ sources += Split("""engine/enginebufferscalest.cpp
                     #lib/soundtouch-1.4.1/BPMDetect.cpp
                     """)
 
-if platform == 'win32':
-	sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_win.cpp""")
-else:
-	sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
+if not platform == 'win64':
+	if platform == 'win32':
+		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_win.cpp""")
+	else:
+		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
 
 
 #KissFFT
@@ -1031,6 +1038,9 @@ if int(flags_optimize):
 			print "Optimizations... enabled"
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
+			# For x64
+			env.Append(CXXFLAGS = '/Ox /favor:AMD64 /MP')
+			env.Append(LINKFLAGS = '/MACHINE:X64')
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '
@@ -1236,7 +1246,10 @@ icon_files = Glob('#res/images/mixxx-icon.png')
 image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
-dll_files = Glob('#/../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+if platform == 'win64':
+	dll_files = Glob('#/../mixxx-win64lib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+else:
+	dll_files = Glob('#/../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
