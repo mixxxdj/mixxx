@@ -147,7 +147,7 @@ Import('platform')
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
 		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		 'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
+		 'win32': 'C:\\qt\\4.3.0'}[platform]	#ditto
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
@@ -1026,21 +1026,21 @@ else:
 	print "MIDI Scripting... disabled"
 
 #Optimization
-if platform == 'win32':
-	flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on win32
+if platform == 'win32' or platform == 'win64':
+	flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on windows
 else:
 	flags_optimize = getFlags(env, 'optimize', 1)   #Default to on for Linux/OS X
 if int(flags_optimize):
-	if platform == 'win32':
+	if platform == 'win32' or platform == 'win64':
 		if int(flags_msvcdebug):
 			print "Optimizations... DISABLED DUE TO DEBUG"
 		else:
 			print "Optimizations... enabled"
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
-			# For x64
-			env.Append(CXXFLAGS = '/Ox /favor:AMD64 /MP')
-			env.Append(LINKFLAGS = '/MACHINE:X64')
+			if platform == 'win64':
+				env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+				env.Append(LINKFLAGS = '/MACHINE:X64')
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '
