@@ -5,13 +5,17 @@ HerculesRMX.leds = {
 // "[Channel2] cue blink":0x54,
 "[Channel1] cue":0x0C,
 "[Channel2] cue":0x24
-
+// "[Channel1] play":0x0B,
+// "[Channel2] play":0x23
  };
+HerculesRMX.debug = false; 
 HerculesRMX.ledOn = 0x7F;
 HerculesRMX.ledOff = 0x00;
 HerculesRMX.scratchMode = false;
 HerculesRMX.playlistJogScrollMode = false;
-
+HerculesRMX.decayLast = new Date().getTime();
+HerculesRMX.decayInterval = 300;
+HerculesRMX.decayRate = 0.5;
 HerculesRMX.cueButton = { "[Channel1]": false, "[Channel2]": false};
 HerculesRMX.cuePlay = { "[Channel1]": false, "[Channel2]": false};
 // TODO HerculesRMX controls should be divided into channels...  then signals should directed 
@@ -19,14 +23,50 @@ HerculesRMX.cuePlay = { "[Channel1]": false, "[Channel2]": false};
 
 HerculesRMX.init = function (id) {    // called when the MIDI device is opened & set up
     // TODO clear all lights
-    print ("HerculesRMX id: \""+HerculesRMX.id+"\" initialized.");
+    print ("HerculesRMX id: \""+id+"\" initialized.");
+
+    for ( var LED in HerculesRMX.leds ) {
+        print("Clear LED: " + LED);
+        midi.sendShortMsg(0xB0, HerculesRMX.leds[LED], HerculesRMX.ledOff);  // Scratch button
+    }
+
     engine.connectControl("[Channel1]","playposition","HerculesRMX.wheelDecay");
     engine.connectControl("[Channel2]","playposition","HerculesRMX.wheelDecay");
 }
 
-HerculesRMX.wheelDecay = function (value) {
-}
+HerculesRMX.wheelDecay = function (value) {    
+    if (engine.getValue("[Channel1]","play") + engine.getValue("[Channel2]","play") == 0) { return; }
+    currentDate = new Date().getTime();
+    // print(currentDate);
+    if (currentDate > HerculesRMX.decayLast + HerculesRMX.decayInterval) {
+       HerculesRMX.decayLast = currentDate;
 
+       if (HerculesRMX.debug) print(" new playposition: " + value + " decayLast: "+ HerculesRMX.decayLast);
+       if (HerculesRMX.scratchMode) { // do some scratching
+          if (HerculesRMX.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch") + " deck2: "+ engine.getValue("[Channel2]","scratch"));
+          // print("do scratching " + jogValue);
+          // engine.setValue(channel,"scratch", jogValue); // /64);
+          jog1 = engine.getValue("[Channel1]","scratch"); 
+	  if (jog1 != 0) {
+	     if (Math.abs(jog1) > HerculesRMX.decayRate) {  
+                engine.setValue("[Channel1]","scratch", (jog1 * HerculesRMX.decayRate).toFixed(2));
+             } else {
+                engine.setValue("[Channel1]","scratch", 0);
+             }
+          }
+       } else { // do pitch adjustment
+          if (HerculesRMX.debug) print("Wheel deck1: " + engine.getValue("[Channel1]","wheel") + " deck2: "+ engine.getValue("[Channel2]","wheel"));
+          jog1 = engine.getValue("[Channel1]","wheel"); 
+	  if (jog1 != 0) {
+	     if (Math.abs(jog1) > HerculesRMX.decayRate) {  
+                engine.setValue("[Channel1]","wheel", (jog1 * HerculesRMX.decayRate).toFixed(2));
+             } else {
+                engine.setValue("[Channel1]","wheel", 0);
+             }
+          }
+       }
+    }
+}
 
 HerculesRMX.shutdown = function(id) {
 }
@@ -55,7 +95,7 @@ HerculesRMX.getChannel = function (control){
 HerculesRMX.toggle_scratch_mode = function (channel, control, value, status) {
     if (value > 0) {
 	HerculesRMX.scratchMode = !HerculesRMX.scratchMode;
-        midi.sendShortMsg(0xB0, HerculesRMX.leds["scratch"] , (HerculesRMX.scratchMode ? 0x7F : 0x0));  // Scratch button
+        midi.sendShortMsg(0xB0, HerculesRMX.leds["scratch"] , (HerculesRMX.scratchMode ? HerculesRMX.ledOn : HerculesRMX.ledOff));  // Scratch button
     }
 }
 
@@ -89,18 +129,19 @@ HerculesRMX.jog_wheel = function (channel, control, value, status) {
 //  7F > 40: CCW Slow > Fast - 127 > 64 
 //  01 > 3F: CW Slow > Fast - 0 > 63
    channel = HerculesRMX.getChannel(control);
-   print ("Wheel");
-   script.debug(channel, control, value, status);
+//   print ("Wheel");
+//   script.debug(channel, control, value, status);
 
-   jogValue = value >=0x7F ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
+   jogValue = value >=0x40 ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
    if (HerculesRMX.playlistJogScrollMode) { // zip through library quickly
         engine.setValue("[Playlist]","SelectTrackKnob", jogValue);
    } else if (HerculesRMX.scratchMode) { // do some scratching
-       // print("do scratching " + jogValue);
-       engine.setValue(channel,"scratch", jogValue); // /64);
+       if (HerculesRMX.debug) print("do scratching value:" + value + " jogValue: " + jogValue );
+       // engine.setValue(channel,"scratch", engine.getValue(channel,"scratch") + (jogValue/64));
+       engine.setValue(channel,"scratch", (engine.getValue(channel,"scratch") + (jogValue/64)).toFixed(2));
    } else { // do pitch adjustment
-       // print("do pitching adjust " + jogValue);
-       engine.setValue(channel,"wheel", jogValue); // /32);
+       // if (HerculesRMX.debug) print("do pitching adjust " + jogValue);
+       engine.setValue(channel,"wheel", (engine.getValue(channel,"wheel") + (jogValue/5)).toFixed(2));
    }
 }
 
@@ -114,7 +155,7 @@ HerculesRMX.cue = function (channel, control, value, status) {
       engine.setValue(channel,"cue_default",1);
       midi.sendShortMsg(0xB0, HerculesRMX.leds[channel + " cue"], HerculesRMX.ledOn);
    } else { // Release
-      print("R. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
+     if (HerculesRMX.debug) print("R. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
 
      if (HerculesRMX.cuePlay[channel]) {
 //       engine.setValue(channel,"cue_default",0);
@@ -137,13 +178,13 @@ HerculesRMX.play = function (channel, control, value, status) {
         midi.sendShortMsg(0xB0, HerculesRMX.leds[channel + " cue"], HerculesRMX.ledOff);     
         playposition = engine.getValue(channel,"playposition");
         engine.setValue(channel,"play",0);
-        print("1. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
+        if (HerculesRMX.debug) print("1. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
         engine.setValue(channel,"cue_default",0);
-        print("2. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
+        if (HerculesRMX.debug) print("2. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
         engine.setValue(channel,"playposition", playposition);
-        print("3. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
+        if (HerculesRMX.debug) print("3. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
         engine.setValue(channel,"play",1);
-        print("4. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
+        if (HerculesRMX.debug) print("4. Play: " + engine.getValue(channel,"play") + " PlayPosition: " + engine.getValue(channel,"playposition") + " cue_default: "+ engine.getValue(channel,"cue_default"));
 	return;
       } else {
         engine.setValue(channel,"play", !engine.getValue(channel,"play"));
