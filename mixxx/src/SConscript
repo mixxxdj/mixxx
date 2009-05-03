@@ -141,13 +141,17 @@ def getFlags(env, argflag, default=0):
 
 Import('platform')
 
+if 'win' in platform:
+	Import('machine')	#CPU Architecture for optimizing x64 builds
+
 #Figure out what the QT path is
 
 
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
 		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		 'win32': 'C:\\qt\\4.3.0'}[platform]	#ditto
+		 'win32': 'C:\\qt\\4.3.0',
+		 'win64': 'C:\\qt\\4.3.0'}[platform]	 #ditto
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
@@ -172,12 +176,11 @@ if platform in ('linux', 'bsd'):
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 elif platform == 'osx':
 	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['#build/', '#/build/osx/'], ENV = os.environ)
-elif platform == 'win32':
+elif 'win' in platform:
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['#build/'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
-
 
 env['MIXXX_VERSION'] = getMixxxVersion() #should this be in the env?
 
@@ -217,7 +220,7 @@ opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 opts.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 opts.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
 opts.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
-if not platform == 'win32':
+if not 'win' in platform:
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
 	opts.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
@@ -420,14 +423,14 @@ sources = Split("""
 #Compile platform specific hardware support
 #if platform == 'linux':
 #	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
-#elif platform == 'win32':
+#elif 'win' in platform:
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
 #Compile platform specific MIDI support
 if platform == 'linux':
 	sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
 	env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
-elif platform == 'win32':
+elif 'win' in platform:
 	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
 	env.Append(CXXFLAGS = '-D__WINMIDI__')
 elif platform == 'osx':
@@ -443,7 +446,7 @@ if platform == 'win64':
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 #'/subsystem:windows',
 
-if platform == 'win32':
+if 'win' in platform:
 	env.Append(CPPPATH=['#/../mixxx-winlib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='#/../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
@@ -644,7 +647,7 @@ if platform in ('linux', 'bsd'):
         _mixxx_files = [('SETTINGS_PATH','.mixxx/'), ('BPMSCHEME_FILE','mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 elif platform == 'osx': #right now this is the same as linux and bsd, but these files should really go in ~/Library/Applicationsomething like the rest of OS X apps do
         _mixxx_files = [('SETTINGS_PATH','.mixxx/'), ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
-elif platform == 'win32':
+elif 'win' in platform:
         _mixxx_files = [('SETTINGS_PATH','Local Settings/Application Data/Mixxx/'), ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 _mixxx_files = [(k, r'\"' + v + r'\"') for k,v in _mixxx_files] #escape the filepaths, so that they wind up as C-strings to the C-compiler (the \s are so the shell doesn't eat the ")
 env.Append(CPPDEFINES=_mixxx_files)
@@ -661,10 +664,14 @@ if platform == 'linux':
 	env.Append(CPPDEFINES='__LINUX__')
 elif platform == 'bsd':
 	env.Append(CPPDEFINES='__BSD__')
-elif platform == 'win32':
-	env.Append(CPPDEFINES='__WIN32__')
+elif 'win' in platform:
+	env.Append(CPPDEFINES='__WINDOWS__')
 	env.Append(CPPDEFINES='UNICODE')	# Need this on Windows until we have UTF16 support in Mixxx
-	
+	if platform == 'win32':	
+		env.Append(CPPDEFINES='__WIN32__')
+	if platform == 'win64':	
+		env.Append(CPPDEFINES='__WIN64__')
+
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')
 
@@ -682,7 +689,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'sndfile') #? we shouldn't have to do this...
 	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
 
-if platform == 'win32':
+if 'win' in platform:
 	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
 	env.Append(LIBS = 'QtXml4');
 	env.Append(LIBS = 'QtGui4');
@@ -700,7 +707,7 @@ if platform == 'win32':
 
 env.Append(CPPDEFINES = ['QT3_SUPPORT', 'QT3_SUPPORT_WARNINGS', 'QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
-if platform in ('linux','bsd','win32'):
+if platform in ('linux','bsd') or 'win' in platform:
 	env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
@@ -708,10 +715,10 @@ if platform in ('linux','bsd','win32'):
 			    '$QTDIR/include/QtOpenGL',
 			    '$QTDIR/include/Qt'])
 
-if platform == 'win32':
+if 'win' in platform:
 	env.Append(CPPPATH=["$VCINSTALLDIR/include/atl", "C:/Program Files/Microsoft Platform SDK/Include/atl"])
 
-if platform == 'win32':
+if 'win' in platform:
 	env.Append(CPPDEFINES = 'WIN32') #for soundtouch
 else:
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g """)) # omghax
@@ -739,7 +746,7 @@ env.Uic4('dlgmidilearning.ui')
 env.Qrc('#res/mixxx.qrc')
 sources += Split(""" #res/qrc_mixxx.cc """)
 
-if platform == 'win32':
+if 'win' in platform:
 	env.RES('mixxx.rc')
 	sources += Split(""" mixxx.res """)
 
@@ -761,7 +768,7 @@ sources += Split("""engine/enginebufferscalest.cpp
                     """)
 
 if not platform == 'win64':
-	if platform == 'win32':
+	if 'win' in platform:
 		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_win.cpp""")
 	else:
 		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
@@ -781,7 +788,7 @@ env.Append(CPPPATH='#lib/fidlib-0.9.9/')
 sources += Split("""#lib/fidlib-0.9.9/fidlib.c """)
 
 ## Platform-specific compile/link flags needed for fidlib
-if platform == 'win32':
+if 'win' in platform:
 	env.Append(CPPDEFINES = 'T_MSVC')
 	#env.Append(CXXFLAGS = '-DT_MSVC') #is this still needed?
 	env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib', '/nodefaultlib:LIBCMTD.lib'])
@@ -820,7 +827,7 @@ flags_ipod = getFlags(env, 'ipod', 0)
 if int(flags_ipod):
 	env.Append(CPPDEFINES = '__IPOD__')
 
-	if platform == 'win32':
+	if 'win' in platform:
 		env.Append(LIBS = 'gpod');
 		# You must check v-this-v directory out from http://publicsvn.songbirdnest.com/vendor-binaries/trunk/windows-i686-msvc8/libgpod/
 		env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib')
@@ -891,7 +898,7 @@ if int(flags_vinylcontrol):
 	env.Append(CPPDEFINES = '__VINYLCONTROL__')
 	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp vinylcontrolsignalwidget.cpp engine/enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='#lib/xwax')
-	if platform == 'win32':
+	if 'win' in platform:
 		sources += Split("""#lib/xwax/timecoder_win32.c """)
 	else:
 		sources += Split("""#lib/xwax/timecoder.c """)
@@ -903,7 +910,7 @@ else:
 	print "Vinyl Control... disabled"
 
 flags_msvcdebug = getFlags(env, 'msvcdebug', 0)
-if platform == 'win32':
+if 'win' in platform:
 	if int(flags_msvcdebug):
 		env.Append(CCFLAGS = '/MDd') # required for sndfile w/ flac support on windows
 		env.Append(LINKFLAGS = '/DEBUG')
@@ -977,7 +984,7 @@ else:
 # Script Studio
 flags_script = getFlags(env, 'script', 0)
 if int(flags_script):
-	if platform == 'win32':
+	if 'win' in platform:
 		env.Append(LIBS = 'QtScript4')
 	elif platform == 'linux':
 		env.Append(LIBS = 'QtScript')
@@ -1007,7 +1014,7 @@ else:
 # MIDI Scripting
 flags_midiscript = getFlags(env, 'midiscript', 0)
 if int(flags_midiscript):
-	if platform == 'win32':
+	if 'win' in platform:
 		env.Append(LIBS = 'QtScript4')
 	elif platform == 'linux':
 		env.Append(LIBS = 'QtScript')
@@ -1026,20 +1033,20 @@ else:
 	print "MIDI Scripting... disabled"
 
 #Optimization
-if platform == 'win32' or platform == 'win64':
-	flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on windows
+if 'win' in platform:
+	flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on win32
 else:
 	flags_optimize = getFlags(env, 'optimize', 1)   #Default to on for Linux/OS X
 if int(flags_optimize):
-	if platform == 'win32' or platform == 'win64':
+	if 'win' in platform:
 		if int(flags_msvcdebug):
 			print "Optimizations... DISABLED DUE TO DEBUG"
 		else:
 			print "Optimizations... enabled"
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
-			if platform == 'win64':
-				env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+			if platform == 'win64':	# In addition
+				env.Append(CXXFLAGS = '/Ox /favor:'+ machine +' /MP')
 				env.Append(LINKFLAGS = '/MACHINE:X64')
 	else:
 		print "Optimizations... enabled"
@@ -1076,12 +1083,12 @@ if int(flags_optimize) > 1:
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
     
 # Enable SoundTouch Windows 3dNow optimizations if we're on AMD
-if platform == 'win32' and int(flags_optimize) in (5,6,7):
+if 'win' in platform and int(flags_optimize) in (5,6,7):
     sources += Split("""#lib/soundtouch-1.4.1/3dnow_win.cpp""")
 
 
 # Profiling and Optimization
-if not platform == 'win32':
+if not 'win' in platform:
 	flags_gprof = getFlags(env, 'gprof', 0)
 	if int(flags_gprof):
 		env.Append(CCFLAGS = '-pg')
@@ -1123,13 +1130,13 @@ else:
 
 
 #Case Metrics
-if platform == 'win32' or platform == 'linux':
+if 'win' in platform or platform == 'linux':
 	flags_cmetrics = getFlags(env, 'cmetrics', 1)
 else:
 	flags_cmetrics = getFlags(env, 'cmetrics', 0) # Off on OS X for now...
 if int(flags_cmetrics):
 	env.Append(CPPDEFINES = '__C_METRICS__')
-	if platform == 'win32':
+	if 'win' in platform:
 		env.Append(LIBS = 'cmetrics')
 	else:
 		client = 'MIXXX'
@@ -1162,7 +1169,7 @@ opts.Save(cachefile, env)
 
 #Tell SCons to build Mixxx
 #=========================
-if platform == 'win32':
+if 'win' in platform:
 	mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
 	mixxx_bin = env.Program('mixxx', sources)
@@ -1337,7 +1344,7 @@ if platform == 'osx':
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 		
-if platform == 'win32':
+if 'win' in platform:
 	skins = env.Install("#dist/skins", skin_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
 	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)

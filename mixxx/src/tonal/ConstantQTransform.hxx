@@ -25,7 +25,7 @@
 #include <vector>
 #include <cmath>
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #define _USE_MATH_DEFINES
 #include <math.h>
 #endif

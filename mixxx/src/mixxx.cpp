@@ -420,7 +420,7 @@ MixxxApp::~MixxxApp()
     delete config;
 
 // Why is this here? The (MSVC 2008) linker even complains about it.
-//#ifdef __WIN32__
+//#ifdef __WINDOWS__
 //    _exit(0);
 //#endif
 }

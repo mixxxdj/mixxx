@@ -64,7 +64,7 @@ void DlgPrefPlaylist::slotDetectiPodMountPoint()
 {
 QString iPodMountPoint;
 QFileInfoList mountpoints;
-#ifdef __WIN32__
+#ifdef __WINDOWS__
   // Windows iPod Detection
   mountpoints = QDir::drives();
 #elif __LINUX__

@@ -17,7 +17,7 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceffmpeg.h"
-//#ifdef __WIN32__
+//#ifdef __WINDOWS__
 //#include <io.h>
 //#include <fcntl.h>
 //#endif

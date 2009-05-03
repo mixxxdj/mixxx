@@ -325,7 +325,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
         else
             setHostAPI(MIXXX_PORTAUDIO_ALSA_STRING);
 #endif
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 //TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
 //        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
 //            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);

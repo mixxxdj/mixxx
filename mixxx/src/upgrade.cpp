@@ -33,7 +33,7 @@ ConfigObject<ConfigValue>* versionUpgrade() {
 */
 
     QString oldLocation = QDir::homePath().append("/%1");
-#ifdef __WIN32__
+#ifdef __WINDOWS__
     QFileInfo* pre170Config = new QFileInfo(oldLocation.arg("mixxx.cfg"));
 #else
     QFileInfo* pre170Config = new QFileInfo(oldLocation.arg(".mixxx.cfg"));
@@ -52,7 +52,7 @@ ConfigObject<ConfigValue>* versionUpgrade() {
         newLocation.append("%1");
         QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
         QString oldFilePath = oldLocation.arg("mixxxtrack.xml");
 #else
         QString oldFilePath = oldLocation.arg(".mixxxtrack.xml");
@@ -70,7 +70,7 @@ ConfigObject<ConfigValue>* versionUpgrade() {
         }
         delete oldFile;
         
-#ifdef __WIN32__
+#ifdef __WINDOWS__
         oldFilePath = oldLocation.arg("mixxxbpmschemes.xml");
 #else
         oldFilePath = oldLocation.arg(".mixxxbpmscheme.xml");
@@ -86,7 +86,7 @@ ConfigObject<ConfigValue>* versionUpgrade() {
             }
         }
         delete oldFile;
-#ifdef __WIN32__
+#ifdef __WINDOWS__
         oldFilePath = oldLocation.arg("MixxxMIDIBindings.xml");
 #else
         oldFilePath = oldLocation.arg(".MixxxMIDIBindings.xml");
@@ -107,7 +107,7 @@ ConfigObject<ConfigValue>* versionUpgrade() {
 
         QFile::remove(oldLocation.arg(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
         oldFilePath = oldLocation.arg("mixxx.cfg");
 #else
         oldFilePath = oldLocation.arg(".mixxx.cfg");

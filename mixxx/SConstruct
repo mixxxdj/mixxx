@@ -2,9 +2,18 @@
 
 import sys, os
 
-if os.name == 'nt': #XXX why doesn't tis use sys.platform?
-   print 'Platform: Windows'
-   platform = 'win32'
+if os.name == 'nt':
+	import platform
+	machine = platform.machine()
+	Export('machine')	#So architecture-specific optimizations can be made in the SConscript
+	if machine == 'x86':
+		print 'Platform: Windows 32-bit'
+		platform = 'win32'
+	else:		#This is only correctly detected if you're running a 64-bit version of Python, otherwise it'll see an x86 system
+		print 'Platform: Windows 64-bit'
+		print 'CPU architecture: ' + machine
+		platform = 'win64'
+		#Need to add a means of using a command line option to force a 32-bit build here
 elif sys.platform == 'linux2':
      print 'Platform: Linux'
      platform = 'linux'
