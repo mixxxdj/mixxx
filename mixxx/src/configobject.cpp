@@ -24,7 +24,7 @@
 #include "cmetrics.h"
 #endif
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #include <windows.h>
 #endif
 
@@ -314,7 +314,7 @@ QString ConfigObject<ValueType>::getConfigPath()
         qConfigPath = UNIX_SHARE_PATH;
     }
 #endif
-#ifdef __WIN32__
+#ifdef __WINDOWS__
     // On Windows, set the config dir relative to the application dir
 //    char* str = new char[200];
 //    GetModuleFileName(NULL, str, 200);

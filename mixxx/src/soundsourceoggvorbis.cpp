@@ -17,7 +17,7 @@
 #include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
 #include <QtDebug>
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -50,7 +50,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
     if(ov_fopen(qBAFilename.data(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
@@ -208,7 +208,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     vorbis_comment *comment = NULL;
     OggVorbis_File vf;
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
     if (ov_fopen(qBAFilename.data(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";        
         return ERR;

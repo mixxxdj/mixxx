@@ -10,7 +10,7 @@
 //
 //
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #include <windows.h> // for Sleep()  on Windows
 #endif
 

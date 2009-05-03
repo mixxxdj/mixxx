@@ -36,7 +36,7 @@
 // #ifdef __LINUX__
 // #include "powermatelinux.h"
 // #endif
-// #ifdef __WIN32__
+// #ifdef __WINDOWS__
 // #include "powermatewin.h"
 // #endif
 // #include "hercules.h"

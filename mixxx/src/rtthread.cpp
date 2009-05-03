@@ -16,7 +16,7 @@
 
 #include "rtthread.h"
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
   #include "windows.h"
 #endif
 #include <string.h>
@@ -79,7 +79,7 @@ void rtThread()
         qDebug() << "Not possible to give audio producer thread high prioriy.";
 #endif
 //#XXX FIXME: write versions of this function appropriate for BSD and OS X
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 //    HANDLE h = GetCurrentThread();
 //    SetThreadPriority(h,THREAD_PRIORITY_BELOW_NORMAL);
 #endif
