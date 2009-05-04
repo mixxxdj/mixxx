@@ -90,7 +90,7 @@ void MidiObjectWin::devOpen(QString device)
     }
 
     HMIDIIN handle;
-    MMRESULT res = midiInOpen(&handle, i, (DWORD)MidiInProc, (DWORD) this, CALLBACK_FUNCTION);
+    MMRESULT res = midiInOpen(&handle, i, (DWORD_PTR)MidiInProc, (DWORD_PTR) this, CALLBACK_FUNCTION);
     if (res == MMSYSERR_NOERROR) {
         // Should follow selected device !!!!
         openDevices.append(device);
