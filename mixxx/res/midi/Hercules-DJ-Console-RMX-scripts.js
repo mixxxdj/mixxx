@@ -15,7 +15,7 @@ HerculesRMX.scratchMode = false;
 HerculesRMX.playlistJogScrollMode = false;
 HerculesRMX.decayLast = new Date().getTime();
 HerculesRMX.decayInterval = 300;
-HerculesRMX.decayRate = 0.5;
+HerculesRMX.decayRate = 1.5;
 HerculesRMX.cueButton = { "[Channel1]": false, "[Channel2]": false};
 HerculesRMX.cuePlay = { "[Channel1]": false, "[Channel2]": false};
 // TODO HerculesRMX controls should be divided into channels...  then signals should directed 
@@ -35,7 +35,9 @@ HerculesRMX.init = function (id) {    // called when the MIDI device is opened &
 }
 
 HerculesRMX.wheelDecay = function (value) {    
-    if (engine.getValue("[Channel1]","play") + engine.getValue("[Channel2]","play") == 0) { return; }
+//    if (engine.getValue("[Channel1]","play") + engine.getValue("[Channel2]","play") == 0) { return; }
+    engine.getValue("[Channel1]","play")
+
     currentDate = new Date().getTime();
     // print(currentDate);
     if (currentDate > HerculesRMX.decayLast + HerculesRMX.decayInterval) {
@@ -43,25 +45,47 @@ HerculesRMX.wheelDecay = function (value) {
 
        if (HerculesRMX.debug) print(" new playposition: " + value + " decayLast: "+ HerculesRMX.decayLast);
        if (HerculesRMX.scratchMode) { // do some scratching
-          if (HerculesRMX.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch") + " deck2: "+ engine.getValue("[Channel2]","scratch"));
-          // print("do scratching " + jogValue);
-          // engine.setValue(channel,"scratch", jogValue); // /64);
-          jog1 = engine.getValue("[Channel1]","scratch"); 
-	  if (jog1 != 0) {
-	     if (Math.abs(jog1) > HerculesRMX.decayRate) {  
-                engine.setValue("[Channel1]","scratch", (jog1 * HerculesRMX.decayRate).toFixed(2));
+         if (HerculesRMX.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch") + " deck2: "+ engine.getValue("[Channel2]","scratch"));
+         // print("do scratching " + jogValue);
+         // engine.setValue(channel,"scratch", jogValue); // /64);
+
+  	 jog1DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
+         jog1 = engine.getValue("[Channel1]","scratch"); 
+	 if (jog1 != 0) {
+         if (Math.abs(jog1) > jog1DecayRate) {  
+               engine.setValue("[Channel1]","scratch", (jog1 / jog1DecayRate).toFixed(2));
+            } else {
+               engine.setValue("[Channel1]","scratch", 0);
+            }
+         }
+	 jog2DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
+         jog2 = engine.getValue("[Channel2]","scratch"); 
+	  if (jog2 != 0) {
+	     if (Math.abs(jog2) > jog2DecayRate) {  
+                engine.setValue("[Channel2]","scratch", (jog2 / jog2DecayRate).toFixed(2));
              } else {
-                engine.setValue("[Channel1]","scratch", 0);
+                engine.setValue("[Channel2]","scratch", 0);
              }
           }
-       } else { // do pitch adjustment
-          if (HerculesRMX.debug) print("Wheel deck1: " + engine.getValue("[Channel1]","wheel") + " deck2: "+ engine.getValue("[Channel2]","wheel"));
-          jog1 = engine.getValue("[Channel1]","wheel"); 
-	  if (jog1 != 0) {
-	     if (Math.abs(jog1) > HerculesRMX.decayRate) {  
-                engine.setValue("[Channel1]","wheel", (jog1 * HerculesRMX.decayRate).toFixed(2));
+
+      } else { // do pitch adjustment
+         if (HerculesRMX.debug) print("Wheel deck1: " + engine.getValue("[Channel1]","wheel") + " deck2: "+ engine.getValue("[Channel2]","wheel"));
+  	 jog1DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
+         jog1 = engine.getValue("[Channel1]","wheel"); 
+	 if (jog1 != 0) {
+         if (Math.abs(jog1) > jog1DecayRate) {  
+               engine.setValue("[Channel1]","wheel", (jog1 / jog1DecayRate).toFixed(2));
+            } else {
+               engine.setValue("[Channel1]","wheel", 0);
+            }
+         }
+	 jog2DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
+         jog2 = engine.getValue("[Channel2]","wheel"); 
+	  if (jog2 != 0) {
+	     if (Math.abs(jog2) > jog2DecayRate) {  
+                engine.setValue("[Channel2]","wheel", (jog2 / jog2DecayRate).toFixed(2));
              } else {
-                engine.setValue("[Channel1]","wheel", 0);
+                engine.setValue("[Channel2]","wheel", 0);
              }
           }
        }
@@ -140,8 +164,10 @@ HerculesRMX.jog_wheel = function (channel, control, value, status) {
        // engine.setValue(channel,"scratch", engine.getValue(channel,"scratch") + (jogValue/64));
        engine.setValue(channel,"scratch", (engine.getValue(channel,"scratch") + (jogValue/64)).toFixed(2));
    } else { // do pitch adjustment
-       // if (HerculesRMX.debug) print("do pitching adjust " + jogValue);
-       engine.setValue(channel,"wheel", (engine.getValue(channel,"wheel") + (jogValue/5)).toFixed(2));
+       newValue = (engine.getValue(channel,"wheel") + (jogValue/5)).toFixed(2);
+       if (newValue > 127) { newValue = 127; }
+       if (HerculesRMX.debug) print("do pitching adjust " + jogValue + " new Value: " + newValue);
+       engine.setValue(channel,"wheel", newValue);
    }
 }
 
