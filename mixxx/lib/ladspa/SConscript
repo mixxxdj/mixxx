@@ -9,7 +9,7 @@ env.Append(CPPPATH=['#lib/ladspa']) #XXX should be '.' but SCons isn't smart eno
 
 nodes = []
 
-if not platform == 'win32': #These plugins will never compile on win32. - Albert
+if 'win' not in platform: #These plugins will never compile on windows. - Albert
 	nodes += SConscript(['caps/SConscript'], exports='env')
 	nodes += SConscript(['cmt/SConscript'], exports='env')
 

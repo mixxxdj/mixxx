@@ -3,7 +3,7 @@
 
 // Merges between win32 and linux version by Tue
 
-#ifdef __WIN32__
+#ifdef WIN32
 
 #pragma warning(disable: 4305)
 

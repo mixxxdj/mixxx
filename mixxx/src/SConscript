@@ -668,9 +668,10 @@ elif 'win' in platform:
 	env.Append(CPPDEFINES='__WINDOWS__')
 	env.Append(CPPDEFINES='UNICODE')	# Need this on Windows until we have UTF16 support in Mixxx
 	if platform == 'win32':	
-		env.Append(CPPDEFINES='__WIN32__')
+		env.Append(CPPDEFINES='WIN32')
 	if platform == 'win64':	
-		env.Append(CPPDEFINES='__WIN64__')
+		env.Append(CPPDEFINES='WIN64')
+		env.Append(CPPDEFINES=machine)
 
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')
@@ -767,11 +768,13 @@ sources += Split("""engine/enginebufferscalest.cpp
                     #lib/soundtouch-1.4.1/BPMDetect.cpp
                     """)
 
-if not platform == 'win64':
-	if 'win' in platform:
+if 'win' in platform:
+	if platform == 'win32':
 		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_win.cpp""")
-	else:
-		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
+	if platform == 'win64':
+		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x64_win.cpp""")
+else:
+	sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
 
 
 #KissFFT
@@ -1039,6 +1042,8 @@ else:
 	flags_optimize = getFlags(env, 'optimize', 1)   #Default to on for Linux/OS X
 if int(flags_optimize):
 	if 'win' in platform:
+		if platform == 'win64':
+			env.Append(LINKFLAGS = '/MACHINE:X64')
 		if int(flags_msvcdebug):
 			print "Optimizations... DISABLED DUE TO DEBUG"
 		else:
@@ -1047,7 +1052,6 @@ if int(flags_optimize):
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
 				env.Append(CXXFLAGS = '/Ox /favor:'+ machine +' /MP')
-				env.Append(LINKFLAGS = '/MACHINE:X64')
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '
