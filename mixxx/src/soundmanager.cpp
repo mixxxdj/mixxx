@@ -176,7 +176,7 @@ QList<QString> SoundManager::getHostAPIList()
     for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++)
     {
         const PaHostApiInfo *api = Pa_GetHostApiInfo(i);
-        apiList.push_back(api->name);
+        if (QString(api->name) != "skeleton implementation") apiList.push_back(api->name);
     }
 
     return apiList;
