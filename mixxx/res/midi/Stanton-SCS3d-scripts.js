@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.00             */
+/*      Stanton SCS.3d MIDI controller script v1.00a            */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.0                                 */
@@ -318,7 +318,11 @@ StantonSCS3d.playButton = function (channel, control, value, status) {
     if ((status & 0xF0) != 0x80) {    // If button down
         StantonSCS3d.modifier["play"]=1;
         if (StantonSCS3d.modifier["cue"]==1) engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
-        else engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !engine.getValue("[Channel"+StantonSCS3d.deck+"]","play"));
+        else {
+            var currentlyPlaying = engine.getValue("[Channel"+StantonSCS3d.deck+"]","play");
+            if (currentlyPlaying) engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !currentlyPlaying);
+        }
         return;
     }
     StantonSCS3d.modifier["play"]=0;
@@ -960,7 +964,7 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if ((status & 0xF0) == 0x90) {    // If button down
         switch (currentMode) {
-            case "vinyl":
+//             case "vinyl":
             case "vinyl2":
                 scratch.enable(StantonSCS3d.deck);
                 break;
@@ -968,7 +972,7 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
     }
     else {  // If button up
         switch (currentMode) {
-            case "vinyl":
+            case "vinyl": break;
             case "vinyl2":
                 scratch.disable(StantonSCS3d.deck);
                 break;

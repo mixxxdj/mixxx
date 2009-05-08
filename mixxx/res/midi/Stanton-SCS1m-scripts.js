@@ -135,10 +135,10 @@ StantonSCS1m.setupButton = function (channel, control, value, status) {
     if ((status & 0XF0) == 0x90) StantonSCS1m.inSetup = !StantonSCS1m.inSetup;
     else if (StantonSCS1m.inSetup) {  // If entering setup, change the LCD back light colors to green
         var No = 0x90 + channel;
-        midi.sendShortMsg(No,49,96);    // to green
-        midi.sendShortMsg(No,49+3,96);  // to green
-        midi.sendShortMsg(No,49+1,96);  // to red
-        midi.sendShortMsg(No,49+2,96);  // to red
+        midi.sendShortMsg(No,49,96);
+        midi.sendShortMsg(No,49+3,96);
+        midi.sendShortMsg(No,49+1,96);
+        midi.sendShortMsg(No,49+2,96);
     }
     else {
         StantonSCS1m.initLCDs(); // If out of setup & the button was released, restore the displays 
