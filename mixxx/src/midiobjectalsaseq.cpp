@@ -373,7 +373,13 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     
     // Decide which event type to choose
     switch ((byte1 & 0xf0)) {
-    case 0x90:  // Note on/off
+    case 0x80:  // Note off
+        snd_seq_ev_set_noteoff(&ev, byte1&0xf, byte2, byte3);
+        //snd_seq_event_output_direct(m_handle, &ev);
+        snd_seq_event_output(m_handle, &ev);
+        snd_seq_drain_output(m_handle);
+        break;
+    case 0x90:  // Note on
         snd_seq_ev_set_noteon(&ev, byte1&0xf, byte2, byte3);
         //snd_seq_event_output_direct(m_handle, &ev);
         snd_seq_event_output(m_handle, &ev);
@@ -386,7 +392,7 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
         snd_seq_drain_output(m_handle);
         break;
     default:
-        qDebug() << "Unhandled event type in sendShortMsg";
+        qDebug() << "Unhandled status byte in sendShortMsg:" << byte1;
         break;
     }
 }
