@@ -20,7 +20,7 @@
 #include <QtCore>
 #include <QtGui>
 #include "vinylcontrolsignalwidget.h"
-
+#include <math.h>
 
 VinylControlSignalWidget::VinylControlSignalWidget() : QGraphicsView()
 {
