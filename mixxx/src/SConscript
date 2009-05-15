@@ -1051,7 +1051,7 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
-				env.Append(CXXFLAGS = '/Ox /favor:'+ machine +' /MP')
+				env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '
@@ -1401,7 +1401,7 @@ def BuildRelease(target, source, env):
 
 	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
 		print "Now building installer..."
-		os.system('"c:/Program Files/NSIS/makensis.exe" Mixxx.nsi')
+		os.system('c:/Progra~1/NSIS/makensis.exe /X"SetCompressor /FINAL /SOLID lzma" Mixxx.nsi')
 	else:
 		print "Aborted building installer"
 
