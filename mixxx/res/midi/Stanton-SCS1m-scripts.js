@@ -65,6 +65,10 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel1]","rate","StantonSCS1m.pitchDisplay1");
     engine.connectControl("[Channel2]","rate","StantonSCS1m.pitchDisplay2");
     
+        // Pitch display colors
+    engine.connectControl("[Channel1]","rateRange","StantonSCS1m.pitchColor1");
+    engine.connectControl("[Channel2]","rateRange","StantonSCS1m.pitchColor2");
+    
         // Virtual platter LEDs & time displays
     engine.connectControl("[Channel1]","playposition","StantonSCS1m.positionUpdates1");
     engine.connectControl("[Channel2]","playposition","StantonSCS1m.positionUpdates2");
@@ -80,6 +84,26 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     StantonSCS1m.browseButton(StantonSCS1m.channel, 0x20, 0x7F, 0x90+StantonSCS1m.channel); // Force into browse mode
 
     midi.sendSysexMsg(StantonSCS1m.sysex.concat([StantonSCS1m.channel, 34, 32, 0xF7]),8); // Get position of all pots
+    
+    // Button LEDs
+    if (StantonSCS1m.faderStart) midi.sendShortMsg(No,8,1);
+    
+    var LEDInit = [ ["Channels","rate_temp_up"],
+                    ["Channels","rate_temp_down"],
+                    ["Channels","pfl"],
+                    ["Channels","beatsync"],
+                    ["Channels","play"],
+                    ["Channels","cue_default"]     ];
+    
+    for (i=0; i<LEDInit.length; i++) {
+        var group = LEDInit[i][0];
+        var name = LEDInit[i][1];
+        if (group=="Channels") {
+            engine.trigger("[Channel1]",name);
+            engine.trigger("[Channel2]",name);
+            }
+        else engine.trigger(group,name);
+    }
 
     print ("StantonSCS1m: \""+StantonSCS1m.id+"\" on MIDI channel "+(StantonSCS1m.channel+1)+" initialized.");
 }
@@ -103,10 +127,10 @@ StantonSCS1m.initLCDs = function () {
     var No = 0x90 + StantonSCS1m.channel;
     var message = "Pitch 1";
     midi.sendSysexMsg(StantonSCS1m.sysex.concat([StantonSCS1m.channel, 1],message.toInt(), 0xF7),7+message.length);   // Set LCD1
-    midi.sendShortMsg(No,49,96);   // to green
+    StantonSCS1m.pitchColor1(engine.getValue("[Channel1]","rateRange"));
     message = " Pitch 2";
     midi.sendSysexMsg(StantonSCS1m.sysex.concat([StantonSCS1m.channel, 4],message.toInt(), 0xF7),7+message.length);   // Set LCD4
-    midi.sendShortMsg(No,49+3,96);   // to green
+    StantonSCS1m.pitchColor2(engine.getValue("[Channel2]","rateRange"));
     message = " Deck 1";
     midi.sendSysexMsg(StantonSCS1m.sysex.concat([StantonSCS1m.channel, 2],message.toInt(), 0xF7),7+message.length);   // Set LCD2
     midi.sendShortMsg(No,49+1,32);   // to red
@@ -187,6 +211,32 @@ StantonSCS1m.encoderJog = function (value,deck) {
     if (StantonSCS1m.checkInSetup()) return;
     engine.setValue("[Channel"+deck+"]","jog",(value-64)*4);
 }
+
+StantonSCS1m.pitchRangeKnob1 = function (channel, control, value, status) {
+    StantonSCS1m.pitchRangeKnob(value,1);
+}
+
+StantonSCS1m.pitchRangeKnob2 = function (channel, control, value, status) {
+    StantonSCS1m.pitchRangeKnob(value,2);
+}
+
+StantonSCS1m.pitchRangeKnob = function (value,deck) {
+    if (StantonSCS1m.checkInSetup()) return;
+    var currentValue = engine.getValue("[Channel"+deck+"]","rateRange");
+    var newValue = currentValue+(value-64)*.01;
+    if (newValue<=0.01) newValue=0.01;
+    if (newValue>1) newValue=1;
+    engine.setValue("[Channel"+deck+"]","rateRange",newValue);
+    engine.trigger("[Channel"+deck+"]","rate");
+}
+
+StantonSCS1m.faderStartToggle = function (channel, control, value, status) {
+    StantonSCS1m.faderStart = !StantonSCS1m.faderStart;
+    var No = 0x90 + StantonSCS1m.channel;
+    if (StantonSCS1m.faderStart) midi.sendShortMsg(No,8,1);
+    else midi.sendShortMsg(No,8,0);
+}
+
 
 // ----------   Slot functions  ----------
 
@@ -278,6 +328,24 @@ StantonSCS1m.pitchDisplay = function (value,deck) {
     midi.sendSysexMsg(StantonSCS1m.sysex.concat([StantonSCS1m.channel, LCD],message.toInt(), 0xF7),7+message.length);   // Set LCD with pitch value
 }
 
+StantonSCS1m.pitchColor1 = function (value) {
+    StantonSCS1m.pitchColor(value,1);
+}
+
+StantonSCS1m.pitchColor2 = function (value) {
+    StantonSCS1m.pitchColor(value,2);
+}
+
+StantonSCS1m.pitchColor = function (value, deck) {
+    var No = 0x90 + StantonSCS1m.channel;
+    var offset=0;
+    if (deck==2) offset=3;
+
+    if (value<=0.25) midi.sendShortMsg(No,49+offset,96);
+    else if (value<=0.5) midi.sendShortMsg(No,49+offset,127);
+    else if (value>0.5) midi.sendShortMsg(No,49+offset,32);
+}
+
 // Virtual platter rings & time displays
 
 StantonSCS1m.durationChange1 = function (value) {
@@ -348,7 +416,5 @@ StantonSCS1m.positionUpdates = function (value,deck) {
 
 /* TODO:
 - Channel fader start
-- Cross- (& channel?) fader start assign buttons
-- Jog wheel scratching, control button
-- Pitch range change
+- Jog wheel scratching, control button: whichever channel has most of the crossfader.
 */

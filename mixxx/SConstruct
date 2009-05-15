@@ -13,7 +13,15 @@ if os.name == 'nt':
 		print 'Platform: Windows 64-bit'
 		print 'CPU architecture: ' + machine
 		platform = 'win64'
-		#Need to add a means of using a command line option to force a 32-bit build here
+	
+	# Allow to override auto-detection (environment variables must already be set appropriately with SETENV.CMD /xp /x86 or /x64)
+	if ARGUMENTS.get('win64'):
+		print 'FORCING 64-BIT BUILD'
+		platform = 'win64'
+	if ARGUMENTS.get('win32'):
+		print 'FORCING 32-BIT BUILD'
+		platform = 'win32'
+	
 elif sys.platform == 'linux2':
      print 'Platform: Linux'
      platform = 'linux'

@@ -542,6 +542,33 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                <control>   <!-- Pitch range knob Ch1 -->
+                    <status>0xB0</status>
+                    <midino>0x7F</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.pitchRangeKnob1</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>   <!-- Pitch range knob Ch2 -->
+                    <status>0xB0</status>
+                    <midino>0x7C</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.pitchRangeKnob2</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>   <!-- Fader start toggle -->
+                    <status>0x90</status>
+                    <midino>0x08</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.faderStartToggle</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
             </controls>
             <outputs>
                 <output>    <!--    Play Ch1    -->
@@ -568,7 +595,7 @@
                     <status>0x90</status>
                     <midino>0x2D</midino>
                     <on>0x40</on>
-                    <off>0x20</off>
+                    <off>0x00</off>
                     <minimum>0.1</minimum>
                 </output>
                 <output>    <!--    Cue Ch2    -->
@@ -577,7 +604,7 @@
                     <status>0x90</status>
                     <midino>0x2E</midino>
                     <on>0x40</on>
-                    <off>0x20</off>
+                    <off>0x00</off>
                     <minimum>0.1</minimum>
                 </output>
                 <output>    <!--    Temp pitch up Ch1    -->
@@ -604,7 +631,7 @@
                     <status>0x90</status>
                     <midino>0x2C</midino>
                     <on>0x40</on>
-                    <off>0x20</off>
+                    <off>0x00</off>
                     <minimum>0.1</minimum>
                 </output>
                 <output>    <!--    Temp pitch down Ch2    -->
@@ -613,7 +640,7 @@
                     <status>0x90</status>
                     <midino>0x2F</midino>
                     <on>0x40</on>
-                    <off>0x20</off>
+                    <off>0x00</off>
                     <minimum>0.1</minimum>
                 </output>
                 <output>    <!--    Headphone cue Ch1    -->
@@ -650,6 +677,24 @@
                     <midino>0x04</midino>
                     <on>0x7F</on>
                     <off>0x40</off>
+                    <minimum>0.1</minimum>
+                </output>
+                <output>    <!--    Flanger Ch1    -->
+                    <group>[Channel1]</group>
+                    <key>flanger</key>
+                    <status>0xB0</status>
+                    <midino>0x7F</midino>
+                    <on>0x15</on>
+                    <off>0x00</off>
+                    <minimum>0.1</minimum>
+                </output>
+                <output>    <!--    Flanger Ch2    -->
+                    <group>[Channel2]</group>
+                    <key>flanger</key>
+                    <status>0xB0</status>
+                    <midino>0x7C</midino>
+                    <on>0x27</on>
+                    <off>0x00</off>
                     <minimum>0.1</minimum>
                 </output>
             </outputs>
