@@ -230,12 +230,16 @@ double ControlObject::GetMidiValue()
 
 void ControlObject::setValueFromThread(double dValue)
 {
+    if (m_dValue == dValue) return;
+
     m_dValue = dValue;
     emit(valueChanged(m_dValue));
 }
 
 void ControlObject::set(double dValue)
 {
+    if (m_dValue == dValue) return;
+
     setValueFromEngine(dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
@@ -244,6 +248,8 @@ void ControlObject::set(double dValue)
 
 void ControlObject::add(double dValue)
 {
+    if (!dValue) return;
+
     setValueFromEngine(m_dValue+dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
@@ -252,6 +258,8 @@ void ControlObject::add(double dValue)
 
 void ControlObject::sub(double dValue)
 {
+    if (!dValue) return;
+
     setValueFromEngine(m_dValue-dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);

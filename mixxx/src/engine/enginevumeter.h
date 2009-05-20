@@ -24,8 +24,8 @@
 
 //SMOOTHING FACTORS
 //Must be from 0-1 the lower the factor, the more smoothing that is applied
-#define ATTACK_SMOOTHING .85
-#define DECAY_SMOOTHING .4//.16//.4
+#define ATTACK_SMOOTHING 1. // .85
+#define DECAY_SMOOTHING .1  //.16//.4
 
 class ControlPotmeter;
 
@@ -43,7 +43,9 @@ private:
     FLOAT_TYPE m_fRMSvolumeSumL;
     FLOAT_TYPE m_fRMSvolumeR;
     FLOAT_TYPE m_fRMSvolumeSumR;
-    FLOAT_TYPE m_iSamplesCalculated;
+    int m_iSamplesCalculated;
+
+    void doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume);
 };
 
 #endif
