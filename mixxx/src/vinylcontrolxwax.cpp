@@ -41,22 +41,24 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     char * timecode  =  NULL;
     bShouldClose    = false;
     m_bCDMode               = false;
-
+    
+    //this is all needed because libxwax indexes by C-strings
+    //so we go and pass libxwax a pointer into our local stack...
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
-        timecode = "serato_2a";
+        timecode = (char*)"serato_2a";
     else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB)
-        timecode = "serato_2b";
+        timecode = (char*)"serato_2b";
     else if (strVinylType == MIXXX_VINYL_SERATOCD) {
-        timecode = "serato_cd";
+        timecode = (char*)"serato_cd";
         m_bCDMode = true;
     }
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
-        timecode = "traktor_a";
+        timecode = (char*)"traktor_a";
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
-        timecode = "traktor_b";
+        timecode = (char*)"traktor_b";
     else {
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
-        timecode = "serato_2a";
+        timecode = (char*)"serato_2a";
     }
 
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;

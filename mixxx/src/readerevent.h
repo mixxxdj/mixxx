@@ -19,14 +19,13 @@
 #define READEREVENT_H
 
 #include <qevent.h>
-//Added by qt3to4:
-#include <QCustomEvent>
+#include "mixxxevent.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class ReaderEvent : public QCustomEvent
+class ReaderEvent : public QEvent
 {
 public:
     ReaderEvent(int bpos, int blen, long int fspos, int bspos, int flen, int srate);

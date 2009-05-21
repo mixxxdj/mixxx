@@ -35,7 +35,7 @@
 class WWidget : public QWidget  {
    Q_OBJECT
 public:
-    WWidget(QWidget *parent=0, const char *name=0, Qt::WFlags flags=0);
+    WWidget(QWidget *parent=0, Qt::WFlags flags=0);
     ~WWidget();
     /** Sets pointer to keyboard configuration */
     static void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);

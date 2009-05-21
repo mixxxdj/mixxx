@@ -28,7 +28,7 @@
 #define DEFAULT_HOLDTIME 300
 
 
-WVuMeter::WVuMeter(QWidget * parent, const char * name) : WWidget(parent,name)
+WVuMeter::WVuMeter(QWidget * parent) : WWidget(parent)
 {
     m_pPixmapBack = 0;
     m_pPixmapVu = 0;

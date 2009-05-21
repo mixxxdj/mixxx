@@ -4,14 +4,6 @@
 #include <QAbstractTableModel>
 #include <qcolor.h>
 
-const int COL_SCORE = -1;
-const int COL_ARTIST = 0;
-const int COL_TITLE = 1;
-const int COL_TYPE  = 2;
-const int COL_LENGTH = 3;
-const int COL_BITRATE = 4;
-const int COL_BPM = 5;
-const int COL_COMMENT = 6;
 
 class TrackPlaylist;
 class TrackCollection;
@@ -37,6 +29,20 @@ public:
 	bool insertRow(int row, TrackInfoObject *m_pTrackInfo, const QModelIndex &parent = QModelIndex());
 	TrackPlaylist *m_pTrackPlaylist;
 	TrackCollection *m_pTrackCollection;
+
+    typedef enum {
+        DISABLED = -1,
+        SCORE = DISABLED,
+        // Note: all disabled items must be set to disabled and must appear before the first non-disabled item.
+        ARTIST  ,
+        TITLE   ,
+        TYPE    ,
+        LENGTH  ,
+        BITRATE ,
+        BPM     ,
+        COMMENT ,
+        COLUMN_COUNT // Note: COLUMN_COUNT must remain the last entry.
+    } TABLE_COLUMNS;
 
  protected:
         Qt::DropActions supportedDropActions() const;

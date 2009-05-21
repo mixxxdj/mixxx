@@ -25,12 +25,12 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-WPushButton::WPushButton(QWidget * parent, const char * name ) : WWidget(parent,name)
+WPushButton::WPushButton(QWidget * parent) : WWidget(parent)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
     setStates(0);
-    setBackgroundMode(Qt::NoBackground);
+    //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03 
 }
 
 WPushButton::~WPushButton()

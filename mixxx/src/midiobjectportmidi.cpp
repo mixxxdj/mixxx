@@ -49,7 +49,9 @@ void MidiObjectPortMidi::updateDeviceList()
 MidiObjectPortMidi::~MidiObjectPortMidi()
 {
 	//TODO: Close the device?
-	//requestStop = true;
+        requestStop = true;
+        wait();
+        shutdown(); // From parent MidiObject
 }
 
 void MidiObjectPortMidi::devOpen(QString device)

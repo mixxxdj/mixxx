@@ -13,6 +13,21 @@ class QColor;
 class WIPodTracksModel : public WTrackTableModel
 {
     Q_OBJECT
+
+    typedef enum {
+        DISABLED = -1,
+        SCORE = DISABLED,
+        // Note: all disabled items must be set to disabled and must appear before the first non-disabled item.
+        ARTIST  ,
+        TITLE   ,
+        TYPE    ,
+        LENGTH  ,
+        BITRATE ,
+        BPM     ,
+        COMMENT ,
+        COLUMN_COUNT // Note: COLUMN_COUNT must remain the last entry.
+    } TABLE_COLUMNS;
+
 public:
     WIPodTracksModel(QObject *parent=0);
     ~WIPodTracksModel();

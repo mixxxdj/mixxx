@@ -26,7 +26,7 @@
 
 class WSlider : public WKnob  {
 public: 
-    WSlider(QWidget *parent=0, const char *name=0);
+    WSlider(QWidget *parent=0);
     ~WSlider();
 };
 

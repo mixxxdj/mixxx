@@ -7,7 +7,7 @@
 MidiInputMappingTableModel::MidiInputMappingTableModel(MidiMapping* mapping) :
     QAbstractTableModel(),
     m_pMapping(NULL)
-                                                                               
+
 {
     setMapping(mapping); //Save the mapping
 }
@@ -43,7 +43,7 @@ QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) co
      if (role == Qt::DisplayRole || role == Qt::EditRole) {
          //This might be super slow, but that's the price of using a map/hash table.
          //Also note that QMaps are always sorted by key, whereas QHashes are not sorted and rearrange themselves.
-         
+
          MidiMessage command = m_pMapping->getInputMidiMessage(index.row());
          MixxxControl control = m_pMapping->getInputMixxxControl(command);
 
@@ -77,7 +77,7 @@ QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) co
                  return QVariant();
          }
      }
-     
+
      return QVariant();
 }
 
@@ -95,37 +95,37 @@ bool MidiInputMappingTableModel::setData(const QModelIndex &index, const QVarian
     if (index.isValid() && role == Qt::EditRole) {
         MidiMessage command = m_pMapping->getInputMidiMessage(index.row());
         MixxxControl control = m_pMapping->getInputMixxxControl(command);
-        
+
         switch (index.column())
             {
                 case MIDIINPUTTABLEINDEX_MIDITYPE:
                     command.setMidiType((MidiType)value.toInt());
                     break;
-                    
+
                 case MIDIINPUTTABLEINDEX_MIDINO:
                     command.setMidiNo(value.toInt());
                     break;
-                    
+
                 case MIDIINPUTTABLEINDEX_MIDICHANNEL:
                     command.setMidiChannel(value.toInt());
                     break;
-                    
+
                 case MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP:
                     control.setControlObjectGroup(value.toString());
                     break;
-                    
+
                 case MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE:
                     control.setControlObjectValue(value.toString());
                     break;
-                    
+
                 case MIDIINPUTTABLEINDEX_MIDIOPTION:
                     control.setMidiOption((MidiOption)value.toInt());
                     break;
             };
-        
+
         //Insert the updated control into the map.
         m_pMapping->setInputMidiMapping(command, control);
-        
+
         emit dataChanged(index, index);
         return true;
     }
@@ -184,13 +184,13 @@ QVariant MidiInputMappingTableModel::headerData(int section, Qt::Orientation ori
     return QVariant();
 }
 
-void MidiInputMappingTableModel::removeRow(int row, const QModelIndex& parent)
+bool MidiInputMappingTableModel::removeRow(int row, const QModelIndex& parent)
 {
     beginRemoveRows(parent, row, row);
-
     m_pMapping->clearInputMidiMapping(row);
-    
     endRemoveRows();
+
+    return true;
 }
 
 bool MidiInputMappingTableModel::removeRows(int row, int count, const QModelIndex& parent)

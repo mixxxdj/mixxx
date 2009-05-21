@@ -84,9 +84,17 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
         return;
     }
 
-    filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
-    if (filelength == OV_EINVAL) {
-        //The file is not seekable. Not sure if any action is needed.
+    ogg_int64_t ret = ov_pcm_total(&vf, -1);
+    if(ret >= 0)
+    {
+      filelength = ret * 2; //*2? why?
+    }
+    else //error
+    {
+      if (ret == OV_EINVAL) {
+          //The file is not seekable. Not sure if any action is needed.
+      }
+
     }
 
 }
@@ -227,13 +235,18 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
         ov_clear(&vf);
         return ERR;
     }
-
-    if (QString(vorbis_comment_query(comment, "title", 0)).length()!=0)
-        Track->setTitle(vorbis_comment_query(comment, "title", 0));
-    if (QString(vorbis_comment_query(comment, "artist", 0)).length()!=0)
-        Track->setArtist(vorbis_comment_query(comment, "artist", 0));
-    if (QString(vorbis_comment_query(comment, "TBPM", 0)).length()!=0) {
-        float bpm = str2bpm(vorbis_comment_query(comment, "TBPM", 0));
+    
+    //precache
+    const char* title_p = vorbis_comment_query(comment, (char*)"title", 0); //the char* cast is to shut up the compiler; libvorbis should take `const char*` here but I don't expect us to get them to change that -kousu 2009/02
+    const char* artist_p = vorbis_comment_query(comment, (char*)"artist", 0);
+    const char* bpm_p = vorbis_comment_query(comment, (char*)"TBPM", 0);
+    
+    if(title_p)
+      Track->setTitle(title_p);
+    if(artist_p)
+      Track->setArtist(artist_p);
+    if (bpm_p) {
+        float bpm = str2bpm(bpm_p);
         if(bpm > 0.0f) {
             Track->setBpm(bpm);
             Track->setBpmConfirm(true);

@@ -38,7 +38,7 @@ class WVisualSimple : public WWidget
 {
     Q_OBJECT
 public:
-    WVisualSimple(const char* group, QWidget *pParent=0, const char *pName=0);
+    WVisualSimple(const char* group, QWidget *parent=0);
     ~WVisualSimple();
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);

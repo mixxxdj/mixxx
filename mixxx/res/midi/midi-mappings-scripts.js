@@ -25,7 +25,7 @@ function scratch() {}
 // See full details here: http://mixxx.org/wiki/doku.php/midi_scripting#available_common_functions
 
 // ----------   Variables    ----------
-scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":0.0, "initialSlider":0, "scratch":0.0 };
+scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":0.0, "initialControlValue":0, "scratch":0.0, "prevControlValue":0, "wrapCount":0 };
 
 // ----------   Functions   ----------
 
@@ -43,7 +43,6 @@ scratch.enable = function (currentDeck) {
     scratch.variables["initialTrackPos"] = scratch.variables["trackPos"] = engine.getValue("[Channel"+currentDeck+"]","playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     
     scratch.variables["time"] = new Date()/1000;   // Current time in seconds
-    scratch.variables["scratch"] = 0.0; // Clear any scratching modifier
     
     // Stop the deck motion. This means we have to pause it if playing
     if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
@@ -67,7 +66,9 @@ scratch.disable = function (currentDeck) {
     // Reset the triggers
     scratch.variables["trackPos"] = 0.0;
     scratch.variables["initialTrackPos"] = 0.0;
-    scratch.variables["initialSlider"] = 0;
+    scratch.variables["initialControlValue"] = 0;
+    scratch.variables["prevControlValue"] = 0;  // for wheel
+    scratch.variables["wrapCount"] = 0; // for wheel
     scratch.variables["time"] = 0.0;
     scratch.variables["scratch"] = 0.0;
     print("MIDI Script: Scratch values CLEARED");
@@ -89,15 +90,50 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // Skip if the track start position hasn't been set yet
     if (scratch.variables["initialTrackPos"] == 0.0) return;
     // If the slider start value hasn't been set yet, set it
-    if (scratch.variables["initialSlider"] == 0) {
-        scratch.variables["initialSlider"] = sliderValue;
-        print("Initial slider="+scratch.variables["initialSlider"]);
+    if (scratch.variables["initialControlValue"] == 0) {
+        scratch.variables["initialControlValue"] = sliderValue;
+        print("Initial slider="+scratch.variables["initialControlValue"]);
         }
+    return scratch.filter(currentDeck, sliderValue, revtime, alpha, beta);
+}
 
+/* -------- ------------------------------------------------------
+    scratch.wheel
+   Purpose: Uses an alpha-beta filter to make scratching with a
+            wheel (0..127 with wrap) sound good, called each time
+            there's a new wheel value
+   Input:   Currently-controlled Mixxx deck, value of the wheel,
+            revolution time of the imaginary record (typically 1.8s,
+            for a 12" disc @ 33+1/3 RPM,) alpha & beta coefficients
+   Output:  New value for the "scratch" control
+   -------- ------------------------------------------------------ */
+scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
+    // Skip if the track start position hasn't been set yet
+    if (scratch.variables["initialTrackPos"] == 0.0) return;
+    // If the wheel start value hasn't been set yet, set it
+    if (scratch.variables["initialControlValue"] == 0) {
+        scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
+        print("Initial wheel="+scratch.variables["initialControlValue"]);
+        }
+        
+    // Take wrap around into account
+    if (wheelValue>=0 && wheelValue<10 && scratch.variables["prevControlValue"]>117 && scratch.variables["prevControlValue"]<=127) scratch.variables["wrapCount"]+=1;
+    if (wheelValue>117 && wheelValue<=127 && scratch.variables["prevControlValue"]>=0 && scratch.variables["prevControlValue"]<10) scratch.variables["wrapCount"]-=1;
+    
+//     From radimark: change = (new - old + 192) % 128 - 64
+    
+    scratch.variables["prevControlValue"]=wheelValue;
+    wheelValue += scratch.variables["wrapCount"]*128;
+    
+    return scratch.filter(currentDeck, wheelValue, revtime, alpha, beta);
+}
+
+// The actual alpha-beta filter
+scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
     // ------------- Thanks to Radiomark (of Xwax) for the info for below ------------------------
     
     // ideal position = (initial_p + (y - x) / 128 * 1.8)
-    var ideal_p = scratch.variables["initialTrackPos"] + (sliderValue - scratch.variables["initialSlider"]) / 128 * revtime;
+    var ideal_p = scratch.variables["initialTrackPos"] + (controlValue - scratch.variables["initialControlValue"]) / 128 * revtime;
     
     var currentTrackPos = engine.getValue("[Channel"+currentDeck+"]","playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     var newTime = new Date()/1000;
@@ -117,7 +153,7 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // scratch.variables["scratch"] += rx * (beta / dt);   // This doesn't work
     scratch.variables["scratch"] = rx * beta;
     
-    print("MIDI Script: Ideal position="+ideal_p+", Predicted position="+predicted_p + ", New scratch val=" + scratch.variables["scratch"]);
+//     print("MIDI Script: Ideal position="+ideal_p+", Predicted position="+predicted_p + ", New scratch val=" + scratch.variables["scratch"]);
     
 //     var newPos = scratch.variables["trackPos"]/engine.getValue("[Channel"+currentDeck+"]","duration");
 //     engine.setValue("[Channel"+currentDeck+"]","playposition",newPos);

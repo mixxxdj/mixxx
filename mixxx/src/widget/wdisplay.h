@@ -31,7 +31,7 @@
 class WDisplay : public WWidget  {
    Q_OBJECT
 public: 
-    WDisplay(QWidget *parent=0, const char *name=0);
+    WDisplay(QWidget *parent=0);
     ~WDisplay();
     void setup(QDomNode node);
     void setPositions(int iNoPos);

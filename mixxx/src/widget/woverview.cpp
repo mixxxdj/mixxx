@@ -22,7 +22,7 @@
 #include "mathstuff.h"
 #include <qapplication.h>
 
-WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, pName)
+WOverview::WOverview(QWidget * parent) : WWidget(parent)
 {
     m_pWaveformSummary = 0;
     m_pSegmentation = 0;
@@ -134,7 +134,7 @@ void WOverview::redrawPixmap() {
         return;
 
     // Erase background
-    m_pScreenBuffer->fill(this->backgroundColor());
+    m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
     
     QPainter paint(m_pScreenBuffer);
 

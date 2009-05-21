@@ -17,15 +17,15 @@ void ScriptStudio::showStudio() {
 	this->setVisible(true);
 }
 
-#define MIXXXMACRODIR ".mixxxmacros"
+#define MIXXXMACRODIR "mixxxmacros"
 
 void ScriptStudio::fillTree() {
-	QString path = QDir::home().absoluteFilePath(MIXXXMACRODIR);
+        QString path = QDir::home().QDir::homePath().append("/").append(SETTINGS_PATH).append(MIXXXMACRODIR);
 	QDir topdir(path);
 	if (!topdir.exists()) {
-		QDir::home().mkdir(MIXXXMACRODIR);
+                QDir().mkdir(path);
 	}
-	        
+
 	QDirModel *model = new QDirModel();
     treeView->setModel(model);
 	treeView->setRootIndex(model->index(path));
@@ -36,7 +36,7 @@ void ScriptStudio::runPressed() {
 }
 
 void ScriptStudio::importScript() {
-    QString filename = QFileDialog::getOpenFileName(this, "Select a macro...", "", MIXXX_SCRIPT_NAMEFILTER);
+    QString filename = QFileDialog::getOpenFileName(this, "Select a macro...", QDir::home().QDir::homePath().append("/").append(SETTINGS_PATH).append(MIXXXMACRODIR), MIXXX_SCRIPT_NAMEFILTER);
     QFile file(filename);
     if (file.open(QFile::ReadWrite))
     {

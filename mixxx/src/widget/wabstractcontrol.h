@@ -22,7 +22,7 @@
 class WAbstractControl : public WWidget {
    Q_OBJECT
 public:
-    WAbstractControl(QWidget *parent=0, const char *name=0, float defaultValue=0.);
+    WAbstractControl(QWidget *parent=0, float defaultValue=0.);
     ~WAbstractControl();
     /** Sets the default value to be used when resetting the value */
     void setDefaultValue(float value);

@@ -1349,7 +1349,7 @@ struct Spec {
 };
 
 FidFilter *
-fid_design(char *spec, double rate, double freq0, double freq1, int f_adj, char **descp) {
+fid_design(const char *spec, double rate, double freq0, double freq1, int f_adj, char **descp) {
    FidFilter *rv;
    Spec sp;
    double f0, f1;
@@ -1608,7 +1608,7 @@ expand_spec(char *buf, char *bufend, char *str) {
 //
 
 double 
-fid_design_coef(double *coef, int n_coef, char *spec, double rate, 
+fid_design_coef(double *coef, int n_coef, const char *spec, double rate, 
 		double freq0, double freq1, int adj) {
    FidFilter *filt= fid_design(spec, rate, freq0, freq1, adj, 0);
    FidFilter *ff= filt;
@@ -1935,7 +1935,7 @@ parse_spec(Spec *sp) {
 //
 
 void 
-fid_rewrite_spec(char *spec, double freq0, double freq1, int adj,
+fid_rewrite_spec(const char *spec, double freq0, double freq1, int adj,
 		 char **spec1p, 
 		 char **spec2p, double *freq0p, double *freq1p, int *adjp) {
    Spec sp;

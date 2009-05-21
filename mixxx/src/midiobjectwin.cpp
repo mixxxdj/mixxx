@@ -15,15 +15,15 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "midiobjectwin.h"
-#include "midiledhandler.h"
 #include <QtCore>
 #include <QtDebug>
+#include "midiledhandler.h"
+#include "midiobjectwin.h"
+
 
 MidiObjectWin::MidiObjectWin() : MidiObject()
 {
-	updateDeviceList();
-
+    updateDeviceList();
     /*
        // Don't open the device yet, it gets opened via dlgprefmidi soon
        // This is how the ALSA one does it anyway... -Adam
@@ -38,23 +38,28 @@ MidiObjectWin::MidiObjectWin() : MidiObject()
 
 MidiObjectWin::~MidiObjectWin()
 {
+    shutdown(); // From parent MidiObject
     // Close devices and delete buffer
 //    while (openDevices.count() > 0) devClose(openDevices.takeFirst());
+    while (openDevices.count() > 0) {
+        openDevices.removeFirst();
+        devClose();
+    }
 }
 
 void MidiObjectWin::updateDeviceList() {
 
     // Fill in list of available devices
-	devices.clear();
+    devices.clear();
 
     MIDIINCAPS info;
     for (unsigned int i=0; i<midiInGetNumDevs(); i++)
     {
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
-		QString device_name= QString::fromUcs2((const ushort*)info.szPname);
+        QString device_name= QString::fromUcs2((const ushort*)info.szPname);
         qDebug() << "Midi Device '" << device_name << "' found.";
 
-		if (!device_name.isEmpty())
+        if (!device_name.isEmpty())
             devices.append(device_name);
         else
             devices.append(QString("Device %1").arg(i));
@@ -62,9 +67,9 @@ void MidiObjectWin::updateDeviceList() {
 }
 
 void MidiObjectWin::devOpen(QString device)
-{	
+{    
     if (openDevices.contains(device)) 
-    	return;
+        return;
     
     // Select device. If not found, select default (first in list).
     unsigned int i;
@@ -72,8 +77,8 @@ void MidiObjectWin::devOpen(QString device)
     for (i=0; i<midiInGetNumDevs(); i++)
     {
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
-		QString device_name = QString::fromUcs2((const ushort*)info.szPname);
-		if ((!device_name.isEmpty() && (device_name == device))|| (QString("Device %1").arg(i) == device))
+        QString device_name = QString::fromUcs2((const ushort*)info.szPname);
+        if ((!device_name.isEmpty() && (device_name == device))|| (QString("Device %1").arg(i) == device))
         {
             qDebug() << "Using Midi Device #" << i << ": " << device_name;
             break;
@@ -94,7 +99,7 @@ void MidiObjectWin::devOpen(QString device)
         return;
     }
 
-	m_deviceName = device;
+    m_deviceName = device;
 
     // Add device and handle to list
     handles.insert(device, handle);
@@ -106,6 +111,8 @@ void MidiObjectWin::devOpen(QString device)
     res = midiInStart(handle);
     if (res != MMSYSERR_NOERROR)
         qDebug() << "Error starting midi.";
+
+    MidiObject::run();  // Load the initial MIDI preset
 }
 
 void MidiObjectWin::devClose()
@@ -128,7 +135,7 @@ void MidiObjectWin::run()
     QThread::currentThread()->setObjectName(QString("MidiObjectWin %1").arg(++id));
     
 //    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+
     MidiObject::run();
 }
 
@@ -147,9 +154,9 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
     MidiObjectWin * midi = (MidiObjectWin *)dwInstance;
     switch (wMsg) {
     case MIM_DATA:
-        qDebug() << "MIM_DATA";
+//         qDebug() << "MIM_DATA";
         midi->handleMidi(dwParam1 & 0x000000ff, (dwParam1 & 0x0000ff00) >> 8, (dwParam1 & 0x00ff0000) >> 16, midi->handles.key(hMidiIn));
-	qDebug() << "MIM_DATA done.";
+//     qDebug() << "MIM_DATA done.";
         break;
     case MIM_LONGDATA:
         qDebug() << "MIM_LONGDATA";
@@ -161,5 +168,25 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
 void MidiObjectWin::sendShortMsg(unsigned int word) {
     // This checks your compiler isn't assigning some wierd type hopefully
     DWORD raw = word;
-    midiOutShortMsg(outhandle, word);
+//     midiOutShortMsg(outhandle, word);
+    MMRESULT result;
+    if ((result = midiOutShortMsg(outhandle, word)) != MMSYSERR_NOERROR)
+        qDebug() << "MidiObjectWin::sendShortMsg midiOutShortMsg failed! " << result;
+}
+
+void MidiObjectWin::sendSysexMsg(unsigned char data[], unsigned int length)
+{
+    MIDIHDR header;
+    memset (&header, 0, sizeof(header));
+    
+    header.lpData = (LPSTR)data;
+    header.dwBufferLength = DWORD(length);
+    header.dwBytesRecorded = DWORD(length);
+    
+    MMRESULT result;
+    
+    midiOutPrepareHeader(outhandle, &header, sizeof(header));
+    if ((result = midiOutLongMsg(outhandle, &header, sizeof(header))) != MMSYSERR_NOERROR)
+        qDebug() << "MidiObjectWin::sendSysexMsg midiOutLongMsg failed! " << result;
+    midiOutUnprepareHeader(outhandle, &header, sizeof(header));
 }

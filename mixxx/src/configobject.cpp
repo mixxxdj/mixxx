@@ -14,7 +14,7 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-
+#include <qapplication.h>
 #include "configobject.h"
 #include <qdir.h>
 #include <QtDebug>
@@ -629,6 +629,9 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     QFile file(filename);
+    if (!QDir(QFileInfo(file).absolutePath()).exists()) {
+        QDir().mkpath(QFileInfo(file).absolutePath());
+    }
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         qDebug() << "Could not write file" << filename << ", don't worry.";
@@ -665,7 +668,16 @@ QString ConfigObject<ValueType>::getConfigPath()
     // On Windows it is always (and only) app dir.
     // On OS X it is the current directory and then the Resources/ dir in the app bundle
     //
-    QString qConfigPath;
+    QString qConfigPath; // TODO: this only changes once (on first load) during a run should make this a singleton.
+
+    // Try to read in the resource directory from the command line
+    QStringList commandLineArgs = QApplication::arguments();
+    int resourcePath = commandLineArgs.indexOf("--resourcePath");
+    if (resourcePath!=-1 && resourcePath + 1 < commandLineArgs.size()) {
+        qDebug() << "Setting qConfigPath from location in resourcePath commandline arg:" << commandLineArgs.at(resourcePath+1);
+        qConfigPath = commandLineArgs.at(resourcePath+1);
+    }
+    if (qConfigPath.isNull() || qConfigPath.isEmpty()) {
 #ifdef __UNIX__
     // On Linux, check if the path is stored in the configuration database.
     if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
@@ -678,13 +690,16 @@ QString ConfigObject<ValueType>::getConfigPath()
 #endif
 #ifdef __WIN32__
     // On Windows, set the config dir relative to the application dir
-//    char* str = new char[200];
-//    GetModuleFileName(NULL, str, 200);
-//    qConfigPath = QFileInfo(str).dirPath();
-      wchar_t str[MAX_PATH];
-      GetModuleFileName(0, str, MAX_PATH);
-      std::wstring path(str);
-      qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
+    #ifndef MSCVER // TODO: figure out why this code block is incompatiable with MSVC - maybe GetModuleFileName should be GetModuleFileNameW???
+        wchar_t str[MAX_PATH];        
+        GetModuleFileName(0, str, MAX_PATH);
+        std::wstring path(str);
+        qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
+    #else // MSVC
+        char* str = new char[200];
+        GetModuleFileName(NULL, str, 200);
+        qConfigPath = QFileInfo(str).dirPath();
+    #endif
 #endif
 #ifdef __APPLE__
     // Set the path relative to the bundle directory
@@ -693,6 +708,7 @@ QString ConfigObject<ValueType>::getConfigPath()
     qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
     qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
 #endif
+    }
     // If the directory does not end with a "/", add one
     if (!qConfigPath.endsWith("/"))
         qConfigPath.append("/");

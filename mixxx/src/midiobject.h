@@ -21,13 +21,13 @@
 #include <QtCore>
 #include "defs.h"
 #include "configobject.h"
+#include "midimessage.h"
 
 #ifdef __MIDISCRIPT__
 class MidiScriptEngine;     // Forward declaration
 #endif
 
 class MidiMapping;     // Forward declaration
-
 class ControlObject;
 class QWidget;
 class DlgPrefMidiBindings;
@@ -51,12 +51,14 @@ class MidiObject : public QThread
 
 public:
     MidiObject();
-    ~MidiObject();
+    virtual ~MidiObject();
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
-        virtual void updateDeviceList() {};
+    virtual void updateDeviceList() {};
     virtual void devClose() = 0;
+    /** Delete MIDIMapping & stop script engine */
+    void shutdown();
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
@@ -73,28 +75,21 @@ public:
     virtual void sendSysexMsg(unsigned char data[], unsigned int length);
     Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
 
-    // Rx/Tx Toggle Functions
-    bool getRxStatus(QString device);
-    bool getTxStatus(QString device);
-    void setRxStatus(QString device, bool status);
-    void setTxStatus(QString device, bool status);
-    bool getDebugStatus();
-    void enableDebug(DlgPrefMidiDevice *dlgDevice);
-    void disableDebug();
-
     bool getMidiLearnStatus();
-    void enableMidiLearn(DlgPrefMidiBindings *dlgBindings);
-    void disableMidiLearn();
-    
+
 #ifdef __MIDISCRIPT__
     MidiScriptEngine *getMidiScriptEngine();
 #endif
 
     MidiMapping *getMidiMapping();
 
-    signals:
-    void midiEvent(ConfigValueMidi *value, QString device);
-    void debugInfo(ConfigValueMidi *event, char value, QString device);
+public slots:
+    void enableMidiLearn();
+    void disableMidiLearn();
+
+signals:
+    void devicesChanged();
+    void midiEvent(MidiMessage message);
 
 protected:
 #ifdef __MIDISCRIPT__
@@ -103,13 +98,13 @@ protected:
     void stop();
     void receive(MidiCategory category, char channel, char control, char value, QString device);
 
-    bool requestStop, debug, midiLearn;
-    QHash<QString, bool> RxEnabled, TxEnabled;
+    bool requestStop;
+    bool m_bMidiLearn;
 
     int fd, count, size, no;
     Q3PtrVector<ControlObject> controlList;
-    
-    /** Name of the currently opened MIDI device. Ignore the other device strings. 
+
+    /** Name of the currently opened MIDI device. Ignore the other device strings.
         This is a temp hack to deal with the weak multiple device support in MidiObject-based
         classes. */
     QString m_deviceName;
@@ -120,17 +115,11 @@ protected:
     QStringList openDevices;
     /** List of available midi configurations. Initialized upon call to getConfigList() */
     QStringList configs;
-    /** Pointer to midi config object*/
 
-    // Pointer to device dialog (for debug output)
-    DlgPrefMidiDevice *dlgDevice;
-    // Pointer to bindings dialog (for MIDI learn)
-    DlgPrefMidiBindings *dlgBindings;
-    
 #ifdef __MIDISCRIPT__
     MidiScriptEngine *m_pScriptEngine;
 #endif
-    
+
     /** Device MIDI mapping object */
     MidiMapping *m_pMidiMapping;    //FIXME: should this be a pointer, won't compile without the *
 };

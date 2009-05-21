@@ -13,7 +13,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 
-WNumberRate::WNumberRate(const char * group, QWidget * parent, const char * name) : WNumber(parent, name)
+WNumberRate::WNumberRate(const char * group, QWidget * parent) : WNumber(parent)
 {
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));

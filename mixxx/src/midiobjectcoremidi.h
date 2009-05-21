@@ -43,6 +43,11 @@ public:
     void handleMidi(const MIDIPacketList *packets, QString device);
     void makeDeviceList();
     MIDIEndpointRef getEndpoint(QString device);
+
+    void notification_add_handler(const MIDIObjectAddRemoveNotification *message);
+    void notification_remove_handler(const MIDIObjectAddRemoveNotification *message);
+    void notification_property_handler(const MIDIObjectPropertyChangeNotification *message);
+    void notification_handler(const MIDINotification *message);
 protected:
     void run();
     void stop();

@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>Hercules DJ Control Steel.midi.xml</name>
+    <name>old/Hercules DJ Control Steel.midi.xml</name>
     <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Hercules DJ Control Steel.midi.xml for Mixxx 1.6.2</description>
+    <description>Auto-conversion of the file old/Hercules DJ Control Steel.midi.xml</description>
   </info>
-  <controller id="Hercules DJ Control Steel" port="Port">
+  <controller id="old/Hercules DJ Control Steel" port="Port">
     <controls>
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x39</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x08</midino>
         <options>
                                 
                         </options>
@@ -26,7 +26,7 @@
         <group>[Channel1]</group>
         <key>rate_temp_down</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x11</midino>
         <options>
                                 
                         </options>
@@ -35,7 +35,7 @@
         <group>[Channel2]</group>
         <key>rate_temp_up</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x15</midino>
         <options>
                                 
                         </options>
@@ -44,7 +44,7 @@
         <group>[Channel2]</group>
         <key>rate_temp_down</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x20</midino>
         <options>
                                 
                         </options>
@@ -53,19 +53,19 @@
         <group>[Master]</group>
         <key>balance</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x37</midino>
       </control>
       <control>
         <group>[Master]</group>
         <key>volume</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x38</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x01</midino>
         <options>
 				
 			</options>
@@ -74,7 +74,7 @@
         <group>[Channel1]</group>
         <key>reverse</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x04</midino>
         <options>
 				
 			</options>
@@ -83,7 +83,7 @@
         <group>[Channel2]</group>
         <key>flanger</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x19</midino>
         <options>
 				
 			</options>
@@ -92,7 +92,7 @@
         <group>[Channel2]</group>
         <key>reverse</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x1C</midino>
         <options>
 				
 			</options>
@@ -101,37 +101,37 @@
         <group>[Channel1]</group>
         <key>volume</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x32</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterHigh</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x34</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterMid</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x35</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLow</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x36</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x31</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>jog</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x2F</midino>
         <options>
 				
 			</options>
@@ -140,7 +140,7 @@
         <group>[Channel1]</group>
         <key>play</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x0B</midino>
         <options>
 				
 			</options>
@@ -149,7 +149,7 @@
         <group>[Channel1]</group>
         <key>cue_default</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x0C</midino>
         <options>
 				
 			</options>
@@ -158,7 +158,7 @@
         <group>[Channel1]</group>
         <key>pfl</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x14</midino>
         <options>
 				
 			</options>
@@ -167,49 +167,49 @@
         <group>[Channel1]</group>
         <key>PrevTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x09</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>NextTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x0A</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>volume</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x3C</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterHigh</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x3E</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterMid</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x3F</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLow</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x40</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x3B</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>jog</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x30</midino>
         <options>
 				
 			</options>
@@ -218,7 +218,7 @@
         <group>[Channel2]</group>
         <key>play</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x23</midino>
         <options>
 				
 			</options>
@@ -227,7 +227,7 @@
         <group>[Channel2]</group>
         <key>cue_default</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x24</midino>
         <options>
 				
 			</options>
@@ -236,7 +236,7 @@
         <group>[Channel2]</group>
         <key>pfl</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x18</midino>
         <options>
 				
 			</options>
@@ -245,19 +245,19 @@
         <group>[Channel2]</group>
         <key>PrevTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x21</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>NextTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x22</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterHighKill</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x0E</midino>
         <options>
 				
 			</options>
@@ -266,7 +266,7 @@
         <group>[Channel2]</group>
         <key>filterHighKill</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x26</midino>
         <options>
 				
 			</options>
@@ -275,7 +275,7 @@
         <group>[Channel1]</group>
         <key>filterMidKill</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x0F</midino>
         <options>
 				
 			</options>
@@ -284,7 +284,7 @@
         <group>[Channel2]</group>
         <key>filterMidKill</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x27</midino>
         <options>
 				
 			</options>
@@ -293,7 +293,7 @@
         <group>[Channel1]</group>
         <key>filterLowKill</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x10</midino>
         <options>
 				
 			</options>
@@ -302,7 +302,7 @@
         <group>[Channel2]</group>
         <key>filterLowKill</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x28</midino>
         <options>
 				
 			</options>
@@ -311,7 +311,7 @@
         <group>[Channel1]</group>
         <key>beatsync</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x07</midino>
         <options>
 				
 			</options>
@@ -320,7 +320,7 @@
         <group>[Channel2]</group>
         <key>beatsync</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x1F</midino>
         <options>
 				
 			</options>
@@ -329,19 +329,19 @@
         <group>[Playlist]</group>
         <key>SelectPrevTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x2A</midino>
       </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectNextTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x2B</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>LoadSelectedTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x12</midino>
         <options>
 				
 			</options>
@@ -350,7 +350,7 @@
         <group>[Channel2]</group>
         <key>LoadSelectedTrack</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x16</midino>
         <options>
 				
 			</options>
@@ -359,13 +359,13 @@
         <group>[Channel1]</group>
         <key>pregain</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x33</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>pregain</key>
         <miditype>Ctrl</miditype>
-        <midino>0x00</midino>
+        <midino>0x3D</midino>
       </control>
     </controls>
   </controller>

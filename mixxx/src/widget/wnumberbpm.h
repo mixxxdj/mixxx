@@ -28,7 +28,7 @@ class WNumberBpm : public WNumber
 {
     Q_OBJECT
 public:
-    WNumberBpm(const char *group, QWidget *parent = 0, const char *name = 0);
+    WNumberBpm(const char *group, QWidget *parent = 0);
     ~WNumberBpm();
     /** Sets the value */
     void setValue(double dValue);

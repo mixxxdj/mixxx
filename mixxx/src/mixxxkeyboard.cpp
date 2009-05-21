@@ -24,9 +24,10 @@
 #include <QEvent>
 #endif
 
-MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent, name)
+MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
 {
     m_pKbdConfigObject = pKbdConfigObject;
+    setObjectName(name);
 }
 
 MixxxKeyboard::~MixxxKeyboard()

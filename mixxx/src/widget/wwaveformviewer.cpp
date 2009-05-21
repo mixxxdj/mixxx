@@ -15,7 +15,7 @@
 #include "waveform/waveformrenderer.h"
 
 
-WWaveformViewer::WWaveformViewer(const char *group, QWidget * pParent, Qt::WFlags f) : QWidget(pParent, f)
+WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) : QWidget(parent, f)
 {
 
     m_pWaveformRenderer = new WaveformRenderer(group);

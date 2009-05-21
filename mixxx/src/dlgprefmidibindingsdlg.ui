@@ -27,27 +27,17 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1" >
-    <widget class="QPushButton" name="btnActivateDevice" >
+   <item row="1" column="3" >
+    <widget class="QPushButton" name="btnImportXML" >
+     <property name="styleSheet" >
+      <string notr="true" />
+     </property>
      <property name="text" >
-      <string>Activate</string>
+      <string>Import</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="2" >
-    <spacer name="horizontalSpacer" >
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0" >
-      <size>
-       <width>303</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" colspan="3" >
+   <item row="2" column="0" colspan="4" >
     <widget class="QToolBox" name="toolBox" >
      <property name="frameShape" >
       <enum>QFrame::NoFrame</enum>
@@ -60,40 +50,27 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>514</width>
-        <height>306</height>
+        <width>520</width>
+        <height>292</height>
        </rect>
       </property>
       <attribute name="label" >
        <string>MIDI Input</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2" >
-       <item row="0" column="0" >
-        <widget class="QPushButton" name="btnSingleLearn" >
+       <item row="0" column="0" colspan="2" >
+        <widget class="QPushButton" name="btnMidiLearnWizard" >
          <property name="styleSheet" >
           <string notr="true" />
          </property>
          <property name="text" >
-          <string>MIDI Learn</string>
+          <string>MIDI Learning Wizard</string>
          </property>
          <property name="checkable" >
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked" >
           <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" >
-        <widget class="QPushButton" name="btnGroupLearn" >
-         <property name="styleSheet" >
-          <string notr="true" />
-         </property>
-         <property name="text" >
-          <string>Group Learn</string>
-         </property>
-         <property name="checkable" >
-          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -105,15 +82,15 @@
          <property name="minimumSize" >
           <size>
            <width>300</width>
-           <height>100</height>
+           <height>0</height>
           </size>
          </property>
          <property name="title" >
           <string>Controls</string>
          </property>
-         <layout class="QGridLayout" name="_2" >
-          <item row="0" column="0" >
-           <widget class="QPushButton" name="btnAddBinding" >
+         <layout class="QHBoxLayout" name="horizontalLayout_2" >
+          <item>
+           <widget class="QPushButton" name="btnAddInputBinding" >
             <property name="styleSheet" >
              <string notr="true" />
             </property>
@@ -122,28 +99,8 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="3" >
-           <widget class="QPushButton" name="btnExportXML" >
-            <property name="styleSheet" >
-             <string notr="true" />
-            </property>
-            <property name="text" >
-             <string>Save to XML</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="5" >
-           <widget class="QPushButton" name="btnImportXML" >
-            <property name="styleSheet" >
-             <string notr="true" />
-            </property>
-            <property name="text" >
-             <string>Load from XML</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" >
-           <widget class="QPushButton" name="btnRemoveBinding" >
+          <item>
+           <widget class="QPushButton" name="btnRemoveInputBinding" >
             <property name="styleSheet" >
              <string notr="true" />
             </property>
@@ -152,8 +109,21 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2" >
-           <widget class="QPushButton" name="btnClearBindings" >
+          <item>
+           <spacer name="horizontalSpacer_3" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>219</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnClearAllInputBindings" >
             <property name="autoFillBackground" >
              <bool>false</bool>
             </property>
@@ -175,90 +145,92 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>514</width>
-        <height>306</height>
+        <width>520</width>
+        <height>286</height>
        </rect>
       </property>
       <attribute name="label" >
        <string>MIDI Output</string>
       </attribute>
-      <widget class="QLabel" name="label_2" >
-       <property name="geometry" >
-        <rect>
-         <x>80</x>
-         <y>0</y>
-         <width>361</width>
-         <height>321</height>
-        </rect>
-       </property>
-       <property name="font" >
-        <font>
-         <family>Courier New</family>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text" >
-        <string>                      ,;-. 
-                    ,((--). 
-                   /         
-                  |          | 
-                  |          | 
-                 (,'"`.  ,'"`.) 
-                 :     /     ; 
-                 `.o  ,'`.  o,' 
-                 (|`>'`--'`&lt;'|)            ,-, 
-     ,.           |/        |         ,-./ / 
-   _ | ,-.       (          )        | `-'`--. 
-  ( `' (_/|__         (o   /       ,-'     ,-' 
-   ;         )    ,|`.  - ,'|.      `-.   )  
-   | (    ,-'   _/ `-.`""',-' ---.   /      ; 
-   |     |   ,-'    /  /   |   |--/       | 
-   |     |_,|    / /  /   /   |          | 
-   |     `     |                /        ,' 
-   |           |              | /      _,' 
-   :           ,              `/------' 
-    `-.___,---')                `. 
-             ,'                    
-            /                       
-           :                        : 
-           |                      _,| 
-            --.___         __,--' ; 
-             `.    `"""""""'      ,' 
-               |                  | 
-               |      .____,      | 
-               |         |        | 
-               |         |        | 
-               |         |        | 
-               |         |        | 
-               |         |        | 
-     -hrr-     |         |        | 
-               |         |        | 
-               |-._____,-|-.____,-| 
-               |_        |_       | 
-             ,'  `------'| `-----'  
-            /           _|_          
-            `--._____,-'   `-.___,-' 
-</string>
-       </property>
-       <property name="scaledContents" >
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_3" >
-       <property name="geometry" >
-        <rect>
-         <x>360</x>
-         <y>280</y>
-         <width>131</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text" >
-        <string>Mmmmm, MIDI....</string>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_3" >
+       <item row="0" column="0" >
+        <widget class="QTableView" name="m_pOutputMappingTableView" />
+       </item>
+       <item row="1" column="0" >
+        <widget class="QGroupBox" name="groupBoxOutputs" >
+         <property name="title" >
+          <string>Outputs</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout" >
+          <item>
+           <widget class="QPushButton" name="btnAddOutputBinding" >
+            <property name="text" >
+             <string>Add</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnRemoveOutputBinding" >
+            <property name="text" >
+             <string>Remove</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>219</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnClearAllOutputBindings" >
+            <property name="text" >
+             <string>Clear All</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <spacer name="horizontalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>303</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QPushButton" name="btnActivateDevice" >
+     <property name="text" >
+      <string>Activate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" >
+    <widget class="QPushButton" name="btnExportXML" >
+     <property name="styleSheet" >
+      <string notr="true" />
+     </property>
+     <property name="text" >
+      <string>Export</string>
+     </property>
     </widget>
    </item>
   </layout>

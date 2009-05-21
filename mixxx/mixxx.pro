@@ -1,9 +1,21 @@
-CONFIG += link_pkgconfig ladspa alsaseqmidi
-DEFINES += __PORTAUDIO__ \    
+CONFIG += debug link_pkgconfig ladspa alsaseqmidi script vinylcontrol m4a
+DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
+    __PORTAUDIO__ \
     __SNDFILE__ \
-    BPMSCHEME_FILE=\\\".mixxxbpmscheme.xml\\\" \
-    SETTINGS_FILE=\\\".mixxx.cfg\\\" \
-    TRACK_FILE=\\\".mixxxtrack.xml\\\"
+    SETTINGS_FILE=\\\"mixxx.cfg\\\" \
+    BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
+    TRACK_FILE=\\\"mixxxtrack.xml\\\"
+
+win32-g++ { # Bit ugly, but you can thank MS-DOS shell for f-ing up the normal way of parsing.
+    QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\\ Settings/Application\\ Data/Mixxx/\\\"\""
+} else {
+  win32 { # i586-mingw32msvc-g++ -- cross compiling
+    DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
+  } else {
+    DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
+  }
+}
+
 TEMPLATE = app
 TARGET = mixxx
 QT += core \
@@ -15,15 +27,36 @@ QT += core \
     opengl \
     script \
     qt3support
+
 DESTDIR = bin
-UI_DIR = bin/ui
-RCC_DIR = bin/rcc
-MOC_DIR = bin/moc
-OBJECTS_DIR = bin/obj
+unix {
+  win32 { # This should only happen when cross compiling...
+    DESTDIR = bin-win32
+  }
+}
+
+BUILDDIR = $$DESTDIR
+UI_DIR = $$BUILDDIR/ui
+RCC_DIR = $$BUILDDIR/rcc
+MOC_DIR = $$BUILDDIR/moc
+OBJECTS_DIR = $$BUILDDIR/obj
+
+CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
+    exists($$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp) {
+        message(found gdbmacros.cpp relative to QTDIR)
+        SOURCES += $$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp
+    } else {
+        exists($$(HOME)/qtcreator-1.0.0/share/qtcreator/gdbmacros/gdbmacros.cpp) {
+            message(found gdbmacros.cpp relative to $$(HOME)/qtcreator-1.0.0)
+            SOURCES += $$(HOME)/qtcreator-1.0.0/share/qtcreator/gdbmacros/gdbmacros.cpp
+        }
+    }
+}
 
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgbpmschemedlg.h \
     $$UI_DIR/ui_dlgbpmtapdlg.h \
+    $$UI_DIR/ui_dlgmidilearning.h \
     $$UI_DIR/ui_dlgprefbpmdlg.h \
     $$UI_DIR/ui_dlgprefcontrolsdlg.h \
     $$UI_DIR/ui_dlgprefcrossfaderdlg.h \
@@ -36,13 +69,15 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefshoutcastdlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
-    $$UI_DIR/ui_dlgprefvinyldlg.h
+    $$UI_DIR/ui_dlgprefvinyldlg.h \
+    $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \
 #    lib/soundtouch \
     lib/kissfft \
+	lib/ladspa \
+	/sw/include \
     $$UI_DIR
-#    src/configmidi.h \
 HEADERS += src/analyser.h \
     src/analyserbpm.h \
     src/analyserqueue.h \
@@ -51,7 +86,6 @@ HEADERS += src/analyser.h \
     src/configobject.h \
     src/controlbeat.h \
     src/controlevent.h \
-    src/controleventengine.h \
     src/engine/engineabstractrecord.h \
     src/engine/enginebuffer.h \
     src/engine/enginebuffercue.h \
@@ -118,7 +152,6 @@ HEADERS += src/analyser.h \
     src/bpm/bpmscheme.h \
     src/bpm/peakfinder.h \
     src/bpm/wavesegmentation.h \
-    src/controleventmidi.h \
     src/controllogpotmeter.h \
     src/controlnull.h \
     src/controlobject.h \
@@ -137,14 +170,15 @@ HEADERS += src/analyser.h \
     src/dlgabout.h \
     src/dlgbpmscheme.h \
     src/dlgbpmtap.h \
+    src/dlgmidilearning.h \
     src/dlgprefbpm.h \
     src/dlgprefcontrols.h \
     src/dlgprefcrossfader.h \
     src/dlgprefeq.h \
     src/dlgpreferences.h \
-#    src/dlgprefmidi.h \
     src/dlgprefmidibindings.h \
 #    src/dlgprefmididevice.h \
+    src/dlgprefnomidi.h \
     src/dlgprefplaylist.h \
     src/dlgprefsound.h \
     src/fakemonitor.h \
@@ -169,6 +203,7 @@ HEADERS += src/analyser.h \
     src/midiobject.h \
     src/midiobjectnull.h \
     src/midioutputmapping.h \
+	src/midioutputmappingtablemodel.h \
     src/miditypedelegate.h \
     src/mixxx.h \
     src/mixxxcontrol.h \
@@ -192,8 +227,8 @@ HEADERS += src/analyser.h \
     src/readerevent.h \
     src/readerextract.h \
 #    src/readerextractbeat.h \
-    src/readerextractfft.h \
-    src/readerextracthfc.h \
+#     src/readerextractfft.h \
+#     src/readerextracthfc.h \
     src/readerextractwave.h \
     src/rotary.h \
     src/rtthread.h \
@@ -220,7 +255,8 @@ HEADERS += src/analyser.h \
     src/wtracktablefilter.h \
     src/wtracktablemodel.h \
     src/wtracktableview.h \
-    src/xmlparse.h
+    src/xmlparse.h \
+    src/errordialog.h
 
 SOURCES += src/analyserbpm.cpp \
     src/analyserqueue.cpp \
@@ -229,7 +265,6 @@ SOURCES += src/analyserbpm.cpp \
     src/configobject.cpp \
     src/controlbeat.cpp \
     src/controlevent.cpp \
-    src/controleventengine.cpp \
     src/engine/enginebuffer.cpp \
     src/engine/enginebuffercue.cpp \
     src/engine/enginebufferscale.cpp \
@@ -294,7 +329,6 @@ SOURCES += src/analyserbpm.cpp \
     src/bpm/bpmscheme.cpp \
     src/bpm/peakfinder.cpp \
     src/bpm/wavesegmentation.cpp \
-    src/controleventmidi.cpp \
     src/controllogpotmeter.cpp \
     src/controlnull.cpp \
     src/controlobject.cpp \
@@ -308,14 +342,15 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgabout.cpp \
     src/dlgbpmscheme.cpp \
     src/dlgbpmtap.cpp \
+    src/dlgmidilearning.cpp \
     src/dlgprefbpm.cpp \
     src/dlgprefcontrols.cpp \
     src/dlgprefcrossfader.cpp \
     src/dlgprefeq.cpp \
     src/dlgpreferences.cpp \
-#    src/dlgprefmidi.cpp \
     src/dlgprefmidibindings.cpp \
 #    src/dlgprefmididevice.cpp \
+    src/dlgprefnomidi.cpp \
     src/dlgprefplaylist.cpp \
     src/dlgprefsound.cpp \
     src/fakemonitor.cpp \
@@ -339,6 +374,7 @@ SOURCES += src/analyserbpm.cpp \
     src/midinodelegate.cpp \
     src/midiobject.cpp \
     src/midiobjectnull.cpp \
+	src/midioutputmappingtablemodel.cpp \
     src/miditypedelegate.cpp \
     src/mixxx.cpp \
     src/mixxxcontrol.cpp \
@@ -391,26 +427,30 @@ SOURCES += src/analyserbpm.cpp \
     src/wtracktablemodel.cpp \
     src/wtracktableview.cpp \
     src/xmlparse.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/errordialog.cpp
 
 # Soundtouch
-INCLUDEPATH += ../mixxx-winlib/soundtouch-1.4.0/include
-LIBS += ../mixxx-winlib/soundtouch-1.4.0/minGW-bin/libSoundTouch.a
-# INCLUDEPATH += lib/soundtouch
-# SOURCES += lib/soundtouch/SoundTouch.cpp \
-#    lib/soundtouch/TDStretch.cpp \
-#    lib/soundtouch/RateTransposer.cpp \
-#    lib/soundtouch/AAFilter.cpp \
-#    lib/soundtouch/FIFOSampleBuffer.cpp \
-#    lib/soundtouch/FIRFilter.cpp \
-#    lib/soundtouch/cpu_detect_x86_gcc.cpp
+win32 {
+    INCLUDEPATH += ../mixxx-winlib/soundtouch-1.4.0/include
+    LIBS += ../mixxx-winlib/soundtouch-1.4.0/mingw-bin/libSoundTouch.a
+} else {
+    INCLUDEPATH += lib/soundtouch
+    SOURCES += lib/soundtouch/SoundTouch.cpp \
+        lib/soundtouch/TDStretch.cpp \
+        lib/soundtouch/RateTransposer.cpp \
+        lib/soundtouch/AAFilter.cpp \
+        lib/soundtouch/FIFOSampleBuffer.cpp \
+        lib/soundtouch/FIRFilter.cpp \
+        lib/soundtouch/cpu_detect_x86_gcc.cpp
+}
 
 # Fidlib
 SOURCES += lib/fidlib-0.9.9/fidlib.c
-win32 {
+win32-g++ {
     DEFINES += T_MINGW
 }
-!win32 {
+!win32-g++ {
     DEFINES += T_LINUX
 }
 
@@ -420,6 +460,7 @@ SOURCES += lib/kissfft/kiss_fft.c
 FORMS += src/dlgaboutdlg.ui \
     src/dlgbpmschemedlg.ui \
     src/dlgbpmtapdlg.ui \
+    src/dlgmidilearning.ui \
     src/dlgprefbpmdlg.ui \
     src/dlgprefcontrolsdlg.ui \
     src/dlgprefcrossfaderdlg.ui \
@@ -430,7 +471,9 @@ FORMS += src/dlgaboutdlg.ui \
 #    src/dlgprefmididlg.ui \
     src/dlgprefplaylistdlg.ui \
     src/dlgprefsounddlg.ui \
-    src/dlgprefvinyldlg.ui
+    src/dlgprefvinyldlg.ui \
+    src/dlgprefnomididlg.ui
+
 RESOURCES += res/mixxx.qrc
 HEADERS += src/recording/defs_recording.h \
     src/recording/enginerecord.h \
@@ -440,7 +483,7 @@ SOURCES += src/recording/enginerecord.cpp \
     src/recording/writeaudiofile.cpp \
     src/dlgprefrecord.cpp
 FORMS += src/dlgprefrecorddlg.ui
-unix {
+!win32:unix {
     !macx { 
         DEFINES += __LINUX__ \
             TEMPORAL \
@@ -475,7 +518,6 @@ unix {
             vorbisfile \
             sndfile
     }
-#    CXXFLAGS += -DX
 }
 macx { 
     DEFINES += __COREMIDI__
@@ -484,7 +526,15 @@ macx {
         -framework CoreAudio \
         -framework AudioToolbox \
         -framework AudioUnit \
-        -lportaudio
+		-L/sw/lib \
+        -lportaudio \
+		-lmad \
+		-lsndfile \
+		-logg \
+		-lvorbis \
+		-lvorbisfile \
+		-lfftw3 \
+		-lid3tag
     HEADERS += src/midiobjectcoremidi.h
     SOURCES += src/midiobjectcoremidi.cpp
 }
@@ -492,9 +542,11 @@ win32 {
     DEFINES += __WINMIDI__
     HEADERS += src/midiobjectwin.h
     SOURCES += src/midiobjectwin.cpp
-    LIBS += ../mixxx-winlib/sndfile.dll \
-        ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/mad.lib \
+    LIBS += ../mixxx-winlib/libsndfile/mingw-bin/libsndfile-1.dll \
+#        ../mixxx-winlib/sndfile.dll \
+#        ../mixxx-winlib/portaudio.dll \
+        ../mixxx-winlib/portaudio-snapshot/mingw-bin/libportaudio-2.dll \
+        ../mixxx-winlib/libmad.a \
         ../mixxx-winlib/libid3tag.a \
         ../mixxx-winlib/vorbisfile.dll \
         ../mixxx-winlib/vorbis.dll \
@@ -542,8 +594,6 @@ CONFIG(ladspa) {
 CONFIG(script) { 
     DEFINES += __MIDISCRIPT__
     HEADERS += src/script/interp.h \
-        src/script/lua/luainterface.h \
-        src/script/lua/luarecorder.h \
         src/script/macro.h \
         src/script/macrolist.h \
         src/script/macrolistitem.h \
@@ -551,7 +601,6 @@ CONFIG(script) {
         src/script/numbercontrolevent.h \
         src/script/numberrecorder.h \
         src/script/playinterface.h \
-        src/script/python/pythoninterface.h \
         src/script/qtscriptinterface.h \
         src/script/recorder.h \
         src/script/scriptcontrolevent.h \
@@ -559,22 +608,19 @@ CONFIG(script) {
         src/script/scriptengine.h \
         src/script/scriptrecorder.h \
         src/script/scriptstudio.h \
-        src/script/scripttest.h \
+#        src/script/scripttest.h \
         src/script/sdatetime.h \
         src/script/signalrecorder.h \
         src/script/trackcontrolevent.h \
-        src/script/trackrecorder.h
-    SOURCES += src/script/lua/luainterface.cpp \
-        src/script/lua/luarecorder.cpp \
-        src/script/lua/tolua.cpp \
-        src/script/macro.cpp \
+        src/script/trackrecorder.h \
+        $$UI_DIR/ui_scriptstudio.h
+    SOURCES += src/script/macro.cpp \
         src/script/macrolist.cpp \
         src/script/macrolistitem.cpp \
         src/script/midiscriptengine.cpp \
         src/script/numbercontrolevent.cpp \
         src/script/numberrecorder.cpp \
         src/script/playinterface.cpp \
-        src/script/python/pythoninterface.cpp \
         src/script/qtscriptinterface.cpp \
         src/script/recorder.cpp \
         src/script/scriptcontrolevent.cpp \
@@ -582,7 +628,7 @@ CONFIG(script) {
         src/script/scriptengine.cpp \
         src/script/scriptrecorder.cpp \
         src/script/scriptstudio.cpp \
-        src/script/scripttest.cpp \
+#        src/script/scripttest.cpp \
         src/script/sdatetime.cpp \
         src/script/signalrecorder.cpp \
         src/script/trackcontrolevent.cpp \
@@ -622,8 +668,20 @@ CONFIG(m4a) {
         src/m4a/sf.h
     SOURCES += src/soundsourcem4a.cpp \
         src/m4a/mp4-mixxx.cpp
-    LIBS += libmp4v2 \
-        libfaad
+    win32{
+        INCLUDEPATH += ../mixxx-winlib/mp4v2/include \
+            ../mixxx-winlib/faad2/include
+        HEADERS += ../mixxx-winlib/mp4v2/include/mp4.h \
+            ../mixxx-winlib/mp4v2/include/mpeg4ip.h \
+            ../mixxx-winlib/mp4v2/include/mpeg4ip_version.h \
+            ../mixxx-winlib/mp4v2/include/mpeg4ip_win32.h
+        LIBS += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
+            ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
+#             ../mixxx-winlib/faad2/mingw-bin/libfaad.a
+    } else {
+        LIBS += -lmp4v2 \
+            -lfaad
+    }
 }
 CONFIG(vinylcontrol) { 
     DEFINES += __VINYLCONTROL__
@@ -632,6 +690,8 @@ CONFIG(vinylcontrol) {
         src/vinylcontrolscratchlib.h \
         src/vinylcontrolsignalwidget.h \
         src/vinylcontrolxwax.h \
+        lib/scratchlib/DAnalyse.h \
+        lib/xwax/timecoder.h \
         src/engine/enginevinylcontrol.h \
         src/dlgprefvinyl.h
     SOURCES += src/vinylcontrol.cpp \
@@ -639,13 +699,14 @@ CONFIG(vinylcontrol) {
         src/vinylcontrolscratchlib.cpp \
         src/vinylcontrolsignalwidget.cpp \
         src/vinylcontrolxwax.cpp \
-        ../../lib/scratchlib/DAnalyse.cpp \
+        lib/scratchlib/DAnalyse.cpp \
         src/engine/enginevinylcontrol.cpp \
         src/dlgprefvinyl.cpp
-    CPPPATH += ../../lib/scratchlib \
-        ../../lib/xwax
-    win32:SOURCES += ../../lib/xwax/timecoder_win32.c
-    !win32:SOURCES += ../../lib/xwax/timecoder.c
+
+    INCLUDEPATH += lib/scratchlib \
+        lib/xwax
+    win32:SOURCES += lib/xwax/timecoder_win32.c
+    !win32:SOURCES += lib/xwax/timecoder.c
 }
 CONFIG(cmetrics):DEFINES += __C_METRICS__ \
     client='MIXXX' \
@@ -700,3 +761,72 @@ CONFIG(ffmpeg) {
         -logg
 }
 
+# Copy Windows dependencies to DESTDIR.
+win32 {
+    !exists($$DESTDIR):system( mkdir $$replace(DESTDIR, /,$$DIR_SEPARATOR) )
+    # MinGW run-time
+    DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll
+    CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
+        ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
+    # Qt4 libraries
+    debug {
+        DLLs += $$(QTDIR)/lib/Qt3Supportd4.dll \
+            $$(QTDIR)/lib/QtCored4.dll \
+            $$(QTDIR)/lib/QtGuid4.dll \
+            $$(QTDIR)/lib/QtNetworkd4.dll \
+            $$(QTDIR)/lib/QtSqld4.dll \
+            $$(QTDIR)/lib/QtXmld4.dll \
+            $$(QTDIR)/lib/QtOpenGLd4.dll \
+            $$(QTDIR)/lib/QtScriptd4.dll
+        # include GNU Debugger in debug distros
+        DLLs += $$(QTDIR)/../mingw/bin/gdb.exe
+    } else {
+        DLLs += $$(QTDIR)/lib/Qt3Support4.dll \
+            $$(QTDIR)/lib/QtCore4.dll \
+            $$(QTDIR)/lib/QtGui4.dll \
+            $$(QTDIR)/lib/QtNetwork4.dll \
+            $$(QTDIR)/lib/QtSql4.dll \
+            $$(QTDIR)/lib/QtXml4.dll \
+            $$(QTDIR)/lib/QtOpenGL4.dll \
+            $$(QTDIR)/lib/QtScript4.dll
+    }
+    # mixxx-winlibs DLLs
+    DLLs += ../mixxx-winlib/ogg.dll \
+#        ../mixxx-winlib/portaudio.dll \
+        ../mixxx-winlib/portaudio-snapshot/mingw-bin/libportaudio-2.dll \
+        ../mixxx-winlib/libsndfile/mingw-bin/libsndfile-1.dll \
+#        ../mixxx-winlib/sndfile.dll \
+        ../mixxx-winlib/vorbis.dll \
+        ../mixxx-winlib/vorbisfile.dll
+
+    # check if DLL exists at target, if not copy it there
+    for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {
+        message( copying "$$replace(DLL, /,$$DIR_SEPARATOR)" -> "$$DESTDIR" ... )
+        system( $$QMAKE_COPY "$$replace(DLL, /,$$DIR_SEPARATOR)" "$$DESTDIR" )
+    }
+    # create DESTDIR\testrun-mixxx.cmd to run mixxx using the workspace resource files.
+    win32-g++:system( echo $$TARGET --resourcePath $$replace(PWD, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}res>$${PWD}$${DIR_SEPERATOR}$$replace(DESTDIR, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}testrun-$${TARGET}.cmd )
+}
+
+win32 {
+    # Makefile target to build an NSIS Installer...
+    # TODO: either fix this to work in a cross-compile or make a seperate cross-compile NSIS target
+    # CMD Usage: C:/Qt/QtCreator/mingw/bin/mingw32-make -f Makefile.Debug nsis
+    # SH Usage: make -f Makefile.Debug nsis
+    nsis.target = nsis
+    exists($$BUILDDIR/gdb.exe):INCLUDE_GDB = -DINCLUDE_GDB
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=$$BUILDDIR $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
+    # nsis.depends =
+    QMAKE_EXTRA_UNIX_TARGETS += nsis
+}
+
+# .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
+message( Generating .mixxx_flags.svn with contents: $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"' )
+system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>.mixxx_flags.svn )
+
+# .mixxx_version.svn
+BUILD_REV = $$system( svnversion )
+isEmpty( BUILD_REV ):BUILD_REV = Killroy was here
+BUILD_REV += - built via qmake/Qt Creator
+message( Generating .mixxx_version.svn with contents: $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"' )
+system( echo $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"'>.mixxx_version.svn )

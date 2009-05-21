@@ -66,12 +66,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
 
-    #include ".mixxx_version.svn" // #define BUILD_REV = "<svn rev number>"
+    #include "../.mixxx_version.svn" // #define BUILD_REV = "<svn rev number>"
     QString buildRevision = "";
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
     #endif
-    #include ".mixxx_flags.svn" // #define BUILD_FLAGS = "<flags>"
+    #include "../.mixxx_flags.svn" // #define BUILD_FLAGS = "<flags>"
     QString buildFlags = "";
     #ifdef BUILD_FLAGS
       buildFlags = BUILD_FLAGS;
@@ -89,9 +89,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pTrack = 0;
     prefDlg = 0;
     midi = 0;
-
     // Read the config file from home directory
-    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
+    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -213,7 +212,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
     if ((config->getValueString(ConfigKey("[Playlist]","Listfile")).length()<1) || (!trackfile.exists()))
     {
-        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homePath().append("/").append(TRACK_FILE));
+        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homePath().append("/").append(SETTINGS_PATH).append(TRACK_FILE));
         config->Save();
     }
 
@@ -385,7 +384,9 @@ MixxxApp::~MixxxApp()
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
-//    qDebug() << "delete midi";
+//     qDebug() << "delete midi";
+    qDebug() << "delete midi, " << qTime.elapsed();
+    delete midi;
 //    qDebug() << "delete midiconfig";
 
     qDebug() << "delete view, " << qTime.elapsed();
@@ -960,24 +961,31 @@ void MixxxApp::slotHelpAbout()
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
     QString credits =
-    "<p align=\"center\"><b>Mixxx 1.6.0 Development Team</b></p>"
+    "<p align=\"center\"><b>Mixxx "+ QString(VERSION) +" Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
 "Garth Dahlstrom<br>"
-"Cedric Gestes<br>"
+"RJ Ryan<br>"
+"Sean Pappalardo<br>"
+"Nick Guenther<br>"
+"Phillip Whelan<br>"
+"Mathieu Rene<br>"
+"Robin Sheat<br>"
+"Tom Care<br>&nbsp;<br>"
 "John Sully<br>"
+"Pawel Bartkiewicz<br>"
+"Cedric Gestes<br>"
 "Ben Wheeler<br>"
 "Micah Lee<br>"
-"Pawel Bartkiewicz<br>"
 "Nathan Prado<br>"
-"Wesley Stessens<br>"
-"RJ Ryan<br>"
 "Zach Elko<br>"
-"Tom Care<br>"
+"Wesley Stessens<br>"
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
 "<p align=\"center\">"
+"Claudio Bantaloukas<br>"
+"Pavel Rusnak<br>"
 "Martin Sakm&#225;r<br>"
 "Ilian Persson<br>"
 "Mark Hills<br>"
@@ -990,7 +998,6 @@ void MixxxApp::slotHelpAbout()
 "Stefan Langhammer<br>"
 "Andre Roth<br>"
 "Frank Willascheck<br>"
-"Robin Sheat<br>"
 "Jeff Nelson<br>"
 "Kevin Schaper<br>"
 "J&aacute;n Jockusch<br>"
@@ -998,13 +1005,16 @@ void MixxxApp::slotHelpAbout()
 "Oriol Puigb&oacute;<br>"
 "Ulrich Heske<br>"
 "James Hagerman<br>"
-"quil0m80<br>"
 "Michael Pujos<br>"
 "Mark Glines<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
+"Francois Garet - Hercules/Guillemot<br>"
+"Philip Lukidis - Hercules/Guillemot<br>"
+"Yann Hamiaux - Hercules/Guillemot<br>"
 "Adam Bellinson<br>"
+"Alexandre Bancel<br>"
 "Melanie Thielker<br>"
 "Julien Rosener<br>"
 "Pau Arum&iacute;<br>"
@@ -1012,7 +1022,6 @@ void MixxxApp::slotHelpAbout()
 "Seb Ruiz<br>"
 "Echo Digital Audio<br>"
 "</p>"
-
 "<p align=\"center\"><b>Past Contributors</b></p>"
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
@@ -1074,7 +1083,7 @@ QString MixxxApp::getSkinPath() {
             qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
         else
         {
-            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineSmall"));
+            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineNetbook"));
             config->Save();
             qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
         }

@@ -20,23 +20,26 @@
 #include <QObject>
 #include "defs.h"
 #include "configobject.h"
+#include "encoder.h"
 
 #include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
 
 class EngineAbstractRecord;
 class TrackInfoObject;
 
-class EncoderVorbis : public QObject {
+class EncoderVorbis : public Encoder {
     Q_OBJECT
 
 public:
     EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
     ~EncoderVorbis();
     int initEncoder();
+    int initEncoder(float quality);
+    int initEncoder(int bitrate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
-    bool metaDataHasChanged();
 
-public slots:
+
+private slots:
     void updateMetaData(TrackInfoObject *trackInfoObj);
 
 private:
@@ -44,6 +47,7 @@ private:
     void flushStream();
     void initStream();
     void sendPackages();
+    bool metaDataHasChanged();
 
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
     ogg_stream_state oggs;    /* take physical pages, weld into logical stream

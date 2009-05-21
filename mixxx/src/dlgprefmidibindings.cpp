@@ -17,6 +17,7 @@
 #include <QtGui>
 #include <QDebug>
 #include "midiinputmappingtablemodel.h"
+#include "midioutputmappingtablemodel.h"
 #include "midichanneldelegate.h"
 #include "miditypedelegate.h"
 #include "midinodelegate.h"
@@ -38,14 +39,14 @@ QStringList controKeyOptionChoices;
 const QStringList outputTypeChoices = (QStringList() << "light");
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QString deviceName,
-										 ConfigObject<ConfigValue> *pConfig) :  
+										 ConfigObject<ConfigValue> *pConfig) :
 							QWidget(parent), Ui::DlgPrefMidiBindingsDlg(), m_rMidi(midi) {
     setupUi(this);
     m_pConfig = pConfig;
-    singleLearning = false;
-    groupLearning = false;
     m_deviceName = deviceName;
-    
+
+    m_pDlgMidiLearning = NULL;
+
     labelDeviceName->setText(m_deviceName);
 
     //Tell the input mapping table widget which data model it should be viewing
@@ -64,7 +65,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     */
     //The above shortcut doesn't work yet, not quite sure why. -- Albert Feb 1 / 2009
 
-    //Set up the cool item delegates for the mapping tables
+    //Set up the cool item delegates for the input mapping table
     m_pMidiChannelDelegate = new MidiChannelDelegate();
     m_pMidiTypeDelegate = new MidiTypeDelegate();
     m_pMidiNoDelegate = new MidiNoDelegate();
@@ -72,20 +73,35 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
 
+    //Tell the output mapping table widget which data model it should be viewing
+    //(note that m_pOutputMappingTableView is defined in the .ui file!)
+    m_pOutputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiOutputMappingTableModel());
+    m_pOutputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_pOutputMappingTableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
+    m_pOutputMappingTableView->verticalHeader()->hide();
+
+    //Set up the cool item delegates for the output mapping table
+    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDITYPE, m_pMidiTypeDelegate);
+    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
+    m_pOutputMappingTableView->setItemDelegateForColumn(MIDIOUTPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
+
     // Connect buttons to slots
-    connect(btnSingleLearn, SIGNAL(clicked()), this, SLOT(slotSingleLearnToggle()));
-    connect(btnGroupLearn, SIGNAL(clicked()), this, SLOT(slotGroupLearnToggle()));
     connect(btnImportXML, SIGNAL(clicked()), this, SLOT(slotImportXML()));
     connect(btnExportXML, SIGNAL(clicked()), this, SLOT(slotExportXML()));
 
-    connect(btnClearBindings, SIGNAL(clicked()), this, SLOT(slotClear()));
-    connect(btnRemoveBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
-    connect(btnAddBinding, SIGNAL(clicked()), this, SLOT(slotAddBinding()));
-    
+    //Input bindings
+    connect(btnMidiLearnWizard, SIGNAL(clicked()), this, SLOT(slotShowMidiLearnDialog()));
+    connect(btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllInputBindings()));
+    connect(btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
+    connect(btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotAddInputBinding()));
+
+    //Output bindings
+    connect(btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllOutputBindings()));
+    connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
+    connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
+
     //Connect the activate button. One day this will be replaced with an "Enabled" checkbox.
     connect(btnActivateDevice, SIGNAL(clicked()), this, SLOT(slotEnableDevice()));
-
-    m_rMidi.disableMidiLearn();
 }
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
@@ -112,32 +128,6 @@ void DlgPrefMidiBindings::slotUpdate() {
 
 }
 
-void DlgPrefMidiBindings::slotRemoveInputBinding()
-{
-	QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
-	if (selectedIndices.size() > 0)
-	{
-		MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
-		if (tableModel) {
-			QModelIndex curIndex;
-			//The model indices are sorted so that we remove the rows from the table
-            //in ascending order. This is necessary because if row A is above row B in
-            //the table, and you remove row A, the model index for row B will change.
-            //Sorting the indices first means we don't have to worry about this.
-            //qSort(selectedIndices);
-
-            //Going through the model indices in descending order (see above comment for explanation).
-			QListIterator<QModelIndex> it(selectedIndices);
-			it.toBack();
-			while (it.hasPrevious())
-			{
-				curIndex = it.previous();
-				tableModel->removeRow(curIndex.row());
-			}
-		}
-	}
-}
-
 /* slotApply()
  * Called when the OK button is pressed.
  */
@@ -149,65 +139,11 @@ void DlgPrefMidiBindings::slotApply() {
     m_rMidi.disableMidiLearn();
 }
 
-/*
- * singleLearn(ConfigValueMidi *, QString)
- * Sets the currently row(s) to the MIDI value and Device. Typically called by
- * the MIDI device handler. Prompts the user to confirm if more than one row is
- * selected.
- */
-void DlgPrefMidiBindings::singleLearn(ConfigValueMidi *value, QString device) {
-    //m_pInputMappingTableView->model()->
-
-}
-
-/* groupLearn(ConfigValueMidi *, QString)
- * A midi learn message has been received during group learn mode. Sets the
- * current row in the group to the given MIDI message, and waits to be called
- * again for the next row. If the end of the selection is reached, group learn
- * is disabled.
- */
-void DlgPrefMidiBindings::groupLearn(ConfigValueMidi *value, QString device) {
-
-}
-
-/* slotSingleLearnToggle()
- * The user has pressed the Single Learn toggle button. Enable or disable the
- * single learning mode and update the status accordingly.
- */
-void DlgPrefMidiBindings::slotSingleLearnToggle() {
-    // Toggle the status variable
-    singleLearning = !singleLearning;
-    if (singleLearning) {
-        // Enable MIDI Hook
-        m_rMidi.enableMidiLearn(this);
-        //labelStatus->setText("Single MIDI Learn: waiting...");
-        // Can't do group learning while single learning
-        btnGroupLearn->setEnabled(false);
-    } else {
-        // Disable MIDI Hook
-        m_rMidi.disableMidiLearn();
-        //labelStatus->setText("Single MIDI Learn disabled");
-        btnGroupLearn->setEnabled(true);
-    }
-}
-
-/* slotGroupLearnToggle()
- * The user has pressed the Group Learn button. Midi Learn is enabled, and the
- * status is updated, indicating Mixxx is waiting for a Message. */
-void DlgPrefMidiBindings::slotGroupLearnToggle() {
-    groupLearning = !groupLearning;
-    if (groupLearning) {
-        // Enable MIDI Hook
-        m_rMidi.enableMidiLearn(this);
-        //labelStatus->setText("Group MIDI Learn: waiting...");
-        // Can't do group learning while single learning
-        btnSingleLearn->setEnabled(false);
-    } else {
-        // Disable MIDI Hook
-        m_rMidi.disableMidiLearn();
-        //labelStatus->setText("Group MIDI Learn disabled");
-        btnSingleLearn->setEnabled(true);
-    }
+void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
+    //Note that DlgMidiLearning is set to delete itself on
+    //close using the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
+    m_pDlgMidiLearning = new DlgMidiLearning(this, m_rMidi.getMidiMapping());
+    m_pDlgMidiLearning->show();
 }
 
 /* slotImportXML()
@@ -215,7 +151,7 @@ void DlgPrefMidiBindings::slotGroupLearnToggle() {
  */
 void DlgPrefMidiBindings::slotImportXML() {
     QString fileName = QFileDialog::getOpenFileName(this,
-            "Import Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
+            "Import Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
             "Preset Files (*.xml)");
     if (!fileName.isNull()) {
         loadPreset(fileName);
@@ -229,42 +165,21 @@ void DlgPrefMidiBindings::slotImportXML() {
  */
 void DlgPrefMidiBindings::slotExportXML() {
     QString fileName = QFileDialog::getSaveFileName(this,
-            "Export Mixxx MIDI Preset", m_pConfig->getConfigPath().append("midi/"),
+            "Export Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
             "Preset Files (*.xml)");
     if (!fileName.isNull()) m_rMidi.getMidiMapping()->savePreset(fileName);
-}
-
-/* slotClear()
- * Clears the table and DOM of all bindings.
- */
-void DlgPrefMidiBindings::slotClear() {
-    if (QMessageBox::warning(this, "Clear Input Bindings",
-            "Are you sure you want to clear all bindings?",
-            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
-        return;
-
-    //Remove all the rows from the data model (ie. the MIDI mapping).
-    MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
-    if (tableModel) {
-        tableModel->removeRows(0, tableModel->rowCount());
-    }
-
 }
 
 void DlgPrefMidiBindings::slotEnableDevice()
 {
 	//Just tell MidiObject to close the old device and open this device
 	m_rMidi.devClose();
-	m_rMidi.devOpen(m_deviceName);  
+	m_rMidi.devOpen(m_deviceName);
 	m_pConfig->set(ConfigKey("[Midi]","Device"), m_deviceName);
 }
 
-
-/* slotAddBinding()
- * Adds a binding to the table, with a minimum of the control and device info.
- */
-void DlgPrefMidiBindings::slotAddBinding() {
-    // TODO: This function is going to be totally broken.
+void DlgPrefMidiBindings::slotAddInputBinding() {
+    // TODO: This function is totally broken.
 
     bool ok = true;
 
@@ -304,8 +219,96 @@ void DlgPrefMidiBindings::slotAddBinding() {
                                               group, key, (MidiOption)option.toInt());
                         //FUCK! The "option" thing above will be garbage when converted to an int, since it's
                         //        some string describing the midi option in words, not a string number like "2".
+                        //Solution: Use a delegate class for the MIDI Option column
 
     //tblBindings->selectRow(tblBindings->rowCount() - 1); // Focus the row just added
+}
+
+void DlgPrefMidiBindings::slotRemoveInputBinding()
+{
+	QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
+	if (selectedIndices.size() > 0)
+	{
+		MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
+		if (tableModel) {
+			QModelIndex curIndex;
+			//The model indices are sorted so that we remove the rows from the table
+            //in ascending order. This is necessary because if row A is above row B in
+            //the table, and you remove row A, the model index for row B will change.
+            //Sorting the indices first means we don't have to worry about this.
+            //qSort(selectedIndices);
+
+            //Going through the model indices in descending order (see above comment for explanation).
+			QListIterator<QModelIndex> it(selectedIndices);
+			it.toBack();
+			while (it.hasPrevious())
+			{
+				curIndex = it.previous();
+				tableModel->removeRow(curIndex.row());
+			}
+		}
+	}
+}
+
+void DlgPrefMidiBindings::slotClearAllInputBindings() {
+    if (QMessageBox::warning(this, "Clear Input Bindings",
+            "Are you sure you want to clear all bindings?",
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+        return;
+
+    //Remove all the rows from the data model (ie. the MIDI mapping).
+    MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
+    if (tableModel) {
+        tableModel->removeRows(0, tableModel->rowCount());
+    }
+}
+
+
+void DlgPrefMidiBindings::slotAddOutputBinding() {
+    qDebug() << "STUB: DlgPrefMidiBindings::slotAddOutputBinding()";
+
+    m_rMidi.getMidiMapping()->setOutputMidiMapping(MixxxControl(), MidiMessage());
+}
+
+void DlgPrefMidiBindings::slotRemoveOutputBinding()
+{
+	QModelIndexList selectedIndices = m_pOutputMappingTableView->selectionModel()->selectedRows();
+	if (selectedIndices.size() > 0)
+	{
+		MidiOutputMappingTableModel* tableModel =
+		                    dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
+		if (tableModel) {
+			QModelIndex curIndex;
+			//The model indices are sorted so that we remove the rows from the table
+            //in ascending order. This is necessary because if row A is above row B in
+            //the table, and you remove row A, the model index for row B will change.
+            //Sorting the indices first means we don't have to worry about this.
+            //qSort(selectedIndices);
+
+            //Going through the model indices in descending order (see above comment for explanation).
+			QListIterator<QModelIndex> it(selectedIndices);
+			it.toBack();
+			while (it.hasPrevious())
+			{
+				curIndex = it.previous();
+				qDebug() << "Dlg: removing row" << curIndex.row();
+				tableModel->removeRow(curIndex.row());
+			}
+		}
+	}
+}
+
+void DlgPrefMidiBindings::slotClearAllOutputBindings() {
+    if (QMessageBox::warning(this, "Clear Output Bindings",
+            "Are you sure you want to clear all output bindings?",
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+        return;
+
+    //Remove all the rows from the data model (ie. the MIDI mapping).
+    MidiOutputMappingTableModel* tableModel = dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
+    if (tableModel) {
+        tableModel->removeRows(0, tableModel->rowCount());
+    }
 }
 
 /* getControlKeyList()

@@ -110,7 +110,7 @@ QString ParserPls::getFilepath(Q3TextStream * stream, QString& basepath)
             break;
 
         if(textline.contains("File")) {
-            int iPos = textline.find("=",0);
+            int iPos = textline.indexOf("=",0);
             ++iPos;
 
             filename = textline.right(textline.length()-iPos);

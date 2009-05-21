@@ -135,7 +135,7 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
         return ERR;
     }
 
-    Track->setType(location.section(".",-1).lower());
+    Track->setType(location.section(".",-1).toLower());
     Track->setBitrate((int)(info.samplerate*32./1000.));
     Track->setDuration(info.frames/info.samplerate);
     Track->setSampleRate(info.samplerate);
