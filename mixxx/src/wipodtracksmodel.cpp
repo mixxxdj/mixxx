@@ -9,25 +9,15 @@
 #include "trackinfoobject.h"
 #include "trackplaylist.h"
 
-#define MIXXX_IPOD_COL_ARTIST  0
-#define MIXXX_IPOD_COL_TITLE   1
-#define MIXXX_IPOD_COL_TYPE    2
-#define MIXXX_IPOD_COL_LENGTH  3
-#define MIXXX_IPOD_COL_BITRATE 4
-#define MIXXX_IPOD_COL_BPM     5
-#define MIXXX_IPOD_COL_COMMENT 6
-
 WIPodTracksModel::WIPodTracksModel(QObject * parent) : WTrackTableModel(parent)
 {
-   //FIXME This causes terrible things, don't know why
-
-    setHeaderData(MIXXX_IPOD_COL_ARTIST ,Qt::Horizontal, tr("Artist"));
-    setHeaderData(MIXXX_IPOD_COL_TITLE, Qt::Horizontal, tr("Title"));
-    setHeaderData(MIXXX_IPOD_COL_TYPE, Qt::Horizontal, tr("Type"));
-    setHeaderData(MIXXX_IPOD_COL_LENGTH, Qt::Horizontal, tr("Length"));
-    setHeaderData(MIXXX_IPOD_COL_BITRATE, Qt::Horizontal, tr("kbit"));
-    setHeaderData(MIXXX_IPOD_COL_BPM, Qt::Horizontal, tr("BPM"));
-    setHeaderData(MIXXX_IPOD_COL_COMMENT, Qt::Horizontal, tr("Comment"));
+    setHeaderData(WIPodTracksModel::ARTIST ,Qt::Horizontal, tr("Artist"));
+    setHeaderData(WIPodTracksModel::TITLE, Qt::Horizontal, tr("Title"));
+    setHeaderData(WIPodTracksModel::TYPE, Qt::Horizontal, tr("Type"));
+    setHeaderData(WIPodTracksModel::LENGTH, Qt::Horizontal, tr("Length"));
+    setHeaderData(WIPodTracksModel::BITRATE, Qt::Horizontal, tr("kbit"));
+    setHeaderData(WIPodTracksModel::BPM, Qt::Horizontal, tr("BPM"));
+    setHeaderData(WIPodTracksModel::COMMENT, Qt::Horizontal, tr("Comment"));
 
 }
 
@@ -37,7 +27,7 @@ WIPodTracksModel::~WIPodTracksModel()
 
 int WIPodTracksModel::columnCount(const QModelIndex &parent) const
 {
-    return 7;
+    return WIPodTracksModel::COLUMN_COUNT;
 }
 
 QVariant WIPodTracksModel::data(const QModelIndex &index, int role) const
@@ -54,13 +44,13 @@ QVariant WIPodTracksModel::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
-        case MIXXX_IPOD_COL_TITLE: return m_pTrackInfo->getTitle();
-        case MIXXX_IPOD_COL_ARTIST: return m_pTrackInfo->getArtist();
-        case MIXXX_IPOD_COL_TYPE: return m_pTrackInfo->getType();
-        case MIXXX_IPOD_COL_LENGTH: return m_pTrackInfo->getDurationStr();
-        case MIXXX_IPOD_COL_BITRATE: return m_pTrackInfo->getBitrateStr();
-        case MIXXX_IPOD_COL_BPM: return m_pTrackInfo->getBpmStr();
-        case MIXXX_IPOD_COL_COMMENT: return m_pTrackInfo->getComment();
+        case WIPodTracksModel::TITLE: return m_pTrackInfo->getTitle();
+        case WIPodTracksModel::ARTIST: return m_pTrackInfo->getArtist();
+        case WIPodTracksModel::TYPE: return m_pTrackInfo->getType();
+        case WIPodTracksModel::LENGTH: return m_pTrackInfo->getDurationStr();
+        case WIPodTracksModel::BITRATE: return m_pTrackInfo->getBitrateStr();
+        case WIPodTracksModel::BPM: return m_pTrackInfo->getBpmStr();
+        case WIPodTracksModel::COMMENT: return m_pTrackInfo->getComment();
 	default:
           qDebug() << "index.column =" << index.column();
           Q_ASSERT(FALSE);    //we should never get here
@@ -80,21 +70,21 @@ QVariant WIPodTracksModel::headerData(int section, Qt::Orientation orientation, 
     {
         switch(section)
         {
-        //case COL_SCORE:
+//        case WIPodTracksModel::SCORE:
         //    return QString("**");
-        case MIXXX_IPOD_COL_TITLE:
+        case WIPodTracksModel::TITLE:
             return QString("Title");
-        case MIXXX_IPOD_COL_ARTIST:
+        case WIPodTracksModel::ARTIST:
             return QString("Artist");
-        case MIXXX_IPOD_COL_TYPE:
+        case WIPodTracksModel::TYPE:
             return QString("Type");
-        case MIXXX_IPOD_COL_LENGTH:
+        case WIPodTracksModel::LENGTH:
             return QString("Length");
-        case MIXXX_IPOD_COL_BITRATE:
+        case WIPodTracksModel::BITRATE:
             return QString("kbit");
-        case MIXXX_IPOD_COL_BPM:
+        case WIPodTracksModel::BPM:
             return QString("BPM");
-        case MIXXX_IPOD_COL_COMMENT:
+        case WIPodTracksModel::COMMENT:
             return QString("Comment");
         default:
 	//this is a nasty error for the user to see, but its better than a crash and should help with debugging
@@ -115,8 +105,8 @@ bool WIPodTracksModel::setData(const QModelIndex &index, const QVariant &value, 
 
         switch(index.column())
         {
-        case MIXXX_IPOD_COL_BPM: m_pTrackInfo->setBpm(value.toString().toFloat()); break;
-        case MIXXX_IPOD_COL_COMMENT: m_pTrackInfo->setComment(value.toString()); break;
+        case WIPodTracksModel::BPM: m_pTrackInfo->setBpm(value.toString().toFloat()); break;
+        case WIPodTracksModel::COMMENT: m_pTrackInfo->setComment(value.toString()); break;
         }
         emit dataChanged(index, index);
         return true;

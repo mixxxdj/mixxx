@@ -150,7 +150,7 @@ protected:
     /// Decimates samples to approx. 500 Hz.
     ///
     /// \return Number of output samples.
-    int decimate(soundtouch::SAMPLETYPE *dest,      ///< Destination buffer
+    unsigned int decimate(soundtouch::SAMPLETYPE *dest,      ///< Destination buffer
                  const soundtouch::SAMPLETYPE *src, ///< Source sample buffer
                  int numsamples                     ///< Number of source samples.
                  );

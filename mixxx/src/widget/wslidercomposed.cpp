@@ -26,8 +26,8 @@
 #include "defs.h"
 #include "wpixmapstore.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent, const char * name, float defaultValue)
-    : WAbstractControl(parent,name,defaultValue)
+WSliderComposed::WSliderComposed(QWidget * parent, float defaultValue)
+    : WAbstractControl(parent,defaultValue)
 {
     m_pSlider = 0;
     m_pHandle = 0;

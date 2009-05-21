@@ -20,6 +20,7 @@
 #include "dlgprefshoutcast.h"
 
 #include "encodervorbis.h"
+#include "encodermp3.h"
 #include "playerinfo.h"
 #include "trackinfoobject.h"
 
@@ -44,6 +45,10 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pConfig = _config;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
     
+    QByteArray baBitrate = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
+    QByteArray baFormat = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
+    int len;
+    
     // Initialize libshout
     shout_init();
 
@@ -61,12 +66,27 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         return;
     }
     
-qDebug("********START SERVERCONNECT*******");
+    qDebug("********START SERVERCONNECT*******");
     serverConnect();
-
-    // Initialize ogg vorbis encoder
-    encoder = new EncoderVorbis(m_pConfig, this);
-    if (encoder->initEncoder() < 0) {
+    
+    if (( len = baBitrate.indexOf(' ')) != -1) {
+        baBitrate.resize(len);
+    }
+    
+    // Initialize encoder
+    if ( ! qstrcmp(baFormat, "MP3")) {
+        encoder = new EncoderMp3(m_pConfig, this);
+    }
+    else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
+        encoder = new EncoderVorbis(m_pConfig, this);
+    }
+    else {
+        qDebug() << "**** Unknown Encoder Format";
+        return;
+    }
+    
+    
+    if (encoder->initEncoder(baBitrate.toInt()) < 0) {
         qDebug() << "**** Vorbis init failed";
     }
 }
@@ -102,6 +122,11 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
     QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
     
+    int format;
+    int len;
+    int protocol;
+    
+    
     if (shout_set_host(m_pShout, baHost.data()) != SHOUTERR_SUCCESS) {
         qDebug() << "Error setting hostname:" << shout_get_error(m_pShout);
         return;
@@ -130,28 +155,67 @@ void EngineShoutcast::updateFromPreferences()
         qDebug() << "Error setting user:" << shout_get_error(m_pShout);
         return;
     }
-    //FIXME: Set the shoutcast format according to the prefs (baFormat.data())
-    if (shout_set_format(m_pShout, SHOUT_FORMAT_OGG) != SHOUTERR_SUCCESS) {
+    
+    
+    if ( !qstrcmp(baFormat.data(), "MP3")) {
+        format = SHOUT_FORMAT_MP3;
+    }
+    else if ( !qstrcmp(baFormat.data(), "Ogg Vorbis")) {
+        format = SHOUT_FORMAT_OGG;
+    }
+    else {
+        qDebug() << "Error: unknown format:" << baFormat.data();
+        return;
+    }
+    
+    if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
         qDebug() << "Error setting format:" << shout_get_error(m_pShout);
         return;
     }
-
-
+    
+    
+    if ((len = baBitrate.indexOf(' ')) != -1) {
+        baBitrate.resize(len);
+    }
+    
+    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.data()) != SHOUTERR_SUCCESS) {
+        qDebug() << "Error setting bitrate:" << shout_get_error(m_pShout);
+        return;
+    }
+    
+    if ( ! qstricmp(baServerType.data(), "Icecast 2")) {
+        protocol = SHOUT_PROTOCOL_HTTP;
+    } else if ( ! qstricmp(baServerType.data(), "Shoutcast")) {
+        protocol = SHOUT_PROTOCOL_ICY;
+    } else if ( ! qstricmp(baServerType.data(), "Icecast 1")) {
+        protocol = SHOUT_PROTOCOL_XAUDIOCAST;
+    } else {
+        qDebug() << "Error: unknown server protocol:" << baServerType.data();
+        return;
+    }
+    
+    if (( protocol == SHOUT_PROTOCOL_ICY ) && ( format != SHOUT_FORMAT_MP3)) {
+        qDebug() << "Error: libshout only supports Shoutcast With MP3 format";
+    }
+    
+    if ( shout_set_protocol(m_pShout, protocol) != SHOUTERR_SUCCESS) {
+        qDebug() << "Error setting protocol: " << shout_get_error(m_pShout);
+        return;
+    }
+    
 }
 
 void EngineShoutcast::serverConnect()
 {
-qDebug("in serverConnect();");
+    qDebug("in serverConnect();");
     if (m_pShout)
         shout_close(m_pShout);
+    
     m_iShoutStatus = shout_open(m_pShout);
     if (m_iShoutStatus == SHOUTERR_SUCCESS)
         m_iShoutStatus = SHOUTERR_CONNECTED;
-/*
-Kinda dangerous this loop.
-We don't want an eternal loop if the connection stays busy.
-But this is just for testing.
-*/
+    
+    
     while (m_iShoutStatus == SHOUTERR_BUSY) {
         qDebug() << "Connection pending. Sleeping...";
         sleep(1);
@@ -165,33 +229,28 @@ But this is just for testing.
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
-//fwrite(header,1,headerLen,stdout);
-//fwrite(body,1,bodyLen,stdout);
-    qDebug() << "writePage() will write " << bodyLen << " data";
     int ret;
-//    usleep(100000);
-/*    qDebug() << "getconnected" << shout_get_connected(m_pShout);
-    m_iShoutStatus = shout_get_connected(m_pShout);
-    if (m_iShoutStatus != SHOUTERR_CONNECTED) {
-        serverConnect();
-    }*/
+    
+    
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-////////        shout_sync(m_pShout);
-        ret = shout_send(m_pShout, header, headerLen);
-        if (ret != SHOUTERR_SUCCESS) {
-            qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-            return;
-        } else {
-            qDebug() << "yea I kinda sent header";
+        // Send header if there is one
+        if ( headerLen > 0 ) {
+            ret = shout_send(m_pShout, header, headerLen);
+            if (ret != SHOUTERR_SUCCESS) {
+                qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+                return;
+            } else {
+                //qDebug() << "yea I kinda sent header";
+            }
         }
-
+        
+        
         ret = shout_send(m_pShout, body, bodyLen);
-
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             return;
         } else {
-            qDebug() << "yea I kinda sent footer";
+            //qDebug() << "yea I kinda sent footer";
         }
         if (shout_queuelen(m_pShout) > 0)
             printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));

@@ -33,14 +33,14 @@
 
 //Forward declarations
 class MidiInputMappingTableModel;
+class MidiOutputMappingTableModel;
 
-
-#define BINDINGS_PATH QDir::homePath().append("/").append(".MixxxMIDIBindings.xml")
+#define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIBindings.xml")
 
 class MidiMapping : public QObject
 {
     Q_OBJECT
-    
+
     public:
     /** Constructor also loads & applies the default XML MIDI mapping file */
     MidiMapping(MidiObject &midi_object);
@@ -51,8 +51,6 @@ class MidiMapping : public QObject
     void loadPreset(QDomElement root);
 
     MidiInputMapping* getInputMapping();
-    QList<QHash<QString,QString> >* getOutputRowParams();
-    void deleteRowParams();
 
     void savePreset(QString path = BINDINGS_PATH);
     void applyPreset();
@@ -66,27 +64,51 @@ class MidiMapping : public QObject
     bool addInputControl(MidiType midiType, int midiNo, int midiChannel,
                          QString controlObjectGroup, QString controlObjectKey,
                          MidiOption midiOption);
+    bool addInputControl(MidiMessage message, MixxxControl control);
     void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
+    MidiOutputMappingTableModel* getMidiOutputMappingTableModel();
     //MixxxControl* getInputMixxxControl(MidiMessage command);
 
     double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
 
-	// MIDI Input Mapping Modifiers
-	int numInputMidiMessages();
-	bool isInputIndexValid(int index);
+    // MIDI Input Mapping Modifiers
+    int numInputMidiMessages();
+    bool isInputIndexValid(int index);
     bool isMidiMessageMapped(MidiMessage command);
-	MidiMessage getInputMidiMessage(int index);
-	MixxxControl getInputMixxxControl(int index);
-	MixxxControl getInputMixxxControl(MidiMessage command);
-	void setInputMidiMapping(MidiMessage command, MixxxControl control);
-	void clearInputMidiMapping(int index);
-	void clearInputMidiMapping(MidiMessage command);
-	void clearInputMidiMapping(int index, int count);
+    MidiMessage getInputMidiMessage(int index);
+    MixxxControl getInputMixxxControl(int index);
+    MixxxControl getInputMixxxControl(MidiMessage command);
+    void setInputMidiMapping(MidiMessage command, MixxxControl control);
+    void clearInputMidiMapping(int index);
+    void clearInputMidiMapping(MidiMessage command);
+    void clearInputMidiMapping(int index, int count);
+
+    // MIDI Output Mapping Modifiers
+    int numOutputMixxxControls();
+    bool isOutputIndexValid(int index);
+    bool isMixxxControlMapped(MixxxControl control);
+    MixxxControl getOutputMixxxControl(int index);
+    MidiMessage getOutputMidiMessage(int index);
+    MidiMessage getOutputMidiMessage(MixxxControl control);
+    void setOutputMidiMapping(MixxxControl control, MidiMessage command);
+    void clearOutputMidiMapping(int index);
+    void clearOutputMidiMapping(MixxxControl control);
+    void clearOutputMidiMapping(int index, int count);
+
+public slots:
+    void finishMidiLearn(MidiMessage message);
+    void beginMidiLearn(MixxxControl control);
+    void cancelMidiLearn();
 
 signals:
     void inputMappingChanged();
     void inputMappingChanged(int startIndex, int endIndex);
+    void outputMappingChanged();
+    void outputMappingChanged(int startIndex, int endIndex);
+    void midiLearningStarted();
+    void midiLearningFinished(MidiMessage);
+    void midiLearningFinished();
 
 private:
 #ifdef __MIDISCRIPT__
@@ -100,9 +122,10 @@ private:
     QDomElement m_Bindings;
     MidiObject &m_rMidiObject;
     MidiInputMapping m_inputMapping;
-    QList<QHash<QString,QString> > m_addOutputRowParams;
-
+    MidiOutputMapping m_outputMapping;
     MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
+    MidiOutputMappingTableModel* m_pMidiOutputMappingTableModel;
+    MixxxControl m_controlToLearn;
 };
 
 #endif

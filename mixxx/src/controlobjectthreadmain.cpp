@@ -31,7 +31,7 @@ ControlObjectThreadMain::~ControlObjectThreadMain()
 bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
 {
     // Handle events
-    if (e->type() == 10000)
+    if (e->type() == MIXXXEVENT_CONTROL)
     {
         ControlEvent * ce = (ControlEvent *)e;
 

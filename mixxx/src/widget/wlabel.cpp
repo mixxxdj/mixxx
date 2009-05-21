@@ -22,7 +22,7 @@
 //Added by qt3to4:
 #include <QLabel>
 
-WLabel::WLabel(QWidget * parent, const char * name ) : WWidget(parent,name)
+WLabel::WLabel(QWidget * parent) : WWidget(parent)
 {
     m_pLabel = new QLabel(parent);
     m_qsText = "";
@@ -38,13 +38,19 @@ void WLabel::setup(QDomNode node)
     WWidget::setup(node);
 
     // Colors
+    QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    
     if(!WWidget::selectNode(node, "BgColor").isNull()) {
         m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+        //m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor)); //deprecated
+        palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
         m_pLabel->setAutoFillBackground(true);
     }
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
+    //m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor)); //deprecated
+    palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
+    
+    m_pLabel->setPalette(palette);
 
     // Text
     if (!selectNode(node, "Text").isNull())

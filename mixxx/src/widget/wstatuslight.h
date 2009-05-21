@@ -33,7 +33,7 @@
 class WStatusLight : public WWidget  {
    Q_OBJECT
 public: 
-    WStatusLight(QWidget *parent=0, const char *name=0);
+    WStatusLight(QWidget *parent=0);
     ~WStatusLight();
     void setup(QDomNode node);
     void setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal=false);

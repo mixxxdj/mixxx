@@ -17,8 +17,9 @@ MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject & midi, do
     m_cobj = ControlObject::getControl(ConfigKey(group, key));
 
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
-    // Q_ASSERT(m_cobj);
-    Q_ASSERT_X(m_cobj, "MidiLedHandler", "Invalid config group: '" + group + "' name:'" + key + "'");
+    //Q_ASSERT(m_cobj);
+    QByteArray err_tmp = QString("Invalid config group: '%1', name: '%2'").arg(group).arg(key).toAscii();
+    Q_ASSERT_X(m_cobj, "MidiLedHandler", err_tmp);
 
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
@@ -32,11 +33,11 @@ void MidiLedHandler::controlChanged(double value) {
     if (value >= m_min && value <= m_max) { m_byte2 = m_on; }
 
     if (lastStatus!=m_byte2) {
-	lastStatus=m_byte2;
- 	if (m_byte2 != 0xff) {
-		// qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
-		m_midi.sendShortMsg(m_status, m_midino, m_byte2, m_device);
-	}
+        lastStatus=m_byte2;
+         if (m_byte2 != 0xff) {
+            // qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
+            m_midi.sendShortMsg(m_status, m_midino, m_byte2, m_device);
+        }
     }
 }
 
@@ -44,13 +45,13 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString de
     if (!node.isNull() && node.isElement()) {
         QDomNode light = node;
         while (!light.isNull()) {
-            if(light.nodeName() == "light") {
+            if(light.nodeName() == "output") {
                 QString group = WWidget::selectNodeQString(light, "group");
                 QString key = WWidget::selectNodeQString(light, "key");
 
                 unsigned char status = (unsigned char)WWidget::selectNodeInt(light, "status");
                 unsigned char midino = (unsigned char)WWidget::selectNodeInt(light, "midino");
-                unsigned char on = 0x7f;	// Compatible with Hercules and others
+                unsigned char on = 0x7f;    // Compatible with Hercules and others
                 unsigned char off = 0x00;
                 float min = 0.0f;
                 float max = 1.0f;
@@ -60,7 +61,7 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString de
                 if (!light.firstChildElement("off").isNull()) {
                     off = (unsigned char)WWidget::selectNodeInt(light, "off");
                 }
-                if (!light.firstChildElement("threshold").isNull()) {
+                if (!light.firstChildElement("threshold").isNull()) { //Deprecated as of 1.7.0
                     min = WWidget::selectNodeFloat(light, "threshold");
                 }
                 if (!light.firstChildElement("minimum").isNull()) {

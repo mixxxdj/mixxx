@@ -29,7 +29,7 @@
 class WNumber : public WWidget  {
     Q_OBJECT
 public:
-    WNumber(QWidget *parent=0, const char *name=0);
+    WNumber(QWidget *parent=0);
     ~WNumber();
     void setup(QDomNode node);
     void move(int, int);

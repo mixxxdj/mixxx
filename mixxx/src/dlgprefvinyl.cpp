@@ -96,13 +96,13 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     //gain->setEnabled( FALSE );
 
     // Add vinyl types
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_SERATOCD);
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_FINALSCRATCH);
-    ComboBoxVinylType->insertItem(MIXXX_VINYL_MIXVIBESDVSCD);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCD);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_FINALSCRATCH);
+    ComboBoxVinylType->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
 }
 
 DlgPrefVinyl::~DlgPrefVinyl()
@@ -162,11 +162,11 @@ void DlgPrefVinyl::slotUpdate()
         ComboBoxDeviceDeck2->addItem(device->getDisplayName(), device->getInternalName());
         if (device->getInternalName() == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")))
         {
-            ComboBoxDeviceDeck1->setCurrentItem(j);
+            ComboBoxDeviceDeck1->setCurrentIndex(j);
         }
         if (device->getInternalName() == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")))
         {
-            ComboBoxDeviceDeck2->setCurrentItem(j);
+            ComboBoxDeviceDeck2->setCurrentIndex(j);
         }
         ++j;
     }

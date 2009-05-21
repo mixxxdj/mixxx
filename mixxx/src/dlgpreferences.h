@@ -37,6 +37,7 @@ class Track;
 class DlgPrefSound;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
+class DlgPrefNoMidi;
 class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
@@ -60,7 +61,9 @@ public:
     ~DlgPreferences();
     void createIcons();
 public slots:
-    void slotUpdate();
+    void slotShow();
+    void slotHide();
+    void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
@@ -70,9 +73,12 @@ signals:
 protected:
     bool eventFilter(QObject *, QEvent *);
 private:
+    void destroyMidiWidgets();
+    void setupMidiWidgets();
     DlgPrefSound *wsound;
     QList<DlgPrefMidiBindings*> wmidiBindingsForDevice;
     DlgPrefPlaylist *wplaylist;
+    DlgPrefNoMidi *wNoMidi;
     DlgPrefControls *wcontrols;
     DlgPrefEQ *weq;
     DlgPrefCrossfader *wcrossfader;

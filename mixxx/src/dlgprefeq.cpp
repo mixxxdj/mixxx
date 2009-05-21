@@ -138,7 +138,6 @@ int DlgPrefEQ::getSliderPosition(int eqFreq)
 {
         if(eqFreq >= 20050)
                 return 480;
-        double dfreq = eqFreq;
         double dsliderPos = pow(eqFreq, 1./4.);
         dsliderPos *= 40;
         return dsliderPos;
@@ -147,7 +146,6 @@ int DlgPrefEQ::getSliderPosition(int eqFreq)
 
 void DlgPrefEQ::slotApply()
 {
-    
 #ifndef __LOFI__
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "LoEQFrequency"))->set(m_lowEqFreq);
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "HiEQFrequency"))->set(m_highEqFreq);
@@ -160,7 +158,7 @@ void DlgPrefEQ::slotUpdate()
 	slotUpdateLoEQ();
 	slotUpdateHiEQ();
 	slotLoFiChanged();
-}    
+}
 
 int DlgPrefEQ::getEqFreq(int sliderVal)
 {

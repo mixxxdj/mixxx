@@ -434,106 +434,106 @@
       </control>
     </controls>
     <outputs>
-      <light>
+      <output>
         <group>[Channel1]</group>
         <key>play</key>
         <status>0xB0</status>
         <midino>0x08</midino>
         <threshold>0.5</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>play</key>
         <status>0xB0</status>
         <midino>0x02</midino>
         <threshold>0.5</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel1]</group>
         <key>playposition</key>
         <status>0xB0</status>
         <midino>0x00</midino>
         <minimum>0.9</minimum>
         <maximum>0.99</maximum>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>playposition</key>
         <status>0xB0</status>
         <midino>0x05</midino>
         <minimum>0.9</minimum>
         <maximum>0.99</maximum>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
         <threshold>0.4</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x16</midino>
         <threshold>0.5</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0D</midino>
         <threshold>0.6</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <threshold>0.7</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0F</midino>
         <threshold>0.8</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x04</midino>
         <threshold>0.4</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x1A</midino>
         <threshold>0.5</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x12</midino>
         <threshold>0.6</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x11</midino>
         <threshold>0.7</threshold>
-      </light>
-      <light>
+      </output>
+      <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x10</midino>
         <threshold>0.8</threshold>
-      </light>
+      </output>
     </outputs>
   </controller>
 </MixxxMIDIPreset>

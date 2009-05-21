@@ -21,7 +21,7 @@
 
 bool WNumberBpm::m_bScaleBpm = true;
 
-WNumberBpm::WNumberBpm(const char * group, QWidget * parent, const char * name) : WNumber(parent, name)
+WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
 {
     m_qsText = "BPM: ";
     m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));

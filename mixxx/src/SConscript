@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import sys
 import glob
@@ -37,6 +38,17 @@ def getSVNRevision(): # GPL code taken from http://trac.zeitherrschaft.org/zzub/
 		if rev != "" and rev != "exported":
 			return rev
 	return ""
+
+
+def getMixxxVersion():
+	defs = File('#src/defs.h') #have to handle out-of-tree building :(
+	p = os.popen('grep -m 1 "#define VERSION" %s' % defs)
+	version = p.readline()
+	p.close()
+	
+	#given "#define VERSION "...."" extract "....":
+	version = version.split()[-1].replace('"', '')
+	return version
 
 
 #Check for FFMPEG support
@@ -140,9 +152,9 @@ Export('platform')
 #Figure out what the QT path is
 #XXX this should be a dict lookup, not an ifelse tree
 default_qtdir = {'linux': '/usr/share/qt4',
-		'bsd': '/usr/local/lib/qt4',
-		'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
+		 'bsd': '/usr/local/lib/qt4',
+		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
+		 'win32': 'C:\\qt\\4.3.0'}[platform]	 #ditto
 
 
 #Read the qtdir flag, if it was set explicitly
@@ -163,16 +175,19 @@ else:
 #The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
 #and on Windows where all the paths are set in the shell.
 if platform in ('linux', 'bsd'):
-	env = Environment(tools=['default','qt4'], toolpath=['../', './'], QTDIR=flags_qtdir, ENV = os.environ)
+	env = Environment(tools=['default','qt4'], toolpath=['#build/'], QTDIR=flags_qtdir, ENV = os.environ)
 	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 elif platform == 'osx':
-	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['../', './', 'osx'], ENV = os.environ)
+	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['#build/', '#/build/osx/'], ENV = os.environ)
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
-	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
+	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['#build/'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
+
+
+env['MIXXX_VERSION'] = getMixxxVersion() #should this be in the env?
 
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
@@ -204,6 +219,7 @@ opts.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
 opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
 opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
+opts.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fogs asmlib, found at http://www.agner.org/optimize/', 0)
 opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 opts.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
@@ -227,7 +243,7 @@ if os.environ.has_key('CCFLAGS'):
 
 ### embed SVN version into build
 ### Put version info into a file, so it doesn't force a rebuild of everything :)
-f = open("../.mixxx_version.svn","w")
+f = open("../../.mixxx_version.svn","w")
 try:
 	f.write('#define BUILD_REV "' + getSVNRevision() + '"\n')
 finally:
@@ -256,6 +272,7 @@ sources = Split("""
                 dlgprefsound.cpp
                 dlgprefmidibindings.cpp
                 dlgprefplaylist.cpp
+                dlgprefnomidi.cpp
                 dlgprefcontrols.cpp
                 dlgbpmtap.cpp
                 dlgprefbpm.cpp
@@ -263,6 +280,7 @@ sources = Split("""
                 dlgabout.cpp
                 dlgprefeq.cpp
                 dlgprefcrossfader.cpp
+                dlgmidilearning.cpp
 
                 engine/enginebuffercue.cpp
                 engine/enginebuffer.cpp
@@ -300,6 +318,7 @@ sources = Split("""
                 midiobjectnull.cpp
                 mididevicehandler.cpp
                 midiinputmappingtablemodel.cpp
+                midioutputmappingtablemodel.cpp
                 midichanneldelegate.cpp
                 miditypedelegate.cpp
                 midinodelegate.cpp
@@ -307,6 +326,7 @@ sources = Split("""
                 mixxxcontrol.cpp
                 mixxx.cpp
                 mixxxview.cpp
+                errordialog.cpp
                 
                 soundsource.cpp
                 soundsourcemp3.cpp
@@ -359,13 +379,8 @@ sources = Split("""
                 bpm/bpmscheme.cpp
                 bpm/peakfinder.cpp
                 bpm/wavesegmentation.cpp
-                
-                soundsourceproxy.cpp
-                
-                powermate.cpp
-                hercules.cpp
-                mouse.cpp
 
+                soundsourceproxy.cpp
 
                 widget/wvisualsimple.cpp
                 widget/wwaveformviewer.cpp
@@ -401,8 +416,8 @@ sources = Split("""
                 """)
 
 #Compile platform specific hardware support
-if platform == 'linux':
-	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
+#if platform == 'linux':
+#	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
 #elif platform == 'win32':
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
@@ -435,15 +450,14 @@ if platform == 'bsd':
 	env.Append(LIBS=['ogg', 'vorbis']) #why do we need to do this on OpenBSD and not on Linux? if we don't then CheckLib("vorbisfile") fails
 
 #Check for dependencies if we're not doing a clean...
-if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
-	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
-
+#if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
+conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
 
 #TODO: Add all of the other configure checks as custom_tests properly.
 	
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
-#XXX all these Exit(1) calls should be turned into a list of libs to look for
+#XXX all these Exit(1) calls should be turned into a list of libs to look for and then a loop that does the exit if any(conf.CheckLib(lib) for lib in list)
 if not conf.CheckLib('portaudio'):
 	print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 	Exit(1)
@@ -513,7 +527,7 @@ if platform in ('linux', 'bsd', 'win32'):
 if platform == 'linux':
 	#Check for g++ (yeah, SCONS is a bit dumb here)
 	if os.system("which g++ > /dev/null"): #Checks for non-zero return code
-		print "Did not find gcc/g++, exiting!"
+		print "Did not find g++, exiting!"
 		Exit(1)
 	
 	#Check for pkg-config
@@ -613,11 +627,11 @@ env = conf.Finish()
 #Declare the flags for Mixxx's config/track listing files:
 #The quotes are necessary, since these are used directly in C code as strings
 if platform in ('linux', 'bsd'):
-	_mixxx_files = [('BPMSCHEME_FILE','.mixxxbpmscheme.xml'), ('SETTINGS_FILE', '.mixxx.cfg'), ('TRACK_FILE', '.mixxxtrack.xml')]
+        _mixxx_files = [('SETTINGS_PATH','.mixxx/'), ('BPMSCHEME_FILE','mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 elif platform == 'osx': #right now this is the same as linux and bsd, but these files should really go in ~/Library/Applicationsomething like the rest of OS X apps do
-	_mixxx_files = [('BPMSCHEME_FILE', '.mixxxbpmscheme.xml'), ('SETTINGS_FILE', '.mixxx.cfg'), ('TRACK_FILE', '.mixxxtrack.xml')]
+        _mixxx_files = [('SETTINGS_PATH','.mixxx/'), ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 elif platform == 'win32':
-	_mixxx_files = [('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
+        _mixxx_files = [('SETTINGS_PATH','Local Settings/Application Data/Mixxx/'), ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'), ('SETTINGS_FILE', 'mixxx.cfg'), ('TRACK_FILE', 'mixxxtrack.xml')]
 _mixxx_files = [(k, r'\"' + v + r'\"') for k,v in _mixxx_files] #escape the filepaths, so that they wind up as C-strings to the C-compiler (the \s are so the shell doesn't eat the ")
 env.Append(CPPDEFINES=_mixxx_files)
 del _mixxx_files #safety net
@@ -671,7 +685,7 @@ if platform == 'win32':
 
 env.Append(CPPDEFINES = ['QT3_SUPPORT', 'QT3_SUPPORT_WARNINGS', 'QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
-if platform in ('linux','bsd'):
+if platform in ('linux','bsd','win32'):
 	env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
@@ -695,6 +709,7 @@ env.Uic4('dlgprefsounddlg.ui')
 env.Uic4('dlgprefmidibindingsdlg.ui')
 env.Uic4('dlgprefmididevicedlg.ui')
 env.Uic4('dlgprefplaylistdlg.ui')
+env.Uic4('dlgprefnomididlg.ui')
 env.Uic4('dlgprefcontrolsdlg.ui')
 env.Uic4('dlgprefeqdlg.ui')
 env.Uic4('dlgprefcrossfaderdlg.ui')
@@ -704,6 +719,7 @@ env.Uic4('dlgbpmtapdlg.ui')
 env.Uic4('dlgprefvinyldlg.ui')
 env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgaboutdlg.ui')
+env.Uic4('dlgmidilearning.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('../../res/mixxx.qrc')
@@ -807,8 +823,9 @@ if int(flags_shoutcast):
 #TODO: check for libshout
 	env.Append(LIBS = 'shout');
 	env.Append(LIBS = 'vorbisenc');
+	env.Append(LIBS = 'mp3lame');
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
-	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encodervorbis.cpp """ )
+	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp encodervorbis.cpp encodermp3.cpp""" )
 	env.Uic4('dlgprefshoutcastdlg.ui')
 	print "Shoutcast support... enabled"
 	build_flags += 'shoutcast '
@@ -975,11 +992,37 @@ if int(flags_optimize):
 		elif flags_optimize=='4':
 			print "  Intel Core 2 optimizations enabled."
 			env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='5':
+			print "  Athlon 3dnow/SSE optimizations enabled (Athlon-4/XP/MP)."
+			env.Append(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='6':
+			print "  Athlon 3dnow/SSE/SSE2 optimizations enabled (K8/Opteron/AMD64)."
+			env.Append(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='7':
+			print "  Athlon 3dnow/SSE/SSE2/SSE3 optimizations enabled (K8/Opteron/AMD64 w/ SSE3)."
+			env.Append(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='8':
+			print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
+			env.Append(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 else:
 	print "Optimizations... disabled"
 
-
-
+#Linking with ASMLIB
+flags_asmlib = getFlags(env, 'asmlib', 0)
+if int(flags_asmlib):
+	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... enabled"
+	env.Append(LIBPATH='#/../asmlib')
+	if platform == 'linux':
+		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+		env.Append(LIBS = '":alibelf32o.a"')
+	elif platform == 'osx':
+		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+		env.Append(LIBS = '":alibmac32o.a"')
+	elif platform == 'win32':
+		env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
+		env.Append(LIBS = 'alibcof32o')
+else:
+	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... disabled"
 
 # Profiling and Optimization
 if not platform == 'win32':
@@ -1044,7 +1087,7 @@ else:
 	print "Case Metrics profiling... disabled"
 
 ### Put flags info into a file
-f = open("../.mixxx_flags.svn","w")
+f = open("../../.mixxx_flags.svn","w")
 try:
 	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
 finally:
@@ -1203,15 +1246,14 @@ if platform in ('linux', 'bsd'):
 if platform == 'osx':
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
-	MIXXX_VERSION="1.6.5" #tmp tmp tmp, this should probably be in the env?
 	ARCH="macintel" #XXX should get this from scons or the system somehow?
-	DMG_ICON="src/osx/VolumeIcon.icns"
+	DMG_ICON="#res/osx/VolumeIcon.icns"
 	
 	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
 	qt_plugins = [("iconengines", e) for e in ["libqsvgicon.dylib"]] + \
 			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] #Left out libqmng and libqtiff to save space.
 	
-	bundle = env.App("Mixxx", [mixxx_bin, 'osx/application.icns',
+	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
 		Dir('#res/midi/'), Dir('#res/keyboard/'),
 		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/')],
@@ -1224,7 +1266,7 @@ if platform == 'osx':
 		 )
 	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	dmg = env.Dmg('Mixxx-'+MIXXX_VERSION+'-'+ARCH, [bundle, '#Mixxx-Manual.pdf', '#LICENSE', '#README'], VOLNAME=VOLNAME, ICON = DMG_ICON)
+	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, '#Mixxx-Manual.pdf', '#LICENSE', '#README'], VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 		
 if platform == 'win32':
@@ -1261,8 +1303,7 @@ def BuildRelease(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
 	print
-	print "You have built version ",
-	os.system('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3')
+	print "You have built version ", env['MIXXX_VERSION']
 	print
 	print "Binary has size ",
 	os.system('ls -lh dist/mixxx.exe | cut -d \' \' -f 5')
@@ -1281,7 +1322,7 @@ def BuildRelease(target, source, env):
 
 	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
 		print "Now building installer..."
-		os.system('"c:/Program Files/NSIS/makensis.exe" Mixxx.nsi')
+		os.system('"%PROGRAMFILES%/NSIS/makensis.exe" -NOCD -DBINDIR=dist build\nsis\Mixxx.nsi')
 	else:
 		print "Aborted building installer"
 
@@ -1298,10 +1339,7 @@ def BuildUbuntuPackage(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
 	print
-	print "You have built version ",
-	p = os.popen('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3 | tr -d \'\"\' | tr -d \'\n\'')
-	version = p.readline()
-	p.close()
+	print "You have built version ", env['MIXXX_VERSION']
 	print
 	print
 	print "Top line of README, check version:"
@@ -1317,22 +1355,22 @@ def BuildUbuntuPackage(target, source, env):
 	if ("yes" == "yes"):
 		print "Now building DEB package..."
 		
-		mixxx_dir = 'mixxx-' + version
-		mixxx_tarball = 'mixxx_' + version + '.orig.tar.gz' #The underscore is super important here to make the deb package work
+		mixxx_dir = 'mixxx-' + env['MIXXX_VERSION']
+		mixxx_tarball = 'mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz' #The underscore is super important here to make the deb package work
 		
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
 
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 		print "Exporting source tree from HEAD"
-		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + version)
+		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + env['MIXXX_VERSION'])
 		
 		print "Copying promo tracks dir"
-		os.system('cp -r promo ubuntu/mixxx-' + version)
+		os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
 	
 		#Remove the Natt skin to fix our 1.6.0 release, damn plagarism
 		print "Removing Natt skin..."
-		os.system('rm -rf ubuntu/mixxx-' + version + '/src/skins/Natt')
+		os.system('rm -rf ubuntu/mixxx-' + env['MIXXX_VERSION'] + '/src/skins/Natt')
 
 		os.chdir('ubuntu')
 		
@@ -1340,14 +1378,14 @@ def BuildUbuntuPackage(target, source, env):
 		#because it can't be included in the source tarball (which we create next).
 		#print "Moving debian directory"
 		#os.system('rm -f debian')
-		#os.system('mv mixxx-' + version + '/src/debian .')
+		#os.system('mv mixxx-' + env['MIXXX_VERSION'] + '/src/debian .')
 		
 		print "Tarring source directory..."
-		os.system("rm -f mixxx_" + version + ".orig.tar.gz") #Remove old tarball
-		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + version + '.orig.tar.gz ' + mixxx_dir)
+		os.system("rm -f mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz") #Remove old tarball
+		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz ' + mixxx_dir)
 		
 		#Move the debian directory into the right spot.
-		#os.system('mv debian mixxx-' + version)
+		#os.system('mv debian mixxx-' + env['MIXXX_VERSION'])
 		os.system('rm -rf ' + mixxx_dir + '/debian')
 		os.system('mv ' + mixxx_dir + '/src/debian ' + mixxx_dir)
 		

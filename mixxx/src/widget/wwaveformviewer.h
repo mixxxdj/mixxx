@@ -22,7 +22,7 @@ class WWaveformViewer : public QWidget
 {
     Q_OBJECT
 public:
-    WWaveformViewer(const char *group, QWidget *pParent=0, Qt::WFlags f = 0);
+    WWaveformViewer(const char *group, QWidget *parent=0, Qt::WFlags f = 0);
     ~WWaveformViewer();
 
     void dragEnterEvent(QDragEnterEvent *event);

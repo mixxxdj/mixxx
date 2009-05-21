@@ -29,20 +29,20 @@
 #ifdef __WINMIDI__
   #include "midiobjectwin.h"
 #endif
-#ifdef __LINUX__
-#include "mouselinux.h"
-#endif
-#ifdef __LINUX__
-#include "powermatelinux.h"
-#endif
-#ifdef __WIN32__
-#include "powermatewin.h"
-#endif
 
-#include "hercules.h"
-#ifdef __LINUX__
-#include "herculeslinux.h"
-#endif
+// #ifdef __LINUX__
+// #include "mouselinux.h"
+// #endif
+// #ifdef __LINUX__
+// #include "powermatelinux.h"
+// #endif
+// #ifdef __WIN32__
+// #include "powermatewin.h"
+// #endif
+// #include "hercules.h"
+// #ifdef __LINUX__
+// #include "herculeslinux.h"
+// #endif
 
 #include "midiobjectnull.h"
 

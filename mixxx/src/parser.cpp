@@ -56,22 +56,27 @@ bool Parser::isFilepath(QString sFilepath){
 
 bool Parser::isBinary(QString filename){
     QFile * file = new QFile(filename);
-    int i = 0;
-
 
     if(file->open(QIODevice::ReadOnly)){
-        if(( i = file->getch())<33){ //Starting byte is no character
-            file->close();
-            return true;
+        char c;
+        unsigned char uc;
+        
+        if(!file->getChar(&c))
+        {
+          qDebug() << "Parser: Error reading stream on " << filename;
+          return true; //should this raise an exception?
         }
-
-        if(i > 127){ //Starting byte is no character
+        
+        uc = uchar(c);
+        
+        if(!(33<=uc && uc<=127))  //Starting byte is no character
+        {
             file->close();
             return true;
         }
 
     } else{
-        qDebug("Parser: Could not open file: "+filename);
+        qDebug() << "Parser: Could not open file: " << filename;
     }
     //qDebug(QString("Parser: textstream starting character is: %1").arg(i));
     file->close();

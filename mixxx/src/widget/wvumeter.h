@@ -32,7 +32,7 @@
 class WVuMeter : public WWidget  {
    Q_OBJECT
 public: 
-    WVuMeter(QWidget *parent=0, const char *name=0);
+    WVuMeter(QWidget *parent=0);
     ~WVuMeter();
     void setup(QDomNode node);
     void setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal=false);

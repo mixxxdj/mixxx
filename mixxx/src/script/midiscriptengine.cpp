@@ -53,6 +53,9 @@ MidiScriptEngine::~MidiScriptEngine() {
     // to signals.
     m_connectedControls.clear();
 
+    // Wait for the thread to terminate
+    wait();
+
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
     if(m_pEngine != NULL) {
@@ -61,6 +64,10 @@ MidiScriptEngine::~MidiScriptEngine() {
         delete engine;
     }
     
+}
+
+bool MidiScriptEngine::isReady() {
+    return m_pEngine != NULL;
 }
 
 
@@ -400,13 +407,19 @@ void MidiScriptEngine::slotValueChanged(double value) {
 
     if(m_connectedControls.contains(key)) {
         QString function = m_connectedControls.value(key);
-        qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
+//         qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
 
         // Could branch to safeExecute from here, but for now do it this way.
         QScriptValue function_value = m_pEngine->evaluate(function);
         QScriptValueList args;
         args << QScriptValue(m_pEngine, value);
-        function_value.call(QScriptValue(), args);
+//         function_value.call(QScriptValue(), args);
+        args << QScriptValue(m_pEngine, key.group); // Added by Math`
+        args << QScriptValue(m_pEngine, key.item);  // Added by Math`
+        QScriptValue result = function_value.call(QScriptValue(), args);
+        if (result.isError()) {
+            qDebug()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+        }
         
     } else {
         qDebug() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
@@ -472,6 +485,7 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
     // TODO(rryan) add locking!
     if(m_scriptErrors.contains(filename))
         return m_scriptErrors.value(filename);
+    return QStringList();   // Fix warning
 }
 
 

@@ -17,7 +17,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "1.6.2"
+#define VERSION "Trunk"
 #define MIXXX_PROMO_DIR "promo"
 
 #include <math.h>
@@ -52,7 +52,8 @@ const int MAX_BUFFER_LEN = 160000;
 
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers
-static CSAMPLE two_pi = (2.f*acos(-1.f));
+// static CSAMPLE two_pi = (2.f*acos(-1.f));
+// two_pi has been moved to mathstuff.h clear up the "defs.h:55: warning: ‘two_pi’ defined but not used" it generates for every file including defs.h
 
 // Ensure that CSAMPLE x stays above the intel cpu denormalization range,
 // otherwise sets x equal to 0.

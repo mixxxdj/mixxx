@@ -64,7 +64,7 @@ void TrackPlaylist::loadFromXMLNode(QDomNode node)
 {
     // Set name of playlist
     m_qName = XmlParse::selectNodeQString(node, "Name");
-    qDebug() << "playlist name" << m_qName.latin1();
+    qDebug() << "playlist name" << m_qName;
 
 	//Set comment for playlist
 	m_qComment = XmlParse::selectNodeQString(node, "Comment");
@@ -315,7 +315,7 @@ void TrackPlaylist::addPath(QString qPath)
         // And then add all the files
 
         dir.setFilter(QDir::Files);
-        dir.setNameFilter(MIXXX_SUPPORTED_AUDIO_FILETYPES);
+        dir.setNameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" "));
         QListIterator<QFileInfo> it(dir.entryInfoList());          // create list iterator
         QFileInfo fi;   // pointer for traversing
 

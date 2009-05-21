@@ -36,7 +36,9 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e)
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
 	if (m_place) {
 		setText("");
-		setPaletteForegroundColor(Qt::black);
+		QPalette palette = this->palette();
+		palette.setColor(this->foregroundRole(), Qt::black);
+		setPalette(palette);
 		m_place = false;
 	}
 }
@@ -52,7 +54,9 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 
 void WSearchLineEdit::showPlaceholder() {
 	setText("Search...");
-	setPaletteForegroundColor(Qt::lightGray);
+	QPalette palette = this->palette();
+	palette.setColor(this->foregroundRole(), Qt::lightGray);
+	setPalette(palette);
 }
 
 void WSearchLineEdit::updateCloseButton(const QString& text)

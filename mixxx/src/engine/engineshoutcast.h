@@ -28,6 +28,8 @@
 
 #include <QObject>
 
+#include "encoder.h"
+
 //class ControlLogpotmeter;
 //class ConfigKey;
 class EncoderVorbis;
@@ -54,7 +56,7 @@ private:
     long m_iShoutStatus;
     ConfigObject<ConfigValue> *m_pConfig;
     ControlObject* recReady;
-    EncoderVorbis *encoder;
+    Encoder *encoder;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
 //    void (*writeFn)(unsigned char *, unsigned char *, int, int);
 };

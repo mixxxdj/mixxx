@@ -17,7 +17,7 @@
 
 #include "wslider.h"
 
-WSlider::WSlider(QWidget * parent, const char * name) : WKnob(parent, name)
+WSlider::WSlider(QWidget * parent) : WKnob(parent)
 {
 }
 
