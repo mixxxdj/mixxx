@@ -530,7 +530,10 @@ if not conf.CheckLib('ogg'):
 	print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
 	Exit(1)
 
+#hack: check for these here, before conf.Finish happens
 have_m4a = conf.CheckLib('mp4')
+have_faad = conf.CheckLib('faad')
+have_m4a = have_m4a and have_faad
 
 ## Check for OpenGL (it's messy to do it for all three platforms)
 ## XXX this should *NOT* have hardcoded paths like this
@@ -939,8 +942,7 @@ else:
 	print "Tonal analysis... disabled"
 
 
-flags_m4a = getFlag(senv, 'm4a', 0)
-print ("%s " % flags_m4a)*50
+flags_m4a = getFlags(env, 'm4a', 0)
 if int(flags_m4a):
 	print "Apple M4A audio file support...",
 	if have_m4a:
@@ -953,7 +955,7 @@ if int(flags_m4a):
 		env.Append(LIBS = 'libmp4v2')
 		env.Append(LIBS = 'libfaad')
 	else:
-		print "not found (did you install libmp4v2?)"
+		print "not found (did you install libmp4v2 and libfaad?)"
 else:
 	print "Apple M4A audio file support... disabled"
 
