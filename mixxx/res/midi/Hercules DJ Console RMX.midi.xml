@@ -10,6 +10,17 @@
             <file filename="Hercules-DJ-Console-RMX-scripts.js" functionprefix="HerculesRMX"/>
         </scriptfiles>
         <controls>
+<!-- Headphone Cue/Mix POTS Control -->
+               <control>
+                   <status>0xB0</status>
+                   <midino>0x3A</midino>
+                   <group>[Master]</group>
+                   <key>headMix</key>
+                   <options>
+                       <normal/>
+                   </options>
+               </control>
+
 <!-- Jog Wheels -->
             <control>
                 <group>[Channel1]</group>
