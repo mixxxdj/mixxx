@@ -441,14 +441,15 @@ elif platform == 'bsd':
 
 #Set up the library path on Windows:
 if platform == 'win64':
-	env.Append(CPPPATH=['#/../mixxx-win64lib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
+	env.Append(CPPPATH='#/../mixxx-win64lib') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='#/../mixxx-win64lib')
-	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
-#'/subsystem:windows',
+
+if platform == 'win32':
+	env.Append(CPPPATH='#/../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
+	env.Append(LIBPATH='#/../mixxx-winlib')
 
 if 'win' in platform:
-	env.Append(CPPPATH=['#/../mixxx-winlib', '../../lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
-	env.Append(LIBPATH='#/../mixxx-winlib')
+	env.Append(CPPPATH='../../lib/ladspa') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 #'/subsystem:windows',
 
@@ -518,9 +519,14 @@ else:
 
 
 #Check for Ogg and Vorbis
-if not conf.CheckLib('vorbisfile'):
-	print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
-	Exit(1)
+if platform == 'win64':
+	if not conf.CheckLib('vorbisfile_static'): # For some reason this has to be checked this way on win64, otherwise it looks for the dll lib which will cause a conflict later (at line 713)
+		print 'Did not find vorbisfile_static.lib or the libvorbisfile development headers, exiting!'
+		Exit(1)
+else:
+	if not conf.CheckLib('vorbisfile'):
+		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
+		Exit(1)
 
 if not conf.CheckLib('vorbis'):
 	print 'Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers, exiting!'
@@ -922,7 +928,11 @@ if 'win' in platform:
 	if int(flags_msvcdebug):
 		env.Append(CCFLAGS = '/MDd') # required for sndfile w/ flac support on windows
 		env.Append(LINKFLAGS = '/DEBUG')
-		env.Append(CXXFLAGS = '/ZI')
+		if platform == 'win64':
+			env.Append(CXXFLAGS = '/Zi')
+			env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
+		else:
+			env.Append(CXXFLAGS = '/ZI')
 		print "MSVC Debugging... enabled"
 		build_flags += 'msvcdebug '
 	else:
