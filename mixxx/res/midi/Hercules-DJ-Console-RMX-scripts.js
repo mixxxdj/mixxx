@@ -138,7 +138,6 @@ HerculesRMX.stop_and_reset_track = function (channel, control, value, status) {
 
 HerculesRMX.up_down_arrows = function (channel, control, value, status) {
    // TODO replace with two seperate functions (Next/Prev) to make them distinctly rebindable.
-   script.debug(group, control, value, status);
    HerculesRMX.playlistJogScrollMode = value > 0;
    if (value > 0) {
      switch (control) {
