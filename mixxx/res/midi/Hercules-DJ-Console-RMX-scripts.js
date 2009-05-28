@@ -67,27 +67,7 @@ HerculesRMX.wheelDecay = function (value) {
                 engine.setValue("[Channel2]","scratch", 0);
              }
           }
-      } /* else { // do pitch adjustment
-         if (HerculesRMX.debug) print("Wheel deck1: " + engine.getValue("[Channel1]","wheel") + " deck2: "+ engine.getValue("[Channel2]","wheel"));
-  	 jog1DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
-         jog1 = engine.getValue("[Channel1]","wheel"); 
-	 if (jog1 != 0) {
-         if (Math.abs(jog1) > jog1DecayRate) {  
-               engine.setValue("[Channel1]","wheel", (jog1 / jog1DecayRate).toFixed(2));
-            } else {
-               engine.setValue("[Channel1]","wheel", 0);
-            }
-         }
-	 jog2DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
-         jog2 = engine.getValue("[Channel2]","wheel"); 
-	  if (jog2 != 0) {
-	     if (Math.abs(jog2) > jog2DecayRate) {  
-                engine.setValue("[Channel2]","wheel", (jog2 / jog2DecayRate).toFixed(2));
-             } else {
-                engine.setValue("[Channel2]","wheel", 0);
-             }
-          }
-       } */
+      } 
     }
 }
 
