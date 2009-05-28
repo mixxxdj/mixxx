@@ -67,6 +67,7 @@ private:
     ControlObjectThreadMain *m_pPlayPos;
     ControlObjectThreadMain *m_pRate;
     ControlObjectThreadMain *m_pRateRange;
+    ControlObjectThreadMain *m_pRateDir;
     
     ControlObject *m_pCOVisualResample;
 
