@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0">
-    <info>
-        <name>Hercules DJ Console Mk2</name>
-        <author>Garth Dahlstrom</author>
-        <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
-    </info>
+  <info>
+    <name>Hercules DJ Console Mk2</name>
+    <author>Garth Dahlstrom</author>
+    <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
+  </info>
   <controller id="Hercules DJ Console Mk2 MIDI">
+    <scriptfiles>
+      <file filename="Hercules-DJ-Console-Mk2-scripts.js" functionprefix="HerculesMk2"/>
+    </scriptfiles>
     <controls>
       <control>
         <group>[Master]</group>
@@ -16,20 +19,20 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>play</key>
+        <key>HerculesMk2.play</key>
         <status>0xB0</status>
         <midino>0x08</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>cue_default</key>
-        <status>0xB0</status>
+        <group>[Channel1]</group> 
+        <key>HerculesMk2.cue</key>
+	<status>0xB0</status>
         <midino>0x09</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -68,20 +71,20 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>jog</key>
+        <key>HerculesMk2.jog_wheel</key>
         <status>0xB0</status>
         <midino>0x36</midino>
         <options>
-          <HercJog/>
+          <Script-Binding/>
         </options>
       </control>
-      <control>
+      <control> <!-- Headphones Deck A -->
         <group>[Channel1]</group>
-        <key>pfl</key>
+        <key>HerculesMk2.pfl</key>
         <status>0xB0</status>
         <midino>0x21</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -161,20 +164,20 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>play</key>
+        <key>HerculesMk2.play</key>
         <status>0xB0</status>
         <midino>0x02</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_default</key>
+        <key>HerculesMk2.cue</key>
         <status>0xB0</status>
         <midino>0x03</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -222,20 +225,20 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>jog</key>
+        <key>HerculesMk2.jog_wheel</key>
         <status>0xB0</status>
         <midino>0x37</midino>
         <options>
-          <HercJog/>
+          <Script-Binding/>
         </options>
       </control>
-      <control>
+      <control> <!-- Headphones Deck B -->
         <group>[Channel2]</group>
-        <key>pfl</key>
+        <key>HerculesMk2.pfl</key>
         <status>0xB0</status>
         <midino>0x22</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -338,19 +341,42 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>LoadSelectedTrack</key>
+        <key>HerculesMk2.loadSelectedTrack</key>
         <status>0xB0</status>
         <midino>0x1B</midino>
-        <options/>
+        <options>
+	  <Script-Binding/>
+        </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>LoadSelectedTrack</key>
+        <key>HerculesMk2.loadSelectedTrack</key>
         <status>0xB0</status>
         <midino>0x1C</midino>
-        <options/>
+        <options>
+	  <Script-Binding/>
+        </options>
+      </control>
+      <control> <!-- Headphones Mix -->
+        <group>[Master]</group>
+        <key>HerculesMk2.pfl</key>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control> <!-- Headphones Split -->
+        <group>[Master]</group>
+        <key>HerculesMk2.pfl</key>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <Script-Binding/>
+        </options>
       </control>
     </controls>
+
     <outputs>
       <output>
         <group>[Channel1]</group>
