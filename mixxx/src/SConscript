@@ -1070,7 +1070,7 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
-				env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+				env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '

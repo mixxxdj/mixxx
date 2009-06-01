@@ -488,11 +488,14 @@
                         <Script-Binding/>
                     </options>
                 </control>
-                <control>
+                <control>   <!-- Select knob press -->
                     <status>0x90</status>
                     <midino>0x27</midino>
-                    <group>[Playlist]</group>
-                    <key>LoadSelectedIntoFirstStopped</key>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.pressSelectKnob</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x90</status>
@@ -520,6 +523,24 @@
                     <midino>0x20</midino>
                     <group>[Master]</group>
                     <key>StantonSCS1m.browseButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>0x1E</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.controlButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>0x1E</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.controlButton</key>
                     <options>
                         <Script-Binding/>
                     </options>
@@ -565,6 +586,60 @@
                     <midino>0x08</midino>
                     <group>[Master]</group>
                     <key>StantonSCS1m.faderStartToggle</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>   <!-- Hot cue deck toggle -->
+                    <status>0x90</status>
+                    <midino>0x22</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.hotCueDeckToggle</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>   <!-- Hot cue deck toggle -->
+                    <status>0x80</status>
+                    <midino>0x22</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.hotCueDeckToggle</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>    <!--    Preset 1   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x90</status>
+                    <midino>0x23</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>    <!--    Preset 2   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x90</status>
+                    <midino>0x24</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>    <!--    Preset 3   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x90</status>
+                    <midino>0x25</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>    <!--    Preset 4   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x90</status>
+                    <midino>0x26</midino>
                     <options>
                         <Script-Binding/>
                     </options>
