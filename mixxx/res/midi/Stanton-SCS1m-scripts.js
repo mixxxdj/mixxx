@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.1m MIDI controller script vPre              */
+/*      Stanton SCS.1m MIDI controller script v1.0              */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.0                                 */
@@ -9,14 +9,14 @@ function StantonSCS1m() {}
 
 // ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/stanton_SCS.1m_mixxx_user_guide  for details
-StantonSCS1m.platterInertia = 0.2;  // Inertia of the virual platter when scratching with the select knob in Control mode (higher=slower response)
+StantonSCS1m.slippage = 0.2;    // Slipperiness of the virtual slipmat when scratching with the select knob in Control mode (higher=slower response)
 
 // ----------   Other global variables    ----------
-StantonSCS1m.debug = false; // Enable/disable debugging messages to the console
+StantonSCS1m.debug = true; // Enable/disable debugging messages to the console
 StantonSCS1m.faderStart = true; // Allows decks to start when their channel or cross fader is opened (toggleable with the top button)
 StantonSCS1m.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1m.channel = 0;   // MIDI channel the device is on
-StantonSCS1m.swVersion = "1.7.0-b1";    // Mixxx version for display
+StantonSCS1m.swVersion = "1.7.0";   // Mixxx version for display
 StantonSCS1m.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messages for this device
 StantonSCS1m.modifier = { };    // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS1m.selectKnobMode = "browse"; // Current mode for the gray select knob
@@ -568,18 +568,18 @@ StantonSCS1m.wheelDecay = function (value) {
 
      if (StantonSCS1m.selectKnobMode=="control") {    // do some scratching
         if (StantonSCS1m.debug) print("Scratch deck"+StantonSCS1m.scratchDeck+": " + engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch"));
-
-        jogDecayRate = StantonSCS1m.platterInertia * (engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","play") ? 1 : 0.2 );
+        
         scratch = engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch");
-     
-	 if (scratch != 0) {
-         if (Math.abs(scratch) > jogDecayRate/2) {  
-               engine.setValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch", (scratch * jogDecayRate).toFixed(2));
-            } else {
-               engine.setValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch", 0);
+        jogDecayRate = StantonSCS1m.slippage * (engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","play") ? 1 : 0.2 );
+         
+        if (scratch != 0) {
+            if (Math.abs(scratch) > jogDecayRate*0.01) {  
+                  engine.setValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch", (scratch * jogDecayRate).toFixed(4));
+               } else {
+                  engine.setValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch", 0);
+               }
             }
-         }
-      }
+     }
 }
 
 /* TODO:
