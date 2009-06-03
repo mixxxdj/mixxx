@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.00a            */
+/*      Stanton SCS.3d MIDI controller script v1.10             */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.0                                 */
@@ -12,9 +12,10 @@ function StantonSCS3d() {}
 StantonSCS3d.pitchRanges = [ 0.08, 0.12, 0.5, 1.0 ];    // Pitch ranges for LED off, blue, purple, red
 StantonSCS3d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
 StantonSCS3d.spinningPlatter = true;    // Spinning platter LEDs
+StantonSCS3d.VUMeters = true;           // Pre-fader VU meter LEDs
 StantonSCS3d.spinningPlatterOnlyVinyl = false;  // Only show the spinning platter LEDs in vinyl mode
 StantonSCS3d.markHotCues = "blue";      // Choose red or blue LEDs for marking the stored positions in TRIG & LOOP modes
-StantonSCS3d.jogOnLoad = true;         // Automatically change to Vinyl1 (jog) mode after loading a track if true
+StantonSCS3d.jogOnLoad = true;          // Automatically change to Vinyl1 (jog) mode after loading a track if true
 StantonSCS3d.globalMode = false;        // Stay in the current mode on deck changes if true
 
 // ----------   Other global variables    ----------
@@ -75,8 +76,10 @@ StantonSCS3d.modeSignals = {"fx":[ ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDep
                             "trig":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "trig2":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "trig3":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
-                            "vinyl":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
-                            "vinyl2":[["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
+                            "vinyl":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
+                                      ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"] ],
+                            "vinyl2":[["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
+                                      ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"] ],
                             "vinyl3":[],
                             "none":[]  // To avoid an error on forced mode changes
                             };
@@ -879,8 +882,8 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
             var add = StantonSCS3d.Peak7(value,-1,128);
             var byte1 = 0xB0 + channel;
             midi.sendShortMsg(byte1,0x01,add); //S4 LEDs
-            midi.sendShortMsg(byte1,0x0C,add); //S3 LEDs
-            midi.sendShortMsg(byte1,0x0E,add); //S5 LEDs
+            if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=1) midi.sendShortMsg(byte1,0x0C,add); //S3 LEDs
+            if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=2)midi.sendShortMsg(byte1,0x0E,add); //S5 LEDs
             
             // Call global scratch slider function
             var newScratchValue = scratch.slider(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
@@ -1035,8 +1038,8 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
             scratch.disable(StantonSCS3d.deck);
             var byte1a = 0xB0 + channel;
             midi.sendShortMsg(byte1a,0x01,0x00); //S4 LEDs off
-            midi.sendShortMsg(byte1a,0x0C,0x00); //S3 LEDs off
-            midi.sendShortMsg(byte1a,0x0E,0x00); //S5 LEDs off
+            if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=1) midi.sendShortMsg(byte1a,0x0C,0x00); //S3 LEDs off
+            if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=2) midi.sendShortMsg(byte1a,0x0E,0x00); //S5 LEDs off
             break;
         case "vinyl3":
             engine.setValue("[Playlist]","LoadSelectedIntoFirstStopped",0);
@@ -1305,15 +1308,15 @@ StantonSCS3d.BoostCut9 = function (value, low, mid, high, lowMidSteps, midHighSt
 
 StantonSCS3d.Peak7 = function (value, low, high) {
     var LEDs = 0;
-    var range = (high-low)/7;
+    var range = (high-low)/6;
+    value=value.toFixed(4);
     if (value>low) LEDs++;
-    if (value>low+range) LEDs++;
-    if (value>low+range*2) LEDs++;
-    if (value>low+range*3) LEDs++;
-    if (value>low+range*4) LEDs++;
-    if (value>low+range*5) LEDs++;
-    if (value>low+range*6) LEDs++;
-    if (value>=high) LEDs++;
+    if (value>=low+range) LEDs++;
+    if (value>=low+range*2) LEDs++;
+    if (value>=low+range*3) LEDs++;
+    if (value>=low+range*4) LEDs++;
+    if (value>=low+range*5) LEDs++;
+    if (value>=low+range*6) LEDs++;
     return LEDs;
 }
 
@@ -1353,6 +1356,14 @@ StantonSCS3d.FXPeriodLEDs = function (value) {
     midi.sendShortMsg(byte1,0x0E,0x28+add);
 }
 
+StantonSCS3d.VUMeterLEDs = function (value) {
+    if (!StantonSCS3d.VUMeters) return;
+    if (StantonSCS3d.modifier["Deck"]==1) return;   // If the Deck button is held down, ignore this.
+    var add = StantonSCS3d.Peak7(value,0,1);
+    var byte1 = 0xB0 + StantonSCS3d.channel;
+    if (StantonSCS3d.deck==2) midi.sendShortMsg(byte1,0x0E,0x28+add);
+    else midi.sendShortMsg(byte1,0x0C,0x28+add);
+}
 
 StantonSCS3d.pitchLEDs = function (value) {
     var LEDs = 0;
