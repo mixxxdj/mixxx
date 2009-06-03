@@ -12,11 +12,12 @@ function StantonSCS3d() {}
 StantonSCS3d.pitchRanges = [ 0.08, 0.12, 0.5, 1.0 ];    // Pitch ranges for LED off, blue, purple, red
 StantonSCS3d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
 StantonSCS3d.spinningPlatter = true;    // Spinning platter LEDs
-StantonSCS3d.VUMeters = true;           // Pre-fader VU meter LEDs
 StantonSCS3d.spinningPlatterOnlyVinyl = false;  // Only show the spinning platter LEDs in vinyl mode
+StantonSCS3d.VUMeters = true;           // Pre-fader VU meter LEDs
 StantonSCS3d.markHotCues = "blue";      // Choose red or blue LEDs for marking the stored positions in TRIG & LOOP modes
 StantonSCS3d.jogOnLoad = true;          // Automatically change to Vinyl1 (jog) mode after loading a track if true
 StantonSCS3d.globalMode = false;        // Stay in the current mode on deck changes if true
+StantonSCS3d.deckChangeWait = 1000;     // Time in milliseconds to hold the DECK button down to avoid changing decks
 
 // ----------   Other global variables    ----------
 
@@ -762,8 +763,8 @@ StantonSCS3d.DeckChange = function (channel, control, value, status) {
     engine.trigger("[Channel"+StantonSCS3d.deck+"]", "rate");  // Restore Pitch LEDs
     StantonSCS3d.modifier["Deck"]=0;   // Clear button modifier flag
     var newMode;
-    // If the button's been held down for over a second, stay on the current deck
-    if (new Date() - StantonSCS3d.modifier["deckTime"]>1000)
+    // If the button's been held down for longer than the specified time, stay on the current deck
+    if (new Date() - StantonSCS3d.modifier["deckTime"]>StantonSCS3d.deckChangeWait)
         midi.sendShortMsg(byte1,StantonSCS3d.buttons["deck"],0x01+StantonSCS3d.deck); // Return to appropriate color
     else {
         StantonSCS3d.connectDeckSignals(channel,true);    // Disconnect static signals
