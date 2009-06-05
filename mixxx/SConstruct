@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import sys, os
+import sys, os, platform
+
+machine = platform.machine()
+Export('machine')	#So architecture-specific decisions & optimizations can be made in the SConscript
 
 if os.name == 'nt':
-	import platform
-	machine = platform.machine()
-	Export('machine')	#So architecture-specific optimizations can be made in the SConscript
 	if machine == 'x86':
 		print 'Platform: Windows 32-bit'
 		platform = 'win32'
@@ -23,16 +23,16 @@ if os.name == 'nt':
 		platform = 'win32'
 	
 elif sys.platform == 'linux2':
-     print 'Platform: Linux'
+     print 'Platform: Linux ' + machine
      platform = 'linux'
 elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
-     print 'Platform: BSD'
+     print 'Platform: BSD ' + machine
      platform = 'bsd'
 elif sys.platform == 'darwin':
-     print 'Platform: OS X'
+     print 'Platform: OS X ' + machine
      platform = 'osx'
 else:
-	print 'Platform: Unknown (assuming Linux-like)'
+	print 'Platform: Unknown (assuming Linux-like,) machine ' + machine
 	platform = 'linux'
 
 Export('platform')

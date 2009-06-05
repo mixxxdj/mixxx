@@ -140,9 +140,7 @@ def getFlags(env, argflag, default=0):
 
 
 Import('platform')
-
-if 'win' in platform:
-	Import('machine')	#CPU Architecture for optimizing x64 builds
+Import('machine')	#CPU Architecture for optimizing x64 builds
 
 #Figure out what the QT path is
 
@@ -671,6 +669,8 @@ if platform in ('linux', 'bsd'):
 
 #declare platform specific flags? though we shouldn't really need these, the compilers should Just Know...
 #on __APPLE__ it works like that. probably we just need to look into what the default __platform__ #defines are and search and replace in the code
+env.Append(CPPDEFINES=machine)
+
 if platform == 'linux':
 	env.Append(CPPDEFINES='__LINUX__')
 elif platform == 'bsd':
@@ -682,7 +682,6 @@ elif 'win' in platform:
 		env.Append(CPPDEFINES='WIN32')
 	if platform == 'win64':	
 		env.Append(CPPDEFINES='WIN64')
-		env.Append(CPPDEFINES=machine)
 
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')
@@ -785,7 +784,10 @@ if 'win' in platform:
 	if platform == 'win64':
 		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x64_win.cpp""")
 else:
-	sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
+	if machine == 'x86_64':
+		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x64_gcc.cpp""")
+	else:
+		sources += Split("""#lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp""")
 
 
 #KissFFT
