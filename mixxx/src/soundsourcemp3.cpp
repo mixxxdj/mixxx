@@ -675,8 +675,14 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
         {
             id3_utf16_t * framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
-            if (strlen>0)
+            if (strlen>0) {
                 str->setUtf16((ushort *)framestr,strlen);
+                //The ID3 specification says that a tag can contain a UTF-16 byte-order-mark (BOM). If we don't
+                //remove these by hand, they will end up in strange places like our library XML file and
+                //break it. :/ Conclusion: libid3tag sucks.
+                *str = str->remove(QChar(QChar::ByteOrderMark));
+                *str = str->remove(QChar(QChar::ByteOrderSwapped));
+            }
             free(framestr);
         }
     }
