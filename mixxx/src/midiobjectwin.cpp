@@ -49,7 +49,7 @@ MidiObjectWin::~MidiObjectWin()
 
 void MidiObjectWin::updateDeviceList() {
 
-    // Fill in list of available devices
+    // Fill in list of available input devices
 	devices.clear();
 
     MIDIINCAPS info;
@@ -71,6 +71,9 @@ void MidiObjectWin::devOpen(QString device)
     if (openDevices.contains(device)) 
     	return;
     
+	// Create list of output devices
+
+
     // Select device. If not found, select default (first in list).
     unsigned int i;
     MIDIINCAPS info;
@@ -80,7 +83,7 @@ void MidiObjectWin::devOpen(QString device)
 		QString device_name = QString::fromUcs2((const ushort*)info.szPname);
 		if ((!device_name.isEmpty() && (device_name == device))|| (QString("Device %1").arg(i) == device))
         {
-            qDebug() << "Using Midi Device #" << i << ": " << device_name;
+			qDebug() << "Using MIDI Device #" << i << ": " << device_name;
             break;
         }
     }
@@ -101,12 +104,40 @@ void MidiObjectWin::devOpen(QString device)
 
 	m_deviceName = device;
 
-    // Add device and handle to list
+    // Add device and input handle to list
     handles.insert(device, handle);
 
+	// Same things, but for output device now
+	MIDIOUTCAPS outInfo;
+    for (i=0; i<midiOutGetNumDevs(); i++)
+    {
+        MMRESULT res = midiOutGetDevCaps(i, &outInfo, sizeof(MIDIOUTCAPS));
+		QString output_device_name = QString::fromUcs2((const ushort*)outInfo.szPname);
+
+		// Ignore "From" and "To" text in the device names
+		QString outputString = output_device_name;
+		QString deviceName = device;
+		if (device.indexOf("from",0,Qt::CaseInsensitive)!=-1) deviceName = device.right(device.length()-4);
+		if (output_device_name.indexOf("to",0,Qt::CaseInsensitive)!=-1) outputString = output_device_name.right(output_device_name.length()-2);
+
+		if ((!outputString.isEmpty() && (outputString == deviceName))|| (QString("Device %1").arg(i) == deviceName))
+        {
+			qDebug() << "Using MIDI Output Device #" << i << ": " << output_device_name;
+            break;
+        }
+    }
+    if (i==midiOutGetNumDevs()) {
+        qDebug() << "Error: Unable to find requested MIDI output device " << device;
+        return;
+    }
+
+	HMIDIOUT outhandle;
     res = midiOutOpen(&outhandle, i, NULL, NULL, CALLBACK_NULL);
-    if (res != MMSYSERR_NOERROR)
-        qDebug() << "Error opening midi output for light control";
+	if (res != MMSYSERR_NOERROR)
+        qDebug() << "Error opening midi output device";
+	else
+		outHandles.insert(device, outhandle);	// Add device and output handle to list
+
 
     res = midiInStart(handle);
     if (res != MMSYSERR_NOERROR)
@@ -122,6 +153,12 @@ void MidiObjectWin::devClose()
     midiInReset(handle);
     midiInClose(handle);
     handles.remove(m_deviceName);
+
+	HMIDIOUT outhandle = outHandles.value(m_deviceName);
+    midiOutReset(outhandle);
+    midiOutClose(outhandle);
+    outHandles.remove(m_deviceName);
+
     openDevices.remove(m_deviceName);
 }
 
@@ -168,6 +205,7 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, DWORD
 }
 
 void MidiObjectWin::sendShortMsg(unsigned int word) {
+	HMIDIOUT outhandle = outHandles.value(m_deviceName);
     // This checks your compiler isn't assigning some wierd type hopefully
     DWORD raw = word;
     midiOutShortMsg(outhandle, word);
@@ -175,6 +213,7 @@ void MidiObjectWin::sendShortMsg(unsigned int word) {
 
 void MidiObjectWin::sendSysexMsg(unsigned char data[], unsigned int length)
 {
+	HMIDIOUT outhandle = outHandles.value(m_deviceName);
     MIDIHDR header;
     memset (&header, 0, sizeof(header));
     

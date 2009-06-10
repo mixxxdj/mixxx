@@ -38,12 +38,11 @@ public:
     virtual void updateDeviceList();
 
     QMap<QString, HMIDIIN> handles;
+	QMap<QString, HMIDIOUT> outHandles;
 
 protected:
     void run();
     void stop();
-
-    HMIDIOUT outhandle;
 };
 
 void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
