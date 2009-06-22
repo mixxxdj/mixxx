@@ -153,7 +153,7 @@ default_qtdir = {'linux': '/usr/share/qt4',
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
-if not os.path.exists(flags_qtdir) and platform != 'osx': #OS X doesn't have a qt path.
+if not os.path.exists(flags_qtdir):
 	print "Error: QT path does not exist or QT4 is not installed."
 	print "Please specify your QT path by running 'scons qtdir=[path]'"
 	Exit(1)
