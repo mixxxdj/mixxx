@@ -62,11 +62,11 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>HerculesMk2.pitch</key>
         <status>0xB0</status>
         <midino>0x34</midino>
         <options>
-          <Diff/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -110,29 +110,29 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterLowKill</key>
+        <key>HerculesMk2.buttons123</key>
         <status>0xB0</status>
         <midino>0x0F</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterMidKill</key>
+        <key>HerculesMk2.buttons123</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterHighKill</key>
+        <key>HerculesMk2.buttons123</key>
         <status>0xB0</status>
         <midino>0x0D</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -200,11 +200,11 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>reverse</key>
+        <key>HerculesMk2.buttons123mode</key>
         <status>0xB0</status>
         <midino>0x01</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -216,11 +216,11 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
+        <key>HerculesMk2.pitch</key>
         <status>0xB0</status>
         <midino>0x35</midino>
         <options>
-          <Diff/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -264,29 +264,29 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterLowKill</key>
+        <key>HerculesMk2.buttons123</key>
         <status>0xB0</status>
         <midino>0x10</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterMidKill</key>
+        <key>HerculesMk2.buttons123</key>
         <status>0xB0</status>
         <midino>0x11</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterHighKill</key>
+        <key>HerculesMk2.buttons123</key>
         <status>0xB0</status>
         <midino>0x12</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -318,11 +318,11 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>reverse</key>
+        <key>HerculesMk2.buttons123mode</key>
         <status>0xB0</status>
         <midino>0x07</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -408,6 +408,7 @@
         <minimum>0.9</minimum>
         <maximum>0.99</maximum>
       </output>
+
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
@@ -424,6 +425,7 @@
         <minimum>0.5</minimum>
         <maximum>1</maximum>
       </output>
+      <!--
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
@@ -445,6 +447,7 @@
         <midino>0x0F</midino>
         <minimum>0.8</minimum>
       </output>
+      -->
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
@@ -459,6 +462,7 @@
         <midino>0x1A</midino>
         <minimum>0.5</minimum>
       </output>
+      <!--
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
@@ -480,6 +484,7 @@
         <midino>0x10</midino>
         <minimum>0.8</minimum>
       </output>
+      -->
     </outputs>
   </controller>
 </MixxxMIDIPreset>
