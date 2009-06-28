@@ -23,6 +23,19 @@
 #define TIMECODER_CHANNELS 2
 #define TIMECODER_RATE 44100 //Default rate - Albert
 
+#define MAX_BITS 32 /* bits in an int */
+
+struct timecode_def_t {
+    char *name, *desc;
+    int bits, /* number of bits in string */
+        resolution, /* wave cycles per second */
+        tap[MAX_BITS], ntaps, /* LFSR taps */
+        polarity; /* cycle begins POLARITY_POSITIVE or POLARITY_NEGATIVE */
+    unsigned int seed, /* LFSR value at timecode zero */
+        length, /* in cycles */
+        safe; /* last 'safe' timecode number (for auto disconnect) */
+    signed int *lookup; /* pointer to built lookup table */
+};
 
 struct timecoder_channel_t {
     int positive; /* wave is in positive part of cycle */
@@ -57,6 +70,8 @@ struct timecoder_t {
     unsigned char *mon; /* x-y array */
     int mon_size, mon_counter, mon_scale,
         log_fd; /* optional file descriptor to log to, or -1 for none */
+        
+    struct timecode_def_t *tc_table;
 };
 
 
@@ -64,8 +79,8 @@ struct timecoder_t {
  * lookup tables soon, so we can use a different timecode on 
  * each timecoder, and switch between them. */
 
-int timecoder_build_lookup(char *timecode_name);
-void timecoder_free_lookup(void);
+int timecoder_build_lookup(char *timecode_name, struct timecoder_t *timecoder);
+void timecoder_free_lookup(struct timecoder_t *timecoder);
 
 void timecoder_init(struct timecoder_t *tc);
 void timecoder_clear(struct timecoder_t *tc);

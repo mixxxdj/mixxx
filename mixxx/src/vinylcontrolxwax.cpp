@@ -64,17 +64,21 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables...";
 
+  
+    //Initialize the timecoder structure.
+    timecoder_init(&timecoder);
+    timecoder.rate = iSampleRate;
+    
+    
     //Build the timecode lookup table.
-    if(timecoder_build_lookup(timecode) == -1)
+    if(timecoder_build_lookup(timecode, &timecoder) == -1)
     {
         qDebug() << "ERROR: Failed to build the timecode table!";
         return;
     }
 
-    //Initialize the timecoder structure.
-    timecoder_init(&timecoder);
-    timecoder.rate = iSampleRate;
-
+    
+    qDebug() << "Starting vinyl control xwax thread";
 
     //Start this thread (ends up calling-back the function "run()" below)
     start();
@@ -89,7 +93,7 @@ VinylControlXwax::~VinylControlXwax()
         free(m_samples);
 
     //Cleanup xwax nicely
-    timecoder_free_lookup();
+    timecoder_free_lookup(&timecoder);
     timecoder_clear(&timecoder);
 
     // Continue the run() function and close it
