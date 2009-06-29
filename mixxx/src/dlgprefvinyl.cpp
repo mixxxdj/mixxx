@@ -77,7 +77,9 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     ComboBoxDeviceDeck2->setEnabled(true);
 
 	connect(ComboBoxDeviceDeck1,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck1Change()));
+	connect(ComboBoxChannelDeck1,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck1Change()));
 	connect(ComboBoxDeviceDeck2,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck2Change()));
+	connect(ComboBoxChannelDeck2,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck2Change()));
 
     // Add vinyl types
     ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
@@ -87,6 +89,13 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
     ComboBoxVinylType->addItem(MIXXX_VINYL_FINALSCRATCH);
     ComboBoxVinylType->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
+
+    //Hack: Fire these to initialize the channel combo boxes
+    //slotComboBoxDeviceDeck1Change();
+    //slotComboBoxDeviceDeck2Change();
+
+    connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
+    //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
 }
 
 DlgPrefVinyl::~DlgPrefVinyl()
@@ -213,6 +222,12 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck1Change()
 		}
 	}
     enableValidComboBoxes();
+
+    //Hack: Apply device change when combobox is clicked.
+    config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
+    config->set(ConfigKey("[VinylControl]","ChannelInputDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
+    m_pSoundManager->closeDevices();
+    m_pSoundManager->setupDevices();
 }
 
 void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
@@ -245,6 +260,12 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
 		}
 	}
 	enableValidComboBoxes();
+
+    //Hack: Apply device change when combobox is clicked.
+    config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
+    config->set(ConfigKey("[VinylControl]","ChannelInputDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
+    m_pSoundManager->closeDevices();
+    m_pSoundManager->setupDevices();
 }
 
 // Update the config object with parameters from dialog
