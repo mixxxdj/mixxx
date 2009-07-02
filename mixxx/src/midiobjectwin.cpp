@@ -180,10 +180,12 @@ void MidiObjectWin::run()	// This function never executes because we only use ca
 
 void MidiObjectWin::handleMidi(char status, char midicontrol, char midivalue)
 {
-	//qDebug() << QString("MIDI status: %1, ctrl: %2, val: %3")
-	//   .arg(QString::number(status & 255, 16).toUpper())
- //      .arg(QString::number(midicontrol, 16).toUpper())
- //      .arg(QString::number(midivalue, 16).toUpper());
+#ifdef __DEBUG__
+	qDebug() << QString("MIDI status: %1, ctrl: %2, val: %3")
+	   .arg(QString::number(status & 255, 16).toUpper())
+       .arg(QString::number(midicontrol, 16).toUpper())
+       .arg(QString::number(midivalue, 16).toUpper());
+#endif
     receive((MidiStatusByte)(status & 255), status & 15, midicontrol, midivalue); // void receive(MidiStatusByte status, char channel, char control, char value);
 }
 
