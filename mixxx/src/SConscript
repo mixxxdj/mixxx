@@ -217,6 +217,7 @@ opts.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 opts.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 opts.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
+opts.Add('debug', 'Set to 1 to enable verbose console debug output.', 0)
 opts.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
 if not 'win' in platform:
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
@@ -1134,6 +1135,19 @@ if not 'win' in platform:
 			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
 	else:
 		print "Optimizing for this CPU... no"
+
+#Debugging output
+flags_debug = getFlags(env, 'debug', 0)
+if 'win' in platform:
+	if int(flags_msvcdebug):
+		flags_debug = 1		# Turn general debugging flag on too if msvcdebug is specified
+
+if int(flags_debug):
+	env.Append(CPPDEFINES = '__DEBUG__')
+	build_flags += 'debug '
+	print "Debugging output... enabled"
+else:
+	print "Debugging output... disabled"
 
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
 flags_msvshacks = getFlags(env, 'msvshacks', 0)
