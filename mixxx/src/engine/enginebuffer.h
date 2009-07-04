@@ -26,6 +26,7 @@
 #include "monitor.h"
 #include "rotary.h"
 
+class LoopingControl;
 class ControlObject;
 class ControlPushButton;
 class ControlBeat;
@@ -86,6 +87,7 @@ public:
     void setNewPlaypos(double);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    void processOld(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char *getGroup();
     /** Set rate change when temp rate button is pressed */
@@ -132,10 +134,14 @@ public slots:
     void slotControlFastBack(double);
 
 private:
+
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
     /** Adjust beat phase */
     void adjustPhase();
+
+    /** Pointer to the loop control object */
+    LoopingControl *m_pLoopingControl;
 
     /** Pointer to other EngineBuffer */
     EngineBuffer *m_pOtherEngineBuffer;
