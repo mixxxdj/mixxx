@@ -26,6 +26,7 @@
 #include "monitor.h"
 #include "rotary.h"
 
+class RateControl;
 class LoopingControl;
 class ControlObject;
 class ControlPushButton;
@@ -88,14 +89,6 @@ public:
     void processOld(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char *getGroup();
-    /** Set rate change when temp rate button is pressed */
-    static void setTemp(double v);
-    /** Set rate change when temp rate small button is pressed */
-    static void setTempSmall(double v);
-    /** Set rate change when perm rate button is pressed */
-    static void setPerm(double v);
-    /** Set rate change when perm rate small button is pressed */
-    static void setPermSmall(double v);
 
     /** Lock abs and buffer playpos vars, so that they can be accessed through
       * getBufferPlaypos() and getAbsPlaypos() from another thread */
@@ -117,15 +110,6 @@ public slots:
     void slotControlEnd(double);
     void slotControlSeek(double, bool bBeatSync=true);
     void slotControlSeekAbs(double, bool bBeatSync=true);
-    void slotControlLoop(double);
-    void slotControlRatePermDown(double);
-    void slotControlRatePermDownSmall(double);
-    void slotControlRatePermUp(double);
-    void slotControlRatePermUpSmall(double);
-    void slotControlRateTempDown(double);
-    void slotControlRateTempDownSmall(double);
-    void slotControlRateTempUp(double);
-    void slotControlRateTempUpSmall(double);
     void slotControlBeatSync(double);
     void slotSetBpm(double);
     void slotControlFastFwd(double);
@@ -138,6 +122,9 @@ private:
 
     /** Pointer to the loop control object */
     LoopingControl *m_pLoopingControl;
+    
+    /** Pointer to the rate control object */
+    RateControl *m_pRateControl;
 
     /** Pointer to other EngineBuffer */
     EngineBuffer *m_pOtherEngineBuffer;
@@ -158,14 +145,8 @@ private:
     QMutex pause;
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
-    /** Values used when temp and perm rate buttons are pressed */
-    static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
-    /** Is true if a rate temp button is pressed */
-    double m_bTempPress;
 
-    ControlPushButton *playButton, *audioBeatMark, *buttonBeatSync;
-    ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
-    ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
+    ControlPushButton *playButton, *buttonBeatSync;
     ControlPushButton *buttonLoop;
     ControlObject *m_pControlObjectBeatLoop;
     ControlObject *rateEngine, *m_pRateDir, *m_pRateRange;
@@ -188,8 +169,6 @@ private:
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */
     ControlBeat *bpmControl;
-    /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */
-    ControlPotmeter *beatEventControl;
     /** Reverse playback control */
     ControlPushButton *reverseButton;
     /** Fwd and back controls, start and end of track control */
@@ -239,11 +218,8 @@ private:
     double m_dBeatFirst, m_dBeatInterval;
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch;
-    /** Old playback rate. Stored in this variable while a temp pitch change buttons is in effect. It does not work to just decrease the pitch slider by the 
-      * value it has been increased with when the temp button was pressed, because there is a fixed limit on the range of the pitch slider */
-    double m_dOldRate;
 
-	// Filter jog wheel data to smooth it:
-	Rotary* m_jogfilter;
+    // Filter jog wheel data to smooth it:
+    Rotary* m_jogfilter;
 };
 #endif

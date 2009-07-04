@@ -34,12 +34,8 @@
 #include "mathstuff.h"
 #include "enginebuffercue.h"
 #include "loopingcontrol.h"
+#include "ratecontrol.h"
 
-// Static default values for rate buttons
-double EngineBuffer::m_dTemp = 0.01;
-double EngineBuffer::m_dTempSmall = 0.001;
-double EngineBuffer::m_dPerm = 0.01;
-double EngineBuffer::m_dPermSmall = 0.001;
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
@@ -55,8 +51,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pConfig = _config;
 
     m_pOtherEngineBuffer = 0;
-
-    m_bTempPress = false;
 
     m_dAbsPlaypos = 0.;
     m_dBufferPlaypos = 0.;
@@ -118,25 +112,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
-    // Permanent rate-change buttons
-    buttonRatePermDown = new ControlPushButton(ConfigKey(group,"rate_perm_down"));
-    connect(buttonRatePermDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermDown(double)));
-    buttonRatePermDownSmall = new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
-    connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermDownSmall(double)));
-    buttonRatePermUp = new ControlPushButton(ConfigKey(group,"rate_perm_up"));
-    connect(buttonRatePermUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermUp(double)));
-    buttonRatePermUpSmall = new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
-    connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermUpSmall(double)));
 
-    // Temporary rate-change buttons
-    buttonRateTempDown = new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    connect(buttonRateTempDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDown(double)));
-    buttonRateTempDownSmall = new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDownSmall(double)));
-    buttonRateTempUp = new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    connect(buttonRateTempUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUp(double)));
-    buttonRateTempUpSmall = new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-    connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUpSmall(double)));
 
     // Wheel to control playback position/speed
     wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
@@ -185,15 +161,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     bpmControl = new ControlBeat(ConfigKey(group, "bpm"), true);
     connect(bpmControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetBpm(double)));
 
-    // Beat event control
-    beatEventControl = new ControlPotmeter(ConfigKey(group, "beatevent"));
-
     // Beat sync (scale buffer tempo relative to tempo of other buffer)
     buttonBeatSync = new ControlPushButton(ConfigKey(group, "beatsync"));
     connect(buttonBeatSync, SIGNAL(valueChanged(double)), this, SLOT(slotControlBeatSync(double)));
-
-    // Audio beat mark toggle
-    audioBeatMark = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
 
     // Loop button
     buttonLoop = new ControlPushButton(ConfigKey(group, "loop"), true);
@@ -201,8 +171,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_bLoopActive = false;
     m_bLoopMeasureTime = false;
-    connect(buttonLoop, SIGNAL(valueChanged(double)), this, SLOT(slotControlLoop(double)));
-
 
 #ifdef __VINYLCONTROL__
     // Vinyl Control status indicator
@@ -248,6 +216,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
 
+    // Create the Rate Controller
+    m_pRateControl = new RateControl(_group, _config);
+
     oldEvent = 0.;
 
     // Used in update of playpos slider
@@ -268,6 +239,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleST;
     delete m_pTrackEnd;
     delete m_pLoopingControl;
+    delete m_pRateControl;
     delete reader;
 }
 
@@ -385,25 +357,6 @@ double EngineBuffer::getRate()
     return rateSlider->get()*m_pRateRange->get()*m_pRateDir->get();
 }
 
-void EngineBuffer::setTemp(double v)
-{
-    m_dTemp = v;
-}
-
-void EngineBuffer::setTempSmall(double v)
-{
-    m_dTempSmall = v;
-}
-
-void EngineBuffer::setPerm(double v)
-{
-    m_dPerm = v;
-}
-
-void EngineBuffer::setPermSmall(double v)
-{
-    m_dPermSmall = v;
-}
 
 void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
 {
@@ -418,7 +371,6 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
     if (buttonLoop->get())
     {
         buttonLoop->set(0.);
-        slotControlLoop(0.);
     }
 
     // Find new playpos
@@ -489,64 +441,6 @@ void EngineBuffer::slotControlSeekAbs(double abs, bool bBeatSync)
     slotControlSeek(abs/file_length_old, bBeatSync);
 }
 
-void EngineBuffer::slotControlLoop(double v)
-{
-    if (m_pControlObjectBeatLoop->get())
-    {
-        // Automatic beat loop
-
-        if (!m_bLoopActive && v && m_dBeatInterval>0.)
-        {
-            // Loop length include one beat before the actual loop and a lot of samples after
-            m_dLoopLength = (double)(int)(m_dBeatInterval*4.);
-            if (!even((long)m_dLoopLength))
-                m_dLoopLength++;
-
-            if (m_dLoopLength>(double)kiTempLength)
-                m_dLoopLength = (double)kiTempLength;
-
-            // Loop starting position
-            m_dTempFilePos = filepos_play;
-
-            m_bLoopActive = false;
-        }
-        else if (v==0. && m_bLoopActive)
-        {
-            m_pScale->clear();
-            m_bLoopActive = false;
-        }
-    }
-    else
-    {
-        // Manual loop
-        if (!m_bLoopActive && v)
-        {
-            if (!m_bLoopMeasureTime)
-            {
-                // Loop starting position
-                m_dTempFilePos = filepos_play;
-                m_bLoopMeasureTime = true;
-            }
-            else
-            {
-                m_dLoopLength = round(filepos_play-m_dTempFilePos);
-                if (!even((long)m_dLoopLength))
-                    m_dLoopLength++;
-                if (m_dLoopLength>(double)kiTempLength)
-                    m_dLoopLength = (double)kiTempLength;
-                m_bLoopMeasureTime = false;
-                //qDebug() << "start " << m_dTempFilePos << ", length " << m_dLoopLength;
-            }
-        }
-        else if (v==0. && m_bLoopActive)
-        {
-            m_pScale->clear();
-            m_bLoopActive = false;
-            m_bLoopMeasureTime = false;
-        }
-    }
-}
-
 void EngineBuffer::slotControlPlay(double)
 {
     m_pEngineBufferCue->slotControlCueSet();
@@ -570,97 +464,6 @@ void EngineBuffer::slotSetBpm(double bpm)
         rateSlider->set(bpm/filebpm-1.);
 }
 
-void EngineBuffer::slotControlRatePermDown(double)
-{
-    // Adjusts temp rate down if button pressed
-    if (buttonRatePermDown->get())
-        rateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
-}
-
-void EngineBuffer::slotControlRatePermDownSmall(double)
-{
-    // Adjusts temp rate down if button pressed
-    if (buttonRatePermDownSmall->get())
-        rateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
-}
-
-void EngineBuffer::slotControlRatePermUp(double)
-{
-    // Adjusts temp rate up if button pressed
-    if (buttonRatePermUp->get())
-        rateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
-}
-
-void EngineBuffer::slotControlRatePermUpSmall(double)
-{
-    // Adjusts temp rate up if button pressed
-    if (buttonRatePermUpSmall->get())
-        rateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
-}
-
-void EngineBuffer::slotControlRateTempDown(double)
-{
-    // Adjusts temp rate down if button pressed, otherwise set to 0.
-    if (buttonRateTempDown->get() && !m_bTempPress)
-    {
-        m_bTempPress = true;
-        m_dOldRate = rateSlider->get();
-        rateSlider->sub(m_pRateDir->get() * m_dTemp / (100. * m_pRateRange->get()));
-    }
-    else if (!buttonRateTempDown->get())
-    {
-        m_bTempPress = false;
-        rateSlider->set(m_dOldRate);
-    }
-}
-
-void EngineBuffer::slotControlRateTempDownSmall(double)
-{
-    // Adjusts temp rate down if button pressed, otherwise set to 0.
-    if (buttonRateTempDownSmall->get() && !m_bTempPress)
-    {
-        m_bTempPress = true;
-        m_dOldRate = rateSlider->get();
-        rateSlider->sub(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
-    }
-    else if (!buttonRateTempDownSmall->get())
-    {
-        m_bTempPress = false;
-        rateSlider->set(m_dOldRate);
-    }
-}
-
-void EngineBuffer::slotControlRateTempUp(double)
-{
-    // Adjusts temp rate up if button pressed, otherwise set to 0.
-    if (buttonRateTempUp->get() && !m_bTempPress)
-    {
-        m_bTempPress = true;
-        m_dOldRate = rateSlider->get();
-        rateSlider->add(m_pRateDir->get() * m_dTemp / (100. * m_pRateRange->get()));
-    }
-    else if (!buttonRateTempUp->get())
-    {
-        m_bTempPress = false;
-        rateSlider->set(m_dOldRate);
-    }
-}
-
-void EngineBuffer::slotControlRateTempUpSmall(double)
-{
-    // Adjusts temp rate up if button pressed, otherwise set to 0.
-    if (buttonRateTempUpSmall->get() && !m_bTempPress)
-    {
-        m_bTempPress = true;
-        m_dOldRate = rateSlider->get();
-        rateSlider->add(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
-    }
-    else if (!buttonRateTempUpSmall->get())
-    {
-        m_bTempPress = false;
-        rateSlider->set(m_dOldRate);
-    }
-}
 
 void EngineBuffer::slotControlBeatSync(double)
 {
