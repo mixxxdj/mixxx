@@ -309,6 +309,7 @@ sources = Split("""
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
 
+                engine/ratecontrol.cpp
                 engine/loopingcontrol.cpp
                 
                 analyserqueue.cpp
