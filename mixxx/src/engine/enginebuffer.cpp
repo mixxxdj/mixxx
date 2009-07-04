@@ -329,43 +329,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 
 }
 
-float EngineBuffer::getDistanceNextBeatMark()
-{
-    return 0.;
-    /*
-       float *p = (float *)reader->getBeatPtr()->getBasePtr();
-       int size = reader->getBeatPtr()->getBufferSize();
-
-       int pos = (int)(bufferpos_play*size/READBUFFERSIZE);
-       //int pos = (int)(bufferpos_play/size);
-
-       //qDebug() << "s1 " << size << " s2 " << READBUFFERSIZE;
-
-       int i;
-       bool found = false;
-
-       for (i=0; i>(pos-size) && !found; --i)
-       {
-        //qDebug() << "p[" << (pos+i)%size << "] = " << p[(pos+i)%size] << " ";
-        if (p[(pos-i)%size] > 0.0)
-        {
-            found = true;
-            //qDebug() << "p[" << (pos+i)%size << "] = " << p[(pos+i)%size] << " ";
-        }
-       }
-
-       if (found)
-       {
-        //qDebug() << "found";
-
-        return ((float)i)*(float)READBUFFERSIZE/(float)size;
-        //return ((float)i)*(float)size;
-       }
-       else
-        return 0.f;
-     */
-}
-
 Reader * EngineBuffer::getReader()
 {
     return reader;
@@ -722,29 +685,11 @@ void EngineBuffer::slotControlBeatSync(double)
             fRateScale = (fRateScale-1.)/m_pRateRange->get();
             rateSlider->set(fRateScale * m_pRateDir->get());
 
-            // Adjust phase
-            adjustPhase();
+            // Adjust the phase:
+            // (removed, see older version for this info)
         }
     }
 
-}
-
-void EngineBuffer::adjustPhase()
-{
-    // Search for distance from playpos to beat mark of both buffers
-    float fThisDistance = getDistanceNextBeatMark();
-    float fOtherDistance = m_pOtherEngineBuffer->getDistanceNextBeatMark();
-
-    //qDebug() << "this " << fThisDistance << ", other " << fOtherDistance << " diff " << fOtherDistance-fThisDistance;
-
-    //filepos_play += fOtherDistance-fThisDistance;
-    bufferpos_play = bufferpos_play+fOtherDistance-fThisDistance;
-    while (bufferpos_play<0.)
-        bufferpos_play += (double)READBUFFERSIZE;
-    while (bufferpos_play>(double)READBUFFERSIZE)
-        bufferpos_play -= (double)READBUFFERSIZE;
-
-    //qDebug() << "buffer pos " << bufferpos_play << ", file pos " << filepos_play;
 }
 
 void EngineBuffer::slotControlFastFwd(double v)
@@ -768,6 +713,23 @@ void EngineBuffer::slotControlFastBack(double v)
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
+
+    // Steps:
+    // - Lookup new reader information
+    
+    // - Calculate current rate
+    
+    // - If playing, copy samples from read buffer to write buffer, process as
+    //   necessary.
+    
+    // - Query LoopingControl for seek necessary
+    
+    // - Query BPMControl for
+
+    // - Process EOT Mode
+     
+
+    
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
@@ -858,19 +820,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If searching in progress...
         if (m_pRateSearch->get()!=0.)
         {
-            // If RealSearch is enabled, set playback rate to baserate
-            if (m_pRealSearch->get())
-            {
-                rate = baserate;
-//                 m_pScale->setFastMode(false);
-            }
-            else
-            {
-                rate = m_pRateSearch->get();
-//                 m_pScale->setFastMode(true);
-            }
+            rate = m_pRateSearch->get();
+//            m_pScale->setFastMode(true);
         }
-
+//         else
+//             m_pScale->setFastMode(false);
         
         // If the rate has changed, set it in the scale object
         if (rate != rate_old)
@@ -1012,8 +966,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // HANDLE END-OF-TRACK MODE
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((playButton->get() ||
-             (!m_pRealSearch->get() && (fwdButton->get() || backButton->get()))) &&
+        if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
             !m_pTrackEnd->get() && readerinfo &&
             ((filepos_play<=0. && backwards) ||
              ((int)filepos_play>=file_length_old && !backwards)))
