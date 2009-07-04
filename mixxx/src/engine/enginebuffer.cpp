@@ -25,7 +25,6 @@
 #include "controlttrotary.h"
 #include "controlbeat.h"
 #include "reader.h"
-//#include "readerextractbeat.h"
 #include "readerextractwave.h"
 #include "enginebufferscalest.h"
 #include "enginebufferscalelinear.h"
@@ -34,6 +33,7 @@
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
 #include "enginebuffercue.h"
+#include "loopingcontrol.h"
 
 // Static default values for rate buttons
 double EngineBuffer::m_dTemp = 0.01;
@@ -244,6 +244,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     int iPitchIndpTimeStretch = _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
+
+    // Create the Loop Controller
+    m_pLoopingControl = new LoopingControl(_group, _config);
+
     oldEvent = 0.;
 
     // Used in update of playpos slider
@@ -263,6 +267,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleLinear;
     delete m_pScaleST;
     delete m_pTrackEnd;
+    delete m_pLoopingControl;
     delete reader;
 }
 
@@ -760,7 +765,305 @@ void EngineBuffer::slotControlFastBack(double v)
         m_pRateSearch->set(-4.);
 }
 
+
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
+{
+    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+
+    bool bCurBufferPaused = false;
+
+    if(!m_pTrackEnd->get() && pause.tryLock()) {
+        bool readerinfo = false;
+        long int filepos_start = 0;
+        long int filepos_end = 0;
+        if(reader->tryLock()) {
+            file_length_old = reader->getFileLength();
+            file_srate_old = reader->getFileSrate();
+            filepos_start = reader->getFileposStart();
+            filepos_end = reader->getFileposEnd();
+            reader->setFileposPlay((long int)filepos_play);
+            reader->setRate(rate_old);
+
+            reader->unlock();
+
+            m_dBeatFirst = 0.;
+            m_dBeatInterval = (m_pFileBpm->get()/60.)*file_srate_old*2.;
+
+            readerinfo = true;
+        }
+
+        double filebpm = m_pFileBpm->get();
+
+        double baserate = ((double)file_srate_old/m_pSampleRate->get());
+
+        double rate;
+
+        // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
+        // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
+        // the wheel's motion is amplified to produce a scrub effect. Also note that playback speed factors like
+        // rateSlider and reverseButton are ignored so that the feel of the wheel is always consistent.
+        // TODO: Configurable vinyl stop effect.
+        if (wheelTouchSwitch->get() && wheelTouchSensor->get()) {
+            // Act as scratch controller
+            if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt()) {
+                // Use vinyl-style pitch bending
+                // qDebug() << "Disabling Pitch-Independent Time Stretch for scratching";
+                m_bResetPitchIndpTimeStretch = true;
+                setPitchIndpTimeStretch(false);
+            }
+            // Experimental formula
+            rate = wheel->get() * 40. * baserate;
+        } else if(playButton->get()) {
+
+            // BJW: Reset timestretch mode if required. NB it's intentional that this should not
+            // get reset until playing; this enables released spinbacks in stop mode.
+            if (m_bResetPitchIndpTimeStretch) {
+                setPitchIndpTimeStretch(true);
+                m_bResetPitchIndpTimeStretch = false;
+                // qDebug() << "Re-enabling Pitch-Independent Time Stretch";
+                }
+            // BJW: Split up initial rate setting from any wheel influence
+            // rate=wheel->get()+(1.+rateSlider->get()*m_pRateRange->get()*m_pRateDir->get())*baserate;
+            rate = (1. + rateSlider->get() * m_pRateRange->get() * m_pRateDir->get()) * baserate;
+            // Apply jog wheel
+            rate += wheel->get(); // / 40.;
+            // rate = wheel->get() / 40 + (1. + rateSlider->get() * m_pRateRange->get() * m_pRateDir->get()) * baserate;
+
+            // qDebug() << "wheel " << wheel->get() << ", slider " << rateSlider->get() << ", range " << m_pRateRange->get() << ", dir " << m_pRateDir->get();
+
+            // Apply scratch
+            if (m_pControlScratch->get()<0.)
+                rate = rate * (m_pControlScratch->get()-1.);
+            else if (m_pControlScratch->get()>0.)
+                rate = rate * (m_pControlScratch->get()+1.);
+
+            // Apply jog
+            // FIXME: Sensitivity should be configurable separately?
+            const double fact = m_pRateRange->get();
+            double val = m_jogfilter->filter(m_pJog->get());
+            rate += val * fact;
+            m_pJog->set(0.);
+
+            // BJW: Apply reverse button (moved from above)
+            if (reverseButton->get()) {
+                rate = -rate;
+            }
+
+        } else {
+            // Stopped. Wheel, jog and scratch controller all scrub through audio.
+            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(m_pJog->get()))*baserate; //*10.;
+			m_pJog->set(0.);
+        }
+
+        // If searching in progress...
+        if (m_pRateSearch->get()!=0.)
+        {
+            // If RealSearch is enabled, set playback rate to baserate
+            if (m_pRealSearch->get())
+            {
+                rate = baserate;
+//                 m_pScale->setFastMode(false);
+            }
+            else
+            {
+                rate = m_pRateSearch->get();
+//                 m_pScale->setFastMode(true);
+            }
+        }
+
+        
+        // If the rate has changed, set it in the scale object
+        if (rate != rate_old)
+        {
+            // The rate returned by the scale object can be different from the wanted rate!
+            rate_old = rate;
+            rate = baserate*m_pScale->setTempo(rate/baserate);
+            m_pScale->setBaseRate(baserate);
+            rate_old = rate;
+        }
+
+        bool at_start = false;
+        bool at_end = false;
+        bool backwards = false;
+
+        if(rate < 0)
+            backwards = true;
+        
+        if((rate == 0) || (filepos_play == 0 && backwards) ||
+           (filepos_play == file_length_old && !backwards)) {
+            rampOut(pOut, iBufferSize);
+            bCurBufferPaused = true;
+        } else {
+
+            // Check if we are at the boundaries of the file
+            if ((filepos_play<0. && backwards) || (filepos_play>file_length_old && !backwards))
+            {
+                //qDebug() << "buffer out of range, filepos_play " << filepos_play << ", length " << file_length_old << "i";
+
+                if (!m_bLastBufferPaused)
+                    rampOut(pOut, iBufferSize);
+                bCurBufferPaused = true;
+            } else {
+
+                CSAMPLE *output;
+                double idx;
+
+                // Perform scaling of Reader buffer into buffer.
+                output = m_pScale->scale(bufferpos_play, iBufferSize);
+                idx = m_pScale->getNewPlaypos();
+                
+                // qDebug() << "idx " << idx << ", buffer pos " << bufferpos_play << ", play " << filepos_play;
+
+                for(int i=0; i<iBufferSize; i++) {
+                    pOutput[i] = output[i];
+                }
+
+                // Adjust filepos_play
+                filepos_play += (idx-bufferpos_play);
+
+                if(filepos_play > file_length_old && readerinfo && file_length_old > 0) {
+                    idx -= filepos_play-file_length_old;
+                    filepos_play = file_length_old;
+                    at_end = true;
+                } else if(filepos_play < 0) {
+                    idx -= filepos_play;
+                    filepos_play = 0;
+                    at_start = true;
+                }
+
+                // Ensure valid range of idx
+                while (idx>READBUFFERSIZE)
+                    idx -= (double)READBUFFERSIZE;
+                while (idx<0)
+                    idx += (double)READBUFFERSIZE;
+
+                // Write buffer playpos
+                bufferpos_play = idx;
+            }
+        }
+
+        // See if the loop controller wants us to loop back.
+        double new_filepos_play = m_pLoopingControl->process(filepos_play);
+        if(new_filepos_play != filepos_play) {
+            // We have no better way of solving this problem than 
+            reader->requestSeek(new_filepos_play);
+            setNewPlaypos(new_filepos_play);
+            rampOut(pOut, iBufferSize);
+        }
+
+        //
+        // Check if more samples are needed from reader, and wake it up if necessary.
+        //
+        if(readerinfo && filepos_end > 0) {
+
+            if(filepos_play > filepos_end || filepos_play < filepos_start) {
+                reader->wake();
+            } else if((filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1))) {
+                reader->wake();
+            } else if(fabs(filepos_play-filepos_start) < (float)(READCHUNKSIZE*(READCHUNK_NO/2-1))) {
+                reader->wake();
+            }
+
+            //
+            // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
+            // if playmode is next file: set next in playlistcontrol
+            //
+
+            // Update playpos slider and bpm display if necessary
+            m_iSamplesCalculated += iBufferSize;
+            if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE))
+            {
+                if (file_length_old!=0.)
+                {
+                    double f = math_max(0.,math_min(filepos_play,file_length_old));
+                    playposSlider->set(f/file_length_old);
+
+//                         qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
+                }
+                else
+                    playposSlider->set(0.);
+                bpmControl->set(filebpm);
+                rateEngine->set(rate);
+
+                m_iSamplesCalculated = 0;
+
+            }
+
+            // Update buffer and abs position. These variables are not in the ControlObject
+            // framework because they need very frequent updates.
+            if (m_qPlayposMutex.tryLock())
+                {
+                    m_dBufferPlaypos = bufferpos_play;
+                    m_dAbsPlaypos = filepos_play;
+                    m_dAbsStartpos = filepos_start;
+                    m_qPlayposMutex.unlock();
+                }
+
+            // Update visual control object, this needs to be done more often than the bpm display and playpos slider
+            if(file_length_old != 0.) {
+                double f = math_max(0.,math_min(filepos_play, file_length_old));
+                visualPlaypos->set(f/file_length_old);
+            } else {
+                visualPlaypos->set(0.);
+            }
+
+        }
+
+        // HANDLE END-OF-TRACK MODE
+
+        // If playbutton is pressed, check if we are at start or end of track
+        if ((playButton->get() ||
+             (!m_pRealSearch->get() && (fwdButton->get() || backButton->get()))) &&
+            !m_pTrackEnd->get() && readerinfo &&
+            ((filepos_play<=0. && backwards) ||
+             ((int)filepos_play>=file_length_old && !backwards)))
+        {
+            // If end of track mode is set to next, signal EndOfTrack to TrackList,
+            // otherwise start looping, pingpong or stop the track
+            int m = (int)m_pTrackEndMode->get();
+            //qDebug() << "end mode " << m;
+            switch (m)
+            {
+            case TRACK_END_MODE_STOP:
+                //qDebug() << "stop";
+                playButton->set(0.);
+                break;
+            case TRACK_END_MODE_NEXT:
+                m_pTrackEnd->set(1.);
+                break;
+                
+            case TRACK_END_MODE_LOOP:
+                //qDebug() << "loop";
+                if(filepos_play <= 0)
+                    slotControlSeek(file_length_old);
+                else
+                    slotControlSeek(0.);
+                break;
+/*
+            case TRACK_END_MODE_PING:
+                qDebug() << "Ping not implemented yet";
+
+                if (reverseButton->get())
+                reverseButton->set(0.);
+                else
+                reverseButton->set(1.);
+
+                break;
+ */
+                //default:
+                //qDebug() << "Invalid track end mode: " << m;
+            }
+        }
+
+        // release the pauselock
+        pause.unlock();
+    }
+
+
+}
+
+
+void EngineBuffer::processOld(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 

@@ -85,6 +85,8 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_pRenderSignalPixmap = new WaveformRenderSignalPixmap(group, this);
     m_pRenderBeat = new WaveformRenderBeat(group, this);
     m_pRenderCue = new WaveformRenderMark(group, ConfigKey(group, "cue_point"), this);
+    m_pRenderLoopStart = new WaveformRenderMark(group, ConfigKey(group, "loop_start_position"), this);
+    m_pRenderLoopEnd = new WaveformRenderMark(group, ConfigKey(group, "loop_end_position"), this);
 
     m_pCOVisualResample = new ControlObject(ConfigKey(group, "VisualResample"));
 
@@ -150,6 +152,14 @@ WaveformRenderer::~WaveformRenderer() {
         delete m_pRenderCue;
     m_pRenderCue = NULL;
 
+    if(m_pRenderLoopStart)
+        delete m_pRenderLoopStart;
+    m_pRenderLoopStart = NULL;
+    
+    if(m_pRenderLoopEnd)
+        delete m_pRenderLoopEnd;
+    m_pRenderLoopEnd = NULL;
+
 }
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {
@@ -189,6 +199,8 @@ void WaveformRenderer::resize(int w, int h) {
     m_pRenderSignalPixmap->resize(w,h);
     m_pRenderBeat->resize(w,h);
     m_pRenderCue->resize(w,h);
+    m_pRenderLoopStart->resize(w,h);
+    m_pRenderLoopEnd->resize(w,h);
 }
 
 void WaveformRenderer::setupControlObjects() {
@@ -269,6 +281,8 @@ void WaveformRenderer::setup(QDomNode node) {
     m_pRenderSignalPixmap->setup(node);
     m_pRenderBeat->setup(node);
     m_pRenderCue->setup(node);
+    m_pRenderLoopStart->setup(node);
+    m_pRenderLoopEnd->setup(node);
 }
 
 
@@ -482,6 +496,8 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     // Draw various markers.
     m_pRenderBeat->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
     m_pRenderCue->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    m_pRenderLoopStart->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    m_pRenderLoopEnd->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
     
     pPainter->setPen(colorMarker);
     
@@ -503,6 +519,8 @@ void WaveformRenderer::slotNewTrack(TrackInfoObject* pTrack) {
     m_pRenderSignalPixmap->newTrack(pTrack);
     m_pRenderBeat->newTrack(pTrack);
     m_pRenderCue->newTrack(pTrack);
+    m_pRenderLoopStart->newTrack(pTrack);
+    m_pRenderLoopEnd->newTrack(pTrack);
 }
 
 int WaveformRenderer::getPixelsPerSecond() {
