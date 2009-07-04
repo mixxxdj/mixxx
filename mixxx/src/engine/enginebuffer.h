@@ -74,12 +74,10 @@ public:
 
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
-    /** Returns current bpm value (not thread-safe) */
-    double getBpm();
     /** Return the current rate (not thread-safe) */
     double getRate();
-    /** Return the distance to the next beat mark from curr. play pos (not thread-safe) */
-    float getDistanceNextBeatMark();
+    /** Returns current bpm value (not thread-safe) */
+    double getBpm();
     /** Sets pointer to other engine buffer/channel */
     void setOtherEngineBuffer(EngineBuffer *);
     /** Reset buffer playpos and set file playpos. This must only be called while holding the
@@ -137,8 +135,6 @@ private:
 
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
-    /** Adjust beat phase */
-    void adjustPhase();
 
     /** Pointer to the loop control object */
     LoopingControl *m_pLoopingControl;
