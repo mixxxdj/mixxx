@@ -198,34 +198,39 @@ if not os.path.isdir(env['CACHEDIR']):
 
 #Hijack scons -h and --help
 cachefile = str(env['CACHEDIR']) + 'custom.py'
-opts = Options(cachefile)
-opts.Add('prefix', 'Set to your install prefix', '/usr/local')
-opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
-opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
-opts.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
-opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
-opts.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
-opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
-opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
-opts.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
-opts.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
-opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
-opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
-opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
-opts.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
-opts.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
-opts.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-opts.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
-opts.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
-opts.Add('debug', 'Set to 1 to enable verbose console debug output.', 0)
-opts.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
+#opts = Options(cachefile)
+vars = Variables(cachefile)
+vars.Add('prefix', 'Set to your install prefix', '/usr/local')
+vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
+vars.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
+vars.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
+vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
+vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
+vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
+vars.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
+vars.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
+vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
+vars.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
+vars.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
+vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
+vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
+vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
+vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
+vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
+vars.Add('debug', 'Set to 1 to enable verbose console debug output.', 0)
+vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
+if platform == 'linux':
+	vars.Add('rawmidi', 'Set to 1 to use ALSA\'s RawMIDI API (instead of the Sequencer API.)', 0)
 if not 'win' in platform:
-	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
-	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
-	opts.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
+	vars.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
+	vars.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
+	vars.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
+else:
+	vars.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
+	vars.Add('msvcdebug', 'Set to 1 to link against MS libraries with debugging info (implies debug=1)', 0)
 #env = Environment(options = opts)
-opts.Update(env)
-Help(opts.GenerateHelpText(env))
+vars.Update(env)
+Help(vars.GenerateHelpText(env))
 
 # user-defined CXXFLAGS
 if os.environ.has_key('CXXFLAGS'):
@@ -426,10 +431,8 @@ sources = Split("""
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
 #Compile platform specific MIDI support
-if platform == 'linux':
-	sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
-	env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
-elif 'win' in platform:
+#   Linux moved to the flag parsing area since it depends on the rawmidi flag
+if 'win' in platform:
 	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
 	env.Append(CXXFLAGS = '-D__WINMIDI__')
 elif platform == 'osx':
@@ -734,7 +737,11 @@ if 'win' in platform:
 	env.Append(CPPDEFINES = 'WIN32') #for soundtouch
 else:
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g """)) # omghax
-	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g -Wl,-rpath,$QTDIR/lib"""))
+	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g"""))
+	#if platform != 'osx':	# Someone needs to verify that this works on OSX 10.5.
+				# This has been split out since XCode on 10.4 doesn't understand rpath
+		#env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
+	env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 	env.Append(CPPDEFINES = "_REENTRANT")
 
 #Uic these guys (they're moc'd automatically after this) - Generates the code for the QT UI forms
@@ -1143,11 +1150,24 @@ if 'win' in platform:
 		flags_debug = 1		# Turn general debugging flag on too if msvcdebug is specified
 
 if int(flags_debug):
-	env.Append(CPPDEFINES = '__DEBUG__')
 	build_flags += 'debug '
 	print "Debugging output... enabled"
 else:
+	env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 	print "Debugging output... disabled"
+
+#ALSA API selection
+if platform == 'linux':
+	flags_rawmidi = getFlags(env, 'rawmidi', 0)
+	if int(flags_rawmidi):
+		build_flags += 'rawmidi '
+		sources += Split("""midiobjectalsa.cpp """)  #ALSA RawMIDI support for Linux
+		env.Append(CXXFLAGS = '-D__ALSAMIDI__')
+		print "ALSA API... RawMIDI"
+	else:
+		sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
+		env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
+		print "ALSA API... Sequencer"
 
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
 flags_msvshacks = getFlags(env, 'msvshacks', 0)
@@ -1204,7 +1224,7 @@ print "Building with flags: " + build_flags
 print "================\n"
 
 #Save the options to cache
-opts.Save(cachefile, env)
+vars.Save(cachefile, env)
 
 #Tell SCons to build Mixxx
 #=========================
