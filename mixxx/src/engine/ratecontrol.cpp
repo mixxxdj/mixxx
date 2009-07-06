@@ -19,8 +19,9 @@ double RateControl::m_dPermSmall = 0.001;
 RateControl::RateControl(const char* _group,
                          const ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
-    m_bTempPress(false),
-    m_dOldRate(0.0f) {
+    m_bTempPress(false), m_bTempDown(false), m_bTempRelease(false),
+    m_dOldRate(0.0f) 
+{
     
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
@@ -93,8 +94,8 @@ RateControl::RateControl(const char* _group,
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
 
     // Scratch controller, this is an accumulator which is useful for
-	// controllers that return individiual +1 or -1s, these get added up and
-	// cleared when we read
+    // controllers that return individiual +1 or -1s, these get added up and
+    // cleared when we read
     m_pScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
@@ -338,6 +339,38 @@ double RateControl::calculateRate(double baserate, bool paused) {
 }
 
 double RateControl::process(const double currentSample,
-                            const double totalSamples) {
-    return 0;
+                            const double totalSamples,
+                            const doube countSamples) 
+{
+    if ( m_bTempPress && !m_bTempDown ) 
+    {
+        m_dOldRate = m_pRateSlider->get();
+        m_bTempDown = true;
+        m_dTempRateChange = m_pRateDir->get() *
+                                ( m_dTemp / (100. * m_pRateRange->get())) /
+                                ( RATE_TEMP_STEP / countSamples)
+                            );
+        
+        //if ( VIRTUAL_DJ_PITCH_BEND )
+        //    m_pRateSlider->sub(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
+    }
+    
+    if ((m_bTempPress) && (m_bTempRelease == false)) 
+    {
+        if ( buttonRateTempUp->get())
+            rateSlider->add(m_dTempRateChange);
+        if ( buttonRateTempDown->get())
+            rateSlider->sub(m_dTempRateChange);
+    }
+    
+    if ((m_bTempRelease))
+    {
+        m_bTempDown = false;
+        m_bTempPress = false;
+        m_bTempRelease = false;
+        
+        rateSlider->set(m_dOldRate);
+    }
+    
+    return 1;
 }
