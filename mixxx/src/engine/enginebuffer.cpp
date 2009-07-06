@@ -32,6 +32,8 @@
 //#include "enginebufferscalesrc.h"
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
+
+#include "engine/enginecontrol.h"
 #include "enginebuffercue.h"
 #include "loopingcontrol.h"
 #include "ratecontrol.h"
@@ -62,7 +64,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"), true);
-    connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
+    connect(playButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlay(double)));
     playButton->set(0);
 
     // Reverse button
@@ -72,22 +75,26 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Fwd button
     fwdButton = new ControlPushButton(ConfigKey(group, "fwd"));
-    connect(fwdButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlFastFwd(double)));
+    connect(fwdButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlFastFwd(double)));
     fwdButton->set(0);
 
     // Back button
     backButton = new ControlPushButton(ConfigKey(group, "back"));
-    connect(backButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlFastBack(double)));
+    connect(backButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlFastBack(double)));
     backButton->set(0);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
-    connect(startButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlStart(double)));
+    connect(startButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlStart(double)));
     startButton->set(0);
 
     // End button
     endButton = new ControlPushButton(ConfigKey(group, "end"));
-    connect(endButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlEnd(double)));
+    connect(endButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlEnd(double)));
     endButton->set(0);
 
     // Playback rate slider
@@ -128,10 +135,12 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
-    connect(playposSlider, SIGNAL(valueChanged(double)), this, SLOT(slotControlSeek(double)));
+    connect(playposSlider, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlSeek(double)));
 
     // Control used to communicate ratio playpos to GUI thread
-    visualPlaypos = new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
+    visualPlaypos =
+        new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
     
     // m_pTrackEnd is used to signal when at end of file during playback
     m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
@@ -145,10 +154,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #ifdef __VINYLCONTROL__
     // Vinyl Control status indicator
     //Disabled because it's not finished yet
-    //m_pVinylControlIndicator = new ControlObject(ConfigKey(group, "VinylControlIndicator"));
+    //m_pVinylControlIndicator =
+    //    new ControlObject(ConfigKey(group, "VinylControlIndicator"));
 #endif
 
-    m_pEngineBufferCue = new EngineBufferCue(group, this);
+    
 
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
@@ -161,6 +171,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScale = 0;
     setNewPlaypos(0.);
+
+    // Create the Cue Controller TODO(rryan) : this has to happen before Reader
+    // is constructed. Fix that.
+    m_pEngineBufferCue = new EngineBufferCue(_group, _config, this);
 
     reader = new Reader(this, &pause, _config);
     read_buffer_prt = reader->getBufferWavePtr();
@@ -179,9 +193,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear = new EngineBufferScaleLinear(reader->getWavePtr());
     m_pScaleST = new EngineBufferScaleST(reader->getWavePtr());
     //Figure out which one to use (setPitchIndpTimeStretch does this)
-    int iPitchIndpTimeStretch = _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
+    int iPitchIndpTimeStretch =
+        _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
-
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
@@ -191,8 +205,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
-
-    oldEvent = 0.;
 
     // Used in update of playpos slider
     m_iSamplesCalculated = 0;
