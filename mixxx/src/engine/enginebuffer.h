@@ -185,8 +185,7 @@ private:
     EngineBufferScaleLinear *m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
     EngineBufferScaleST *m_pScaleST;
-    /** Number of samples left in audio beat mark from last call to process */
-    int m_iBeatMarkSamplesLeft;
+
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
     float m_fLastSampleValue;
@@ -196,7 +195,8 @@ private:
     /** Pointer to ReaderExtractWave buffer */
     float *m_pWaveBuffer;
 
-    /** Whether Pitch-Independent Time Stretch should be re-enabled when we start playing post-scratch **/
+    /** Whether Pitch-Independent Time Stretch should be re-enabled when we
+        start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch; // TODO
 
     // Filter jog wheel data to smooth it:
