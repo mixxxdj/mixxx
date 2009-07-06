@@ -8,28 +8,27 @@
 #ifndef LOOPINGCONTROL_H_
 #define LOOPINGCONTROL_H_
 
-#include "configobject.h"
-
 #include <QObject>
+
+#include "configobject.h"
+#include "engine/enginecontrol.h"
 
 class ControlPushButton;
 class ControlObject;
 
-class LoopingControl : QObject {
+
+class LoopingControl : public EngineControl {
     Q_OBJECT
 public:
 	LoopingControl(const char * _group, ConfigObject<ConfigValue> * _config);
 	virtual ~LoopingControl();
-	double process(double absPlayPos);
-	void setCurrentSample(int currentSample);
+	double process(double currentSample, double totalSamples);
 
 	public slots:
 	void slotLoopIn(double);
 	void slotLoopOut(double);
 	void slotReloopExit(double);
 private:
-	QString m_group;
-	ConfigObject<ConfigValue>* m_pConfig;
 	ControlObject* m_pCOLoopStartPosition;
 	ControlObject* m_pCOLoopEndPosition;
 	ControlPushButton* m_pLoopInButton;

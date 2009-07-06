@@ -6,6 +6,7 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
+#include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 
 // Static default values for rate buttons
@@ -14,23 +15,9 @@ double RateControl::m_dTempSmall = 0.001;
 double RateControl::m_dPerm = 0.01;
 double RateControl::m_dPermSmall = 0.001;
 
-void RateControl::setTemp(double v) {
-    m_dTemp = v;
-}
-
-void RateControl::setTempSmall(double v) {
-    m_dTempSmall = v;
-}
-
-void RateControl::setPerm(double v) {
-    m_dPerm = v;
-}
-
-void RateControl::setPermSmall(double v) {
-    m_dPermSmall = v;
-}
-
-RateControl::RateControl(const char* _group, ConfigObject<ConfigValue>* _config) :
+RateControl::RateControl(const char* _group,
+                         const ConfigObject<ConfigValue>* _config) :
+    EngineControl(_group, _config),
     m_bTempPress(false),
     m_dOldRate(0.0f) {
     m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
@@ -91,8 +78,22 @@ RateControl::~RateControl() {
     delete buttonRatePermDownSmall;
     delete buttonRatePermUp;
     delete buttonRatePermUpSmall;
+}
 
-    
+void RateControl::setTemp(double v) {
+    m_dTemp = v;
+}
+
+void RateControl::setTempSmall(double v) {
+    m_dTempSmall = v;
+}
+
+void RateControl::setPerm(double v) {
+    m_dPerm = v;
+}
+
+void RateControl::setPermSmall(double v) {
+    m_dPermSmall = v;
 }
 
 void RateControl::slotControlRatePermDown(double)
@@ -185,4 +186,9 @@ void RateControl::slotControlRateTempUpSmall(double)
         m_bTempPress = false;
         m_pRateSlider->set(m_dOldRate);
     }
+}
+
+double RateControl::process(const double currentSample,
+                            const double totalSamples) {
+    return 0;
 }
