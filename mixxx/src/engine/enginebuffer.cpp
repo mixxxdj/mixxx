@@ -27,7 +27,6 @@
 #include "enginebufferscalest.h"
 #include "enginebufferscalelinear.h"
 #include "enginebufferscalereal.h"
-//#include "enginebufferscalesrc.h"
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
 
@@ -366,12 +365,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = false;
 
-        if(!playButton->get())
+        if (!playButton->get())
             paused = true;
 
         if (wheelTouchSensorEnabled) {
             paused = true;
         }
+
+
+        // TODO(rryan) : review this touch sensitive business with the Mixxx
+        // team to see if this is what we actually want.
         
         // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
         // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
@@ -421,12 +424,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If paused, then ramp out.
         if (bCurBufferPaused) {
             // If this is the first process() since being paused, then ramp out.
-            if (!m_bLastBufferPaused)
+            if (!m_bLastBufferPaused) {
                 rampOut(pOut, iBufferSize);
+                m_bLastBufferPaused = true;
+            }
         // Otherwise, scale the audio.
-        } else { // if (bCurBufferPaused)
+        } else { // if (bCurBufferPaused)            
             CSAMPLE *output;
             double idx;
+
+            m_bLastBufferPaused = false;
 
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(bufferpos_play, iBufferSize);
@@ -493,53 +500,19 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
-        //
-        // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
-        // if playmode is next file: set next in playlistcontrol
-        //
+        // Update all the indicators that EngineBuffer publishes to allow
+        // external parts of Mixxx to observe its status.
+        updateIndicators(rate, iBufferSize);
 
-        // Update playpos slider and bpm display if necessary
-        m_iSamplesCalculated += iBufferSize;
-        if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
-            if (file_length_old!=0.) {
-                double f = math_max(0.,math_min(filepos_play,file_length_old));
-                playposSlider->set(f/file_length_old);
-
-                //qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
-            } else {
-                playposSlider->set(0.);
-            }
-            
-            if(rate != rateEngine->get())
-                rateEngine->set(rate);
-            m_iSamplesCalculated = 0;
-        }
-
-        // Update buffer and abs position. These variables are not in the ControlObject
-        // framework because they need very frequent updates.
-        if (m_qPlayposMutex.tryLock()) {
-            m_dBufferPlaypos = bufferpos_play;
-            m_dAbsPlaypos = filepos_play;
-            m_dAbsStartpos = filepos_start;
-            m_qPlayposMutex.unlock();
-        }
-
-        // Update visual control object, this needs to be done more often than the bpm display and playpos slider
-        if(file_length_old != 0.) {
-            double f = math_max(0.,math_min(filepos_play, file_length_old));
-            visualPlaypos->set(f/file_length_old);
-        } else {
-            visualPlaypos->set(0.);
-        }
-
-        // HANDLE END-OF-TRACK MODE
+        // Handle End-Of-Track mode
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            !m_pTrackEnd->get() && readerinfo &&
-            ((filepos_play<=0. && backwards) ||
-             ((int)filepos_play>=file_length_old && !backwards)))
-        {
+            !m_pTrackEnd->get() &&
+            readerinfo &&
+            !(at_start && backwards) &&
+            !(at_end && !backwards)) {
+            
             // If end of track mode is set to next, signal EndOfTrack to TrackList,
             // otherwise start looping, pingpong or stop the track
             int m = (int)m_pTrackEndMode->get();
@@ -608,4 +581,47 @@ void EngineBuffer::rampOut(const CSAMPLE * pOut, int iBufferSize)
         pOutput[i]=0.;
         ++i;
     } 
+}
+
+
+void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
+
+    // Increase samplesCalculated by the buffer size
+    m_iSamplesCalculated += iBufferSize;
+
+    double fFractionalPlaypos = 0.0;
+    if (file_length_old!=0.) {
+        fFractionalPlaypos = math_max(0.,math_min(filepos_play,file_length_old));
+        fFractionalPlaypos /= file_length_old;
+        //qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
+    } else {
+        fFractionalPlaypos = 0.;
+    }
+
+
+    // Update indicators that are only updated after every
+    // sampleRate/UPDATE_RATE samples processed.  (e.g. playposSlider,
+    // rateEngine)
+    if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
+        playposSlider->set(fFractionalPlaypos)
+        
+        if(rate != rateEngine->get())
+            rateEngine->set(rate);
+
+        // Reset sample counter
+        m_iSamplesCalculated = 0;
+    }
+
+    // Update visual control object, this needs to be done more often than the
+    // rateEngine and playpos slider
+    visualPlaypos->set(fFractionalPlaypos);
+
+    // Update buffer and abs position. These variables are not in the ControlObject
+    // framework because they need very frequent updates.
+    if (m_qPlayposMutex.tryLock()) {
+        m_dBufferPlaypos = bufferpos_play;
+        m_dAbsPlaypos = filepos_play;
+        m_dAbsStartpos = filepos_start;
+        m_qPlayposMutex.unlock();
+    }
 }

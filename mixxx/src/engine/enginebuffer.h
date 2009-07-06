@@ -116,6 +116,8 @@ private:
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
+    void updateIndicators(double rate, int iBufferSize);
+
     /** Pointer to the loop control object */
     LoopingControl *m_pLoopingControl;
     
