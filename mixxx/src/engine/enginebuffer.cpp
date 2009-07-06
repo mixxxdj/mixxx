@@ -338,7 +338,7 @@ double EngineBuffer::getRate()
 }
 
 
-void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
+void EngineBuffer::slotControlSeek(double change)
 {
     if(isnan(change) || change > 1.0 || change < 0.0) {
         // This seek is ridiculous.
@@ -361,9 +361,9 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
     setNewPlaypos(new_playpos);
 }
 
-void EngineBuffer::slotControlSeekAbs(double abs, bool bBeatSync)
+void EngineBuffer::slotControlSeekAbs(double abs)
 {
-    slotControlSeek(abs/file_length_old, bBeatSync);
+    slotControlSeek(abs/file_length_old);
 }
 
 void EngineBuffer::slotControlPlay(double)

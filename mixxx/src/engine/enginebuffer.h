@@ -108,8 +108,8 @@ public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
     void slotControlEnd(double);
-    void slotControlSeek(double, bool bBeatSync=true);
-    void slotControlSeekAbs(double, bool bBeatSync=true);
+    void slotControlSeek(double);
+    void slotControlSeekAbs(double);
     void slotControlBeatSync(double);
     void slotSetBpm(double);
     void slotControlFastFwd(double);

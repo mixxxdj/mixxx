@@ -1,4 +1,4 @@
-// RateControl.h
+// ratecontrol.h
 // Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef RATECONTROL_H
@@ -13,7 +13,7 @@ class ControlObject;
 class ControlPushButton;
 
 class RateControl : public EngineControl {
-    
+    Q_OBJECT
 public:
     RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
     ~RateControl();
