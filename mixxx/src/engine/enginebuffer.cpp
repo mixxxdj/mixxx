@@ -426,14 +426,57 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
 
-        double rate;
+        double rate = 0.0f;
 
+        // Is a touch sensitive wheel being touched?
+        bool wheelTouchSensorEnabled = wheelTouchSwitch->get() && wheelTouchSensor->get();
+
+        // Calculate wheel (experimental formula)
+        double wheelFactor = 40 * wheel->get();
+
+        // Calculate scratch factor
+        double scratchFactor = m_pControlScratch->get();
+        if(!isnan(scratchFactor) && scratchFactor != 0.0f) {
+            if (scratchFactor < 0.) {
+                scratchFactor = scratchFactor - 1.0f;
+            } else if (scratch > 0.) {
+                scratchFactor = scratchFactor + 1.0f;
+            }
+        } else {
+            scratchFactor = 1.0f;
+        }
+
+        // Calculate jog factor
+        // FIXME: Sensitivity should be configurable separately?
+        const double jogSensitivity = m_pRateRange->get();
+        double jogValue = m_pJog->get();
+
+        // Since m_pJog is an accumulator, reset it since we've used its value.
+        if(jogVal != 0.)
+            m_pJog->set(0.);
+        
+        double jogValueFiltered = m_jogfilter->filter(jogValue);
+        double jogFactor = jogValueFiltered * jogSensitivity;
+
+        if (isnan(jogValue) || isnan(jogFactor)) {
+            jogFactor = 0.0f;
+        }
+
+        bool paused = false;
+
+        if(!playbutton->get())
+            paused = true;
+
+        if (wheelTouchSensorEnabled) {
+            paused = true;
+        }
+        
         // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
         // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
         // the wheel's motion is amplified to produce a scrub effect. Also note that playback speed factors like
         // rateSlider and reverseButton are ignored so that the feel of the wheel is always consistent.
         // TODO: Configurable vinyl stop effect.
-        if (wheelTouchSwitch->get() && wheelTouchSensor->get()) {
+        if (wheelTouchSensorEnabled) {
             // Act as scratch controller
             if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt()) {
                 // Use vinyl-style pitch bending
@@ -441,73 +484,42 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 m_bResetPitchIndpTimeStretch = true;
                 setPitchIndpTimeStretch(false);
             }
-            // Experimental formula
-            rate = wheel->get() * 40. * baserate;
-        } else if(playButton->get()) {
-
+        } else if (!paused) {
             // BJW: Reset timestretch mode if required. NB it's intentional that this should not
             // get reset until playing; this enables released spinbacks in stop mode.
             if (m_bResetPitchIndpTimeStretch) {
                 setPitchIndpTimeStretch(true);
                 m_bResetPitchIndpTimeStretch = false;
                 // qDebug() << "Re-enabling Pitch-Independent Time Stretch";
-                }
-            // BJW: Split up initial rate setting from any wheel influence
-            // rate=wheel->get()+(1.+rateSlider->get()*m_pRateRange->get()*m_pRateDir->get())*baserate;
-            rate = (1. + rateSlider->get() * m_pRateRange->get() * m_pRateDir->get()) * baserate;
-            // Apply jog wheel
-            rate += wheel->get(); // / 40.;
-            // rate = wheel->get() / 40 + (1. + rateSlider->get() * m_pRateRange->get() * m_pRateDir->get()) * baserate;
-
-            // qDebug() << "wheel " << wheel->get() << ", slider " << rateSlider->get() << ", range " << m_pRateRange->get() << ", dir " << m_pRateDir->get();
-
-            // Apply scratch
-            double scratch = m_pControlScratch->get();
-            if(!isnan(scratch)) {
-                if (scratch < 0.) {
-                    rate = rate * (scratch-1.);                
-                } else if (scratch > 0.) {
-                    rate = rate * (scratch+1.);
-                }
             }
+        }
 
-            // Apply jog
-            // FIXME: Sensitivity should be configurable separately?
-            const double fact = m_pRateRange->get();
-            double jogVal = m_pJog->get();
-            double val = m_jogfilter->filter(jogVal);
-            rate += val * fact;
-            if(jogVal != 0.)
-                m_pJog->set(0.);
+        if (paused) {
+            // Stopped. Wheel, jog and scratch controller all scrub through audio.
+            rate = (wheelFactor + scratchFactor + jogFactor) * baserate;            
+        } else {
+            // The buffer is playing, so calculate the buffer rate.
 
-            // BJW: Apply reverse button (moved from above)
+            // There are three rate effects we apply: wheel, scratch, and jog.
+            // Wheel: a linear additive effect
+            // Scratch: a rate multiplier
+            // Jog: a linear additive effect whose value is filtered 
+            
+            rate = (1. + getRate()) * baserate;
+            rate += wheelFactor;
+            rate *= scratchFactor;
+            rate += jogFactor;
+
+            // If we are reversing, flip the rate.
             if (reverseButton->get()) {
                 rate = -rate;
             }
-
-        } else {
-            // Stopped. Wheel, jog and scratch controller all scrub through audio.
-            double jogVal = m_pJog->get();
-
-            // Don't trust values from m_pControlScratch
-            double scratch = m_pControlScratch->get();
-            if(isnan(scratch)) {
-                scratch = 0.0;
-            }
-            
-            rate=(wheel->get()*40.+scratch+m_jogfilter->filter(jogVal))*baserate; //*10.;
-            if(jogVal != 0.)
-                m_pJog->set(0.);
         }
-
+        
         // If searching in progress...
-        if (m_pRateSearch->get()!=0.)
-        {
+        if (m_pRateSearch->get()!=0.) {
             rate = m_pRateSearch->get();
-//            m_pScale->setFastMode(true);
         }
-//         else
-//             m_pScale->setFastMode(false);
         
         // If the rate has changed, set it in the scale object
         if (rate != rate_old)
@@ -519,46 +531,43 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             rate_old = rate;
         }
 
-        bool at_start = false;
-        bool at_end = false;
-        bool backwards = false;
+        bool at_start = filepos_play <= 0;
+        bool at_end = filepos_play >= file_length_old;
+        bool backwards = rate < 0;
 
-        if(rate < 0)
-            backwards = true;
-        
-        if((rate == 0) || (filepos_play == 0 && backwards) ||
-           (filepos_play == file_length_old && !backwards)) {
-            rampOut(pOut, iBufferSize);
-            bCurBufferPaused = true;
-        } else {
+        // If we're playing past the end, playing before the start, or standing
+        // still then by definition the buffer is paused.
+        bool bCurBufferPaused = rate == 0 ||
+            (at_start && backwards) ||
+            (at_end && !backwards);
 
-            // Check if we are at the boundaries of the file
-            if ((filepos_play<0. && backwards) || (filepos_play>file_length_old && !backwards))
-            {
-                //qDebug() << "buffer out of range, filepos_play " << filepos_play << ", length " << file_length_old << "i";
+        // If paused, then ramp out.
+        if (bCurBufferPaused) {
+            // If this is the first process() since being paused, then ramp out.
+            if (!m_bLastBufferPaused)
+                rampOut(pOut, iBufferSize);
+        // Otherwise, scale the audio.
+        } else { // if (bCurBufferPaused)
+            CSAMPLE *output;
+            double idx;
 
-                if (!m_bLastBufferPaused)
-                    rampOut(pOut, iBufferSize);
-                bCurBufferPaused = true;
-            } else {
-
-                CSAMPLE *output;
-                double idx;
-
-                // Perform scaling of Reader buffer into buffer.
-                output = m_pScale->scale(bufferpos_play, iBufferSize);
-                idx = m_pScale->getNewPlaypos();
+            // Perform scaling of Reader buffer into buffer.
+            output = m_pScale->scale(bufferpos_play, iBufferSize);
+            idx = m_pScale->getNewPlaypos();
                 
-                // qDebug() << "idx " << idx << ", buffer pos " << bufferpos_play << ", play " << filepos_play;
+            // qDebug() << "idx " << idx << ", buffer pos " << bufferpos_play << ", play " << filepos_play;
 
-                for(int i=0; i<iBufferSize; i++) {
-                    pOutput[i] = output[i];
-                }
+            // Copy scaled audio into pOutput
+            // TODO(XXX) could this be done safely/faster with a memcpy?
+            for(int i=0; i<iBufferSize; i++) {
+                pOutput[i] = output[i];
+            }
 
-                // Adjust filepos_play
-                filepos_play += (idx-bufferpos_play);
+            // Adjust filepos_play by the amount we processed.
+            filepos_play += (idx-bufferpos_play);
 
-                if(filepos_play > file_length_old && readerinfo && file_length_old > 0) {
+            if (file_length_old > 0 && readerinfo) {
+                if(filepos_play > file_length_old) {
                     idx -= filepos_play-file_length_old;
                     filepos_play = file_length_old;
                     at_end = true;
@@ -567,17 +576,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                     filepos_play = 0;
                     at_start = true;
                 }
-
-                // Ensure valid range of idx
-                while (idx>READBUFFERSIZE)
-                    idx -= (double)READBUFFERSIZE;
-                while (idx<0)
-                    idx += (double)READBUFFERSIZE;
-
-                // Write buffer playpos
-                bufferpos_play = idx;
             }
-        }
+
+            // Ensure valid range of idx
+            while (idx>READBUFFERSIZE)
+                idx -= (double)READBUFFERSIZE;
+            while (idx<0)
+                idx += (double)READBUFFERSIZE;
+
+            // Write buffer playpos
+            bufferpos_play = idx;
+        } // else (bCurBufferPaused)
 
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
