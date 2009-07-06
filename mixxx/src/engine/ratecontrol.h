@@ -9,6 +9,9 @@
 #include "configobject.h"
 #include "engine/enginecontrol.h"
 
+const int RATE_TEMP_STEP = 100.;
+const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
+
 class Rotary;
 class ControlTTRotary;
 class ControlObject;
@@ -20,7 +23,8 @@ class RateControl : public EngineControl {
 public:
     RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
     ~RateControl();
-    double process(const double currentSample, const double totalSamples);
+    double process(const double currentSample, const double totalSamples, 
+                        const double iBufferSize);
     double calculateRate(double baserate, bool paused);
     double getRawRate();
 
@@ -70,6 +74,12 @@ private:
 
     /** Is true if a rate temp button is pressed */    
     bool m_bTempPress;
+    /** Is true if a rate button was released */
+    bool m_bTempRelease;
+    /** Is true if a rate button is down */
+    bool m_bTempDown;
+    /** Set to the rate change used for rate temp */
+    double m_dTempRateChange;
 
     /** Old playback rate. Stored in this variable while a temp pitch change
       * buttons is in effect. It does not work to just decrease the pitch slider
