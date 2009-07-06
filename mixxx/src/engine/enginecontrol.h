@@ -10,10 +10,11 @@
 
 class EngineControl : public QObject {
     Q_OBJECT
+    
     public:
 
     EngineControl(const char * _group, const ConfigObject<ConfigValue> * _config);
-    virtual ~EngineControl() = 0;
+    virtual ~EngineControl();
     
     virtual double process(const double currentSample, const double totalSamples) {
         return 0;

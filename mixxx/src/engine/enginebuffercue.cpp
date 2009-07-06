@@ -123,7 +123,7 @@ void EngineBufferCue::slotControlCueGoto(double pos)
         else
         {
             // Seek to cue point
-            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
         }
     }
 }
@@ -133,7 +133,7 @@ void EngineBufferCue::slotControlCueGotoAndStop(double pos)
 {
     if(pos == 0.) return;
     //Seek to the cue point...
-    m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+    m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
 
     //... and stop.
     playButton->set(0.);
@@ -150,7 +150,7 @@ void EngineBufferCue::slotControlCuePreview(double)
         // Stop playing (set playbutton to stoped) and seek to cue point
         playButton->set(0.);
         m_bCuePreview = false;
-        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
     }
     else if (!m_bCuePreview)
     {
@@ -162,7 +162,7 @@ void EngineBufferCue::slotControlCuePreview(double)
         else
         {
             // Seek to cue point
-            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
         }
     }
 }
@@ -180,7 +180,7 @@ void EngineBufferCue::slotControlCueSimple(double v)
             saveCuePoint(cue);
         }
         else  //If playback is ongoing, then jump to the cue-point.
-            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
     }
 }
 
@@ -204,7 +204,7 @@ void EngineBufferCue::slotControlCueCDJ(double v) {
     {
         // Stop playing (set playbutton to stopped) and seek to cue point
         playButton->set(0.);
-        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
     }
     else if (v!=0. && playButton->get()==0.)
     // On button press, If the track is not playing and we are not previewing
