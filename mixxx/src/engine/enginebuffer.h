@@ -133,6 +133,8 @@ private:
     Reader *reader;
     /** The current sample to play in the file. */
     double filepos_play;
+    /** The first sample of the file */
+    double filepos_start;
     /** Sample in the buffer relative to filepos_play. */
     double bufferpos_play;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
