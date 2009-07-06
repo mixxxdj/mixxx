@@ -35,6 +35,7 @@
 #include "enginebuffercue.h"
 #include "loopingcontrol.h"
 #include "ratecontrol.h"
+#include "bpmcontrol.h"
 
 
 #ifdef _MSC_VER
@@ -58,10 +59,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     filepos_play = 0;
     bufferpos_play = 0;
-
-    // Set up temporary buffer for seeking and looping
-    m_pTempBuffer = new float[kiTempLength];
-    m_dTempFilePos = 0.;
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"), true);
@@ -145,17 +142,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // TrackEndMode determines what to do at the end of a track
     m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
 
-    // BPM of the file
-    m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
-
-    // BPM control
-    bpmControl = new ControlBeat(ConfigKey(group, "bpm"), true);
-    connect(bpmControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetBpm(double)));
-
-    // Beat sync (scale buffer tempo relative to tempo of other buffer)
-    buttonBeatSync = new ControlPushButton(ConfigKey(group, "beatsync"));
-    connect(buttonBeatSync, SIGNAL(valueChanged(double)), this, SLOT(slotControlBeatSync(double)));
-
 #ifdef __VINYLCONTROL__
     // Vinyl Control status indicator
     //Disabled because it's not finished yet
@@ -203,6 +189,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
 
+    // Create the BPM Controller
+    m_pBpmControl = new BpmControl(_group, _config);
+
     oldEvent = 0.;
 
     // Used in update of playpos slider
@@ -213,7 +202,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
-    delete [] m_pTempBuffer;
     delete playButton;
     delete wheel;
     delete m_pControlScratch;
@@ -291,14 +279,15 @@ Reader * EngineBuffer::getReader()
 
 double EngineBuffer::getBpm()
 {
-    return bpmControl->get();
+    return m_pBpmControl->getBpm();
 }
 
 void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 {
-    if (!m_pOtherEngineBuffer)
+    if (!m_pOtherEngineBuffer) {
         m_pOtherEngineBuffer = pOtherEngineBuffer;
-    else
+        m_pBpmControl->setOtherEngineBuffer(pOtherEngineBuffer);
+    } else
         qCritical("EngineBuffer: Other engine buffer already set!");
 }
 
@@ -381,44 +370,6 @@ void EngineBuffer::slotControlEnd(double)
     slotControlSeek(1.);
 }
 
-void EngineBuffer::slotSetBpm(double bpm)
-{
-    double filebpm = m_pFileBpm->get(); //reader->getBpm();
-
-    if (filebpm!=0.)
-        rateSlider->set(bpm/filebpm-1.);
-}
-
-
-void EngineBuffer::slotControlBeatSync(double)
-{
-    double fOtherBpm = m_pOtherEngineBuffer->getBpm();
-    double fThisBpm  = bpmControl->get();
-    double fRateScale;
-
-    if (fOtherBpm>0. && fThisBpm>0.)
-    {
-        // Test if this buffers bpm is the double of the other one, and find rate scale:
-        if (fabs(fThisBpm*2.-fOtherBpm) < fabs(fThisBpm-fOtherBpm))
-            fRateScale = fOtherBpm/(2*fThisBpm) * (1.+m_pOtherEngineBuffer->getRate());
-        else if ( fabs(fThisBpm-2.*fOtherBpm) < fabs(fThisBpm-fOtherBpm))
-            fRateScale = 2.*fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
-        else
-            fRateScale = (fOtherBpm*(1.+m_pOtherEngineBuffer->getRate()))/fThisBpm;
-
-        // Ensure the rate is within resonable boundaries
-        if (fRateScale<2. && fRateScale>0.5)
-        {
-            // Adjust the rate:
-            fRateScale = (fRateScale-1.)/m_pRateRange->get();
-            rateSlider->set(fRateScale * m_pRateDir->get());
-
-            // Adjust the phase:
-            // (removed, see older version for this info)
-        }
-    }
-
-}
 
 void EngineBuffer::slotControlFastFwd(double v)
 {
@@ -477,8 +428,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             reader->unlock();
             readerinfo = true;
         }
-
-        double filebpm = m_pFileBpm->get();
 
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
 
@@ -680,8 +629,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 playposSlider->set(0.);
             }
             
-            if(filebpm != bpmControl->get())
-                bpmControl->set(filebpm);
             if(rate != rateEngine->get())
                 rateEngine->set(rate);
             m_iSamplesCalculated = 0;
