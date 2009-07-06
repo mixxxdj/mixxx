@@ -19,53 +19,67 @@
 #include "trackinfoobject.h"
 #include "controlpushbutton.h"
 #include "controlobject.h"
-#include "enginebuffercue.h"
-#include "enginebuffer.h"
 #include "mathstuff.h"
 
-EngineBufferCue::EngineBufferCue(const char * group, EngineBuffer * pEngineBuffer)
-{
+#include "engine/enginecontrol.h"
+#include "engine/enginebuffercue.h"
+#include "engine/enginebuffer.h"
+
+
+EngineBufferCue::EngineBufferCue(const char* _group,
+                                 const ConfigObject<ConfigValue>* _config,
+                                 EngineBuffer* pEngineBuffer) :
+    EngineControl(_group, _config) {
+
     m_pEngineBuffer = pEngineBuffer;
     m_bCuePreview = false;
-    m_group = group;
 
     // Get pointer to play button
-    playButton = ControlObject::getControl(ConfigKey(group, "play"));
-    connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
+    playButton = ControlObject::getControl(ConfigKey(_group, "play"));
+    connect(playButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlay(double)));
 
     // Cue set button:
-    buttonCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
-    connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
+    buttonCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
+    connect(buttonCueSet, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCueSet(double)));
 
     // Cue goto button:
-    buttonCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
-    connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
+    buttonCueGoto = new ControlPushButton(ConfigKey(_group, "cue_goto"));
+    connect(buttonCueGoto, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCueGoto(double)));
 
     // Cue goto and stop button:
-    buttonCueGotoAndStop = new ControlPushButton(ConfigKey(group, "cue_gotoandstop"));
-    connect(buttonCueGotoAndStop, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGotoAndStop(double)));
+    buttonCueGotoAndStop =
+        new ControlPushButton(ConfigKey(_group, "cue_gotoandstop"));
+    connect(buttonCueGotoAndStop, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCueGotoAndStop(double)));
 
     // Cue "simple-style" button:
-    buttonCueSimple = new ControlPushButton(ConfigKey(group, "cue_simple"));
-    connect(buttonCueSimple, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSimple(double)));
+    buttonCueSimple = new ControlPushButton(ConfigKey(_group, "cue_simple"));
+    connect(buttonCueSimple, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCueSimple(double)));
 
     // Cue point
-    cuePoint = new ControlObject(ConfigKey(group, "cue_point"));
+    cuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
 
     // Cue preview button:
-    buttonCuePreview = new ControlPushButton(ConfigKey(group, "cue_preview"));
-    connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
+    buttonCuePreview = new ControlPushButton(ConfigKey(_group, "cue_preview"));
+    connect(buttonCuePreview, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCuePreview(double)));
 
     // Cue button CDJ style
-    buttonCueCDJ = new ControlPushButton(ConfigKey(group, "cue_cdj"));
-    connect(buttonCueCDJ, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueCDJ(double)));
+    buttonCueCDJ = new ControlPushButton(ConfigKey(_group, "cue_cdj"));
+    connect(buttonCueCDJ, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCueCDJ(double)));
     
     // Cue button generic handler
-    buttonCueDefault = new ControlPushButton(ConfigKey(group, "cue_default"));
-    connect(buttonCueDefault, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueDefault(double)));
+    buttonCueDefault = new ControlPushButton(ConfigKey(_group, "cue_default"));
+    connect(buttonCueDefault, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlCueDefault(double)));
     
     // Cue behavior setting. 1 means Simple Mode, 0 means CDJ Mode
-    m_pControlCueDefault = new ControlObject(ConfigKey(group,"cue_mode"));
+    m_pControlCueDefault = new ControlObject(ConfigKey(_group,"cue_mode"));
 }
 
 EngineBufferCue::~EngineBufferCue()
@@ -84,7 +98,7 @@ EngineBufferCue::~EngineBufferCue()
 void EngineBufferCue::saveCuePoint(double cue)
 {
     //Save the cue point inside the TrackInfoObject for that player.
-    int channel = m_group[8] - '0'; //The 8th char of [Channel#] is the #.
+    int channel = getGroup()[8] - '0'; //The 8th char of [Channel#] is the #.
     TrackInfoObject* currentTrack = PlayerInfo::Instance().getTrackInfo(channel);
     if (currentTrack) //Ensures a track is loaded :)
         currentTrack->setCuePoint(cue);
@@ -236,6 +250,3 @@ void EngineBufferCue::slotControlCueDefault(double v)
     }
 }
 
-void EngineBufferCue::process(const CSAMPLE *, const CSAMPLE *, const int)
-{
-}

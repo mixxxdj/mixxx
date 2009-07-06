@@ -82,12 +82,11 @@ public:
     double getBpm();
     /** Sets pointer to other engine buffer/channel */
     void setOtherEngineBuffer(EngineBuffer *);
-    /** Reset buffer playpos and set file playpos. This must only be called while holding the
-      * pause mutex */
+    /** Reset buffer playpos and set file playpos. This must only be called
+      * while holding the pause mutex */
     void setNewPlaypos(double);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void processOld(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char *getGroup();
 
@@ -180,8 +179,6 @@ private:
     /** Pointer to cue object */
     EngineBufferCue *m_pEngineBufferCue;
     
-    /** Used to store if an event has happen in last iteration of event based playback */
-    double oldEvent;
     /** Object used to perform waveform scaling (sample rate conversion) */
     EngineBufferScale *m_pScale;
     /** Object used for linear interpolation scaling of the audio */
