@@ -15,15 +15,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "controlpushbutton.h"
-#include "enginebuffer.h"
-
-#include <qevent.h>
+#include <QEvent>
 #include <QtDebug>
+
+#include "enginebuffer.h"
+#include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
-#include "controlttrotary.h"
-#include "controlbeat.h"
 #include "reader.h"
 #include "readerextractwave.h"
 #include "enginebufferscalest.h"
@@ -58,31 +56,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     filepos_play(0.),
     bufferpos_play(0.),
     m_iSamplesCalculated(0),
-    m_pScale(NULL),
-{
+    m_pScale(NULL) {
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"), true);
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);
-
-    // Reverse button
-    reverseButton = new ControlPushButton(ConfigKey(group, "reverse"));
-    reverseButton->set(0);
-    reverseButton->setToggleButton(true);
-
-    // Fwd button
-    fwdButton = new ControlPushButton(ConfigKey(group, "fwd"));
-    connect(fwdButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlFastFwd(double)));
-    fwdButton->set(0);
-
-    // Back button
-    backButton = new ControlPushButton(ConfigKey(group, "back"));
-    connect(backButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlFastBack(double)));
-    backButton->set(0);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
@@ -96,26 +76,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlEnd(double)));
     endButton->set(0);
 
-    // Playback rate slider
-    rateSlider = new ControlPotmeter(ConfigKey(group, "rate"), -1.f, 1.f);
-
     m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
-
-    // Search rate. Rate used when searching in sound. This overrules the playback rate
-    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.);
-
-    // Range of rate
-    m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
-
-    // Wheel to control playback position/speed
-    wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
-
-    // Scratch controller, this is an accumulator which is useful for controllers
-	// that return individiual +1 or -1s, these get added up and cleared when we read
-    m_pControlScratch = new ControlTTRotary(ConfigKey(group, "scratch"));
 
     // BJW Wheel touch sensor (makes wheel act as scratch)
     wheelTouchSensor = new ControlPushButton(ConfigKey(group, "wheel_touch_sensor"));
@@ -124,12 +88,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     wheelTouchSwitch->setToggleButton(true);
     // BJW Whether to revert to PitchIndpTimeStretch after scratching
     m_bResetPitchIndpTimeStretch = false;
-
-    m_pJog = new ControlObject(ConfigKey(group, "jog"));
-    m_jogfilter = new Rotary();
-    // FIXME: This should be dependent on sample rate/block size or something
-    m_jogfilter->setFilterLength(5);
-
+    
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)),
@@ -141,9 +100,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     
     // m_pTrackEnd is used to signal when at end of file during playback
     m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
-
-    // Direction of rate slider
-    m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
 
     // TrackEndMode determines what to do at the end of a track
     m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
@@ -169,6 +125,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
+    fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
+    backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
@@ -198,9 +156,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 EngineBuffer::~EngineBuffer()
 {
     delete playButton;
-    delete wheel;
-    delete m_pControlScratch;
-    delete rateSlider;
     delete m_pScaleLinear;
     delete m_pScaleST;
     delete m_pTrackEnd;
@@ -316,7 +271,7 @@ const char * EngineBuffer::getGroup()
 
 double EngineBuffer::getRate()
 {
-    return rateSlider->get()*m_pRateRange->get()*m_pRateDir->get();
+    return m_pRateControl->getRawRate();
 }
 
 
@@ -363,26 +318,6 @@ void EngineBuffer::slotControlEnd(double)
     slotControlSeek(1.);
 }
 
-
-void EngineBuffer::slotControlFastFwd(double v)
-{
-    qDebug() << "slotControlFastFwd(" << v << ")";
-    if (v==0.)
-        m_pRateSearch->set(0.);
-    else
-        m_pRateSearch->set(4.);
-}
-
-void EngineBuffer::slotControlFastBack(double v)
-{
-    qDebug() << "slotControlFastBack(" << v << ")";
-    if (v==0.)
-        m_pRateSearch->set(0.);
-    else
-        m_pRateSearch->set(-4.);
-}
-
-
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
 
@@ -425,46 +360,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
-
-        double rate = 0.0f;
-
+        
         // Is a touch sensitive wheel being touched?
         bool wheelTouchSensorEnabled = wheelTouchSwitch->get() && wheelTouchSensor->get();
 
-        // Calculate wheel (experimental formula)
-        double wheelFactor = 40 * wheel->get();
-
-        // Calculate scratch factor
-        double scratchFactor = m_pControlScratch->get();
-        if(!isnan(scratchFactor) && scratchFactor != 0.0f) {
-            if (scratchFactor < 0.) {
-                scratchFactor = scratchFactor - 1.0f;
-            } else if (scratch > 0.) {
-                scratchFactor = scratchFactor + 1.0f;
-            }
-        } else {
-            scratchFactor = 1.0f;
-        }
-
-        // Calculate jog factor
-        // FIXME: Sensitivity should be configurable separately?
-        const double jogSensitivity = m_pRateRange->get();
-        double jogValue = m_pJog->get();
-
-        // Since m_pJog is an accumulator, reset it since we've used its value.
-        if(jogVal != 0.)
-            m_pJog->set(0.);
-        
-        double jogValueFiltered = m_jogfilter->filter(jogValue);
-        double jogFactor = jogValueFiltered * jogSensitivity;
-
-        if (isnan(jogValue) || isnan(jogFactor)) {
-            jogFactor = 0.0f;
-        }
-
         bool paused = false;
 
-        if(!playbutton->get())
+        if(!playButton->get())
             paused = true;
 
         if (wheelTouchSensorEnabled) {
@@ -494,32 +396,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
-        if (paused) {
-            // Stopped. Wheel, jog and scratch controller all scrub through audio.
-            rate = (wheelFactor + scratchFactor + jogFactor) * baserate;            
-        } else {
-            // The buffer is playing, so calculate the buffer rate.
-
-            // There are three rate effects we apply: wheel, scratch, and jog.
-            // Wheel: a linear additive effect
-            // Scratch: a rate multiplier
-            // Jog: a linear additive effect whose value is filtered 
-            
-            rate = (1. + getRate()) * baserate;
-            rate += wheelFactor;
-            rate *= scratchFactor;
-            rate += jogFactor;
-
-            // If we are reversing, flip the rate.
-            if (reverseButton->get()) {
-                rate = -rate;
-            }
-        }
-        
-        // If searching in progress...
-        if (m_pRateSearch->get()!=0.) {
-            rate = m_pRateSearch->get();
-        }
+        double rate = m_pRateControl->calculateRate(baserate, paused);
         
         // If the rate has changed, set it in the scale object
         if (rate != rate_old)

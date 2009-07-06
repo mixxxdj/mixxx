@@ -9,7 +9,10 @@
 #include "configobject.h"
 #include "engine/enginecontrol.h"
 
+class Rotary;
+class ControlTTRotary;
 class ControlObject;
+class ControlPotmeter;
 class ControlPushButton;
 
 class RateControl : public EngineControl {
@@ -18,6 +21,8 @@ public:
     RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
     ~RateControl();
     double process(const double currentSample, const double totalSamples);
+    double calculateRate(double baserate, bool paused);
+    double getRawRate();
 
     /** Set rate change when temp rate button is pressed */
     static void setTemp(double v);
@@ -36,8 +41,14 @@ public slots:
     void slotControlRateTempDown(double);
     void slotControlRateTempDownSmall(double);
     void slotControlRateTempUp(double);
-    void slotControlRateTempUpSmall(double);                                            
+    void slotControlRateTempUpSmall(double);
+    void slotControlFastForward(double);
+    void slotControlFastBack(double);
 private:
+    double getJogFactor();
+    double getWheelFactor();
+    double getScratchFactor();
+    
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
     
@@ -45,7 +56,17 @@ private:
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
         *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *m_pRateDir, *m_pRateRange, *m_pRateSlider;
+    ControlObject *m_pRateDir, *m_pRateRange;
+    ControlPotmeter* m_pRateSlider;
+    ControlPotmeter* m_pRateSearch;
+    ControlPushButton* m_pReverseButton;
+    ControlObject* m_pBackButton;
+    ControlObject* m_pForwardButton;
+
+    ControlTTRotary* m_pWheel;
+    ControlTTRotary* m_pScratch;
+    ControlObject* m_pJog;
+    Rotary* m_pJogFilter;
 
     /** Is true if a rate temp button is pressed */    
     bool m_bTempPress;

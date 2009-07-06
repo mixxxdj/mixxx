@@ -110,8 +110,6 @@ public slots:
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
-    void slotControlFastFwd(double);
-    void slotControlFastBack(double);
 
 private:
 
@@ -148,12 +146,10 @@ private:
     int m_iSamplesCalculated;
 
     ControlPushButton *playButton, *buttonBeatSync;
+    ControlObject *fwdButton, *backButton;
 
-    ControlObject *rateEngine, *m_pRateDir, *m_pRateRange;
+    ControlObject *rateEngine;
     ControlObject *m_pMasterRate;
-    ControlObject *m_pJog;
-    ControlPotmeter *rateSlider, *m_pRateSearch;
-    ControlTTRotary *wheel, *m_pControlScratch;
     ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
@@ -167,10 +163,8 @@ private:
 
     /** Control used to signal when at end of file */
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
-    /** Reverse playback control */
-    ControlPushButton *reverseButton;
     /** Fwd and back controls, start and end of track control */
-    ControlPushButton *fwdButton, *backButton, *startButton, *endButton;
+    ControlPushButton *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
 
