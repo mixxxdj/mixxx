@@ -9,18 +9,17 @@
 #include <QObject>
 
 #include "configobject.h"
+#include "engine/enginecontrol.h"
 
 class ControlObject;
 class ControlPushButton;
 
-class RateControl : QObject {
-    Q_OBJECT
-
+class RateControl : public EngineControl {
+    
 public:
-    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
     ~RateControl();
-    bool process();
-    void setCurrentSample(int currentSample);
+    double process(const double currentSample, const double totalSamples);
 
     /** Set rate change when temp rate button is pressed */
     static void setTemp(double v);
@@ -44,8 +43,10 @@ private:
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
     
-    ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
-    ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
+    ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
+        *buttonRateTempUp, *buttonRateTempUpSmall;
+    ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
+        *buttonRatePermUp, *buttonRatePermUpSmall;
     ControlObject *m_pRateDir, *m_pRateRange, *m_pRateSlider;
 
     /** Is true if a rate temp button is pressed */    

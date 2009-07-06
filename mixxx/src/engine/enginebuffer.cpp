@@ -715,7 +715,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         // See if the loop controller wants us to loop back.
-        double new_filepos_play = m_pLoopingControl->process(filepos_play);
+        double new_filepos_play = m_pLoopingControl->process(filepos_play,
+                                                             file_length_old);
         if(new_filepos_play != filepos_play) {
             // We have no better way of solving this problem than 
             reader->requestSeek(new_filepos_play);

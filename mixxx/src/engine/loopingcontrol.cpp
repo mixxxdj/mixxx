@@ -8,16 +8,17 @@
 #include <QtDebug>
 #include <QObject>
 
+
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlpushbutton.h"
 #include "engine/loopingcontrol.h"
+#include "engine/enginecontrol.h"
 
-LoopingControl::LoopingControl(const char * _group, ConfigObject<ConfigValue> * _config) :
-    QObject() {
-    
-	m_group = _group;
-	m_pConfig = _config;
+LoopingControl::LoopingControl(const char * _group,
+                               ConfigObject<ConfigValue> * _config) :
+    EngineControl(_group, _config) {
+
 	m_bLoopingEnabled = false;
 	m_iLoopStartSample = 0;
 	m_iLoopEndSample = 0;
@@ -42,20 +43,16 @@ LoopingControl::LoopingControl(const char * _group, ConfigObject<ConfigValue> * 
 LoopingControl::~LoopingControl() {
 }
 
-void LoopingControl::setCurrentSample(int currentSample) {
-    m_iCurrentSample = currentSample;
-}
-
-double LoopingControl::process(double absPlayPos)
+double LoopingControl::process(double currentSample, double totalSamples)
 {
 	// From WBS: 1.2.2 In process() (or similar) function, check if playpos ==
     // end of loop (and move playpos to start of loop)
 
-    m_iCurrentSample = absPlayPos;
+    m_iCurrentSample = currentSample;
     
-    double retval = absPlayPos;
+    double retval = currentSample;
     if(m_bLoopingEnabled) {
-        if (absPlayPos >= m_iLoopEndSample) {
+        if (currentSample >= m_iLoopEndSample) {
         
             //Oh crap, the play position ticks along in buffer sizes. How do we
             //wrap when the loop end position is in the middle of a buffer?
