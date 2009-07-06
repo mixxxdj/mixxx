@@ -48,19 +48,18 @@
 #endif
 
 
-EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config)
+EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
+    group(_group),
+    m_pConfig(_config),
+    m_pOtherEngineBuffer(NULL),
+    m_dAbsPlaypos(0.),
+    m_dBufferPlaypos(0.),
+    m_dAbsStartpos(0.),
+    filepos_play(0.),
+    bufferpos_play(0.),
+    m_iSamplesCalculated(0),
+    m_pScale(NULL),
 {
-    group = _group;
-    m_pConfig = _config;
-
-    m_pOtherEngineBuffer = 0;
-
-    m_dAbsPlaypos = 0.;
-    m_dBufferPlaypos = 0.;
-    m_dAbsStartpos = 0.;
-
-    filepos_play = 0;
-    bufferpos_play = 0;
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"), true);
@@ -111,8 +110,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
-
-
     // Wheel to control playback position/speed
     wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
 
@@ -158,31 +155,29 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     //    new ControlObject(ConfigKey(group, "VinylControlIndicator"));
 #endif
 
-    
-
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
-    // Control file changed
-//    filechanged = new ControlEngine(controlfilechanged);
-//    filechanged->setNotify(this,(EngineMethod)&EngineBuffer::newtrack);
-
-    //m_bCuePreview = false;
-
-    m_pScale = 0;
     setNewPlaypos(0.);
 
     // Create the Cue Controller TODO(rryan) : this has to happen before Reader
     // is constructed. Fix that.
     m_pEngineBufferCue = new EngineBufferCue(_group, _config, this);
 
+    // Create the Loop Controller
+    m_pLoopingControl = new LoopingControl(_group, _config);
+
+    // Create the Rate Controller
+    m_pRateControl = new RateControl(_group, _config);
+
+    // Create the BPM Controller
+    m_pBpmControl = new BpmControl(_group, _config);
+    
     reader = new Reader(this, &pause, _config);
     read_buffer_prt = reader->getBufferWavePtr();
     file_length_old = -1;
     file_srate_old = 0;
     rate_old = 0;
-
-    m_iBeatMarkSamplesLeft = 0;
 
     m_bLastBufferPaused = true;
     m_fLastSampleValue = 0;
@@ -196,18 +191,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     int iPitchIndpTimeStretch =
         _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
-
-    // Create the Loop Controller
-    m_pLoopingControl = new LoopingControl(_group, _config);
-
-    // Create the Rate Controller
-    m_pRateControl = new RateControl(_group, _config);
-
-    // Create the BPM Controller
-    m_pBpmControl = new BpmControl(_group, _config);
-
-    // Used in update of playpos slider
-    m_iSamplesCalculated = 0;
 
     reader->start();
 }
@@ -321,8 +304,6 @@ void EngineBuffer::setNewPlaypos(double newpos)
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
 
-    m_iBeatMarkSamplesLeft = 0;
-
     // The right place to do this?
     if (m_pScale)
         m_pScale->clear();
@@ -418,6 +399,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // - Query BPMControl for
 
     // - Process EOT Mode
+
+    // - Set last sample value (m_fLastSampleValue) so that rampOut works?
      
 
     
