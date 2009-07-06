@@ -19,8 +19,13 @@
 #include "configobject.h"
 #include "dlgprefshoutcast.h"
 
+#ifdef __SHOUTCAST_VORBIS__
 #include "encodervorbis.h"
+#endif // __SHOUTCAST_VORBIS__
+#ifdef __SHOUTCAST_LAME__
 #include "encodermp3.h"
+#endif // __SHOUTCAST_LAME__
+
 #include "playerinfo.h"
 #include "trackinfoobject.h"
 
@@ -45,6 +50,18 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pConfig = _config;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
     
+    m_pCrossfader = new ControlObjectThreadMain(
+                            ControlObject::getControl(ConfigKey("[Master]","crossfader"))
+                    );
+    
+    m_pVolume1 = new ControlObjectThreadMain(
+                     ControlObject::getControl(ConfigKey("[Channel1]","volume"))
+                 );
+    
+    m_pVolume2 = new ControlObjectThreadMain(
+                     ControlObject::getControl(ConfigKey("[Channel2]","volume"))
+                );
+    
     QByteArray baBitrate = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
     int len;
@@ -57,6 +74,15 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         qDebug() << "Could not allocate shout_t";
         return;
     }
+    
+    if (!(m_pShoutMetaData = shout_metadata_new())) {
+        qDebug() << "Cound not allocate shout_metadata_t";
+        return;
+    }
+    
+    // set to a high number to automatically update the metadata
+    // on the first change
+    m_pMetaDataLife = 31337;
     
     //Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
     updateFromPreferences();
@@ -75,10 +101,20 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     
     // Initialize encoder
     if ( ! qstrcmp(baFormat, "MP3")) {
+#ifdef __SHOUTCAST_LAME__
         encoder = new EncoderMp3(m_pConfig, this);
+#else
+        qDebug() << "*** Missing MP3 Encoder Support";
+        return;
+#endif // __SHOUTCAST_LAME__
     }
     else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
+#ifdef __SHOUTCAST_VORBIS__
         encoder = new EncoderVorbis(m_pConfig, this);
+#else
+        qDebug() << "*** Missing OGG Vorbis Encoder Support";
+        return;
+#endif // __SHOUTCAST_VORBIS__
     }
     else {
         qDebug() << "**** Unknown Encoder Format";
@@ -95,7 +131,12 @@ EngineShoutcast::~EngineShoutcast()
 {
     delete encoder;
     delete m_pUpdateShoutcastFromPrefs;
+    delete m_pCrossfader;
+    delete m_pVolume1;
+    delete m_pVolume2;
     
+    if (m_pShoutMetaData)
+        shout_metadata_free(m_pShoutMetaData);
     if (m_pShout)
         shout_close(m_pShout);
     shout_shutdown();
@@ -259,15 +300,115 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
     }
 }
 
-/*void EngineShoutcast::wrapper2writePage(void *pObj, unsigned char *header, unsigned char *body,
-                                        int headerLen, int bodyLen)
+void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
-    EngineShoutcast* mySelf = (EngineShoutcast*)pObj;
-    pObj->writePage(header, body, headerLen, bodyLen);
-}*/
-
-void EngineShoutcast::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
-{
-//    encoder->encodeBuffer((void*) &objA, EngineShoutcast::wrapper2writePage, pOut, iBufferSize);
     if (iBufferSize > 0) encoder->encodeBuffer(pOut, iBufferSize);
+    
+    if ( metaDataHasChanged())
+        updateMetaData();
+}
+
+/* Algorithm which simply flips the lowest and/or second lowest bits,
+ * bits 1 and 2, to represent which track is active and returns the result.
+ */
+
+int EngineShoutcast::getActiveTracks()
+{
+    int tracks = 0;
+    
+    
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.) tracks |= 1;
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.) tracks |= 2;
+    
+    if (tracks ==  0)
+        return 0;
+    
+    // Detect the dominant track by checking the crossfader and volume levels
+    if ((tracks & 1) && (tracks & 2)) {
+        // allow a bit of leeway with the crossfader
+        if ( m_pCrossfader->get() < 0.0001 ) {
+            tracks = 1;
+        }
+        else if ( m_pCrossfader->get() > 0.0001 ) {
+            tracks = 2;
+        }
+        else {
+            
+            if (m_pVolume1->get() > m_pVolume2->get()) {
+                tracks = 1;
+            }
+            else if (m_pVolume1->get() < m_pVolume2->get()) {
+                tracks = 2;
+            }
+            
+        }    
+        
+    }
+    
+    return tracks;
+}
+
+bool EngineShoutcast::metaDataHasChanged()
+{
+    int tracks;
+    TrackInfoObject *newMetaData;
+    bool changed = false;
+    
+    
+    if ( m_pMetaDataLife < 32 ) {
+        m_pMetaDataLife++;
+        return false;
+    }
+    
+    m_pMetaDataLife = 0;
+    
+    
+    tracks = getActiveTracks();
+    
+    
+    switch (tracks)
+    {
+    case 0:
+        // no tracks are playing
+        // we should set the metadata to nothing
+        break;
+    case 1:
+        // track 1 is active
+        
+        newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        break;
+    case 2:
+        // track 2 is active
+        newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        break;
+    case 3:
+        // both tracks are active, just stick with it for now
+        break;
+    }
+    
+    qDebug() << "tracks = " << tracks << " changed = " << changed;
+    
+    
+    return changed;
+}
+
+void EngineShoutcast::updateMetaData()
+{
+    // convert QStrings to char*s
+    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
+    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
+    QByteArray baSong = baArtist + " - " + baTitle;
+    
+    shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
+    shout_set_metadata(m_pShout, m_pShoutMetaData);
 }
