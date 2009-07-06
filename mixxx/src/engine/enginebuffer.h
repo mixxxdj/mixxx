@@ -147,8 +147,7 @@ private:
     int m_iSamplesCalculated;
 
     ControlPushButton *playButton, *buttonBeatSync;
-    ControlPushButton *buttonLoop;
-    ControlObject *m_pControlObjectBeatLoop;
+
     ControlObject *rateEngine, *m_pRateDir, *m_pRateRange;
     ControlObject *m_pMasterRate;
 	ControlObject *m_pJog;
@@ -199,25 +198,13 @@ private:
     /** Temporary buffer used when seeking and looping */
     float *m_pTempBuffer;
     /** Temproray buffer position in file */
-    double m_dTempFilePos;
-    /** Seek position */
-    double m_dSeekFilePos;
-    /** True if currently performing a beat syncronious seek */
-    bool m_bSeekBeat;
-    /** Length of loop */
-    double m_dLoopLength;
-    /** Is looping active, and is loop time being measured */
-    bool m_bLoopActive, m_bLoopMeasureTime;
-    /** True if crossfade has been performed (is only used when m_bSeekBeat is true) */
-    bool m_bSeekCrossfade;
-    /** File position of cross fade end */
-    double m_dSeekCrossfadeEndFilePos;
+    double m_dTempFilePos; // TODO
+
     /** Pointer to ReaderExtractWave buffer */
     float *m_pWaveBuffer;
-    /** Variables used to calculate safe beat info. Automatically updated during process() */
-    double m_dBeatFirst, m_dBeatInterval;
+
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we start playing post-scratch **/
-    bool m_bResetPitchIndpTimeStretch;
+    bool m_bResetPitchIndpTimeStretch; // TODO
 
     // Filter jog wheel data to smooth it:
     Rotary* m_jogfilter;
