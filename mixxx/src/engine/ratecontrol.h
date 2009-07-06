@@ -80,7 +80,9 @@ private:
     bool m_bTempDown;
     /** Set to the rate change used for rate temp */
     double m_dTempRateChange;
-
+    /** Set the Temporary Rate Change Mode */
+    bool m_bRateTempMode;
+    
     /** Old playback rate. Stored in this variable while a temp pitch change
       * buttons is in effect. It does not work to just decrease the pitch slider
       * by the value it has been increased with when the temp button was

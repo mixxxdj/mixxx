@@ -20,6 +20,7 @@ RateControl::RateControl(const char* _group,
                          const ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
     m_bTempPress(false), m_bTempDown(false), m_bTempRelease(false),
+    m_bRateTempMode(true),
     m_dOldRate(0.0f) 
 {
     
@@ -340,22 +341,41 @@ double RateControl::calculateRate(double baserate, bool paused) {
 
 double RateControl::process(const double currentSample,
                             const double totalSamples,
-                            const doube countSamples) 
+                            const double countSamples) 
 {
     if ( m_bTempPress && !m_bTempDown ) 
     {
         m_dOldRate = m_pRateSlider->get();
         m_bTempDown = true;
-        m_dTempRateChange = m_pRateDir->get() *
+        
+        if ( m_bRateTempMode == 0 ) 
+        {
+            double change = m_pRateDir->get() * m_dTemp / 
+                                    (100. * m_pRateRange->get());
+            double csmall = m_pRateDir->get() * m_dTempSmall / 
+                                    (100. * m_pRateRange->get());
+            
+            
+            if (buttonRateTempUp->get())
+                m_pRateSlider->add(change);
+            else if (buttonRateTempDown->get())
+                m_pRateSlider->sub(change);
+            else if (buttonRateTempUpSmall->get())
+                m_pRateSlider->add(csmall);
+            else if (buttonRateTempDownSmall->get())
+                m_pRateSlider->sub(csmall);
+        }
+        else 
+        {
+            m_dTempRateChange = m_pRateDir->get() *
                                 ( m_dTemp / (100. * m_pRateRange->get())) /
                                 ( RATE_TEMP_STEP / countSamples)
                             );
-        
-        //if ( VIRTUAL_DJ_PITCH_BEND )
-        //    m_pRateSlider->sub(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
+        }
+            
     }
     
-    if ((m_bTempPress) && (m_bTempRelease == false)) 
+    if ((m_bTempPress) && (m_bTempRelease == false) && (m_bRateTempMode)) 
     {
         if ( buttonRateTempUp->get())
             rateSlider->add(m_dTempRateChange);
