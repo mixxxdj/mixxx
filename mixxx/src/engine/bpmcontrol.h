@@ -9,7 +9,6 @@
 class ControlBeat;
 class ControlObject;
 class ControlPushButton;
-class EngineBuffer;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -17,11 +16,6 @@ class BpmControl : public EngineControl {
     public:
     BpmControl(const char* _group, const ConfigObject<ConfigValue>* _config);
     ~BpmControl();
-    
-    void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {
-        m_pOtherEngineBuffer = pOtherEngineBuffer;
-    }
-
     double getBpm();
     
 public slots:
@@ -31,7 +25,8 @@ public slots:
     void slotControlBeatSync(double);
     
 private:
-    
+
+    // ControlObjects that come from EngineBuffer
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
@@ -44,8 +39,6 @@ private:
     
     /** Button for sync'ing with the other EngineBuffer */
     ControlPushButton* m_pButtonSync;
-    
-    EngineBuffer* m_pOtherEngineBuffer;
 
 };
 

@@ -10,8 +10,7 @@
 
 BpmControl::BpmControl(const char* _group,
                        const ConfigObject<ConfigValue>* _config) :
-    EngineControl(_group, _config),
-    m_pOtherEngineBuffer(NULL) {
+    EngineControl(_group, _config) {
 
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
@@ -55,17 +54,18 @@ void BpmControl::slotSetEngineBpm(double bpm) {
 
 void BpmControl::slotControlBeatSync(double)
 {
-
-    if(!m_pOtherEngineBuffer)
+    EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
+    
+    if(!pOtherEngineBuffer)
         return;
     
-    double fOtherBpm = m_pOtherEngineBuffer->getBpm();
+    double fOtherBpm = pOtherEngineBuffer->getBpm();
     double fThisBpm  = m_pEngineBpm->get();
     double fRateScale;
 
     if (fOtherBpm>0. && fThisBpm>0.)
     {
-        float fOtherRate = m_pOtherEngineBuffer->getRate();
+        float fOtherRate = pOtherEngineBuffer->getRate();
         float fBpmDelta = fabs(fThisBpm-fOtherBpm);
 
         // Test if this buffers bpm is the double of the other one, and find
