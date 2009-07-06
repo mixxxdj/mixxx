@@ -714,6 +714,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
+        // Let RateControl do its logic. This is a temporary hack until this
+        // step is just processing a list of EngineControls
+        m_pRateControl->process(filepos_play, file_length_old);
+        
         // See if the loop controller wants us to loop back.
         double new_filepos_play = m_pLoopingControl->process(filepos_play,
                                                              file_length_old);
