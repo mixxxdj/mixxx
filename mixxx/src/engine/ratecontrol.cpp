@@ -368,8 +368,9 @@ double RateControl::process(const double currentSample,
         else 
         {
             m_dTempRateChange = m_pRateDir->get() *
+                            (
                                 ( m_dTemp / (100. * m_pRateRange->get())) /
-                                ( RATE_TEMP_STEP / countSamples)
+                                ( RATE_TEMP_STEP / countSamples )
                             );
         }
             
@@ -378,9 +379,9 @@ double RateControl::process(const double currentSample,
     if ((m_bTempPress) && (m_bTempRelease == false) && (m_bRateTempMode)) 
     {
         if ( buttonRateTempUp->get())
-            rateSlider->add(m_dTempRateChange);
+            m_pRateSlider->add(m_dTempRateChange);
         if ( buttonRateTempDown->get())
-            rateSlider->sub(m_dTempRateChange);
+            m_pRateSlider->sub(m_dTempRateChange);
     }
     
     if ((m_bTempRelease))
@@ -389,7 +390,7 @@ double RateControl::process(const double currentSample,
         m_bTempPress = false;
         m_bTempRelease = false;
         
-        rateSlider->set(m_dOldRate);
+        m_pRateSlider->set(m_dOldRate);
     }
     
     return 1;
