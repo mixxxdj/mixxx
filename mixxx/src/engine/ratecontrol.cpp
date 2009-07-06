@@ -196,65 +196,53 @@ void RateControl::slotControlRatePermUpSmall(double)
 
 void RateControl::slotControlRateTempDown(double)
 {
-    // Adjusts temp rate down if button pressed, otherwise set to 0.
+    // Set the state of the Temporary button. Logic is handled in ::process()
     if (buttonRateTempDown->get() && !m_bTempPress)
     {
         m_bTempPress = true;
-        m_dOldRate = m_pRateSlider->get();
-        m_pRateSlider->sub(m_pRateDir->get() * m_dTemp / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempDown->get())
     {
-        m_bTempPress = false;
-        m_pRateSlider->set(m_dOldRate);
+        m_bTempRelease = true;
     }
 }
 
 void RateControl::slotControlRateTempDownSmall(double)
 {
-    // Adjusts temp rate down if button pressed, otherwise set to 0.
+    // Set the state of the Temporary button. Logic is handled in ::process()
     if (buttonRateTempDownSmall->get() && !m_bTempPress)
     {
         m_bTempPress = true;
-        m_dOldRate = m_pRateSlider->get();
-        m_pRateSlider->sub(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempDownSmall->get())
     {
-        m_bTempPress = false;
-        m_pRateSlider->set(m_dOldRate);
+        m_bTempRelease = true;
     }
 }
 
 void RateControl::slotControlRateTempUp(double)
 {
-    // Adjusts temp rate up if button pressed, otherwise set to 0.
+    // Set the state of the Temporary button. Logic is handled in ::process()
     if (buttonRateTempUp->get() && !m_bTempPress)
     {
         m_bTempPress = true;
-        m_dOldRate = m_pRateSlider->get();
-        m_pRateSlider->add(m_pRateDir->get() * m_dTemp / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempUp->get())
     {
-        m_bTempPress = false;
-        m_pRateSlider->set(m_dOldRate);
+        m_bTempRelease = true;
     }
 }
 
 void RateControl::slotControlRateTempUpSmall(double)
 {
-    // Adjusts temp rate up if button pressed, otherwise set to 0.
+    // Set the state of the Temporary button. Logic is handled in ::process()
     if (buttonRateTempUpSmall->get() && !m_bTempPress)
     {
         m_bTempPress = true;
-        m_dOldRate = m_pRateSlider->get();
-        m_pRateSlider->add(m_pRateDir->get() * m_dTempSmall / (100. * m_pRateRange->get()));
     }
     else if (!buttonRateTempUpSmall->get())
     {
-        m_bTempPress = false;
-        m_pRateSlider->set(m_dOldRate);
+        m_bTempRelease = true;
     }
 }
 
