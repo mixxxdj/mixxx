@@ -30,7 +30,6 @@ public slots:
     void slotFileBpmChanged(double);
     void slotControlBeatSync(double);
     
-    
 private:
     
     ControlObject* m_pRateSlider;
