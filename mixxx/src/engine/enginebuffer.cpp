@@ -53,6 +53,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_dBufferPlaypos(0.),
     m_dAbsStartpos(0.),
     filepos_play(0.),
+    filepos_start(0.),
     bufferpos_play(0.),
     m_iSamplesCalculated(0),
     m_pScale(NULL) {
@@ -344,7 +345,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     if(!m_pTrackEnd->get() && pause.tryLock()) {
         bool readerinfo = false;
-        long int filepos_start = 0;
         long int filepos_end = 0;
         if(reader->tryLock()) {
             file_length_old = reader->getFileLength();
@@ -604,7 +604,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // sampleRate/UPDATE_RATE samples processed.  (e.g. playposSlider,
     // rateEngine)
     if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
-        playposSlider->set(fFractionalPlaypos)
+        playposSlider->set(fFractionalPlaypos);
         
         if(rate != rateEngine->get())
             rateEngine->set(rate);
