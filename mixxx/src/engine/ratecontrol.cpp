@@ -1,7 +1,5 @@
-/**
- * RateControl.cpp
- * 7/4/2009 -- rryan@mit.edu
- */
+// RateControl.cpp
+// Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
