@@ -597,17 +597,23 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // qDebug() << "wheel " << wheel->get() << ", slider " << rateSlider->get() << ", range " << m_pRateRange->get() << ", dir " << m_pRateDir->get();
 
             // Apply scratch
-            if (m_pControlScratch->get()<0.)
-                rate = rate * (m_pControlScratch->get()-1.);
-            else if (m_pControlScratch->get()>0.)
-                rate = rate * (m_pControlScratch->get()+1.);
+            double scratch = m_pControlScratch->get();
+            if(!isnan(scratch)) {
+                if (scratch < 0.) {
+                    rate = rate * (scratch-1.);                
+                } else if (scratch > 0.) {
+                    rate = rate * (scratch+1.);
+                }
+            }
 
             // Apply jog
             // FIXME: Sensitivity should be configurable separately?
             const double fact = m_pRateRange->get();
-            double val = m_jogfilter->filter(m_pJog->get());
+            double jogVal = m_pJog->get();
+            double val = m_jogfilter->filter(jogVal);
             rate += val * fact;
-            m_pJog->set(0.);
+            if(jogVal != 0.)
+                m_pJog->set(0.);
 
             // BJW: Apply reverse button (moved from above)
             if (reverseButton->get()) {
@@ -616,8 +622,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         } else {
             // Stopped. Wheel, jog and scratch controller all scrub through audio.
-            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(m_pJog->get()))*baserate; //*10.;
-			m_pJog->set(0.);
+            double jogVal = m_pJog->get();
+
+            // Don't trust values from m_pControlScratch
+            double scratch = m_pControlScratch->get();
+            if(isnan(scratch)) {
+                scratch = 0.0;
+            }
+            
+            rate=(wheel->get()*40.+scratch+m_jogfilter->filter(jogVal))*baserate; //*10.;
+            if(jogVal != 0.)
+                m_pJog->set(0.);
         }
 
         // If searching in progress...
@@ -720,50 +735,47 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             } else if(fabs(filepos_play-filepos_start) < (float)(READCHUNKSIZE*(READCHUNK_NO/2-1))) {
                 reader->wake();
             }
+        }
 
-            //
-            // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
-            // if playmode is next file: set next in playlistcontrol
-            //
+        //
+        // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
+        // if playmode is next file: set next in playlistcontrol
+        //
 
-            // Update playpos slider and bpm display if necessary
-            m_iSamplesCalculated += iBufferSize;
-            if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE))
-            {
-                if (file_length_old!=0.)
-                {
-                    double f = math_max(0.,math_min(filepos_play,file_length_old));
-                    playposSlider->set(f/file_length_old);
+        // Update playpos slider and bpm display if necessary
+        m_iSamplesCalculated += iBufferSize;
+        if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
+            if (file_length_old!=0.) {
+                double f = math_max(0.,math_min(filepos_play,file_length_old));
+                playposSlider->set(f/file_length_old);
 
-//                         qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
-                }
-                else
-                    playposSlider->set(0.);
-                bpmControl->set(filebpm);
-                rateEngine->set(rate);
-
-                m_iSamplesCalculated = 0;
-
-            }
-
-            // Update buffer and abs position. These variables are not in the ControlObject
-            // framework because they need very frequent updates.
-            if (m_qPlayposMutex.tryLock())
-                {
-                    m_dBufferPlaypos = bufferpos_play;
-                    m_dAbsPlaypos = filepos_play;
-                    m_dAbsStartpos = filepos_start;
-                    m_qPlayposMutex.unlock();
-                }
-
-            // Update visual control object, this needs to be done more often than the bpm display and playpos slider
-            if(file_length_old != 0.) {
-                double f = math_max(0.,math_min(filepos_play, file_length_old));
-                visualPlaypos->set(f/file_length_old);
+                //qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
             } else {
-                visualPlaypos->set(0.);
+                playposSlider->set(0.);
             }
+            
+            if(filebpm != bpmControl->get())
+                bpmControl->set(filebpm);
+            if(rate != rateEngine->get())
+                rateEngine->set(rate);
+            m_iSamplesCalculated = 0;
+        }
 
+        // Update buffer and abs position. These variables are not in the ControlObject
+        // framework because they need very frequent updates.
+        if (m_qPlayposMutex.tryLock()) {
+            m_dBufferPlaypos = bufferpos_play;
+            m_dAbsPlaypos = filepos_play;
+            m_dAbsStartpos = filepos_start;
+            m_qPlayposMutex.unlock();
+        }
+
+        // Update visual control object, this needs to be done more often than the bpm display and playpos slider
+        if(file_length_old != 0.) {
+            double f = math_max(0.,math_min(filepos_play, file_length_old));
+            visualPlaypos->set(f/file_length_old);
+        } else {
+            visualPlaypos->set(0.);
         }
 
         // HANDLE END-OF-TRACK MODE
@@ -814,8 +826,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // release the pauselock
         pause.unlock();
     }
-
-
 }
 
 
