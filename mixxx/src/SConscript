@@ -875,16 +875,42 @@ else:
 
 #Experimental Shoutcast
 flags_shoutcast = getFlags(env, 'shoutcast', 0)
+
 if int(flags_shoutcast):
-#TODO: check for libshout
-	env.Append(LIBS = 'shout');
-	env.Append(LIBS = 'vorbisenc');
-	env.Append(LIBS = 'mp3lame');
+	shoutmp3 = 0
+	shoutogg = 0
+	
+	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
+	conf.CheckLib('shout')
+	
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
-	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp encodervorbis.cpp encodermp3.cpp""" )
-	env.Uic4('dlgprefshoutcastdlg.ui')
-	print "Shoutcast support... enabled"
+	
+	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp """ )
 	build_flags += 'shoutcast '
+	
+	
+	if conf.CheckLib('mp3lame'):
+		env.Append(CPPDEFINES = '__SHOUTCAST_LAME__')
+		sources += Split(""" encodermp3.cpp """)
+		shoutmp3 = 1
+	
+	if conf.CheckLib('vorbisenc'):
+		env.Append(CPPDEFINES = '__SHOUTCAST_VORBIS__')
+		sources += Split("""  encodervorbis.cpp """)
+		shoutogg = 1
+	
+	
+	if shoutmp3 and shoutogg:
+		print "Shoutcast support (OGG/MP3)... enabled"
+	elif shoutmp3:
+		print "Shoutcast support (MP3)... enabled"
+	elif shoutogg:
+		print "Shoutcast support (OGG)... enabled"
+	else:
+		print "Shoutcast support... enabled"
+	
+	env.Uic4('dlgprefshoutcastdlg.ui')
+	
 else:
 	print "Shoutcast support... disabled"
 
