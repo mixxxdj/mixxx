@@ -26,6 +26,7 @@
 #include "monitor.h"
 #include "rotary.h"
 
+class BpmControl;
 class RateControl;
 class LoopingControl;
 class ControlObject;
@@ -110,8 +111,6 @@ public slots:
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
-    void slotControlBeatSync(double);
-    void slotSetBpm(double);
     void slotControlFastFwd(double);
     void slotControlFastBack(double);
 
@@ -125,6 +124,9 @@ private:
     
     /** Pointer to the rate control object */
     RateControl *m_pRateControl;
+
+    /** Pointer to the BPM control object */
+    BpmControl *m_pBpmControl;
 
     /** Pointer to other EngineBuffer */
     EngineBuffer *m_pOtherEngineBuffer;
@@ -150,13 +152,13 @@ private:
 
     ControlObject *rateEngine, *m_pRateDir, *m_pRateRange;
     ControlObject *m_pMasterRate;
-	ControlObject *m_pJog;
+    ControlObject *m_pJog;
     ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
     ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
-    ControlObject *m_pFileBpm, *m_pSampleRate;
+    ControlObject *m_pSampleRate;
     ConfigObject<ConfigValue> *m_pConfig; 
                  
     /** Mutex used in sharing buffer and abs playpos */
@@ -166,8 +168,6 @@ private:
 
     /** Control used to signal when at end of file */
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
-    /** Control used to input desired playback BPM */
-    ControlBeat *bpmControl;
     /** Reverse playback control */
     ControlPushButton *reverseButton;
     /** Fwd and back controls, start and end of track control */
@@ -195,11 +195,7 @@ private:
     float m_fLastSampleValue;
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
-    /** Temporary buffer used when seeking and looping */
-    float *m_pTempBuffer;
-    /** Temproray buffer position in file */
-    double m_dTempFilePos; // TODO
-
+    
     /** Pointer to ReaderExtractWave buffer */
     float *m_pWaveBuffer;
 
