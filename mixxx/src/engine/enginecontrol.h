@@ -8,6 +8,8 @@
 
 #include "configobject.h"
 
+class EngineBuffer;
+
 /**
  * EngineControl is an abstract base class for objects which implement
  * functionality pertaining to EngineBuffer. An EngineControl is meant to be a
@@ -30,8 +32,6 @@
  * developer.
  */
 class EngineControl : public QObject {
-    Q_OBJECT
-    
     public:
 
     EngineControl(const char * _group, const ConfigObject<ConfigValue> * _config);
@@ -40,15 +40,20 @@ class EngineControl : public QObject {
     virtual double process(const double currentSample, const double totalSamples) {
         return 0;
     }
+
+    void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {
+        m_pOtherEngineBuffer = pOtherEngineBuffer;
+    }
     
     void setCurrentSample(const double currentSample) {
         m_dCurrentSample = currentSample;
     }
+    
     double getCurrentSample() {
         return m_dCurrentSample;
     }
 
-private:
+protected:
     const char* getGroup() {
         return m_pGroup;
     }
@@ -56,10 +61,16 @@ private:
     const ConfigObject<ConfigValue>* getConfig() {
         return m_pConfig;
     }
-    
+
+    EngineBuffer* getOtherEngineBuffer() {
+        return m_pOtherEngineBuffer;
+    }
+
+private:
     const char* m_pGroup;
     const ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;
+    EngineBuffer* m_pOtherEngineBuffer;
 };
 
 
