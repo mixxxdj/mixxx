@@ -367,7 +367,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     bool bCurBufferPaused = false;
 
-    if(!m_pTrackEnd->get() && pause.tryLock()) {
+    if (!m_pTrackEnd->get() && pause.tryLock()) {
         bool readerinfo = false;
         long int filepos_start = 0;
         long int filepos_end = 0;
@@ -444,7 +444,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If we're playing past the end, playing before the start, or standing
         // still then by definition the buffer is paused.
-        bool bCurBufferPaused = rate == 0 ||
+        bCurBufferPaused = rate == 0 ||
             (at_start && backwards) ||
             (at_end && !backwards);
         
@@ -453,14 +453,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // If this is the first process() since being paused, then ramp out.
             if (!m_bLastBufferPaused) {
                 rampOut(pOut, iBufferSize);
-                m_bLastBufferPaused = true;
             }
         // Otherwise, scale the audio.
         } else { // if (bCurBufferPaused)            
             CSAMPLE *output;
             double idx;
-
-            m_bLastBufferPaused = false;
 
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(bufferpos_play, iBufferSize);
@@ -580,11 +577,27 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // release the pauselock
         pause.unlock();
+    } else { // if (!m_pTrackEnd->get() && pause.tryLock()) {
+        if (!m_bLastBufferPaused)
+            rampOut(pOut, iBufferSize);
+        bCurBufferPaused = true;
     }
+    
+    // Force ramp in if this is the first buffer during a play
+    if (m_bLastBufferPaused && !bCurBufferPaused) {
+        // Ramp from zero
+        int iLen = math_min(iBufferSize, kiRampLength);
+        float fStep = pOutput[iLen-1]/(float)iLen;
+        for (int i=0; i<iLen; ++i)
+            pOutput[i] = fStep*i;
+    }
+
+    m_bLastBufferPaused = bCurBufferPaused;
+    m_fLastSampleValue = pOutput[iBufferSize-1];
 }
 
 
-void EngineBuffer::rampOut(const CSAMPLE * pOut, int iBufferSize)
+void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
 {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
