@@ -108,7 +108,7 @@
    <Pressed>sync-on-Ch1.png</Pressed>
    <Unpressed>sync-off-Ch1.png</Unpressed>
   </State>
-  <Pos>50,112</Pos>
+  <Pos>50,295</Pos>
   <Connection>
    <ConfigKey>[Channel1],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -124,13 +124,141 @@
    <Pressed>sync-on-Ch2.png</Pressed>
    <Unpressed>sync-off-Ch2.png</Unpressed>
   </State>
-  <Pos>953,112</Pos>
+  <Pos>953,295</Pos>
   <Connection>
    <ConfigKey>[Channel2],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
  </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-In</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopin-on-Ch1.png</Pressed>
+   <Unpressed>loopin-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>50,92</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],loop_in</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],loop_in</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-In</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopin-on-Ch2.png</Pressed>
+   <Unpressed>loopin-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>953,92</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],loop_in</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],loop_in</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-Out</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopout-on-Ch1.png</Pressed>
+   <Unpressed>loopout-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>50,120</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],loop_out</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],loop_out</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-Out</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopout-on-Ch2.png</Pressed>
+   <Unpressed>loopout-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>953,120</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],loop_out</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],loop_out</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Reloop</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>reloop-on-Ch1.png</Pressed>
+   <Unpressed>reloop-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>50,148</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],reloop_exit</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],reloop_exit</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Reloop</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>reloop-on-Ch2.png</Pressed>
+   <Unpressed>reloop-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>953,148</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],reloop_exit</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],reloop_exit</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
 
  <PushButton>
   <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
@@ -731,7 +859,7 @@
    <Pressed>flanger-on-Ch1.png</Pressed>
    <Unpressed>flanger-on-Ch1.png</Unpressed>
   </State>
-  <Pos>50,308</Pos>
+  <Pos>50,326</Pos>
   <Connection>
    <ConfigKey>[Channel1],flanger</ConfigKey>
   </Connection>
@@ -750,7 +878,7 @@
    <Pressed>flanger-on-Ch2.png</Pressed>
    <Unpressed>flanger-on-Ch2.png</Unpressed>
   </State>
-  <Pos>953,308</Pos>
+  <Pos>953,326</Pos>
   <Connection>
    <ConfigKey>[Channel2],flanger</ConfigKey>
   </Connection>
@@ -769,7 +897,7 @@
    <Pressed>head-on-Ch1.png</Pressed>
    <Unpressed>head-on-Ch1.png</Unpressed>
   </State>
-  <Pos>2,308</Pos>
+  <Pos>2,295</Pos>
   <Connection>
    <ConfigKey>[Channel1],pfl</ConfigKey>
   </Connection>
@@ -788,7 +916,7 @@
    <Pressed>head-on-Ch2.png</Pressed>
    <Unpressed>head-on-Ch2.png</Unpressed>
   </State>
-  <Pos>905,308</Pos>
+  <Pos>905,295</Pos>
   <Connection>
    <ConfigKey>[Channel2],pfl</ConfigKey>
   </Connection>
