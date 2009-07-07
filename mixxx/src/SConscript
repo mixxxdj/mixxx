@@ -1062,10 +1062,7 @@ else:
 	print "MIDI Scripting... disabled"
 
 #Optimization
-if 'win' in platform:
-	flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on win32
-else:
-	flags_optimize = getFlags(env, 'optimize', 1)   #Default to on for Linux/OS X
+flags_optimize = getFlags(env, 'optimize', 1)
 if int(flags_optimize):
 	if 'win' in platform:
 		if platform == 'win64':
@@ -1077,7 +1074,10 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
-				env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
+				if 'makerelease' in COMMAND_LINE_TARGETS:
+					env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+				else:
+					env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '
@@ -1180,9 +1180,9 @@ flags_force32 = getFlags(env, 'force32', 0)
 if int(flags_force32):
 	env.Append(CCFLAGS = '-m32')
 	env.Append(CXXFLAGS = '-m32')
-	print "Force 32-bit compile... enabled"
+	print "Force 32-bit GCC compile... enabled"
 else:
-	print "Force 32-bit compile... disabled"
+	print "Force 32-bit GCC compile... disabled"
 
 
 #Case Metrics
@@ -1436,6 +1436,9 @@ def BuildRelease(target, source, env):
 	print
 	print "You have built version ", env['MIXXX_VERSION']
 	print
+	if flags_msvcdebug>0 or flags_debug>0:
+		print "DEBUGGING IS STILL ENABLED"
+		print
 	print "Binary has size ",
 	os.system('ls -lh dist/mixxx.exe | cut -d \' \' -f 5')
 	print
@@ -1451,11 +1454,50 @@ def BuildRelease(target, source, env):
 	print "More checks here soon... :)"
 	print
 
-	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
-		print "Now building installer..."
-		os.system('c:/Progra~1/NSIS/makensis.exe /X"SetCompressor /FINAL /SOLID lzma" Mixxx.nsi')
-	else:
-		print "Aborted building installer"
+	try:
+		if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
+			print "\nNow building installer..."
+			
+			buildwin64 = ""
+			type(buildwin64) == str
+			
+			# Windows registry access to find where NSIS is installed
+			import _winreg
+			hklm = _winreg.ConnectRegistry( None, _winreg.HKEY_LOCAL_MACHINE )
+			nsis_location_handle = ""
+			try:
+				nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+			except WindowsError:
+				nsis_location_handle = None
+			
+			if not nsis_location_handle:
+				try:
+					nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
+					if platform == 'win64':
+						print "WARNING: using a 32-bit version of NSIS will cause Windows to default to the 32-bit program files directory"
+						if (raw_input("Continue (yes/[no])? ") != "yes"):
+							raise StopIteration()
+				except WindowsError:
+					nsis_location_handle = None
+
+			if not nsis_location_handle:
+				print "Cannot find NSIS. Do you have it installed?"
+			else:
+				if platform == 'win64':
+					buildwin64 = "/Dx64=1"
+				nsis_location = _winreg.QueryValue(nsis_location_handle, None)
+				_winreg.CloseKey(hklm)
+			
+				# Call the NSIS build
+				command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s Mixxx.nsi' % {'path':nsis_location, \
+	'version':env['MIXXX_VERSION'], '64bit':buildwin64}
+				type(command) == str
+				print "Using command:" + command
+				os.system(command)
+		else:
+			print "Aborted building installer"
+	except StopIteration:
+		print "Aborted building installer...install NSIS x64"
 
 # Do release things
 versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
