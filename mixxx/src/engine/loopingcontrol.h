@@ -24,7 +24,7 @@ public:
 	virtual ~LoopingControl();
 	double process(double currentSample, double totalSamples);
 
-	public slots:
+public slots:
 	void slotLoopIn(double);
 	void slotLoopOut(double);
 	void slotReloopExit(double);
@@ -38,7 +38,6 @@ private:
 	unsigned long m_iLoopEndSample;
 	unsigned long m_iLoopStartSample;
 	unsigned long m_iCurrentSample;
-
 };
 
 #endif /* LOOPINGCONTROL_H_ */
