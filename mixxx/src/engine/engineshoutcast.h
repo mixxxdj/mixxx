@@ -51,7 +51,7 @@ public slots:
 //    void writePage(unsigned char *header, unsigned char *body,
 //                   int headerLen, int bodyLen, int count);
 private:
-    void serverConnect();
+    bool serverConnect();
     int getActiveTracks();
     bool metaDataHasChanged();
     void updateMetaData();
