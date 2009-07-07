@@ -93,7 +93,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     }
     
     qDebug("********START SERVERCONNECT*******");
-    serverConnect();
+    if ( !serverConnect())
+        return;
     
     if (( len = baBitrate.indexOf(' ')) != -1) {
         baBitrate.resize(len);
@@ -302,6 +303,9 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
 
 void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
+    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+        return;
+    
     if (iBufferSize > 0) encoder->encodeBuffer(pOut, iBufferSize);
     
     if ( metaDataHasChanged())
