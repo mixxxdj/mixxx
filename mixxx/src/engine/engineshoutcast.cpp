@@ -247,7 +247,7 @@ void EngineShoutcast::updateFromPreferences()
     
 }
 
-void EngineShoutcast::serverConnect()
+bool EngineShoutcast::serverConnect()
 {
     qDebug("in serverConnect();");
     if (m_pShout)
@@ -265,7 +265,10 @@ void EngineShoutcast::serverConnect()
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to Shoutcast server...";
+        return true;
     }
+    
+    return false;
 }
 
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
