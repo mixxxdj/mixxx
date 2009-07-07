@@ -128,21 +128,6 @@ void MidiObjectALSA::run()
                     if (i==2) midiControl = (unsigned char)buffer[0];
                     if (i==3) {
                         midiValue = (unsigned char)buffer[0];
-//                         MidiStatusByte midiStatusB;
-//                         switch ((midiStatus & 0xF0)) {
-//                             case 0x80:  // Note off
-//                                 midiStatusB = MIDI_STATUS_NOTE_OFF;
-//                                 break;
-//                             case 0x90:  // Note on
-//                                 midiStatusB = MIDI_STATUS_NOTE_ON;
-//                                 break;
-//                             case 0xb0:  // Control Change
-//                                 midiStatusB = MIDI_STATUS_CC;
-//                                 break;
-//                             case 0xe0:  // Pitch bend
-//                                 midiStatusB = MIDI_STATUS_PITCH_BEND;
-//                                 break;
-//                         }
                         receive((MidiStatusByte)(midiStatus & 0xF0), midiStatus & 0x0F, midiControl, midiValue);
                         i=0;
                     }
