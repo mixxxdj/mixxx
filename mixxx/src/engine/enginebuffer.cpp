@@ -382,7 +382,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             reader->unlock();
             readerinfo = true;
         }
-
+        
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
         
         // Is a touch sensitive wheel being touched?
@@ -396,7 +396,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (wheelTouchSensorEnabled) {
             paused = true;
         }
-
 
         // TODO(rryan) : review this touch sensitive business with the Mixxx
         // team to see if this is what we actually want.
@@ -503,18 +502,21 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // See if the loop controller wants us to loop back.
         double new_filepos_play = m_pLoopingControl->process(filepos_play,
                                                              file_length_old);
+        bool wokeReader = false;
         if(new_filepos_play != filepos_play) {
             // We have no better way of solving this problem than 
             reader->requestSeek(new_filepos_play);
+            wokeReader = true;
             setNewPlaypos(new_filepos_play);
-            rampOut(pOut, iBufferSize);
         }
-
+        
         //
         // Check if more samples are needed from reader, and wake it up if necessary.
         //
-        if(readerinfo && filepos_end > 0) {
-
+        // TODO(rryan) this code is from the old EngineBuffer::process code. The
+        // relationship between Reader and EngineBuffer is not very clear at the
+        // moment, so investigate the legitimacy of this code later.
+        if(readerinfo && filepos_end > 0 && !wokeReader) {
             if(filepos_play > filepos_end || filepos_play < filepos_start) {
                 reader->wake();
             } else if((filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1))) {
@@ -532,6 +534,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         at_start = filepos_play <= 0;
         at_end = filepos_play >= file_length_old;
 
+        bool end_of_track = (at_start && backwards) ||
+            (at_end && !backwards);
+        
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
             !m_pTrackEnd->get() && readerinfo &&

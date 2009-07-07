@@ -295,7 +295,7 @@ void Reader::stop()
 
 void Reader::seek()
 {
-    double new_playpos = -1.;;
+    double new_playpos = -1.;
 
     // Get new play position
     seekqueuemutex.lock();
