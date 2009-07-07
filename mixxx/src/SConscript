@@ -147,9 +147,9 @@ Import('machine')	#CPU Architecture for optimizing x64 builds
 
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
-		 'osx': '/usr/local/Trolltech/Qt-4.3.2/', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/local/Trolltech/Qt-4.*.*/
-		 'win32': 'C:\\qt\\4.3.0',
-		 'win64': 'C:\\qt\\4.3.0'}[platform]	 #ditto
+		 'osx': '/usr/lib/Qt-4.5', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/lib/Qt-4.*.*/
+		 'win32': 'C:\\qt\\4.5.1',
+		 'win64': 'C:\\qt\\4.5.1'}[platform]	 #ditto
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
@@ -232,13 +232,11 @@ else:
 vars.Update(env)
 Help(vars.GenerateHelpText(env))
 
-# user-defined CXXFLAGS
-if os.environ.has_key('CXXFLAGS'):
-	env.Append(CXXFLAGS = SCons.Util.CLVar( os.environ['CXXFLAGS'] ))
-# user-defined CCFLAGS
-if os.environ.has_key('CCFLAGS'):
-	env.Append(CCFLAGS = SCons.Util.CLVar(os.environ['CCFLAGS']))
-
+for getenv in ['CXXFLAGS', 'CCFLAGS', 'LINKFLAGS', 'LIBPATH', 'CPPPATH']:
+	kwargs = {}
+	if os.environ.has_key(getenv):
+		kwargs[getenv] = SCons.Util.CLVar( os.environ[getenv] )
+		env.Append(**kwargs)
 
 #env.Append(CPPDEFINES=[('BUILD_REV', '"%s"' % getBZRRevision())]) #doing this forces a rebuild of everything whenever a commit happens -- not much fun
 ## instead, embed BZR version into build
@@ -738,9 +736,8 @@ if 'win' in platform:
 else:
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g """)) # omghax
 	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g"""))
-	#if platform != 'osx':	# Someone needs to verify that this works on OSX 10.5.
-				# This has been split out since XCode on 10.4 doesn't understand rpath
-		#env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
+	if platform != 'osx':
+		env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 	env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 	env.Append(CPPDEFINES = "_REENTRANT")
 
