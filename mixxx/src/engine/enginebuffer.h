@@ -116,7 +116,11 @@ private:
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
-    void updateIndicators(double rate, int iBufferSize);
+    void updateIndicators(double rate, int iBufferSize, double filepos_start);
+
+    /** Holds the name of the control group */
+    const char *group;
+    ConfigObject<ConfigValue> *m_pConfig; 
 
     /** Pointer to the loop control object */
     LoopingControl *m_pLoopingControl;
@@ -158,7 +162,7 @@ private:
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
-    ConfigObject<ConfigValue> *m_pConfig; 
+    
                  
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
@@ -169,8 +173,6 @@ private:
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
-    /** Holds the name of the control group */
-    const char *group;
 
     CSAMPLE *read_buffer_prt;
 
@@ -197,7 +199,5 @@ private:
         start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch; // TODO
 
-    // Filter jog wheel data to smooth it:
-    Rotary* m_jogfilter;
 };
 #endif
