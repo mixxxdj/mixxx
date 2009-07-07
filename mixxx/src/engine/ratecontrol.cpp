@@ -331,6 +331,13 @@ double RateControl::process(const double currentSample,
                             const double totalSamples,
                             const double countSamples) 
 {
+    /* 
+     * Code to handle temporary rate change buttons.
+     *
+     * We support two behaviours, the standard ramped pitch bending
+     * and pitch shift stepping, which is the old behaviour.
+     */
+    
     if ( m_bTempPress && !m_bTempDown ) 
     {
         m_dOldRate = m_pRateSlider->get();
@@ -338,6 +345,8 @@ double RateControl::process(const double currentSample,
         
         if ( m_bRateTempMode == 0 ) 
         {
+            // old temporary pitch shift behaviour
+            
             double change = m_pRateDir->get() * m_dTemp / 
                                     (100. * m_pRateRange->get());
             double csmall = m_pRateDir->get() * m_dTempSmall / 
@@ -355,6 +364,7 @@ double RateControl::process(const double currentSample,
         }
         else 
         {
+            // set the rate change for the new ramped pitchbending behaviour
             m_dTempRateChange = m_pRateDir->get() *
                             (
                                 ( m_dTemp / (100. * m_pRateRange->get())) /
@@ -366,6 +376,7 @@ double RateControl::process(const double currentSample,
     
     if ((m_bTempPress) && (m_bTempRelease == false) && (m_bRateTempMode)) 
     {
+        // apply ramped pitchbending
         if ( buttonRateTempUp->get())
             m_pRateSlider->add(m_dTempRateChange);
         if ( buttonRateTempDown->get())
