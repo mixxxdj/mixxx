@@ -48,15 +48,34 @@
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     group(_group),
     m_pConfig(_config),
+    m_pLoopingControl(NULL),
+    m_pRateControl(NULL),
+    m_pBpmControl(NULL),
     m_pOtherEngineBuffer(NULL),
-    m_dAbsPlaypos(0.),
-    m_dBufferPlaypos(0.),
-    m_dAbsStartpos(0.),
+    reader(NULL),
     filepos_play(0.),
     bufferpos_play(0.),
+    rate_old(0.),
+    file_length_old(-1),
+    file_srate_old(0),
     m_iSamplesCalculated(0),
-    m_pScale(NULL) {
-
+    m_dBufferPlaypos(0.),
+    m_dAbsPlaypos(0.),
+    m_dAbsStartpos(0.),
+    m_pTrackEnd(NULL),
+    m_pTrackEndMode(NULL),
+    startButton(NULL),
+    endButton(NULL),
+    read_buffer_prt(NULL),
+    m_pEngineBufferCue(NULL),
+    m_pScale(NULL),
+    m_pScaleLinear(NULL),
+    m_pScaleST(NULL),
+    m_fLastSampleValue(0.),
+    m_bLastBufferPaused(true),
+    m_pWaveBuffer(NULL),
+    m_bResetPitchIndpTimeStretch(true) {
+    
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"), true);
     connect(playButton, SIGNAL(valueChanged(double)),
@@ -132,13 +151,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     
     reader = new Reader(this, &pause, _config);
     read_buffer_prt = reader->getBufferWavePtr();
-    file_length_old = -1;
-    file_srate_old = 0;
-    rate_old = 0;
-
-    m_bLastBufferPaused = true;
-    m_fLastSampleValue = 0;
-
     m_pWaveBuffer = (float *)reader->getWavePtr()->getBasePtr();
 
     // Construct scaling objects
@@ -154,13 +166,26 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
-    delete playButton;
-    delete m_pScaleLinear;
-    delete m_pScaleST;
-    delete m_pTrackEnd;
     delete m_pLoopingControl;
     delete m_pRateControl;
+    delete m_pBpmControl;
+    delete m_pEngineBufferCue;
     delete reader;
+
+    delete playButton;
+    delete startButton;
+    delete endButton;
+    delete rateEngine;
+    delete wheelTouchSensor;
+    delete wheelTouchSwitch;
+    delete playposSlider;
+    delete visualPlaypos;
+    
+    delete m_pTrackEnd;
+    delete m_pTrackEndMode;
+        
+    delete m_pScaleLinear;
+    delete m_pScaleST;
 }
 
 void EngineBuffer::lockPlayposVars()
@@ -399,7 +424,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
+        
         double rate = m_pRateControl->calculateRate(baserate, paused);
+        //qDebug() << "rate" << rate << " paused" << paused;
         
         // If the rate has changed, set it in the scale object
         if (rate != rate_old)
@@ -420,7 +447,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool bCurBufferPaused = rate == 0 ||
             (at_start && backwards) ||
             (at_end && !backwards);
-
+        
         // If paused, then ramp out.
         if (bCurBufferPaused) {
             // If this is the first process() since being paused, then ramp out.
@@ -502,16 +529,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
-        updateIndicators(rate, iBufferSize);
+        updateIndicators(rate, iBufferSize, filepos_start);
 
         // Handle End-Of-Track mode
+        at_start = filepos_play <= 0;
+        at_end = filepos_play >= file_length_old;
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            !m_pTrackEnd->get() &&
-            readerinfo &&
-            !(at_start && backwards) &&
-            !(at_end && !backwards)) {
+            !m_pTrackEnd->get() && readerinfo &&
+            ((at_start && backwards) ||
+             (at_end && !backwards))) {
             
             // If end of track mode is set to next, signal EndOfTrack to TrackList,
             // otherwise start looping, pingpong or stop the track
@@ -545,8 +573,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
                 break;
  */
-                //default:
-                //qDebug() << "Invalid track end mode: " << m;
+            default:
+                qDebug() << "Invalid track end mode: " << m;
             }
         }
 
@@ -584,7 +612,7 @@ void EngineBuffer::rampOut(const CSAMPLE * pOut, int iBufferSize)
 }
 
 
-void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
+void EngineBuffer::updateIndicators(double rate, int iBufferSize, double filepos_start) {
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
@@ -598,12 +626,11 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         fFractionalPlaypos = 0.;
     }
 
-
     // Update indicators that are only updated after every
     // sampleRate/UPDATE_RATE samples processed.  (e.g. playposSlider,
     // rateEngine)
     if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
-        playposSlider->set(fFractionalPlaypos)
+        playposSlider->set(fFractionalPlaypos);
         
         if(rate != rateEngine->get())
             rateEngine->set(rate);
