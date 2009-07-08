@@ -82,18 +82,25 @@ void MidiObjectALSA::devClose()
     // Stop the midi thread:
     m_run = false;
     wait();
+    
+    int err;
 
     // Close device
-    int err = snd_rawmidi_close(m_inHandle);
-    if (err != 0) qDebug() << "Closing MIDI input device failed: " << snd_strerror(err) << ".";
-    m_inHandle = NULL;  // snd_rawmidi_close() does not clear invalid pointer
+    if (m_inHandle) {
+        err = snd_rawmidi_close(m_inHandle);
+        if (err != 0) { qDebug() << "Closing MIDI input device failed: " << snd_strerror(err) << "."; }
+        else {
+            m_inHandle = NULL;  // snd_rawmidi_close() does not clear invalid pointer
+            delete [] m_buffer;
+//             m_deviceName = "";
+        }
+    }
 
-    err = snd_rawmidi_close(m_outHandle);
-    if (err != 0) qDebug() << "Closing MIDI output device failed: " << snd_strerror(err) << ".";
-    m_outHandle = NULL; // snd_rawmidi_close() does not clear invalid pointer
-
-    // Deallocate buffer
-    delete [] m_buffer;
+    if (m_outHandle) {
+        err = snd_rawmidi_close(m_outHandle);
+        if (err != 0) { qDebug() << "Closing MIDI output device failed: " << snd_strerror(err) << "."; }
+        else m_outHandle = NULL; // snd_rawmidi_close() does not clear invalid pointer
+    }
     
 //     return err;
 }
