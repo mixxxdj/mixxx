@@ -143,7 +143,7 @@ Section "Start Menu Shortcuts" SecStartMenu
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
   
 SectionEnd
 
@@ -192,7 +192,7 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
-  Delete $INSTDIR\uninstall.exe
+  Delete $INSTDIR\uninst.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
