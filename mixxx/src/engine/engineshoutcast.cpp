@@ -294,6 +294,9 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
     } else {
         qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
     }
+    else {
+        qDebug() << "*************Unable to Connect to Shoutcast server...";
+    }
 }
 
 void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
