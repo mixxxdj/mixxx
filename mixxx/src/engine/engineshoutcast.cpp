@@ -50,17 +50,9 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pConfig = _config;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
     
-    m_pCrossfader = new ControlObjectThreadMain(
-                            ControlObject::getControl(ConfigKey("[Master]","crossfader"))
-                    );
-    
-    m_pVolume1 = new ControlObjectThreadMain(
-                     ControlObject::getControl(ConfigKey("[Channel1]","volume"))
-                 );
-    
-    m_pVolume2 = new ControlObjectThreadMain(
-                     ControlObject::getControl(ConfigKey("[Channel2]","volume"))
-                );
+    m_pCrossfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+    m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
+    m_pVolume2 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
     
     QByteArray baBitrate = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
@@ -332,14 +324,18 @@ int EngineShoutcast::getActiveTracks()
     
     // Detect the dominant track by checking the crossfader and volume levels
     if ((tracks & 1) && (tracks & 2)) {
-        // allow a bit of leeway with the crossfader
-        if ( m_pCrossfader->get() < 0.0001 ) {
+        
+        if ((m_pVolume1->get() == 0) && (m_pVolume2->get() == 0))
+            return 0;
+        
+        if (m_pVolume2->get() == 0) {
             tracks = 1;
         }
-        else if ( m_pCrossfader->get() > 0.0001 ) {
+        else if ( m_pVolume1->get() == 0) {
             tracks = 2;
         }
-        else {
+        // allow a bit of leeway with the crossfader
+        else if ((m_pCrossfader->get() < 0.05) && (m_pCrossfader->get() > -0.05)) {
             
             if (m_pVolume1->get() > m_pVolume2->get()) {
                 tracks = 1;
@@ -348,7 +344,13 @@ int EngineShoutcast::getActiveTracks()
                 tracks = 2;
             }
             
-        }    
+        }
+        else if ( m_pCrossfader->get() < -0.05 ) {
+            tracks = 1;
+        }
+        else if ( m_pCrossfader->get() > 0.05 ) {
+            tracks = 2;
+        }
         
     }
     
@@ -362,7 +364,7 @@ bool EngineShoutcast::metaDataHasChanged()
     bool changed = false;
     
     
-    if ( m_pMetaDataLife < 32 ) {
+    if ( m_pMetaDataLife < 1 ) {
         m_pMetaDataLife++;
         return false;
     }

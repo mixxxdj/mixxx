@@ -65,9 +65,9 @@ private:
     Encoder *encoder;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
 //    void (*writeFn)(unsigned char *, unsigned char *, int, int);
-    ControlObjectThreadMain* m_pCrossfader;
-    ControlObjectThreadMain* m_pVolume1;
-    ControlObjectThreadMain* m_pVolume2;
+    ControlObjectThread* m_pCrossfader;
+    ControlObjectThread* m_pVolume1;
+    ControlObjectThread* m_pVolume2;
 };
 
 #endif
