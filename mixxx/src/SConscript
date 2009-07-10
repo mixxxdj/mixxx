@@ -313,7 +313,9 @@ sources = Split("""
                 engine/ratecontrol.cpp
                 engine/loopingcontrol.cpp
                 engine/bpmcontrol.cpp
-                
+
+                cachingreader.cpp
+
                 analyserqueue.cpp
 		analyserwavesummary.cpp
 		analyserbpm.cpp
