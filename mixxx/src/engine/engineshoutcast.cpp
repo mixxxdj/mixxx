@@ -88,6 +88,10 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     if ( !serverConnect())
         return;
     
+    
+    qDebug("********SERVERCONNECTED********");
+    
+    
     if (( len = baBitrate.indexOf(' ')) != -1) {
         baBitrate.resize(len);
     }
@@ -242,13 +246,29 @@ void EngineShoutcast::updateFromPreferences()
 bool EngineShoutcast::serverConnect()
 {
     qDebug("in serverConnect();");
-    if (m_pShout)
-        shout_close(m_pShout);
     
-    m_iShoutStatus = shout_open(m_pShout);
-    if (m_iShoutStatus == SHOUTERR_SUCCESS)
-        m_iShoutStatus = SHOUTERR_CONNECTED;
     
+    m_iShoutStatus = SHOUTERR_BUSY;
+    m_iShoutFailures = 0;
+    
+    
+    while (1) {
+        if (m_pShout)
+            shout_close(m_pShout);
+        
+        m_iShoutStatus = shout_open(m_pShout);
+        if (m_iShoutStatus == SHOUTERR_SUCCESS)
+            m_iShoutStatus = SHOUTERR_CONNECTED;
+        
+        if ((m_iShoutStatus == SHOUTERR_BUSY) || (m_iShoutStatus == SHOUTERR_CONNECTED) || (m_iShoutStatus == SHOUTERR_SUCCESS))
+            break;
+        
+        m_iShoutFailures++;
+        sleep(30);
+    }
+    
+    
+    m_iShoutFailures = 0;
     
     while (m_iShoutStatus == SHOUTERR_BUSY) {
         qDebug() << "Connection pending. Sleeping...";
@@ -275,6 +295,11 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+                if ( m_iShoutFailures > 3 )
+                    serverConnect();
+                else
+                    m_iShoutFailures++;
+                
                 return;
             } else {
                 //qDebug() << "yea I kinda sent header";
@@ -285,6 +310,11 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+            if ( m_iShoutFailures > 3 )
+                    serverConnect();
+                else
+                    m_iShoutFailures++;
+            
             return;
         } else {
             //qDebug() << "yea I kinda sent footer";
@@ -364,7 +394,7 @@ bool EngineShoutcast::metaDataHasChanged()
     bool changed = false;
     
     
-    if ( m_pMetaDataLife < 1 ) {
+    if ( m_pMetaDataLife < 32 ) {
         m_pMetaDataLife++;
         return false;
     }

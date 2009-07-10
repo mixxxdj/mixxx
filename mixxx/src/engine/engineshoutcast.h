@@ -60,6 +60,7 @@ private:
     shout_metadata_t *m_pShoutMetaData;
     int m_pMetaDataLife;
     long m_iShoutStatus;
+    long m_iShoutFailures;
     ConfigObject<ConfigValue> *m_pConfig;
     ControlObject* recReady;
     Encoder *encoder;
