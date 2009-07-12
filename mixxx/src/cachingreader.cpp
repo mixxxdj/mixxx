@@ -72,14 +72,18 @@ void CachingReader::initialize() {
 
     int total_chunks = memory_to_use / kChunkLength;
     
-    m_chunks.reserve(total_chunks);
+    m_chunks.resize(total_chunks);
     //m_freeChunks.reserve(total_chunks);
     m_allocatedChunks.reserve(total_chunks);
 
     char* memory = m_pRawMemoryBuffer;
+
+    qDebug() << "Creating total of " << total_chunks;
     
     for (int i=0; i < total_chunks; i++, memory += kChunkLength) {
-        Chunk& c = m_chunks[i];
+        qDebug() << "Creating chunk " << i;
+            
+        Chunk &c = m_chunks[i];
         c.chunk_number = 0;
         c.sample = 0;
         c.length = 0;
@@ -196,11 +200,15 @@ void CachingReader::newTrack(TrackInfoObject* pTrack) {
 }
 
 int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
+    
+    
     int start_chunk = chunkForSample(sample);
     int end_chunk = chunkForSample(sample + num_samples);
 
     int samples_remaining = num_samples;
-    
+
+    // Need to lock while we're touching Chunk's
+    m_readerMutex.lock();
     for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
         Chunk* current = getChunk(start_chunk);
 
@@ -216,9 +224,9 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         }
         samples_remaining -= samples_to_read;
     }
+    m_readerMutex.unlock();
 
     Q_ASSERT(samples_remaining == 0);
-
     return num_samples - samples_remaining;
 }
 
@@ -314,3 +322,19 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
 }
+
+
+int CachingReader::getTrackSampleRate() {
+    m_readerMutex.lock();
+    int value = m_iTrackSampleRate;
+    m_readerMutex.unlock();
+    return value;
+}
+
+int CachingReader::getTrackTotalSamples() {
+    m_readerMutex.lock();
+    int value = m_iTrackNumSamples;
+    m_readerMutex.unlock();
+    return value;
+}
+

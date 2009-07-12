@@ -22,12 +22,10 @@
 #include <qobject.h>
 #include "enginebufferscale.h"
 
-class ReaderExtractWave;
-
 class EngineBufferScaleDummy : public EngineBufferScale 
 {
 public:
-    EngineBufferScaleDummy(ReaderExtractWave *_wave);
+    EngineBufferScaleDummy();
     ~EngineBufferScaleDummy();
     
     /** Set base tempo, ie. normal playback speed. */
@@ -39,7 +37,10 @@ public:
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     void clear();
     /** Scale buffer */
-    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase=0, unsigned long iBaseLength=0);
+    CSAMPLE* scale(double playpos, 
+                   unsigned long buf_size,
+                   CSAMPLE* pBase,
+                   unsigned long iBaseLength);
     
 protected:
 

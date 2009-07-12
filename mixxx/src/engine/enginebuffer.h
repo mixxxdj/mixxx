@@ -34,7 +34,7 @@ class ControlPushButton;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
-class Reader;
+class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
@@ -66,7 +66,7 @@ const int kiRampLength = 50;
 
 class EngineBuffer : public EngineObject
 {
-    Q_OBJECT
+     Q_OBJECT
 public:
     EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
     ~EngineBuffer();
@@ -75,7 +75,7 @@ public:
     bool getPitchIndpTimeStretch(void);
 
     /** Returns pointer to Reader object. Used in MixxxApp. */
-    Reader *getReader();
+    CachingReader *getReader();
     /** Return the current rate (not thread-safe) */
     double getRate();
     /** Returns current bpm value (not thread-safe) */
@@ -96,13 +96,8 @@ public:
     /** Unlocks abs and buffer playpos vars, so that they can be accessed
       * internally in this object */
     void unlockPlayposVars();
-    /** Returns the buffer playpos. lockPlayposVars() must be called in advance */
-    double getBufferPlaypos();
     /** Returns the abs playpos. lockPlayposVars() must be called in advance */
     double getAbsPlaypos();
-    /** Returns the buffer startpos. lockPlayposVars() must be called in advance */    
-    double getAbsStartpos();
-
 
 public slots:
     void slotControlPlay(double);
@@ -116,29 +111,34 @@ private:
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
-    void updateIndicators(double rate, int iBufferSize, double filepos_start);
+    void updateIndicators(double rate, int iBufferSize);
+
+    int prepareSampleBuffer(int iSourceSamples, 
+                            const double rate,
+                            const int iBufferSize);
+
+    void hintReader(const double rate,
+                    const int iSourceSamples);
 
     /** Holds the name of the control group */
-    const char *group;
-    ConfigObject<ConfigValue> *m_pConfig; 
+    const char* group;
+    ConfigObject<ConfigValue>* m_pConfig; 
 
     /** Pointer to the loop control object */
-    LoopingControl *m_pLoopingControl;
+    LoopingControl* m_pLoopingControl;
     
     /** Pointer to the rate control object */
-    RateControl *m_pRateControl;
+    RateControl* m_pRateControl;
 
     /** Pointer to the BPM control object */
-    BpmControl *m_pBpmControl;
+    BpmControl* m_pBpmControl;
 
     /** Pointer to other EngineBuffer */
-    EngineBuffer *m_pOtherEngineBuffer;
+    EngineBuffer* m_pOtherEngineBuffer;
     /** Pointer to reader */
-    Reader *reader;
+    CachingReader* m_pReader;
     /** The current sample to play in the file. */
     double filepos_play;
-    /** Sample in the buffer relative to filepos_play. */
-    double bufferpos_play;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
     double rate_old;
     /** Copy of length of file */
@@ -151,6 +151,8 @@ private:
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
 
+    ControlObject* m_pTrackSamples;
+
     ControlPushButton *playButton, *buttonBeatSync;
     ControlObject *fwdButton, *backButton;
 
@@ -160,19 +162,16 @@ private:
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
-    
                  
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
     /** Buffer and absolute playpos shared among threads */
-    double m_dBufferPlaypos, m_dAbsPlaypos, m_dAbsStartpos;
+    double m_dAbsPlaypos;
 
     /** Control used to signal when at end of file */
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
-
-    CSAMPLE *read_buffer_prt;
 
     /** Pointer to cue object */
     EngineBufferCue *m_pEngineBufferCue;
@@ -189,13 +188,22 @@ private:
     float m_fLastSampleValue;
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
-    
-    /** Pointer to ReaderExtractWave buffer */
-    float *m_pWaveBuffer;
 
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we
         start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch; // TODO
 
+    // BufferSamplePair is a pair corresponding that says that a given buffer
+    // index (first value) corresponds to a file sample (second value).
+    typedef QPair<int, int> BufferSamplePair;
+
+    CSAMPLE* m_pBuffer;
+    int m_iBufferSize;
+    int m_iBufferRead;
+    int m_iBufferReadSample;
+    QList<BufferSamplePair> m_bufferSamples;
+    int m_iBufferWrite;
+
 };
+
 #endif

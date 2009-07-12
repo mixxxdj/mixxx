@@ -10,6 +10,8 @@
 
 class EngineBuffer;
 
+const double kNoTrigger = -1;
+
 /**
  * EngineControl is an abstract base class for objects which implement
  * functionality pertaining to EngineBuffer. An EngineControl is meant to be a
@@ -37,8 +39,22 @@ class EngineControl : public QObject {
     EngineControl(const char * _group, const ConfigObject<ConfigValue> * _config);
     virtual ~EngineControl();
     
-    virtual double process(const double currentSample, const double totalSamples) {
+    virtual double process(const double dRate,
+                           const double currentSample,
+                           const double totalSamples) {
         return 0;
+    }
+
+    virtual double nextTrigger(const double rate,
+                               const double currentSample,
+                               const double totalSamples) {
+        return kNoTrigger;
+    }
+
+    virtual double getTrigger(const double rate,
+                              const double currentSample,
+                              const double totalSamples) {
+        return kNoTrigger;
     }
 
     void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {

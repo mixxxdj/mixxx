@@ -366,13 +366,9 @@ sources = Split("""
 				widget/hexspinbox.cpp
                 
                 mathstuff.cpp
-                readerextract.cpp
-                readerextractwave.cpp
-                readerevent.cpp
                 rtthread.cpp
                 windowkaiser.cpp
                 probabilityvector.cpp
-                reader.cpp
 
                 peaklist.cpp
                 rotary.cpp
