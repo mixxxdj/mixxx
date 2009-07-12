@@ -122,14 +122,14 @@ private:
     int m_iTrackNumSamples;
 
     // Keeps track of free Chunks we've allocated
-    QVector<Chunk> m_chunks;
+    QVector<Chunk*> m_chunks;
     QList<Chunk*> m_freeChunks;
     // Keeps track of what Chunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
     QHash<int, Chunk*> m_allocatedChunks;
     QLinkedList<Chunk*> m_recentlyUsedChunks;
 
-    char* m_pRawMemoryBuffer;
+    CSAMPLE* m_pRawMemoryBuffer;
     int m_iRawMemoryBufferLength;
     SAMPLE* m_pSample;
     bool m_bQuit;

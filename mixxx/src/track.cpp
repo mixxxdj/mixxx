@@ -27,8 +27,6 @@
 #include "mixxxview.h"
 #include <q3dragobject.h>
 
-#include "cachingreader.h"
-
 /*used for new model/view interface*/
 #include "wtracktablemodel.h"
 #include "wplaylistlistmodel.h"
