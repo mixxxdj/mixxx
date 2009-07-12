@@ -462,47 +462,45 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //
             //    rate * sourceSamples = iBufferSize
             //
-            int iSourceSamples = double(iBufferSize) / rate;
+            int iSourceSamples = abs(double(iBufferSize) * rate);
 
             if (!even(iSourceSamples))
                 iSourceSamples++;
             
             // Read the raw source data into m_pBuffer
             prepareSampleBuffer(iSourceSamples, rate, iBufferSize);
-            int iBufferStartSample = (backwards ? iSourceSamples-1 : 0);
             
+            int iBufferStartSample = (backwards ? iSourceSamples-1 : 0);
  
             // Perform scaling of Reader buffer into buffer.
-            // output = m_pScale->scale(iBufferStartSample,
-            //                          iBufferSize,
-            //                          m_pBuffer,
-            //                          iSourceSamples);
-            // idx = m_pScale->getNewPlaypos();
+            output = m_pScale->scale(iBufferStartSample,
+                                     iBufferSize,
+                                     m_pBuffer,
+                                     iSourceSamples);
+            idx = m_pScale->getNewPlaypos();
                 
-            qDebug() << "sourceSamples used " << iSourceSamples
-                     <<" idx " << idx
-                     << ", buffer pos " << iBufferStartSample
-                     << ", play " << filepos_play
-                     << " bufferlen " << iBufferSize;
+            // qDebug() << "sourceSamples used " << iSourceSamples
+            //          <<" idx " << idx
+            //          << ", buffer pos " << iBufferStartSample
+            //          << ", play " << filepos_play
+            //          << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
             // TODO(XXX) could this be done safely/faster with a memcpy?
             for(int i=0; i<iBufferSize; i++) {
-                pOutput[i] = m_pBuffer[i]; //output[i];
-                if (i < 20) {
-                    qDebug() << "OUTBUF " << i << ":" << pOutput[i];
-                }
+                pOutput[i] = output[i];
+                //if (i < 20) {
+                    // qDebug() << "OUTBUF " << i << ":" << pOutput[i];
+                //}
             }
-            
 
             // Adjust filepos_play by the amount we processed.
-            //filepos_play += (idx-iBufferStartSample);
-            filepos_play += iBufferSize;
+            filepos_play += (idx-iBufferStartSample);
 
             // Adjust filepos_play in case we took any loops during this buffer
-            // filepos_play = m_pLoopingControl->process(rate,
-            //                                           filepos_play,
-            //                                           file_length_old);
+            filepos_play = m_pLoopingControl->process(rate,
+                                                      filepos_play,
+                                                      file_length_old);
 
             // Fix filepos_play so that it is not out of bounds.
             if (file_length_old > 0) {
@@ -670,6 +668,9 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
                                    samples_needed);
     }
 
+    // qDebug() << "Reading " << samples_to_read << " from CachingReader. next_loop is "
+    //          << next_loop;
+
     if (samples_to_read == samples_needed) {
         // The loop does not matter, we will not hit it in this buffer.
 
@@ -709,7 +710,7 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
         // Zero the samples we didn't get
         for (int i = actual_samples; i < samples_to_read; i++) {
             baseBuffer[i] = 0.0f;
-        }        
+        }
     }
 
     baseBuffer += actual_samples;
