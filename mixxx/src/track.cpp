@@ -267,8 +267,10 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     TrackPlaylist::setTrack(this);
 
 
-    connect(m_pBuffer1->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)), this, SLOT(slotFinishLoadingPlayer1(TrackInfoObject*, bool)));
-    connect(m_pBuffer2->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)), this, SLOT(slotFinishLoadingPlayer2(TrackInfoObject*, bool)));
+    connect(m_pBuffer1, SIGNAL(trackLoaded(TrackInfoObject*)),
+            this, SLOT(slotFinishLoadingPlayer1(TrackInfoObject*)));
+    connect(m_pBuffer2, SIGNAL(trackLoaded(TrackInfoObject*)),
+            this, SLOT(slotFinishLoadingPlayer2(TrackInfoObject*)));
 
 	m_pView->m_pTrackTableView->repaintEverything();
 
@@ -960,7 +962,7 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
-    m_pBuffer1->getReader()->newTrack(m_pTrackPlayer1);
+    m_pBuffer1->loadTrack(m_pTrackPlayer1);
     // TODO(rryan) : We no longer will start at the end position, fix that.
 
     //The rest of the track loading code gets executed in slotFinishLoadingPlayer1(), 
@@ -973,8 +975,9 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     after the song has been loaded into the reader. Before this function was implemented, there were a handful
     of race conditions in slotLoadPlayer1() where stuff was executed at the same time as Reader was loading the 
     track. This function explicitly solves that problem. */
-void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos)
+void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject)
 {
+    bool bStartFromEndPos = false;
     // Read the tags if required
     if(!m_pTrackPlayer1->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer1);
@@ -1004,9 +1007,7 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
         if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
             //Note that cueRecall == 0 corresponds to "ON", not OFF.
             float cue_point = m_pTrackPlayer1->getCuePoint();
-            long numSamplesInSong = m_pBuffer1->getReader()->getTrackTotalSamples();
-            cue_point = cue_point / (numSamplesInSong);
-            m_pPlayPositionCh1->slotSet(cue_point);
+            m_pBuffer1->slotControlSeekAbs(cue_point);
         }
     }
 
@@ -1054,13 +1055,14 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
-    m_pBuffer2->getReader()->newTrack(m_pTrackPlayer2);
+    m_pBuffer2->loadTrack(m_pTrackPlayer2);
     // TODO(rryan) : We no longer will start at the end position, fix that.
 }
 
 /** See comment for slotFinishLoadingPlayer1 */
-void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos)
+void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject)
 {
+    bool bStartFromEndPos = false;
     // Read the tags if required
     if(!m_pTrackPlayer2->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pTrackPlayer2);
@@ -1090,9 +1092,7 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
         if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
             //Note that cueRecall == 0 corresponds to "ON", not OFF.
             float cue_point = m_pTrackPlayer2->getCuePoint();
-            long numSamplesInSong = m_pBuffer2->getReader()->getTrackTotalSamples(); 
-            cue_point = cue_point / (numSamplesInSong);
-            m_pPlayPositionCh2->slotSet(cue_point);
+            m_pBuffer2->slotControlSeekAbs(cue_point);
         }
     }
 

@@ -44,17 +44,20 @@ class CachingReader : public QThread {
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
 
-    // TODO nix these, replace with signal on track load
+    // You really shouldn't use these unless there /really/ isn't any other way
+    // of getting at this data.
     int getTrackSampleRate();
-    int getTrackTotalSamples();
+    int getTrackNumSamples();
 
     int read(int sample, int num_samples, CSAMPLE* buffer);
     void hint(int sample, int length, int priority);
     void newTrack(TrackInfoObject* pTrack);
     void wake();
+
+signals:
+    void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
     
 protected:
-
     void run();
 
 private:

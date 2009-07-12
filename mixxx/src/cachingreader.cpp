@@ -94,6 +94,7 @@ void CachingReader::initialize() {
 
 
 void CachingReader::freeChunk(Chunk* pChunk) {
+    qDebug() << "freeChunk(" << pChunk->chunk_number << ")";
     Chunk* removed = m_allocatedChunks.take(pChunk->chunk_number);
     m_recentlyUsedChunks.removeOne(pChunk); // TODO
     Q_ASSERT(removed == pChunk);
@@ -149,6 +150,7 @@ Chunk* CachingReader::getChunk(int chunk_number) {
     Chunk* chunk = lookupChunk(chunk_number);
 
     if (chunk == NULL) {
+        qDebug() << "Cache miss on chunk " << chunk_number;
         chunk = allocateChunkExpireLRU();
         Q_ASSERT(chunk);
 
@@ -166,8 +168,9 @@ Chunk* CachingReader::getChunk(int chunk_number) {
 }
 
 bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
+    qDebug() << "readChunkFromFile reading chunk " << chunk_number;
     
-    if (m_pCurrentSoundSource == NULL || pChunk == NULL || chunk_number >= 0)
+    if (m_pCurrentSoundSource == NULL || pChunk == NULL || chunk_number < 0)
         return false;
     
     // Stereo samples
@@ -175,6 +178,10 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     int samples_remaining = m_iTrackNumSamples - sample_position;
     int samples_to_read = math_min(kSamplesPerChunk, samples_remaining);
 
+    qDebug() << "sample_position: " << sample_position
+             << " samples_remaining " << samples_remaining
+             << " samples_to_read " << samples_to_read;
+    
     // Bogus chunk number
     if (samples_to_read <= 0)
         return false;
@@ -184,7 +191,11 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
                                                    m_pSample);
 
     for (int i=0; i < samples_read; i++) {
-        pChunk->data[i] = m_pSample[i];
+        if (i < 20) {
+            qDebug() << "READCHUNK " << i << ":" << m_pSample[i];
+        }
+            
+        pChunk->data[i] = CSAMPLE(m_pSample[i]);
     }
     
     pChunk->sample = sample_position;
@@ -200,8 +211,8 @@ void CachingReader::newTrack(TrackInfoObject* pTrack) {
 }
 
 int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
-    
-    
+
+    qDebug() << "read() sample " << sample << " num_samples " << num_samples;
     int start_chunk = chunkForSample(sample);
     int end_chunk = chunkForSample(sample + num_samples);
 
@@ -219,9 +230,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         CSAMPLE* start = current->data;
         CSAMPLE* end = current->data + samples_to_read;
 
-        while (start < end) {
-            *buffer++ = *start++;
+        qDebug() << "from chunk " << start_chunk << " reading " << samples_to_read;
+
+        for (int i = 0; i < samples_to_read; ++i) {
+            buffer[i] = start[i];
         }
+
         samples_remaining -= samples_to_read;
     }
     m_readerMutex.unlock();
@@ -312,7 +326,7 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     QString filename = pTrack->getLocation();
     QFileInfo fileInfo(filename);
 
-    if (filename.isEmpty() || fileInfo.exists()) {
+    if (filename.isEmpty() || !fileInfo.exists()) {
         qDebug() << "Couldn't load track with filename: " << filename;
         return;
     }
@@ -321,6 +335,9 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_pCurrentTrack = pTrack;
     m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
+
+    // Emit that the track is loaded.
+    emit(trackLoaded(pTrack, m_iTrackSampleRate, m_iTrackNumSamples));
 }
 
 
@@ -331,7 +348,7 @@ int CachingReader::getTrackSampleRate() {
     return value;
 }
 
-int CachingReader::getTrackTotalSamples() {
+int CachingReader::getTrackNumSamples() {
     m_readerMutex.lock();
     int value = m_iTrackNumSamples;
     m_readerMutex.unlock();
