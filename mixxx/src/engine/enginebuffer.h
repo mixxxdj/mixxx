@@ -39,6 +39,7 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferCue;
+class TrackInfoObject;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -74,8 +75,8 @@ public:
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
-    /** Returns pointer to Reader object. Used in MixxxApp. */
-    CachingReader *getReader();
+    void loadTrack(TrackInfoObject* pTrack);
+
     /** Return the current rate (not thread-safe) */
     double getRate();
     /** Returns current bpm value (not thread-safe) */
@@ -106,6 +107,13 @@ public slots:
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
 
+signals:
+    void trackLoaded(TrackInfoObject *pTrack);
+
+private slots:
+    void slotTrackLoaded(TrackInfoObject *pTrack,
+                         int iSampleRate, int iNumSamples);
+    
 private:
 
     /** Called from process() when an empty buffer, possible ramped to zero is needed */

@@ -36,6 +36,8 @@
 #include "ratecontrol.h"
 #include "bpmcontrol.h"
 
+#include "trackinfoobject.h"
+
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
@@ -149,6 +151,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pBpmControl = new BpmControl(_group, _config);
     
     m_pReader = new CachingReader(_group, _config);
+    connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
+            this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
     
 
     // Construct scaling objects
@@ -244,11 +248,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 
 }
 
-CachingReader* EngineBuffer::getReader()
-{
-    return m_pReader;
-}
-
 double EngineBuffer::getBpm()
 {
     return m_pBpmControl->getBpm();
@@ -292,6 +291,19 @@ const char * EngineBuffer::getGroup()
 double EngineBuffer::getRate()
 {
     return m_pRateControl->getRawRate();
+}
+
+void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
+                                   int iTrackSampleRate,
+                                   int iTrackNumSamples) {
+    pause.lock();
+    file_srate_old = iTrackSampleRate;
+    file_length_old = iTrackNumSamples;
+    pause.unlock();
+    
+    m_pTrackSamples->set(iTrackNumSamples);
+
+    emit(trackLoaded(pTrack));
 }
 
 
@@ -365,13 +377,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
-        long file_length_new = m_pReader->getTrackTotalSamples();
-        if (file_length_new != file_length_old) {
-            m_pTrackSamples->set(file_length_new);
-            file_length_old = file_length_new;
-        }
-        file_srate_old = m_pReader->getTrackSampleRate();
-        
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
         
         // Is a touch sensitive wheel being touched?
@@ -468,29 +473,36 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             
  
             // Perform scaling of Reader buffer into buffer.
-            output = m_pScale->scale(iBufferStartSample,
-                                     iBufferSize,
-                                     m_pBuffer,
-                                     iSourceSamples);
-            idx = m_pScale->getNewPlaypos();
+            // output = m_pScale->scale(iBufferStartSample,
+            //                          iBufferSize,
+            //                          m_pBuffer,
+            //                          iSourceSamples);
+            // idx = m_pScale->getNewPlaypos();
                 
-            qDebug() << "idx " << idx
+            qDebug() << "sourceSamples used " << iSourceSamples
+                     <<" idx " << idx
                      << ", buffer pos " << iBufferStartSample
-                     << ", play " << filepos_play;
+                     << ", play " << filepos_play
+                     << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
             // TODO(XXX) could this be done safely/faster with a memcpy?
             for(int i=0; i<iBufferSize; i++) {
-                pOutput[i] = output[i];
+                pOutput[i] = m_pBuffer[i]; //output[i];
+                if (i < 20) {
+                    qDebug() << "OUTBUF " << i << ":" << pOutput[i];
+                }
             }
+            
 
             // Adjust filepos_play by the amount we processed.
-            filepos_play += (idx-iBufferStartSample);
+            //filepos_play += (idx-iBufferStartSample);
+            filepos_play += iBufferSize;
 
             // Adjust filepos_play in case we took any loops during this buffer
-            filepos_play = m_pLoopingControl->process(rate,
-                                                      filepos_play,
-                                                      file_length_old);
+            // filepos_play = m_pLoopingControl->process(rate,
+            //                                           filepos_play,
+            //                                           file_length_old);
 
             // Fix filepos_play so that it is not out of bounds.
             if (file_length_old > 0) {
@@ -649,6 +661,10 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
                                                       file_length_old);
     CSAMPLE* baseBuffer = m_pBuffer;
 
+    for (int i=0; i < iSourceSamples; i++) {
+        baseBuffer[i] = 0.0f;
+    }
+
     if (next_loop != kNoTrigger) {
         samples_to_read = math_min(fabs(next_loop-filepos_play),
                                    samples_needed);
@@ -782,4 +798,8 @@ void EngineBuffer::hintReader(const double dRate,
                               const int iSourceSamples) {
     
 
+}
+
+void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+    m_pReader->newTrack(pTrack);
 }
