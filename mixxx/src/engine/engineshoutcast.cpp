@@ -32,17 +32,10 @@
 #include <QDebug>
 #include <stdio.h> // currently used for writing to stdout
 
+
 /*
-This is some really ugly stuff. I left a lot of EngineRecord to be too.
-I'll clean it up once I get something that starts to look like it can work.
-
-I also have to implement a shoutcast connect function and check whether
-there's a connection or whether it is needed to reconnect.
-Right now I'm not doing that.
-My test Icecast2 server is configured with a 1000 timeout value instead.
-(default is 10) I'll fix that right after I can get vorbis sound to play through it.
-*/
-
+ * Initialize EngineShoutcast
+ */
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 {
     m_pShout = 0;
@@ -60,8 +53,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     
     // Initialize libshout
     shout_init();
-
-// INIT STUFF
+    
     if (!(m_pShout = shout_new())) {
         qDebug() << "Could not allocate shout_t";
         return;
@@ -71,10 +63,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         qDebug() << "Cound not allocate shout_metadata_t";
         return;
     }
-    
-    // set to a high number to automatically update the metadata
-    // on the first change
-    m_pMetaDataLife = 31337;
     
     //Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
     updateFromPreferences();
@@ -124,6 +112,9 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     }
 }
 
+/*
+ * Cleanup EngineShoutcast
+ */
 EngineShoutcast::~EngineShoutcast()
 {
     delete encoder;
@@ -139,6 +130,9 @@ EngineShoutcast::~EngineShoutcast()
     shout_shutdown();
 }
 
+/*
+ * Update EngineShoutcast values from the preferences.
+ */
 void EngineShoutcast::updateFromPreferences()
 {
     qDebug() << "EngineShoutcast: updating from preferences";
@@ -243,13 +237,22 @@ void EngineShoutcast::updateFromPreferences()
     
 }
 
+/*
+ * Reset the Server state and Connect to the Server.
+ */
 bool EngineShoutcast::serverConnect()
 {
     qDebug("in serverConnect();");
     
     
+    // set to busy in case another thread calls one of the other
+    // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
+    // reset the number of failures to zero
     m_iShoutFailures = 0;
+    // set to a high number to automatically update the metadata
+    // on the first change
+    m_pMetaDataLife = 31337;
     
     
     while (1) {
@@ -283,6 +286,9 @@ bool EngineShoutcast::serverConnect()
     return false;
 }
 
+/*
+ * Called by the Engine implementation to flush the stream to the server.
+ */
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
@@ -326,6 +332,10 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
     }
 }
 
+/*
+ * This is called by the Engine implementation for each sample.
+ * Encode and send the stream, as well as check for metadata changes.
+ */
 void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
@@ -337,10 +347,10 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
         updateMetaData();
 }
 
-/* Algorithm which simply flips the lowest and/or second lowest bits,
+/*
+ * Algorithm which simply flips the lowest and/or second lowest bits,
  * bits 1 and 2, to represent which track is active and returns the result.
  */
-
 int EngineShoutcast::getActiveTracks()
 {
     int tracks = 0;
@@ -387,6 +397,13 @@ int EngineShoutcast::getActiveTracks()
     return tracks;
 }
 
+
+/*
+ * Check if the metadata has changed since the previous check.
+ * We also check when was the last check performed to avoid using
+ * too much CPU and as well to avoid changing the metadata during
+ * scratches.
+ */
 bool EngineShoutcast::metaDataHasChanged()
 {
     int tracks;
@@ -435,12 +452,15 @@ bool EngineShoutcast::metaDataHasChanged()
         break;
     }
     
-    qDebug() << "tracks = " << tracks << " changed = " << changed;
-    
     
     return changed;
 }
 
+/*
+ * Update shoutcast metadata.
+ * This does not work for OGG/Vorbis and Icecast, since the actual
+ * OGG/Vorbis stream contains the metadata.
+ */
 void EngineShoutcast::updateMetaData()
 {
     // convert QStrings to char*s
