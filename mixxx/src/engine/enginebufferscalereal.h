@@ -32,13 +32,14 @@ class ControlObject;
 class EngineBufferScaleReal : public EngineBufferScale  
 {
 public:
-    EngineBufferScaleReal(ReaderExtractWave *wave);
+    EngineBufferScaleReal();
     ~EngineBufferScaleReal();
     double setTempo(double dTempo);
     /** Set base rate */
     void setBaseRate(double dBaseRate);
     void clear();
-    CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
+    CSAMPLE* scale(double playpos, int buf_size, 
+                   CSAMPLE* pBase, int iBaseLength);
 
 private:
     ControlObject *m_pControlObjectSampleRate;

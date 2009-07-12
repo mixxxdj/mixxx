@@ -1,10 +1,9 @@
 #include <QtCore>
 #include "enginebufferscale.h"
-#include "readerextractwave.h"
 #include "enginebufferscaledummy.h"
 
 
-EngineBufferScaleDummy::EngineBufferScaleDummy(ReaderExtractWave *_wave) : EngineBufferScale(_wave)
+EngineBufferScaleDummy::EngineBufferScaleDummy() : EngineBufferScale()
 {
 	new_playpos = 0.0f;
 }
@@ -40,16 +39,11 @@ void EngineBufferScaleDummy::clear()
  * @param pBase
  * @param iBaseLength (same units as playpos)
  */
-CSAMPLE *EngineBufferScaleDummy::scale(double playpos, unsigned long buf_size, float *pBase, unsigned long iBaseLength)
+CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
+                                       unsigned long buf_size,
+                                       CSAMPLE* pBase,
+                                       unsigned long iBaseLength)
 {
-    if (!pBase)
-    {
-        pBase = wavebuffer;				//The "base" buffer is really 
-        								//the EngineBuffer's circular 
-        								//audio buffer.
-        iBaseLength = READBUFFERSIZE;	//Length of the base buffer
-    }
-		
 	unsigned long baseplaypos = ((long)playpos) % iBaseLength; // Playpos wraps within the base buffer
 													  // This is the position within base
 

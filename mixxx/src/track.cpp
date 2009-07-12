@@ -27,6 +27,8 @@
 #include "mixxxview.h"
 #include <q3dragobject.h>
 
+#include "cachingreader.h"
+
 /*used for new model/view interface*/
 #include "wtracktablemodel.h"
 #include "wplaylistlistmodel.h"
@@ -47,7 +49,6 @@
 #include <QCursor>
 #include <q3cstring.h>
 #include "engine/enginebuffer.h"
-#include "reader.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "configobject.h"
@@ -959,7 +960,8 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
-    m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1, bStartFromEndPos);
+    m_pBuffer1->getReader()->newTrack(m_pTrackPlayer1);
+    // TODO(rryan) : We no longer will start at the end position, fix that.
 
     //The rest of the track loading code gets executed in slotFinishLoadingPlayer1(), 
     //which gets called when Reader emits a signal saying it's done loading the song. This prevents
@@ -1002,7 +1004,7 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
         if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
             //Note that cueRecall == 0 corresponds to "ON", not OFF.
             float cue_point = m_pTrackPlayer1->getCuePoint();
-            long numSamplesInSong = m_pBuffer1->getReader()->getFileLength(); 
+            long numSamplesInSong = m_pBuffer1->getReader()->getTrackTotalSamples();
             cue_point = cue_point / (numSamplesInSong);
             m_pPlayPositionCh1->slotSet(cue_point);
         }
@@ -1052,7 +1054,8 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
-    m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
+    m_pBuffer2->getReader()->newTrack(m_pTrackPlayer2);
+    // TODO(rryan) : We no longer will start at the end position, fix that.
 }
 
 /** See comment for slotFinishLoadingPlayer1 */
@@ -1087,7 +1090,7 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bSt
         if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
             //Note that cueRecall == 0 corresponds to "ON", not OFF.
             float cue_point = m_pTrackPlayer2->getCuePoint();
-            long numSamplesInSong = m_pBuffer2->getReader()->getFileLength(); 
+            long numSamplesInSong = m_pBuffer2->getReader()->getTrackTotalSamples(); 
             cue_point = cue_point / (numSamplesInSong);
             m_pPlayPositionCh2->slotSet(cue_point);
         }

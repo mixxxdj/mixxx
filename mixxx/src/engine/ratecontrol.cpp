@@ -337,7 +337,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
     return rate;
 }
 
-double RateControl::process(const double currentSample,
+double RateControl::process(const double rate,
+                            const double currentSample,
                             const double totalSamples) {
     return 0;
 }
