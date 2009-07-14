@@ -30,7 +30,6 @@ typedef struct Hint {
 
 typedef struct Chunk {
     int chunk_number;
-    int sample;
     int length;
     CSAMPLE* data;
 } Chunk;
@@ -45,7 +44,8 @@ class CachingReader : public QThread {
     virtual ~CachingReader();
 
     // You really shouldn't use these unless there /really/ isn't any other way
-    // of getting at this data.
+    // of getting at this data. Calling it involves a lock/unlock. It's better
+    // to receive trackLoaded signals instead.
     int getTrackSampleRate();
     int getTrackNumSamples();
 
@@ -106,7 +106,8 @@ private:
 
     int chunkForSample(int sample_number) {
         // TODO make sure this floor()'s it
-        return sample_number / kSamplesPerChunk;
+        return int(floor(double(sample_number) / double(kSamplesPerChunk)));
+        //return sample_number / kSamplesPerChunk;
     }
     
     int sampleForChunk(int chunk_number) {
