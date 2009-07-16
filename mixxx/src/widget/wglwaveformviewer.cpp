@@ -9,7 +9,6 @@
 
 
 #include "mixxx.h"
-#include "reader.h"
 #include "trackinfoobject.h"
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"

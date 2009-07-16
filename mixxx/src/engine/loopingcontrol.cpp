@@ -14,6 +14,7 @@
 #include "controlpushbutton.h"
 #include "engine/loopingcontrol.h"
 #include "engine/enginecontrol.h"
+#include "mathstuff.h"
 
 LoopingControl::LoopingControl(const char * _group,
                                ConfigObject<ConfigValue> * _config) :
@@ -43,28 +44,60 @@ LoopingControl::LoopingControl(const char * _group,
 LoopingControl::~LoopingControl() {
 }
 
-double LoopingControl::process(double currentSample, double totalSamples)
+double LoopingControl::process(const double dRate,
+                               const double currentSample,
+                               const double totalSamples)
 {
 	// From WBS: 1.2.2 In process() (or similar) function, check if playpos ==
     // end of loop (and move playpos to start of loop)
 
+    
     m_iCurrentSample = currentSample;
+    if (!even(m_iCurrentSample))
+        m_iCurrentSample--;
+
+    bool reverse = dRate < 0;
     
     double retval = currentSample;
     if(m_bLoopingEnabled) {
-        if (currentSample >= m_iLoopEndSample) {
-        
-            //Oh crap, the play position ticks along in buffer sizes. How do we
-            //wrap when the loop end position is in the middle of a buffer?
-            //Maybe this is why looping isn't implemented yet...
-
-            // Oh well, let's hack around it!
-            // People with high-latency will have sucky looping though.
-            retval = m_iLoopStartSample;
+        if (reverse) {
+            if (currentSample <= m_iLoopStartSample)
+                retval = m_iLoopEndSample;
+        } else {
+            if (currentSample >= m_iLoopEndSample) 
+                retval = m_iLoopStartSample;
         }
     } 
     
     return retval;
+}
+
+double LoopingControl::nextTrigger(const double dRate,
+                                   const double currentSample,
+                                   const double totalSamples) {
+    bool bReverse = dRate < 0;
+
+    if(m_bLoopingEnabled) {
+        if (bReverse)
+            return m_iLoopStartSample;
+        else
+            return m_iLoopEndSample;
+    }
+    return kNoTrigger;
+}
+
+double LoopingControl::getTrigger(const double dRate,
+                                  const double currentSample,
+                                  const double totalSamples) {
+    bool bReverse = dRate < 0;
+
+    if(m_bLoopingEnabled) {
+        if (bReverse)
+            return m_iLoopEndSample;
+        else
+            return m_iLoopStartSample;
+    }
+    return kNoTrigger;
 }
 
 void LoopingControl::slotLoopIn(double val)

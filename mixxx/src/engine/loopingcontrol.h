@@ -16,13 +16,20 @@
 class ControlPushButton;
 class ControlObject;
 
-
 class LoopingControl : public EngineControl {
     Q_OBJECT
 public:
 	LoopingControl(const char * _group, ConfigObject<ConfigValue> * _config);
 	virtual ~LoopingControl();
-	double process(double currentSample, double totalSamples);
+	double process(const double dRate,
+                   const double currentSample,
+                   const double totalSamples);
+    double nextTrigger(const double dRate,
+                       const double currentSample,
+                       const double totalSamples);
+    double getTrigger(const double dRate,
+                      const double currentSample,
+                      const double totalSamples);
 
 public slots:
 	void slotLoopIn(double);

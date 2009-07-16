@@ -18,8 +18,6 @@
 #ifndef PROBABILITYVECTOR_H
 #define PROBABILITYVECTOR_H
 
-//#include "readerextractbeat.h"
-
 #ifdef FILEOUTPUT
     #include <qfile.h>
     #include <qstring.h>

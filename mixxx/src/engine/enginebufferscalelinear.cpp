@@ -18,11 +18,10 @@
 #include <QtCore>
 #include "enginebufferscalelinear.h"
 #include "mathstuff.h"
-#include "readerextractwave.h"
 
 #define RATE_LERP_LENGTH 200
 
-EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave * wave) : EngineBufferScale(wave)
+EngineBufferScaleLinear::EngineBufferScaleLinear() : EngineBufferScale()
 {
     m_dBaseRate = 0.0f;
     m_dTempo = 0.0f;
@@ -81,16 +80,9 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 }
 
 /** Stretch a buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
+CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
+                                         CSAMPLE* pBase, unsigned long iBaseLength)
 {
-    if (!pBase)
-    {
-        pBase = wavebuffer;				//The "base" buffer is really 
-        								//the EngineBuffer's circular 
-        								//audio buffer.
-        iBaseLength = READBUFFERSIZE;	//Length of the base buffer
-    }
-    
     float rate_add_new = 2.*m_dBaseRate;
     float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new; 
@@ -111,7 +103,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             long next = (prev-2+READBUFFERSIZE)%READBUFFERSIZE;
 
             //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-            //prevents the change from being discontinuous and helps improve sound
+            //prevvents the change from being discontinuous and helps improve sound
             //quality.
             if (i < RATE_LERP_LENGTH)
             {
@@ -123,12 +115,12 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             CSAMPLE frac = new_playpos-floor(new_playpos);
             
             //Hermite interpolation, see the comments in the "else" block below.
-            //buffer[i  ] = hermite4(frac, wavebuffer[math_min(prev-2, 0)], wavebuffer[prev], wavebuffer[next], wavebuffer[(next+2)%READBUFFERSIZE]); 
-            //buffer[i+1] = hermite4(frac, wavebuffer[math_min(prev-1, 1)], wavebuffer[prev+1], wavebuffer[(next+1)%READBUFFERSIZE], wavebuffer[(next+3)%READBUFFERSIZE]); 
+            //buffer[i  ] = hermite4(frac, pBase[math_min(prev-2, 0)], pBase[prev], pBase[next], pBase[(next+2)%READBUFFERSIZE]); 
+            //buffer[i+1] = hermite4(frac, pBase[math_min(prev-1, 1)], pBase[prev+1], pBase[(next+1)%READBUFFERSIZE], pBase[(next+3)%READBUFFERSIZE]); 
             
             //Perform linear interpolation
-            buffer[i  ] = wavebuffer[prev  ] + frac*(wavebuffer[next  ]-wavebuffer[prev  ]);
-            buffer[i+1] = wavebuffer[prev+1] + frac*(wavebuffer[next+1]-wavebuffer[prev+1]);
+            buffer[i  ] = pBase[prev  ] + frac*(pBase[next  ]-pBase[prev  ]);
+            buffer[i+1] = pBase[prev+1] + frac*(pBase[next+1]-pBase[prev+1]);
 
             new_playpos += rate_add;
         }
@@ -156,15 +148,15 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             /* //Hermite interpolation - experimented with this to see if there was any noticeable increase
              *                           in sound quality, but I couldn't hear any (the literature generally
              *                           agrees that that is the case too) - Albert 04/27/08
-            buffer[i  ] = hermite4(frac, wavebuffer[math_min(prev-2, 0)], 
-                                   wavebuffer[prev], wavebuffer[next], wavebuffer[(next+2)%READBUFFERSIZE]); 
-            buffer[i+1] = hermite4(frac, wavebuffer[math_min(prev-1, 1)], 
-                                   wavebuffer[prev+1], wavebuffer[(next+1)%READBUFFERSIZE], wavebuffer[(next+3)%READBUFFERSIZE]); 
+            buffer[i  ] = hermite4(frac, pBase[math_min(prev-2, 0)], 
+                                   pBase[prev], pBase[next], pBase[(next+2)%READBUFFERSIZE]); 
+            buffer[i+1] = hermite4(frac, pBase[math_min(prev-1, 1)], 
+                                   pBase[prev+1], pBase[(next+1)%READBUFFERSIZE], pBase[(next+3)%READBUFFERSIZE]); 
             */
             
             //Perform linear interpolation
-            buffer[i  ] = wavebuffer[prev  ] + frac*(wavebuffer[next  ]-wavebuffer[prev  ]);
-            buffer[i+1] = wavebuffer[prev+1] + frac*(wavebuffer[next+1]-wavebuffer[prev+1]);
+            buffer[i  ] = pBase[prev  ] + frac*(pBase[next  ]-pBase[prev  ]);
+            buffer[i+1] = pBase[prev+1] + frac*(pBase[next+1]-pBase[prev+1]);
 
             new_playpos += rate_add;
         }
