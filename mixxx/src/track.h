@@ -120,9 +120,9 @@ public slots:
     /** Load the given track in player 2 if it exists */
     void slotLoadPlayer2(QString filename, bool bStartFromEndPos = false);
     /** Finish loading a track into Player1 after Reader has loaded the song into memory */
-    void slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos);
+    void slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject);
     /** Finish loading a track into Player2 after Reader has loaded the song into memory */
-    void slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos);
+    void slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer1(double);
     /** Slot used when playback reaches end of track */

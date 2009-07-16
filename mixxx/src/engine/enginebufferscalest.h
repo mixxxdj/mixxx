@@ -74,7 +74,7 @@ class EngineBufferScaleST : public EngineBufferScale
 
 public: 
 
-    EngineBufferScaleST(ReaderExtractWave *wave);
+    EngineBufferScaleST();
 
     ~EngineBufferScaleST();
 
@@ -85,7 +85,8 @@ public:
 
     /** Scale buffer */
 
-    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase=0, unsigned long iBaseLength=0);
+    CSAMPLE* scale(double playpos, unsigned long buf_size,
+                   CSAMPLE* pBase, unsigned long iBaseLength);
 
     /** Set tempo */
 

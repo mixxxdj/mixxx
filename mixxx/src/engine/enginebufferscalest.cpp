@@ -16,7 +16,6 @@
 ***************************************************************************/
 
 #include <QtCore>
-#include "readerextractwave.h"
 #include "mathstuff.h"
 #include "engineobject.h"
 #include "enginebufferscalest.h"
@@ -25,7 +24,7 @@
 
 using namespace soundtouch;
 
-EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave * wave) : EngineBufferScale(wave)
+EngineBufferScaleST::EngineBufferScaleST() : EngineBufferScale()
 {
     m_qMutex.lock();
     m_pSoundTouch = new soundtouch::SoundTouch();
@@ -150,14 +149,9 @@ double EngineBufferScaleST::setTempo(double dTempo)
  * @param pBase Pointer to an EngineBuffer's ringbuffer.
  * @param iBaseLength (same units as playpos)
  */
-CSAMPLE * EngineBufferScaleST::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
-{
+CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
+                                    CSAMPLE* pBase, unsigned long iBaseLength) {
     m_qMutex.lock();
-    if (!pBase)
-    {
-        pBase = wavebuffer;
-        iBaseLength = READBUFFERSIZE;
-    }
 
     //If we've just cleared SoundTouch's FIFO of unprocessed samples,
     //then reset our "read ahead position" because we probably need

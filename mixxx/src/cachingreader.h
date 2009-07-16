@@ -30,7 +30,6 @@ typedef struct Hint {
 
 typedef struct Chunk {
     int chunk_number;
-    int sample;
     int length;
     CSAMPLE* data;
 } Chunk;
@@ -44,13 +43,21 @@ class CachingReader : public QThread {
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
 
+    // You really shouldn't use these unless there /really/ isn't any other way
+    // of getting at this data. Calling it involves a lock/unlock. It's better
+    // to receive trackLoaded signals instead.
+    int getTrackSampleRate();
+    int getTrackNumSamples();
+
     int read(int sample, int num_samples, CSAMPLE* buffer);
     void hint(int sample, int length, int priority);
     void newTrack(TrackInfoObject* pTrack);
     void wake();
+
+signals:
+    void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
     
 protected:
-
     void run();
 
 private:
@@ -99,7 +106,8 @@ private:
 
     int chunkForSample(int sample_number) {
         // TODO make sure this floor()'s it
-        return sample_number / kSamplesPerChunk;
+        return int(floor(double(sample_number) / double(kSamplesPerChunk)));
+        //return sample_number / kSamplesPerChunk;
     }
     
     int sampleForChunk(int chunk_number) {
@@ -115,14 +123,14 @@ private:
     int m_iTrackNumSamples;
 
     // Keeps track of free Chunks we've allocated
-    QVector<Chunk> m_chunks;
+    QVector<Chunk*> m_chunks;
     QList<Chunk*> m_freeChunks;
     // Keeps track of what Chunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
     QHash<int, Chunk*> m_allocatedChunks;
     QLinkedList<Chunk*> m_recentlyUsedChunks;
 
-    char* m_pRawMemoryBuffer;
+    CSAMPLE* m_pRawMemoryBuffer;
     int m_iRawMemoryBufferLength;
     SAMPLE* m_pSample;
     bool m_bQuit;

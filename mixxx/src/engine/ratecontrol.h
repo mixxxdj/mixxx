@@ -23,8 +23,9 @@ class RateControl : public EngineControl {
 public:
     RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
     ~RateControl();
-    double process(const double currentSample, const double totalSamples, 
-                        const double iBufferSize);
+    double process(const double dRate, 
+                   const double currentSample,
+                   const double totalSamples);
     double calculateRate(double baserate, bool paused);
     double getRawRate();
 
