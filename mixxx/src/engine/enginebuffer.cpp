@@ -468,6 +468,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             Q_ASSERT(even(iSourceSamples));
             //if (!even(iSourceSamples))
             //iSourceSamples++;
+
+            // Integer valued.
+            Q_ASSERT(round(filepos_play) == filepos_play);
+            // Even.
+            Q_ASSERT(even(filepos_play));
             
             // Read the raw source data into m_pBuffer
             prepareSampleBuffer(iSourceSamples, rate, iBufferSize);
@@ -502,11 +507,20 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             filepos_play += (idx-iBufferStartSample);
             //filepos_play += iBufferSize;
 
+            // Get rid of annoying decimals that the scaler sometimes produces
+            filepos_play = round(filepos_play);
+
+            if (!even(filepos_play))
+                filepos_play--;
+
             // Adjust filepos_play in case we took any loops during this buffer
             filepos_play = m_pLoopingControl->process(rate,
                                                       filepos_play,
                                                       file_length_old);
 
+            Q_ASSERT(round(filepos_play) == filepos_play);
+
+            // Safety check that LoopingControl didn't pass us a bogus value
             if (!even(filepos_play))
                 filepos_play--;
 
@@ -644,7 +658,7 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
                                       const int iBufferSize) {
     
     if (!even(iSourceSamples))
-        iSourceSamples++;
+        iSourceSamples--;
 
     // We have to ensure that the buffer we prepare has enough source samples to
     // fill an entire iBufferSize buffer with scaled audio, whether we are
@@ -664,57 +678,67 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
     double next_loop = m_pLoopingControl->nextTrigger(dRate,
                                                       filepos_play,
                                                       file_length_old);
-    CSAMPLE* baseBuffer = m_pBuffer;
 
     if (next_loop != kNoTrigger) {
         samples_to_read = math_min(fabs(next_loop-filepos_play),
                                    samples_needed);
     }
 
-    // qDebug() << "Reading " << samples_to_read << " from CachingReader. next_loop is "
-    //          << next_loop;
+    // qDebug() << "Reading " << samples_to_read << " from CachingReader. "
+    //          << "next_loop is " << next_loop
+    //          << "samples_needed:" << samples_needed
+    //          << "filepos_play" << filepos_play
+    //          << "diff" << (next_loop - filepos_play);
+    // qDebug("%f, %f, %f", next_loop, filepos_play, next_loop-filepos_play);
+
+    Q_ASSERT(even(samples_to_read));
+
+    // The logic below will fill these values out, and well pass them as
+    // arguments to m_pReader
+    int start_sample = filepos_play;
+    int num_samples = samples_to_read;
+    CSAMPLE* baseBuffer = m_pBuffer;
 
     if (samples_to_read == samples_needed) {
         // The loop does not matter, we will not hit it in this buffer.
-
         if (in_reverse) {
             // TODO(rryan) this won't work at the start of the track,
             // Fill with zeroes, then read from sample 0.
             
             // Read samples_to_read samples into baseBuffer from
             // filepos-samples_to_read, since we're in reverse.
-            actual_samples = m_pReader->read(filepos_play-samples_needed,
-                                             samples_to_read,
-                                             baseBuffer);
+            start_sample = filepos_play - samples_needed;
         } else {
             // Read samples_to_read bytes into baseBuffer from filepos
-            actual_samples = m_pReader->read(filepos_play,
-                                             samples_to_read,
-                                             baseBuffer);
-            // for (int i=0; i < samples_to_read; i++) {
-            //     if (baseBuffer[i] != (filepos_play + i)) {
-            //         // qDebug() << "invalid: " << i
-            //         //          << " : " << baseBuffer[i]
-            //         //          << " should be " << filepos_play + i;
-            //     }
-            // }
         }
     } else {
         // The loop will affect us in this buffer
         if (in_reverse) {
             // Funky. We need to read samples_to_read bytes so that the section
             // of data read fills up to the very last element of the buffer.
+            start_sample = filepos_play-samples_to_read;
             int read_offset = iSourceSamples - samples_to_read;
-            actual_samples = m_pReader->read(filepos_play-samples_to_read,
-                                             samples_to_read,
-                                             baseBuffer + read_offset);
+            baseBuffer += read_offset;
         } else {
             // Read samples_to_read bytes into baseBuffer from filepos
-            actual_samples = m_pReader->read(filepos_play,
-                                             samples_to_read,
-                                             baseBuffer);
-        }
+        }        
     }
+
+    // Ensure we don't have a wacky start sample.
+    if (start_sample < 0) {
+        // Clear the samples we're requesting before the track.
+        memset(baseBuffer, 0, sizeof(CSAMPLE) * (-start_sample));
+        // Decrease the num_samples we will read, and increase baseBuffer by
+        // that number too (start_sample is negative)
+        num_samples += start_sample;
+        baseBuffer -= start_sample;
+        start_sample = 0;
+    }
+    
+    // Do the actual read
+    actual_samples = m_pReader->read(start_sample,
+                                     num_samples,
+                                     baseBuffer);
 
     if (actual_samples != samples_to_read) {
         // For some reason there was a reader error. This should not happen.
@@ -728,6 +752,9 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
 
     baseBuffer += actual_samples;
     samples_needed -= actual_samples;
+
+    // TODO(rryan) -- loops of size less than the buffer size will not be
+    // properly handled here.
 
     if (samples_needed > 0 && actual_samples == samples_to_read) {
         // No read error occured, and we still need more samples, so that means
@@ -748,7 +775,6 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
                                              samples_to_read,
                                              baseBuffer);
         } else {
-            
             actual_samples = m_pReader->read(loop_trigger,
                                              samples_to_read,
                                              baseBuffer);
