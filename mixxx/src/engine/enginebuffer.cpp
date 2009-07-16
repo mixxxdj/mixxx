@@ -532,11 +532,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
-        m_pRateControl->process(rate, filepos_play, file_length_old);
+        // NOTE: RJ munged up this call... I only *really* need the last
+        // argument, to be able to handle pitchbending wrt latency.
+        //m_pRateControl->process(rate, filepos_play, file_length_old);
+        m_pRateControl->process(rate, filepos_play, ((double)m_pSampleRate->get() / iBufferSize));
         
-        // See if the loop controller wants us to loop back.
-        double new_filepos_play = m_pLoopingControl->process(filepos_play,
-                                                             file_length_old);
+        
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
         hintReader(rate, iBufferSize);
