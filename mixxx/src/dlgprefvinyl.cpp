@@ -52,7 +52,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     m_vinylControlInput1R = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylControlInputR")));
     m_vinylControlInput2L = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlInputL")));
     m_vinylControlInput2R = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylControlInputR")));
-    
+
 
 
     m_signalWidget1.setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
@@ -226,8 +226,7 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck1Change()
     //Hack: Apply device change when combobox is clicked.
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","ChannelInputDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
-    m_pSoundManager->closeDevices();
-    m_pSoundManager->setupDevices();
+    this->applySoundDeviceChanges();
 }
 
 void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
@@ -264,8 +263,7 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
     //Hack: Apply device change when combobox is clicked.
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","ChannelInputDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
-    m_pSoundManager->closeDevices();
-    m_pSoundManager->setupDevices();
+    this->applySoundDeviceChanges();
 }
 
 // Update the config object with parameters from dialog
@@ -407,6 +405,32 @@ void DlgPrefVinyl::VinylGainSlotApply()
 
     //qDebug() << "Setting Gain Text";
     //gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
+}
+
+/** @brief Closes and reopens the sound devices for us. */
+void DlgPrefVinyl::applySoundDeviceChanges()
+{
+    m_pSoundManager->closeDevices();
+
+    // Not much to do if the API is None...
+	try{
+		if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None")
+		{
+			if (m_pSoundManager->setupDevices() != 0)
+				QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+			else
+				slotUpdate();
+		}
+	}
+	catch (int e)
+	{
+		if (e == MIXXX_DUPLICATE_OUTPUT_CHANNEL_EXCEPTION)
+		    QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
+		if (e == MIXXX_DUPLICATE_INPUT_CHANNEL_EXCEPTION)
+		    QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");
+		//m_parent->setHidden(false);
+		//m_configError = true;
+	}
 }
 
 /** @brief Wraps updateSignalQuality to work nicely with slots
