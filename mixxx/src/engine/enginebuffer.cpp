@@ -356,21 +356,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     // Steps:
     // - Lookup new reader information
-    
     // - Calculate current rate
-    
-    // - If playing, copy samples from read buffer to write buffer, process as
-    //   necessary.
-    
-    // - Query LoopingControl for seek necessary
-    
-    // - Query BPMControl for
-
-    // - Process EOT Mode
-
-    // - Set last sample value (m_fLastSampleValue) so that rampOut works?
-     
-
+    // - Prepare an intermediate source sample buffer with loops taken into account.
+    // - Scale the audio with m_pScale, copy the resulting samples into the
+    //   output buffer
+    // - Give EngineControl's a chance to do work / request seeks, etc
+    // - Process EndOfTrack mode if we're at the end of a track
+    // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
+    //   miscellaneous upkeep issues.
     
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
@@ -422,8 +415,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         //qDebug() << "rate" << rate << " paused" << paused;
         
         // If the rate has changed, set it in the scale object
-        if (rate != rate_old)
-        {
+        if (rate != rate_old) {
             // The rate returned by the scale object can be different from the wanted rate!
             rate_old = rate;
             rate = baserate*m_pScale->setTempo(rate/baserate);
@@ -460,15 +452,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // needed to fill a buffer of `iBufferSize' if the song is going at
             // a `rate' speedup,
             //
-            //    rate * sourceSamples = iBufferSize
+            //    sourceSamples = iBufferSize * rate
             //
-            int iSourceSamples = abs(double(iBufferSize) * rate) * 2;
+            int iSourceSamples = abs(double(iBufferSize) * rate);
 
             Q_ASSERT(even(iBufferSize));
-            Q_ASSERT(even(iSourceSamples));
-            //if (!even(iSourceSamples))
-            //iSourceSamples++;
+            
+            //Q_ASSERT(even(iSourceSamples));
+            if (!even(iSourceSamples))
+                iSourceSamples++;
 
+            // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
             Q_ASSERT(round(filepos_play) == filepos_play);
             // Even.
@@ -476,7 +470,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             
             // Read the raw source data into m_pBuffer
             prepareSampleBuffer(iSourceSamples, rate, iBufferSize);
-            
+
+            // This is because of some oddness with EngineBufferScalers. We need
+            // to revisit the EngineBufferScale design now that we have more
+            // control
             int iBufferStartSample = (backwards ? iSourceSamples-1 : 0);
  
             // Perform scaling of Reader buffer into buffer.
@@ -493,19 +490,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //          << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
-            // TODO(XXX) could this be done safely/faster with a memcpy?
-            for(int i=0; i<iBufferSize; i++) {
-                pOutput[i] = output[i];
-                //pOutput[i] = m_pBuffer[i];
-                //if (i < 20) {
-                    // qDebug() << "OUTBUF " << i << ":" << pOutput[i];
-                //}
-            }
+            memcpy(pOutput, output, sizeof(CSAMPLE) * iBufferSize);
+
+            // for(int i=0; i<iBufferSize; i++) {
+            //     pOutput[i] = output[i];
+            // }
             
 
             // Adjust filepos_play by the amount we processed.
             filepos_play += (idx-iBufferStartSample);
-            //filepos_play += iBufferSize;
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -702,9 +695,6 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
     if (samples_to_read == samples_needed) {
         // The loop does not matter, we will not hit it in this buffer.
         if (in_reverse) {
-            // TODO(rryan) this won't work at the start of the track,
-            // Fill with zeroes, then read from sample 0.
-            
             // Read samples_to_read samples into baseBuffer from
             // filepos-samples_to_read, since we're in reverse.
             start_sample = filepos_play - samples_needed;
@@ -804,7 +794,6 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     if (file_length_old!=0.) {
         fFractionalPlaypos = math_max(0.,math_min(filepos_play,file_length_old));
         fFractionalPlaypos /= file_length_old;
-        //qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
     } else {
         fFractionalPlaypos = 0.;
     }
@@ -836,8 +825,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
 void EngineBuffer::hintReader(const double dRate,
                               const int iSourceSamples) {
-    
-
+    // TODO(rryan) ... hint the reader!
 }
 
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
