@@ -14,6 +14,7 @@
 #include "controlpushbutton.h"
 #include "engine/loopingcontrol.h"
 #include "engine/enginecontrol.h"
+#include "mathstuff.h"
 
 LoopingControl::LoopingControl(const char * _group,
                                ConfigObject<ConfigValue> * _config) :
@@ -50,7 +51,10 @@ double LoopingControl::process(const double dRate,
 	// From WBS: 1.2.2 In process() (or similar) function, check if playpos ==
     // end of loop (and move playpos to start of loop)
 
+    
     m_iCurrentSample = currentSample;
+    if (!even(m_iCurrentSample))
+        m_iCurrentSample--;
 
     bool reverse = dRate < 0;
     
