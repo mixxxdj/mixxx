@@ -223,7 +223,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     m_pCurrentSoundSource->seek(sample_position);
     int samples_read = m_pCurrentSoundSource->read(samples_to_read,
                                                    m_pSample);
-
+    
     if (samples_read != samples_to_read) {
         qDebug() << "SoundSource underrun chunk "
                  << chunk_number << " "
@@ -236,6 +236,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
         // }
             
         pChunk->data[i] = CSAMPLE(m_pSample[i]);
+        //pChunk->data[i] = CSAMPLE(sample_position) + i;
     }
 
     pChunk->chunk_number = chunk_number;
@@ -270,7 +271,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Need to lock while we're touching Chunk's
     m_readerMutex.lock();
     for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
-        Chunk* current = getChunk(start_chunk);
+        Chunk* current = getChunk(chunk_num);
 
         if (current == NULL) {
             qCritical() << "Couldn't get chunk " << start_chunk << " in read()";
@@ -293,23 +294,32 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
                                        chunk_remaining_samples);
 
         Q_ASSERT(samples_to_read % 2 == 0);
-        // qDebug() << "from chunk " << chunk_num
-        //          << " reading " << samples_to_read;
 
         CSAMPLE *end = data + samples_to_read;
 
+        //bool warned_this_chunk = false;
+        //int i = 0;
         while (data < end) {
             *buffer = *data;
+            
+            // if (*buffer != (current_sample + i)) {
+            //     if (!warned_this_chunk) {
+            //         qDebug() << "Current chunk has issues: " << current
+            //                  << " : " << current->chunk_number;
+            //         warned_this_chunk = true;
+            //     }
+            //     qDebug() << "Problem: " << (current_sample+i) << " != " << *buffer;
+            // }
+            
             buffer++;
             data++;
+            //i++;
         }
         
         samples_remaining -= samples_to_read;
         current_sample += samples_to_read;
     }
     m_readerMutex.unlock();
-
-    hint(sampleForChunk(end_chunk+1), 0, 0);
 
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong.
