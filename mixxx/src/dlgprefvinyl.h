@@ -66,6 +66,8 @@ public slots:
 signals:
     void apply();
 private:
+	void applySoundDeviceChanges();
+
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
 
