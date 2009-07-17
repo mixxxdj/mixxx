@@ -21,8 +21,8 @@
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key, bool bMidiSimulateLatching) : ControlObject(key)
-{
+ControlPushButton::ControlPushButton(ConfigKey key, bool bMidiSimulateLatching) :
+    ControlObject(key, false) {
     m_bMidiSimulateLatching = bMidiSimulateLatching;
     m_bIsToggleButton = false;
 }

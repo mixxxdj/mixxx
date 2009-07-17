@@ -4,25 +4,45 @@
 ; has uninstall support and (optionally) installs start menu shortcuts.
 ;
 ; By Tue Haste Andersen <haste@diku.dk>, June 2004.
+; Heavily modified since by Albert Santoni, Garth Dahlstrom and Sean Pappalardo.
+; 
+; Lots of bits lifted from http://www.improve.dk/downloads/InstallScript.txt
 ;
 ;Include Modern UI
 !include "MUI.nsh"
 
+; Definitions
+!define PRODUCT_NAME "Mixxx"
+;!define PRODUCT_VERSION ""  ; Specified by the SConscript
+!define PRODUCT_PUBLISHER "The Mixxx Team"
+!define PRODUCT_WEB_SITE "http://www.mixxx.org"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Mixxx.exe"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+
 ; The name of the installer
-Name "Mixxx"
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 
 ; Disable the Nullsoft Installer branding text at the bottom.
 BrandingText " "
 
 ; The file to write
-OutFile "mixxx-1.7.0~beta1-win.exe"
+!ifdef x64
+    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+!else
+    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+!endif
+
+; Use best compression
+SetCompressor /SOLID lzma
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\Mixxx
+InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\NSIS_Mixxx" "Install_Dir"
+;InstallDirRegKey HKLM "Software\NSIS_Mixxx" "Install_Dir"
+InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 ;Interface Settings
 !define MUI_ABORTWARNING
@@ -40,7 +60,18 @@ InstallDirRegKey HKLM "Software\NSIS_Mixxx" "Install_Dir"
 !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
+; Install functions
 
+Function .onInit    ; Prevent multiple installer instances
+    System::Call 'kernel32::CreateMutexA(i 0, i 0, t "runningMixxxInstallerMutex") i .r1 ?e'
+    Pop $R0
+ 
+    StrCmp $R0 0 +3
+        MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
+        Abort
+FunctionEnd
+
+;--------------------------------
 ; The stuff to install
 Section "Mixxx (required)" SecMixxx
 
@@ -52,9 +83,21 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "dist\mixxx.exe"
   File "dist\*.dll"
-;  File "..\mixxx-winlib\msvcm80.dll"
-;  File "..\mixxx-winlib\msvcp80.dll"
-;  File "..\mixxx-winlib\msvcr80.dll"
+  
+  ; NOTE: you need to copy the below files into the applicable directory manually
+  ; (Visual C++ 2005 is msvc?80.dll, Visual C++ 2008 is msvc?90.dll)
+  ;
+  ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
+  
+  !ifdef x64    ; x64 versions
+    File "..\mixxx-win64lib\msvcm*.dll"
+    File "..\mixxx-win64lib\msvcp*.dll"
+    File "..\mixxx-win64lib\msvcr*.dll"
+  !else         ; x86 versions
+    File "..\mixxx-winlib\msvcm*.dll"
+    File "..\mixxx-winlib\msvcp*.dll"
+    File "..\mixxx-winlib\msvcr*.dll"
+  !endif
 
   ; And documentation, licence etc.
   File "Mixxx-Manual.pdf"
@@ -77,14 +120,19 @@ Section "Mixxx (required)" SecMixxx
   File /r /x ".svn" /x ".bzr" res\skins\*.*
 
   ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"
+  ;WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
   
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "DisplayName" "Mixxx"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx" "NoRepair" 1
-  WriteUninstaller "uninstall.exe"
+  WriteUninstaller "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\Mixxx.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegDWORD ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "NoModify" 1
+  WriteRegDWORD ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "NoRepair" 1
   
 SectionEnd
 
@@ -95,7 +143,7 @@ Section "Start Menu Shortcuts" SecStartMenu
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
   
 SectionEnd
 
@@ -127,17 +175,24 @@ SectionEnd
 
 ; Uninstaller
 
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+FunctionEnd
+
+Function un.onInit
+!insertmacro MUI_UNGETLANGUAGE
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  Abort
+FunctionEnd
+
 Section "Uninstall"
-  
-  ; Remove registry keys
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Mixxx"
-  DeleteRegKey HKLM SOFTWARE\NSIS_Mixxx
 
   ; Remove files and uninstaller
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
-  Delete $INSTDIR\uninstall.exe
+  Delete $INSTDIR\uninst.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
@@ -182,4 +237,10 @@ Section "Uninstall"
   RMDir "$SMPROGRAMS\Mixxx"
   RMDir "$INSTDIR"
 
+  ; Remove registry keys
+  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  ;DeleteRegKey HKLM SOFTWARE\NSIS_Mixxx
+  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  SetAutoClose true
+  
 SectionEnd

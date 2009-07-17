@@ -63,7 +63,7 @@ class ControlObject : public QObject
     Q_OBJECT
 public:
     ControlObject();
-    ControlObject(ConfigKey key);
+    ControlObject(ConfigKey key, bool bIgnoreNops=true);
     ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest. */
     static bool connectControls(ConfigKey src, ConfigKey dest);
@@ -122,6 +122,8 @@ protected:
     ConfigKey m_Key;
 
 private:
+    // Whether to ignore set/add/sub()'s which would have no effect
+    bool m_bIgnoreNops;
     /** List of associated proxy objects */
     Q3PtrList<ControlObjectThread> m_qProxyList;
     /** Mutex for the proxy list */
