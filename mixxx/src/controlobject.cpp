@@ -32,14 +32,14 @@ Q3PtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
 Q3PtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
 Q3PtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
 
-ControlObject::ControlObject()
-{
+ControlObject::ControlObject() :
+    m_bIgnoreNops(true) {
 }
 
-ControlObject::ControlObject(ConfigKey key)
-{
-    m_dValue = 0.;
-    m_Key = key;
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops) :
+    m_dValue(0),
+    m_Key(key),
+    m_bIgnoreNops(bIgnoreNops) {
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(key,this);
     m_sqCOHashMutex.unlock();
@@ -230,7 +230,8 @@ double ControlObject::GetMidiValue()
 
 void ControlObject::setValueFromThread(double dValue)
 {
-    if (m_dValue == dValue) return;
+    if (m_bIgnoreNops && m_dValue == dValue)
+        return;
 
     m_dValue = dValue;
     emit(valueChanged(m_dValue));
@@ -238,7 +239,8 @@ void ControlObject::setValueFromThread(double dValue)
 
 void ControlObject::set(double dValue)
 {
-    if (m_dValue == dValue) return;
+    if (m_bIgnoreNops && m_dValue == dValue)
+        return;
 
     setValueFromEngine(dValue);
     m_sqQueueMutexChanges.lock();
@@ -248,7 +250,8 @@ void ControlObject::set(double dValue)
 
 void ControlObject::add(double dValue)
 {
-    if (!dValue) return;
+    if (m_bIgnoreNops && !dValue)
+        return;
 
     setValueFromEngine(m_dValue+dValue);
     m_sqQueueMutexChanges.lock();
@@ -258,7 +261,8 @@ void ControlObject::add(double dValue)
 
 void ControlObject::sub(double dValue)
 {
-    if (!dValue) return;
+    if (m_bIgnoreNops && !dValue)
+        return;
 
     setValueFromEngine(m_dValue-dValue);
     m_sqQueueMutexChanges.lock();

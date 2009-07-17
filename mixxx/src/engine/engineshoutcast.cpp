@@ -19,25 +19,23 @@
 #include "configobject.h"
 #include "dlgprefshoutcast.h"
 
+#ifdef __SHOUTCAST_VORBIS__
 #include "encodervorbis.h"
+#endif // __SHOUTCAST_VORBIS__
+#ifdef __SHOUTCAST_LAME__
 #include "encodermp3.h"
+#endif // __SHOUTCAST_LAME__
+
 #include "playerinfo.h"
 #include "trackinfoobject.h"
 
 #include <QDebug>
 #include <stdio.h> // currently used for writing to stdout
 
+
 /*
-This is some really ugly stuff. I left a lot of EngineRecord to be too.
-I'll clean it up once I get something that starts to look like it can work.
-
-I also have to implement a shoutcast connect function and check whether
-there's a connection or whether it is needed to reconnect.
-Right now I'm not doing that.
-My test Icecast2 server is configured with a 1000 timeout value instead.
-(default is 10) I'll fix that right after I can get vorbis sound to play through it.
-*/
-
+ * Initialize EngineShoutcast
+ */
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 {
     m_pShout = 0;
@@ -45,16 +43,24 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pConfig = _config;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
     
+    m_pCrossfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+    m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
+    m_pVolume2 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
+    
     QByteArray baBitrate = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
     int len;
     
     // Initialize libshout
     shout_init();
-
-// INIT STUFF
+    
     if (!(m_pShout = shout_new())) {
         qDebug() << "Could not allocate shout_t";
+        return;
+    }
+    
+    if (!(m_pShoutMetaData = shout_metadata_new())) {
+        qDebug() << "Cound not allocate shout_metadata_t";
         return;
     }
     
@@ -67,7 +73,12 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     }
     
     qDebug("********START SERVERCONNECT*******");
-    serverConnect();
+    if ( !serverConnect())
+        return;
+    
+    
+    qDebug("********SERVERCONNECTED********");
+    
     
     if (( len = baBitrate.indexOf(' ')) != -1) {
         baBitrate.resize(len);
@@ -75,10 +86,20 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     
     // Initialize encoder
     if ( ! qstrcmp(baFormat, "MP3")) {
+#ifdef __SHOUTCAST_LAME__
         encoder = new EncoderMp3(m_pConfig, this);
+#else
+        qDebug() << "*** Missing MP3 Encoder Support";
+        return;
+#endif // __SHOUTCAST_LAME__
     }
     else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
+#ifdef __SHOUTCAST_VORBIS__
         encoder = new EncoderVorbis(m_pConfig, this);
+#else
+        qDebug() << "*** Missing OGG Vorbis Encoder Support";
+        return;
+#endif // __SHOUTCAST_VORBIS__
     }
     else {
         qDebug() << "**** Unknown Encoder Format";
@@ -91,16 +112,27 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     }
 }
 
+/*
+ * Cleanup EngineShoutcast
+ */
 EngineShoutcast::~EngineShoutcast()
 {
     delete encoder;
     delete m_pUpdateShoutcastFromPrefs;
+    delete m_pCrossfader;
+    delete m_pVolume1;
+    delete m_pVolume2;
     
+    if (m_pShoutMetaData)
+        shout_metadata_free(m_pShoutMetaData);
     if (m_pShout)
         shout_close(m_pShout);
     shout_shutdown();
 }
 
+/*
+ * Update EngineShoutcast values from the preferences.
+ */
 void EngineShoutcast::updateFromPreferences()
 {
     qDebug() << "EngineShoutcast: updating from preferences";
@@ -205,16 +237,41 @@ void EngineShoutcast::updateFromPreferences()
     
 }
 
-void EngineShoutcast::serverConnect()
+/*
+ * Reset the Server state and Connect to the Server.
+ */
+bool EngineShoutcast::serverConnect()
 {
     qDebug("in serverConnect();");
-    if (m_pShout)
-        shout_close(m_pShout);
     
-    m_iShoutStatus = shout_open(m_pShout);
-    if (m_iShoutStatus == SHOUTERR_SUCCESS)
-        m_iShoutStatus = SHOUTERR_CONNECTED;
     
+    // set to busy in case another thread calls one of the other
+    // EngineShoutcast calls
+    m_iShoutStatus = SHOUTERR_BUSY;
+    // reset the number of failures to zero
+    m_iShoutFailures = 0;
+    // set to a high number to automatically update the metadata
+    // on the first change
+    m_pMetaDataLife = 31337;
+    
+    
+    while (1) {
+        if (m_pShout)
+            shout_close(m_pShout);
+        
+        m_iShoutStatus = shout_open(m_pShout);
+        if (m_iShoutStatus == SHOUTERR_SUCCESS)
+            m_iShoutStatus = SHOUTERR_CONNECTED;
+        
+        if ((m_iShoutStatus == SHOUTERR_BUSY) || (m_iShoutStatus == SHOUTERR_CONNECTED) || (m_iShoutStatus == SHOUTERR_SUCCESS))
+            break;
+        
+        m_iShoutFailures++;
+        sleep(30);
+    }
+    
+    
+    m_iShoutFailures = 0;
     
     while (m_iShoutStatus == SHOUTERR_BUSY) {
         qDebug() << "Connection pending. Sleeping...";
@@ -223,9 +280,15 @@ void EngineShoutcast::serverConnect()
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to Shoutcast server...";
+        return true;
     }
+    
+    return false;
 }
 
+/*
+ * Called by the Engine implementation to flush the stream to the server.
+ */
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
@@ -238,6 +301,11 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+                if ( m_iShoutFailures > 3 )
+                    serverConnect();
+                else
+                    m_iShoutFailures++;
+                
                 return;
             } else {
                 //qDebug() << "yea I kinda sent header";
@@ -248,6 +316,11 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+            if ( m_iShoutFailures > 3 )
+                    serverConnect();
+                else
+                    m_iShoutFailures++;
+            
             return;
         } else {
             //qDebug() << "yea I kinda sent footer";
@@ -259,15 +332,142 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
     }
 }
 
-/*void EngineShoutcast::wrapper2writePage(void *pObj, unsigned char *header, unsigned char *body,
-                                        int headerLen, int bodyLen)
+/*
+ * This is called by the Engine implementation for each sample.
+ * Encode and send the stream, as well as check for metadata changes.
+ */
+void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
-    EngineShoutcast* mySelf = (EngineShoutcast*)pObj;
-    pObj->writePage(header, body, headerLen, bodyLen);
-}*/
-
-void EngineShoutcast::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
-{
-//    encoder->encodeBuffer((void*) &objA, EngineShoutcast::wrapper2writePage, pOut, iBufferSize);
+    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+        return;
+    
     if (iBufferSize > 0) encoder->encodeBuffer(pOut, iBufferSize);
+    
+    if ( metaDataHasChanged())
+        updateMetaData();
+}
+
+/*
+ * Algorithm which simply flips the lowest and/or second lowest bits,
+ * bits 1 and 2, to represent which track is active and returns the result.
+ */
+int EngineShoutcast::getActiveTracks()
+{
+    int tracks = 0;
+    
+    
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.) tracks |= 1;
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.) tracks |= 2;
+    
+    if (tracks ==  0)
+        return 0;
+    
+    // Detect the dominant track by checking the crossfader and volume levels
+    if ((tracks & 1) && (tracks & 2)) {
+        
+        if ((m_pVolume1->get() == 0) && (m_pVolume2->get() == 0))
+            return 0;
+        
+        if (m_pVolume2->get() == 0) {
+            tracks = 1;
+        }
+        else if ( m_pVolume1->get() == 0) {
+            tracks = 2;
+        }
+        // allow a bit of leeway with the crossfader
+        else if ((m_pCrossfader->get() < 0.05) && (m_pCrossfader->get() > -0.05)) {
+            
+            if (m_pVolume1->get() > m_pVolume2->get()) {
+                tracks = 1;
+            }
+            else if (m_pVolume1->get() < m_pVolume2->get()) {
+                tracks = 2;
+            }
+            
+        }
+        else if ( m_pCrossfader->get() < -0.05 ) {
+            tracks = 1;
+        }
+        else if ( m_pCrossfader->get() > 0.05 ) {
+            tracks = 2;
+        }
+        
+    }
+    
+    return tracks;
+}
+
+
+/*
+ * Check if the metadata has changed since the previous check.
+ * We also check when was the last check performed to avoid using
+ * too much CPU and as well to avoid changing the metadata during
+ * scratches.
+ */
+bool EngineShoutcast::metaDataHasChanged()
+{
+    int tracks;
+    TrackInfoObject *newMetaData;
+    bool changed = false;
+    
+    
+    if ( m_pMetaDataLife < 32 ) {
+        m_pMetaDataLife++;
+        return false;
+    }
+    
+    m_pMetaDataLife = 0;
+    
+    
+    tracks = getActiveTracks();
+    
+    
+    switch (tracks)
+    {
+    case 0:
+        // no tracks are playing
+        // we should set the metadata to nothing
+        break;
+    case 1:
+        // track 1 is active
+        
+        newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        break;
+    case 2:
+        // track 2 is active
+        newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        break;
+    case 3:
+        // both tracks are active, just stick with it for now
+        break;
+    }
+    
+    
+    return changed;
+}
+
+/*
+ * Update shoutcast metadata.
+ * This does not work for OGG/Vorbis and Icecast, since the actual
+ * OGG/Vorbis stream contains the metadata.
+ */
+void EngineShoutcast::updateMetaData()
+{
+    // convert QStrings to char*s
+    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
+    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
+    QByteArray baSong = baArtist + " - " + baTitle;
+    
+    shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
+    shout_set_metadata(m_pShout, m_pShoutMetaData);
 }
