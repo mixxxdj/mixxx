@@ -47,6 +47,8 @@ public slots:
 	void ChannelsSlotApply();
     void slotComboBoxDeviceDeck1Change();
     void slotComboBoxDeviceDeck2Change();
+    void refreshDeck1Channels();
+    void refreshDeck2Channels();
 	void EnableRelativeModeSlotApply();
 	void EnableScratchModeSlotApply();
 	void VinylTypeSlotApply();
