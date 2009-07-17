@@ -29,7 +29,6 @@ class ControlObject;
 class ControlObjectThreadMain;
 
 
-
 /**
   *@author Stefan Langhammer
   *@author Albert Santoni
