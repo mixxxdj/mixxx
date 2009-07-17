@@ -34,7 +34,6 @@ class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
 public:
     DlgPrefSound(QWidget *parent, SoundManager* _soundman, ConfigObject<ConfigValue> *_config);
     ~DlgPrefSound();
-	bool m_configError;
 public slots:
     /** Update widget */
     void slotUpdate();
