@@ -214,7 +214,7 @@ StantonSCS1m.selectKnob = function (channel, control, value, status) {
         case "control":
             group = "[Channel"+StantonSCS1m.scratchDeck+"]";
             if (engine.getValue(group,"play")==1 && engine.getValue(group,"reverse")==1) jogValue= -(jogValue);
-            multiplier = 0.18 * (engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","play") ? 1 : 2 );
+            multiplier = 0.18 * (engine.getValue(group,"play") ? 1 : 2 );
             if (StantonSCS1m.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
             engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue * multiplier)).toFixed(2));
 
