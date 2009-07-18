@@ -509,7 +509,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Adjust filepos_play in case we took any loops during this buffer
             filepos_play = m_pLoopingControl->process(rate,
                                                       filepos_play,
-                                                      file_length_old);
+                                                      file_length_old,
+                                                      iBufferSize);
 
             Q_ASSERT(round(filepos_play) == filepos_play);
 
@@ -532,7 +533,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
-        m_pRateControl->process(rate, filepos_play, file_length_old);
+        m_pRateControl->process(rate, filepos_play,
+                                file_length_old, iBufferSize);
         
 
         // Give the Reader hints as to which chunks of the current song we
@@ -670,7 +672,8 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
 
     double next_loop = m_pLoopingControl->nextTrigger(dRate,
                                                       filepos_play,
-                                                      file_length_old);
+                                                      file_length_old,
+                                                      iBufferSize);
 
     if (next_loop != kNoTrigger) {
         samples_to_read = math_min(fabs(next_loop-filepos_play),
@@ -755,7 +758,8 @@ int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
         // which we should jump once we pass the next_loop sample.
         double loop_trigger = m_pLoopingControl->getTrigger(dRate,
                                                             filepos_play,
-                                                            file_length_old);
+                                                            file_length_old,
+                                                            iBufferSize);
         
         if (in_reverse) {
             // Special case -- since we're reading backwards, the loop samples
