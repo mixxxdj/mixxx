@@ -23,14 +23,17 @@ public:
 	virtual ~LoopingControl();
 	double process(const double dRate,
                    const double currentSample,
-                   const double totalSamples);
+                   const double totalSamples,
+                   const int iBufferSize);
     double nextTrigger(const double dRate,
                        const double currentSample,
-                       const double totalSamples);
+                       const double totalSamples,
+                       const int iBufferSize);
     double getTrigger(const double dRate,
                       const double currentSample,
-                      const double totalSamples);
-
+                      const double totalSamples,
+                      const int iBufferSize);
+                                            
 public slots:
 	void slotLoopIn(double);
 	void slotLoopOut(double);

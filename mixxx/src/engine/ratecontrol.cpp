@@ -339,6 +339,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
 
 double RateControl::process(const double rate,
                             const double currentSample,
-                            const double totalSamples) {
+                            const double totalSamples,
+                            const int iBufferSize) {
     return 0;
 }

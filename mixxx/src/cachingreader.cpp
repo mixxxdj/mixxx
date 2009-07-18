@@ -1,6 +1,7 @@
 
 #include <math.h>
 
+#include <QtDebug>
 #include <QFileInfo>
 
 #include "cachingreader.h"
@@ -244,7 +245,10 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // getChunk gets a chunk at any cost. If it has failed to lookup the
         // chunk, then there is a serious issue.
         if (current == NULL) {
-            qCritical() << "Couldn't get chunk " << start_chunk << " in read()";
+            qDebug() << "Couldn't get chunk " << start_chunk << " in read()";
+            // Something is wrong. Break out of the loop, that should fill the
+            // samples requested with zeroes.
+            break;
         }
         
         int chunk_start_sample = sampleForChunk(chunk_num);
@@ -278,10 +282,10 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
-    while(samples_remaining > 0) {
-        *buffer++ = 0.0f;
-        samples_remaining--;
+    for (int i=0; i<samples_remaining; i++) {
+        buffer[i] = 0.0f;
     }
+    samples_remaining = 0;
 
     Q_ASSERT(samples_remaining == 0);
     return num_samples - samples_remaining;
