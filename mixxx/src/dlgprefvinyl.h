@@ -29,7 +29,6 @@ class ControlObject;
 class ControlObjectThreadMain;
 
 
-
 /**
   *@author Stefan Langhammer
   *@author Albert Santoni
@@ -48,6 +47,8 @@ public slots:
 	void ChannelsSlotApply();
     void slotComboBoxDeviceDeck1Change();
     void slotComboBoxDeviceDeck2Change();
+    void refreshDeck1Channels();
+    void refreshDeck2Channels();
 	void EnableRelativeModeSlotApply();
 	void EnableScratchModeSlotApply();
 	void VinylTypeSlotApply();
@@ -66,6 +67,8 @@ public slots:
 signals:
     void apply();
 private:
+	void applySoundDeviceChanges();
+
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
 

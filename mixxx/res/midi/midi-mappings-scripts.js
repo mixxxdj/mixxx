@@ -224,7 +224,7 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     if (wheelValue>=0 && wheelValue<10 && scratch.variables["prevControlValue"]>117 && scratch.variables["prevControlValue"]<=127) scratch.variables["wrapCount"]+=1;
     if (wheelValue>117 && wheelValue<=127 && scratch.variables["prevControlValue"]>=0 && scratch.variables["prevControlValue"]<10) scratch.variables["wrapCount"]-=1;
     
-//     From radimark: change = (new - old + 192) % 128 - 64
+//     From radiomark: change = (new - old + 192) % 128 - 64
     
     scratch.variables["prevControlValue"]=wheelValue;
     wheelValue += scratch.variables["wrapCount"]*128;
