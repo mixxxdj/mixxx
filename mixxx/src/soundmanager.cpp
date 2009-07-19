@@ -404,7 +404,9 @@ int SoundManager::setupDevices()
 			src.channels = 2;	//TODO: Should we have a mono option?  Surround sound mixing might be cool...
 			src.type = SOURCE_MASTER;
 
-            device->addSource(src);
+            err = device->addSource(src);
+            if (err != 0)
+                return err;
             bNeedToOpenDeviceForOutput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
@@ -414,7 +416,9 @@ int SoundManager::setupDevices()
 			src.channels = 2;
 			src.type = SOURCE_HEADPHONES;
 
-			device->addSource(src);
+			err = device->addSource(src);
+			if (err != 0)
+                return err;
             bNeedToOpenDeviceForOutput = 1;
         }
 
@@ -426,7 +430,9 @@ int SoundManager::setupDevices()
 			recv.channels = 2;
 			recv.type = RECEIVER_VINYLCONTROL_ONE;
 
-            device->addReceiver(recv);
+            err = device->addReceiver(recv);
+            if (err != 0)
+                return err;
             bNeedToOpenDeviceForInput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
@@ -436,7 +442,9 @@ int SoundManager::setupDevices()
 			recv.channels = 2;
 			recv.type = RECEIVER_VINYLCONTROL_TWO;
 
-            device->addReceiver(recv);
+            err = device->addReceiver(recv);
+            if (err != 0)
+                return err;
             bNeedToOpenDeviceForInput = 1;
         }
 
@@ -457,7 +465,7 @@ int SoundManager::setupDevices()
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
-    return (iNumDevicesOpenedForOutput == 0);
+    return (iNumDevicesOpenedForOutput == 0); //Returns non-zero if we have no output devices
 }
 
 void SoundManager::sync()

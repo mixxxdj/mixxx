@@ -383,6 +383,15 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>    <!--    S5 Relative    -->
+                <group>[Master]</group>
+                <key>StantonSCS3d.S5relative</key>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
             <control>    <!--    S5 Touch    -->
                 <group>[Master]</group>
                 <key>StantonSCS3d.S5touch</key>
