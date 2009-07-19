@@ -533,6 +533,7 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer2 = inputBuffer;
     }
 
+/*
     //If we have two stereo input streams (interlaced as one), then
     //break them up into two separate interlaced streams
     if (iFrameSize == 4)
@@ -548,10 +549,12 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
         vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
+*/
+    else { //More than two channels of input (iFrameSize > 2)
 
-/*
+        //Do crazy deinterleaving of the audio into the correct m_pReceiverBuffers.
+
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-
         for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Deinterlace the input audio data from the portaudio buffer
@@ -566,10 +569,16 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 				for(iChannel = 0; iChannel < recv.channels; iChannel++)	//this will make sure a sample from each channel is copied
 				{
 					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			        m_pReceiverBuffers[type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
+			        m_pReceiverBuffers[recv.type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
                 }
 			}
         }
+        //Set the pointers to point to the de-interlaced input audio
+        vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+        vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    }
+
+/*
 
 */
 
