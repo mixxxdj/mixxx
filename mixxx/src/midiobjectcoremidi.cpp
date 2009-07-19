@@ -15,8 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
+// NOTE: The #include order is important, since the CoreMIDI headers
+//       have to be included before Qt headers (CoreMIDI uses qDebug
+//       as a define, and Qt has a qDebug() function!)
 #include "midiobjectcoremidi.h"
+#include <QtCore>
 
 static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
