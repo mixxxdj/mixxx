@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: vorbis encode-engine setup
- last mod: $Id: vorbisenc.h 13293 2007-07-24 00:09:47Z xiphmont $
+ last mod: $Id: vorbisenc.h 16037 2009-05-26 21:10:58Z xiphmont $
 
  ********************************************************************/
 
@@ -26,34 +26,34 @@ extern "C"
 #include "codec.h"
 
 extern int vorbis_encode_init(vorbis_info *vi,
-			      long channels,
-			      long rate,
+                              long channels,
+                              long rate,
 
-			      long max_bitrate,
-			      long nominal_bitrate,
-			      long min_bitrate);
+                              long max_bitrate,
+                              long nominal_bitrate,
+                              long min_bitrate);
 
 extern int vorbis_encode_setup_managed(vorbis_info *vi,
-				       long channels,
-				       long rate,
+                                       long channels,
+                                       long rate,
 
-				       long max_bitrate,
-				       long nominal_bitrate,
-				       long min_bitrate);
+                                       long max_bitrate,
+                                       long nominal_bitrate,
+                                       long min_bitrate);
 
 extern int vorbis_encode_setup_vbr(vorbis_info *vi,
-				  long channels,
-				  long rate,
+                                  long channels,
+                                  long rate,
 
-				  float quality /* quality level from 0. (lo) to 1. (hi) */
-				  );
+                                  float quality /* quality level from 0. (lo) to 1. (hi) */
+                                  );
 
 extern int vorbis_encode_init_vbr(vorbis_info *vi,
-				  long channels,
-				  long rate,
+                                  long channels,
+                                  long rate,
 
-				  float base_quality /* quality level from 0. (lo) to 1. (hi) */
-				  );
+                                  float base_quality /* quality level from 0. (lo) to 1. (hi) */
+                                  );
 
 extern int vorbis_encode_setup_init(vorbis_info *vi);
 
