@@ -1,8 +1,7 @@
-
 #ifndef PORTAUDIO_H
 #define PORTAUDIO_H
 /*
- * $Id: portaudio.h 1149 2006-11-27 01:42:26Z leland_lucius $
+ * $Id: portaudio.h 1337 2008-02-15 07:32:09Z rossb $
  * PortAudio Portable Real-Time Audio Library
  * PortAudio API Header File
  * Latest version available at: http://www.portaudio.com/
@@ -41,7 +40,8 @@
  */
 
 /** @file
- @brief The PortAudio API.
+ @ingroup public_header
+ @brief The portable PortAudio API.
 */
 
 
@@ -153,10 +153,10 @@ PaError Pa_Terminate( void );
 
 
 /** The type used to refer to audio devices. Values of this type usually
- range from 0 to (Pa_DeviceCount-1), and may also take on the PaNoDevice
+ range from 0 to (Pa_GetDeviceCount()-1), and may also take on the PaNoDevice
  and paUseHostApiSpecificDeviceSpecification values.
 
- @see Pa_DeviceCount, paNoDevice, paUseHostApiSpecificDeviceSpecification
+ @see Pa_GetDeviceCount, paNoDevice, paUseHostApiSpecificDeviceSpecification
 */
 typedef int PaDeviceIndex;
 

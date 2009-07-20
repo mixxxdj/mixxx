@@ -1,6 +1,6 @@
 /*
  * libid3tag - ID3 tag manipulation library
- * Copyright (C) 2000-2001 Robert Leslie
+ * Copyright (C) 2000-2004 Underbit Technologies, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: id3tag.h 363 2003-06-10 15:29:38Z tuehaste $
+ * If you would like to negotiate alternate licensing terms, you may do
+ * so by contacting: Underbit Technologies, Inc. <info@underbit.com>
+ *
+ * $Id: id3tag.h,v 1.17 2004/01/23 23:22:46 rob Exp $
  */
 
 # ifndef LIBID3TAG_ID3TAG_H
@@ -30,6 +33,15 @@ extern "C" {
 # define ID3_TAG_VERSION_MAJOR(x)	(((x) >> 8) & 0xff)
 # define ID3_TAG_VERSION_MINOR(x)	(((x) >> 0) & 0xff)
 
+typedef unsigned char id3_byte_t;
+typedef unsigned long id3_length_t;
+
+typedef unsigned long id3_ucs4_t;
+
+typedef unsigned char id3_latin1_t;
+typedef unsigned short id3_utf16_t;
+typedef signed char id3_utf8_t;
+
 struct id3_tag {
   unsigned int refcount;
   unsigned int version;
@@ -39,7 +51,7 @@ struct id3_tag {
   int options;
   unsigned int nframes;
   struct id3_frame **frames;
-  unsigned long paddedsize;
+  id3_length_t paddedsize;
 };
 
 # define ID3_TAG_QUERYSIZE	10
@@ -49,14 +61,14 @@ struct id3_tag {
 # define ID3_FRAME_TITLE	"TIT2"
 # define ID3_FRAME_ARTIST	"TPE1"
 # define ID3_FRAME_ALBUM	"TALB"
-# define ID3_FRAME_YEAR		"TDRC"
 # define ID3_FRAME_TRACK	"TRCK"
+# define ID3_FRAME_YEAR		"TDRC"
 # define ID3_FRAME_GENRE	"TCON"
 # define ID3_FRAME_COMMENT	"COMM"
 
 /* special frames */
 
-# define ID3_FRAME_OBSOLETE	"ZOBS"
+# define ID3_FRAME_OBSOLETE	"ZOBS"	/* with apologies to the French */
 
 /* tag flags */
 
@@ -120,24 +132,15 @@ enum {
 /* library options */
 
 enum {
-  ID3_TAG_OPTION_UNSYNCHRONISATION = 0x0001,
-  ID3_TAG_OPTION_COMPRESSION       = 0x0002,
-  ID3_TAG_OPTION_CRC               = 0x0004,
+  ID3_TAG_OPTION_UNSYNCHRONISATION = 0x0001,	/* use unsynchronisation */
+  ID3_TAG_OPTION_COMPRESSION       = 0x0002,	/* use compression */
+  ID3_TAG_OPTION_CRC               = 0x0004,	/* use CRC */
 
-  ID3_TAG_OPTION_APPENDEDTAG       = 0x0010,
-  ID3_TAG_OPTION_FILEALTERED       = 0x0020,
+  ID3_TAG_OPTION_APPENDEDTAG       = 0x0010,	/* tag will be appended */
+  ID3_TAG_OPTION_FILEALTERED       = 0x0020,	/* audio data was altered */
 
-  ID3_TAG_OPTION_ID3V1             = 0x0100
+  ID3_TAG_OPTION_ID3V1             = 0x0100	/* render ID3v1/ID3v1.1 tag */
 };
-
-typedef unsigned char id3_byte_t;
-typedef unsigned long id3_length_t;
-
-typedef unsigned long id3_ucs4_t;
-
-typedef unsigned char id3_latin1_t;
-typedef unsigned short id3_utf16_t;
-typedef signed char id3_utf8_t;
 
 struct id3_frame {
   char id[5];
@@ -234,10 +237,30 @@ union id3_field {
   } binary;
 };
 
+/* file interface */
+
+enum id3_file_mode {
+  ID3_FILE_MODE_READONLY = 0,
+  ID3_FILE_MODE_READWRITE
+};
+
+struct id3_file *id3_file_open(char const *, enum id3_file_mode);
+struct id3_file *id3_file_fdopen(int, enum id3_file_mode);
+int id3_file_close(struct id3_file *);
+
+struct id3_tag *id3_file_tag(struct id3_file const *);
+
+int id3_file_update(struct id3_file *);
+
 /* tag interface */
 
 struct id3_tag *id3_tag_new(void);
 void id3_tag_delete(struct id3_tag *);
+
+unsigned int id3_tag_version(struct id3_tag const *);
+
+int id3_tag_options(struct id3_tag *, int, int);
+void id3_tag_setlength(struct id3_tag *, id3_length_t);
 
 void id3_tag_clearframes(struct id3_tag *);
 
@@ -252,34 +275,16 @@ signed long id3_tag_query(id3_byte_t const *, id3_length_t);
 struct id3_tag *id3_tag_parse(id3_byte_t const *, id3_length_t);
 id3_length_t id3_tag_render(struct id3_tag const *, id3_byte_t *);
 
-/* file interface */
+/* frame interface */
 
-enum id3_file_mode {
-  ID3_FILE_MODE_READONLY = 0,
-  ID3_FILE_MODE_READWRITE
-};
+struct id3_frame *id3_frame_new(char const *);
+void id3_frame_delete(struct id3_frame *);
 
-struct id3_file *id3_file_open(char const *, enum id3_file_mode);
-struct id3_file *id3_file_fdopen(int, enum id3_file_mode);
-void id3_file_close(struct id3_file *);
-
-struct id3_tag *id3_file_tag(struct id3_file const *);
-int id3_file_update(struct id3_file *);
-
-/* ucs4 interface */
-
-id3_latin1_t *id3_ucs4_latin1duplicate(id3_ucs4_t const *);
-id3_utf16_t *id3_ucs4_utf16duplicate(id3_ucs4_t const *);
-id3_utf8_t *id3_ucs4_utf8duplicate(id3_ucs4_t const *);
-
-void id3_ucs4_putnumber(id3_ucs4_t *, unsigned long);
-unsigned long id3_ucs4_getnumber(id3_ucs4_t const *);
-
-/* genre interface */
-
-id3_ucs4_t const *id3_genre_name(id3_ucs4_t const *);
+union id3_field *id3_frame_field(struct id3_frame const *, unsigned int);
 
 /* field interface */
+
+enum id3_field_type id3_field_type(union id3_field const *);
 
 int id3_field_setint(union id3_field *, signed long);
 int id3_field_settextencoding(union id3_field *, enum id3_field_textencoding);
@@ -295,20 +300,44 @@ int id3_field_setbinarydata(union id3_field *,
 			    id3_byte_t const *, id3_length_t);
 
 signed long id3_field_getint(union id3_field const *);
+enum id3_field_textencoding id3_field_gettextencoding(union id3_field const *);
+id3_latin1_t const *id3_field_getlatin1(union id3_field const *);
+id3_latin1_t const *id3_field_getfulllatin1(union id3_field const *);
 id3_ucs4_t const *id3_field_getstring(union id3_field const *);
 id3_ucs4_t const *id3_field_getfullstring(union id3_field const *);
 unsigned int id3_field_getnstrings(union id3_field const *);
 id3_ucs4_t const *id3_field_getstrings(union id3_field const *,
-				       unsigned int index);
+				       unsigned int);
 char const *id3_field_getframeid(union id3_field const *);
 id3_byte_t const *id3_field_getbinarydata(union id3_field const *,
 					  id3_length_t *);
 
+/* genre interface */
+
+id3_ucs4_t const *id3_genre_index(unsigned int);
+id3_ucs4_t const *id3_genre_name(id3_ucs4_t const *);
+int id3_genre_number(id3_ucs4_t const *);
+
+/* ucs4 interface */
+
+id3_latin1_t *id3_ucs4_latin1duplicate(id3_ucs4_t const *);
+id3_utf16_t *id3_ucs4_utf16duplicate(id3_ucs4_t const *);
+id3_utf8_t *id3_ucs4_utf8duplicate(id3_ucs4_t const *);
+
+void id3_ucs4_putnumber(id3_ucs4_t *, unsigned long);
+unsigned long id3_ucs4_getnumber(id3_ucs4_t const *);
+
+/* latin1/utf16/utf8 interfaces */
+
+id3_ucs4_t *id3_latin1_ucs4duplicate(id3_latin1_t const *);
+id3_ucs4_t *id3_utf16_ucs4duplicate(id3_utf16_t const *);
+id3_ucs4_t *id3_utf8_ucs4duplicate(id3_utf8_t const *);
+
 /* version interface */
 
 # define ID3_VERSION_MAJOR	0
-# define ID3_VERSION_MINOR	14
-# define ID3_VERSION_PATCH	2
+# define ID3_VERSION_MINOR	15
+# define ID3_VERSION_PATCH	1
 # define ID3_VERSION_EXTRA	" (beta)"
 
 # define ID3_VERSION_STRINGIZE(str)	#str
@@ -318,6 +347,10 @@ id3_byte_t const *id3_field_getbinarydata(union id3_field const *,
 			ID3_VERSION_STRING(ID3_VERSION_MINOR) "."  \
 			ID3_VERSION_STRING(ID3_VERSION_PATCH)  \
 			ID3_VERSION_EXTRA
+
+# define ID3_PUBLISHYEAR	"2000-2004"
+# define ID3_AUTHOR		"Underbit Technologies, Inc."
+# define ID3_EMAIL		"info@underbit.com"
 
 extern char const id3_version[];
 extern char const id3_copyright[];

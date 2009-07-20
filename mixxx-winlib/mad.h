@@ -1,6 +1,6 @@
 /*
  * libmad - MPEG audio decoder library
- * Copyright (C) 2000-2001 Robert Leslie
+ * Copyright (C) 2000-2004 Underbit Technologies, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * If you would like to negotiate alternate licensing terms, you may do
- * so by contacting the author: Robert Leslie <rob@mars.org>
+ * so by contacting: Underbit Technologies, Inc. <info@underbit.com>
  */
 
 # ifdef __cplusplus
@@ -26,18 +26,21 @@ extern "C" {
 
 # define FPM_INTEL
 
+
+
 # define SIZEOF_INT 4
 # define SIZEOF_LONG 4
 # define SIZEOF_LONG_LONG 8
 
-/* Id: version.h,v 1.20 2001/10/27 22:47:32 rob Exp */
+
+/* Id: version.h,v 1.26 2004/01/23 09:41:33 rob Exp */
 
 # ifndef LIBMAD_VERSION_H
 # define LIBMAD_VERSION_H
 
 # define MAD_VERSION_MAJOR	0
-# define MAD_VERSION_MINOR	14
-# define MAD_VERSION_PATCH	2
+# define MAD_VERSION_MINOR	15
+# define MAD_VERSION_PATCH	1
 # define MAD_VERSION_EXTRA	" (beta)"
 
 # define MAD_VERSION_STRINGIZE(str)	#str
@@ -48,9 +51,9 @@ extern "C" {
 				MAD_VERSION_STRING(MAD_VERSION_PATCH)  \
 				MAD_VERSION_EXTRA
 
-# define MAD_PUBLISHYEAR	"2000-2001"
-# define MAD_AUTHOR		"Robert Leslie"
-# define MAD_EMAIL		"rob@mars.org"
+# define MAD_PUBLISHYEAR	"2000-2004"
+# define MAD_AUTHOR		"Underbit Technologies, Inc."
+# define MAD_EMAIL		"info@underbit.com"
 
 extern char const mad_version[];
 extern char const mad_copyright[];
@@ -59,7 +62,7 @@ extern char const mad_build[];
 
 # endif
 
-/* Id: fixed.h,v 1.30 2001/11/02 09:51:06 rob Exp */
+/* Id: fixed.h,v 1.38 2004/02/17 02:02:03 rob Exp */
 
 # ifndef LIBMAD_FIXED_H
 # define LIBMAD_FIXED_H
@@ -250,6 +253,21 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
 	    : "cc");  \
        __result;  \
     })
+#   elif defined(OPT_INTEL)
+/*
+ * Alternate Intel scaling that may or may not perform better.
+ */
+#    define mad_f_scale64(hi, lo)  \
+    ({ mad_fixed_t __result;  \
+       asm ("shrl %3,%1\n\t"  \
+	    "shll %4,%2\n\t"  \
+	    "orl %2,%1"  \
+	    : "=rm" (__result)  \
+	    : "0" (lo), "r" (hi),  \
+	      "I" (MAD_F_SCALEBITS), "I" (32 - MAD_F_SCALEBITS)  \
+	    : "cc");  \
+       __result;  \
+    })
 #   else
 #    define mad_f_scale64(hi, lo)  \
     ({ mad_fixed_t __result;  \
@@ -274,12 +292,8 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
  */
 # if 1
 /*
- * There's a bug somewhere, possibly in the compiler, that sometimes makes
- * this necessary instead of the default implementation via MAD_F_MLX and
- * mad_f_scale64. It may be related to the use (or lack) of
- * -finline-functions and/or -fstrength-reduce.
- *
- * This is also apparently faster than MAD_F_MLX/mad_f_scale64.
+ * This is faster than the default implementation via MAD_F_MLX() and
+ * mad_f_scale64().
  */
 #  define mad_f_mul(x, y)  \
     ({ mad_fixed64hi_t __hi;  \
@@ -317,7 +331,7 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
     ({ mad_fixed_t __result;  \
        asm ("movs	%0, %1, lsr %3\n\t"  \
 	    "adc	%0, %0, %2, lsl %4"  \
-	    : "=r" (__result)  \
+	    : "=&r" (__result)  \
 	    : "r" (lo), "r" (hi),  \
 	      "M" (MAD_F_SCALEBITS), "M" (32 - MAD_F_SCALEBITS)  \
 	    : "cc");  \
@@ -385,58 +399,69 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
 # elif defined(FPM_PPC)
 
 /*
- * This PowerPC version is tuned for the 4xx embedded processors. It is
- * effectively a tuned version of FPM_64BIT. It is a little faster and just
- * as accurate. The disposition of the least significant bit depends on
- * OPT_ACCURACY via mad_f_scale64().
+ * This PowerPC version is fast and accurate; the disposition of the least
+ * significant bit depends on OPT_ACCURACY via mad_f_scale64().
  */
 #  define MAD_F_MLX(hi, lo, x, y)  \
-    asm ("mulhw %1, %2, %3\n\t"  \
-	 "mullw %0, %2, %3"  \
-	 : "=&r" (lo), "=&r" (hi)  \
-	 : "%r" (x), "r" (y))
-
-#  define MAD_F_MLA(hi, lo, x, y)  \
-    ({ mad_fixed64hi_t __hi;  \
-       mad_fixed64lo_t __lo;  \
-       MAD_F_MLX(__hi, __lo, (x), (y));  \
-       asm ("addc %0, %2, %3\n\t"  \
-	    "adde %1, %4, %5"  \
-	    : "=r" (lo), "=r" (hi)  \
-	    : "%r" (__lo), "0" (lo), "%r" (__hi), "1" (hi));  \
-    })
+    do {  \
+      asm ("mullw %0,%1,%2"  \
+	   : "=r" (lo)  \
+	   : "%r" (x), "r" (y));  \
+      asm ("mulhw %0,%1,%2"  \
+	   : "=r" (hi)  \
+	   : "%r" (x), "r" (y));  \
+    }  \
+    while (0)
 
 #  if defined(OPT_ACCURACY)
 /*
- * This is accurate and ~2 - 2.5 times slower than the unrounded version.
- *
- * The __volatile__ improves the generated code by another 5% (fewer spills
- * to memory); eventually they should be removed.
+ * This gives best accuracy but is not very fast.
+ */
+#   define MAD_F_MLA(hi, lo, x, y)  \
+    ({ mad_fixed64hi_t __hi;  \
+       mad_fixed64lo_t __lo;  \
+       MAD_F_MLX(__hi, __lo, (x), (y));  \
+       asm ("addc %0,%2,%3\n\t"  \
+	    "adde %1,%4,%5"  \
+	    : "=r" (lo), "=r" (hi)  \
+	    : "%r" (lo), "r" (__lo),  \
+	      "%r" (hi), "r" (__hi)  \
+	    : "xer");  \
+    })
+#  endif
+
+#  if defined(OPT_ACCURACY)
+/*
+ * This is slower than the truncating version below it.
  */
 #   define mad_f_scale64(hi, lo)  \
-    ({ mad_fixed_t __result;  \
-       mad_fixed64hi_t __hi_;  \
-       mad_fixed64lo_t __lo_;  \
-       asm __volatile__ ("addc %0, %2, %4\n\t"  \
-			 "addze %1, %3"  \
-	    : "=r" (__lo_), "=r" (__hi_)  \
-	    : "r" (lo), "r" (hi), "r" (1 << (MAD_F_SCALEBITS - 1)));  \
-       asm __volatile__ ("rlwinm %0, %2,32-%3,0,%3-1\n\t"  \
-			 "rlwimi %0, %1,32-%3,%3,31"  \
-	    : "=&r" (__result)  \
-	    : "r" (__lo_), "r" (__hi_), "I" (MAD_F_SCALEBITS));  \
-	    __result;  \
+    ({ mad_fixed_t __result, __round;  \
+       asm ("rotrwi %0,%1,%2"  \
+	    : "=r" (__result)  \
+	    : "r" (lo), "i" (MAD_F_SCALEBITS));  \
+       asm ("extrwi %0,%1,1,0"  \
+	    : "=r" (__round)  \
+	    : "r" (__result));  \
+       asm ("insrwi %0,%1,%2,0"  \
+	    : "+r" (__result)  \
+	    : "r" (hi), "i" (MAD_F_SCALEBITS));  \
+       asm ("add %0,%1,%2"  \
+	    : "=r" (__result)  \
+	    : "%r" (__result), "r" (__round));  \
+       __result;  \
     })
 #  else
 #   define mad_f_scale64(hi, lo)  \
     ({ mad_fixed_t __result;  \
-       asm ("rlwinm %0, %2,32-%3,0,%3-1\n\t"  \
-	    "rlwimi %0, %1,32-%3,%3,31"  \
+       asm ("rotrwi %0,%1,%2"  \
 	    : "=r" (__result)  \
-	    : "r" (lo), "r" (hi), "I" (MAD_F_SCALEBITS));  \
-	    __result;  \
+	    : "r" (lo), "i" (MAD_F_SCALEBITS));  \
+       asm ("insrwi %0,%1,%2,0"  \
+	    : "+r" (__result)  \
+	    : "r" (hi), "i" (MAD_F_SCALEBITS));  \
+       __result;  \
     })
-#  endif  /* OPT_ACCURACY */
+#  endif
 
 #  define MAD_F_SCALEBITS  MAD_F_FRACBITS
 
@@ -470,8 +495,8 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
 
 # if !defined(mad_f_mul)
 #  define mad_f_mul(x, y)  \
-    ({ mad_fixed64hi_t __hi;  \
-       mad_fixed64lo_t __lo;  \
+    ({ register mad_fixed64hi_t __hi;  \
+       register mad_fixed64lo_t __lo;  \
        MAD_F_MLX(__hi, __lo, (x), (y));  \
        mad_f_scale64(__hi, __lo);  \
     })
@@ -511,13 +536,14 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
 #  define MAD_F_SCALEBITS  MAD_F_FRACBITS
 # endif
 
-/* miscellaneous C routines */
+/* C routines */
 
 mad_fixed_t mad_f_abs(mad_fixed_t);
+mad_fixed_t mad_f_div(mad_fixed_t, mad_fixed_t);
 
 # endif
 
-/* Id: bit.h,v 1.8 2001/10/17 19:14:47 rob Exp */
+/* Id: bit.h,v 1.12 2004/01/23 09:41:32 rob Exp */
 
 # ifndef LIBMAD_BIT_H
 # define LIBMAD_BIT_H
@@ -546,7 +572,7 @@ unsigned short mad_bit_crc(struct mad_bitptr, unsigned int, unsigned short);
 
 # endif
 
-/* Id: timer.h,v 1.12 2001/11/03 03:57:11 rob Exp */
+/* Id: timer.h,v 1.16 2004/01/23 09:41:33 rob Exp */
 
 # ifndef LIBMAD_TIMER_H
 # define LIBMAD_TIMER_H
@@ -628,10 +654,11 @@ void mad_timer_string(mad_timer_t, char *, char const *,
 
 # endif
 
-/* Id: stream.h,v 1.15 2001/11/08 23:28:03 rob Exp */
+/* Id: stream.h,v 1.20 2004/02/05 09:02:39 rob Exp */
 
 # ifndef LIBMAD_STREAM_H
 # define LIBMAD_STREAM_H
+
 
 # define MAD_BUFFER_GUARD	8
 # define MAD_BUFFER_MDLEN	(511 + 2048 + MAD_BUFFER_GUARD)
@@ -653,6 +680,7 @@ enum mad_error {
   MAD_ERROR_BADCRC	   = 0x0201,	/* CRC check failed */
   MAD_ERROR_BADBITALLOC	   = 0x0211,	/* forbidden bit allocation value */
   MAD_ERROR_BADSCALEFACTOR = 0x0221,	/* bad scalefactor index */
+  MAD_ERROR_BADMODE        = 0x0222,	/* bad bitrate/mode combination */
   MAD_ERROR_BADFRAMELEN	   = 0x0231,	/* bad frame length */
   MAD_ERROR_BADBIGVALUES   = 0x0232,	/* bad big_values count */
   MAD_ERROR_BADBLOCKTYPE   = 0x0233,	/* reserved block_type */
@@ -715,10 +743,11 @@ char const *mad_stream_errorstr(struct mad_stream const *);
 
 # endif
 
-/* Id: frame.h,v 1.16 2001/10/17 19:13:41 rob Exp */
+/* Id: frame.h,v 1.20 2004/01/23 09:41:32 rob Exp */
 
 # ifndef LIBMAD_FRAME_H
 # define LIBMAD_FRAME_H
+
 
 enum mad_layer {
   MAD_LAYER_I   = 1,			/* Layer I */
@@ -736,7 +765,8 @@ enum mad_mode {
 enum mad_emphasis {
   MAD_EMPHASIS_NONE	  = 0,		/* no emphasis */
   MAD_EMPHASIS_50_15_US	  = 1,		/* 50/15 microseconds emphasis */
-  MAD_EMPHASIS_CCITT_J_17 = 3		/* CCITT J.17 emphasis */
+  MAD_EMPHASIS_CCITT_J_17 = 3,		/* CCITT J.17 emphasis */
+  MAD_EMPHASIS_RESERVED   = 2		/* unknown emphasis */
 };
 
 struct mad_header {
@@ -810,10 +840,11 @@ void mad_frame_mute(struct mad_frame *);
 
 # endif
 
-/* Id: synth.h,v 1.11 2001/11/08 23:28:03 rob Exp */
+/* Id: synth.h,v 1.15 2004/01/23 09:41:33 rob Exp */
 
 # ifndef LIBMAD_SYNTH_H
 # define LIBMAD_SYNTH_H
+
 
 struct mad_pcm {
   unsigned int samplerate;		/* sampling frequency (Hz) */
@@ -858,10 +889,11 @@ void mad_synth_frame(struct mad_synth *, struct mad_frame const *);
 
 # endif
 
-/* Id: decoder.h,v 1.13 2001/11/03 03:57:11 rob Exp */
+/* Id: decoder.h,v 1.17 2004/01/23 09:41:32 rob Exp */
 
 # ifndef LIBMAD_DECODER_H
 # define LIBMAD_DECODER_H
+
 
 enum mad_decoder_mode {
   MAD_DECODER_MODE_SYNC  = 0,

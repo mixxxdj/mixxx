@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 1999-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as published by
@@ -69,6 +69,7 @@ enum
 	SF_FORMAT_WVE			= 0x190000,		/* Psion WVE format */
 	SF_FORMAT_OGG			= 0x200000,		/* Xiph OGG container */
 	SF_FORMAT_MPC2K			= 0x210000,		/* Akai MPC 2000 sampler */
+	SF_FORMAT_RF64			= 0x220000,		/* RF64 WAV file */
 
 	/* Subtypes from here on. */
 
@@ -153,6 +154,7 @@ enum
 	SFC_GET_MAX_ALL_CHANNELS		= 0x1045,
 
 	SFC_SET_ADD_PEAK_CHUNK			= 0x1050,
+	SFC_SET_ADD_HEADER_PAD_CHUNK	= 0x1051,
 
 	SFC_UPDATE_HEADER_NOW			= 0x1060,
 	SFC_SET_UPDATE_HEADER_AUTO		= 0x1061,
@@ -189,7 +191,7 @@ enum
 	SFC_WAVEX_SET_AMBISONIC			= 0x1200,
 	SFC_WAVEX_GET_AMBISONIC			= 0x1201,
 
-	SFC_SET_VBR_ENCODING_QUALITY		= 0x1300,
+	SFC_SET_VBR_ENCODING_QUALITY	= 0x1300,
 
 	/* Following commands for testing only. */
 	SFC_TEST_IEEE_FLOAT_REPLACE		= 0x6001,
@@ -299,10 +301,9 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 ** header file to be compiler by both GCC and the microsoft compiler.
 */
 
-#ifdef _MSCVER
-#pragma message("wazaaaaaaaaaaa")
+#if (defined (_MSCVER) || defined (_MSC_VER))
 typedef __int64	sf_count_t ;
-//#define SF_COUNT_MAX		0x7fffffffffffffffi64
+#define SF_COUNT_MAX		0x7fffffffffffffffi64
 #else
 typedef __int64	sf_count_t ;
 #define SF_COUNT_MAX		0x7FFFFFFFFFFFFFFFLL
@@ -426,20 +427,27 @@ typedef struct
 /*	Struct used to retrieve broadcast (EBU) information from a file.
 **	Strongly (!) based on EBU "bext" chunk format used in Broadcast WAVE.
 */
-typedef struct
-{	char			description [256] ;
-	char			originator [32] ;
-	char			originator_reference [32] ;
-	char			origination_date [10] ;
-	char			origination_time [8] ;
-	unsigned int	time_reference_low ;
-	unsigned int	time_reference_high ;
-	short			version ;
-	char			umid [64] ;
-	char			reserved [190] ;
-	unsigned int	coding_history_size ;
-	char			coding_history [256] ;
-} SF_BROADCAST_INFO ;
+#define	SF_BROADCAST_INFO_VAR(coding_hist_size) \
+			struct \
+			{	char			description [256] ; \
+				char			originator [32] ; \
+				char			originator_reference [32] ; \
+				char			origination_date [10] ; \
+				char			origination_time [8] ; \
+				unsigned int	time_reference_low ; \
+				unsigned int	time_reference_high ; \
+				short			version ; \
+				char			umid [64] ; \
+				char			reserved [190] ; \
+				unsigned int	coding_history_size ; \
+				char			coding_history [coding_hist_size] ; \
+			}
+
+/* SF_BROADCAST_INFO is the above struct with coding_history field of 256 bytes. */
+typedef SF_BROADCAST_INFO_VAR (256) SF_BROADCAST_INFO ;
+
+
+/*	Virtual I/O functionality. */
 
 typedef sf_count_t		(*sf_vio_get_filelen)	(void *user_data) ;
 typedef sf_count_t		(*sf_vio_seek)		(sf_count_t offset, int whence, void *user_data) ;
@@ -459,7 +467,7 @@ typedef	struct SF_VIRTUAL_IO SF_VIRTUAL_IO ;
 
 /* Open the specified file for read, write or both. On error, this will
 ** return a NULL pointer. To find the error number, pass a NULL SNDFILE
-** to sf_perror () or sf_error_str ().
+** to sf_strerror ().
 ** All calls to sf_open() should be matched with a call to sf_close().
 */
 
@@ -472,7 +480,7 @@ SNDFILE* 	sf_open		(const char *path, int mode, SF_INFO *sfinfo) ;
 ** of file header is at the current file offset. This allows sound files within
 ** larger container files to be read and/or written.
 ** On error, this will return a NULL pointer. To find the error number, pass a
-** NULL SNDFILE to sf_perror () or sf_error_str ().
+** NULL SNDFILE to sf_strerror ().
 ** All calls to sf_open_fd() should be matched with a call to sf_close().
 
 */
@@ -500,7 +508,7 @@ const char* sf_strerror (SNDFILE *sndfile) ;
 
 const char*	sf_error_number	(int errnum) ;
 
-/* The following three error functions are deprecated but they will remain in the
+/* The following two error functions are deprecated but they will remain in the
 ** library for the forseeable future. The function sf_strerror() should be used
 ** in their place.
 */
@@ -542,6 +550,10 @@ sf_count_t	sf_seek 		(SNDFILE *sndfile, sf_count_t frames, int whence) ;
 int sf_set_string (SNDFILE *sndfile, int str_type, const char* str) ;
 
 const char* sf_get_string (SNDFILE *sndfile, int str_type) ;
+
+/* Return the library version string. */
+
+const char * sf_version_string (void) ;
 
 /* Functions for reading/writing the waveform data of a sound file.
 */
