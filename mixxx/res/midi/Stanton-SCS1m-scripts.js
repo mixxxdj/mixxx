@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.1m MIDI controller script v1.0              */
+/*      Stanton SCS.1m MIDI controller script v1.1              */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.0                                 */
@@ -9,10 +9,15 @@ function StantonSCS1m() {}
 
 // ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/stanton_SCS.1m_mixxx_user_guide  for details
-StantonSCS1m.slippage = 0.2;    // Slipperiness of the virtual slipmat when scratching with the select knob in Control mode (higher=slower response)
+
+// The below values vary with latency and are preset for 10ms. For 2ms, use 0.8, 0.8 and 1.5.
+
+StantonSCS1m.scratchKnob = {    "slippage":0.2,             // Slipperiness of the virtual slipmat when scratching with the select knob (higher=slower response, 0<n<1)
+                                "sensitivity":0.5,          // How much the audio moves for a given knob arc (higher=faster response, 0<n<1)
+                                "stoppedMultiplier":2.2 };  // Correction for when the deck is stopped (set higher for higher latencies)
 
 // ----------   Other global variables    ----------
-StantonSCS1m.debug = true; // Enable/disable debugging messages to the console
+StantonSCS1m.debug = false; // Enable/disable debugging messages to the console
 StantonSCS1m.faderStart = true; // Allows decks to start when their channel or cross fader is opened (toggleable with the top button)
 StantonSCS1m.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1m.channel = 0;   // MIDI channel the device is on
@@ -21,7 +26,7 @@ StantonSCS1m.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messag
 StantonSCS1m.modifier = { };    // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS1m.selectKnobMode = "browse"; // Current mode for the gray select knob
 StantonSCS1m.inSetup = false; // Flag for if the device is in setup mode
-StantonSCS1m.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0 };  // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
+StantonSCS1m.revtime = 1.8;   // Time in seconds for the virtual record to spin once. Used for calculating the position LEDs (1.8 for 33 1/3 RPM)
 StantonSCS1m.trackDuration = [0,0]; // Duration of the song on each deck (used for vinyl LEDs)
 StantonSCS1m.lastLight = [-1,-1];   // Last circle LED values
 StantonSCS1m.lastTime = ["-99:99","-99:99"];    // Last time remaining values
@@ -78,8 +83,8 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel2]","rateRange","StantonSCS1m.pitchColor2");
     
         // Virtual platter LEDs & time displays
-    engine.connectControl("[Channel1]","playposition","StantonSCS1m.positionUpdates1");
-    engine.connectControl("[Channel2]","playposition","StantonSCS1m.positionUpdates2");
+    engine.connectControl("[Channel1]","visual_playposition","StantonSCS1m.positionUpdates1");
+    engine.connectControl("[Channel2]","visual_playposition","StantonSCS1m.positionUpdates2");
     engine.connectControl("[Channel1]","duration","StantonSCS1m.durationChange1");
     engine.connectControl("[Channel2]","duration","StantonSCS1m.durationChange2");
     
@@ -154,6 +159,50 @@ StantonSCS1m.checkInSetup = function () {
   return StantonSCS1m.inSetup;
 }
 
+StantonSCS1m.playButton1 = function (channel, control, value, status) {
+    StantonSCS1m.playButton(channel, control, value, status, 1);
+}
+
+StantonSCS1m.playButton2 = function (channel, control, value, status) {
+    StantonSCS1m.playButton(channel, control, value, status, 2);
+}
+
+StantonSCS1m.playButton = function (channel, control, value, status, deck) {
+    print("Play button"+deck);
+    var byte1 = 0x90 + channel;
+    if ((status & 0xF0) == 0x90) {    // If button down
+        StantonSCS1m.modifier["play"+deck]=1;
+        if (StantonSCS1m.modifier["cue"+deck]==1) engine.setValue("[Channel"+deck+"]","play",1);
+        else {
+            var currentlyPlaying = engine.getValue("[Channel"+deck+"]","play");
+            if (currentlyPlaying && engine.getValue("[Channel"+deck+"]","cue_default")==1) engine.setValue("[Channel"+deck+"]","cue_default",0);
+            engine.setValue("[Channel"+deck+"]","play", !currentlyPlaying);
+        }
+        return;
+    }
+    StantonSCS1m.modifier["play"+deck]=0;
+}
+
+StantonSCS1m.cueButton1 = function (channel, control, value, status) {
+    StantonSCS1m.cueButton(channel, control, value, status, 1);
+}
+
+StantonSCS1m.cueButton2 = function (channel, control, value, status) {
+    StantonSCS1m.cueButton(channel, control, value, status, 2);
+}
+
+StantonSCS1m.cueButton = function (channel, control, value, status, deck) {
+    print("Cue button"+deck);
+    var byte1 = 0x90 + channel;
+    if ((status & 0xF0) != 0x80) {    // If button down
+        engine.setValue("[Channel"+deck+"]","cue_default",1);
+        StantonSCS1m.modifier["cue"+deck]=1;   // Set button modifier flag
+        return;
+    }
+    if (StantonSCS1m.modifier["play"+deck]==0) engine.setValue("[Channel"+deck+"]","cue_default",0);
+    StantonSCS1m.modifier["cue"+deck]=0;   // Clear button modifier flag
+}
+
 StantonSCS1m.setupButton = function (channel, control, value, status) {
     if ((status & 0XF0) == 0x90) StantonSCS1m.inSetup = !StantonSCS1m.inSetup;
     else if (StantonSCS1m.inSetup) {  // If entering setup, change the LCD back light colors to green
@@ -214,8 +263,8 @@ StantonSCS1m.selectKnob = function (channel, control, value, status) {
         case "control":
             group = "[Channel"+StantonSCS1m.scratchDeck+"]";
             if (engine.getValue(group,"play")==1 && engine.getValue(group,"reverse")==1) jogValue= -(jogValue);
-            multiplier = 0.18 * (engine.getValue(group,"play") ? 1 : 2 );
-            if (StantonSCS1m.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
+            multiplier = StantonSCS1m.scratchKnob["sensitivity"] * (engine.getValue(group,"play") ? 1 : StantonSCS1m.scratchKnob["stoppedMultiplier"] );
+//            if (StantonSCS1m.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
             engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue * multiplier)).toFixed(2));
 
             break;
@@ -347,7 +396,7 @@ StantonSCS1m.presetButton = function (channel, control, value, status) {
         }
         else {
             if (StantonSCS1m.cuePoints[StantonSCS1m.hotCueDeck][control] == -0.1)
-                StantonSCS1m.cuePoints[StantonSCS1m.hotCueDeck][control] = engine.getValue("[Channel"+StantonSCS1m.hotCueDeck+"]","playposition");
+                StantonSCS1m.cuePoints[StantonSCS1m.hotCueDeck][control] = engine.getValue("[Channel"+StantonSCS1m.hotCueDeck+"]","visual_playposition");
             else engine.setValue("[Channel"+StantonSCS1m.hotCueDeck+"]","playposition",StantonSCS1m.cuePoints[StantonSCS1m.hotCueDeck][control]);
         }
     }
@@ -518,7 +567,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
     StantonSCS1m.wheelDecay(value); // Take care of scratching
     
     // Revolution time of the imaginary record in seconds
-    var revtime = StantonSCS1m.scratch["revtime"];
+    var revtime = StantonSCS1m.revtime;
     var currentTrackPos = value * StantonSCS1m.trackDuration[deck];
     
     var revolutions = currentTrackPos/revtime;
@@ -567,13 +616,14 @@ StantonSCS1m.positionUpdates = function (value,deck) {
 StantonSCS1m.wheelDecay = function (value) {
 
      if (StantonSCS1m.selectKnobMode=="control") {    // do some scratching
-        if (StantonSCS1m.debug) print("Scratch deck"+StantonSCS1m.scratchDeck+": " + engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch"));
         
         scratch = engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch");
-        jogDecayRate = StantonSCS1m.slippage * (engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","play") ? 1 : 0.2 );
+        jogDecayRate = StantonSCS1m.scratchKnob["slippage"] * (engine.getValue("[Channel"+StantonSCS1m.scratchDeck+"]","play") ? 1 : 1.1 );
+        
+        if (StantonSCS1m.debug) print("Scratch deck"+StantonSCS1m.scratchDeck+": " + scratch + ", Jog decay rate="+jogDecayRate);
          
         if (scratch != 0) {
-            if (Math.abs(scratch) > jogDecayRate*0.01) {  
+            if (Math.abs(scratch) > jogDecayRate*0.001) {  
                   engine.setValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch", (scratch * jogDecayRate).toFixed(4));
                } else {
                   engine.setValue("[Channel"+StantonSCS1m.scratchDeck+"]","scratch", 0);
