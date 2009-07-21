@@ -8,7 +8,7 @@
 #   sample rates, and channel numbers
 #
 
-formats=("mp3")  # mp3 must come after wav
+formats=("wav" "mp3" "ogg" "flac")  # mp3 must come after wav
 channels=(1 2)
 samplesizes=(16 24 32)
 samplerates=(22050 32000 44100 48000 96000)
