@@ -614,7 +614,7 @@ void MidiMapping::clearPreset() {
      
      clearPreset(); // Create blank document
 
-     const QString wtfbbqdevicename = "foobar";
+     const QString wtfbbqdevicename = "Last used";
 #ifdef __MIDISCRIPT__
       //This sucks, put this code inside MidiScriptEngine instead of here,
       // and just ask MidiScriptEngine to spit it out for us.
