@@ -1480,50 +1480,43 @@ def BuildRelease(target, source, env):
 	print "More checks here soon... :)"
 	print
 
-	try:
-		if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
-			print "\nNow building installer..."
-			
-			buildwin64 = ""
-			type(buildwin64) == str
-			
-			# Windows registry access to find where NSIS is installed
-			import _winreg
-			hklm = _winreg.ConnectRegistry( None, _winreg.HKEY_LOCAL_MACHINE )
-			nsis_location_handle = ""
+	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
+		print "\nNow building installer..."
+		
+		buildwin64 = ""
+		type(buildwin64) == str
+		
+		# Windows registry access to find where NSIS is installed
+		import _winreg
+		hklm = _winreg.ConnectRegistry( None, _winreg.HKEY_LOCAL_MACHINE )
+		nsis_location_handle = ""
+		try:
+			nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+		except WindowsError:
+			nsis_location_handle = None
+		
+		if not nsis_location_handle:
 			try:
-				nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+				nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
 			except WindowsError:
 				nsis_location_handle = None
-			
-			if not nsis_location_handle:
-				try:
-					nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
-					if platform == 'win64':
-						print "WARNING: using a 32-bit version of NSIS will cause Windows to default to the 32-bit program files directory"
-						if (raw_input("Continue (yes/[no])? ") != "yes"):
-							raise StopIteration()
-				except WindowsError:
-					nsis_location_handle = None
 
-			if not nsis_location_handle:
-				print "Cannot find NSIS. Do you have it installed?"
-			else:
-				if platform == 'win64':
-					buildwin64 = "/Dx64=1"
-				nsis_location = _winreg.QueryValue(nsis_location_handle, None)
-				_winreg.CloseKey(hklm)
-			
-				# Call the NSIS build
-				command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s Mixxx.nsi' % {'path':nsis_location, \
-	'version':env['MIXXX_VERSION'], '64bit':buildwin64}
-				type(command) == str
-				print "Using command:" + command
-				os.system(command)
+		if not nsis_location_handle:
+			print "Cannot find NSIS. Do you have it installed?"
 		else:
-			print "Aborted building installer"
-	except StopIteration:
-		print "Aborted building installer...install NSIS x64"
+			if platform == 'win64':
+				buildwin64 = "/Dx64=1"
+			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
+			_winreg.CloseKey(hklm)
+		
+			# Call the NSIS build
+			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s Mixxx.nsi' % {'path':nsis_location, \
+'version':env['MIXXX_VERSION'], '64bit':buildwin64}
+			type(command) == str
+			print "Using command:" + command
+			os.system(command)
+	else:
+		print "Aborted building installer"
 
 # Do release things
 versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
