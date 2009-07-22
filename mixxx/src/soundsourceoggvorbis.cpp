@@ -123,7 +123,10 @@ long SoundSourceOggVorbis::seek(long filepos)
     
     if (ov_seekable(&vf)){
         if(ov_pcm_seek(&vf, filepos/2) != 0) {
-            qDebug() << "ogg vorbis: Seek ERR on seekable.";
+            // This is totally common (i.e. you're at EOF). Let's not leave this
+            // qDebug on.
+            
+            // qDebug() << "ogg vorbis: Seek ERR on seekable.";
         }
         
         // Even if an error occured, return them the current position because
@@ -166,9 +169,9 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // destination. For stereo files, read the full buffer (size*2
     // bytes). For mono files, only read half the buffer (size bytes),
     // and we will double the buffer to be in stereo later.
-    needed = size * channels;
+    unsigned int needed = size * channels;
 
-    unsigned int index=0,ret=0,needed=0;
+    unsigned int index=0,ret=0;
     
     // loop until requested number of samples has been retrieved
     while (needed > 0) {
