@@ -26,18 +26,17 @@ Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ; Disable the Nullsoft Installer branding text at the bottom.
 BrandingText " "
 
-; The file to write
+; The file to write and default installation directory
 !ifdef x64
     OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+    InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 !else
     OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+    InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 !endif
 
 ; Use best compression
 SetCompressor /SOLID lzma
-
-; The default installation directory
-InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -46,6 +45,13 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 ;Interface Settings
 !define MUI_ABORTWARNING
+
+!define MUI_HEADERIMAGE
+;!define MUI_HEADERIMAGE_RIGHT
+!define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
+!define MUI_HEADERIMAGE_BITMAP "res\images\mixxx_install_logo.bmp"
+!define MUI_ICON "res\images\icon.ico"
+!define MUI_UNICON "res\images\icon.ico"
 
 ; Pages
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
