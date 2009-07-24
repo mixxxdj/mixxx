@@ -86,14 +86,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_samplerates.push_back("44100");
     m_samplerates.push_back("48000");
     m_samplerates.push_back("96000");
-
-#ifdef __PORTAUDIO__
-    PaError err = Pa_Initialize();
-    if (err != paNoError)
-    {
-        qDebug() << "Error:" << Pa_GetErrorText(err);
-    }
-#endif
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -254,6 +246,10 @@ void SoundManager::clearDeviceList()
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
+    
+#ifdef __PORTAUDIO__
+    Pa_Terminate();
+#endif
 }
 
 /** Returns a list of samplerates we will attempt to support.
@@ -271,6 +267,13 @@ void SoundManager::queryDevices()
     clearDeviceList();
 
 #ifdef __PORTAUDIO__
+    PaError err = Pa_Initialize();
+    if (err != paNoError)
+    {
+        qDebug() << "Error:" << Pa_GetErrorText(err);
+        return;
+    }
+    
     int iNumDevices;
     iNumDevices = Pa_GetDeviceCount();
     if(iNumDevices < 0)

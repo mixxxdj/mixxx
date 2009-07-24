@@ -284,20 +284,17 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #endif
 
     // Try open player device If that fails, the preference panel is opened.
-    if (soundmanager->setupDevices() != 0)
+    while (soundmanager->setupDevices() != 0)
     {
 
 #ifdef __C_METRICS__
-	    cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
-	                      "Mixxx failed to open audio device(s) on startup.");
+        cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
+                          "Mixxx failed to open audio device(s) on startup.");
 #endif
 
-        QMessageBox::warning(this, tr("Mixxx"),
-                                   tr("Failed to open your audio device(s).\n"
-                                      "Please verify your selection in the preferences."),
-                                   QMessageBox::Ok,
-                                   QMessageBox::Ok);
-         prefDlg->show();
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        if ( noSoundDlg() != 0 )
+            exit(0);
     }
 
     //setFocusPolicy(QWidget::StrongFocus);
@@ -424,6 +421,67 @@ MixxxApp::~MixxxApp()
 //    _exit(0);
 //#endif
 }
+
+int MixxxApp::noSoundDlg(void)
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Sound Device Busy");
+    msgBox.setText( "<html>Mixxx was unable to access the sound device <b><i>"+
+                    config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
+                    "</i></b>, "+
+                    "this is because another application is using the "+
+                    "sound device or the device is not plugged in, would you "+
+                    "like Mixxx to:"+
+                    "<ul>"+
+                        "<li>"+
+                            "<b>Retry</b> after you have closed the "+
+                            "other application or reconnected the sound "+
+                            "device."+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Reconfigure</b> your hardware preferences "+
+                            "to use a different sound device."+
+                        "</li>" +
+                        "<li>"+
+                            "Get <b>Help</b> from the Mixxx Wiki."+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Exit</b> without saving your settings."+
+                        "</li>" +
+                    "</ul></html>"
+    );
+
+    QPushButton *retryButton = msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
+    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton *wikiButton = msgBox.addButton(tr("Help"), QMessageBox::ActionRole);
+    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+
+    while(1)
+    {
+        msgBox.exec();
+        
+        if (msgBox.clickedButton() == retryButton) {
+            soundmanager->queryDevices();
+            return 0;
+        } else if (msgBox.clickedButton() == wikiButton) {
+            QDesktopServices::openUrl(QUrl("http://mixxx.org/wiki/doku.php/troubleshooting#Sound_Device_Busy"));
+            wikiButton->setEnabled(false);
+        } else if (msgBox.clickedButton() == reconfigureButton) {
+            msgBox.hide();
+            msgBox.setWindowModality(Qt::NonModal);
+            msgBox.show();
+            
+            soundmanager->queryDevices();
+            
+            prefDlg->setWindowModality(Qt::ApplicationModal);
+            prefDlg->show();
+            
+        } else if (msgBox.clickedButton() == exitButton) {
+            return 1;
+        }
+    }
+}
+
 
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
