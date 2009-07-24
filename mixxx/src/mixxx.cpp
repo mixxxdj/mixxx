@@ -468,13 +468,16 @@ int MixxxApp::noSoundDlg(void)
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
-            msgBox.setWindowModality(Qt::NonModal);
-            msgBox.show();
-            
             soundmanager->queryDevices();
             
             prefDlg->setWindowModality(Qt::ApplicationModal);
-            prefDlg->show();
+            prefDlg->exec();
+            if ( prefDlg->result() == QDialog::Accepted) {
+                soundmanager->queryDevices();
+                return 0;
+            }
+            
+            msgBox.show();
             
         } else if (msgBox.clickedButton() == exitButton) {
             return 1;
