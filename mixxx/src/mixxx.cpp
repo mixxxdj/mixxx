@@ -425,13 +425,14 @@ MixxxApp::~MixxxApp()
 int MixxxApp::noSoundDlg(void)
 {
     QMessageBox msgBox;
+	msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle("Sound Device Busy");
     msgBox.setText( "<html>Mixxx was unable to access the sound device <b>"+
                     config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
-                    "</b>, "+
-                    "this is because another application is using the "+
-                    "sound device or the device is not plugged in, would you "+
-                    "like Mixxx to:"+
+                    "</b>. "+
+                    "This is because another application is using that "+
+                    "sound device or the device is not plugged in.<br>Would you "+
+                    "like to:"+
                     "<ul>"+
                         "<li>"+
                             "<b>Retry</b> after you have closed the "+
