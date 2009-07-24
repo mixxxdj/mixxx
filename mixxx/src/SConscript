@@ -217,7 +217,7 @@ vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
-vars.Add('debug', 'Set to 1 to enable verbose console debug output.', 0)
+vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
 if platform == 'linux':
 	vars.Add('rawmidi', 'Set to 1 to use ALSA\'s RawMIDI API (instead of the Sequencer API.)', 0)
@@ -1167,17 +1167,17 @@ if not 'win' in platform:
 		print "Optimizing for this CPU... no"
 
 #Debugging output
-flags_debug = getFlags(env, 'debug', 0)
+flags_qdebug = getFlags(env, 'qdebug', 0)
 if 'win' in platform:
 	if int(flags_msvcdebug):
-		flags_debug = 1		# Turn general debugging flag on too if msvcdebug is specified
+		flags_qdebug = 1		# Turn general debugging flag on too if msvcdebug is specified
 
-if int(flags_debug):
-	build_flags += 'debug '
-	print "Debugging output... enabled"
+if int(flags_qdebug):
+	build_flags += 'qdebug '
+	print "Debugging message output... enabled"
 else:
 	env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
-	print "Debugging output... disabled"
+	print "Debugging message output... disabled"
 
 #ALSA API selection
 if platform == 'linux':
@@ -1462,7 +1462,7 @@ def BuildRelease(target, source, env):
 	print
 	print "You have built version ", env['MIXXX_VERSION']
 	print
-	if flags_msvcdebug>0 or flags_debug>0:
+	if flags_msvcdebug>0 or flags_qdebug>0:
 		print "DEBUGGING IS STILL ENABLED"
 		print
 	print "Binary has size ",
