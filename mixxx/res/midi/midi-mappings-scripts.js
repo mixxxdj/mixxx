@@ -1,6 +1,6 @@
 // Functions common to all controllers go in this file
 
-nop = function () {}    // Only here so you don't get a syntax error on load
+nop = function () {}    // Only here so you don't get a syntax error on load if the file was otherwise empty
 
 // ----------------- Prototype enhancements ---------------------
 
@@ -106,20 +106,6 @@ bpm.tapButton = function(deck) {
     
     engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
 //     print("Script: BPM="+average);
-
-//         print("StantonSCS3d: BPM="+(60/tapDelta));
-//         var fRateScale = (60/tapDelta)/engine.getValue("[Channel"+deck+"]","bpm");
-//         fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
-//         bpm.tap.push(fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
-//         
-//         if (bpm.tap.length>8) bpm.tap.shift();
-//         var sum = 0;
-//         for (i=0; i<bpm.tap.length; i++) {
-//             sum += bpm.tap[i];
-//         }
-//         var average = sum/bpm.tap.length;
-//         
-//         engine.setValue("[Channel"+deck+"]","rate",average);
 }
 
 
