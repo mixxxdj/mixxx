@@ -39,7 +39,8 @@ public slots:
     void slotUpdateLatency(double latency);
     void slotUpdatePlayPos(double playpos);
     void slotUpdateRate(double rate);
-    void slotUpdateRateRange(double rate);
+    void slotUpdateRateRange(double rate_range);
+    void slotUpdateRateDir(double rate_dir);
     
 protected:
     void run();
@@ -53,7 +54,7 @@ private:
 
     int m_iPlayPosTime, m_iPlayPosTimeOld;
     QTime m_playPosTime, m_playPosTimeOld;
-    double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange;
+    double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange, m_dRateDir;
     int m_iDupes;
     double m_dPlayPosAdjust;
     int m_iLatency;
