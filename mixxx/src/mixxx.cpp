@@ -426,9 +426,9 @@ int MixxxApp::noSoundDlg(void)
 {
     QMessageBox msgBox;
     msgBox.setWindowTitle("Sound Device Busy");
-    msgBox.setText( "<html>Mixxx was unable to access the sound device <b><i>"+
+    msgBox.setText( "<html>Mixxx was unable to access the sound device <b>"+
                     config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
-                    "</i></b>, "+
+                    "</b>, "+
                     "this is because another application is using the "+
                     "sound device or the device is not plugged in, would you "+
                     "like Mixxx to:"+
@@ -464,7 +464,7 @@ int MixxxApp::noSoundDlg(void)
             soundmanager->queryDevices();
             return 0;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl("http://mixxx.org/wiki/doku.php/troubleshooting#Sound_Device_Busy"));
+            QDesktopServices::openUrl(QUrl("http://mixxx.org/wiki/doku.php/troubleshooting#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
