@@ -427,21 +427,18 @@ int MixxxApp::noSoundDlg(void)
     QMessageBox msgBox;
 	msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle("Sound Device Busy");
-    msgBox.setText( "<html>Mixxx was unable to access the sound device <b>"+
+    msgBox.setText( "<html>Mixxx cannot access the sound device <b>"+
                     config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
                     "</b>. "+
-                    "This is because another application is using that "+
-                    "sound device or the device is not plugged in.<br>Would you "+
-                    "like to:"+
+                    "Another application is using the sound device or it is "+
+                    "not plugged in."+
                     "<ul>"+
                         "<li>"+
-                            "<b>Retry</b> after you have closed the "+
-                            "other application or reconnected the sound "+
-                            "device."+
+                            "<b>Retry</b> after closing the other application "+
+                            "or reconnecting the sound device"+
                         "</li>"+
                         "<li>"+
-                            "<b>Reconfigure</b> your hardware preferences "+
-                            "to use a different sound device."+
+                            "<b>Reconfigure</b> Mixxx to use another sound device."+
                         "</li>" +
                         "<li>"+
                             "Get <b>Help</b> from the Mixxx Wiki."+
@@ -471,6 +468,7 @@ int MixxxApp::noSoundDlg(void)
             msgBox.hide();
             soundmanager->queryDevices();
             
+            // This way of opening the dialog allows us to use it synchronously
             prefDlg->setWindowModality(Qt::ApplicationModal);
             prefDlg->exec();
             if ( prefDlg->result() == QDialog::Accepted) {
