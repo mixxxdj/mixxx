@@ -171,6 +171,7 @@ MidiObjectALSASeq::~MidiObjectALSASeq()
     wait();
     
     shutdown(); // From parent MidiObject
+    devClose();
     
     int err;
     err = snd_seq_free_queue(m_handle, m_queue);
@@ -228,8 +229,8 @@ void MidiObjectALSASeq::devOpen(QString device)
                         //qDebug() << "Connecting input " + sPortName + " to Mixxx";
                         snd_seq_connect_from(m_handle, m_input, iAlsaClient, iAlsaPort);
 //                         sActivePortNames.append(sPortName);
-                        sActivePorts.insert(sPortName, iAlsaClient);
-                        sActivePorts.insert(sPortName, iAlsaPort);
+                        sActivePorts.insert(sPortName+"in", iAlsaPort);
+                        sActivePorts.insert(sPortName+"in", iAlsaClient);
                     }
                     else {
                         //Disconnect Mixxx from any other input ports (might be annoying, but lets us be safe.)
@@ -257,8 +258,8 @@ void MidiObjectALSASeq::devOpen(QString device)
                         //qDebug() << "Connecting output " + sPortName + " to Mixxx";
                         // Output port may be different
                         snd_seq_connect_to(m_handle, m_input, iAlsaClient, iAlsaPort);
-                        sActivePorts.insert(sPortName, iAlsaClient);
-                        sActivePorts.insert(sPortName, iAlsaPort);
+                        sActivePorts.insert(sPortName+"out", iAlsaPort);
+                        sActivePorts.insert(sPortName+"out", iAlsaClient);
                     }
                     else {
                         //Disconnect Mixxx from any other output ports (might be annoying, but lets us be safe.)
@@ -287,13 +288,20 @@ void MidiObjectALSASeq::devOpen(QString device)
 
 void MidiObjectALSASeq::devClose()
 {
-    if (!sActivePorts.contains(m_deviceName)) return;
-    QList<int> values = sActivePorts.values(m_deviceName);
+    QList<int> values;
+    if (sActivePorts.contains(m_deviceName+"in")) {
+        values = sActivePorts.values(m_deviceName+"in");
+        qDebug() << "Disconnecting" << m_deviceName << "input on" << values;
+        snd_seq_disconnect_from(m_handle, m_input, values.at(0), values.at(1));
+        sActivePorts.remove(m_deviceName+"in");
+    }
     
-    snd_seq_disconnect_from(m_handle, m_input, values.at(3), values.at(2));
-    snd_seq_disconnect_to(m_handle, m_input, values.at(1), values.at(0));
-    
-    sActivePorts.remove(m_deviceName);
+    if (sActivePorts.contains(m_deviceName+"out")) {
+        values = sActivePorts.values(m_deviceName+"out");
+        qDebug() << "Disconnecting" << m_deviceName << "output on" << values;
+        snd_seq_disconnect_to(m_handle, m_input, values.at(0), values.at(1));
+        sActivePorts.remove(m_deviceName+"out");
+    }
 }
 
 void MidiObjectALSASeq::run()
