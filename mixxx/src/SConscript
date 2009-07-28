@@ -1338,11 +1338,11 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 
 #Windows DLLs
 if platform == 'win64':
-	dll_files = Glob('#/../mixxx-win64lib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+	dll_files = Glob('#/../mixxx-win64lib/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 else:
-	dll_files = Glob('#/../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+	dll_files = Glob('#/../mixxx-winlib/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
+dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtSVG4.dll""")
 
 if int(flags_script):
 	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
@@ -1464,8 +1464,8 @@ def BuildRelease(target, source, env):
 	print
 	print "You have built version ", env['MIXXX_VERSION']
 	print
-	if flags_msvcdebug>0 or flags_qdebug>0:
-		print "DEBUGGING IS STILL ENABLED"
+	if flags_msvcdebug>0:
+		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
 		print
 	print "Binary has size ",
 	os.system('ls -lh dist/mixxx.exe | cut -d \' \' -f 5')
