@@ -51,7 +51,6 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 !define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
 !define MUI_HEADERIMAGE_BITMAP "res\images\mixxx_install_logo.bmp"
 !define MUI_ICON "res\images\icon.ico"
-!define MUI_UNICON "res\images\icon.ico"
 
 ; Pages
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
@@ -90,19 +89,23 @@ Section "Mixxx (required)" SecMixxx
   File "dist\mixxx.exe"
   File "dist\*.dll"
   
-  ; NOTE: you need to copy the below files into the applicable directory manually
-  ; (Visual C++ 2005 is msvc?80.dll, Visual C++ 2008 is msvc?90.dll)
+  ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
+  ; and place the appropriate versions of the listed DLL files and their manifest files
+  ; into the mixxx-win[64]lib directory for packaging before making the installer
+  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest, Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   
   !ifdef x64    ; x64 versions
-    File "..\mixxx-win64lib\msvcm*.dll"
-    File "..\mixxx-win64lib\msvcp*.dll"
-    File "..\mixxx-win64lib\msvcr*.dll"
+    File ..\mixxx-win64lib\msvcr*.dll
+    File ..\mixxx-win64lib\msvcp*.dll
+    File /nonfatal ..\mixxx-win64lib\msvcm*.dll
+    File ..\mixxx-win64lib\Microsoft.VC*.CRT.manifest
   !else         ; x86 versions
-    File "..\mixxx-winlib\msvcm*.dll"
-    File "..\mixxx-winlib\msvcp*.dll"
-    File "..\mixxx-winlib\msvcr*.dll"
+    File ..\mixxx-winlib\msvcr*.dll
+    File ..\mixxx-winlib\msvcp*.dll
+    File /nonfatal ..\mixxx-winlib\msvcm*.dll
+    File ..\mixxx-winlib\Microsoft.VC*.CRT.manifest
   !endif
 
   ; And documentation, licence etc.
