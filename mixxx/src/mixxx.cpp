@@ -35,7 +35,7 @@
 #include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"
-#include "bpm/bpmdetector.h"
+// #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
 
