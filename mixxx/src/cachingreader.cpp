@@ -269,10 +269,14 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         Q_ASSERT(samples_to_read % 2 == 0);
 
         CSAMPLE *data = current->data + chunk_offset;
+
+        // TODO(rryan) do a test and see if using memcpy is faster than gcc
+        // optimizing the for loop
+        memcpy(buffer, data, sizeof(*buffer) * samples_to_read);
+        // for (int i=0; i < samples_to_read; i++) {
+        //     buffer[i] = data[i];
+        // }
         
-        for (int i=0; i < samples_to_read; i++) {
-            buffer[i] = data[i];
-        }
         buffer += samples_to_read;
         current_sample += samples_to_read;
         samples_remaining -= samples_to_read;
@@ -360,6 +364,7 @@ void CachingReader::wake() {
 void CachingReader::stop() {
     m_bQuit = true;
     wake();
+    wait();
 }
 
 void CachingReader::loadTrack(TrackInfoObject *pTrack) {

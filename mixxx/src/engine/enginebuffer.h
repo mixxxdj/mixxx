@@ -29,6 +29,7 @@
 class BpmControl;
 class RateControl;
 class LoopingControl;
+class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
 class ControlBeat;
@@ -140,6 +141,10 @@ private:
 
     /** Pointer to the BPM control object */
     BpmControl* m_pBpmControl;
+
+    /** The read ahead manager for EngineBufferScale's that need to read
+        ahead */
+    ReadAheadManager* m_pReadAheadManager;
 
     /** Pointer to other EngineBuffer */
     EngineBuffer* m_pOtherEngineBuffer;

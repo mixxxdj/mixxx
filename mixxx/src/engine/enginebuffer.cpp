@@ -30,6 +30,7 @@
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
 
+#include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "enginebuffercue.h"
 #include "loopingcontrol.h"
@@ -53,6 +54,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
+    m_pReadAheadManager(NULL),
     m_pOtherEngineBuffer(NULL),
     m_pReader(NULL),
     filepos_play(0.),
@@ -130,7 +132,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     
-    setNewPlaypos(0.);
+    
 
     
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
@@ -153,16 +155,19 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
             this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
-    
+
+    m_pReadAheadManager = new ReadAheadManager(m_pReader);
+    m_pReadAheadManager->addEngineControl(m_pLoopingControl);
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear();
-    m_pScaleST = new EngineBufferScaleST();
+    m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch =
         _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
+    setNewPlaypos(0.);
     m_pReader->start();
 
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -281,6 +286,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
     // The right place to do this?
     if (m_pScale)
         m_pScale->clear();
+    m_pReadAheadManager->notifySeek(filepos_play);
 }
 
 const char * EngineBuffer::getGroup()
@@ -454,7 +460,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //
             //    sourceSamples = iBufferSize * rate
             //
-            int iSourceSamples = abs(double(iBufferSize) * rate);
+            int iSourceSamples = abs(double(iBufferSize) * rate) * 5;
 
             Q_ASSERT(even(iBufferSize));
             
@@ -469,7 +475,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             Q_ASSERT(even(filepos_play));
             
             // Read the raw source data into m_pBuffer
-            prepareSampleBuffer(iSourceSamples, rate, iBufferSize);
+            //prepareSampleBuffer(iSourceSamples, rate, iBufferSize);
 
             // This is because of some oddness with EngineBufferScalers. We need
             // to revisit the EngineBufferScale design now that we have more
