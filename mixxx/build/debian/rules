@@ -9,30 +9,18 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+
+
+
 CFLAGS = -Wall -g
-
-# no thanks dpkg-buildpackage, we will handle our own C++ optimizations
-DEB_BUILD_OPTIONS= noopt
-
-MIXXX_SCONS_FLAGS = optimize=0
-ifeq (,$(findstring i386,$(DEB_BUILD_ARCH)))
-	MIXXX_SCONS_FLAGS = optimize=1
-endif
-#ifeq (,$(findstring amd64,$(DEB_BUILD_ARCH)))
-#	MIXXX_SCONS_FLAGS = optimize=3
-#endif
-
-# detect number of processors
-NCPUS := $(shell getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
-ifeq ($(NCPUS),-1)
-	NCPUS:=1
-endif
-ifeq ($(NCPUS),0)
-	NCPUS:=1
-endif
-
-MIXXX_SCONS_FLAGS += -j$(NCPUS) prefix=/usr install_root=$(CURDIR)/debian/tmp/usr
+MIXXX_SCONS_FLAGS = optimize=2 prefix=/usr install_root=$(CURDIR)/debian/tmp/usr
 SCONS = scons
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
 
 configure: configure-stamp
 configure-stamp:
@@ -64,17 +52,17 @@ clean:
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
 	rm -f src/qt4.pyc
-	test -e .sconsign.dblite && rm -f .sconsign.dblite
-	test -e .sconf_temp && rm -rf .sconf_temp
+	rm -f .sconsign.dblite
+	rm -rf .sconf_temp
 	
 	rm -f $(CURDIR)/debian/tmp
 
-	dh_clean
+	dh_clean 
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_clean -k 
 	dh_installdirs
 	mkdir -p $(CURDIR)/debian/tmp/usr
 	mkdir -p $(CURDIR)/debian/tmp/usr/share/applications
@@ -123,5 +111,4 @@ binary-arch: build install
 	dh_builddeb
 
 binary: binary-indep binary-arch
-# .PHONY: build clean binary-indep binary-arch binary install configure
-.PHONY: build binary-indep binary-arch binary install configure
+.PHONY: build clean binary-indep binary-arch binary install configure
