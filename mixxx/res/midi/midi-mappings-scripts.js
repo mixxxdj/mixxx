@@ -17,11 +17,24 @@ String.prototype.toInt = function() {
 
 function secondstominutes(secs)
 {
-    var m = (secs / 60) | 0;
+   var m = (secs / 60) | 0;
 
    return (m < 10 ? "0" + m : m) 
           + ":"
           + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
+}
+
+function msecondstominutes(msecs)
+{
+    var csecs = (msecs / 100) | 0;
+    var secs = (msecs / 1000) | 0;
+    var m = (secs / 60) | 0;
+
+    return (m < 10 ? "0" + m : m) 
+        + ":"
+        + ( ( secs %= 60 ) < 10 ? "0" + secs : secs)
+        + "."
+        + ( csecs < 10 ? "0" + csecs : csecs);
 }
 
 function script() {}
@@ -41,6 +54,7 @@ script.absoluteNonLin = function (value, low, mid, high) {
     else return 1+(value-63)/(64/(high-mid));
 }
 
+// DEPRECATED
 // Used to control an EQ setting (0..1..4) from an absolute control (0..127)
 script.absoluteEQ = function (group, key, value) {
     if (value<=64) engine.setValue(group, key, value/64);
