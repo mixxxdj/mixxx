@@ -122,10 +122,6 @@ private:
 
     void updateIndicators(double rate, int iBufferSize);
 
-    int prepareSampleBuffer(int iSourceSamples, 
-                            const double rate,
-                            const int iBufferSize);
-
     void hintReader(const double rate,
                     const int iSourceSamples);
 
@@ -205,18 +201,6 @@ private:
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we
         start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch; // TODO
-
-    // BufferSamplePair is a pair corresponding that says that a given buffer
-    // index (first value) corresponds to a file sample (second value).
-    typedef QPair<int, int> BufferSamplePair;
-
-    CSAMPLE* m_pBuffer;
-    int m_iBufferSize;
-    int m_iBufferRead;
-    int m_iBufferReadSample;
-    QList<BufferSamplePair> m_bufferSamples;
-    int m_iBufferWrite;
-
 };
 
 #endif
