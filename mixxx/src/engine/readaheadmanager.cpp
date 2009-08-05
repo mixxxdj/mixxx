@@ -24,8 +24,6 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     int start_sample = m_iCurrentPosition;
     int samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
-    
-    
 
     // A loop will only limit the amount we can read in one shot.
     QPair<int, double> next_loop = getSoonestTrigger(in_reverse,
