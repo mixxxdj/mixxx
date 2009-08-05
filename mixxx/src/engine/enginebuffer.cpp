@@ -472,7 +472,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // }
             
             // Adjust filepos_play by the amount we processed.
-            filepos_play += (idx-iBufferStartSample);
+            filepos_play += idx;
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
