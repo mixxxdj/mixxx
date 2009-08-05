@@ -189,7 +189,7 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     while (remaining_frames > 0) {
         long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
                                                              remaining_frames);
-            
+        
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames*2;
@@ -202,20 +202,6 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
                                  buffer_back,
                                  iLenFrames * 2);
             unsigned long iAvailFrames = iAvailSamples / 2;
-
-            if (m_bBackwards) {
-                // Put the samples in reverse
-                double temp1, temp2;
-                for (unsigned long j=0; j < (iAvailFrames * 2)/2; j++) {
-                    const int endpos = iAvailFrames*2-1-j-1;
-                    temp1 = buffer_back[j];
-                    temp2 = buffer_back[j+1];
-                    buffer_back[j] = buffer_back[endpos];
-                    buffer_back[j+1] = buffer_back[endpos+1];
-                    buffer_back[endpos] = temp1;
-                    buffer_back[endpos+1] = temp2;
-                }
-            }
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
