@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.20             */
+/*      Stanton SCS.3d MIDI controller script v1.21             */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.0                                 */
@@ -127,6 +127,10 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
         engine.connectControl("[Channel1]","duration","StantonSCS3d.durationChange1");
         engine.connectControl("[Channel2]","duration","StantonSCS3d.durationChange2");
     }
+    
+    //  Initialize the spinning platter LEDs if the mapping is loaded after a song is
+    StantonSCS3d.durationChange1(engine.getValue("[Channel1]","duration"));
+    StantonSCS3d.durationChange2(engine.getValue("[Channel2]","duration"));
     
     print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" initialized.");
 }
