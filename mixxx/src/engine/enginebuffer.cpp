@@ -233,15 +233,16 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //but for now, I've just changed it back to using EngineBufferScaleST
     //exclusively. - Albert
 
+    m_pScale = m_pScaleST;
+    ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     if (b == true)
     {
-        m_pScale = m_pScaleST;
-        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        //m_pScale = m_pScaleST;
         //m_pScale = m_pScaleLinear;
     }
     else
     {
-        m_pScale = m_pScaleLinear;
+        //m_pScale = m_pScaleLinear;
     }
     m_qPlayposMutex.unlock();
 
