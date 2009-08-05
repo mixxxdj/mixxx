@@ -180,89 +180,65 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
 
     long total_received_frames = 0;
     long total_read_frames = 0;
-    //m_pSoundTouch->clear();
-    // Invert wavebuffer for backwards playback
-    if (m_bBackwards)
-    {
-        while (m_pSoundTouch->numSamples() < buf_size/2)
-        {
-            int iLenFrames = math_min(kiSoundTouchReadAheadLength, iCurPos/2);
-            int i = iCurPos;
-            for(unsigned long j=0; j < (iLenFrames * 2); j+=2)
-            {
-            	Q_ASSERT(i > 0);
-            	buffer_back[j] = pBase[i]; //Left channel.
-            	buffer_back[j+1] = pBase[i+1]; //Right channel.
-            	i = i - 2;
-            }
-            m_pSoundTouch->putSamples((const SAMPLETYPE *)buffer_back, iLenFrames);
-            iCurPos = (iCurPos-(iLenFrames*2)+iBaseLength)%iBaseLength;
-            if (iCurPos==0)
-                iCurPos = iBaseLength;
-        }
-    }
 
-    else
-    {
 
-        long remaining_frames = buf_size/2;
-        //long remaining_source_frames = iBaseLength/2;
-        CSAMPLE* read = buffer;
-        bool last_read_failed = false;
-        while (remaining_frames > 0) {
-            long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
-                                                                 remaining_frames);
+    long remaining_frames = buf_size/2;
+    //long remaining_source_frames = iBaseLength/2;
+    CSAMPLE* read = buffer;
+    bool last_read_failed = false;
+    while (remaining_frames > 0) {
+        long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
+                                                             remaining_frames);
             
-            remaining_frames -= received_frames;
-            total_received_frames += received_frames;
-            read += received_frames*2;
+        remaining_frames -= received_frames;
+        total_received_frames += received_frames;
+        read += received_frames*2;
 
-            if (remaining_frames > 0) {
-                // math_min(kiSoundTouchReadAheadLength,remaining_source_frames);
-                unsigned long iLenFrames = kiSoundTouchReadAheadLength;
-                unsigned long iAvailSamples = m_pReadAheadManager
-                    ->getNextSamples(1.0, //m_dBaseRate * m_dTempo,
-                                     buffer_back,
-                                     iLenFrames * 2);
-                unsigned long iAvailFrames = iAvailSamples / 2;
+        if (remaining_frames > 0) {
+            // math_min(kiSoundTouchReadAheadLength,remaining_source_frames);
+            unsigned long iLenFrames = kiSoundTouchReadAheadLength;
+            unsigned long iAvailSamples = m_pReadAheadManager
+                ->getNextSamples((m_bBackwards ? -1.0f : 1.0f) * m_dBaseRate * m_dTempo,
+                                 buffer_back,
+                                 iLenFrames * 2);
+            unsigned long iAvailFrames = iAvailSamples / 2;
 
-                if (iAvailFrames > 0) {
-                    last_read_failed = false;
-                    total_read_frames += iAvailFrames;
-                    m_pSoundTouch->putSamples(buffer_back, iAvailFrames);
-                } else {
-                    if (last_read_failed)
-                        break;
-                    last_read_failed = true;
+            if (m_bBackwards) {
+                // Put the samples in reverse
+                double temp1, temp2;
+                for (unsigned long j=0; j < (iAvailFrames * 2)/2; j++) {
+                    const int endpos = iAvailFrames*2-1-j-1;
+                    temp1 = buffer_back[j];
+                    temp2 = buffer_back[j+1];
+                    buffer_back[j] = buffer_back[endpos];
+                    buffer_back[j+1] = buffer_back[endpos+1];
+                    buffer_back[endpos] = temp1;
+                    buffer_back[endpos+1] = temp2;
                 }
-                //iCurPos = (iCurPos+iLenFrames*2);
-                //remaining_source_frames -= iLenFrames;
             }
-            
-        }
-        
-        //Feed more samples into SoundTouch until it has processed enough to
-        //fill the audio buffer that we need to fill. 
-        //SoundTouch::numSamples() returns the number of _FRAMES_ that
-        //are in its FIFO audio buffer...
-        
-        // while (m_pSoundTouch->numSamples() < buf_size/2 && m_iReadAheadPos < iBaseLength)
-        // {
-        //     unsigned long iLenFrames = math_min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
-        //     qDebug() << iLenFrames << "samples being fed to ST, currently have:" << m_pSoundTouch->numSamples();
-        //     m_pSoundTouch->putSamples(&pBase[m_iReadAheadPos], iLenFrames);
-        //     m_iReadAheadPos = (m_iReadAheadPos+iLenFrames*2); 
-        // }
 
-        // if (m_pSoundTouch->numSamples() < buf_size/2) {
-        //     qDebug() << "Got too few samples!";
-        // }
-   
+            if (iAvailFrames > 0) {
+                last_read_failed = false;
+                total_read_frames += iAvailFrames;
+                m_pSoundTouch->putSamples(buffer_back, iAvailFrames);
+            } else {
+                if (last_read_failed)
+                    break;
+                last_read_failed = true;
+            }
+        }
     }
+        
+    //Feed more samples into SoundTouch until it has processed enough to
+    //fill the audio buffer that we need to fill. 
+    //SoundTouch::numSamples() returns the number of _FRAMES_ that
+    //are in its FIFO audio buffer...
+        
 
     // Calculate new playpos
 
-    //Get the stretched _frames_ (not Samples, as the function call erroroneously implies)
+    //Get the stretched _frames_ (not Samples, as the function call
+    //erroroneously implies)
     //long receivedFrames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)buffer, buf_size/2);
 
     // qDebug() << "Fed ST" << total_read_frames*2
@@ -274,9 +250,6 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     
     //for (unsigned long i = 0; i < buf_size; i++)
     //    qDebug() << buffer[i];
-
-
-    //m_iReadAheadPos = iCurPos;
     
     if (m_bBackwards)
         new_playpos = playpos - m_dTempo*m_dBaseRate*total_received_frames*2;
@@ -286,6 +259,5 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     m_qMutex.unlock();
 
     return buffer;
-
 }
 

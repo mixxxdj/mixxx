@@ -183,6 +183,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pRateControl;
     delete m_pBpmControl;
     delete m_pEngineBufferCue;
+    delete m_pReadAheadManager;
     delete m_pReader;
 
     delete playButton;
@@ -308,7 +309,6 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     pause.unlock();
     
     m_pTrackSamples->set(iTrackNumSamples);
-
     emit(trackLoaded(pTrack));
 }
 
