@@ -200,7 +200,7 @@ private:
 
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we
         start playing post-scratch **/
-    bool m_bResetPitchIndpTimeStretch; // TODO
+    bool m_bResetPitchIndpTimeStretch; // TODO(rryan) remove?
 };
 
 #endif
