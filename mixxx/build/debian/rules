@@ -51,7 +51,7 @@ clean:
 	($(SCONS) -c)
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
-	rm -f src/qt4.pyc
+	rm -f build/qt4.pyc
 	rm -f .sconsign.dblite
 	rm -rf .sconf_temp
 	
