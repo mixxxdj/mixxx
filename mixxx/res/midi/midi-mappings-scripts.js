@@ -26,15 +26,20 @@ function secondstominutes(secs)
 
 function msecondstominutes(msecs)
 {
-    var csecs = (msecs / 100) | 0;
+    var m = (msecs / 60000) | 0;
+    msecs %= 60000;
     var secs = (msecs / 1000) | 0;
-    var m = (secs / 60) | 0;
+    msecs %= 1000;
+    msecs = Math.round(msecs * 100 / 1000);
+    if (msecs==100) msecs=99;
+    
+    print("secs="+secs+", msecs="+msecs);
 
     return (m < 10 ? "0" + m : m) 
         + ":"
-        + ( ( secs %= 60 ) < 10 ? "0" + secs : secs)
+        + ( secs < 10 ? "0" + secs : secs )
         + "."
-        + ( csecs < 10 ? "0" + csecs : csecs);
+        + ( msecs < 10 ? "0" + msecs : msecs);
 }
 
 function script() {}

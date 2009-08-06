@@ -406,28 +406,54 @@ StantonSCS1d.ffwd = function (channel, control, value, status) {
 
 StantonSCS1d.rangeButton = function (channel, control, value, status) {
     if ((status & 0xF0) == 0x90) {    // If button down
-        var currentRange = engine.getValue("[Channel"+StantonSCS1d.deck+"]","rateRange");
-        switch (true) {
-            case (currentRange<=StantonSCS1d.pitchRanges[0]):
-                    engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[1]);
-                break;
-            case (currentRange<=StantonSCS1d.pitchRanges[1]):
-                    engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[2]);
-                break;
-            case (currentRange<=StantonSCS1d.pitchRanges[2]):
-                    engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[3]);
-                break;
-            case (currentRange>=StantonSCS1d.pitchRanges[3]):
-                    engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[0]);
-                break;
+        midi.sendShortMsg(0x90+StantonSCS1d.channel,control,0x7F);  // Light button LED
+        StantonSCS1d.modifier["pitchRange"]=1;   // Set button modifier flag
+        // Move to cross-fader position
+        StantonSCS1d.pitchRangeLEDs(0); // darken range LEDs
+        var xfader = engine.getValue("[Master]","crossfader")*63+64;
+        if (StantonSCS1d.debug) print ("Moving slider to "+xfader);
+        midi.sendShortMsg(0xB0+StantonSCS1d.channel,0x00,xfader);
+        StantonSCS1d.state["crossfaderAdjusted"]=false;
+    }
+    else {
+        midi.sendShortMsg(0x80+StantonSCS1d.channel,control,0); // Darken button LED
+        StantonSCS1d.modifier["pitchRange"]=0; // Clear button modifier flag
+        midi.sendShortMsg(0xB0+StantonSCS1d.channel,0x00,engine.getValue("[Channel"+StantonSCS1d.deck+"]","rate")*63+64);    // Move to pitch position
+        
+        if (!StantonSCS1d.state["crossfaderAdjusted"]) {
+            // Change the range
+            var currentRange = engine.getValue("[Channel"+StantonSCS1d.deck+"]","rateRange");
+            switch (true) {
+                case (currentRange<=StantonSCS1d.pitchRanges[0]):
+                        engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[1]);
+                    break;
+                case (currentRange<=StantonSCS1d.pitchRanges[1]):
+                        engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[2]);
+                    break;
+                case (currentRange<=StantonSCS1d.pitchRanges[2]):
+                        engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[3]);
+                    break;
+                case (currentRange>=StantonSCS1d.pitchRanges[3]):
+                        engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[0]);
+                    break;
+            }
+            // Update the screen display
+            engine.trigger("[Channel"+StantonSCS1d.deck+"]","rate");
         }
-        // Update the screen display
-        engine.trigger("[Channel"+StantonSCS1d.deck+"]","rate");
+        StantonSCS1d.pitchRangeLEDs(engine.getValue("[Channel"+StantonSCS1d.deck+"]","rateRange")); // Light the LEDs again
     }
 }
 
 StantonSCS1d.pitchReset = function (channel, control, value, status) {
-    if ((status & 0xF0) == 0x80) engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",0);
+    if ((status & 0xF0) == 0x90) midi.sendShortMsg(0x90+StantonSCS1d.channel,control,0x7F); // Light button LED
+    else {
+        midi.sendShortMsg(0x80+StantonSCS1d.channel,control,0); // Darken button LED
+        if (StantonSCS1d.modifier["pitchRange"]==1) {
+            engine.setValue("[Master]","crossfader",0);
+            StantonSCS1d.state["crossfaderAdjusted"]=true;
+        }
+        else engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",0);
+    }
 }
 
 StantonSCS1d.platterGrabbed = function (channel, control, value, status) {
@@ -573,7 +599,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
     var newPlatterMode;
     // If the button's been held down for over a second, stay on the current deck
     if (new Date() - StantonSCS1d.modifier["deckTime"]>StantonSCS1d.deckChangeWait) {
-        StantonSCS1d.connectKnobSignals(channel);   // Re-connect (restored) knob signals
+        //StantonSCS1d.connectKnobSignals(channel);   // Re-connect (restored) knob signals
         // Return to appropriate color
         if (StantonSCS1d.deck==2) midi.sendShortMsg(byte1,control,64); // Deck select button red
         else midi.sendShortMsg(byte1,control,32); // Deck select button green
@@ -644,14 +670,13 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
                 midi.sendShortMsg(byte1,control,64); // Deck select button red
         }
         StantonSCS1d.connectDeckSignals(channel);    // Connect static signals
+        StantonSCS1d.padRefresh();  // Light pad section correctly
     }
     if (StantonSCS1d.globalMode) StantonSCS1d.knobMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.state["Oldknob"];
     else newPlatterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
     
     StantonSCS1d.connectKnobSignals(channel);   // Connect new knob signals & light LEDs & displays
     StantonSCS1d.encoderBank(channel, 4, 0, 0x80);  // Light the bank button the correct color for the mode
-    
-    StantonSCS1d.padRefresh();  // Light pad section correctly
     
     switch(newPlatterMode) {
         case "control": StantonSCS1d.controlButton(channel, StantonSCS1d.buttons["control"], value, 0x90 + channel); break;
@@ -1021,15 +1046,15 @@ StantonSCS1d.encoderSetAbs = function (mode,knob,value,save) {
 
 StantonSCS1d.pitchSlider = function (channel, control, value) {
     var currentValue = engine.getValue("[Channel"+StantonSCS1d.deck+"]","rate");
-    var newValue;
-    if (StantonSCS1d.modifier["pitchRange"]==1) {   // Fine pitch adjust
-        // add me
-    }
-    else newValue = (value-64)/63;
+    var newValue = (value-64)/63;
     if (newValue<-1) newValue=-1.0;
     if (newValue>1) newValue=1.0;
     StantonSCS1d.state["dontMove"]=new Date();
-    engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",newValue);
+    if (StantonSCS1d.modifier["pitchRange"]==1) {
+        engine.setValue("[Master]","crossfader",newValue);
+        StantonSCS1d.state["crossfaderAdjusted"]=true;
+    }
+    else engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",newValue);
 }
 
 // ----------   Surface buttons  ----------
@@ -1263,6 +1288,7 @@ StantonSCS1d.reverse = function (value) {
 }
 
 StantonSCS1d.pitchChange = function (value) {
+    if (StantonSCS1d.modifier["pitchRange"]==1) return; // Skip if adjusting the cross-fader
     if (value < -1 || value > 1) return;  // FIXME: This sometimes happens after using the BPM button to set the tempo and changing the pitch range. We should find out why.
     var now=new Date();
     // Move slider if applicable
@@ -1301,7 +1327,7 @@ StantonSCS1d.buttonLED = function (value, note, on, off) {
 
 StantonSCS1d.playLED = function (value) {
     var CC = 0xB0 + StantonSCS1d.channel;
-    print ("PlatterGrabbed="+StantonSCS1d.state["platterGrabbed"]);
+    if (StantonSCS1d.debug) print ("PlatterGrabbed="+StantonSCS1d.state["platterGrabbed"]);
     if (StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] == "vinyl" && !StantonSCS1d.state["platterGrabbed"]) {
         if (value==0) midi.sendShortMsg(CC,1,'x'.toInt());   // Stop platter
         else midi.sendShortMsg(CC,1,'o'.toInt());   // Start platter
