@@ -1462,7 +1462,7 @@ def BuildRelease(target, source, env):
 	print
 	print "You have built version ", env['MIXXX_VERSION']
 	print
-	if flags_msvcdebug>0:
+	if int(flags_msvcdebug):
 		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
 		print
 	print "Binary has size ",
