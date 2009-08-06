@@ -1,9 +1,9 @@
 /***************************************************************************
-                          midiobjectalsaseq.h  -  description
+                          midiobjectalsa.h  -  description
                              -------------------
-    begin                : Mon Sep 25 2006
-    copyright            : (C) 2006 by Cedric GESTES
-    email                : goctaf@gmail.com
+    begin                : Thu Jul 4 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,34 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MIDIOBJECTALSASEQ_H
-#define MIDIOBJECTALSASEQ_H
+#ifndef MIDIOBJECTALSA_H
+#define MIDIOBJECTALSA_H
 
 #include <midiobject.h>
 #include <alsa/asoundlib.h>
 
 /**
-  *@author Cedric GESTES
+  *@author Sean M. Pappalardo
   */
 
-class MidiObjectALSASeq : public MidiObject  {
-public:
-    MidiObjectALSASeq();
-    ~MidiObjectALSASeq();
-    int getClientPortsList(void);
+class MidiObjectALSA : public MidiObject  {
+public: 
+    MidiObjectALSA();
+    ~MidiObjectALSA();
+    int getDevicesList();
     void devOpen(QString device);
     void devClose();
+//     int devOpen(QString device);
+//     int devClose();
     void sendShortMsg(unsigned int word);
     void sendSysexMsg(unsigned char data[], unsigned int length);
 protected:
     void run();
+    int find_midi_devices_on_card(int card);
+    int find_subdevice_info(snd_ctl_t *ctl, int card, int device);
+    int is_input(snd_ctl_t *ctl, int card, int device, int sub);
+    int is_output(snd_ctl_t *ctl, int card, int device, int sub);
 
-    snd_seq_t *m_handle;
-    snd_seq_port_info_t *pinfo;
-    QMultiMap<QString, int> sActivePorts;   //The name and client & port numbers we're currently connected to.
-    int m_client;
+    snd_rawmidi_t   *m_inHandle;
+    snd_rawmidi_t   *m_outHandle;
+    char            *m_buffer;
+    QMap<QString, QString>  m_availableDevices;   //The name and ALSA device string of available MIDI devices
+    // Try QMap<QString, QChar[]>
     int m_input;
-    int m_queue;
     bool m_run;
 };
 

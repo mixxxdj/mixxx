@@ -23,6 +23,14 @@ void AnalyserWaveform::initialise(TrackInfoObject* tio, int sampleRate, int tota
 
     double mz = tio->getVisualResampleRate();
     double n = double(sampleRate) / mz;
+    
+    QByteArray err_tmp = QString("TrackInfoObject %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(mz).arg(n).toAscii();
+    Q_ASSERT_X(mz != 0 && n > 0,"AnalyserWaveform::initialise",err_tmp);
+    
+    if (mz == 0 || n <= 0) {
+        qDebug() << "TrackInfoObject" << tio->getId() << "returned bad data: tio->getVisualResampleRate()=" << mz << "n=" << n << "Aborting analysis";
+        return;
+    }
 
     int samplesPerDownsample = n;
     int numDownsamples = totalSamples / samplesPerDownsample;

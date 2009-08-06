@@ -30,6 +30,7 @@
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
 
+#include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "enginebuffercue.h"
 #include "loopingcontrol.h"
@@ -53,6 +54,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
+    m_pReadAheadManager(NULL),
     m_pOtherEngineBuffer(NULL),
     m_pReader(NULL),
     filepos_play(0.),
@@ -130,7 +132,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     
-    setNewPlaypos(0.);
+    
 
     
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
@@ -153,23 +155,20 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
             this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
-    
+
+    m_pReadAheadManager = new ReadAheadManager(m_pReader);
+    m_pReadAheadManager->addEngineControl(m_pLoopingControl);
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear();
-    m_pScaleST = new EngineBufferScaleST();
+    m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch =
         _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
+    setNewPlaypos(0.);
     m_pReader->start();
-
-    m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
-    m_iBufferRead = 0;
-    m_iBufferReadSample = 0;
-    m_iBufferWrite = 0;
-    m_iBufferSize = MAX_BUFFER_LEN;
 }
 
 EngineBuffer::~EngineBuffer()
@@ -178,6 +177,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pRateControl;
     delete m_pBpmControl;
     delete m_pEngineBufferCue;
+    delete m_pReadAheadManager;
     delete m_pReader;
 
     delete playButton;
@@ -197,7 +197,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleLinear;
     delete m_pScaleST;
 
-    delete m_pBuffer;
 }
 
 void EngineBuffer::lockPlayposVars()
@@ -234,15 +233,16 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //but for now, I've just changed it back to using EngineBufferScaleST
     //exclusively. - Albert
 
+    m_pScale = m_pScaleST;
+    ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     if (b == true)
     {
-        m_pScale = m_pScaleST;
-        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        //m_pScale = m_pScaleST;
         //m_pScale = m_pScaleLinear;
     }
     else
     {
-        m_pScale = m_pScaleLinear;
+        //m_pScale = m_pScaleLinear;
     }
     m_qPlayposMutex.unlock();
 
@@ -281,6 +281,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
     // The right place to do this?
     if (m_pScale)
         m_pScale->clear();
+    m_pReadAheadManager->notifySeek(filepos_play);
 }
 
 const char * EngineBuffer::getGroup()
@@ -302,7 +303,6 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     pause.unlock();
     
     m_pTrackSamples->set(iTrackNumSamples);
-
     emit(trackLoaded(pTrack));
 }
 
@@ -444,43 +444,19 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             CSAMPLE *output;
             double idx;
 
-            // We need to figure out number of source samples required. rate is
-            // the rate speedup from the base rate.  iBufferSize is the number
-            // of samples to consume. If rate == 2, then for every 1 sample the
-            // original song consumed in a given amount of buffer space, the
-            // twice sped up song will consume 2. The number of `sourceSamples'
-            // needed to fill a buffer of `iBufferSize' if the song is going at
-            // a `rate' speedup,
-            //
-            //    sourceSamples = iBufferSize * rate
-            //
-            int iSourceSamples = abs(double(iBufferSize) * rate);
-
             Q_ASSERT(even(iBufferSize));
             
-            //Q_ASSERT(even(iSourceSamples));
-            if (!even(iSourceSamples))
-                iSourceSamples++;
-
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
             Q_ASSERT(round(filepos_play) == filepos_play);
             // Even.
             Q_ASSERT(even(filepos_play));
             
-            // Read the raw source data into m_pBuffer
-            prepareSampleBuffer(iSourceSamples, rate, iBufferSize);
-
-            // This is because of some oddness with EngineBufferScalers. We need
-            // to revisit the EngineBufferScale design now that we have more
-            // control
-            int iBufferStartSample = (backwards ? iSourceSamples-1 : 0);
- 
             // Perform scaling of Reader buffer into buffer.
-            output = m_pScale->scale(iBufferStartSample,
+            output = m_pScale->scale(0,
                                      iBufferSize,
-                                     m_pBuffer,
-                                     iSourceSamples);
+                                     0,
+                                     0);
             idx = m_pScale->getNewPlaypos();
                 
             // qDebug() << "sourceSamples used " << iSourceSamples
@@ -496,9 +472,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //     pOutput[i] = output[i];
             // }
             
-
             // Adjust filepos_play by the amount we processed.
-            filepos_play += (idx-iBufferStartSample);
+            filepos_play += idx;
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -509,7 +484,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Adjust filepos_play in case we took any loops during this buffer
             filepos_play = m_pLoopingControl->process(rate,
                                                       filepos_play,
-                                                      file_length_old);
+                                                      file_length_old,
+                                                      iBufferSize);
 
             Q_ASSERT(round(filepos_play) == filepos_play);
 
@@ -532,11 +508,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
-        // NOTE: RJ munged up this call... I only *really* need the last
-        // argument, to be able to handle pitchbending wrt latency.
-        //m_pRateControl->process(rate, filepos_play, file_length_old);
-        m_pRateControl->process(rate, filepos_play, ((double)m_pSampleRate->get() / iBufferSize));
-        
+        m_pRateControl->process(rate, filepos_play,
+                                file_length_old, 
+                                ((double)m_pSampleRate->get() / iBufferSize));
         
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
@@ -648,145 +622,6 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         ++i;
     } 
 }
-
-int EngineBuffer::prepareSampleBuffer(int iSourceSamples,
-                                      const double dRate,
-                                      const int iBufferSize) {
-    
-    if (!even(iSourceSamples))
-        iSourceSamples--;
-
-    // We have to ensure that the buffer we prepare has enough source samples to
-    // fill an entire iBufferSize buffer with scaled audio, whether we are
-    // progressing forward or in reverse.
-
-    bool in_reverse = (dRate < 0);
-
-    // First read samples from the current position of the audio.  If we read
-    // from a given audio position p, then we need to read at least
-    // iSourceSamples forward and backward in order for the EngineBufferScale we
-    // are using to have enough data to do its work.
-    
-    int samples_needed = iSourceSamples;
-    int actual_samples = 0;
-    int samples_to_read = samples_needed;
-
-    double next_loop = m_pLoopingControl->nextTrigger(dRate,
-                                                      filepos_play,
-                                                      file_length_old);
-
-    if (next_loop != kNoTrigger) {
-        samples_to_read = math_min(fabs(next_loop-filepos_play),
-                                   samples_needed);
-    }
-
-    // qDebug() << "Reading " << samples_to_read << " from CachingReader. "
-    //          << "next_loop is " << next_loop
-    //          << "samples_needed:" << samples_needed
-    //          << "filepos_play" << filepos_play
-    //          << "diff" << (next_loop - filepos_play);
-    // qDebug("%f, %f, %f", next_loop, filepos_play, next_loop-filepos_play);
-
-    Q_ASSERT(even(samples_to_read));
-
-    // The logic below will fill these values out, and well pass them as
-    // arguments to m_pReader
-    int start_sample = filepos_play;
-    int num_samples = samples_to_read;
-    CSAMPLE* baseBuffer = m_pBuffer;
-
-    if (samples_to_read == samples_needed) {
-        // The loop does not matter, we will not hit it in this buffer.
-        if (in_reverse) {
-            // Read samples_to_read samples into baseBuffer from
-            // filepos-samples_to_read, since we're in reverse.
-            start_sample = filepos_play - samples_needed;
-        } else {
-            // Read samples_to_read bytes into baseBuffer from filepos
-        }
-    } else {
-        // The loop will affect us in this buffer
-        if (in_reverse) {
-            // Funky. We need to read samples_to_read bytes so that the section
-            // of data read fills up to the very last element of the buffer.
-            start_sample = filepos_play-samples_to_read;
-            int read_offset = iSourceSamples - samples_to_read;
-            baseBuffer += read_offset;
-        } else {
-            // Read samples_to_read bytes into baseBuffer from filepos
-        }        
-    }
-
-    // Ensure we don't have a wacky start sample.
-    if (start_sample < 0) {
-        // Clear the samples we're requesting before the track.
-        memset(baseBuffer, 0, sizeof(CSAMPLE) * (-start_sample));
-        // Decrease the num_samples we will read, and increase baseBuffer by
-        // that number too (start_sample is negative)
-        num_samples += start_sample;
-        baseBuffer -= start_sample;
-        start_sample = 0;
-    }
-    
-    // Do the actual read
-    actual_samples = m_pReader->read(start_sample,
-                                     num_samples,
-                                     baseBuffer);
-
-    if (actual_samples != samples_to_read) {
-        // For some reason there was a reader error. This should not happen.
-        qDebug() << "While reading got fewer samples than asked for:"
-                 << actual_samples << " / " << samples_to_read;
-        // Zero the samples we didn't get
-        for (int i = actual_samples; i < samples_to_read; i++) {
-            baseBuffer[i] = 0.0f;
-        }
-    }
-
-    baseBuffer += actual_samples;
-    samples_needed -= actual_samples;
-
-    // TODO(rryan) -- loops of size less than the buffer size will not be
-    // properly handled here.
-
-    if (samples_needed > 0 && actual_samples == samples_to_read) {
-        // No read error occured, and we still need more samples, so that means
-        // we need to read from the loop target.
-        samples_to_read = samples_needed;
-
-        // Whether we are going reverse or forward, this returns the sample to
-        // which we should jump once we pass the next_loop sample.
-        double loop_trigger = m_pLoopingControl->getTrigger(dRate,
-                                                            filepos_play,
-                                                            file_length_old);
-        
-        if (in_reverse) {
-            // Special case -- since we're reading backwards, the loop samples
-            // go at the start of the buffer.
-            baseBuffer = m_pBuffer;
-            actual_samples = m_pReader->read(loop_trigger,
-                                             samples_to_read,
-                                             baseBuffer);
-        } else {
-            actual_samples = m_pReader->read(loop_trigger,
-                                             samples_to_read,
-                                             baseBuffer);
-        }
-
-        if (actual_samples != samples_to_read) {
-            // For some reason there was a reader error. This should not happen.
-            qDebug() << "While reading loop got fewer samples than asked for:"
-                     << actual_samples << " / " << samples_to_read;
-            // Zero the samples we didn't get
-            for (int i = actual_samples; i < samples_to_read; i++) {
-                baseBuffer[i] = 0.0f;
-            }
-        }
-    }
-
-    return 0;
-}
-
 
 void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
