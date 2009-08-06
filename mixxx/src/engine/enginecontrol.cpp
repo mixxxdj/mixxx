@@ -1,4 +1,4 @@
-// EngineControl.cpp
+// enginecontrol.cpp
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #include "engine/enginecontrol.h"
@@ -14,4 +14,26 @@ EngineControl::EngineControl(const char * _group,
 
 EngineControl::~EngineControl() {
 
+}
+
+
+double EngineControl::process(const double,
+                               const double,
+                               const double,
+                               const int) {
+    return 0;
+}
+
+double EngineControl::nextTrigger(const double,
+                                  const double,
+                                  const double,
+                                  const int) {
+    return kNoTrigger;
+}
+
+double EngineControl::getTrigger(const double,
+                                 const double,
+                                 const double,
+                                 const int) {
+    return kNoTrigger;
 }

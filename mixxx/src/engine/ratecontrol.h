@@ -25,7 +25,8 @@ public:
     ~RateControl();
     double process(const double dRate, 
                    const double currentSample,
-                   const double totalSamples);
+                   const double totalSamples,
+                   const double iBufferSize);
     double calculateRate(double baserate, bool paused);
     double getRawRate();
 

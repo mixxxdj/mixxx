@@ -43,7 +43,7 @@ void MidiStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         else if (status == MIDI_STATUS_PITCH_BEND)
             text = MIDISTATUS_STRING_PITCH;
         else
-            text = tr("Unknown");
+            text = tr("Unknown") + " (0x" + QString::number(status, 16) + ")";
 
         painter->drawText(option.rect, text, QTextOption(Qt::AlignCenter));
         //Note that Qt::AlignCenter does both vertical and horizontal alignment.

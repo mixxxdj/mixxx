@@ -70,23 +70,29 @@ bool ControlObjectThread::setExtern(double v)
 {
     bool result = false;
 
-    if ( m_sqMutex.tryLock() )
-    {
-        if( m_dataMutex.tryLock() )
-        {
-            m_sqQueue.enqueue(this);
-            m_dValue = v;
-            
-            m_dataMutex.unlock();
-            m_sqMutex.unlock();
-            
-            result = true;
-        }
-        else
-        {
-            m_sqMutex.unlock();
-        }
+    if (m_dataMutex.tryLock()) {
+        m_dValue = v;
+        result = true;
+        m_dataMutex.unlock();
     }
+
+    // if ( m_sqMutex.tryLock() )
+    // {
+    //     if( m_dataMutex.tryLock() )
+    //     {
+    //         m_sqQueue.enqueue(this);
+    //         m_dValue = v;
+            
+    //         m_dataMutex.unlock();
+    //         m_sqMutex.unlock();
+            
+    //         result = true;
+    //     }
+    //     else
+    //     {
+    //         m_sqMutex.unlock();
+    //     }
+    // }
 
     return result;
 }

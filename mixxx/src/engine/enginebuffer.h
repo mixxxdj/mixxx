@@ -29,6 +29,7 @@
 class BpmControl;
 class RateControl;
 class LoopingControl;
+class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
 class ControlBeat;
@@ -121,10 +122,6 @@ private:
 
     void updateIndicators(double rate, int iBufferSize);
 
-    int prepareSampleBuffer(int iSourceSamples, 
-                            const double rate,
-                            const int iBufferSize);
-
     void hintReader(const double rate,
                     const int iSourceSamples);
 
@@ -140,6 +137,10 @@ private:
 
     /** Pointer to the BPM control object */
     BpmControl* m_pBpmControl;
+
+    /** The read ahead manager for EngineBufferScale's that need to read
+        ahead */
+    ReadAheadManager* m_pReadAheadManager;
 
     /** Pointer to other EngineBuffer */
     EngineBuffer* m_pOtherEngineBuffer;
@@ -199,19 +200,7 @@ private:
 
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we
         start playing post-scratch **/
-    bool m_bResetPitchIndpTimeStretch; // TODO
-
-    // BufferSamplePair is a pair corresponding that says that a given buffer
-    // index (first value) corresponds to a file sample (second value).
-    typedef QPair<int, int> BufferSamplePair;
-
-    CSAMPLE* m_pBuffer;
-    int m_iBufferSize;
-    int m_iBufferRead;
-    int m_iBufferReadSample;
-    QList<BufferSamplePair> m_bufferSamples;
-    int m_iBufferWrite;
-
+    bool m_bResetPitchIndpTimeStretch; // TODO(rryan) remove?
 };
 
 #endif

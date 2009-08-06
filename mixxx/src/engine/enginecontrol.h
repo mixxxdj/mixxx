@@ -1,4 +1,4 @@
-// EngineControl.h
+// enginecontrol.h
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef ENGINECONTROL_H
@@ -40,29 +40,26 @@ class EngineControl : public QObject {
     virtual ~EngineControl();
     
     virtual double process(const double dRate,
-                           const double currentSample,
-                           const double totalSamples) {
-        return 0;
-    }
+                           const double dCurrentSample,
+                           const double dTotalSamples,
+                           const int iBufferSize);
 
-    virtual double nextTrigger(const double rate,
-                               const double currentSample,
-                               const double totalSamples) {
-        return kNoTrigger;
-    }
+    virtual double nextTrigger(const double dRate,
+                               const double dCurrentSample,
+                               const double dTotalSamples,
+                               const int iBufferSize);
 
-    virtual double getTrigger(const double rate,
-                              const double currentSample,
-                              const double totalSamples) {
-        return kNoTrigger;
-    }
+    virtual double getTrigger(const double dRate,
+                              const double dCurrentSample,
+                              const double dTotalSamples,
+                              const int iBufferSize);
 
     void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {
         m_pOtherEngineBuffer = pOtherEngineBuffer;
     }
     
-    void setCurrentSample(const double currentSample) {
-        m_dCurrentSample = currentSample;
+    void setCurrentSample(const double dCurrentSample) {
+        m_dCurrentSample = dCurrentSample;
     }
     
     double getCurrentSample() {

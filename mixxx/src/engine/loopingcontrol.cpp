@@ -46,12 +46,9 @@ LoopingControl::~LoopingControl() {
 
 double LoopingControl::process(const double dRate,
                                const double currentSample,
-                               const double totalSamples)
+                               const double totalSamples,
+                               const int iBufferSize)
 {
-	// From WBS: 1.2.2 In process() (or similar) function, check if playpos ==
-    // end of loop (and move playpos to start of loop)
-
-    
     m_iCurrentSample = currentSample;
     if (!even(m_iCurrentSample))
         m_iCurrentSample--;
@@ -74,7 +71,8 @@ double LoopingControl::process(const double dRate,
 
 double LoopingControl::nextTrigger(const double dRate,
                                    const double currentSample,
-                                   const double totalSamples) {
+                                   const double totalSamples,
+                                   const int iBufferSize) {
     bool bReverse = dRate < 0;
 
     if(m_bLoopingEnabled) {
@@ -88,7 +86,8 @@ double LoopingControl::nextTrigger(const double dRate,
 
 double LoopingControl::getTrigger(const double dRate,
                                   const double currentSample,
-                                  const double totalSamples) {
+                                  const double totalSamples,
+                                  const int iBufferSize) {
     bool bReverse = dRate < 0;
 
     if(m_bLoopingEnabled) {

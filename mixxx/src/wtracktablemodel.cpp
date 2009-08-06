@@ -188,7 +188,8 @@ QMimeData *WTrackTableModel::mimeData(const QModelIndexList &indexes) const {
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
             TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->at(index.row());
-            QUrl url(QString(m_pTrackInfo->getLocation()));
+			QUrl url = QUrl::fromLocalFile(QString(m_pTrackInfo->getLocation()));
+
             if (!url.isValid())
               qDebug() << "ERROR invalid url\n";
             else
