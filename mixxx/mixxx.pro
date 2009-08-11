@@ -28,10 +28,10 @@ QT += core \
     script \
     qt3support
 
-DESTDIR = bin
+DESTDIR = win32_build
 unix {
   win32 { # This should only happen when cross compiling...
-    DESTDIR = bin-win32
+    DESTDIR = win32_build
   }
 }
 
@@ -73,7 +73,6 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \
-#    lib/soundtouch \
     lib/kissfft \
 	lib/ladspa \
 	/sw/include \
@@ -93,7 +92,6 @@ HEADERS += src/analyser.h \
     src/engine/enginebufferscaledummy.h \
     src/engine/enginebufferscalelinear.h \
     src/engine/enginebufferscalereal.h \
-#    src/engine/enginebufferscalesrc.h \
     src/engine/enginebufferscalest.h \
     src/engine/enginechannel.h \
     src/engine/engineclipping.h \
@@ -108,7 +106,6 @@ HEADERS += src/analyser.h \
     src/engine/engineobject.h \
     src/engine/enginepregain.h \
     src/engine/enginesidechain.h \
-#    src/engine/enginespectralback.h \
     src/engine/enginespectralfwd.h \
     src/engine/enginetemporal.h \
     src/engine/enginevinylsoundemu.h \
@@ -124,7 +121,6 @@ HEADERS += src/analyser.h \
     src/waveform/waveformrendersignal.h \
     src/waveform/waveformrendersignalpixmap.h \
     src/widget/wabstractcontrol.h \
-#    src/widget/wcombobox.h \
     src/widget/wdisplay.h \
     src/widget/wglwaveformviewer.h \
     src/widget/wknob.h \
@@ -141,7 +137,6 @@ HEADERS += src/analyser.h \
     src/widget/wslider.h \
     src/widget/wslidercomposed.h \
     src/widget/wstatuslight.h \
-#    src/widget/wvinylcontrolindicator.h \
     src/widget/wvisualsimple.h \
     src/widget/wvumeter.h \
     src/widget/wwaveformviewer.h \
@@ -160,7 +155,6 @@ HEADERS += src/analyser.h \
     src/controlobjectthreadwidget.h \
     src/controlpotmeter.h \
     src/controlpushbutton.h \
-#    src/controlrotary.h \
     src/controlttrotary.h \
     src/defs.h \
     src/defs_audiofiles.h \
@@ -177,13 +171,10 @@ HEADERS += src/analyser.h \
     src/dlgprefeq.h \
     src/dlgpreferences.h \
     src/dlgprefmidibindings.h \
-#    src/dlgprefmididevice.h \
     src/dlgprefnomidi.h \
     src/dlgprefplaylist.h \
     src/dlgprefsound.h \
     src/fakemonitor.h \
-#    src/hercules.h \
-#    src/herculeslinux.h \
     src/imgcolor.h \
     src/imginvert.h \
     src/imgloader.h \
@@ -194,7 +185,6 @@ HEADERS += src/analyser.h \
     src/mathstuff.h \
     src/midichanneldelegate.h \
     src/mididevicehandler.h \
-#    src/midiinputmapping.h \
     src/midiinputmappingtablemodel.h \
     src/midiledhandler.h \
     src/midimapping.h \
@@ -210,25 +200,16 @@ HEADERS += src/analyser.h \
     src/mixxxkeyboard.h \
     src/mixxxview.h \
     src/monitor.h \
-#    src/mouse.h \
-#    src/mouselinux.h \
-#    src/mousewin.h \
     src/parser.h \
     src/parserm3u.h \
     src/parserpls.h \
     src/peaklist.h \
     src/playerinfo.h \
-#    src/powermate.h \
-#    src/powermatelinux.h \
-#    src/powermatewin.h \
     src/probabilityvector.h \
     src/proxymodel.h \
     src/reader.h \
     src/readerevent.h \
     src/readerextract.h \
-#    src/readerextractbeat.h \
-#     src/readerextractfft.h \
-#     src/readerextracthfc.h \
     src/readerextractwave.h \
     src/rotary.h \
     src/rtthread.h \
@@ -271,7 +252,6 @@ SOURCES += src/analyserbpm.cpp \
     src/engine/enginebufferscaledummy.cpp \
     src/engine/enginebufferscalelinear.cpp \
     src/engine/enginebufferscalereal.cpp \
-#    src/engine/enginebufferscalesrc.cpp \
     src/engine/enginebufferscalest.cpp \
     src/engine/enginechannel.cpp \
     src/engine/engineclipping.cpp \
@@ -286,7 +266,6 @@ SOURCES += src/analyserbpm.cpp \
     src/engine/engineobject.cpp \
     src/engine/enginepregain.cpp \
     src/engine/enginesidechain.cpp \
-#    src/engine/enginespectralback.cpp \
     src/engine/enginespectralfwd.cpp \
     src/engine/enginetemporal.cpp \
     src/engine/enginevinylsoundemu.cpp \
@@ -302,7 +281,6 @@ SOURCES += src/analyserbpm.cpp \
     src/waveform/waveformrendersignal.cpp \
     src/waveform/waveformrendersignalpixmap.cpp \
     src/widget/wabstractcontrol.cpp \
-#    src/widget/wcombobox.cpp \
     src/widget/wdisplay.cpp \
     src/widget/wglwaveformviewer.cpp \
     src/widget/wknob.cpp \
@@ -319,7 +297,6 @@ SOURCES += src/analyserbpm.cpp \
     src/widget/wslider.cpp \
     src/widget/wslidercomposed.cpp \
     src/widget/wstatuslight.cpp \
-#    src/widget/wvinylcontrolindicator.cpp \
     src/widget/wvisualsimple.cpp \
     src/widget/wvumeter.cpp \
     src/widget/wwaveformviewer.cpp \
@@ -337,7 +314,6 @@ SOURCES += src/analyserbpm.cpp \
     src/controlobjectthreadwidget.cpp \
     src/controlpotmeter.cpp \
     src/controlpushbutton.cpp \
-#    src/controlrotary.cpp \
     src/controlttrotary.cpp \
     src/dlgabout.cpp \
     src/dlgbpmscheme.cpp \
@@ -349,14 +325,10 @@ SOURCES += src/analyserbpm.cpp \
     src/dlgprefeq.cpp \
     src/dlgpreferences.cpp \
     src/dlgprefmidibindings.cpp \
-#    src/dlgprefmididevice.cpp \
     src/dlgprefnomidi.cpp \
     src/dlgprefplaylist.cpp \
     src/dlgprefsound.cpp \
     src/fakemonitor.cpp \
-#    src/hercules.cpp \
-#    src/herculeslinux.cpp \
-#    src/herculeslinuxlegacy.cpp \
     src/imgcolor.cpp \
     src/imginvert.cpp \
     src/imgloader.cpp \
@@ -366,7 +338,6 @@ SOURCES += src/analyserbpm.cpp \
     src/mathstuff.cpp \
     src/midichanneldelegate.cpp \
     src/mididevicehandler.cpp \
-#    src/midiinputmapping.cpp \
     src/midiinputmappingtablemodel.cpp \
     src/midiledhandler.cpp \
     src/midimapping.cpp \
@@ -381,25 +352,16 @@ SOURCES += src/analyserbpm.cpp \
     src/mixxxkeyboard.cpp \
     src/mixxxview.cpp \
     src/monitor.cpp \
-#    src/mouse.cpp \
-#    src/mouselinux.cpp \
-#    src/mousewin.cpp \
     src/parser.cpp \
     src/parserm3u.cpp \
     src/parserpls.cpp \
     src/peaklist.cpp \
     src/playerinfo.cpp \
-#    src/powermate.cpp \
-#    src/powermatelinux.cpp \
-#    src/powermatewin.cpp \
     src/probabilityvector.cpp \
     src/proxymodel.cpp \
     src/reader.cpp \
     src/readerevent.cpp \
     src/readerextract.cpp \
-#    src/readerextractbeat.cpp \
-#    src/readerextractfft.cpp \
-#    src/readerextracthfc.cpp \
     src/readerextractwave.cpp \
     src/rotary.cpp \
     src/rtthread.cpp \
@@ -468,7 +430,6 @@ FORMS += src/dlgaboutdlg.ui \
     src/dlgpreferencesdlg.ui \
     src/dlgprefmidibindingsdlg.ui \
     src/dlgprefmididevicedlg.ui \
-#    src/dlgprefmididlg.ui \
     src/dlgprefplaylistdlg.ui \
     src/dlgprefsounddlg.ui \
     src/dlgprefvinyldlg.ui \
@@ -608,7 +569,6 @@ CONFIG(script) {
         src/script/scriptengine.h \
         src/script/scriptrecorder.h \
         src/script/scriptstudio.h \
-#        src/script/scripttest.h \
         src/script/sdatetime.h \
         src/script/signalrecorder.h \
         src/script/trackcontrolevent.h \
@@ -628,7 +588,6 @@ CONFIG(script) {
         src/script/scriptengine.cpp \
         src/script/scriptrecorder.cpp \
         src/script/scriptstudio.cpp \
-#        src/script/scripttest.cpp \
         src/script/sdatetime.cpp \
         src/script/signalrecorder.cpp \
         src/script/trackcontrolevent.cpp \
@@ -763,32 +722,32 @@ CONFIG(ffmpeg) {
 
 # Copy Windows dependencies to DESTDIR.
 win32 {
-    !exists($$DESTDIR):system( mkdir $$replace(DESTDIR, /,$$DIR_SEPARATOR) )
+    !exists($$DESTDIR):system( mkdir \"$$replace(DESTDIR, /,$$DIR_SEPARATOR)\" )
     # MinGW run-time
     DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll
     CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
         ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
     # Qt4 libraries
     debug {
-        DLLs += $$(QTDIR)/lib/Qt3Supportd4.dll \
-            $$(QTDIR)/lib/QtCored4.dll \
-            $$(QTDIR)/lib/QtGuid4.dll \
-            $$(QTDIR)/lib/QtNetworkd4.dll \
-            $$(QTDIR)/lib/QtSqld4.dll \
-            $$(QTDIR)/lib/QtXmld4.dll \
-            $$(QTDIR)/lib/QtOpenGLd4.dll \
-            $$(QTDIR)/lib/QtScriptd4.dll
+        DLLs += $$(QTDIR)/bin/Qt3Supportd4.dll \
+            $$(QTDIR)/bin/QtCored4.dll \
+            $$(QTDIR)/bin/QtGuid4.dll \
+            $$(QTDIR)/bin/QtNetworkd4.dll \
+            $$(QTDIR)/bin/QtSqld4.dll \
+            $$(QTDIR)/bin/QtXmld4.dll \
+            $$(QTDIR)/bin/QtOpenGLd4.dll \
+            $$(QTDIR)/bin/QtScriptd4.dll
         # include GNU Debugger in debug distros
         DLLs += $$(QTDIR)/../mingw/bin/gdb.exe
     } else {
-        DLLs += $$(QTDIR)/lib/Qt3Support4.dll \
-            $$(QTDIR)/lib/QtCore4.dll \
-            $$(QTDIR)/lib/QtGui4.dll \
-            $$(QTDIR)/lib/QtNetwork4.dll \
-            $$(QTDIR)/lib/QtSql4.dll \
-            $$(QTDIR)/lib/QtXml4.dll \
-            $$(QTDIR)/lib/QtOpenGL4.dll \
-            $$(QTDIR)/lib/QtScript4.dll
+        DLLs += $$(QTDIR)/bin/Qt3Support4.dll \
+            $$(QTDIR)/bin/QtCore4.dll \
+            $$(QTDIR)/bin/QtGui4.dll \
+            $$(QTDIR)/bin/QtNetwork4.dll \
+            $$(QTDIR)/bin/QtSql4.dll \
+            $$(QTDIR)/bin/QtXml4.dll \
+            $$(QTDIR)/bin/QtOpenGL4.dll \
+            $$(QTDIR)/bin/QtScript4.dll
     }
     # mixxx-winlibs DLLs
     DLLs += ../mixxx-winlib/ogg.dll \
@@ -801,11 +760,12 @@ win32 {
 
     # check if DLL exists at target, if not copy it there
     for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {
-        message( copying "$$replace(DLL, /,$$DIR_SEPARATOR)" -> "$$DESTDIR" ... )
-        system( $$QMAKE_COPY "$$replace(DLL, /,$$DIR_SEPARATOR)" "$$DESTDIR" )
+        message( copying \"$$replace(DLL, /,$$DIR_SEPARATOR)\" -> \"$$DESTDIR\" ... )
+        system( $$QMAKE_COPY \"$$replace(DLL, /,$$DIR_SEPARATOR)\" \"$$DESTDIR\" )
     }
     # create DESTDIR\testrun-mixxx.cmd to run mixxx using the workspace resource files.
-    win32-g++:system( echo $$TARGET --resourcePath $$replace(PWD, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}res>$${PWD}$${DIR_SEPERATOR}$$replace(DESTDIR, /,$${DIR_SEPERATOR})$${DIR_SEPERATOR}testrun-$${TARGET}.cmd )
+    message ( Creating testrun-mixxx.cmd at \"$${PWD}$${DIR_SEPARATOR}$$replace(DESTDIR, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}testrun-$${TARGET}.cmd\" )
+    system( echo $$TARGET --resourcePath \"$$replace(PWD, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}res\">\"$${PWD}$${DIR_SEPARATOR}$$replace(DESTDIR, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}testrun-$${TARGET}.cmd\" )
 }
 
 win32 {
@@ -815,7 +775,7 @@ win32 {
     # SH Usage: make -f Makefile.Debug nsis
     nsis.target = nsis
     exists($$BUILDDIR/gdb.exe):INCLUDE_GDB = -DINCLUDE_GDB
-    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=$$BUILDDIR $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=\"$$BUILDDIR\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
     # nsis.depends =
     QMAKE_EXTRA_UNIX_TARGETS += nsis
 }
