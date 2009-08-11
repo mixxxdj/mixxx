@@ -14,7 +14,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #pragma intrinsic(fabs)
 #endif
 
@@ -59,23 +59,31 @@ void EngineVuMeter::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBuf
     m_iSamplesCalculated += iBufferSize/2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated*2 > (44100/UPDATE_RATE) )
+    if (m_iSamplesCalculated > (44100/2/UPDATE_RATE) )
     {
-        m_fRMSvolumeL = log10(m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1);
-        m_fRMSvolumeR = log10(m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1);
-        m_ctrlVuMeterL->set( math_min(1.0, math_max(0.0, m_fRMSvolumeL)) );
-        m_ctrlVuMeterR->set( math_min(1.0, math_max(0.0, m_fRMSvolumeR)) );
+        doSmooth(m_fRMSvolumeL, log10(m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
+	doSmooth(m_fRMSvolumeR, log10(m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
 
-        FLOAT_TYPE m_fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2;
-        FLOAT_TYPE m_fRMSvolumePrev = m_fRMSvolume;
-        FLOAT_TYPE smoothFactor;
-        // Smooth the output
-        smoothFactor = (m_fRMSvolumePrev > m_fRMSvolume) ? DECAY_SMOOTHING : ATTACK_SMOOTHING;
-        m_fRMSvolume = m_fRMSvolumePrev + smoothFactor * (m_fRMSvolume - m_fRMSvolumePrev);
-        m_ctrlVuMeter->set( math_min(1.0, math_max(0.0, m_fRMSvolume)) );
-        // Reset calculation:
+	m_ctrlVuMeterL->set(m_fRMSvolumeL);
+        m_ctrlVuMeterR->set(m_fRMSvolumeR);
+        m_ctrlVuMeter->set( (m_fRMSvolumeL + m_fRMSvolumeR) / 2);
+
+	    // Reset calculation:
         m_iSamplesCalculated = 0;
         m_fRMSvolumeSumL = 0;
         m_fRMSvolumeSumR = 0;
     }
+}
+
+
+ void EngineVuMeter::doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume)
+{
+	if (currentVolume > newVolume)
+		currentVolume -= DECAY_SMOOTHING * (currentVolume - newVolume);
+	else
+		currentVolume += ATTACK_SMOOTHING * (newVolume - currentVolume);
+	if (currentVolume < 0)
+		currentVolume=0;
+	if (currentVolume > 1.0)
+		currentVolume=1.0;
 }

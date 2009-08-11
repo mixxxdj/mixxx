@@ -63,7 +63,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
-    $$UI_DIR/ui_dlgprefmididevicedlg.h \
+#    $$UI_DIR/ui_dlgprefmididevicedlg.h \
 #    $$UI_DIR/ui_dlgprefmididlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
@@ -141,12 +141,14 @@ HEADERS += src/analyser.h \
     src/widget/wvumeter.h \
     src/widget/wwaveformviewer.h \
     src/widget/wwidget.h \
-    src/bpm/bpmdetect.h \
-    src/bpm/bpmdetector.h \
+#    src/bpm/bpmdetect.h \
+#    src/bpm/bpmdetector.h \
     src/bpm/bpmreceiver.h \
     src/bpm/bpmscheme.h \
-    src/bpm/peakfinder.h \
+#    src/bpm/peakfinder.h \
     src/bpm/wavesegmentation.h \
+    src/controlgroupdelegate.h \
+    src/controlvaluedelegate.h \
     src/controllogpotmeter.h \
     src/controlnull.h \
     src/controlobject.h \
@@ -194,7 +196,8 @@ HEADERS += src/analyser.h \
     src/midiobjectnull.h \
     src/midioutputmapping.h \
 	src/midioutputmappingtablemodel.h \
-    src/miditypedelegate.h \
+#    src/miditypedelegate.h \
+    src/midistatusdelegate.h \
     src/mixxx.h \
     src/mixxxcontrol.h \
     src/mixxxkeyboard.h \
@@ -301,11 +304,13 @@ SOURCES += src/analyserbpm.cpp \
     src/widget/wvumeter.cpp \
     src/widget/wwaveformviewer.cpp \
     src/widget/wwidget.cpp \
-    src/bpm/bpmdetect.cpp \
-    src/bpm/bpmdetector.cpp \
+#    src/bpm/bpmdetect.cpp \
+#    src/bpm/bpmdetector.cpp \
     src/bpm/bpmscheme.cpp \
-    src/bpm/peakfinder.cpp \
+#    src/bpm/peakfinder.cpp \
     src/bpm/wavesegmentation.cpp \
+    src/controlgroupdelegate.cpp \
+    src/controlvaluedelegate.cpp \
     src/controllogpotmeter.cpp \
     src/controlnull.cpp \
     src/controlobject.cpp \
@@ -346,7 +351,8 @@ SOURCES += src/analyserbpm.cpp \
     src/midiobject.cpp \
     src/midiobjectnull.cpp \
 	src/midioutputmappingtablemodel.cpp \
-    src/miditypedelegate.cpp \
+#    src/miditypedelegate.cpp \
+    src/midistatusdelegate.cpp \
     src/mixxx.cpp \
     src/mixxxcontrol.cpp \
     src/mixxxkeyboard.cpp \
@@ -393,19 +399,16 @@ SOURCES += src/analyserbpm.cpp \
     src/errordialog.cpp
 
 # Soundtouch
-win32 {
-    INCLUDEPATH += ../mixxx-winlib/soundtouch-1.4.0/include
-    LIBS += ../mixxx-winlib/soundtouch-1.4.0/mingw-bin/libSoundTouch.a
-} else {
-    INCLUDEPATH += lib/soundtouch
-    SOURCES += lib/soundtouch/SoundTouch.cpp \
-        lib/soundtouch/TDStretch.cpp \
-        lib/soundtouch/RateTransposer.cpp \
-        lib/soundtouch/AAFilter.cpp \
-        lib/soundtouch/FIFOSampleBuffer.cpp \
-        lib/soundtouch/FIRFilter.cpp \
-        lib/soundtouch/cpu_detect_x86_gcc.cpp
-}
+INCLUDEPATH += lib/soundtouch-1.4.1
+SOURCES += lib/soundtouch-1.4.1/SoundTouch.cpp \
+    lib/soundtouch-1.4.1/TDStretch.cpp \
+    lib/soundtouch-1.4.1/RateTransposer.cpp \
+    lib/soundtouch-1.4.1/AAFilter.cpp \
+    lib/soundtouch-1.4.1/FIFOSampleBuffer.cpp \
+    lib/soundtouch-1.4.1/FIRFilter.cpp \
+    lib/soundtouch-1.4.1/PeakFinder.cpp \
+    lib/soundtouch-1.4.1/BPMDetect.cpp \
+    lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp
 
 # Fidlib
 SOURCES += lib/fidlib-0.9.9/fidlib.c

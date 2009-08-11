@@ -22,7 +22,7 @@ class WWaveformViewer : public QWidget
 {
     Q_OBJECT
 public:
-    WWaveformViewer(const char *group, QWidget *parent=0, Qt::WFlags f = 0);
+  WWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *parent=0, Qt::WFlags f = 0);
     ~WWaveformViewer();
 
     void dragEnterEvent(QDragEnterEvent *event);
@@ -31,7 +31,7 @@ public:
     bool eventFilter(QObject *o, QEvent *e);
 
 public slots:
-    void slotNewTrack(TrackInfoObject*);
+
 signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
@@ -52,14 +52,10 @@ private:
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
     
-    /** Colors */
-    QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
-
     bool m_painting;
     QMutex m_paintMutex;
 
     const char *m_pGroup;
-    EngineBuffer *m_pEngineBuffer;
 
 };
 

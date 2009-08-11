@@ -74,8 +74,8 @@ EngineSideChain::~EngineSideChain()
     wait(); //Wait until the thread has finished.
 
     //Free up memory
-    delete m_bufferFront;
-    delete m_bufferBack;
+    delete [] m_bufferFront;
+    delete [] m_bufferBack;
 
 #ifdef __SHOUTCAST__
     delete shoutcast;

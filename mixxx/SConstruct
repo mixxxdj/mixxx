@@ -1,7 +1,50 @@
-#Build the SConscript file in /src, and make it us src/.obj for storing obj output.
-#SConscript(File('lib/ladspa/SConscript'), build_dir=Dir('lib/ladspa/.obj'), duplicate=0)
-SConscript(File('src/SConscript'), build_dir=Dir('src/.obj'), duplicate=0) 
+#!/usr/bin/env python
+
+import sys, os, platform
+
+machine = platform.machine()
+Export('machine')	#So architecture-specific decisions & optimizations can be made in the SConscript
+
+if os.name == 'nt':
+	if machine == 'x86':
+		print 'Platform: Windows 32-bit'
+		platform = 'win32'
+	else:		#This is only correctly detected if you're running a 64-bit version of Python, otherwise it'll see an x86 system
+		print 'Platform: Windows 64-bit'
+		print 'CPU architecture: ' + machine
+		platform = 'win64'
+	
+	# Allow to override auto-detection (environment variables must already be set appropriately with SETENV.CMD /xp /x86 or /x64)
+	if ARGUMENTS.get('win64'):
+		print 'FORCING 64-BIT BUILD'
+		platform = 'win64'
+	if ARGUMENTS.get('win32'):
+		print 'FORCING 32-BIT BUILD'
+		platform = 'win32'
+	
+elif sys.platform == 'linux2':
+     print 'Platform: Linux ' + machine
+     platform = 'linux'
+elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
+     print 'Platform: BSD ' + machine
+     platform = 'bsd'
+elif sys.platform == 'darwin':
+     print 'Platform: OS X ' + machine
+     platform = 'osx'
+else:
+	print 'Platform: Unknown (assuming Linux-like,) machine ' + machine
+	platform = 'linux'
+
+Export('platform')
+
+build_dir = '%s_build' % platform
+
+SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
 #wtf doesn't this work on win32 (works on Linux, OS X):
-Command("mixxx", "#src/.obj/mixxx", Copy("$TARGET", "$SOURCE"))
+Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
+
 #hack for windows:
-Copy("mixxx", "#src/.obj/mixxx")
+Copy("mixxx", os.path.join(build_dir, "mixxx"))
+
+#on OS X, if the bundle has been built, copy it up:
+#Command("Mixxx.app", os.path.join(build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))

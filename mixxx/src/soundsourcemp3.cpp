@@ -22,21 +22,23 @@
 SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
     QFile file( qFilename );
-    if (!file.open(QIODevice::ReadOnly))
-        qDebug() << "MAD: Open failed:" << qFilename;
+    if (!file.open(QIODevice::ReadOnly)) {
+        //qDebug() << "MAD: Open failed:" << qFilename;
+    }
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.read(inputbuf, inputbuf_len);
-    if (tmp != inputbuf_len)
-        qDebug() << "MAD: ERR reading mp3-file: "
-                 << qFilename
-                 << "\nRead only "
-                 << tmp
-                 << "bytes, but wanted"
-                 << inputbuf_len
-                 << "bytes";
+    if (tmp != inputbuf_len) {
+        // qDebug() << "MAD: ERR reading mp3-file: "
+        //          << qFilename
+        //          << "\nRead only "
+        //          << tmp
+        //          << "bytes, but wanted"
+        //          << inputbuf_len
+        //          << "bytes";
+    }
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -68,11 +70,11 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
                 }
             }
 
-            qDebug() << "MAD: ERR decoding header "
-                     << currentframe << ": "
-                     << mad_stream_errorstr(&Stream)
-                     << " (len=" << mad_timer_count(filelength,MAD_UNITS_MILLISECONDS)
-                     << ")";
+            // qDebug() << "MAD: ERR decoding header "
+            //          << currentframe << ": "
+            //          << mad_stream_errorstr(&Stream)
+            //          << " (len=" << mad_timer_count(filelength,MAD_UNITS_MILLISECONDS)
+            //          << ")";
             continue;
         }
 
@@ -80,7 +82,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 
         // This warns us only when the reported sample rate changes. (and when it is first set)
         if(SRATE != Header.samplerate) {
-            qDebug() << "SSMP3() :: Setting SRATE to " << Header.samplerate << " from " << SRATE;
+            //qDebug() << "SSMP3() :: Setting SRATE to " << Header.samplerate << " from " << SRATE;
         }
 
         SRATE = Header.samplerate;
@@ -436,7 +438,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                     }
                     continue;
                 }
-                qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(&Stream) << ")";
+                //qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(&Stream) << ")";
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
                 // qDebug() << "MAD: buflen ERR";
@@ -584,7 +586,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
         unsigned int readbytes = file.read(inputbuf, READLENGTH);
         if(readbytes != READLENGTH) {
-            qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
+            //qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
             if(readbytes == -1) {
                 // fatal error, no bytes were read
                 qDebug() << "MAD: fatal error reading mp3 file";
@@ -609,7 +611,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
                         break;
                     }
                     // Something worse happened
-                    qDebug() << "SSMP3::ParseHeaeder - MAD unrecoverable error: " << mad_stream_errorstr(&Stream);
+                    //qDebug() << "SSMP3::ParseHeaeder - MAD unrecoverable error: " << mad_stream_errorstr(&Stream);
                     break;
                 } else if(Stream.error == MAD_ERROR_LOSTSYNC) {
                     // ignore LOSTSYNC due to ID3 tags
@@ -634,8 +636,8 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
     }
 
-    qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
-    qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
+    //qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
+    //qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
     
     if (constantbitrate && frames>0) {
         // This means that duration is an approximation.
@@ -646,7 +648,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
         //mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
         mad_timer_multiply(&dur, Track->getLength()/bytesperframe);
         int duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
-        qDebug() << "SSMP3::ParseHeader - CBR bytes per frame" << bytesperframe << " Estimated duration " << duration;
+        //qDebug() << "SSMP3::ParseHeader - CBR bytes per frame" << bytesperframe << " Estimated duration " << duration;
         Track->setDuration(duration);
         Track->setBitrate(Header.bitrate/1000);
     }
@@ -673,8 +675,14 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
         {
             id3_utf16_t * framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
-            if (strlen>0)
+            if (strlen>0) {
                 str->setUtf16((ushort *)framestr,strlen);
+                //The ID3 specification says that a tag can contain a UTF-16 byte-order-mark (BOM). If we don't
+                //remove these by hand, they will end up in strange places like our library XML file and
+                //break it. :/ Conclusion: libid3tag sucks.
+                *str = str->remove(QChar(QChar::ByteOrderMark));
+                *str = str->remove(QChar(QChar::ByteOrderSwapped));
+            }
             free(framestr);
         }
     }

@@ -64,8 +64,8 @@ EngineBufferCue::EngineBufferCue(const char * group, EngineBuffer * pEngineBuffe
     buttonCueDefault = new ControlPushButton(ConfigKey(group, "cue_default"));
     connect(buttonCueDefault, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueDefault(double)));
     
-    // Cue behavior setting
-    m_pControlCueDefault = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"cue_simple")));
+    // Cue behavior setting. 1 means Simple Mode, 0 means CDJ Mode
+    m_pControlCueDefault = new ControlObject(ConfigKey(group,"cue_mode"));
 }
 
 EngineBufferCue::~EngineBufferCue()

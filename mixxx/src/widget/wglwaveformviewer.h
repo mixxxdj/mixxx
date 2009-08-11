@@ -22,7 +22,7 @@ class WGLWaveformViewer : public QGLWidget
 {
     Q_OBJECT
 public:
-    WGLWaveformViewer(const char *group, QWidget *pParent=0, const QGLWidget *pShareWidget = 0, Qt::WFlags f = 0);
+    WGLWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *pParent=0, const QGLWidget *pShareWidget = 0, Qt::WFlags f = 0);
     ~WGLWaveformViewer();
 
     bool directRendering();
@@ -30,10 +30,8 @@ public:
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
-    //void resetColors();
     
 public slots:
-    void slotNewTrack(TrackInfoObject*);
     void setValue(double);
 signals:
     void valueChangedLeftDown(double);
@@ -59,14 +57,10 @@ private:
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
     
-    /** Colors */
-    QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
-
     bool m_painting;
     QMutex m_paintMutex;
 
     const char *m_pGroup;
-    EngineBuffer *m_pEngineBuffer;
 
 };
 

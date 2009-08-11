@@ -32,20 +32,19 @@ public:
     ~MidiObjectWin();
     void devOpen(QString device);
     void devClose();
-    void handleMidi(char channel, char midicontrol, char midivalue, QString device);
+    void handleMidi(char channel, char midicontrol, char midivalue);
     void sendShortMsg(unsigned int word);
     void sendSysexMsg(unsigned char data[], unsigned int length);
     virtual void updateDeviceList();
 
     QMap<QString, HMIDIIN> handles;
+	QMap<QString, HMIDIOUT> outHandles;
 
 protected:
     void run();
     void stop();
-
-    HMIDIOUT outhandle;
 };
 
-void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
 
 #endif

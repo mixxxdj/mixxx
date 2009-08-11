@@ -28,28 +28,14 @@
 #include <qmap.h>
 #include <QHash>
 
+/*
 typedef enum {
     MIDI_EMPTY            = 0,
     MIDI_KEY              = 1,
     MIDI_CTRL             = 2,
     MIDI_PITCH            = 3
 } MidiType;
-
-typedef enum {
-    MIDI_OPT_NORMAL           = 0,
-    MIDI_OPT_INVERT           = 1,
-    MIDI_OPT_ROT64            = 2,
-    MIDI_OPT_ROT64_INV        = 3,
-    MIDI_OPT_ROT64_FAST       = 4,
-    MIDI_OPT_DIFF             = 5,
-    MIDI_OPT_BUTTON           = 6, // Button Down (!=00) and Button Up (00) events happen together
-    MIDI_OPT_SWITCH           = 7, // Button Down (!=00) and Button Up (00) events happen seperately
-    MIDI_OPT_HERC_JOG         = 8, // Generic hercules wierd range correction
-    MIDI_OPT_SPREAD64         = 9, // Accelerated difference from 64
-    MIDI_OPT_SELECTKNOB       = 10,// Relative knob which can be turned forever and outputs a signed value.
-    
-    MIDI_OPT_SCRIPT           = 50,// Maps a MIDI control to a custom MixxxScript function
-} MidiOption;
+*/
 
 typedef QMap<char,char> MidiValueMap;
 
@@ -93,26 +79,6 @@ public:
     friend bool operator==(const ConfigValue & s1, const ConfigValue & s2);
 };
 
-class ConfigValueMidi : public ConfigValue
-{
-public:
-    ConfigValueMidi();
-    ConfigValueMidi(QString _value);
-    ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel);
-    ConfigValueMidi(QDomNode node);
-    void valCopy(const ConfigValueMidi v);
-    char translateValue(char value);
-    double ComputeValue(MidiType _miditype, double _prevmidivalue, double _newmidivalue);
-    friend bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2);
-    QString getType();
-
-    MidiType miditype;
-    int midino, midichannel;
-    unsigned int sensitivity;
-    MidiOption midioption;
-    // BJW: Static translation of MIDI values for this object, defined in the mapping file.
-    MidiValueMap translateMidiValues;
-};
 
 class ConfigValueKbd : public ConfigValue
 {

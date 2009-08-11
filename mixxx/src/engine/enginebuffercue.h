@@ -53,7 +53,7 @@ private:
     /** Default cue control */
     ControlPushButton *buttonCueDefault;
     /** Cue behavior preference */
-    ControlObjectThreadMain *m_pControlCueDefault;
+    ControlObject *m_pControlCueDefault;
     /** Pointer to play button */
     ControlObject *playButton;
     /** Storage of cue point */

@@ -1,16 +1,15 @@
 
 #include <QtDebug>
 
-
+#include "BPMDetect.h"
 #include "trackinfoobject.h"
 #include "analyserbpm.h"
-#include "bpm/bpmdetect.h"
+
 
 AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
     m_pConfig = _config;
     m_pDetector = NULL;
 }
-
 
 void AnalyserBPM::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
@@ -23,9 +22,11 @@ void AnalyserBPM::initialise(TrackInfoObject* tio, int sampleRate, int totalSamp
     if(bpmEnabled &&
        tio->getBpmConfirm() == false &&
        tio->getBpm() == 0.) {
-        m_pDetector = new BpmDetect(tio->getChannels(), sampleRate,
-                                    defaultrange ? MIN_BPM : m_iMinBpm,
-                                    defaultrange ? MAX_BPM : m_iMaxBpm);
+        // All SoundSource's return stereo data, no matter the real file's type
+        m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
+        //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
+        //                                    defaultrange ? MIN_BPM : m_iMinBpm,
+        //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
     }
 }
 
@@ -39,19 +40,18 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     }
     //qDebug() << "AnalyserBPM::process() processing " << iLen << " samples";
 
-    
-    int cur = 0;
-    int remaining = iLen;
-    while(remaining > 0) {
-        int read = math_min(remaining, BPM_NUM_SAMPLES);
-        memcpy(samples, &pIn[cur], sizeof(float)*read);
-        /*for(int i=0; i<read; i++) {
-            samples[i] = pIn[cur+i];
-            }*/
-        m_pDetector->inputSamples(samples, read/2);
-        cur += read;
-        remaining-=read;
-    }
+    m_pDetector->inputSamples(pIn, iLen/2);
+
+}
+
+float AnalyserBPM::correctBPM( float BPM, int min, int max) {
+    if ( BPM == 0 ) return BPM;
+
+    if( BPM*2 < max ) BPM *= 2;
+    while ( BPM > max ) BPM /= 2;
+    while ( BPM < min ) BPM *= 2;
+
+    return BPM;
 }
 
 void AnalyserBPM::finalise(TrackInfoObject *tio) {
@@ -62,14 +62,16 @@ void AnalyserBPM::finalise(TrackInfoObject *tio) {
     
     float bpm = m_pDetector->getBpm();
     if(bpm != 0) {
-        bpm = BpmDetect::correctBPM(bpm, m_iMinBpm, m_iMaxBpm);
-        tio->setBpm(bpm);
+        // Shift it by 2's until it is in the desired range
+        float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm);
+        
+        tio->setBpm(newbpm);
         tio->setBpmConfirm();
         //if(pBpmReceiver) {
         //pBpmReceiver->setComplete(tio, false, bpm);
         //}
         qDebug() << "AnalyserBPM BPM detection successful for" << tio->getFilename();
-        qDebug() << "AnalyserBPM BPM is " << bpm;
+        qDebug() << "AnalyserBPM BPM is " << newbpm << " (raw: " << bpm << ")";
     } else {
         qDebug() << "AnalyserBPM BPM detection failed, setting to 0.";
     }

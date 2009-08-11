@@ -51,14 +51,24 @@ public slots:
 //    void writePage(unsigned char *header, unsigned char *body,
 //                   int headerLen, int bodyLen, int count);
 private:
-    void serverConnect();
+    bool serverConnect();
+    int getActiveTracks();
+    bool metaDataHasChanged();
+    void updateMetaData();
+    TrackInfoObject *m_pMetaData;
     shout_t *m_pShout;
+    shout_metadata_t *m_pShoutMetaData;
+    int m_pMetaDataLife;
     long m_iShoutStatus;
+    long m_iShoutFailures;
     ConfigObject<ConfigValue> *m_pConfig;
     ControlObject* recReady;
     Encoder *encoder;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
 //    void (*writeFn)(unsigned char *, unsigned char *, int, int);
+    ControlObjectThread* m_pCrossfader;
+    ControlObjectThread* m_pVolume1;
+    ControlObjectThread* m_pVolume2;
 };
 
 #endif

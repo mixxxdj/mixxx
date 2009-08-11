@@ -32,14 +32,14 @@ Q3PtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
 Q3PtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
 Q3PtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
 
-ControlObject::ControlObject()
-{
+ControlObject::ControlObject() :
+    m_bIgnoreNops(true) {
 }
 
-ControlObject::ControlObject(ConfigKey key)
-{
-    m_dValue = 0.;
-    m_Key = key;
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops) :
+    m_dValue(0),
+    m_Key(key),
+    m_bIgnoreNops(bIgnoreNops) {
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(key,this);
     m_sqCOHashMutex.unlock();
@@ -50,6 +50,65 @@ ControlObject::~ControlObject()
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_Key);
     m_sqCOHashMutex.unlock();
+
+    ControlObjectThread * obj;
+    m_qProxyListMutex.lock();
+    for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
+    {
+        obj->slotParentDead();
+    }
+    m_qProxyListMutex.unlock();
+
+
+    m_sqQueueMutexThread.lock();
+
+    QueueObjectThread * tobj = NULL;;
+    QueueObjectThread * thead = m_sqQueueThread.head();
+    
+    while(tobj != thead) {
+        tobj = m_sqQueueThread.dequeue();
+        if(tobj == NULL) {
+            Q_ASSERT(false);
+        } else if(tobj->pControlObject != this) {
+            m_sqQueueThread.enqueue(tobj);
+        } else {
+            delete tobj;
+        }
+    }
+    m_sqQueueMutexThread.unlock();
+
+    m_sqQueueMutexMidi.lock();
+    QueueObjectMidi * mobj = NULL;
+    QueueObjectMidi * mhead = m_sqQueueMidi.head();
+
+    while(mobj != mhead) {
+        mobj = m_sqQueueMidi.dequeue();
+        if (mobj == NULL) {
+            Q_ASSERT(false);
+        } else if (mobj->pControlObject != this) {
+            m_sqQueueMidi.enqueue(mobj);
+        } else {
+            delete mobj;
+        }
+    }
+    m_sqQueueMutexMidi.unlock();
+
+    // Remove this control object from the changes queue, since we're being
+    // deleted.
+    m_sqQueueMutexChanges.lock();
+    ControlObject * cobj = NULL;
+    int count = m_sqQueueChanges.count();
+    while(count > 0) {
+        cobj = m_sqQueueChanges.dequeue();
+        if(cobj == NULL) {
+            break;
+        } else if(cobj != this) {
+            m_sqQueueChanges.enqueue(cobj);
+        }
+        count--;
+    }
+    m_sqQueueMutexChanges.unlock();
+    
 }
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
@@ -84,11 +143,15 @@ bool ControlObject::disconnectControl(ConfigKey key)
 
 void ControlObject::addProxy(ControlObjectThread * pControlObjectThread)
 {
+    m_qProxyListMutex.lock();
     m_qProxyList.append(pControlObjectThread);
+    m_qProxyListMutex.unlock();
 }
 
 void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
+    m_qProxyListMutex.lock();
     m_qProxyList.removeRef(pControlObjectThread);
+    m_qProxyListMutex.unlock();
 }
 
 bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
@@ -96,14 +159,16 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
     ControlObjectThread * obj;
     bool bUpdateSuccess = true;
     // qDebug() << "updateProxies: Group" << m_Key.group << "/ Item" << m_Key.item;
+    m_qProxyListMutex.lock();
     for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
     {
         if (obj!=pProxyNoUpdate)
         {
             // qDebug() << "upd" << this->getKey().item;
-            bUpdateSuccess = obj->setExtern(m_dValue);
+            bUpdateSuccess = bUpdateSuccess && obj->setExtern(m_dValue); 
         }
     }
+    m_qProxyListMutex.unlock();
     return bUpdateSuccess;
 }
 
@@ -165,12 +230,18 @@ double ControlObject::GetMidiValue()
 
 void ControlObject::setValueFromThread(double dValue)
 {
+    if (m_bIgnoreNops && m_dValue == dValue)
+        return;
+
     m_dValue = dValue;
     emit(valueChanged(m_dValue));
 }
 
 void ControlObject::set(double dValue)
 {
+    if (m_bIgnoreNops && m_dValue == dValue)
+        return;
+
     setValueFromEngine(dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
@@ -179,6 +250,9 @@ void ControlObject::set(double dValue)
 
 void ControlObject::add(double dValue)
 {
+    if (m_bIgnoreNops && !dValue)
+        return;
+
     setValueFromEngine(m_dValue+dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
@@ -187,6 +261,9 @@ void ControlObject::add(double dValue)
 
 void ControlObject::sub(double dValue)
 {
+    if (m_bIgnoreNops && !dValue)
+        return;
+
     setValueFromEngine(m_dValue-dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);

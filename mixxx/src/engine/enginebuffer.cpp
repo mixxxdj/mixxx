@@ -41,6 +41,14 @@ double EngineBuffer::m_dTempSmall = 0.001;
 double EngineBuffer::m_dPerm = 0.01;
 double EngineBuffer::m_dPermSmall = 0.001;
 
+#ifdef _MSC_VER
+#include <float.h>  // for _isnan() on VC++
+#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+#else
+#include <math.h>  // for isnan() everywhere else
+#endif
+
+
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config)
 {
     group = _group;
@@ -53,6 +61,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_dAbsPlaypos = 0.;
     m_dBufferPlaypos = 0.;
     m_dAbsStartpos = 0.;
+
+    filepos_play = 0;
+    bufferpos_play = 0;
 
     // Set up temporary buffer for seeking and looping
     m_pTempBuffer = new float[kiTempLength];
@@ -429,6 +440,11 @@ void EngineBuffer::setPermSmall(double v)
 void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
 {
     //qDebug() << "seeking... " << change;
+
+    if(isnan(change) || change > 1.0 || change < 0.0) {
+        // This seek is ridiculous.
+        return;
+    }
 
     // If seeking, and in loop mode, disable loop
     if (buttonLoop->get())
@@ -853,11 +869,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // qDebug() << "wheel " << wheel->get() << ", slider " << rateSlider->get() << ", range " << m_pRateRange->get() << ", dir " << m_pRateDir->get();
 
             // Apply scratch
-            if (m_pControlScratch->get()<0.)
-                rate = rate * (m_pControlScratch->get()-1.);
-            else if (m_pControlScratch->get()>0.)
-                rate = rate * (m_pControlScratch->get()+1.);
-
+            double scratch = m_pControlScratch->get();
+            if(!isnan(scratch)) {
+                if (scratch < 0.) {
+                    rate = rate * (scratch-1.);                
+                } else if (scratch > 0.) {
+                    rate = rate * (scratch+1.);
+                }
+            }
+                
             // Apply jog
             // FIXME: Sensitivity should be configurable separately?
             const double fact = m_pRateRange->get();
@@ -876,7 +896,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         {
             // Stopped. Wheel, jog and scratch controller all scrub through audio.
             double jogVal = m_pJog->get();
-            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(jogVal))*baserate; //*10.;
+
+            // Don't trust values from m_pControlScratch
+            double scratch = m_pControlScratch->get();
+            if(isnan(scratch)) {
+                scratch = 0.0;
+            }
+            
+            rate=(wheel->get()*40.+scratch+m_jogfilter->filter(jogVal))*baserate; //*10.;
             if(jogVal != 0.)
                 m_pJog->set(0.);
         }
@@ -1276,50 +1303,52 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
 
-            //
-            // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
-            // if playmode is next file: set next in playlistcontrol
-            //
+        }
 
-            // Update playpos slider and bpm display if necessary
-            m_iSamplesCalculated += iBufferSize;
-            if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE))
-            {
-                if (file_length_old!=0.)
-                {
-                    double f = math_max(0.,math_min(filepos_play,file_length_old));
-                    playposSlider->set(f/file_length_old);
 
-//                         qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
-                }
-                else
-                    playposSlider->set(0.);
-                if(filebpm != bpmControl->get())
-                    bpmControl->set(filebpm);
-                if(rate != rateEngine->get())
-                    rateEngine->set(rate);
+        //
+        // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
+        // if playmode is next file: set next in playlistcontrol
+        //
 
-                m_iSamplesCalculated = 0;
-
-            }
-
-            // Update buffer and abs position. These variables are not in the ControlObject
-            // framework because they need very frequent updates.
-            if (m_qPlayposMutex.tryLock())
-            {
-                m_dBufferPlaypos = bufferpos_play;
-                m_dAbsPlaypos = filepos_play;
-                m_dAbsStartpos = filepos_start;
-                m_qPlayposMutex.unlock();
-            }
-
-            // Update visual control object, this needs to be done more often than the bpm display and playpos slider
-            if(file_length_old != 0.) {
-                double f = math_max(0.,math_min(filepos_play, file_length_old));
-                visualPlaypos->set(f/file_length_old);
+        // Update playpos slider and bpm display if necessary
+        m_iSamplesCalculated += iBufferSize;
+        if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
+            
+            if (file_length_old!=0.) {
+                
+                double f = math_max(0.,math_min(filepos_play,file_length_old));
+                playposSlider->set(f/file_length_old);
+                
+                //qDebug() << "f " << f << ", len " << file_length_old << "i, " << f/file_length_old;
             } else {
-                visualPlaypos->set(0.);
+                playposSlider->set(0.);
             }
+            
+            if(filebpm != bpmControl->get())
+                bpmControl->set(filebpm);
+            if(rate != rateEngine->get())
+                rateEngine->set(rate);
+            
+            m_iSamplesCalculated = 0;
+        }
+
+        // Update buffer and abs position. These variables are not in the ControlObject
+        // framework because they need very frequent updates.
+        if (m_qPlayposMutex.tryLock()) {
+            
+            m_dBufferPlaypos = bufferpos_play;
+            m_dAbsPlaypos = filepos_play;
+            m_dAbsStartpos = filepos_start;
+            m_qPlayposMutex.unlock();
+        }
+
+        // Update visual control object, this needs to be done more often than the bpm display and playpos slider
+        if(file_length_old != 0.) {
+            double f = math_max(0.,math_min(filepos_play, file_length_old));
+            visualPlaypos->set(f/file_length_old);
+        } else {
+            visualPlaypos->set(0.);
         }
 
 //          qDebug() << "filepos_play " << filepos_play << ", len " << file_length_old << ", back " << backwards << ", play " << playButton->get();

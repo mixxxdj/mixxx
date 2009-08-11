@@ -14,6 +14,26 @@ MidiChannelDelegate::MidiChannelDelegate(QObject *parent)
 {
 }
 
+void MidiChannelDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
+                         const QModelIndex &index) const
+{
+    if (index.data().canConvert<int>()) {
+        int channel = index.data().value<int>();
+        //Convert to natural numbers (starts at 1 instead of 0.)
+        channel++;
+
+        if (option.state & QStyle::State_Selected)
+            painter->fillRect(option.rect, option.palette.highlight());
+
+        QString text = QString("%1").arg(channel);
+
+        painter->drawText(option.rect, text, QTextOption(Qt::AlignCenter));
+        //Note that Qt::AlignCenter does both vertical and horizontal alignment.
+    } else {
+        QItemDelegate::paint(painter, option, index);
+    }
+}
+
 QWidget *MidiChannelDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &/* option */,
         const QModelIndex &/* index */) const
@@ -28,10 +48,15 @@ QWidget *MidiChannelDelegate::createEditor(QWidget *parent,
 void MidiChannelDelegate::setEditorData(QWidget *editor,
                                     const QModelIndex &index) const
 {
-    int value = index.model()->data(index, Qt::EditRole).toInt();
-
+    int channel = index.model()->data(index, Qt::EditRole).toInt();
+    
+    //Convert the channel to natural numbers (1-16). The actual MIDI messages
+    //address them as 0-15 as per the spec, but all user documentation for every
+    //MIDI device on the planet refers to the channels as 1-16.
+    channel++;
+    
     QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
-    spinBox->setValue(value);
+    spinBox->setValue(channel);
 }
 
 void MidiChannelDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
@@ -39,9 +64,9 @@ void MidiChannelDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
 {
     QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
     spinBox->interpretText();
-    int value = spinBox->value();
-
-    model->setData(index, value, Qt::EditRole);
+    int channel = spinBox->value();
+    channel--; //Convert the MIDI channel back into the 0-15 range.
+    model->setData(index, channel, Qt::EditRole);
 }
 
 void MidiChannelDelegate::updateEditorGeometry(QWidget *editor,

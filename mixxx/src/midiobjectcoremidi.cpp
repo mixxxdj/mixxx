@@ -15,10 +15,15 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
+// NOTE: The #include order is important, since the CoreMIDI headers
+//       have to be included before Qt headers (CoreMIDI uses qDebug
+//       as a define, and Qt has a qDebug() function!)
 #include "midiobjectcoremidi.h"
+#include <QtCore>
 
-
+static QString toHex(QString numberStr) {
+    return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+}
 
 /* This is a wrapper function for MidiObjectCoreMidi::notification_handler
  * needed because we cannot pass instance methods as callbacks, generally.
@@ -38,11 +43,16 @@ MidiObjectCoreMidi::MidiObjectCoreMidi() : MidiObject()
   // Initialize CoreMidi
   MIDIClientCreate(CFSTR("Mixxx"), CoreMIDI_notification_handler, this, &midiClient);
   MIDIInputPortCreate(midiClient, CFSTR("Input port"), midi_read_proc, (void *)this, &midiPort);
-  
+  MIDIOutputPortCreate(midiClient, CFSTR("Output port"), &midiOutPort);
+
   // No default device opening
   //currentMidiEndpoint = MIDIGetSource(0);
   //MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
   
+  //Clear the sysex queue.
+  memset(m_sysexQueue, 0, sizeof(*m_sysexQueue) * COREMIDI_SYSEX_QUEUE_SIZE);
+  m_sysexQueueIdx = 0;
+
   // Allocate buffer
   buffer = new char[4096];
   if (buffer == 0)
@@ -96,23 +106,28 @@ void MidiObjectCoreMidi::devOpen(QString device)
   persistentDeviceNames.append(persistentString);
   
   MIDIPortConnectSource(midiPort, ref, persistentString);
+  currentMidiOutEndpoint = getDestinationEndpoint(device);
   
   // Should follow selected device !!!!
   openDevices.append(device);
-
-  MidiObject::run();  // Load the initial MIDI preset
+#ifdef __MIDISCRIPT__
+	MidiObject::run();
+#endif
 }
 
 void MidiObjectCoreMidi::devClose(MIDIEndpointRef ref) {
   if (!ref) return;
   
-  MIDIPortDisconnectSource(midiPort, ref);
+  if (currentMidiOutEndpoint != ref) {
+    MIDIPortDisconnectSource(midiPort, ref);
+  }
 }
 
 void MidiObjectCoreMidi::devClose()
 {  
   // Find the endpoint associated with the device
   devClose(currentMidiEndpoint);
+
   openDevices.clear();
 }
 
@@ -128,8 +143,9 @@ void MidiObjectCoreMidi::run()
   QThread::currentThread()->setObjectName(QString("MidiObjectCoreMidi %1").arg(++id));
   
   //qDebug() << QString("MidiObjectCoreMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-
+#ifdef __MIDISCRIPT__
   MidiObject::run();
+#endif
 }
 
 void MidiObjectCoreMidi::notification_add_handler(const MIDIObjectAddRemoveNotification* message)
@@ -221,7 +237,7 @@ void MidiObjectCoreMidi::notification_handler(const MIDINotification *message)
 
 void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString device)
 {
-  qDebug() << "handleMidi("<<device<<")";
+    //qDebug() << "handleMidi("<<device<<")";
     const MIDIPacket * packet;
     //Byte message[256];
     int messageSize = 0;
@@ -236,12 +252,12 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString devi
                 continue; // Skip over realtime data?!?
             if ((packet->data[j] & 0x80) != 0 && messageSize > 0)
             {
-                MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+                MidiStatusByte midistatus = (MidiStatusByte)(buffer[0] & 0xF0);
                 char midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
                 char midicontrol = buffer[1];
                 char midivalue = buffer[2];
 
-                receive(midicategory, midichannel, midicontrol, midivalue, device);
+                receive(midistatus, midichannel, midicontrol, midivalue);
                 messageSize = 0;
             }
 
@@ -252,12 +268,12 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets, QString devi
     }
     if (messageSize>0)
     {
-        MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+        MidiStatusByte midistatus = (MidiStatusByte)(buffer[0] & 0xF0);
         char midichannel = buffer[0] & 0x0F;  // The channel is stored in the lower 4 bits of the status byte received
         char midicontrol = buffer[1];
         char midivalue = buffer[2];
 
-        receive(midicategory, midichannel, midicontrol, midivalue, device);
+        receive(midistatus, midichannel, midicontrol, midivalue);
     }
 }
 
@@ -277,8 +293,8 @@ void MidiObjectCoreMidi::makeDeviceList() {
 
 // Get an endpoint given a device name
 MIDIEndpointRef MidiObjectCoreMidi::getEndpoint(QString device) {
-	unsigned int i; // Unsigned because of comparison
-	for (i = 0; i < MIDIGetNumberOfSources(); i++)
+     unsigned int i; // Unsigned because of comparison
+     for (i = 0; i < MIDIGetNumberOfSources(); i++)
     {
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         CFStringRef name = EndpointName(endpoint, true);
@@ -293,10 +309,83 @@ MIDIEndpointRef MidiObjectCoreMidi::getEndpoint(QString device) {
     return 0;
 }
 
+// Get a destination endpoint given a device name
+MIDIEndpointRef MidiObjectCoreMidi::getDestinationEndpoint(QString device) {
+        unsigned int i; // Unsigned because of comparison
+        for (i = 0; i < MIDIGetNumberOfDestinations(); i++)
+    {
+        MIDIEndpointRef endpoint = MIDIGetDestination(i);
+        CFStringRef name = EndpointName(endpoint, true);
+        if (CFStringGetCStringPtr(name,0) == device)
+        {
+            return endpoint;
+        }
+    }
+
+    qDebug() << "CoreMIDI: Error finding destination device endpoint for \"" << device
+                        << "\"";
+    return 0;
+}
+
+void MidiObjectCoreMidi::sendShortMsg(unsigned int word)
+{
+    char buf[512];
+	unsigned char msg[] = { word & 0xff, (word>>8) & 0xff, (word>>16) & 0xff};
+
+	MIDIPacketList *mpl = (MIDIPacketList*)buf;
+	MIDIPacket *pkt = MIDIPacketListInit(mpl);
+	pkt = MIDIPacketListAdd(mpl, sizeof(buf), pkt, 0, 3, msg);
+	if (pkt)
+	{
+         MIDISend(midiOutPort, currentMidiOutEndpoint, mpl);
+	}
+	
+	//qDebug() << "MidiObjectCoreMidi::sendShortMsg() " << toHex(QString::number((int)msg[0])) << toHex(QString::number((int)msg[1]))
+	// 		 << toHex(QString::number((int)msg[2]));
+}
+
+/** Sends a MIDI sysex message through CoreMIDI. Copies the packet into a queue temporarily
+    because we can only tell OS X to send the packets asynchronously, or in other words, we
+    tell OS X we want to send a packet and then it sends it whenever it wants. Because of that,
+    we need to keep the packet around until it's sent by OS X, so we throw it in a queue and
+    hope it gets sent before the queue fills and wraps around to the same element. */
+void MidiObjectCoreMidi::sendSysexMsg(unsigned char data[], unsigned int length) {
+    
+    //Grab the next element in the ringbuffer/queue.
+    struct MIDISysexSendRequest* sysex = &m_sysexQueue[m_sysexQueueIdx];
+  
+    //Give a warning to developers if our queue overflowed. In that case, you should probably
+    //up the size of the queue. (This would happen if you fire sysex messages crazy fast.)
+    if (sysex->data != 0 && sysex->complete == false)
+        qDebug() << "Warning: MidiObjectCoreMIDI sysex queue overflowed.";
+    
+    //Delete old sysex packet from our queue,if it exists.
+    if (sysex->data)
+        delete [] sysex->data;
+
+    //Erase the rest of the struct.
+    memset(sysex, 0, sizeof(*sysex));
+
+    //Create our new packet, and copy over the bytes so we have them in our queue.
+    sysex->destination = currentMidiOutEndpoint;
+    sysex->data = new unsigned char[length];
+    memcpy((void*)sysex->data, data, length * sizeof(*data));
+    sysex->bytesToSend = length;
+
+    //Send the sysex request asynchronously. We need to stick the sysex messages in a queue
+    //so that when OS X actually decides to send them, the pointers (that we passed it) are 
+    //still valid.
+    MIDISendSysex(sysex);
+
+    //Increment and wrap (the queue is a ringbuffer)
+    m_sysexQueueIdx = (m_sysexQueueIdx+1)%COREMIDI_SYSEX_QUEUE_SIZE;
+}
+
+
 // C/C++ wrapper function
 static void midi_read_proc(const MIDIPacketList * packets, void * refCon, void *connRefCon)
 {
-  qDebug() << "midi_read_proc";
+    //qDebug() << "midi_read_proc";
     MidiObjectCoreMidi * midi = (MidiObjectCoreMidi *)refCon;
     // Midi packets arrived, forward to handler with device name
     midi->handleMidi(packets, *((QString *)connRefCon));

@@ -24,7 +24,7 @@
 #include "cmetrics.h"
 #endif
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #include <windows.h>
 #endif
 
@@ -65,374 +65,6 @@ void ConfigValue::valCopy(const ConfigValue _value)
     value = _value.value;
 }
 
-ConfigValueMidi::ConfigValueMidi()
-{
-}
-
-ConfigValueMidi::ConfigValueMidi(QDomNode node) {
-    QString key = WWidget::selectNodeQString(node, "key");
-    QString type = WWidget::selectNodeQString(node, "miditype");
-    midino = WWidget::selectNodeInt(node, "midino");
-    midichannel = WWidget::selectNodeInt(node, "midichan");
-
-    // BJW: Jog/scratch sensitivity adjustment
-    sensitivity = WWidget::selectNodeInt(node, "sensitivity");
-    if (sensitivity) {
-        qDebug() << "Setting" << key << "sensitivity to" << sensitivity;
-    } else if (key == "wheel" || key == "scratch" || key == "jog") {
-        sensitivity = 50;
-        qDebug() << "Defaulting" << key << "sensitivity to" << sensitivity;
-    }
-
-    // BJW: MIDI Value Translations
-    QDomNode translations = node.namedItem("translations");
-    if (!translations.isNull()) {
-        QDomNode translation = translations.firstChild();
-        while (!translation.isNull()) {
-            QDomNamedNodeMap attrs = translation.attributes();
-            if (translation.nodeName() == "single") {
-                if (attrs.namedItem("value").isNull()) {
-                    qWarning("MIDI Map: Missing 'value' attribute in <translations><single>");
-                } else {
-                    int from = attrs.namedItem("value").toAttr().value().toInt();
-                    int newval = translation.toElement().text().toInt();
-                    if (from < -128 || from > 127 || newval < -128 || newval > 127) {
-                        qWarning("MIDI Map: Illegal values in <translations><single>");
-                    } else {
-                        translateMidiValues[(char) from] = (char) newval;
-                        qDebug() << "MIDI Map: Value Translation: Single value " << from << " -> " << newval;
-                    }
-                }
-            } else if (translation.nodeName() == "range") {
-                if (attrs.namedItem("lower").isNull() || attrs.namedItem("upper").isNull()) {
-                    qWarning("MIDI Map: Missing 'lower' and/or 'upper' attribute in <translations><range>");
-                } else {
-                    int lower = attrs.namedItem("lower").toAttr().value().toInt();
-                    int upper = attrs.namedItem("upper").toAttr().value().toInt();
-                    int newval = translation.toElement().text().toInt();
-                    if (lower < -128 || lower > 127 || upper < -128 || upper > 127 || upper < lower || newval < -128 || newval > 127) {
-                        qWarning("MIDI Map: Illegal values in <translations><range>");
-                    } else {
-                        for (char c = lower; c <= upper; c++) {
-                            translateMidiValues[c] = (char) newval;
-                        }
-                        qDebug() << "MIDI Map: Value Translation: Range of values " << lower << "-" << upper << " -> " << newval;
-                    }
-                }
-            } else {
-                qWarning() << "MIDI Map: Unknown translation element:" << translation.nodeName();
-            }
-            translation = translation.nextSibling();
-        }
-    }
-
-    if (midichannel == 0) { midichannel = 1; }
-
-    QTextOStream(&value) << midino << " ch " << midichannel;
-
-    type = type.toLower();
-
-    // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
-    // more useful by adding the line number of the input file.
-    if ((key.isEmpty() || type.isEmpty()) && node.nodeName() != "#comment")
-        qWarning() << "Missing <key> or <type> in MIDI map node:" << node.nodeName();
-    if (!midino && type != "pitch")
-        qWarning() << "No <midino> defined in MIDI map node:" << node.nodeName();
-
-    if (type == "key" || type == "note") {
-        miditype = MIDI_KEY;
-        value.prepend("Key ");
-    } else if (type == "ctrl") {
-        miditype = MIDI_CTRL;
-        value.prepend("Ctrl ");
-    } else if (type == "pitch") {
-        miditype = MIDI_PITCH;
-        value.prepend("Pitch ");
-    } else {
-        miditype = MIDI_EMPTY;
-    }
-
-    QDomNode opts = node.namedItem("options");
-    if (!opts.isNull()) {
-        QDomNode opt = opts.firstChild();
-        if (!opt.nextSibling().isNull()) {
-            qCritical("Multiple option elements in midi mapping not supported yet");
-        }
-
-        QString optname = opt.nodeName().toLower();
-        if (optname == "invert")
-            midioption = MIDI_OPT_INVERT;
-        else if (optname == "rot64inv")
-            midioption = MIDI_OPT_ROT64_INV;
-        else if (optname == "rot64fast")
-            midioption = MIDI_OPT_ROT64_FAST;
-        else if (optname == "rot64")
-            midioption = MIDI_OPT_ROT64;
-        else if (optname == "diff")
-            midioption = MIDI_OPT_DIFF;
-        else if (optname == "button")
-            midioption = MIDI_OPT_BUTTON;
-        else if (optname == "switch")
-            midioption = MIDI_OPT_SWITCH;
-        else if (optname == "hercjog")
-            midioption = MIDI_OPT_HERC_JOG;
-        else if (optname == "spread64")
-            midioption = MIDI_OPT_SPREAD64;
-        else if (optname == "selectknob")
-        	midioption = MIDI_OPT_SELECTKNOB;
-        else if (optname == "script-binding")
-        	midioption = MIDI_OPT_SCRIPT;
-        else {
-            qWarning() << "Unknown option:" << optname;
-            midioption = MIDI_OPT_NORMAL;
-        }
-
-        qDebug() << "Found option: " << optname << "(" << midioption << ")";
-    } else {
-        midioption = MIDI_OPT_NORMAL;
-    }
-
-    // qDebug() << "MIDI Config:" << key << "=" << value << "option" << midioption;
-
-}
-
-ConfigValueMidi::ConfigValueMidi(QString _value)
-{
-    qDebug() << "ConfigValueMidi(QString)";
-    QString channelMark;
-    QString type;
-    QString option;
-
-    QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel >> option;
-    if (type.contains("Key",Qt::CaseInsensitive))
-        miditype = MIDI_KEY;
-    else if (type.contains("Ctrl",Qt::CaseInsensitive))
-        miditype = MIDI_CTRL;
-    else if (type.contains("Pitch",Qt::CaseInsensitive))
-        miditype = MIDI_PITCH;
-    else
-        miditype = MIDI_EMPTY;
-
-    if (!channelMark.endsWith("h")) {
-        // No channel specified; default to channel 1 and parse this field as an option instead
-        option = channelMark;
-        midichannel = 1;
-    }
-
-
-    // If empty string, default midino should be below 0.
-    if (_value.length()==0)
-        midino = -1;
-    qDebug() << "miditype:" << type << "midino" << midino << "midichannel" << midichannel;
-
-    //This should be a map
-    if (option.contains("Invert", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_INVERT;
-    else if (option.contains("Rot64Inv", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_ROT64_INV;
-    else if (option.contains("Rot64Fast", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_ROT64_FAST;
-    else if (option.contains("Rot64", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_ROT64;
-    else if (option.contains("Diff", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_DIFF;
-    else if (option.contains("Button", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_BUTTON;
-    else if (option.contains("Switch", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_SWITCH;
-    else if (option.contains("HercJog", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_HERC_JOG;
-    else if (option.contains("Spread64", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_SPREAD64;
-    else if (option.contains("SelectKnob", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_SELECTKNOB;
-    else if (option.contains("Script-Binding", Qt::CaseInsensitive))
-        midioption = MIDI_OPT_SCRIPT;
-    else
-        midioption = MIDI_OPT_NORMAL;
-    // Store string with corrected config value
-    //value="";
-    //QTextOStream(&value) << type << " " << midino << " ch " << midichannel;
-}
-
-ConfigValueMidi::ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel)
-{
-    //qDebug() << "--2";
-    miditype = _miditype;
-    midino = _midino;
-    midichannel = _midichannel;
-    QTextOStream(&value) << midino << " ch " << midichannel;
-    if (miditype==MIDI_KEY)
-        value.prepend("Key ");
-    else if (miditype==MIDI_CTRL)
-        value.prepend("Ctrl ");
-    else if (miditype==MIDI_PITCH)
-        value.prepend("Pitch ");
-    midioption = MIDI_OPT_NORMAL;
-
-    //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
-}
-
-void ConfigValueMidi::valCopy(const ConfigValueMidi v)
-{
-    //qDebug() << "--1, midino: " << midino << ", midimask: " << midimask << ", midichannel: " << midichannel;
-    miditype = v.miditype;
-    midino = v.midino;
-    midichannel = v.midichannel;
-    midioption = v.midioption;
-    value = "";
-    QTextOStream(&value) << midino << " ch " << midichannel;
-    if (miditype==MIDI_KEY)
-        value.prepend("Key ");
-    else if (miditype==MIDI_CTRL)
-        value.prepend("Ctrl ");
-    else if (miditype==MIDI_PITCH)
-        value.prepend("Pitch ");
-
-    if (midioption == MIDI_OPT_INVERT)
-        value.append(" Invert");
-    else if (midioption == MIDI_OPT_ROT64)
-        value.append(" Rot64");
-    else if (midioption == MIDI_OPT_ROT64_INV)
-        value.append(" Rot64Inv");
-    else if (midioption == MIDI_OPT_ROT64_FAST)
-        value.append(" Rot64Fast");
-    else if (midioption == MIDI_OPT_DIFF)
-        value.append(" Diff");
-    else if (midioption == MIDI_OPT_SPREAD64)
-        value.append(" Spread64");
-    else if (midioption == MIDI_OPT_SELECTKNOB)
-        value.append(" SelectKnob");
-
-    qDebug() << "Config value:" << value;
-    //qDebug() << "--1, midino: " << midino << ", midimask: " << midimask << ", midichannel: " << midichannel;
-}
-
-
-// BJW: Apply value translations defined in MIDI map file. Done separately to ComputeValue() as these need
-// to be done prior to any midioption-related activity which might change the original MIDI value (and outputs
-// a double rather than a char)
-char ConfigValueMidi::translateValue(char value)
-{
-    if (!translateMidiValues.isEmpty()) {
-        MidiValueMap::Iterator it;
-        if ((it = translateMidiValues.find(value)) != translateMidiValues.end()) {
-            // qDebug() << "MIDI value " << value << " translated to " << it.value();
-            return it.value();
-        }
-    }
-    //if no mapping found, don't translate
-    return value;
-}
-
-
-// BJW: Note: _prevmidivalue is not the previous MIDI value. It's the
-// current controller value, scaled to 0-127 but only in the case of pots.
-// (See Control*::GetMidiValue())
-double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidivalue, double _newmidivalue)
-{
-    double tempval = 0.;
-    double diff = 0.;
-
-    // qDebug() << "ComputeValue: option " << midioption << ", MIDI value " << _newmidivalue << ", current control value " << _prevmidivalue;
-    if (midioption == MIDI_OPT_NORMAL) {
-        return _newmidivalue;
-    }
-    else if (midioption == MIDI_OPT_INVERT)
-    {
-        return 127. - _newmidivalue;
-    }
-    else if (midioption == MIDI_OPT_ROT64 || midioption == MIDI_OPT_ROT64_INV)
-    {
-        tempval = _prevmidivalue;
-        diff = _newmidivalue - 64.;
-        if (diff == -1 || diff == 1)
-            diff /= 16;
-        else
-            diff += (diff > 0 ? -1 : +1);
-        if (midioption == MIDI_OPT_ROT64)
-            tempval += diff;
-        else
-            tempval -= diff;
-        return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
-    }
-    else if (midioption == MIDI_OPT_ROT64_FAST)
-    {
-        tempval = _prevmidivalue;
-        diff = _newmidivalue - 64.;
-        diff *= 1.5;
-        tempval += diff;
-        return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
-    }
-    else if (midioption == MIDI_OPT_DIFF)
-    {
-        //Interpret 7-bit signed value using two's compliment.
-        if (_newmidivalue >= 64.)
-            _newmidivalue = _newmidivalue - 128.;
-        //Apply sensitivity to signed value.
-        if(sensitivity > 0)
-            _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
-        //Apply new value to current value.
-        _newmidivalue = _prevmidivalue + _newmidivalue;
-    }
-    else if (midioption == MIDI_OPT_SELECTKNOB)
-    {
-        //Interpret 7-bit signed value using two's compliment.
-        if (_newmidivalue >= 64.)
-            _newmidivalue = _newmidivalue - 128.;
-        //Apply sensitivity to signed value.
-        if(sensitivity > 0)
-            _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
-        //Since this is a selection knob, we do not want to inherit previous values.
-        return _newmidivalue;
-    }
-    else if (midioption == MIDI_OPT_BUTTON)
-    {
-        if (_newmidivalue != 0.) {
-            _newmidivalue = !_prevmidivalue;
-        } else {
-            _newmidivalue = _prevmidivalue;
-        }
-    }
-    else if (midioption == MIDI_OPT_SWITCH)
-    {
-        _newmidivalue = (_newmidivalue != 0);
-    }
-    else if (midioption == MIDI_OPT_SPREAD64)
-    {
-        // BJW: Spread64: Distance away from centre point (aka "relative CC")
-        // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
-        // but with added sensitivity adjustment. This formula is still experimental.
-        double distance = _newmidivalue - 64.;
-        _newmidivalue = distance * distance * sensitivity / 50000.;
-        if (distance < 0.)
-            _newmidivalue = -_newmidivalue;
-        // qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
-    }
-    else if (midioption == MIDI_OPT_HERC_JOG)
-    {
-        if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
-		_newmidivalue += _prevmidivalue;
-		//if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
-    }
-    else
-    {
-        qWarning("Unknown MIDI option %d", midioption);
-    }
-
-    return _newmidivalue;
-}
-
-QString ConfigValueMidi::getType() {
-    if (miditype==MIDI_KEY)
-        return "Key";
-    else if (miditype==MIDI_CTRL)
-        return "Ctrl";
-    else if (miditype==MIDI_PITCH)
-        return "Pitch";
-    else
-    	return "";
-}
 
 ConfigValueKbd::ConfigValueKbd()
 {
@@ -462,12 +94,6 @@ void ConfigValueKbd::valCopy(const ConfigValueKbd v)
 bool operator==(const ConfigValue & s1, const ConfigValue & s2)
 {
     return (s1.value.toUpper() == s2.value.toUpper());
-}
-
-bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2)
-{
-    return ((s1.midichannel == s2.midichannel) && (s1.midino == s2.midino) && ( s1.miditype == s2.miditype)) ||
-           ((s1.midichannel == s2.midichannel) && (s1.miditype == MIDI_PITCH) && (s1.miditype == s2.miditype));
 }
 
 bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2)
@@ -550,7 +176,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
             //qDebug() << "ConfigObject: last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
-    qDebug() << "No match for ConfigObject:" << v.value;
+    //qDebug() << "No match for ConfigObject:" << v.value;
     return 0;
 }
 
@@ -688,18 +314,19 @@ QString ConfigObject<ValueType>::getConfigPath()
         qConfigPath = UNIX_SHARE_PATH;
     }
 #endif
-#ifdef __WIN32__
+#ifdef __WINDOWS__
     // On Windows, set the config dir relative to the application dir
-    #ifndef MSCVER // TODO: figure out why this code block is incompatiable with MSVC - maybe GetModuleFileName should be GetModuleFileNameW???
-        wchar_t str[MAX_PATH];        
-        GetModuleFileName(0, str, MAX_PATH);
-        std::wstring path(str);
-        qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
-    #else // MSVC
-        char* str = new char[200];
-        GetModuleFileName(NULL, str, 200);
-        qConfigPath = QFileInfo(str).dirPath();
-    #endif
+// #ifndef MSCVER // TODO: figure out why this code block is incompatiable with MSVC - maybe GetModuleFileName should be GetModuleFileNameW???
+//     wchar_t str[MAX_PATH];        
+//     GetModuleFileName(0, str, MAX_PATH);
+//     std::wstring path(str);
+//     qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
+// #else // MSVC
+//     char* str = new char[200];
+//     GetModuleFileName(NULL, str, 200);
+//     qConfigPath = QFileInfo(str).dirPath();
+// #endif
+    qConfigPath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
     // Set the path relative to the bundle directory
@@ -737,6 +364,5 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
 
 
 template class ConfigObject<ConfigValue>;
-template class ConfigObject<ConfigValueMidi>;
 template class ConfigObject<ConfigValueKbd>;
 

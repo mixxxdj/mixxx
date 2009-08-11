@@ -1,4 +1,4 @@
-Mixxx 1.6.1
+Mixxx 1.7.0
 
 * HOMEPAGE *************************************************
 http://www.mixxx.org
@@ -42,7 +42,7 @@ Mixxx has the following dependencies:
 - libvorbisfile
 - libsndfile
 - PortAudio-v19
-- QT 4.3+
+- QT 4.4+
 - scons
 
 NOTE: If you want JACK support in Mixxx, make sure you 
@@ -59,27 +59,17 @@ tell you if you're missing any of the dependencies listed above.
 It's also possible to specify a prefix path and additional
 build flags, for example:
 
-   $ scons prefix=/usr djconsole=1 
+   $ scons prefix=/usr 
    
 To install Mixxx after compilation, run:
 
-   $ scons prefix=/usr djconsole=1 install
+   $ sudo scons prefix=/usr install
 
 * HERCULES DJ CONSOLE USERS ON LINUX ***********************
 
-For users of any of the Hercules PC DJ Console controllers
-on Linux, please note that you must compile Mixxx with the
-djconsole=1 flag, for example:
-
-   $ scons djconsole=1
-
-will do the trick. You must have libdjconsole installed
-prior to compiling. The latest libdjconsole can be obtained
-by running:
-
-   $ bzr branch lp:libdjconsole
-
-and building with make. 
+Please see: http://www.mixxx.org/wiki/doku.php/hercules
+You may need to install the official Hercules Linux drivers 
+from: http://www.hercules.com/
 
 * REINSTALLING MIXXX ***************************************
 

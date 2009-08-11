@@ -87,6 +87,8 @@ double ControlPotmeter::getValueFromWidget(double dValue)
 
 void ControlPotmeter::setValueFromThread(double dValue)
 {
+    if (dValue == m_dValue) return;
+
     if (dValue>m_dMaxValue)
         m_dValue = m_dMaxValue;
     else if (dValue<m_dMinValue)

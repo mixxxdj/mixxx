@@ -21,14 +21,21 @@ MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject & midi, do
     QByteArray err_tmp = QString("Invalid config group: '%1', name: '%2'").arg(group).arg(key).toAscii();
     Q_ASSERT_X(m_cobj, "MidiLedHandler", err_tmp);
 
-    connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
-    connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
+    connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)), Qt::DirectConnection);
+    connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)), Qt::DirectConnection);
 }
 
 MidiLedHandler::~MidiLedHandler() {
 }
 
 void MidiLedHandler::controlChanged(double value) {
+    //Guh, the valueChangedFromEngine and valueChanged signals can occur simultaneously because we're
+    //using Qt::DirectConnection. We have to block by hand to prevent re-entrancy. We can't use 
+    //Qt::BlockingQueuedConnection because we don't have an event loop in some of the threads that
+    //create MidiLedHandlers. (The underlying code is messy - On first run, the LED handlers get created
+    //in the main thread, and then after you load a new binding, they get created from the Midi thread.)
+    // - Albert 04/19/2009
+    m_reentracyBlock.lock();
     unsigned char m_byte2 = m_off;
     if (value >= m_min && value <= m_max) { m_byte2 = m_on; }
 
@@ -36,9 +43,10 @@ void MidiLedHandler::controlChanged(double value) {
         lastStatus=m_byte2;
          if (m_byte2 != 0xff) {
             // qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
-            m_midi.sendShortMsg(m_status, m_midino, m_byte2, m_device);
+            m_midi.sendShortMsg(m_status, m_midino, m_byte2);
         }
     }
+    m_reentracyBlock.unlock();
 }
 
 void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString device) {

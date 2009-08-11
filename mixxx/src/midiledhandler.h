@@ -35,6 +35,7 @@ private:
 	unsigned char m_on;
 	unsigned char m_off;
 	unsigned char lastStatus;
+	QMutex m_reentracyBlock;
 };
 
 #endif

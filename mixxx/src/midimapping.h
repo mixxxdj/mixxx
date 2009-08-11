@@ -36,6 +36,7 @@ class MidiInputMappingTableModel;
 class MidiOutputMappingTableModel;
 
 #define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIBindings.xml")
+#define MIDI_MAPPING_EXTENSION ".midi.xml"
 
 class MidiMapping : public QObject
 {
@@ -50,27 +51,18 @@ class MidiMapping : public QObject
     void loadPreset(QString path);
     void loadPreset(QDomElement root);
 
-    MidiInputMapping* getInputMapping();
-
     void savePreset(QString path = BINDINGS_PATH);
     void applyPreset();
-    void clearPreset();
-    void buildDomElement();
+    
+    
 
-    void addControl(QDomElement& control, QString device);
-    void addOutput(QDomElement& output, QString device);
-    void addMidiScriptInfo(QDomElement &scriptFile, QString device); //Sucks
-
-    bool addInputControl(MidiType midiType, int midiNo, int midiChannel,
-                         QString controlObjectGroup, QString controlObjectKey,
-                         MidiOption midiOption);
-    bool addInputControl(MidiMessage message, MixxxControl control);
-    void removeInputMapping(MidiType midiType, int midiNo, int midiChannel);
+    
+    
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
     MidiOutputMappingTableModel* getMidiOutputMappingTableModel();
     //MixxxControl* getInputMixxxControl(MidiMessage command);
 
-    double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
+    static double ComputeValue(MidiOption midioption, double _prevmidivalue, double _newmidivalue);
 
     // MIDI Input Mapping Modifiers
     int numInputMidiMessages();
@@ -111,6 +103,29 @@ signals:
     void midiLearningFinished();
 
 private:
+    int internalNumInputMidiMessages();
+    bool internalIsInputIndexValid(int index);
+    void internalSetInputMidiMapping(MidiMessage command, 
+                                     MixxxControl control,
+                                     bool shouldEmit);
+    int internalNumOutputMidiMessages();
+    int internalNumOutputMixxxControls();
+    bool internalIsOutputIndexValid(int index);
+    void internalSetOutputMidiMapping(MixxxControl control,
+                                      MidiMessage command,
+                                      bool shouldEmit);
+    void clearPreset();
+    void buildDomElement();
+    void addControl(QDomElement& control, QString device);
+    void addOutput(QDomElement& output, QString device);
+    void addMidiScriptInfo(QDomElement &scriptFile, QString device); //Sucks
+
+    bool addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
+                         QString controlObjectGroup, QString controlObjectKey,
+                         MidiOption midiOption);
+    bool addInputControl(MidiMessage message, MixxxControl control);
+    void removeInputMapping(MidiStatusByte midiStatus, int midiNo, int midiChannel);
+
 #ifdef __MIDISCRIPT__
     /** Adds a script file name and function prefix to the list to be loaded */
     void addScriptFile(QString filename, QString functionprefix);
@@ -119,6 +134,7 @@ private:
     QList<QString> m_pScriptFunctionPrefixes;
     MidiScriptEngine *m_pScriptEngine;
 #endif
+    QMutex m_mappingLock;
     QDomElement m_Bindings;
     MidiObject &m_rMidiObject;
     MidiInputMapping m_inputMapping;

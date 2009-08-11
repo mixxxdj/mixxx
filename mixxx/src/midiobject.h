@@ -21,7 +21,7 @@
 #include <QtCore>
 #include "defs.h"
 #include "configobject.h"
-#include "midimessage.h"
+#include "midimessage.h" //MOC doesn't like incomplete type definitions in signals. :(
 
 #ifdef __MIDISCRIPT__
 class MidiScriptEngine;     // Forward declaration
@@ -52,7 +52,6 @@ class MidiObject : public QThread
 public:
     MidiObject();
     virtual ~MidiObject();
-    void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
     virtual void updateDeviceList() {};
@@ -64,13 +63,13 @@ public:
     /** Returns a list of available devices */
     virtual QStringList *getDeviceList();
     /** Returns the name of the current open device */
-    QStringList getOpenDevices();
+    QString getOpenDevice();
     /** Returns a list of available configurations. Takes as input the directory path
       * containing the configuration files */
     QStringList *getConfigList(QString path);
 
     // Stuff for sending messages to control the device
-    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device);
+    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     virtual void sendShortMsg(unsigned int word);
     virtual void sendSysexMsg(unsigned char data[], unsigned int length);
     Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
@@ -78,6 +77,7 @@ public:
     bool getMidiLearnStatus();
 
 #ifdef __MIDISCRIPT__
+    void restartScriptEngine();
     MidiScriptEngine *getMidiScriptEngine();
 #endif
 
@@ -86,6 +86,7 @@ public:
 public slots:
     void enableMidiLearn();
     void disableMidiLearn();
+    void slotScriptEngineReady();
 
 signals:
     void devicesChanged();
@@ -96,7 +97,7 @@ protected:
     void run();
 #endif
     void stop();
-    void receive(MidiCategory category, char channel, char control, char value, QString device);
+    void receive(MidiStatusByte status, char channel, char control, char value);
 
     bool requestStop;
     bool m_bMidiLearn;
@@ -118,6 +119,8 @@ protected:
 
 #ifdef __MIDISCRIPT__
     MidiScriptEngine *m_pScriptEngine;
+    QMutex m_scriptEngineInitializedMutex;
+    QWaitCondition m_scriptEngineInitializedCondition;
 #endif
 
     /** Device MIDI mapping object */

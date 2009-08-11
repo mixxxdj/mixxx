@@ -164,9 +164,11 @@ void MidiObjectPortMidi::run()
     QThread::currentThread()->setObjectName(QString("MidiObjectPortMidi %1").arg(++id));
     
     qDebug() << QString("MidiObjectPortMidi: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    // Set up the MidiScriptEngine here, as this is the thread the bulk of it runs in
+
+#ifdef __MIDISCRIPT__
     MidiObject::run();
-    
+#endif
+
 	int numEvents = 0;
 	bool stopRunning = false;
 
@@ -187,7 +189,7 @@ void MidiObjectPortMidi::run()
 					int velocity = Pm_MessageData2(m_midiBuffer[i].message);
 									
 					//qDebug() << note;
-	                receive((MidiCategory)type, channel, note, velocity, m_strActiveDevice);
+	                receive((MidiCategory)type, channel, note, velocity);
 				}
 			}
 		}

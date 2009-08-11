@@ -33,7 +33,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
     m_pMaster = _master;
-    m_pInterleavedBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pStreamBuffers[SOURCE_MASTER] = (CSAMPLE*)_master->getMasterBuffer();
     m_pStreamBuffers[SOURCE_HEADPHONES] = (CSAMPLE*)_master->getHeadphoneBuffer();
 
@@ -87,14 +86,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_samplerates.push_back("44100");
     m_samplerates.push_back("48000");
     m_samplerates.push_back("96000");
-
-#ifdef __PORTAUDIO__
-    PaError err = Pa_Initialize();
-    if (err != paNoError)
-    {
-        qDebug() << "Error:" << Pa_GetErrorText(err);
-    }
-#endif
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -108,9 +99,9 @@ SoundManager::~SoundManager()
 
     Pa_Terminate();
 
-    delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
-    delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
-    delete m_pReceiverBuffers[RECEIVER_MICROPHONE];
+    delete [] m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+    delete [] m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    delete [] m_pReceiverBuffers[RECEIVER_MICROPHONE];
 }
 
 /** Returns a list of all the devices we've enumerated through PortAudio.
@@ -154,7 +145,7 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
             }
             if (bInputDevices)
             {
-                if (device->getNumInputChannels() <= 0)
+                if (device->getNumInputChannels() <= 1) //Ignore mono input and no-input devices
                     bMatchedCriteria = false;
             }
 
@@ -177,7 +168,7 @@ QList<QString> SoundManager::getHostAPIList()
     for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++)
     {
         const PaHostApiInfo *api = Pa_GetHostApiInfo(i);
-        apiList.push_back(api->name);
+        if (QString(api->name) != "skeleton implementation") apiList.push_back(api->name);
     }
 
     return apiList;
@@ -255,6 +246,10 @@ void SoundManager::clearDeviceList()
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
+    
+#ifdef __PORTAUDIO__
+    Pa_Terminate();
+#endif
 }
 
 /** Returns a list of samplerates we will attempt to support.
@@ -272,6 +267,13 @@ void SoundManager::queryDevices()
     clearDeviceList();
 
 #ifdef __PORTAUDIO__
+    PaError err = Pa_Initialize();
+    if (err != paNoError)
+    {
+        qDebug() << "Error:" << Pa_GetErrorText(err);
+        return;
+    }
+    
     int iNumDevices;
     iNumDevices = Pa_GetDeviceCount();
     if(iNumDevices < 0)
@@ -326,7 +328,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
         else
             setHostAPI(MIXXX_PORTAUDIO_ALSA_STRING);
 #endif
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 //TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
 //        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
 //            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);
@@ -405,7 +407,9 @@ int SoundManager::setupDevices()
 			src.channels = 2;	//TODO: Should we have a mono option?  Surround sound mixing might be cool...
 			src.type = SOURCE_MASTER;
 
-            device->addSource(src);
+            err = device->addSource(src);
+            if (err != 0)
+                return err;
             bNeedToOpenDeviceForOutput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
@@ -415,7 +419,9 @@ int SoundManager::setupDevices()
 			src.channels = 2;
 			src.type = SOURCE_HEADPHONES;
 
-			device->addSource(src);
+			err = device->addSource(src);
+			if (err != 0)
+                return err;
             bNeedToOpenDeviceForOutput = 1;
         }
 
@@ -427,7 +433,9 @@ int SoundManager::setupDevices()
 			recv.channels = 2;
 			recv.type = RECEIVER_VINYLCONTROL_ONE;
 
-            device->addReceiver(recv);
+            err = device->addReceiver(recv);
+            if (err != 0)
+                return err;
             bNeedToOpenDeviceForInput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
@@ -437,7 +445,9 @@ int SoundManager::setupDevices()
 			recv.channels = 2;
 			recv.type = RECEIVER_VINYLCONTROL_TWO;
 
-            device->addReceiver(recv);
+            err = device->addReceiver(recv);
+            if (err != 0)
+                return err;
             bNeedToOpenDeviceForInput = 1;
         }
 
@@ -458,6 +468,7 @@ int SoundManager::setupDevices()
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
+    //Returns non-zero if we have no output devices
     return (iNumDevicesOpenedForOutput == 0);
 }
 
@@ -526,6 +537,7 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer2 = inputBuffer;
     }
 
+/*
     //If we have two stereo input streams (interlaced as one), then
     //break them up into two separate interlaced streams
     if (iFrameSize == 4)
@@ -541,10 +553,12 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
         vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
+*/
+    else { //More than two channels of input (iFrameSize > 2)
 
-/*
+        //Do crazy deinterleaving of the audio into the correct m_pReceiverBuffers.
+
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-
         for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Deinterlace the input audio data from the portaudio buffer
@@ -559,10 +573,16 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 				for(iChannel = 0; iChannel < recv.channels; iChannel++)	//this will make sure a sample from each channel is copied
 				{
 					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			        m_pReceiverBuffers[type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
+			        m_pReceiverBuffers[recv.type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
                 }
 			}
         }
+        //Set the pointers to point to the de-interlaced input audio
+        vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+        vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    }
+
+/*
 
 */
 

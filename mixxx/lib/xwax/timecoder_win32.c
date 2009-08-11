@@ -30,8 +30,6 @@
 #define ZERO_AVG 1024
 #define SIGNAL_AVG 256
 
-#define MAX_BITS 32 /* bits in an int */
-
 #define REF_PEAKS_AVG 48 /* in wave cycles */
 
 /* The number of correct bits which come in before the timecode 
@@ -50,19 +48,6 @@
 
 #define POLARITY_NEGATIVE 0
 #define POLARITY_POSITIVE 1
-
-struct timecode_def_t {
-    char *name, *desc;
-    int bits, /* number of bits in string */
-        resolution, /* wave cycles per second */
-        tap[MAX_BITS], ntaps, /* LFSR taps */
-        polarity; /* cycle begins POLARITY_POSITIVE or POLARITY_NEGATIVE */
-    unsigned int seed, /* LFSR value at timecode zero */
-        length, /* in cycles */
-        safe; /* last 'safe' timecode number (for auto disconnect) */
-    signed int *lookup; /* pointer to built lookup table */
-};
-
 
 struct timecode_def_t timecode_def[] = {
     {
@@ -107,8 +92,8 @@ struct timecode_def_t timecode_def[] = {
     {
         "traktor_a",
         "Traktor Scratch, side A",
-        2000,
         23,
+        2000,
         {6, 12, 18},
         3,
         POLARITY_NEGATIVE,
@@ -120,8 +105,8 @@ struct timecode_def_t timecode_def[] = {
     {
         "traktor_b",
         "Traktor Scratch, side B",
-        2000,
-        23,        
+        23,
+        2000,        
         {6, 12, 18},
         3,
         POLARITY_NEGATIVE,
@@ -136,21 +121,21 @@ struct timecode_def_t timecode_def[] = {
 };
 
 
-struct timecode_def_t *def;
+//struct timecode_def_t *def;
 
 
 /* Linear Feeback Shift Register in the forward direction. New values
  * are generated at the least-significant bit. */
 
-static int lfsr(unsigned int code)
+static int lfsr(unsigned int code, struct timecoder_t *timecoder)
 {
     unsigned int r;
     char s, n;
 
     r = code & 1;
 
-    for(n = 0; n < def->ntaps; n++) {
-        s = *(def->tap + n);
+    for(n = 0; n < timecoder->tc_table->ntaps; n++) {
+        s = *(timecoder->tc_table->tap + n);
         r += (code & (1 << s)) >> s;
     }
     
@@ -161,15 +146,15 @@ static int lfsr(unsigned int code)
 /* Linear Feeback Shift Register in the reverse direction. New values
  * are generated at the most-significant bit. */
 
-static /* inline */ int lfsr_rev(unsigned int code) // inline causes compile failure on MSVC++ 2005 EE
+static /* inline */ int lfsr_rev(unsigned int code, struct timecoder_t *timecoder) // inline causes compile failure on MSVC++ 2005 EE
 {
     unsigned int r;
     char s, n;
 
-    r = (code & (1 << (def->bits - 1))) >> (def->bits - 1);
+    r = (code & (1 << (timecoder->tc_table->bits - 1))) >> (timecoder->tc_table->bits - 1);
 
-    for(n = 0; n < def->ntaps; n++) {
-        s = *(def->tap + n) - 1;
+    for(n = 0; n < timecoder->tc_table->ntaps; n++) {
+        s = *(timecoder->tc_table->tap + n) - 1;
         r += (code & (1 << s)) >> s;
     }
     
@@ -179,9 +164,10 @@ static /* inline */ int lfsr_rev(unsigned int code) // inline causes compile fai
 
 /* Setup globally, for a chosen timecode definition */
 
-int timecoder_build_lookup(char *timecode_name) {
+int timecoder_build_lookup(char *timecode_name, struct timecoder_t *timecoder) {
     unsigned int n, current;
 
+    struct timecode_def_t *def;
     def = &timecode_def[0];
 
     while(def->name) {
@@ -196,36 +182,36 @@ int timecoder_build_lookup(char *timecode_name) {
         return -1;
     }
 
-    
-    if (!def->lookup)
-    {
-        def->lookup = malloc((2 << def->bits) * sizeof(unsigned int));
-        //fprintf(stderr, "Allocating %d slots (%zuKb) for %d bit timecode (%s)\n",
-        //    2 << def->bits, (2 << def->bits) * sizeof(unsigned int) / 1024,
-        //    def->bits, def->desc);
-
+    //Copy the lookup table stuff
+    if (timecoder->tc_table == NULL) {
+        timecoder->tc_table = malloc(sizeof(struct timecode_def_t));
     }
-    else
-        return 0;
-        
-    if(!def->lookup) {
+    memcpy(timecoder->tc_table, def, sizeof(struct timecode_def_t));
+
+    //fprintf(stderr, "Allocating %d slots (%zuKb) for %d bit timecode (%s)\n",
+    //        2 << timecoder->tc_table->bits, (2 << timecoder->tc_table->bits) * sizeof(unsigned int) / 1024,
+    //        timecoder->tc_table->bits, timecoder->tc_table->desc);
+
+    timecoder->tc_table->lookup = malloc((2 << timecoder->tc_table->bits) * sizeof(unsigned int));
+    if(!timecoder->tc_table->lookup) {
         perror("malloc");
         return 0;
     }
+   
+    for(n = 0; n < ((unsigned int)2 << timecoder->tc_table->bits); n++)
+        timecoder->tc_table->lookup[n] = -1;
     
-    for(n = 0; n < ((unsigned int)2 << def->bits); n++)
-        def->lookup[n] = -1;
+    current = timecoder->tc_table->seed;
     
-    current = def->seed;
-    
-    for(n = 0; n < def->length; n++) {
-        if(def->lookup[current] != -1) {
-            fprintf(stderr, "Timecode has wrapped; finishing here.\n");
+    for(n = 0; n < timecoder->tc_table->length; n++) {
+        if(timecoder->tc_table->lookup[current] != -1) {
+            //fprintf(stderr, "Timecode has wrapped; finishing here.\n");
             return -1;
         }
         
-        def->lookup[current] = n;
-        current = (current >> 1) + (lfsr(current) << (def->bits - 1));
+        timecoder->tc_table->lookup[current] = n;
+        current = (current >> 1) + (lfsr(current, timecoder) << (timecoder->tc_table->bits - 1));
+        //printf("n=%d\n", n);
     }
     
     return 0;    
@@ -234,11 +220,11 @@ int timecoder_build_lookup(char *timecode_name) {
 
 /* Free the timecoder lookup table when it is no longer needed */
 
-void timecoder_free_lookup(void) {
-    if (def->lookup)
+void timecoder_free_lookup(struct timecoder_t* timecoder) {
+    if (timecoder->tc_table->lookup)
     {
-        free(def->lookup);
-        def->lookup = NULL;
+        free(timecoder->tc_table->lookup);
+        timecoder->tc_table->lookup = NULL;
     }
 }
 
@@ -279,6 +265,8 @@ void timecoder_init(struct timecoder_t *tc)
 
     tc->mon = NULL;
     tc->log_fd = -1;
+    
+    tc->tc_table = NULL;
 }
 
 
@@ -356,7 +344,7 @@ int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
     b = 0;
     l = 0;
     
-    mask = ((1 << def->bits) - 1);
+    mask = ((1 << tc->tc_table->bits) - 1);
     monitor_centre = tc->mon_size / 2;
 
     offset = 0;
@@ -379,7 +367,7 @@ int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
             /* Work out whether half way through a cycle we are
              * looking for the wave to be positive or negative */
             
-            if(tc->mono.positive == (def->polarity ^ tc->forwards)) {
+            if(tc->mono.positive == (tc->tc_table->polarity ^ tc->forwards)) {
                 
                 /* Entering the second half of a wave cycle */
                 
@@ -405,16 +393,16 @@ int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
                  * direction. */
                 
                 if(tc->forwards) {
-                    l = lfsr(tc->timecode);
+                    l = lfsr(tc->timecode, tc);
                     
                     tc->bitstream = (tc->bitstream >> 1)
-                        + (b << (def->bits - 1));
+                        + (b << (tc->tc_table->bits - 1));
                     
                     tc->timecode = (tc->timecode >> 1)
-                        + (l << (def->bits - 1));
+                        + (l << (tc->tc_table->bits - 1));
                     
                 } else {
-                    l = lfsr_rev(tc->timecode);
+                    l = lfsr_rev(tc->timecode, tc);
                     
                     tc->bitstream = ((tc->bitstream << 1) & mask) + b;
                     tc->timecode = ((tc->timecode << 1) & mask) + l;
@@ -545,7 +533,7 @@ int timecoder_get_pitch(struct timecoder_t *tc, float *pitch)
     /* Value of tc->crossings may be negative in reverse */
     
     *pitch = tc->rate * (float)tc->crossings / tc->pitch_ticker
-        / (def->resolution * 2);
+        / (tc->tc_table->resolution * 2);
 
     tc->crossings = 0;
     tc->pitch_ticker = 0;
@@ -564,7 +552,7 @@ signed int timecoder_get_position(struct timecoder_t *tc, int *when)
     signed int r;
 
     if(tc->valid_counter > VALID_BITS) {
-        r = def->lookup[tc->bitstream];
+        r = tc->tc_table->lookup[tc->bitstream];
 
         if(r >= 0) {
             if(when) 
@@ -594,7 +582,7 @@ int timecoder_get_alive(struct timecoder_t *tc)
 
 unsigned int timecoder_get_safe(struct timecoder_t *tc)
 {
-    return def->safe;
+    return tc->tc_table->safe;
 }
 
 
@@ -603,5 +591,5 @@ unsigned int timecoder_get_safe(struct timecoder_t *tc)
 
 int timecoder_get_resolution(struct timecoder_t *tc)
 {
-    return def->resolution;
+    return tc->tc_table->resolution;
 }

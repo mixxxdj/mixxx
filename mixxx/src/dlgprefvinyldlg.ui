@@ -308,6 +308,13 @@
         </property>
        </widget>
       </item>
+      <item>
+        <widget class="QCheckBox" name="NeedleSkipEnable" >
+        <property name="text">
+                <string>Enable Needle Skip Prevention</string>
+        </property>
+        </widget>
+      </item>
      </layout>
     </widget>
    </item>

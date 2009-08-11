@@ -30,16 +30,17 @@ public:
     void resize(int w, int h);
     void draw(QPainter* pPainter, QPaintEvent *pEvent);
     void drawSignalPixmap(QPainter* p);
-    void newTrack(TrackInfoObject *pTrack);
     void setup(QDomNode node);
     void precomputePixmap();
     int getSubpixelsPerPixel();
     int getPixelsPerSecond();
 public slots:
+    void slotNewTrack(TrackInfoObject *pTrack);
     void slotUpdateLatency(double latency);
     void slotUpdatePlayPos(double playpos);
     void slotUpdateRate(double rate);
-    void slotUpdateRateRange(double rate);
+    void slotUpdateRateRange(double rate_range);
+    void slotUpdateRateDir(double rate_dir);
     
 protected:
     void run();
@@ -53,7 +54,7 @@ private:
 
     int m_iPlayPosTime, m_iPlayPosTimeOld;
     QTime m_playPosTime, m_playPosTimeOld;
-    double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange;
+    double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange, m_dRateDir;
     int m_iDupes;
     double m_dPlayPosAdjust;
     int m_iLatency;
@@ -67,6 +68,7 @@ private:
     ControlObjectThreadMain *m_pPlayPos;
     ControlObjectThreadMain *m_pRate;
     ControlObjectThreadMain *m_pRateRange;
+    ControlObjectThreadMain *m_pRateDir;
     
     ControlObject *m_pCOVisualResample;
 

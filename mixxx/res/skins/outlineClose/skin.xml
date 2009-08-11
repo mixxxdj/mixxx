@@ -1001,10 +1001,21 @@
   <Tooltip>Master VuMeter</Tooltip>
   <PathVu>vumeter-on-.png</PathVu>
   <PathBack>vumeter-off-.png</PathBack>
-  <Pos>9,728</Pos>
+  <Pos>9,717</Pos>
   <Horizontal>true</Horizontal>
   <Connection>
-   <ConfigKey>[Master],VuMeter</ConfigKey>
+   <ConfigKey>[Master],VuMeterL</ConfigKey>
+  </Connection>
+ </VuMeter>
+
+ <VuMeter>
+  <Tooltip>Master VuMeter</Tooltip>
+  <PathVu>vumeter-on-.png</PathVu>
+  <PathBack>vumeter-off-.png</PathBack>
+  <Pos>9,739</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Master],VuMeterR</ConfigKey>
   </Connection>
  </VuMeter>
 

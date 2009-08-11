@@ -3,13 +3,13 @@ Section: sound
 Priority: optional
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
 XSBC-Original-Maintainer: Albert Santoni <gamegod@users.sf.net> 
-Build-Depends: debhelper (>= 4.0.0), pkg-config, docbook-to-man, xlibmesa-gl-dev, libglu1-mesa-dev, libqt4-dev (>= 4.3.0), libqt4-opengl-dev, scons, libjack-dev, libsamplerate-dev, portaudio19-dev, libid3tag0-dev, libmad0-dev, libogg-dev, libsndfile1-dev, libaudiofile-dev, libasound2-dev, libvorbis-dev, libexpat-dev, libsoundtouch1-dev
+Build-Depends: debhelper (>= 4.0.0), pkg-config, docbook-to-man, xlibmesa-gl-dev, libglu1-mesa-dev, libqt4-opengl-dev | libqt4-dev (>= 4.4.0), scons, libjack-dev, libsamplerate-dev, portaudio19-dev, libid3tag0-dev, libmad0-dev, libogg-dev, libsndfile1-dev, libaudiofile-dev, libasound2-dev, libvorbis-dev, libexpat-dev, libsoundtouch1-dev
 Standards-Version: 3.7.3 
 
 Package: mixxx
 Section: sound
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-opengl, libqt4-svg
 Recommends: caps, cmt, swh-plugins
 Suggests: pdf-viewer
 Replaces: mixxx-data

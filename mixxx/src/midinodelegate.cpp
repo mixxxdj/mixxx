@@ -7,6 +7,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include "widget/hexspinbox.h"
 #include "midinodelegate.h"
 
 MidiNoDelegate::MidiNoDelegate(QObject *parent)
@@ -14,11 +15,32 @@ MidiNoDelegate::MidiNoDelegate(QObject *parent)
 {
 }
 
+void MidiNoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
+                         const QModelIndex &index) const
+{
+    if (index.data().canConvert<int>()) {
+        int midino = index.data().value<int>();
+        
+        if (option.state & QStyle::State_Selected)
+            painter->fillRect(option.rect, option.palette.highlight());
+
+        QString text = QString("0x") + QString("%1").arg(midino, 
+                                                2,   //Field width (makes "F" become "0F")
+                                                16, 
+                                                QLatin1Char('0')).toUpper();
+
+        painter->drawText(option.rect, text, QTextOption(Qt::AlignCenter));
+        //Note that Qt::AlignCenter does both vertical and horizontal alignment.
+    } else {
+        QItemDelegate::paint(painter, option, index);
+    }
+}
+
 QWidget *MidiNoDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &/* option */,
         const QModelIndex & index ) const
 {
-    QSpinBox *editor = new QSpinBox(parent);
+    HexSpinBox *editor = new HexSpinBox(parent);
     editor->setMinimum(0);
     editor->setMaximum(127);
 
@@ -30,7 +52,7 @@ void MidiNoDelegate::setEditorData(QWidget *editor,
 {
     int value = index.model()->data(index, Qt::EditRole).toInt();
 
-    QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
+    HexSpinBox *spinBox = static_cast<HexSpinBox*>(editor);
     spinBox->setValue(value);
     spinBox->interpretText();
 }
@@ -38,7 +60,7 @@ void MidiNoDelegate::setEditorData(QWidget *editor,
 void MidiNoDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                     const QModelIndex &index) const
 {
-    QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
+    HexSpinBox *spinBox = static_cast<HexSpinBox*>(editor);
     spinBox->interpretText();
     int value = spinBox->value();
 

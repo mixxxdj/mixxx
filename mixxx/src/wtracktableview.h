@@ -172,7 +172,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void keyPressEvent(QKeyEvent *event);
     void dragMoveEvent(QDragMoveEvent * event);
-
+    void resizeEvent(QResizeEvent *event);
     DlgBpmTap *bpmTapDlg;
     QModelIndex m_dirindex;
     QList<QString> m_selectedDirTrackNames;        //Names of the selected tracks when in browse mode.

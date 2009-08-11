@@ -1,8 +1,20 @@
-mixxx (1.6.5-0ubuntu1) hardy; urgency=low
+mixxx (1.7.0-0ubuntu1) intrepid; urgency=low
 
-  * New upstream release - Bleeding edge MIDI Learning code
+  * New upstream release 
   
- -- Garth Dahlstrom <ironstorm@users.sourceforge.net>  Thu,  27 November 2008 01:00:00 -0500
+ -- Albert Santoni <alberts@mixxx.org>  Thu,  5 August 2009 11:07:35 -0800
+
+mixxx (1.7.0~beta2-0ubuntu1) intrepid; urgency=low
+
+  * New upstream release 
+  
+ -- Albert Santoni <alberts@mixxx.org>  Sun,  19 July 2009 12:13:37 -0800
+
+mixxx (1.7.0~beta1-0ubuntu1) intrepid; urgency=low
+
+  * New upstream release 
+  
+ -- Albert Santoni <alberts@mixxx.org>  Mon,  13 April 2009 13:43:37 -0500
 
 mixxx (1.6.2-0ubuntu1) hardy; urgency=low
 

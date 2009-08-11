@@ -40,17 +40,17 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     m_samples               = NULL;
     char * timecode  =  NULL;
     bShouldClose    = false;
-    m_bCDMode               = false;
+    m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
     
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
         timecode = (char*)"serato_2a";
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB)
+    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) 
         timecode = (char*)"serato_2b";
     else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
-        m_bCDMode = true;
+        m_bNeedleSkipPrevention = false;
     }
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
         timecode = (char*)"traktor_a";
@@ -64,17 +64,21 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables...";
 
+  
+    //Initialize the timecoder structure.
+    timecoder_init(&timecoder);
+    timecoder.rate = iSampleRate;
+    
+    
     //Build the timecode lookup table.
-    if(timecoder_build_lookup(timecode) == -1)
+    if(timecoder_build_lookup(timecode, &timecoder) == -1)
     {
         qDebug() << "ERROR: Failed to build the timecode table!";
         return;
     }
 
-    //Initialize the timecoder structure.
-    timecoder_init(&timecoder);
-    timecoder.rate = iSampleRate;
-
+    
+    qDebug() << "Starting vinyl control xwax thread";
 
     //Start this thread (ends up calling-back the function "run()" below)
     start();
@@ -89,7 +93,7 @@ VinylControlXwax::~VinylControlXwax()
         free(m_samples);
 
     //Cleanup xwax nicely
-    timecoder_free_lookup();
+    timecoder_free_lookup(&timecoder);
     timecoder_clear(&timecoder);
 
     // Continue the run() function and close it
@@ -112,8 +116,8 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecoder_submit(&timecoder, samples, size);
 
         //Update the input signal strength
-        timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX);
-        timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX);
+        timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX * 2.0f);
+        timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
 
         waitForNextInput.wakeAll();
         lockSamples.unlock();
@@ -213,7 +217,7 @@ void VinylControlXwax::run()
                     //If the position from the timecode is more than a few seconds off, resync the position.
                     if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && 
                         (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
-                        !m_bCDMode)
+                        m_bNeedleSkipPrevention)
                     {
                         syncPosition();
                     }
@@ -221,7 +225,7 @@ void VinylControlXwax::run()
                     //with CDJs, so there's no point in trying to prevent needle skips.
                     else if (fabs(dVinylPosition - filePosition - iLeadInTime) > 0.2 &&
                              (iVCMode == MIXXX_VCMODE_ABSOLUTE) &&
-                             m_bCDMode) //CD Mode
+                             (!m_bNeedleSkipPrevention)) 
                     {
                         syncPosition();
                     }

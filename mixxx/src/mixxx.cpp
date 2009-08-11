@@ -37,12 +37,17 @@
 #include "trackinfoobject.h"
 #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
+#include "waveform/waveformrenderer.h"
 
 #include "soundmanager.h"
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
 #include "mididevicehandler.h"
 #include "recording/defs_recording.h"
+
+#include "upgrade.h"
+
+#include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
 #ifdef __IPOD__
 #include "wtracktableview.h"
@@ -65,21 +70,23 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-
-    #include "../.mixxx_version.svn" // #define BUILD_REV = "<svn rev number>"
-    QString buildRevision = "";
+    
+    QString buildRevision, buildFlags;
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
     #endif
-    #include "../.mixxx_flags.svn" // #define BUILD_FLAGS = "<flags>"
-    QString buildFlags = "";
+    
     #ifdef BUILD_FLAGS
       buildFlags = BUILD_FLAGS;
     #endif
-    if (buildRevision.trimmed().length() > 0)
-        if (buildFlags.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
-        else buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
-
+    
+    if (buildRevision.trimmed().length() > 0) {
+        if (buildFlags.trimmed().length() > 0)
+            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+        else
+            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+    }
+    
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
     setWindowIcon(QIcon(":/images/icon.svg"));
@@ -89,8 +96,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pTrack = 0;
     prefDlg = 0;
     midi = 0;
-    // Read the config file from home directory
-    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    
+    // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
+    config = versionUpgrade();  // This static function is located in upgrade.cpp
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -248,10 +256,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer2(QString)));
 
     // Ensure that visual receive updates when new tracks are loaded
-    if (view->m_pVisualCh1)
-        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pVisualCh1, SLOT(slotNewTrack(TrackInfoObject *)));
-    if (view->m_pVisualCh2)
-        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pVisualCh2, SLOT(slotNewTrack(TrackInfoObject *)));
+    if (view->m_pWaveformRendererCh1)
+        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
+    if (view->m_pWaveformRendererCh2)
+        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
 
 
 
@@ -276,20 +284,17 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #endif
 
     // Try open player device If that fails, the preference panel is opened.
-    if (soundmanager->setupDevices() != 0)
+    while (soundmanager->setupDevices() != 0)
     {
 
 #ifdef __C_METRICS__
-	    cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
-	                      "Mixxx failed to open audio device(s) on startup.");
+        cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
+                          "Mixxx failed to open audio device(s) on startup.");
 #endif
 
-        QMessageBox::warning(this, tr("Mixxx"),
-                                   tr("Failed to open your audio device(s).\n"
-                                      "Please verify your selection in the preferences."),
-                                   QMessageBox::Ok,
-                                   QMessageBox::Ok);
-         prefDlg->show();
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        if ( noSoundDlg() != 0 )
+            exit(0);
     }
 
     //setFocusPolicy(QWidget::StrongFocus);
@@ -359,6 +364,7 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
+	m_pTrack->appShuttingDown();
 
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
@@ -410,10 +416,74 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config, " << qTime.elapsed();
     delete config;
 
-#ifdef __WIN32__
-    _exit(0);
-#endif
+// Why is this here? The (MSVC 2008) linker even complains about it.
+//#ifdef __WINDOWS__
+//    _exit(0);
+//#endif
 }
+
+int MixxxApp::noSoundDlg(void)
+{
+    QMessageBox msgBox;
+	msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle("Sound Device Busy");
+    msgBox.setText( "<html>Mixxx cannot access the sound device <b>"+
+                    config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
+                    "</b>. "+
+                    "Another application is using the sound device or it is "+
+                    "not plugged in."+
+                    "<ul>"+
+                        "<li>"+
+                            "<b>Retry</b> after closing the other application "+
+                            "or reconnecting the sound device"+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Reconfigure</b> Mixxx to use another sound device."+
+                        "</li>" +
+                        "<li>"+
+                            "Get <b>Help</b> from the Mixxx Wiki."+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Exit</b> without saving your settings."+
+                        "</li>" +
+                    "</ul></html>"
+    );
+
+    QPushButton *retryButton = msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
+    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton *wikiButton = msgBox.addButton(tr("Help"), QMessageBox::ActionRole);
+    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+
+    while(1)
+    {
+        msgBox.exec();
+        
+        if (msgBox.clickedButton() == retryButton) {
+            soundmanager->queryDevices();
+            return 0;
+        } else if (msgBox.clickedButton() == wikiButton) {
+            QDesktopServices::openUrl(QUrl("http://mixxx.org/wiki/doku.php/troubleshooting#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
+            wikiButton->setEnabled(false);
+        } else if (msgBox.clickedButton() == reconfigureButton) {
+            msgBox.hide();
+            soundmanager->queryDevices();
+            
+            // This way of opening the dialog allows us to use it synchronously
+            prefDlg->setWindowModality(Qt::ApplicationModal);
+            prefDlg->exec();
+            if ( prefDlg->result() == QDialog::Accepted) {
+                soundmanager->queryDevices();
+                return 0;
+            }
+            
+            msgBox.show();
+            
+        } else if (msgBox.clickedButton() == exitButton) {
+            return 1;
+        }
+    }
+}
+
 
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
@@ -970,49 +1040,31 @@ void MixxxApp::slotHelpAbout()
 "Sean Pappalardo<br>"
 "Nick Guenther<br>"
 "Phillip Whelan<br>"
-"Mathieu Rene<br>"
-"Robin Sheat<br>"
-"Tom Care<br>&nbsp;<br>"
-"John Sully<br>"
-"Pawel Bartkiewicz<br>"
-"Cedric Gestes<br>"
-"Ben Wheeler<br>"
-"Micah Lee<br>"
-"Nathan Prado<br>"
 "Zach Elko<br>"
-"Wesley Stessens<br>"
+"Tom Care<br>"
+"Pawel Bartkiewicz<br>"
+
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
 "<p align=\"center\">"
-"Claudio Bantaloukas<br>"
-"Pavel Rusnak<br>"
-"Martin Sakm&#225;r<br>"
-"Ilian Persson<br>"
 "Mark Hills<br>"
-"Alex Barker<br>"
-"Dave Jarvis<br>"
-"Thomas Baag<br>"
-"Karlis Kalnins<br>"
-"Amias Channer<br>"
-"Sacha Berger<br>"
-"Stefan Langhammer<br>"
 "Andre Roth<br>"
-"Frank Willascheck<br>"
-"Jeff Nelson<br>"
-"Kevin Schaper<br>"
-"J&aacute;n Jockusch<br>"
-"Alex Markley<br>"
-"Oriol Puigb&oacute;<br>"
-"Ulrich Heske<br>"
-"James Hagerman<br>"
+"Robin Sheat<br>"
 "Michael Pujos<br>"
 "Mark Glines<br>"
+"Claudio Bantaloukas<br>"
+"Pavol Rusnak<br>"
+"Mathieu Rene<br>"
+"Miko Kiiski<br>"
+"Navaho Gunleg<br>"
+"Gavin Pryke<br>"
+
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
-"Francois Garet - Hercules/Guillemot<br>"
-"Philip Lukidis - Hercules/Guillemot<br>"
-"Yann Hamiaux - Hercules/Guillemot<br>"
+"Stanton<br>"
+"Hercules<br>"
+"Echo Digital Audio<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
 "Melanie Thielker<br>"
@@ -1020,24 +1072,52 @@ void MixxxApp::slotHelpAbout()
 "Pau Arum&iacute;<br>"
 "David Garcia<br>"
 "Seb Ruiz<br>"
-"Echo Digital Audio<br>"
+"Joseph Mattiello<br>"
 "</p>"
-"<p align=\"center\"><b>Past Contributors</b></p>"
+        
+"<p align=\"center\"><b>Past Developers</b></p>"
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
 "Ken Haste Andersen<br>"
+"Cedric Gestes<br>"
+"John Sully<br>"
+"Torben Hohn<br>"
+"Peter Chang<br>"
+"Micah Lee<br>"
+"Ben Wheeler<br>"
+"Wesley Stessens<br>"
+"Nathan Prado<br>"
+"</p>"
+
+"<p align=\"center\"><b>Past Contributors</b></p>"
+"<p align=\"center\">"
 "Ludek Hor&#225;cek<br>"
 "Svein Magne Bang<br>"
 "Kristoffer Jensen<br>"
 "Ingo Kossyk<br>"
-"Torben Hohn<br>"
-"Peter Chang<br>"
 "Mads Holm<br>"
 "Lukas Zapletal<br>"
 "Jeremie Zimmermann<br>"
 "Gianluca Romanin<br>"
 "Tim Jackson<br>"
-"Jan Jockusch<br>"
+"J&aacute;n Jockusch<br>"
+"Stefan Langhammer<br>"
+"Frank Willascheck<br>"
+"Jeff Nelson<br>"
+"Kevin Schaper<br>"
+"Alex Markley<br>"
+"Oriol Puigb&oacute;<br>"
+"Ulrich Heske<br>"
+"James Hagerman<br>"
+"quil0m80<br>"
+"Martin Sakm&#225;r<br>"
+"Ilian Persson<br>"
+"Alex Barker<br>"
+"Dave Jarvis<br>"
+"Thomas Baag<br>"
+"Karlis Kalnins<br>"
+"Amias Channer<br>"
+"Sacha Berger<br>"
 "</p>";
 
 

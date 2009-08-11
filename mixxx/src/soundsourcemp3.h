@@ -22,7 +22,12 @@
 #include "defs.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef WIN64
+  #define FPM_64BIT // So mad.h doesn't try to use inline assembly which MSVC-x64 doesn't support
+#endif
 #include "mad.h"
+
 #include "errno.h"
 #include "soundsource.h"
 #include <sys/types.h>

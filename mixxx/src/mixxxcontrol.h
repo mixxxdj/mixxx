@@ -4,6 +4,22 @@
 #include <QDebug>
 #include "configobject.h"
 
+typedef enum {
+    MIDI_OPT_NORMAL           = 0,
+    MIDI_OPT_INVERT           = 1,
+    MIDI_OPT_ROT64            = 2,
+    MIDI_OPT_ROT64_INV        = 3,
+    MIDI_OPT_ROT64_FAST       = 4,
+    MIDI_OPT_DIFF             = 5,
+    MIDI_OPT_BUTTON           = 6, // Button Down (!=00) and Button Up (00) events happen together
+    MIDI_OPT_SWITCH           = 7, // Button Down (!=00) and Button Up (00) events happen seperately
+    MIDI_OPT_HERC_JOG         = 8, // Generic hercules wierd range correction
+    MIDI_OPT_SPREAD64         = 9, // Accelerated difference from 64
+    MIDI_OPT_SELECTKNOB       = 10,// Relative knob which can be turned forever and outputs a signed value.
+    
+    MIDI_OPT_SCRIPT           = 50,// Maps a MIDI control to a custom MixxxScript function
+} MidiOption;
+
 /** Note: The hash table in the MIDI mapping class maps MidiCommands onto MixxxControls! */
 
 class MixxxControl
@@ -24,11 +40,12 @@ class MixxxControl
         float getThresholdMinimum() const { return m_thresholdMinimum; };
         float getThresholdMaximum() const { return m_thresholdMaximum; };
         void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
-        bool operator==(MixxxControl& other) {
+        bool operator==(const MixxxControl& other) const {
             return ((m_strCOGroup == other.getControlObjectGroup()) &&
                     (m_strCOValue == other.getControlObjectValue()) &&
                     (m_midiOption == other.getMidiOption()));
-        };     
+        };
+        bool isNull() { return (m_strCOGroup == "" && m_strCOValue == ""); };
     private:
         QString m_strCOGroup;
         QString m_strCOValue;
@@ -43,12 +60,12 @@ class MixxxControl
 
 inline bool operator<(const MixxxControl &first, const MixxxControl &second)
 {
-     //int firstval = (first.getMidiChannel() * 128) + (int)first.getMidiType() * (128*16) + first.getMidiNo();
-     //int secondval = (second.getMidiChannel() * 128) + (int)second.getMidiType() * (128*16) + second.getMidiNo();
-     //return firstval < secondval;
-     return ((first.getControlObjectGroup() + first.getControlObjectValue()) < 
-              (second.getControlObjectGroup() + second.getControlObjectValue()));
+   return ((first.getControlObjectGroup() + first.getControlObjectValue()) < 
+            (second.getControlObjectGroup() + second.getControlObjectValue()));
 }
+  
+/** Hash function needed so we can use MixxxControl in a QHash table */
+uint qHash(const MixxxControl& key);
 
 /*
 QDebug operator<<(QDebug dbg, MixxxControl& control)
