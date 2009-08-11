@@ -10,6 +10,8 @@
 
 
 #include <QtGui>
+#include <QPainter>
+#include <QTimerEvent>
 
 enum VinylControlSignalType {
     VINYLCONTROL_SIGQUALITY = 0,
@@ -24,22 +26,34 @@ class VinylControlSignalWidget : public QGraphicsView
 public:
     VinylControlSignalWidget();
     ~VinylControlSignalWidget();
-    void setupWidget();
+    
     void resetWidget();
+    void startDrawing();
+    void stopDrawing();
+    void updateScene();
+    void setupWidget();
+                      
 public slots:
     void updateSignalQuality(VinylControlSignalType type, double value);
 
+protected:
+    void timerEvent (QTimerEvent* event);
+    
 private:
+    QMutex m_controlLock;
     QGraphicsScene m_signalScene;
     QGraphicsRectItem* m_signalRectItem[VINYLCONTROL_SIGTYPE_NUM];
+    QGraphicsTextItem* m_textItem;
     QRectF m_signalRect[VINYLCONTROL_SIGTYPE_NUM];
-    QBrush m_signalBrush[VINYLCONTROL_SIGTYPE_NUM];
-    QPixmap *m_bg[VINYLCONTROL_SIGTYPE_NUM];
+    
+    QLinearGradient m_signalGradGood;
+    QLinearGradient m_signalGradBad;
 
     float m_fRMSvolumeSum[VINYLCONTROL_SIGTYPE_NUM];
     float m_fRMSvolume[VINYLCONTROL_SIGTYPE_NUM];
     long m_samplesCalculated[VINYLCONTROL_SIGTYPE_NUM];
 
+    int m_iTimerId;
 };
 
 #endif /* VINYLCONTROLSIGNALWIDGET_H_ */

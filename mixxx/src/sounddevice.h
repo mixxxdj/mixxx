@@ -25,8 +25,8 @@
 class SoundDevice;
 class SoundManager;
 
-#define MIXXX_DUPLICATE_OUTPUT_CHANNEL_EXCEPTION 0x0f00f00
-#define MIXXX_DUPLICATE_INPUT_CHANNEL_EXCEPTION  0x0100100
+#define MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL 0x0f00f00
+#define MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL  0x0100100
 
 class SoundDevice
 {
@@ -41,8 +41,8 @@ class SoundDevice
         virtual int close() = 0;
         int getNumOutputChannels();     
         int getNumInputChannels();   
-        void addSource(AudioSource src);
-        void addReceiver(AudioReceiver recv);
+        int addSource(AudioSource src);
+        int addReceiver(AudioReceiver recv);
         void clearSources();
         void clearReceivers();
         bool operator== (SoundDevice* other);

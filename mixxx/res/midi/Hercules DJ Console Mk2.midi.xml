@@ -1,50 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
-    <info>
-        <name>Hercules DJ Console Mk2</name>
-        <author>Unknown</author>
-        <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
-    </info>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0">
+  <info>
+    <name>Hercules DJ Console Mk2</name>
+    <author>Garth Dahlstrom</author>
+    <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
+  </info>
   <controller id="Hercules DJ Console Mk2 MIDI">
+    <scriptfiles>
+      <file filename="Hercules-DJ-Console-Mk2-scripts.js" functionprefix="HerculesMk2"/>
+    </scriptfiles>
     <controls>
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
-        <miditype>Ctrl</miditype>
-        <midino>49</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x31</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>play</key>
-        <miditype>Ctrl</miditype>
-        <midino>8</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.play</key>
+        <status>0xB0</status>
+        <midino>0x08</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>cue_default</key>
-        <miditype>Ctrl</miditype>
-        <midino>9</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <group>[Channel1]</group> 
+        <key>HerculesMk2.cue</key>
+	<status>0xB0</status>
+        <midino>0x09</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>PrevTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>11</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
         <options>
           <Button/>
         </options>
@@ -52,10 +47,8 @@
       <control>
         <group>[Channel1]</group>
         <key>NextTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>12</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x0C</midino>
         <options>
           <Button/>
         </options>
@@ -63,167 +56,135 @@
       <control>
         <group>[Channel1]</group>
         <key>volume</key>
-        <miditype>Ctrl</miditype>
-        <midino>50</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x32</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
-        <miditype>Ctrl</miditype>
-        <midino>52</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <key>HerculesMk2.pitch</key>
+        <status>0xB0</status>
+        <midino>0x34</midino>
         <options>
-          <Diff/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>wheel</key>
-        <miditype>Ctrl</miditype>
-        <midino>54</midino>
-        <midichan>1</midichan>
-        <controltype>wheel</controltype>
+        <key>HerculesMk2.jog_wheel</key>
+        <status>0xB0</status>
+        <midino>0x36</midino>
         <options>
-          <HercJog/>
+          <Script-Binding/>
         </options>
       </control>
-      <control>
+      <control> <!-- Headphones Deck A -->
         <group>[Channel1]</group>
-        <key>pfl</key>
-        <miditype>Ctrl</miditype>
-        <midino>33</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.pfl</key>
+        <status>0xB0</status>
+        <midino>0x21</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLow</key>
-        <miditype>Ctrl</miditype>
-        <midino>46</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x2E</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterMid</key>
-        <miditype>Ctrl</miditype>
-        <midino>47</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x2F</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterHigh</key>
-        <miditype>Ctrl</miditype>
-        <midino>48</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x30</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterLowKill</key>
-        <miditype>Ctrl</miditype>
-        <midino>15</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123</key>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterMidKill</key>
-        <miditype>Ctrl</miditype>
-        <midino>14</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123</key>
+        <status>0xB0</status>
+        <midino>0x0E</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>filterHighKill</key>
-        <miditype>Ctrl</miditype>
-        <midino>13</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123</key>
+        <status>0xB0</status>
+        <midino>0x0D</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
-        <miditype>Ctrl</miditype>
-        <midino>19</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x13</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down</key>
-        <miditype>Ctrl</miditype>
-        <midino>20</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x14</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>beatsync</key>
-        <miditype>Ctrl</miditype>
-        <midino>10</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
-        <options>
-          <Switch/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>play</key>
-        <miditype>Ctrl</miditype>
-        <midino>2</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x0A</midino>
         <options>
           <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>cue_default</key>
-        <miditype>Ctrl</miditype>
-        <midino>3</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.play</key>
+        <status>0xB0</status>
+        <midino>0x02</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>HerculesMk2.cue</key>
+        <status>0xB0</status>
+        <midino>0x03</midino>
+        <options>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>PrevTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>5</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x05</midino>
         <options>
           <Button/>
         </options>
@@ -231,222 +192,205 @@
       <control>
         <group>[Channel2]</group>
         <key>NextTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>6</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x06</midino>
         <options>
           <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>reverse</key>
-        <miditype>Ctrl</miditype>
-        <midino>1</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123mode</key>
+        <status>0xB0</status>
+        <midino>0x01</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>volume</key>
-        <miditype>Ctrl</miditype>
-        <midino>51</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x033</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
-        <miditype>Ctrl</miditype>
-        <midino>53</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <key>HerculesMk2.pitch</key>
+        <status>0xB0</status>
+        <midino>0x35</midino>
         <options>
-          <Diff/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>wheel</key>
-        <miditype>Ctrl</miditype>
-        <midino>55</midino>
-        <midichan>1</midichan>
-        <controltype>wheel</controltype>
+        <key>HerculesMk2.jog_wheel</key>
+        <status>0xB0</status>
+        <midino>0x37</midino>
         <options>
-          <HercJog/>
+          <Script-Binding/>
         </options>
       </control>
-      <control>
+      <control> <!-- Headphones Deck B -->
         <group>[Channel2]</group>
-        <key>pfl</key>
-        <miditype>Ctrl</miditype>
-        <midino>34</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.pfl</key>
+        <status>0xB0</status>
+        <midino>0x22</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLow</key>
-        <miditype>Ctrl</miditype>
-        <midino>43</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x2B</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterMid</key>
-        <miditype>Ctrl</miditype>
-        <midino>44</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x2C</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterHigh</key>
-        <miditype>Ctrl</miditype>
-        <midino>45</midino>
-        <midichan>1</midichan>
-        <controltype>fader</controltype>
+        <status>0xB0</status>
+        <midino>0x2D</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterLowKill</key>
-        <miditype>Ctrl</miditype>
-        <midino>16</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123</key>
+        <status>0xB0</status>
+        <midino>0x10</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterMidKill</key>
-        <miditype>Ctrl</miditype>
-        <midino>17</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123</key>
+        <status>0xB0</status>
+        <midino>0x11</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>filterHighKill</key>
-        <miditype>Ctrl</miditype>
-        <midino>18</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123</key>
+        <status>0xB0</status>
+        <midino>0x12</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_up</key>
-        <miditype>Ctrl</miditype>
-        <midino>23</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x17</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_down</key>
-        <miditype>Ctrl</miditype>
-        <midino>24</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x18</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>beatsync</key>
-        <miditype>Ctrl</miditype>
-        <midino>4</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x04</midino>
         <options>
-          <Switch/>
+          <Button/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>reverse</key>
-        <miditype>Ctrl</miditype>
-        <midino>7</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <key>HerculesMk2.buttons123mode</key>
+        <status>0xB0</status>
+        <midino>0x07</midino>
         <options>
-          <Switch/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectPrevTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>22</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x16</midino>
         <options/>
       </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectNextTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>26</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
         <options/>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>LoadSelectedTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>27</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
-        <options/>
+        <key>HerculesMk2.loadSelectedTrack</key>
+        <status>0xB0</status>
+        <midino>0x1B</midino>
+        <options>
+	  <Script-Binding/>
+        </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>LoadSelectedTrack</key>
-        <miditype>Ctrl</miditype>
-        <midino>28</midino>
-        <midichan>1</midichan>
-        <controltype>button</controltype>
-        <options/>
+        <key>HerculesMk2.loadSelectedTrack</key>
+        <status>0xB0</status>
+        <midino>0x1C</midino>
+        <options>
+	  <Script-Binding/>
+        </options>
+      </control>
+      <control> <!-- Headphones Mix -->
+        <group>[Master]</group>
+        <key>HerculesMk2.pfl</key>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control> <!-- Headphones Split -->
+        <group>[Master]</group>
+        <key>HerculesMk2.pfl</key>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <Script-Binding/>
+        </options>
       </control>
     </controls>
+
     <outputs>
       <output>
         <group>[Channel1]</group>
         <key>play</key>
         <status>0xB0</status>
         <midino>0x08</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>play</key>
         <status>0xB0</status>
         <midino>0x02</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
@@ -464,76 +408,83 @@
         <minimum>0.9</minimum>
         <maximum>0.99</maximum>
       </output>
+
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
-        <threshold>0.4</threshold>
+        <minimum>0.4</minimum>
+        <maximum>1</maximum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x16</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
       </output>
+      <!--
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0D</midino>
-        <threshold>0.6</threshold>
+        <minimum>0.6</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
-        <threshold>0.7</threshold>
+        <minimum>0.7</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x0F</midino>
-        <threshold>0.8</threshold>
+        <minimum>0.8</minimum>
       </output>
+      -->
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x04</midino>
-        <threshold>0.4</threshold>
+        <minimum>0.4</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x1A</midino>
-        <threshold>0.5</threshold>
+        <minimum>0.5</minimum>
       </output>
+      <!--
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x12</midino>
-        <threshold>0.6</threshold>
+        <minimum>0.6</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x11</midino>
-        <threshold>0.7</threshold>
+        <minimum>0.7</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
         <key>VuMeter</key>
         <status>0xB0</status>
         <midino>0x10</midino>
-        <threshold>0.8</threshold>
+        <minimum>0.8</minimum>
       </output>
+      -->
     </outputs>
   </controller>
 </MixxxMIDIPreset>

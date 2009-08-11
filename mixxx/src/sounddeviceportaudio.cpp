@@ -118,8 +118,10 @@ int SoundDevicePortAudio::open()
 
 
     //Round to the nearest multiple of 4.
-    iLatencySamples -= (iLatencySamples % 4);
-    iLatencySamples += 4;
+    if (iLatencySamples % 4 != 0) {
+        iLatencySamples -= (iLatencySamples % 4);
+        iLatencySamples += 4;
+    }
 
     qDebug() << "iLatencySamples:" << iLatencySamples;
 

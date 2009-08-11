@@ -30,34 +30,34 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
     // At the moment, use one element, in future iterate through options
     QString strMidiOption;
     if (optionsNode.hasChildNodes()) {
-        strMidiOption = optionsNode.firstChild().nodeName();
+        strMidiOption = optionsNode.firstChild().nodeName().toLower();
     } else {
-        strMidiOption = "Normal";
+        strMidiOption = "normal";
     }
 
-    if (strMidiOption == "Normal")
+    if (strMidiOption == "normal")
         m_midiOption = MIDI_OPT_NORMAL;
-    else if (strMidiOption == "Invert")
+    else if (strMidiOption == "invert")
         m_midiOption = MIDI_OPT_INVERT;
-    else if (strMidiOption == "Rot64")
+    else if (strMidiOption == "rot64")
         m_midiOption = MIDI_OPT_ROT64;
-    else if (strMidiOption == "Rot64inv")
+    else if (strMidiOption == "rot64inv")
         m_midiOption = MIDI_OPT_ROT64_INV;
-    else if (strMidiOption == "Rot64fast")
+    else if (strMidiOption == "rot64fast")
         m_midiOption = MIDI_OPT_ROT64_FAST;
-    else if (strMidiOption == "Diff")
+    else if (strMidiOption == "diff")
         m_midiOption = MIDI_OPT_DIFF;
-    else if (strMidiOption == "Button")
+    else if (strMidiOption == "button")
         m_midiOption = MIDI_OPT_BUTTON;
-    else if (strMidiOption == "Switch")
+    else if (strMidiOption == "switch")
         m_midiOption = MIDI_OPT_SWITCH;
-    else if (strMidiOption == "HercJog")
+    else if (strMidiOption == "hercjog")
         m_midiOption = MIDI_OPT_HERC_JOG;
-    else if (strMidiOption == "Spread64")
+    else if (strMidiOption == "spread64")
         m_midiOption = MIDI_OPT_SPREAD64;
-    else if (strMidiOption == "SelectKnob")
+    else if (strMidiOption == "selectknob")
         m_midiOption = MIDI_OPT_SELECTKNOB;
-    else if (strMidiOption == "Script-Binding")
+    else if (strMidiOption == "script-binding")
         m_midiOption = MIDI_OPT_SCRIPT;
     else {
         m_midiOption = MIDI_OPT_NORMAL;
@@ -74,13 +74,19 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
         bool ok = false;
         if (!minNode.isNull()) {
             m_thresholdMinimum = minNode.text().toFloat(&ok);
+        } else {
+            ok = false;
         }
+
         if (!ok) //If not a float, or node wasn't defined
             m_thresholdMinimum = 0.0f;
             
         if (!maxNode.isNull()) {
             m_thresholdMaximum = maxNode.text().toFloat(&ok);
+        } else {
+            ok = false;
         }
+
         if (!ok) //If not a float, or node wasn't defined
             m_thresholdMaximum = 1.0f;
     }
@@ -109,29 +115,29 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
     QString strMidiOption;
     int iMidiOption = this->getMidiOption();
     if (iMidiOption == MIDI_OPT_NORMAL)
-        strMidiOption = "Normal";
+        strMidiOption = "normal";
     else if (iMidiOption == MIDI_OPT_INVERT)
-        strMidiOption = "Invert";
+        strMidiOption = "invert";
     else if (iMidiOption == MIDI_OPT_ROT64)
-        strMidiOption = "Rot64";
+        strMidiOption = "rot64";
     else if (iMidiOption == MIDI_OPT_ROT64_INV)
-        strMidiOption = "Rot64inv";
+        strMidiOption = "rot64inv";
     else if (iMidiOption == MIDI_OPT_ROT64_FAST)
-        strMidiOption = "Rot64fast";
+        strMidiOption = "rot64fast";
     else if (iMidiOption == MIDI_OPT_DIFF)
-        strMidiOption = "Diff";
+        strMidiOption = "diff";
     else if (iMidiOption == MIDI_OPT_BUTTON)
-        strMidiOption = "Button";
+        strMidiOption = "button";
     else if (iMidiOption == MIDI_OPT_SWITCH)
-        strMidiOption = "Switch";
+        strMidiOption = "switch";
     else if (iMidiOption == MIDI_OPT_HERC_JOG)
-        strMidiOption = "HercJog";
+        strMidiOption = "hercjog";
     else if (iMidiOption == MIDI_OPT_SPREAD64)
-        strMidiOption = "Spread64";
+        strMidiOption = "spread64";
     else if (iMidiOption == MIDI_OPT_SELECTKNOB)
-        strMidiOption = "SelectKnob";
+        strMidiOption = "selectknob";
     else if (iMidiOption == MIDI_OPT_SCRIPT)
-        strMidiOption = "Script-Binding";
+        strMidiOption = "script-binding";
     else {
         strMidiOption = "Unknown";
         qDebug() << "Warning: Unknown midioption in" << __FILE__;
@@ -155,4 +161,10 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
+}
+
+
+uint qHash(const MixxxControl& key)
+{
+    return (qHash(key.getControlObjectGroup() + key.getControlObjectValue()));
 }

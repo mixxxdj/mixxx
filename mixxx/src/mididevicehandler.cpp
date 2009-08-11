@@ -1,3 +1,9 @@
+// NOTE: CoreMIDI must be defined first to avoid qDebug macro/function conflict
+//       with Qt headers.
+#ifdef __COREMIDI__
+  #include "midiobjectcoremidi.h"
+#endif
+
 #include "mididevicehandler.h"
 #include "midiobject.h"
 
@@ -18,9 +24,6 @@
   #include "midiobjectportmidi.h"
 #endif
 
-#ifdef __COREMIDI__
-  #include "midiobjectcoremidi.h"
-#endif
 
 #ifdef __OSSMIDI__
   #include "midiobjectoss.h"
@@ -36,7 +39,7 @@
 // #ifdef __LINUX__
 // #include "powermatelinux.h"
 // #endif
-// #ifdef __WIN32__
+// #ifdef __WINDOWS__
 // #include "powermatewin.h"
 // #endif
 // #include "hercules.h"

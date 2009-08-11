@@ -18,9 +18,9 @@
 #ifndef MIDIOBJECTCOREMIDI_H
 #define MIDIOBJECTCOREMIDI_H
 
-#include "midiobject.h"
-
-#include <QtCore>
+// NOTE: The #include order is important: the CoreMIDI headers
+//       have to be included before Qt headers (CoreMIDI uses qDebug
+//       as a define, and Qt has a qDebug() function!)
 
 #include <CoreFoundation/CoreFoundation.h>
 // #include <CoreAudio/CoreAudio.h>
@@ -28,6 +28,12 @@
 // #include <AudioToolbox/AUGraph.h>
 // #include <CoreMIDI/CoreMIDI.h>
 #include <CoreMIDI/MIDIServices.h>
+
+#include "midiobject.h"
+
+#include <QtCore>
+
+#define COREMIDI_SYSEX_QUEUE_SIZE 32 
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -43,6 +49,9 @@ public:
     void handleMidi(const MIDIPacketList *packets, QString device);
     void makeDeviceList();
     MIDIEndpointRef getEndpoint(QString device);
+    MIDIEndpointRef getDestinationEndpoint(QString device);
+    void sendShortMsg(unsigned int word);
+    void sendSysexMsg(unsigned char data[], unsigned int length);
 
     void notification_add_handler(const MIDIObjectAddRemoveNotification *message);
     void notification_remove_handler(const MIDIObjectAddRemoveNotification *message);
@@ -55,9 +64,13 @@ protected:
     char            *buffer;
     MIDIClientRef   midiClient;
     MIDIPortRef     midiPort;
+    MIDIPortRef     midiOutPort;
     MIDIEndpointRef currentMidiEndpoint;
+    MIDIEndpointRef currentMidiOutEndpoint;
     QList<MIDIEndpointRef> currentMidiEndpoints;
     QList<QString *> persistentDeviceNames;
+    MIDISysexSendRequest m_sysexQueue[COREMIDI_SYSEX_QUEUE_SIZE];
+    unsigned int m_sysexQueueIdx;
 };
 
 static void midi_read_proc(const MIDIPacketList *packets, void *refCon, void *connRefCon);

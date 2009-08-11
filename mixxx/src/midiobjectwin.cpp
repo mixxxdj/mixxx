@@ -49,8 +49,8 @@ MidiObjectWin::~MidiObjectWin()
 
 void MidiObjectWin::updateDeviceList() {
 
-    // Fill in list of available devices
-    devices.clear();
+    // Fill in list of available input devices
+	devices.clear();
 
     MIDIINCAPS info;
     for (unsigned int i=0; i<midiInGetNumDevs(); i++)
@@ -71,6 +71,9 @@ void MidiObjectWin::devOpen(QString device)
     if (openDevices.contains(device)) 
         return;
     
+	// Create list of output devices
+
+
     // Select device. If not found, select default (first in list).
     unsigned int i;
     MIDIINCAPS info;
@@ -80,7 +83,7 @@ void MidiObjectWin::devOpen(QString device)
         QString device_name = QString::fromUcs2((const ushort*)info.szPname);
         if ((!device_name.isEmpty() && (device_name == device))|| (QString("Device %1").arg(i) == device))
         {
-            qDebug() << "Using Midi Device #" << i << ": " << device_name;
+			qDebug() << "Using MIDI Device #" << i << ": " << device_name;
             break;
         }
     }
@@ -90,7 +93,7 @@ void MidiObjectWin::devOpen(QString device)
     }
 
     HMIDIIN handle;
-    MMRESULT res = midiInOpen(&handle, i, (DWORD)MidiInProc, (DWORD) this, CALLBACK_FUNCTION);
+    MMRESULT res = midiInOpen(&handle, i, (DWORD_PTR)MidiInProc, (DWORD_PTR) this, CALLBACK_FUNCTION);
     if (res == MMSYSERR_NOERROR) {
         // Should follow selected device !!!!
         openDevices.append(device);
@@ -101,18 +104,47 @@ void MidiObjectWin::devOpen(QString device)
 
     m_deviceName = device;
 
-    // Add device and handle to list
+    // Add device and input handle to list
     handles.insert(device, handle);
 
+	// Same things, but for output device now
+	MIDIOUTCAPS outInfo;
+    for (i=0; i<midiOutGetNumDevs(); i++)
+    {
+        MMRESULT res = midiOutGetDevCaps(i, &outInfo, sizeof(MIDIOUTCAPS));
+		QString output_device_name = QString::fromUcs2((const ushort*)outInfo.szPname);
+
+		// Ignore "From" and "To" text in the device names
+		QString outputString = output_device_name;
+		QString deviceName = device;
+		if (device.indexOf("from",0,Qt::CaseInsensitive)!=-1) deviceName = device.right(device.length()-4);
+		if (output_device_name.indexOf("to",0,Qt::CaseInsensitive)!=-1) outputString = output_device_name.right(output_device_name.length()-2);
+
+		if ((!outputString.isEmpty() && (outputString == deviceName))|| (QString("Device %1").arg(i) == deviceName))
+        {
+			qDebug() << "Using MIDI Output Device #" << i << ": " << output_device_name;
+            break;
+        }
+    }
+    if (i==midiOutGetNumDevs()) {
+        qDebug() << "Error: Unable to find requested MIDI output device " << device;
+        return;
+    }
+
+	HMIDIOUT outhandle;
     res = midiOutOpen(&outhandle, i, NULL, NULL, CALLBACK_NULL);
-    if (res != MMSYSERR_NOERROR)
-        qDebug() << "Error opening midi output for light control";
+	if (res != MMSYSERR_NOERROR)
+        qDebug() << "Error opening midi output device";
+	else
+		outHandles.insert(device, outhandle);	// Add device and output handle to list
+
 
     res = midiInStart(handle);
     if (res != MMSYSERR_NOERROR)
         qDebug() << "Error starting midi.";
-
+#ifdef __MIDISCRIPT__
     MidiObject::run();  // Load the initial MIDI preset
+#endif
 }
 
 void MidiObjectWin::devClose()
@@ -121,6 +153,12 @@ void MidiObjectWin::devClose()
     midiInReset(handle);
     midiInClose(handle);
     handles.remove(m_deviceName);
+
+	HMIDIOUT outhandle = outHandles.value(m_deviceName);
+    midiOutReset(outhandle);
+    midiOutClose(outhandle);
+    outHandles.remove(m_deviceName);
+
     openDevices.remove(m_deviceName);
 }
 
@@ -129,34 +167,36 @@ void MidiObjectWin::stop()
     MidiObject::stop();
 }
 
-void MidiObjectWin::run()
+void MidiObjectWin::run()	// This function never executes because we only use callbacks
 {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiObjectWin %1").arg(++id));
     
 //    qDebug() << QString("MidiObjectWin: Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-
+#ifdef __MIDISCRIPT__
     MidiObject::run();
+#endif
 }
 
-void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue, QString device)
+void MidiObjectWin::handleMidi(char status, char midicontrol, char midivalue)
 {
-    qDebug() << QString("midi miditype: %1 ch: %2, ctrl: %3, val: %4").arg(QString::number(channel& 240, 16).toUpper())
-       .arg(QString::number(channel&15, 16).toUpper())
-       .arg(QString::number(midicontrol, 16).toUpper())
-       .arg(QString::number(midivalue, 16).toUpper());
-    receive((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue, device); // void receive(MidiCategory category, char channel, char control, char value, QString device);
+    qDebug() << QString("MIDI status: %1, ctrl: %2, val: %3")
+        .arg(QString::number(status & 255, 16).toUpper())
+        .arg(QString::number(midicontrol, 16).toUpper())
+        .arg(QString::number(midivalue, 16).toUpper());
+
+    receive((MidiStatusByte)(status & 255), status & 15, midicontrol, midivalue); // void receive(MidiStatusByte status, char channel, char control, char value);
 }
 
 // C/C++ wrapper function
-void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
+void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 {
     MidiObjectWin * midi = (MidiObjectWin *)dwInstance;
     switch (wMsg) {
     case MIM_DATA:
-//         qDebug() << "MIM_DATA";
-        midi->handleMidi(dwParam1 & 0x000000ff, (dwParam1 & 0x0000ff00) >> 8, (dwParam1 & 0x00ff0000) >> 16, midi->handles.key(hMidiIn));
-//     qDebug() << "MIM_DATA done.";
+//        qDebug() << "MIM_DATA";
+        midi->handleMidi(dwParam1 & 0x000000ff, (dwParam1 & 0x0000ff00) >> 8, (dwParam1 & 0x00ff0000) >> 16);
+//	qDebug() << "MIM_DATA done.";
         break;
     case MIM_LONGDATA:
         qDebug() << "MIM_LONGDATA";
@@ -166,6 +206,7 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
 }
 
 void MidiObjectWin::sendShortMsg(unsigned int word) {
+	HMIDIOUT outhandle = outHandles.value(m_deviceName);
     // This checks your compiler isn't assigning some wierd type hopefully
     DWORD raw = word;
 //     midiOutShortMsg(outhandle, word);
@@ -176,6 +217,7 @@ void MidiObjectWin::sendShortMsg(unsigned int word) {
 
 void MidiObjectWin::sendSysexMsg(unsigned char data[], unsigned int length)
 {
+	HMIDIOUT outhandle = outHandles.value(m_deviceName);
     MIDIHDR header;
     memset (&header, 0, sizeof(header));
     

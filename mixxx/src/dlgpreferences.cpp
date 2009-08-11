@@ -119,6 +119,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #ifdef __VINYLCONTROL__
+    connect(this, SIGNAL(showDlg()), wvinylcontrol, SLOT(slotShow()));
+    connect(this, SIGNAL(closeDlg()), wvinylcontrol,SLOT(slotClose()));
     connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control
@@ -274,6 +276,8 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
    	{
    		int index = m_midiBindingsButtons.indexOf(current);
    		pagesWidget->setCurrentWidget(wmidiBindingsForDevice.value(index));
+   		//Manually fire this slot since it doesn't work right...
+   		wmidiBindingsForDevice.value(index)->slotUpdate();
    	}
    	
    	//If the root "MIDI Device" item is clicked, select the first MIDI device instead.
@@ -347,6 +351,9 @@ void DlgPreferences::rescanMidi()
 void DlgPreferences::destroyMidiWidgets()
 {
 //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
+
+  m_midiBindingsButtons.clear();
+  
   while (!wmidiBindingsForDevice.isEmpty())
     {
       DlgPrefMidiBindings* midiDlg = wmidiBindingsForDevice.takeLast();
@@ -361,8 +368,6 @@ void DlgPreferences::destroyMidiWidgets()
       m_pMIDITreeItem->removeChild(midiBindingsButton);
       delete midiBindingsButton;
     }
-  m_midiBindingsButtons.clear();
-
 }
 
 void DlgPreferences::setupMidiWidgets()
@@ -391,9 +396,6 @@ void DlgPreferences::setupMidiWidgets()
 	    m_pMIDITreeItem->addChild(midiBindingsButton);
 	    m_midiBindingsButtons.append(midiBindingsButton);	    
 	  }
-	
-
-
 }
 
 void DlgPreferences::slotApply()

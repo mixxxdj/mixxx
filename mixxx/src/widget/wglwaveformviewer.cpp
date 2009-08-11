@@ -14,13 +14,12 @@
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 
-extern MixxxApp *mixxx_instance;
-
-WGLWaveformViewer::WGLWaveformViewer(const char *group, QWidget * pParent, const QGLWidget * pShareWidget, Qt::WFlags f) : QGLWidget(QGLFormat(QGL::SampleBuffers), pParent, pShareWidget)
+WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * pParent, const QGLWidget * pShareWidget, Qt::WFlags f) : QGLWidget(QGLFormat(QGL::SampleBuffers), pParent, pShareWidget)
 {
 
-    m_pWaveformRenderer = new WaveformRenderer(group);
-
+    m_pWaveformRenderer = pWaveformRenderer;
+    Q_ASSERT(m_pWaveformRenderer);
+    
     m_pGroup = group;
     
     setAcceptDrops(true);
@@ -45,11 +44,6 @@ bool WGLWaveformViewer::directRendering()
 WGLWaveformViewer::~WGLWaveformViewer() {
     // Stop the timer we started
     killTimer(m_iTimerID);
-
-    if(m_pWaveformRenderer) {
-        delete m_pWaveformRenderer;
-        m_pWaveformRenderer = NULL;
-    }
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
@@ -119,6 +113,7 @@ void WGLWaveformViewer::timerEvent(QTimerEvent *qte) {
 
 
 void WGLWaveformViewer::initializeGL() {
+    QGLWidget::initializeGL();
     //qDebug() << "QGL initializeGL";
 
     /*
@@ -138,12 +133,15 @@ void WGLWaveformViewer::initializeGL() {
 }
 
 void WGLWaveformViewer::resizeGL(int w, int h) {
+    QGLWidget::resizeGL(w,h);
     //qDebug() << "QGL resizeGL " << w << " : " << h;
 
     //m_pWaveformRenderer->resize(w,h);    
 }
 
 void WGLWaveformViewer::paintGL() {
+    QGLWidget::paintGL();
+    
     //qDebug() << "QGL paintGL";
 
     //m_pWaveformRenderer->glDraw();
@@ -153,15 +151,6 @@ void WGLWaveformViewer::paintGL() {
 
 
 /** SLOTS **/
-
-void WGLWaveformViewer::slotNewTrack(TrackInfoObject *pTrack) {
-    qDebug() << "WGLWaveformViewer() << slotNewTrack() ";
-
-    if(m_pWaveformRenderer) {
-        m_pWaveformRenderer->newTrack(pTrack);
-    }
-    
-}
 
 void WGLWaveformViewer::setValue(double) {
     // unused, stops a bad connect from happening

@@ -29,10 +29,16 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     stackedWidget->setCurrentIndex(0); //Ensure the first page is always shown regardless
                                        //of the last page shown when the .ui file was saved.
 
+    //Delete this dialog when its closed. We don't want any persistence.
     QWidget::setAttribute(Qt::WA_DeleteOnClose);
+
+    m_pSkipShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    connect(m_pSkipShortcut, SIGNAL(activated()), pushButtonSkip, SLOT(click()));
+    //pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));    
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
     connect(pushButtonSkip, SIGNAL(clicked()), this, SLOT(next()));
+    connect(pushButtonPrevious, SIGNAL(clicked()), this, SLOT(prev()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished(MidiMessage)), this, SLOT(controlMapped(MidiMessage)));
     connect(pushButtonFinish, SIGNAL(clicked()), this, SLOT(close()));
 
@@ -51,6 +57,69 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     m_controlsToBind.append(MixxxControl("[Channel1]", "play"));
     m_controlDescriptions.append("Play button for Player 1");
 
+    m_controlsToBind.append(MixxxControl("[Channel2]", "play"));
+    m_controlDescriptions.append("Play button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "back"));
+    m_controlDescriptions.append("Rewind button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "back"));
+    m_controlDescriptions.append("Rewind button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "fwd"));
+    m_controlDescriptions.append("Seek forwards button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "fwd"));
+    m_controlDescriptions.append("Seek forward button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "cue_default"));
+    m_controlDescriptions.append("Cue button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "cue_default"));
+    m_controlDescriptions.append("Cue button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "volume"));
+    m_controlDescriptions.append("Channel 1 volume");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "volume"));
+    m_controlDescriptions.append("Channel 2 volume");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "rate"));
+    m_controlDescriptions.append("Pitch control for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "rate"));
+    m_controlDescriptions.append("Pitch control for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "pfl"));
+    m_controlDescriptions.append("Headphone listen button for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "pfl"));
+    m_controlDescriptions.append("Headphone listen button for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "filterLow"));
+    m_controlDescriptions.append("Low EQ knob for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "filterLow"));
+    m_controlDescriptions.append("Low EQ knob for Channel 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "filterMid"));
+    m_controlDescriptions.append("Mid EQ knob for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "filterMid"));
+    m_controlDescriptions.append("Mid EQ knob for Channel 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "filterHigh"));
+    m_controlDescriptions.append("High EQ knob for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "filterHigh"));
+    m_controlDescriptions.append("High EQ knob for Channel 2");
+    
+    m_controlsToBind.append(MixxxControl("[Channel1]", "pregain"));
+    m_controlDescriptions.append("Gain for Channel 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "pregain"));
+    m_controlDescriptions.append("Gain for Channel 2");
+    
     //Should be same number of controls as descriptions.
     Q_ASSERT(m_controlsToBind.size() == m_controlDescriptions.size());
 
@@ -60,6 +129,8 @@ DlgMidiLearning::~DlgMidiLearning()
 {
     //If there was any ongoing learning, cancel it (benign if there wasn't).
     m_pMidiMapping->cancelMidiLearn();
+
+    delete m_pSkipShortcut;
 }
 
 void DlgMidiLearning::begin()
@@ -82,12 +153,30 @@ void DlgMidiLearning::next()
         labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
         pushButtonSkip->setText(tr("Skip"));
         labelMappedTo->setText("");
+        pushButtonPrevious->setEnabled(true);
     }
     else
     {
         //We've hit the end, show the congrats pane
         stackedWidget->setCurrentIndex(2);
     }
+}
+
+void DlgMidiLearning::prev()
+{
+    iCurrentControl--;
+    if (iCurrentControl >= 0)
+    {
+        m_pMidiMapping->beginMidiLearn(m_controlsToBind[iCurrentControl]);
+        labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
+        pushButtonSkip->setText(tr("Skip"));
+        labelMappedTo->setText("");
+        
+        //We've hit the start, don't let the user go back anymore.
+        if (iCurrentControl == 0)
+            pushButtonPrevious->setEnabled(false);
+    }
+
 }
 
 /** Gets called when a control has just been mapped successfully */

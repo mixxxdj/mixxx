@@ -5,265 +5,344 @@
     <control>
       <group>[Master]</group>
       <key>crossfader</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>17</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Master]</group>
       <key>balance</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>32</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Master]</group>
       <key>volume</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>3</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Master]</group>
       <key>headVolume</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>26</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Master]</group>
       <key>headMix</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>4</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>play</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>48</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>play</key>
+      <status>0x80</status>
+      <midino>48</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>back</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>44</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>back</key>
+      <status>0x80</status>
+      <midino>44</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>fwd</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>45</midino>
-      <midichan>1</midichan>
+    </control>
+    
+    <control>
+      <group>[Channel1]</group>
+      <key>fwd</key>
+      <status>0x80</status>
+      <midino>45</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_down</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>36</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>36</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>37</midino>
-      <midichan>1</midichan>
+    </control>
+    
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
+      <midino>37</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>volume</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>1</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>rate</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>2</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>pfl</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>41</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>pfl</key>
+      <status>0x80</status>
+      <midino>41</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>cue_default</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>49</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>cue_default</key>
+      <status>0x80</status>
+      <midino>49</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>flanger</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>40</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>flanger</key>
+      <status>0x80</status>
+      <midino>40</midino>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>filterLow</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>7</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>filterMid</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>9</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>filterHigh</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>11</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel1]</group>
       <key>pregain</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>13</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>play</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>50</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>play</key>
+      <status>0x80</status>
+      <midino>50</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>back</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>46</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>back</key>
+      <status>0x80</status>
+      <midino>46</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>fwd</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>47</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>fwd</key>
+      <status>0x80</status>
+      <midino>47</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_down</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>38</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>38</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_up</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>39</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
+      <midino>39</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>volume</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>6</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>rate</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>5</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>pfl</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>42</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>pfl</key>
+      <status>0x80</status>
+      <midino>42</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>cue_default</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>51</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>cue_default</key>
+      <status>0x80</status>
+      <midino>51</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>flanger</key>
-      <miditype>Key</miditype>
+      <status>0x90</status>
       <midino>43</midino>
-      <midichan>1</midichan>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>flanger</key>
+      <status>0x80</status>
+      <midino>43</midino>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>filterLow</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>8</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>filterMid</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>10</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>filterHigh</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>12</midino>
-      <midichan>1</midichan>
     </control>
 
     <control>
       <group>[Channel2]</group>
       <key>pregain</key>
-      <miditype>Ctrl</miditype>
+      <status>0xB0</status>
       <midino>14</midino>
-      <midichan>1</midichan>
     </control>
   </controls>
 </controller>

@@ -322,6 +322,7 @@ void TrackPlaylist::addPath(QString qPath)
         while (it.hasNext())
         {
             fi = it.next();
+            bexists = false;
 
             //Check if the scan has been cancelled.
             m_qLibScanMutex.lock();

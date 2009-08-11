@@ -25,13 +25,6 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
-	#(cd src; QTDIR=/usr/share/qt3 ./configure --enable-jack)
-	#  still experimental
-	#  --enable-alsa
-	# hacky way to remove qmake generated -w!
-	#sed -i 's/ -w / /' src/Makefile
-
 	touch configure-stamp
 
 
@@ -58,7 +51,7 @@ clean:
 	($(SCONS) -c)
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
-	rm -f src/qt4.pyc
+	rm -f build/qt4.pyc
 	rm -f .sconsign.dblite
 	rm -rf .sconf_temp
 	
@@ -72,6 +65,7 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 	mkdir -p $(CURDIR)/debian/tmp/usr
+	mkdir -p $(CURDIR)/debian/tmp/usr/share/applications
 	mkdir -p $(CURDIR)/debian/tmp/usr/share/mixxx
 	# Add here commands to install the package into debian/mixxx.
 	$(SCONS) $(MIXXX_SCONS_FLAGS) install
@@ -111,7 +105,7 @@ binary-arch: build install
 #	dh_python
 #	dh_makeshlibs
 	dh_installdeb
-	dh_shlibdeps
+	dh_shlibdeps -- --ignore-missing-info #This command complains about libQtXml.so.4 as of Ubuntu 8.10 (Intrepid), unless I tell it to ignore missing info. I don't understand why - Albert 04/13/2009
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

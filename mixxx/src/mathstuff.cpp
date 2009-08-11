@@ -109,7 +109,7 @@ CSAMPLE mod2pi(CSAMPLE x)
     return(r);
 }
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 // Rounds a CSAMPLE to nearest integer, and returns as int
 int round(CSAMPLE x)
 {

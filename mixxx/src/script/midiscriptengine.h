@@ -41,10 +41,11 @@ public:
     bool evaluate(QString filepath);
     // Execute a particular function
     bool execute(QString function); 
+    // Execute a particular function with a data string (e.g. a device ID)
+    bool execute(QString function, QString data); 
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
-                 QString device, char control,
-                 char value, MidiCategory category); 
+                 char control, char value, MidiStatusByte status); 
 
     // Lookup registered script functions
     QStringList getScriptFunctions();
@@ -61,33 +62,33 @@ public slots:
     void slotValueChanged(double value);
     
 signals:
-    void sigEvaluate(QString filename);
-    void sigExecute(QString function);
-    void sigExecute(QString function, char channel,
-                    QString device, char control,
-                    char value, MidiCategory category);
-                                                      
-private slots:
-    bool safeEvaluate(QString filename);
-    bool safeExecute(QString function);
-    bool safeExecute(QString function, char channel,
-                     QString device, char control,
-                     char value, MidiCategory category);
+    void initialized();
 
 protected:
     void run();
 
 private:
+    // Only call these with the scriptEngineLock
+    bool safeEvaluate(QString filepath);
+    bool safeExecute(QString function);
+    bool safeExecute(QString function, QString data);
+    bool safeExecute(QString function, char channel, 
+                     char control, char value, MidiStatusByte status);
+    void initializeScriptEngine();
+
     void generateScriptFunctions(QString code);
     bool checkException();
+
+    ControlObjectThread* getControlObjectThread(QString group, QString name);
+    
 
     MidiObject *m_pMidiObject;
     QHash<ConfigKey, QString> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
     QMap<QString,QStringList> m_scriptErrors;
-    
-//     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    QMutex m_scriptEngineLock;
+    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 };
 
 #endif

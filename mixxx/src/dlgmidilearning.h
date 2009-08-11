@@ -39,12 +39,14 @@ public:
 public slots:
     void begin();   /** Begin the MIDI learning phase */
     void next();    /** Ask to map the next control */
+    void prev();    /** Ask to map the previous control */
     void controlMapped(MidiMessage); /** Gets called when a control has just been mapped successfully */
 private:
     MidiMapping* m_pMidiMapping;
     QList<MixxxControl> m_controlsToBind;
     QList<QString> m_controlDescriptions;
     int iCurrentControl; /** Used to iterate through the controls list */
+    QShortcut* m_pSkipShortcut;
 
 };
 

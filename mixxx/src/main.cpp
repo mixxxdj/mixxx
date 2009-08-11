@@ -37,7 +37,7 @@
 #include <ladspa/ladspaloader.h>
 #endif
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
 #ifdef DEBUGCONSOLE
 #include <io.h> // Debug Console
 #include <windows.h>
@@ -64,12 +64,12 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
     }
 }
 #endif // DEBUGCONSOLE
-#endif // __WIN32__
+#endif // __WINDOWS__
 
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *dialogHelper = new ErrorDialog();   // allows threads to show error dialogs
+ErrorDialog *dialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
 
 void qInitImages_mixxx();
 
@@ -77,7 +77,7 @@ void MessageOutput( QtMsgType type, const char * msg )
 {
     switch ( type ) {
     case QtDebugMsg:
-#ifdef __WIN32__
+#ifdef __WINDOWS__
         if (strstr(msg, "doneCurrent")) {
             break;
         }
@@ -157,7 +157,7 @@ void MessageHandler( QtMsgType type, const char * input )
     
     switch ( type ) {
     case QtDebugMsg:
-#ifdef __WIN32__  //wtf? -kousu 2/2009
+#ifdef __WINDOWS__  //wtf? -kousu 2/2009
         if (strstr(input, "doneCurrent")) {
             break;
         }
@@ -200,11 +200,13 @@ int main(int argc, char * argv[])
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 	
 
-#ifdef __WIN32__
+#ifdef __WINDOWS__
   #ifdef DEBUGCONSOLE
     InitDebugConsole();
   #endif
 #endif
+   dialogHelper = new ErrorDialog(); 
+
     qInstallMsgHandler( MessageHandler );
 
     QThread::currentThread()->setObjectName("Main");
@@ -253,7 +255,7 @@ int main(int argc, char * argv[])
     if (!ladspaPath.isEmpty())
     {
         // get the list of directories containing LADSPA plugins
-#ifdef __WIN32__
+#ifdef __WINDOWS__
         //paths.ladspaPath.split(';');
 #else  //this doesn't work, I think we need to iterate over the splitting to do it properly
         //paths = ladspaPath.split(':');
@@ -271,7 +273,7 @@ int main(int argc, char * argv[])
      dir.cd("PlugIns");
          plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
          plugin_paths.push_back (dir.absolutePath()); //ladspa_plugins directory in Mixxx.app bundle //XXX work in QApplication::appdir()
-#elif __WIN32__
+#elif __WINDOWS__
         // not tested yet but should work:
         QString programFiles = QString(getenv("ProgramFiles"));
          plugin_paths.push_back (programFiles+"\\LADSPA Plugins");

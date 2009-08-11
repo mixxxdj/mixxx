@@ -136,7 +136,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e)
         s = "Alt+" + s;
     #endif
 
-     qDebug() << "keyboard press: " << s;
+    //qDebug() << "keyboard press: " << s;
 
     return QKeySequence(s);
 }

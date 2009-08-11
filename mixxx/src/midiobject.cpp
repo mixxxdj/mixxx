@@ -45,18 +45,15 @@ MidiObject::MidiObject()
 
 
 #ifdef __MIDISCRIPT__
-    //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    m_pScriptEngine = new MidiScriptEngine(this);
+    //Start the scripting engine.
+    m_pScriptEngine = NULL;
+    restartScriptEngine();
 
-    m_pScriptEngine->start();
-    // Wait for the m_pScriptEngine to initialize
-    while(!m_pScriptEngine->isReady()) ;
-    m_pScriptEngine->moveToThread(m_pScriptEngine);
-
-    m_pMidiMapping = new MidiMapping(*this);
-//     m_pMidiMapping->loadInitialPreset();
 #endif
-    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+    m_pMidiMapping = new MidiMapping(*this);
+#ifndef __MIDISCRIPT__
+     m_pMidiMapping->loadInitialPreset();	// Only do this here if NOT using MIDI scripting
+#endif
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 
@@ -70,6 +67,49 @@ MidiObject::MidiObject()
 MidiObject::~MidiObject()
 {
 }
+
+#ifdef __MIDISCRIPT__
+
+void MidiObject::restartScriptEngine()
+{
+
+    //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+    
+    if(m_pScriptEngine) {
+        MidiScriptEngine *engine = m_pScriptEngine;
+        m_pScriptEngine = NULL;
+        delete engine;
+    }
+
+    m_pScriptEngine = new MidiScriptEngine(this);
+    
+    m_pScriptEngine->moveToThread(m_pScriptEngine);
+    
+    connect(m_pScriptEngine, SIGNAL(initialized()),
+            this, SLOT(slotScriptEngineReady()),
+            Qt::DirectConnection);
+    m_scriptEngineInitializedMutex.lock();
+    m_pScriptEngine->start();
+    // Wait until the script engine is initialized
+    m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+    m_scriptEngineInitializedMutex.unlock();
+    
+}
+#endif
+
+void MidiObject::slotScriptEngineReady() {
+#ifdef __MIDISCRIPT__	// Can't ifdef slots in the .h file, so we just do the body.
+
+    // The lock prevents us from waking before the main thread is waiting on the
+    // condition.
+    m_scriptEngineInitializedMutex.lock();
+    m_scriptEngineInitializedCondition.wakeAll();
+    m_scriptEngineInitializedMutex.unlock();
+
+#endif
+}
+
+
 
 /* -------- ------------------------------------------------------
    Purpose: Deletes MIDI mapping and stops script engine, to be called
@@ -169,9 +209,9 @@ QStringList * MidiObject::getConfigList(QString path)
     return &configs;
 }
 
-QStringList MidiObject::getOpenDevices()
+QString MidiObject::getOpenDevice()
 {
-    return openDevices;
+    return m_deviceName;
 }
 
 /* -------- ------------------------------------------------------
@@ -179,36 +219,11 @@ QStringList MidiObject::getOpenDevices()
    Input:   Values as received from MIDI
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::receive(MidiCategory status, char channel, char control, char value, QString device)
+void MidiObject::receive(MidiStatusByte status, char channel, char control, char value)
 {
-    //qDebug() << "Device:" << device << "RxEnabled:"<< RxEnabled[device];
-    // if (!RxEnabled[device]) return;
+//    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
 
-    // BJW: From this point onwards, use human (1-based) channel numbers
-    channel++;
-
-    qDebug() << "MidiObject::receive() miditype: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
-
-    MidiType type = MIDI_EMPTY;
-    switch (status) {
-    case NOTE_OFF:
-        // BJW: Not clear why this is done.
-        value = 1;
-        // NB Fall-through
-    case NOTE_ON:
-        type = MIDI_KEY;
-        break;
-    case CTRL_CHANGE:
-        type = MIDI_CTRL;
-        break;
-    case PITCH_WHEEL:
-        type = MIDI_PITCH;
-        break;
-    default:
-        type = MIDI_EMPTY;
-    }
-
-    MidiMessage inputCommand(type, control, channel);
+    MidiMessage inputCommand(status, control, channel);
 
     if (m_bMidiLearn) {
         emit(midiEvent(inputCommand));
@@ -216,10 +231,14 @@ void MidiObject::receive(MidiCategory status, char channel, char control, char v
     }
 
     // Only check for a mapping if the status byte is one we know how to handle
-    if (type == MIDI_KEY || type == MIDI_CTRL) {
+    if (status == MIDI_STATUS_NOTE_ON 
+         || status == MIDI_STATUS_NOTE_OFF
+         || status == MIDI_STATUS_PITCH_BEND 
+         || status == MIDI_STATUS_CC) {
         // If there was no control bound to that MIDI command, return;
-        if (!m_pMidiMapping->isMidiMessageMapped(inputCommand))
+        if (!m_pMidiMapping->isMidiMessageMapped(inputCommand)) {
             return;
+        }
     }
 
     MixxxControl mixxxControl = m_pMidiMapping->getInputMixxxControl(inputCommand);
@@ -231,9 +250,9 @@ void MidiObject::receive(MidiCategory status, char channel, char control, char v
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
-//         qDebug() << "MidiObject: Calling script function" << configKey.item;
+        // qDebug() << "MidiObject: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
 
-        if (!m_pScriptEngine->execute(configKey.item, channel, device, control, value, status)) {
+        if (!m_pScriptEngine->execute(configKey.item, channel, control, value, status)) {
             qDebug() << "MidiObject: Invalid script function" << configKey.item;
         }
         return;
@@ -245,17 +264,18 @@ void MidiObject::receive(MidiCategory status, char channel, char control, char v
     if (p) //Only pass values on to valid ControlObjects.
     {
       double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
-      qDebug() << "value coming out ComputeValue: " << newValue;
 
       // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi mapping is <button> we override the Midi 'status' appropriately.
       switch (mixxxControl.getMidiOption()) {
               case MIDI_OPT_BUTTON:
-              case MIDI_OPT_SWITCH: status = NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
+              case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
+              default: break;
       }
 
       ControlObject::sync();
-
-      p->queueFromMidi(status, newValue);
+    
+        //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
+      p->queueFromMidi((MidiCategory)status, newValue);
     }
 
     return;
@@ -277,8 +297,7 @@ void abortRead(int)
 #endif
 }
 
-void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2, QString device) {
-//    if (!TxEnabled[device]) { qDebug() << "Device:"<< device << "is not enabled for transmit."; return; }
+void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
@@ -311,10 +330,13 @@ bool MidiObject::getMidiLearnStatus() {
 
 void MidiObject::enableMidiLearn() {
     m_bMidiLearn = true;
+    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+
 }
 
 void MidiObject::disableMidiLearn() {
     m_bMidiLearn = false;
+    disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
 }
 
 #ifdef __MIDISCRIPT__

@@ -91,7 +91,7 @@ void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename
 
 void WVuMeter::setValue(double fValue)
 {
-    int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
+    int idx = (int)(fValue * (float)(m_iNoPos)/128.);
     // Range check
     if (idx>m_iNoPos)
         idx = m_iNoPos;
@@ -99,7 +99,8 @@ void WVuMeter::setValue(double fValue)
         idx = 0;
 
     setPeak(idx);
-    WWidget::setValue(fValue);
+    m_fValue = fValue;
+    update(); //Post a paintEvent() message, so that the widget repaints.
 }
 
 void WVuMeter::setPeak(int pos)

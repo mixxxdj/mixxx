@@ -5,19 +5,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>538</width>
+    <width>598</width>
     <height>436</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" >
+  <layout class="QGridLayout" name="gridLayout_4" >
    <item row="0" column="0" >
     <widget class="QLabel" name="labelDeviceName" >
      <property name="font" >
       <font>
-       <pointsize>11</pointsize>
+       <pointsize>14</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -27,17 +27,72 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3" >
-    <widget class="QPushButton" name="btnImportXML" >
-     <property name="styleSheet" >
-      <string notr="true" />
+   <item rowspan="2" row="0" column="1" >
+    <spacer name="horizontalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
      </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>115</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item rowspan="2" row="0" column="2" >
+    <widget class="QGroupBox" name="groupBoxPresets" >
+     <property name="title" >
+      <string/>
+     </property>
+     <property name="flat" >
+      <bool>true</bool>
+     </property>
+     <property name="checkable" >
+      <bool>false</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout" >
+      <item row="0" column="0" >
+       <widget class="QLabel" name="label" >
+        <property name="text" >
+         <string>Load Preset:</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" >
+       <widget class="QComboBox" name="comboBoxPreset" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" >
+       <widget class="QPushButton" name="btnExportXML" >
+        <property name="styleSheet" >
+         <string notr="true" />
+        </property>
+        <property name="text" >
+         <string>Export</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QPushButton" name="btnActivateDevice" >
      <property name="text" >
-      <string>Import</string>
+      <string>Activate</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="4" >
+   <item row="2" column="0" colspan="3" >
     <widget class="QToolBox" name="toolBox" >
      <property name="frameShape" >
       <enum>QFrame::NoFrame</enum>
@@ -50,30 +105,14 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>520</width>
-        <height>292</height>
+        <width>580</width>
+        <height>287</height>
        </rect>
       </property>
       <attribute name="label" >
        <string>MIDI Input</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2" >
-       <item row="0" column="0" colspan="2" >
-        <widget class="QPushButton" name="btnMidiLearnWizard" >
-         <property name="styleSheet" >
-          <string notr="true" />
-         </property>
-         <property name="text" >
-          <string>MIDI Learning Wizard</string>
-         </property>
-         <property name="checkable" >
-          <bool>false</bool>
-         </property>
-         <property name="checked" >
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0" colspan="2" >
         <widget class="QTableView" name="m_pInputMappingTableView" />
        </item>
@@ -106,6 +145,22 @@
             </property>
             <property name="text" >
              <string>Remove</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnMidiLearnWizard" >
+            <property name="styleSheet" >
+             <string notr="true" />
+            </property>
+            <property name="text" >
+             <string>MIDI Learning Wizard</string>
+            </property>
+            <property name="checkable" >
+             <bool>false</bool>
+            </property>
+            <property name="checked" >
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -145,8 +200,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>520</width>
-        <height>286</height>
+        <width>580</width>
+        <height>287</height>
        </rect>
       </property>
       <attribute name="label" >
@@ -154,7 +209,11 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3" >
        <item row="0" column="0" >
-        <widget class="QTableView" name="m_pOutputMappingTableView" />
+        <widget class="QTableView" name="m_pOutputMappingTableView" >
+         <property name="enabled" >
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0" >
         <widget class="QGroupBox" name="groupBoxOutputs" >
@@ -164,6 +223,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout" >
           <item>
            <widget class="QPushButton" name="btnAddOutputBinding" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
             <property name="text" >
              <string>Add</string>
             </property>
@@ -201,36 +263,6 @@
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item row="1" column="1" >
-    <spacer name="horizontalSpacer" >
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0" >
-      <size>
-       <width>303</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" >
-    <widget class="QPushButton" name="btnActivateDevice" >
-     <property name="text" >
-      <string>Activate</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2" >
-    <widget class="QPushButton" name="btnExportXML" >
-     <property name="styleSheet" >
-      <string notr="true" />
-     </property>
-     <property name="text" >
-      <string>Export</string>
-     </property>
     </widget>
    </item>
   </layout>

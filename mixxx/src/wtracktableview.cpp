@@ -725,6 +725,13 @@ void WTrackTableView::setTrack(Track * pTrack)
     m_pTrack = pTrack;
 }
 
+void WTrackTableView::resizeEvent(QResizeEvent *event)
+{
+    m_pTrack->resizeColumnsForLibraryMode(); //fucking massive hack
+    //I hate life
+	QWidget::resizeEvent(event);
+}
+
 /* Move the cursor to the next track. */
 void WTrackTableView::selectNext()
 {

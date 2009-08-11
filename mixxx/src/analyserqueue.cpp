@@ -50,8 +50,8 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
     
-	SAMPLE data16[ANALYSISBLOCKSIZE];
-    CSAMPLE samples[ANALYSISBLOCKSIZE];
+    SAMPLE *data16 = new SAMPLE[ANALYSISBLOCKSIZE];
+    CSAMPLE *samples = new CSAMPLE[ANALYSISBLOCKSIZE];
 
 	int read = 0;
 
@@ -82,6 +82,8 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
         emit(trackProgress(tio, progress));
 	
 	} while(read == ANALYSISBLOCKSIZE);
+    delete[] data16;
+    delete[] samples;
 }
 
 void AnalyserQueue::stop() {

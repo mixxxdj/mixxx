@@ -5,6 +5,7 @@
 #include "configobject.h"
 #include "waveformviewerfactory.h"
 
+#include "waveform/waveformrenderer.h"
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
@@ -16,7 +17,7 @@ QList<WWaveformViewer*> WaveformViewerFactory::m_visualViewers = QList<WWaveform
 QList<WGLWaveformViewer*> WaveformViewerFactory::m_visualGLViewers = QList<WGLWaveformViewer*>();
 
 
-WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QObject **target) {
+WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer* pWaveformRenderer) {
     qDebug() << "createWaveformViewer()";
 
     bool bVisualWaveform = true;
@@ -41,7 +42,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         else
             qDebug() << "WaveformViewerFactory :: Sharing existing GL context.";
         
-        WGLWaveformViewer *visual = new WGLWaveformViewer(group, parent, other);
+        WGLWaveformViewer *visual = new WGLWaveformViewer(group, pWaveformRenderer, parent, NULL);
 
         if(visual->isValid()) {
             m_visualGLViewers.append(visual);
@@ -64,7 +65,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
             visual = NULL;
 
             /*qDebug() << "Making a nongl viewer";
-            WWaveformViewer *nongl = new WWaveformViewer(group,parent);
+            WWaveformViewer *nongl = new WWaveformViewer(group,pWaveformRenderer,parent);
             m_visualViewers.append(nongl);
             m_viewers.append(nongl);
             ret = WAVEFORM_WIDGET;

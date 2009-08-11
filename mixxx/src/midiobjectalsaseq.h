@@ -39,7 +39,7 @@ protected:
 
     snd_seq_t *m_handle;
     snd_seq_port_info_t *pinfo;
-    QList<QString> sActivePortNames; //The name of the port/client we're currently connected to.
+    QMultiMap<QString, int> sActivePorts;   //The name and client & port numbers we're currently connected to.
     int m_client;
     int m_input;
     int m_queue;
