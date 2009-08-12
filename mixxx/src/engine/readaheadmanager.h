@@ -1,6 +1,9 @@
 // readaheadmanager.h
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
+#ifndef __READAHEADMANGER_H__
+#define __READAHEADMANGER_H__
+
 #include <QList>
 #include <QMutex>
 #include <QPair>
@@ -37,3 +40,5 @@ private:
     int m_iCurrentPosition;
     CachingReader* m_pReader;
 };
+
+#endif // __READAHEADMANGER_H__
