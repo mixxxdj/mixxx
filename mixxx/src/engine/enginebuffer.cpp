@@ -160,7 +160,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
 
     // Construct scaling objects
-    m_pScaleLinear = new EngineBufferScaleLinear();
+    m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch =
@@ -229,20 +229,21 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //If we delete the m_pScale object and recreate it, it eventually
     //causes some weird bad pointer somewhere, which will either cause
     //the waveform the roll in a weird way or fire an ASSERT from
-    //visualchannel.cpp or something. Need to valgrind this or something,
-    //but for now, I've just changed it back to using EngineBufferScaleST
-    //exclusively. - Albert
-
+    //visualchannel.cpp or something. Need to valgrind this or something.
+    
+    
+    // Der... have to have a scale engine assigned to call setPitchIndpTimeStretch
+    // -madjester
+    
     m_pScale = m_pScaleST;
     ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     if (b == true)
     {
-        //m_pScale = m_pScaleST;
-        //m_pScale = m_pScaleLinear;
+        m_pScale = m_pScaleST;
     }
     else
     {
-        //m_pScale = m_pScaleLinear;
+        m_pScale = m_pScaleLinear;
     }
     m_qPlayposMutex.unlock();
 
