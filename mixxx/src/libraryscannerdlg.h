@@ -23,7 +23,6 @@
 #include <QThread>
 #include <QtCore>
 #include <QtGui>
-#include "trackplaylistlist.h"
 
 class LibraryScannerDlg : public QObject
 {
@@ -33,26 +32,21 @@ class LibraryScannerDlg : public QObject
         LibraryScannerDlg();
         ~LibraryScannerDlg();
     public slots:
-	    void slotStartTiming();
-	    void slotStopTiming();
-	    void slotCheckTiming(QString path);  
+	    void slotUpdate(QString path);  
 	    void slotCancel();  
+        void slotScanFinished();
         
     signals:
-        void scanFinished();
         void scanCancelled();
     private:
-        TrackPlaylist* m_qLibraryPlaylist;  //The list of playlists
         QString m_qLibraryPath;             //The path to the library on disk
-	    void setupTiming();        
             
-	    static QTime m_timer;
-	    static int m_timeruses;
-	    static QWidget* m_progress;
-	    static QLabel* m_current;
-	    static QPushButton* m_cancel;
-	    static bool m_timersetup;
-	    QMutex m_qMutex;
+	    QTime m_timer;
+        QVBoxLayout* m_layout;
+        QLabel* m_label;
+	    QWidget* m_progress;
+	    QLabel* m_current;
+	    QPushButton* m_cancel;
 	    bool m_bCancelled;    
 };
 

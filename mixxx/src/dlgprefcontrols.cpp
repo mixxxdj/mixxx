@@ -28,7 +28,6 @@
 #include "controlobjectthreadmain.h"
 #include "mixxxview.h"
 #include "widget/wnumberpos.h"
-#include "widget/wnumberbpm.h"
 #include "engine/enginebuffer.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
@@ -228,20 +227,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     slotUpdateSchemes();
 
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
-    //
-    // Scale BPM configuration
-    //
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue(1));
-
-    // Update combo box
-    ComboBoxScaleBpm->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).toInt()+1)%2);
-
-    connect(ComboBoxScaleBpm,   SIGNAL(activated(int)), this, SLOT(slotSetScaleBpm(int)));
-    slotSetScaleBpm(0);
-
-
+    
     //
     // Tooltip configuration
     //
@@ -360,15 +346,6 @@ void DlgPrefControls::slotSetCueDefault(int)
 void DlgPrefControls::slotSetCueRecall(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
-}
-
-void DlgPrefControls::slotSetScaleBpm(int)
-{
-    m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue((ComboBoxScaleBpm->currentIndex()+1)%2));
-    if (ComboBoxScaleBpm->currentIndex()==0)
-        WNumberBpm::setScaleBpm(true);
-    else
-        WNumberBpm::setScaleBpm(false);
 }
 
 void DlgPrefControls::slotSetTooltips(int)

@@ -208,7 +208,8 @@ void DlgBpmTap::slotNext()
 {
     if(m_TrackPlaylist)
     {
-        TrackInfoObject * track = m_CurrentTrack->getNext(m_TrackPlaylist);
+        //FIXME
+        TrackInfoObject * track = NULL;//m_CurrentTrack->getNext(m_TrackPlaylist);
 
         if(track)
         {
@@ -223,8 +224,8 @@ void DlgBpmTap::slotPrev()
 
     if(m_TrackPlaylist)
     {
-
-        TrackInfoObject * track = m_CurrentTrack->getPrev(m_TrackPlaylist);
+        //FIXME
+        TrackInfoObject * track = NULL;// m_CurrentTrack->getPrev(m_TrackPlaylist);
 
         if(track)
         {

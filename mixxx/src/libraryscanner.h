@@ -21,24 +21,24 @@
 
 #include <QThread>
 #include <QtCore>
-#include "trackplaylistlist.h"
+#include "trackcollection.h"
 #include "libraryscannerdlg.h"
 
 class LibraryScanner : public QThread
 {
     Q_OBJECT
-    
+
     public:
         LibraryScanner();
-        LibraryScanner(TrackPlaylist* library_playlist, QString libraryPath);
+        LibraryScanner(TrackCollection* collection);
         ~LibraryScanner();
         void run();
         void scan(QString libraryPath);
-        void scan();  
+        void scan();
     signals:
         void scanFinished();
     private:
-        TrackPlaylist* m_qLibraryPlaylist;    //The library playlist
+        TrackCollection* m_pCollection;      //The library trackcollection
         QString m_qLibraryPath;               //The path to the library on disk
         LibraryScannerDlg* m_pProgress;       //The library scanning window
 };

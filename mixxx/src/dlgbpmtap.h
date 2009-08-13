@@ -24,11 +24,11 @@
 #include <qlist.h>
 
 #include "configobject.h"
-#include "track.h"
 #include "bpm/bpmreceiver.h"
 
 class MixxxApp;
 class TrackInfoObject;
+class TrackPlaylist;
 class BpmScheme;
 class AnalyserQueue;
 

@@ -1324,9 +1324,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             } else {
                 playposSlider->set(0.);
             }
-            
-            if(filebpm != bpmControl->get())
-                bpmControl->set(filebpm);
+            double scaledBpm = filebpm * rate;
+            if(scaledBpm != bpmControl->get())
+                bpmControl->set(scaledBpm);
             if(rate != rateEngine->get())
                 rateEngine->set(rate);
             

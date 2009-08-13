@@ -11,6 +11,7 @@
 //
 #include "woverview.h"
 #include "wskincolor.h"
+#include "trackinfoobject.h"
 #include <qpainter.h>
 #include <QtDebug>
 #include <qpixmap.h>
@@ -119,7 +120,15 @@ void WOverview::setVirtualPos(double fValue)
     }
 }
 
-void WOverview::setData(Q3MemArray<char> * pWaveformSummary, Q3ValueList<long> * pSegmentation, long liSampleDuration)
+void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
+{
+	//Update this widget with new waveform summary data from the new track.
+    this->setData(pTrack->getWaveSummary(), pTrack->getSegmentationSummary(), 
+    			  pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels());
+    update();
+}
+
+void WOverview::setData(QByteArray* pWaveformSummary, Q3ValueList<long> * pSegmentation, long liSampleDuration)
 {
     m_pWaveformSummary = pWaveformSummary;
     m_pSegmentation = pSegmentation;

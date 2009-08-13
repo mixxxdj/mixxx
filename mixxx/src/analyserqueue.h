@@ -14,17 +14,18 @@ class SoundSourceProxy;
 
 class AnalyserQueue : public QThread {
     Q_OBJECT
-
-public:
+    
+    public:
 	AnalyserQueue();
 	virtual ~AnalyserQueue();
-    
-	void queueAnalyseTrack(TrackInfoObject* tio);
 	void stop();
     
 	static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
 	static AnalyserQueue* createBPMAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createAnalyserQueue(QList<Analyser*> analysers);
+
+public slots:
+    void queueAnalyseTrack(TrackInfoObject* tio);
     
 signals:
     void trackProgress(TrackInfoObject*,int);
