@@ -580,7 +580,7 @@ if platform == 'linux':
 		"""
 		env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
-                env.ParseConfig('pkg-config QtSql --silence-errors --cflags --libs')
+        env.ParseConfig('pkg-config QtSql --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
@@ -596,6 +596,7 @@ if platform == 'linux':
 		'Qt3Support',
 		'QtXml',
 		'QtSvg',
+		'QtSql',
 		'QtScript',
 		#'QtUiTools',
 		#'QtDesigner',
@@ -633,13 +634,13 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 	
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
-				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtSql.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 	
 	#Non-standard libpaths for fink and darwin ports
