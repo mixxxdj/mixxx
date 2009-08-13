@@ -25,7 +25,6 @@
 #include "trackinfoobject.h"
 class TrackCollection;
 class WTrackTable;
-class Track;
 class LibraryScanner;
 
 
@@ -63,18 +62,12 @@ public:
     TrackPlaylist(TrackCollection *pTrackCollectionm, QDomNode node);
     /** Destruct the playlist */
     ~TrackPlaylist();
-    /** Set pointer to Track object */
-    static void setTrack(Track *pTrack);
     /** Write database content to XML file */
     void writeXML(QDomDocument &doc, QDomElement &header);
     /** Add a track to the playlist */
     void addTrack(TrackInfoObject *pTrack);
     /** Add a track to the playlist */
     void addTrack(QString qLocation);
-    /** Add all tracks from the playlist to the WTrackTable */
-    void activate(WTrackTable *pTable);
-    /** Remove all tracks from the WTrackTable */
-    void deactivate();
     /** Get name of playlist */
     QString getListName();
     /** Get comment for playlist */
@@ -87,17 +80,8 @@ public:
     void setTrackCollection(TrackCollection * pTrackCollection);
     /** Set name of list */
     void setListName(QString name);
-    /** Add recursively the tracks in path to the collection, and then to this list */
-    void addPath(QString qPath);
-    /** Updates the score field in the WTrackTable */
-    void updateScores();
     /** Returns name of playlist */
     QString getName();
-    /** Get TrackInfoObject of first track in playlist */
-    TrackInfoObject *getFirstTrack();
-	int getSongNum();
-    int getIndexOf(int id);
-	TrackCollection *getCollection();
 
     /** Sort routines */
     void sortByScore(bool ascending);
@@ -119,8 +103,6 @@ signals:
 public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);
-    /** Cancel a library scan */
-    void slotCancelLibraryScan();
 
 protected:
     /** Sorting algorithm... */
@@ -133,11 +115,6 @@ private:
     QString m_qName;
     /** Comment for playlist */
     QString m_qComment;
-    /** Static pointer to Track */
-    static Track *spTrack;
-	QMutex m_qLibScanMutex;
-	bool m_bStopLibraryScan;
-
 };
 
 #endif

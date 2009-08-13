@@ -23,14 +23,14 @@
 
 LibraryScanner::LibraryScanner()
 {
-    m_qLibraryPlaylist = NULL;
+	m_pCollection = NULL;
     m_qLibraryPath = "";
 }
 
-LibraryScanner::LibraryScanner(TrackPlaylist* library_playlist, QString libraryPath)
+LibraryScanner::LibraryScanner(TrackCollection* collection)
 {
-    m_qLibraryPlaylist = library_playlist;
-    m_qLibraryPath = libraryPath;
+    m_pCollection = collection;
+    //m_qLibraryPath = libraryPath;
 
     qDebug() << "Constructed LibraryScanner!!!";
 }
@@ -47,7 +47,7 @@ void LibraryScanner::run()
     //m_pProgress->slotStartTiming();
 
     //Start scanning the library.
-    m_qLibraryPlaylist->addPath(m_qLibraryPath);
+	m_pCollection->scanPath(m_qLibraryPath);
 
     qDebug() << "Scan finished cleanly";
     //m_pProgress->slotStopTiming();
@@ -64,14 +64,9 @@ void LibraryScanner::scan(QString libraryPath)
     //across threads. Normally you'd use regular QueuedConnections for this, but since we don't have an event loop running and
     //we need the signals to get processed immediately, we have to use BlockingQueuedConnection. (DirectConnection isn't an
     //option for sending signals across threads.)
-    connect(m_qLibraryPlaylist, SIGNAL(startedLoading()), m_pProgress, SLOT(slotStartTiming()), Qt::BlockingQueuedConnection);
-    connect(m_qLibraryPlaylist, SIGNAL(finishedLoading()), m_pProgress, SLOT(slotStopTiming()), Qt::BlockingQueuedConnection);
-    connect(m_qLibraryPlaylist, SIGNAL(progressLoading(QString)), m_pProgress, SLOT(slotCheckTiming(QString)), Qt::BlockingQueuedConnection);
-
-    //connect(m_pProgress, SIGNAL(scanCancelled()), this, SLOT(terminate()));  //This causes a deadlock, don't use it.
-    connect(m_pProgress, SIGNAL(scanCancelled()), m_qLibraryPlaylist, SLOT(slotCancelLibraryScan()));
-
-    //connect(m_qPlaylists->at(0), SIGNAL(finishedLoading()), this, SIGNAL(scanFinished()), Qt::BlockingQueuedConnection);
+    connect(m_pCollection, SIGNAL(progressLoading(QString)), m_pProgress, SLOT(slotUpdate(QString)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(scanFinished()), m_pProgress, SLOT(slotScanFinished()));
+    connect(m_pProgress, SIGNAL(scanCancelled()), m_pCollection, SLOT(slotCancelLibraryScan()));
 
     scan();
 }

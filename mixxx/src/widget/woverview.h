@@ -26,6 +26,7 @@ Waveform overview display
 @author Tue Haste Andersen
 */
 
+class TrackInfoObject;
 
 class WOverview : public WWidget
 {
@@ -34,7 +35,7 @@ public:
     WOverview(QWidget *parent=NULL);
     ~WOverview();
     void setup(QDomNode node);
-    void setData(Q3MemArray<char> *pWaveformSummary, Q3ValueList<long> *pSegmentation, long liSampleDuration);
+    void setData(QByteArray *pWaveformSummary, Q3ValueList<long> *pSegmentation, long liSampleDuration);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
@@ -45,12 +46,13 @@ public:
 public slots:
     void setValue(double);
     void setVirtualPos(double);
+    void slotLoadNewWaveform(TrackInfoObject* pTrack);
 protected:
 
     bool waveformChanged;
 
     /** Pointer to array containing waveform summary */
-    Q3MemArray<char> *m_pWaveformSummary;
+    QByteArray *m_pWaveformSummary;
     /** Pointer to list of segmentation points */
     Q3ValueList<long> *m_pSegmentation;
     /** Duration of current track in samples */

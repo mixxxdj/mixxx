@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QToolButton>
 #include <QLabel>
+#include <QTimer>
 
 class WSearchLineEdit : public QLineEdit {
 
@@ -17,12 +18,20 @@ protected:
 	virtual void focusInEvent(QFocusEvent*);
 	virtual void focusOutEvent(QFocusEvent*);
 
+signals:
+	void search(const QString& text);
+	void searchCleared();
+	void searchStarting();
+
 private slots:
     void updateCloseButton(const QString& text);
+    void slotSetupTimer(const QString& text);
+	void triggerSearch();
 
 private:
 	void showPlaceholder();
 
+	QTimer m_searchTimer;
 	QToolButton* m_clearButton;
 	bool m_place;
 };

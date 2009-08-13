@@ -23,19 +23,15 @@
 #include <QDropEvent>
 #include <qpushbutton.h>
 #include "trackplaylist.h"
-#include "track.h"
 #include "libraryscanner.h"
 #include "defs_audiofiles.h"
 
-
-Track * TrackPlaylist::spTrack = 0;
 
 /** Note: if you use this, you MUST manually call playlist->setTrackCollection()... */
 TrackPlaylist::TrackPlaylist() : QObject(), QList<TrackInfoObject*>()
 {
 	m_pTrackCollection = NULL;
 	m_qName = "Uninitialized playlist";
-	m_bStopLibraryScan = false;
 }
 
 TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName) : QObject(), QList<TrackInfoObject*>()
@@ -43,13 +39,11 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName) 
     m_pTrackCollection = pTrackCollection;
     //m_pTable = 0;
     m_qName = qName;
-    m_bStopLibraryScan = false;
 }
 
 TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node): QObject(), QList<TrackInfoObject*>()
 {
     m_pTrackCollection = pTrackCollection;
-    m_bStopLibraryScan = false;
     //m_pTable = 0;
 
     loadFromXMLNode(node);
@@ -62,6 +56,7 @@ void TrackPlaylist::setTrackCollection(TrackCollection * pTrackCollection)
 
 void TrackPlaylist::loadFromXMLNode(QDomNode node)
 {
+	/*
     // Set name of playlist
     m_qName = XmlParse::selectNodeQString(node, "Name");
     qDebug() << "playlist name" << m_qName;
@@ -82,16 +77,16 @@ void TrackPlaylist::loadFromXMLNode(QDomNode node)
         }
 
         idnode = idnode.nextSibling();
-    }
+    }*/
+}
+
+QString TrackPlaylist::getName()
+{
+    return m_qName;
 }
 
 TrackPlaylist::~TrackPlaylist()
 {
-}
-
-void TrackPlaylist::setTrack(Track * pTrack)
-{
-    spTrack = pTrack;
 }
 
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
@@ -138,50 +133,6 @@ void TrackPlaylist::addTrack(QString qLocation)
         addTrack(pTrack);
 }
 
-/*
-   void TrackPlaylist::activate(WTrackTable *pTable)
-   {
-    m_pTable = pTable;
-
-    m_pTable->setNumRows(this->count());
-
-    int i=0;
-    TrackInfoObject *it = this->first();
-    while (it)
-    {
-        //qDebug() << "inserting in row " << i;
-        it->insertInTrackTableRow(m_pTable, i);
-
-        it = this->next();
- ++i;
-    }
-
-    // Connect drop events to table to this playlist
-    //connect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
-   }
-
-   void TrackPlaylist::deactivate()
-   {
-    if (!m_pTable)
-        //return;
-
-    //disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
-    if (m_pTable)
-    {
-        m_pTable->setNumRows(0);
-
-        TrackInfoObject *it = this->first();
-        while (it)
-        {
-            it->clearTrackTableRow();
-                        qDebug() << "removing: " << it->getFilename();
-            it = this->next();
-        }
-    }
-
-    m_pTable = 0;
-   }
- */
 QString TrackPlaylist::getListName()
 {
     return m_qName;
@@ -219,8 +170,8 @@ void TrackPlaylist::slotDrop(QDropEvent * e)
     Q3UriDrag::decode(e, lst);
 
     // For each drop element...
-    for (uint i=0; i<lst.count(); ++i )
-        addPath(Q3UriDrag::uriToLocalFile(lst.at(i)));
+    //for (uint i=0; i<lst.count(); ++i )
+    //    addPath(Q3UriDrag::uriToLocalFile(lst.at(i)));
 }
 
 void TrackPlaylist::dumpInfo()
@@ -229,7 +180,6 @@ void TrackPlaylist::dumpInfo()
     qDebug() << "*** Dumping Playlist Information ***";
     qDebug() << "Name: " << getName();
     qDebug() << "List Name: " << getListName();
-    qDebug() << "Song Count: " << getSongNum();
     qDebug() << "Listing Songs...";
 
 
@@ -246,166 +196,6 @@ void TrackPlaylist::dumpInfo()
 */
     qDebug() << "*** End Playlist Dump ***";
 
-}
-
-void TrackPlaylist::slotCancelLibraryScan()
-{
-    m_qLibScanMutex.lock();
-    m_bStopLibraryScan = true;
-    m_qLibScanMutex.unlock();
-}
-
-void TrackPlaylist::addPath(QString qPath)
-{
-    emit(startedLoading());
-    //qDebug() << "addPath";
-
-    // Is this a file or directory?
-    bool bexists = false;
-    TrackCollection * tempCollection = getCollection();
-    QDir dir(qPath);
-
-    emit(progressLoading(qPath));
-
-    //Check if the scan has been cancelled (because this function is called recursively and we can't use
-    //terminate() to end the thread safely.)
-    m_qLibScanMutex.lock();
-    if (m_bStopLibraryScan)
-    {
-    	m_qLibScanMutex.unlock();
-    	return;
-    }
-    m_qLibScanMutex.unlock();
-
-    if (!dir.exists())
-    {
-        for(int i = 0; i < tempCollection->getSize(); i++)
-        {
-            if (tempCollection->getTrack(i))
-                if(tempCollection->getTrack(i)->getLocation() == qPath)
-                {
-                    bexists = true;
-                    break;
-                }
-        }
-        if(bexists == false)
-        {
-            addTrack(qPath);
-            emit(progressLoading(qPath));
-        }
-    }
-    else
-    {
-        dir.setFilter(QDir::Dirs);
-
-        // Check if the dir is empty
-        if (dir.entryInfoList().isEmpty())
-            return;
-
-        QListIterator<QFileInfo> dir_it(dir.entryInfoList());
-        QFileInfo d;
-        while (dir_it.hasNext())
-        {
-            d = dir_it.next();
-            if (!d.filePath().endsWith(".") && !d.filePath().endsWith(".."))
-                addPath(d.filePath());
-           emit(progressLoading(d.filePath()));
-        }
-
-        // And then add all the files
-
-        dir.setFilter(QDir::Files);
-        dir.setNameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" "));
-        QListIterator<QFileInfo> it(dir.entryInfoList());          // create list iterator
-        QFileInfo fi;   // pointer for traversing
-
-        while (it.hasNext())
-        {
-            fi = it.next();
-            bexists = false;
-
-            //Check if the scan has been cancelled.
-            m_qLibScanMutex.lock();
-            if (m_bStopLibraryScan)
-            {
-            	m_qLibScanMutex.unlock();
-            	return;
-            }
-            m_qLibScanMutex.unlock();
-
-            for(int i = 0; i < getCollection()->getSize(); ++i)
-            {
-                /*qDebug() << "Checking: " << tempCollection->getTrack(i)->getFilename();*/
-                if (tempCollection->getTrack(i))
-                {
-                    if(tempCollection->getTrack(i)->getFilename() == fi.fileName() &&
-                       tempCollection->getTrack(i)->getFilepath() == fi.absolutePath()) {
-
-                        bexists = true;
-                        emit(progressLoading(fi.fileName())); //We're not actually reloading the library in this case,
-                        			      //just checking if songs exist.
-                        break;
-                    }
-                }
-            }
-            /*if(bexists==true)
-                    qDebug() << "track exists!";*/
-            if(bexists == false)
-            {
-                /*qDebug() << "all tracks searched, file does not exist, adding...";*/
-                addTrack(fi.filePath());
-                emit(progressLoading(fi.fileName()));
-            }
-
-        }
-    }
-
-    emit(finishedLoading());
-}
-
-void TrackPlaylist::updateScores()
-{
-    // Update the score column for each track
-
-    for(int i = 0; i < this->size(); i++)
-    {
-        this->at(i)->updateScore();
-    }
-}
-
-QString TrackPlaylist::getName()
-{
-    return m_qName;
-}
-
-TrackInfoObject * TrackPlaylist::getFirstTrack()
-{
-    return this->first();
-}
-
-TrackCollection * TrackPlaylist::getCollection()
-{
-    return m_pTrackCollection;
-}
-
-/**
- * FIXME: No longer needed?
- */
-int TrackPlaylist::getIndexOf(int id)
-{
-    for(int i = 0; i < this->count(); ++i)
-    {
-        TrackInfoObject * tmpTrack = this->at(i);
-
-        if(tmpTrack->getId() == id)
-            return i;
-    }
-    return -1;
-}
-
-int TrackPlaylist::getSongNum()
-{
-    return this->count();
 }
 
 QString TrackPlaylist::getComment()

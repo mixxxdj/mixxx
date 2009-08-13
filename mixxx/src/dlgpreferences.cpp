@@ -35,7 +35,6 @@
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
 #include "mixxx.h"
-#include "track.h"
 #include "midiobject.h"
 #include <QTabWidget>
 
@@ -45,7 +44,7 @@
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
-                               SoundManager * soundman, Track *track,
+                               SoundManager * soundman, 
                                MidiObject * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
@@ -58,7 +57,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
     setWindowTitle(tr("Preferences"));
     config = _config;
-    m_pTrack = track;
 
     createIcons();
     //contentsTreeWidget->setCurrentRow(0);
@@ -146,10 +144,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #endif
 
     //Update the library when you change the options
-    if (m_pTrack && wplaylist)
+    /*if (m_pTrack && wplaylist)
     {
         connect(wplaylist, SIGNAL(apply()), m_pTrack, SLOT(slotScanLibrary()));
-    }
+    }*/
+    //FIXME: Disabled due to library reworking
 }
 
 DlgPreferences::~DlgPreferences()

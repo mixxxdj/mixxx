@@ -30,7 +30,7 @@
 #include "trackplaylist.h"
 //#include "wtracktable.h"
 //#include "wtracktableitem.h"
-#include "widget/woverview.h"
+
 #include "xmlparse.h"
 #include <qdom.h>
 #include "controlobject.h"
@@ -41,8 +41,8 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) 
-	: m_sFilename(sFile), m_sFilepath(sPath),
+TrackInfoObject::TrackInfoObject(const QString sLocation) 
+	: m_sLocation(sLocation),
 	m_chordData() {
     m_sArtist = "";
     m_sTitle = "";
@@ -62,13 +62,13 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile)
     m_pVisualWave = 0;
     m_pWave = 0;
     m_pSegmentation = 0;
-    m_pControlObjectBpm = 0;
-    m_pControlObjectDuration = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
 
     m_dVisualResampleRate = 0;
+    QFileInfo fileInfo(sLocation);
+    m_sFilename = fileInfo.fileName();
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
@@ -103,7 +103,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile)
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 	: m_chordData() {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    m_sFilepath = XmlParse::selectNodeQString(nodeHeader, "Filepath");
+    //m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath");
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
     m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
     m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
@@ -127,13 +127,11 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
-    
-    m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
+
+    //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     //m_pTableTrack = 0;
-    m_pControlObjectBpm = 0;
-    m_pControlObjectDuration = 0;
 
     //m_pTableItemScore = 0;
     //m_pTableItemTitle = 0;
@@ -157,6 +155,10 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
 TrackInfoObject::~TrackInfoObject()
 {
+    //Update this track in the library. (Saves stuff.)
+
+
+
     //removeFromTrackTable();
     delete m_fBpmFactors;
 }
@@ -194,7 +196,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     m_qMutex.lock();
 
     XmlParse::addElement( doc, header, "Filename", m_sFilename );
-    XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
+    //XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
     XmlParse::addElement( doc, header, "Title", m_sTitle );
     XmlParse::addElement( doc, header, "Artist", m_sArtist );
     XmlParse::addElement( doc, header, "Type", m_sType );
@@ -210,9 +212,9 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
     XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
-    if (m_pWave) {
-        XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
-    }
+    //if (m_pWave) {
+        //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
+    //}
     if (m_pSegmentation)
         XmlParse::addElement(doc, header, "SegmentationSummary", m_pSegmentation);
 
@@ -357,7 +359,7 @@ void TrackInfoObject::parseFilename()
     }
 
     // Find the length:
-    m_iLength = QFileInfo(m_sFilepath + '/' + m_sFilename).size();
+    m_iLength = QFileInfo(m_sLocation).size();
 
     // Add no comment
     m_sComment = QString("");
@@ -366,6 +368,11 @@ void TrackInfoObject::parseFilename()
     m_sType = m_sFilename.section(".",-1).toLower().trimmed();
 
     m_qMutex.unlock();
+}
+
+void TrackInfoObject::setLength(int bytes)
+{
+	m_iLength = bytes;
 }
 
 QString TrackInfoObject::getDurationStr() const
@@ -403,12 +410,19 @@ QString TrackInfoObject::getDurationStr() const
     }
 }
 
+void TrackInfoObject::setLocation(QString location)
+{
+	m_sLocation = location;
+}
+
 QString TrackInfoObject::getLocation() const
 {
-    m_qMutex.lock();
-    QString qLocation = m_sFilepath + "/" + m_sFilename;
-    m_qMutex.unlock();
-    return qLocation;
+    return m_sLocation;
+}
+
+void TrackInfoObject::setFilename(QString filename)
+{
+	m_sFilename = filename;
 }
 
 float TrackInfoObject::getBpm() const
@@ -427,14 +441,10 @@ void TrackInfoObject::setBpm(float f)
     m_qMutex.unlock();
 
     generateBpmFactors();
-/*
-    if (m_pTableItemBpm)
-    {
-        m_pTableItemBpm->setText(getBpmStr());
-        m_pTableItemBpm->table()->updateCell(m_pTableItemBpm->row(), m_pTableItemBpm->col());
-    }
- */
-    setBpmControlObject(m_pControlObjectBpm);
+    
+    //Tell the GUI to update the bpm label...
+    qDebug() << "TrackInfoObject: emitting bpmUpdated signal!";
+    emit(bpmUpdated(f));
 }
 
 void TrackInfoObject::generateBpmFactors()
@@ -533,7 +543,6 @@ void TrackInfoObject::setDuration(int i)
         m_pTableItemDuration->table()->updateCell(m_pTableItemDuration->row(), m_pTableItemDuration->col());
     }
  */
-    setDurationControlObject(m_pControlObjectDuration);
 }
 
 QString TrackInfoObject::getTitle()  const
@@ -618,21 +627,6 @@ void TrackInfoObject::incTimesPlayed()
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::setFilepath(QString s)
-{
-    m_qMutex.lock();
-    m_sFilepath = s;
-    m_qMutex.unlock();
-}
-
-QString TrackInfoObject::getFilepath() const
-{
-    m_qMutex.lock();
-    QString sFilepath = m_sFilepath;
-    m_qMutex.unlock();
-
-    return sFilepath;
-}
 QString TrackInfoObject::getComment() const
 {
     m_qMutex.lock();
@@ -836,10 +830,10 @@ double TrackInfoObject::getVisualResampleRate() {
     return rate;
 }
 
-Q3MemArray<char> * TrackInfoObject::getWaveSummary()
+QByteArray *TrackInfoObject::getWaveSummary()
 {
     m_qMutex.lock();
-    Q3MemArray<char> *pWaveSummary = m_pWave;
+    QByteArray *pWaveSummary = m_pWave;
     m_qMutex.unlock();
 
     return pWaveSummary;
@@ -860,63 +854,17 @@ void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long> * pSegmentation, bool updateUI)
+void TrackInfoObject::setWaveSummary(QByteArray* pWave, Q3ValueList<long> * pSegmentation, bool updateUI)
 {
     m_qMutex.lock();
     m_pWave = pWave;
     m_pSegmentation = pSegmentation;
     m_qMutex.unlock();
 
-    if (updateUI) setOverviewWidget(m_pOverviewWidget);
+    //if (updateUI) setOverviewWidget(m_pOverviewWidget);
+    emit(wavesummaryUpdated(this));
 }
 
-//TODO: Get rid of these crappy methods. getNext() and getPrev() are terrible for modularity
-//      and should be removed the next time I work on the library. -- Albert
-TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
-{
-    TrackInfoObject* nextTrack = NULL;
-    if (pPlaylist)
-    {
-        nextTrack = pPlaylist->value( pPlaylist->getIndexOf(getId())+1, NULL );
-    }
-    return nextTrack;
-}
-
-//TODO: Get rid of these crappy methods. getNext() and getPrev() are terrible for modularity
-//      and should be removed the next time I work on the library. -- Albert
-TrackInfoObject * TrackInfoObject::getPrev(TrackPlaylist * pPlaylist)
-{
-    TrackInfoObject* prevTrack = NULL;
-    if (pPlaylist)
-    {
-        prevTrack = pPlaylist->value( pPlaylist->getIndexOf(getId())-1, NULL );
-    }
-    return prevTrack;
-}
-
-void TrackInfoObject::setOverviewWidget(WOverview * p)
-{
-    m_pOverviewWidget = p;
-
-    if (m_pOverviewWidget)
-        p->setData(getWaveSummary(), getSegmentationSummary(), getDuration()*getSampleRate()*getChannels());
-}
-
-void TrackInfoObject::setBpmControlObject(ControlObject * p)
-{
-    m_pControlObjectBpm = p;
-
-    if (m_pControlObjectBpm)
-        p->queueFromThread(getBpm());
-}
-
-void TrackInfoObject::setDurationControlObject(ControlObject * p)
-{
-    m_pControlObjectDuration = p;
-
-    if (m_pControlObjectDuration)
-        p->queueFromThread(getDuration());
-}
 
 /** Set URL for track*/
 void TrackInfoObject::setURL(QString url)

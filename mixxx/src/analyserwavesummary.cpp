@@ -1,4 +1,3 @@
-#include <q3memarray.h>
 #include <QtDebug>
 
 #include "trackinfoobject.h"
@@ -20,16 +19,13 @@ AnalyserWavesummary::AnalyserWavesummary() {
 
 void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
     // Check if the preview has already been generated
-    Q3MemArray<char> *p = tio->getWaveSummary();
+    QByteArray* p = tio->getWaveSummary();
     if(p != NULL && p->size() > 0) {
         return;
     }
-    
-    m_pData = new Q3MemArray<char>(kiSummaryBufferSize);
 
-    // Zero the array
-    for (unsigned int i=0; i<m_pData->size(); i++)
-        m_pData->at(i) = 0;
+    // Initialize kiSummaryBufferSize bytes to 0
+    m_pData = new QByteArray(kiSummaryBufferSize, 0);
 
     // The stride length is the number of samples that correspond
     // to one "line" (3 entries) in the data buffer. 
@@ -52,9 +48,10 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
     
     for(int i=0; i<iLen; i++) {
         if(m_iBufferPos >= m_iStrideLength) {
-            m_pData->at(m_iCurPos) = (int)(m_fMin*127);
-            m_pData->at(m_iCurPos+1) = (int)(m_fMax*127);
-            m_pData->at(m_iCurPos+2) = 0;
+            
+            (*m_pData)[m_iCurPos] = (char)(m_fMin*127);
+            (*m_pData)[m_iCurPos+1] = (char)(m_fMax*127);
+            (*m_pData)[m_iCurPos+2] = 0;
             m_iCurPos += 3;
             
             m_iBufferPos = 0;
