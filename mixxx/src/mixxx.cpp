@@ -32,12 +32,16 @@
 #include "engine/enginebuffer.h"
 #include "analyserqueue.h"
 #include "engine/enginevumeter.h"
-#include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"
-// #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
+
+#include "player.h"
+#include "wtracktableview.h"
+#include "trackcollection.h"
+#include "librarytablemodel.h"
+#include "libraryscanner.h"
 
 #include "soundmanager.h"
 #include "defs_urls.h"
