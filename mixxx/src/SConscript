@@ -1433,8 +1433,10 @@ if platform == 'osx':
 	
 	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
 	qt_plugins = [("iconengines", e) for e in ["libqsvgicon.dylib"]] + \
-			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] #Left out libqmng and libqtiff to save space.
-	
+			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] + \
+             [("sqldrivers", e) for e in ["libqsqlite.dylib"]]
+	#Left out libqmng and libqtiff to save space.
+
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
 		Dir('#res/midi/'), Dir('#res/keyboard/'),
