@@ -9,7 +9,7 @@
 #include "configobject.h"
 #include "engine/enginecontrol.h"
 
-const int RATE_TEMP_STEP = 100.;
+const int RATE_TEMP_STEP = 250.;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
 
 class Rotary;
