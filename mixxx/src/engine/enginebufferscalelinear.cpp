@@ -100,7 +100,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     
     // Prepare buffer
     CSAMPLE* pbuf = buffer;
-    long get_samples = buf_size + (long)(floor((float)buf_size * ((float)m_dBaseRate - 1.0)));
+    long get_samples = buf_size + (long)(floor((float)buf_size * abs((int)m_dBaseRate - 1)));
     if ( !even(get_samples))
         get_samples++;
     
