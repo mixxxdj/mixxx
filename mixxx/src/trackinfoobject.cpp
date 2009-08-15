@@ -591,6 +591,70 @@ void TrackInfoObject::setArtist(QString s)
  */
 }
 
+QString TrackInfoObject::getAlbum()  const
+{
+    m_qMutex.lock();
+    QString sAlbum = m_sAlbum;
+    m_qMutex.unlock();
+
+    return sAlbum;
+}
+
+void TrackInfoObject::setAlbum(QString s)
+{
+    m_qMutex.lock();
+    m_sAlbum = s.trimmed();
+    m_qMutex.unlock();
+}
+
+QString TrackInfoObject::getYear()  const
+{
+    m_qMutex.lock();
+    QString sYear = m_sYear;
+    m_qMutex.unlock();
+
+    return sYear;
+}
+
+void TrackInfoObject::setYear(QString s)
+{
+    m_qMutex.lock();
+    m_sYear = s.trimmed();
+    m_qMutex.unlock();
+}
+
+QString TrackInfoObject::getGenre()  const
+{
+    m_qMutex.lock();
+    QString sGenre = m_sGenre;
+    m_qMutex.unlock();
+
+    return sGenre;
+}
+
+void TrackInfoObject::setGenre(QString s)
+{
+    m_qMutex.lock();
+    m_sGenre = s.trimmed();
+    m_qMutex.unlock();
+}
+
+QString TrackInfoObject::getTrackNumber()  const
+{
+    m_qMutex.lock();
+    QString sTrackNumber = m_sTrackNumber;
+    m_qMutex.unlock();
+
+    return sTrackNumber;
+}
+
+void TrackInfoObject::setTrackNumber(QString s)
+{
+    m_qMutex.lock();
+    m_sTrackNumber = s.trimmed();
+    m_qMutex.unlock();
+}
+
 QString TrackInfoObject::getFilename()  const
 {
     m_qMutex.lock();
