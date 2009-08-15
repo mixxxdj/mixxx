@@ -26,8 +26,15 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     CSAMPLE* base_buffer = buffer;
 
     // A loop will only limit the amount we can read in one shot.
+
     QPair<int, double> next_loop = getSoonestTrigger(in_reverse,
                                                      m_iCurrentPosition);
+    // Ignore it for now and just go with the first one.
+    next_loop.first = 0;
+    next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
+                                                        m_iCurrentPosition,
+                                                        0, 0);
+                                                           
     if (next_loop.second != kNoTrigger) {
         int samples_available;
         if (in_reverse) {
@@ -42,7 +49,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     if (in_reverse) {
         start_sample = m_iCurrentPosition - samples_needed;
         if (start_sample < 0) {
-            samples_needed += start_sample;
+            samples_needed = math_max(0, samples_needed + start_sample);
             start_sample = 0;
         }
     }
@@ -63,13 +70,14 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // Activate on this trigger if necessary
     if (next_loop.second != kNoTrigger) {
+        double loop_trigger = next_loop.second;
         double loop_target = m_sEngineControls[next_loop.first]->
             getTrigger(dRate,
                        m_iCurrentPosition,
                        0, 0);
         
-        if ((in_reverse && m_iCurrentPosition <= loop_target) ||
-            (!in_reverse && m_iCurrentPosition >= loop_target)) {
+        if ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
+            (!in_reverse && m_iCurrentPosition >= loop_trigger)) {
             m_iCurrentPosition = loop_target;
         }
     }
@@ -119,6 +127,7 @@ QPair<int, double> ReadAheadManager::getSoonestTrigger(double dRate,
         bool trigger_active = (trigger != kNoTrigger &&
                                ((in_reverse && trigger <= iCurrentSample) ||
                                 (!in_reverse && trigger >= iCurrentSample)));
+        
         if (trigger_active &&
             (next_trigger == kNoTrigger ||
              (in_reverse && trigger > next_trigger) ||
