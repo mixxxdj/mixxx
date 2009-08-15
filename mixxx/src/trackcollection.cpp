@@ -2,7 +2,7 @@
 #include <QtGui>
 #include <QtSql>
 #include <QtDebug>
-  
+
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
@@ -53,9 +53,11 @@ bool TrackCollection::checkForTables()
  	QSqlQuery query;
  	//Little bobby tables
     query.exec("CREATE TABLE library (id INTEGER primary key, "
-               "artist varchar(20), title varchar(20), "
- 			   "filename varchar(20), location varchar(20), "
- 			   "comment varchar(20), url varchar(20), "
+               "artist varchar(48), title varchar(48), "
+               "album varchar(48), year varchar(16), "
+               "genre varchar(32), tracknumber varchar(3), "
+ 			   "filename varchar(512), location varchar(512), "
+ 			   "comment varchar(20), url varchar(256), "
  			   "duration integer, length_in_bytes integer, "
      		   "bitrate integer, samplerate integer, "
      		   "cuepoint integer, bpm float, "
@@ -84,18 +86,22 @@ void TrackCollection::addTrack(QString location)
     QSqlDatabase::database().transaction();
  
  	QSqlQuery query;
-    query.prepare("INSERT INTO library (artist, title, filename, "
+    query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, filename, "
  				  "location, comment, url, duration, length_in_bytes, "
  				  "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
  				  "channels) "
                   "VALUES (:artist, "
- 				  ":title, :filename, "
+ 				  ":title, :album, :year, :genre, :tracknumber, :filename, "
  				  ":location, :comment, :url, :duration, :length_in_bytes, "
  				  ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":channels)");
     //query.bindValue(":id", 1001);
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
+    query.bindValue(":album", pTrack->getAlbum());
+    query.bindValue(":year", pTrack->getYear());
+    query.bindValue(":genre", pTrack->getGenre());
+    query.bindValue(":tracknumber", pTrack->getTrackNumber());
     query.bindValue(":filename", pTrack->getFilename());
     query.bindValue(":location", pTrack->getLocation());
     query.bindValue(":comment", pTrack->getComment());
@@ -176,6 +182,10 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
      	track = new TrackInfoObject();
         QString artist = query.value(query.record().indexOf("artist")).toString();
         QString title = query.value(query.record().indexOf("title")).toString();
+        QString album = query.value(query.record().indexOf("album")).toString();
+        QString year = query.value(query.record().indexOf("year")).toString();
+        QString genre = query.value(query.record().indexOf("genre")).toString();
+        QString tracknumber = query.value(query.record().indexOf("tracknumber")).toString();
         QString filename = query.value(query.record().indexOf("filename")).toString();
         QString location = query.value(query.record().indexOf("location")).toString();
         QString comment = query.value(query.record().indexOf("comment")).toString();
@@ -193,6 +203,10 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
  
         track->setArtist(artist);
         track->setTitle(title);
+        track->setAlbum(album);
+        track->setYear(year);
+        track->setGenre(genre);
+        track->setTrackNumber(tracknumber);
         track->setFilename(filename);
         track->setLocation(location);
         track->setComment(comment);
@@ -312,7 +326,7 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
  	//Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
- 				  "title=:title, filename=:filename, "
+ 				  "title=:title, album=:album, :year=filename=:filename, "
  				  "comment=:comment, url=:url, duration=:duration, "
  				  "length_in_bytes=:length_in_bytes, "
  				  "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
@@ -322,6 +336,10 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
     //query.bindValue(":id", 1001);
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
+    query.bindValue(":album", pTrack->getAlbum());
+    query.bindValue(":year", pTrack->getYear());
+    query.bindValue(":genre", pTrack->getGenre());
+    query.bindValue(":tracknumber", pTrack->getTrackNumber());
     query.bindValue(":filename", pTrack->getFilename());
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
