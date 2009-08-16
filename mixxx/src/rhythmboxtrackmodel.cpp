@@ -11,7 +11,16 @@
 
 RhythmboxTrackModel::RhythmboxTrackModel()
 {
+    int idx = 0;
+    
+    
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
+    if ( ! db.exists()) {
+        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
+        if ( ! db.exists())
+            return;
+    }
+    
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
     
@@ -20,8 +29,21 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     db.close();
     
     m_entryNodes = rhythmdb.elementsByTagName("entry");
-    //m_entryNodes = rhythmdb.documentElement().childNodes();
+    
+    
+    /* Filter out non song entries */
+    while (( idx < m_entryNodes.count())) {
+        QDomNode n = m_entryNodes.item(idx);
+        QDomElement e = n.toElement();
         
+        if (( e.isNull()) || ( e.attribute("type") != "song" ))
+            n.parentNode().removeChild(n);
+        else
+            idx++;
+    }
+    
+    //m_entryNodes = rhythmdb.documentElement().childNodes();
+    
     qDebug() << rhythmdb.doctype().name();
     qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_entryNodes.size();
 }
@@ -38,20 +60,31 @@ Qt::ItemFlags RhythmboxTrackModel::flags ( const QModelIndex & index ) const
 
 QVariant RhythmboxTrackModel::data ( const QModelIndex & index, int role ) const
 {
-     if (!index.isValid())
-         return QVariant();
-
-     if (m_entryNodes.size() < index.row())
-         return QVariant();
-
+    if (!index.isValid())
+        return QVariant();
+    
+    if (m_entryNodes.size() < index.row())
+        return QVariant();
+    
     QDomNode songNode = m_entryNodes.at(index.row());
+    QDomElement e = songNode.toElement();
     
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
             case RhythmboxTrackModel::COLUMN_ARTIST: 
                 return songNode.firstChildElement("artist").text();
             case RhythmboxTrackModel::COLUMN_TITLE:
-                return songNode.firstChildElement("title").text(); 
+                return songNode.firstChildElement("title").text();
+            case RhythmboxTrackModel::COLUMN_ALBUM:
+                return songNode.firstChildElement("album").text();
+            case RhythmboxTrackModel::COLUMN_DATE:
+                return songNode.firstChildElement("date").text();
+            case RhythmboxTrackModel::COLUMN_GENRE:
+                return songNode.firstChildElement("genre").text();
+            case RhythmboxTrackModel::COLUMN_LOCATION:
+                return songNode.firstChildElement("location").text();
+            case RhythmboxTrackModel::COLUMN_DURATION:
+                return songNode.firstChildElement("duration").text();
             
             
             default:
@@ -64,19 +97,37 @@ QVariant RhythmboxTrackModel::data ( const QModelIndex & index, int role ) const
 
 QVariant RhythmboxTrackModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
+    /* Only respond to requests for column header display names */
+    if ( role != Qt::DisplayRole )
+        return QVariant();
+    
     if (orientation == Qt::Horizontal)
     {
         switch (section) 
         {
             case RhythmboxTrackModel::COLUMN_ARTIST:
-                return QVariant("Artist");
-                break;
+                return QString("Artist");
             
             case RhythmboxTrackModel::COLUMN_TITLE:
-                return QVariant("Title");
-                break;
+                return QString("Title");
             
-            default: return "Unknown";
+            case RhythmboxTrackModel::COLUMN_ALBUM:
+                return QString("Album");
+            
+            case RhythmboxTrackModel::COLUMN_DATE:
+                return QString("Date");
+            
+            case RhythmboxTrackModel::COLUMN_GENRE:
+                return QString("Genre");
+            
+            case RhythmboxTrackModel::COLUMN_LOCATION:
+                return QString("Location");
+            
+            case RhythmboxTrackModel::COLUMN_DURATION:
+                return QString("Duration");
+            
+            default:
+                return QString("Unknown");
         }
     }
     
@@ -130,5 +181,3 @@ void RhythmboxTrackModel::search(const QString& searchText)
 {
 
 }
-
-	

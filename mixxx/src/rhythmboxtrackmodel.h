@@ -34,6 +34,11 @@ class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
     enum Columns {
         COLUMN_ARTIST = 0,
         COLUMN_TITLE,
+        COLUMN_ALBUM,
+        COLUMN_DATE,
+        COLUMN_GENRE,
+        COLUMN_LOCATION,
+        COLUMN_DURATION,
         NUM_COLUMNS
     };
 
