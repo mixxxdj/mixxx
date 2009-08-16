@@ -380,6 +380,7 @@ sources = Split("""
                 tracksourcesmodel.cpp
                 librarytablemodel.cpp
                 browsetablemodel.cpp
+                rhythmboxtrackmodel.cpp
               
                 xmlparse.cpp
                 trackimporter.cpp

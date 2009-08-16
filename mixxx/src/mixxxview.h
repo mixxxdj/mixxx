@@ -58,6 +58,7 @@ class Player;
 class TrackInfoObject;
 class QStandardItemModel;
 class LibraryTableModel;
+class RhythmboxTrackModel;
 
 /**
  * This class provides an incomplete base for your application view.
@@ -149,6 +150,8 @@ private:
 	QSplitter *m_pSplitter; 
 	/** A pointer to the data model representing the song library */
 	LibraryTableModel *m_pLibraryTableModel;
+	/** A pointer to a data model wrapping Rhythmbox's track database */
+	RhythmboxTrackModel *m_pRhythmboxTrackModel;
 	/** The data model representing the list of library track sources */
 	QStandardItemModel *m_pLibraryTrackSourcesModel;
 

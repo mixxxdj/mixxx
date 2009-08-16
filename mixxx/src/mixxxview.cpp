@@ -65,6 +65,7 @@
 #endif
 #include "defs_promo.h"
 #include "librarytablemodel.h"
+#include "rhythmboxtrackmodel.h"
 #include "browsetablemodel.h"
 #include "tracksourcesmodel.h"
 
@@ -77,6 +78,7 @@ LibraryTableModel* pLibraryTableModel) : QWidget(parent)
     m_pPlayer1 = player1;
     m_pPlayer2 = player2;
     m_pLibraryTableModel = pLibraryTableModel;
+    m_pRhythmboxTrackModel = new RhythmboxTrackModel();
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -119,6 +121,7 @@ LibraryTableModel* pLibraryTableModel) : QWidget(parent)
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
     m_pLibraryTrackSourcesView = 0;
+    m_pLibraryTrackSourcesModel = 0;
 
     setupColorScheme(docElem, pConfig);
 
@@ -1084,5 +1087,6 @@ void MixxxView::slotActivateCheeseburger()
 {
     qDebug() << "I can has cheeseburger data model?";
 
-    m_pTrackTableView->setModel(NULL);
+    //m_pTrackTableView->setModel(NULL);
+    m_pTrackTableView->setModel(m_pRhythmboxTrackModel);
 }
