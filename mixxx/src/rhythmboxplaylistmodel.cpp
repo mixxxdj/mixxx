@@ -210,6 +210,9 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist)
         m_sCurrentPlaylist = playlist;
     else
         m_sCurrentPlaylist = "";
+    
+    // force the layout to update
+    emit(layoutChanged());
 }
 
 void RhythmboxPlaylistModel::search(const QString& searchText)
