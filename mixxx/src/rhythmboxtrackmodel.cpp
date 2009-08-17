@@ -2,6 +2,9 @@
 #include <QtGui>
 #include <QtSql>
 #include <QtDebug>
+#include <QtXmlPatterns/QXmlQuery>
+#include <QtXmlPatterns/QXmlResultItems>
+
 
 #include "rhythmboxtrackmodel.h"
 #include "xmlparse.h"
@@ -11,9 +14,16 @@
 
 RhythmboxTrackModel::RhythmboxTrackModel()
 {
-    int idx = 0;
+    QXmlQuery query;
+    QXmlQuery entries;
+    QString res;
+    QDomDocument rhythmdb;
     
     
+    /*
+     * Try and open the Rhythmbox DB. An API call which tells us where
+     * the file is would be nice.
+     */
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
     if ( ! db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
@@ -24,24 +34,32 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
     
-    QDomDocument rhythmdb;
-    rhythmdb.setContent(&db);
+    /*
+     * Use QXmlQuery to execute and XPath query. Check the version to
+     * make sure.
+     */
+    query.setFocus(&db);
+    query.setQuery("rhythmdb[@version='1.6']/entry[@type='song']");
+    if ( ! query.isValid())
+        return;
+    
+    query.evaluateTo(&res);
     db.close();
     
+    
+    /*
+     * Parse the result as an XML file. These shennanigans actually
+     * reduce the load time from a minute to a matter of seconds.
+     */
+    rhythmdb.setContent("<rhythmdb version='1.6'>" + res + "</rhythmdb>");
     m_entryNodes = rhythmdb.elementsByTagName("entry");
     
     
-    /* Filter out non song entries */
-    while (( idx < m_entryNodes.count()) && (m_entryNodes.count() > 0)) {
-        QDomNode n = m_entryNodes.item(idx);
-        QDomElement e = n.toElement();
+    for (int i = 0; i < m_entryNodes.count(); i++) {
+        QDomNode n = m_entryNodes.at(i);
+        QString location = n.firstChildElement("location").text();
         
-        if (( e.isNull()) || ( e.attribute("type") != "song" ))
-            n.parentNode().removeChild(n);
-        else {
-            m_mTracksByLocation[n.firstChildElement("location").text()] = n;
-            idx++;
-        }
+        m_mTracksByLocation[location] = n;
     }
     
     qDebug() << rhythmdb.doctype().name();
