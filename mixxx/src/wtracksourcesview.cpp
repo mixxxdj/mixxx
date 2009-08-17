@@ -3,8 +3,12 @@
 #include <QtGui>
 #include "wtracksourcesview.h"
 
-WTrackSourcesView::WTrackSourcesView() : QListView()
+WTrackSourcesView::WTrackSourcesView() : QTreeView()
 {
+    //Set some properties
+    setHeaderHidden(true);
+    
+    //Connect some signals
     connect(this, SIGNAL(activated(const QModelIndex&)), 
             this, SLOT(activatedSignalProxy(const QModelIndex&)));
     connect(this, SIGNAL(clicked(const QModelIndex&)), 

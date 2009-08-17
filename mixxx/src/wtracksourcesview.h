@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QtGui>
 
-class WTrackSourcesView : public QListView
+class WTrackSourcesView : public QTreeView
 {
     Q_OBJECT
     public:
