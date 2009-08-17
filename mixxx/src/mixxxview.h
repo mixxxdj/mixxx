@@ -59,6 +59,7 @@ class TrackInfoObject;
 class QStandardItemModel;
 class LibraryTableModel;
 class RhythmboxTrackModel;
+class RhythmboxPlaylistModel;
 
 /**
  * This class provides an incomplete base for your application view.
@@ -112,6 +113,7 @@ public slots:
 	void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
     void slotActivateLibrary();
     void slotActivateCheeseburger();
+    void slotActiveRhythmboxPlaylist(QString);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
@@ -152,6 +154,8 @@ private:
 	LibraryTableModel *m_pLibraryTableModel;
 	/** A pointer to a data model wrapping Rhythmbox's track database */
 	RhythmboxTrackModel *m_pRhythmboxTrackModel;
+    /** A pointer to a data model wrapping Rhythmbox's playlist database */
+    RhythmboxPlaylistModel *m_pRhythmboxPlaylistModel;
 	/** The data model representing the list of library track sources */
 	QStandardItemModel *m_pLibraryTrackSourcesModel;
 

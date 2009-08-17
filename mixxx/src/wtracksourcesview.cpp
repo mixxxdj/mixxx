@@ -30,5 +30,13 @@ void WTrackSourcesView::activatedSignalProxy(const QModelIndex& index)
     {
         emit(cheeseburgerItemActivated());
     }
+    else if (model()->data(index).toString() == tr("Liberry"))
+    {
+        // Ignore
+    }
+    else
+    {
+        emit(rhythmboxPlaylistItemActivated(model()->data(index).toString()));
+    }
 }
 

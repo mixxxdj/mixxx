@@ -32,17 +32,17 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     
     
     /* Filter out non song entries */
-    while (( idx < m_entryNodes.count())) {
+    while (( idx < m_entryNodes.count()) && (m_entryNodes.count() > 0)) {
         QDomNode n = m_entryNodes.item(idx);
         QDomElement e = n.toElement();
         
         if (( e.isNull()) || ( e.attribute("type") != "song" ))
             n.parentNode().removeChild(n);
-        else
+        else {
+            m_mTracksByLocation[n.firstChildElement("location").text()] = n;
             idx++;
+        }
     }
-    
-    //m_entryNodes = rhythmdb.documentElement().childNodes();
     
     qDebug() << rhythmdb.doctype().name();
     qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_entryNodes.size();
@@ -171,6 +171,21 @@ TrackInfoObject * RhythmboxTrackModel::getTrack(const QModelIndex& index) const
  	
     QDomNode songNode = m_entryNodes.at(index.row());
  	track->setLocation(QUrl(songNode.firstChildElement("location").text()).toLocalFile());
+ 	track->setArtist(songNode.firstChildElement("artist").text());
+ 	track->setTitle(songNode.firstChildElement("title").text());
+ 	track->setDuration(songNode.firstChildElement("duration").text().toUInt()); 	 	    
+    return track;
+}
+
+TrackInfoObject * RhythmboxTrackModel::getTrackByLocation(const QString& location) const
+{
+    TrackInfoObject *track = new TrackInfoObject();
+    
+    if ( !m_mTracksByLocation.contains(location))
+        return NULL;
+    
+    QDomNode songNode = m_mTracksByLocation[location];
+    track->setLocation(QUrl(songNode.firstChildElement("location").text()).toLocalFile());
  	track->setArtist(songNode.firstChildElement("artist").text());
  	track->setTitle(songNode.firstChildElement("title").text());
  	track->setDuration(songNode.firstChildElement("duration").text().toUInt()); 	 	    
