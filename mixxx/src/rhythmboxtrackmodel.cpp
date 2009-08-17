@@ -179,5 +179,5 @@ TrackInfoObject * RhythmboxTrackModel::getTrack(const QModelIndex& index) const
 
 void RhythmboxTrackModel::search(const QString& searchText)
 {
-
+    //FIXME
 }

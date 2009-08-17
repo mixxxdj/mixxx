@@ -13,6 +13,6 @@ class TrackSourcesModel : public QStandardItemModel
     private:
         QStandardItem* m_pLibraryItem;
         QStandardItem* m_pCheeseburgerItem;
-        
+        QStandardItem* m_pRhythmboxLibraryItem;
 };
 #endif

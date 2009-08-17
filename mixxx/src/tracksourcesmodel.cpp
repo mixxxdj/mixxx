@@ -10,10 +10,14 @@ TrackSourcesModel::TrackSourcesModel() : QStandardItemModel()
     //      needs to be passed in here.
 
     m_pLibraryItem = new QStandardItem(tr("Library"));
-    m_pCheeseburgerItem = new QStandardItem(tr("Cheeseburger"));
+    m_pCheeseburgerItem = new QStandardItem(QIcon(":/images/library/rhythmbox.png"), tr("Cheeseburger"));
 
+    m_pRhythmboxLibraryItem = new QStandardItem(tr("Liberry"));
+    m_pCheeseburgerItem->appendRow(m_pRhythmboxLibraryItem);
+    
     m_pLibraryItem->setEditable(false);
     m_pCheeseburgerItem->setEditable(false);
+    m_pRhythmboxLibraryItem->setEditable(false);
 
     appendRow(m_pLibraryItem);
 	appendRow(m_pCheeseburgerItem);		
