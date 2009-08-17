@@ -30,7 +30,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_fOldTempo = 1.0f;
     m_fOldBaseRate = 1.0f;
     
-    buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength*2];
+    buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -90,6 +90,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_new = 2.*m_dBaseRate;
     float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new; 
+    int buffer_step = 0;
     
     m_fOldBaseRate = m_dBaseRate;           //Update the old base rate because we only need to
                                             //interpolate/ramp up the pitch changes once.
@@ -100,47 +101,62 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     
     // Prepare buffer
     CSAMPLE* pbuf = buffer;
-    long get_samples = buf_size + (long)(floor((float)buf_size * abs((int)m_dBaseRate - 1)));
+    long get_samples = buf_size + (long)(floor((float)buf_size * ((float)m_dBaseRate - 1.0)));
     if ( !even(get_samples))
         get_samples++;
     
-    int i;
-    int iAvailSamples = m_pReadAheadManager
-                ->getNextSamples((m_bBackwards ? -1.0f : 1.0f) * m_dBaseRate * m_dTempo,
-                                 buffer_int, get_samples);
+    int i = 0;
     
-    for (i=0; i<buf_size; i+=2)
+    
+    while ( get_samples > 0 )
     {
-        long prev = (long)floor(new_playpos-playpos)%READBUFFERSIZE;
-        if (!even(prev)) prev--;
-        long next = (prev+2)%READBUFFERSIZE;
+        int iAvailSamples = m_pReadAheadManager
+                    ->getNextSamples((m_bBackwards ? -1.0f : 1.0f) * m_dBaseRate * m_dTempo,
+                                     buffer_int, math_min(kiLinearScaleReadAheadLength, get_samples));
+        
+        get_samples -= iAvailSamples;
         
         
-        //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-        //prevvents the change from being discontinuous and helps improve sound
-        //quality.
-        if (i < RATE_LERP_LENGTH)
+        while (1)
         {
-            rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
+            i++; 
+            
+            long prev = (long)floor(new_playpos-playpos-(buffer_step*kiLinearScaleReadAheadLength)) % READBUFFERSIZE;
+            if (!even(prev)) prev--;
+            long next = (prev+2) % READBUFFERSIZE;
+            
+            // Break out of loop to get more samples
+            if ( next > iAvailSamples )
+                break;
+            
+            //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
+            //prevvents the change from being discontinuous and helps improve sound
+            //quality.
+            if (i < RATE_LERP_LENGTH)
+            {
+                rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
+            }
+            else
+                rate_add = rate_add_new;
+            
+            
+            CSAMPLE frac = (new_playpos - floor(new_playpos))/2;
+            
+            //Perform linear interpolation
+            *pbuf++ = buffer_int[prev] + frac*(buffer_int[next] - buffer_int[prev]);
+            *pbuf++ = buffer_int[prev+1] + frac*(buffer_int[next+1] - buffer_int[prev+1]);
+            
+            
+            // Calculate playpos and execute the forward code in the fast-path
+            if ( !m_bBackwards )
+                new_playpos += (rate_add);
+            else
+                new_playpos -= (rate_add);
+            
         }
-        else
-            rate_add = rate_add_new;
         
-        
-        CSAMPLE frac = (new_playpos - floor(new_playpos))/2;
-        
-        //Perform linear interpolation
-        pbuf[i] = buffer_int[prev] + frac*(buffer_int[next] - buffer_int[prev]);
-        pbuf[i+1] = buffer_int[prev+1] + frac*(buffer_int[next+1] - buffer_int[prev+1]);
-        
-        
-        // Calculate playpos and execute the forward code in the fast-path
-        if ( !m_bBackwards )
-            new_playpos += (rate_add);
-        else
-            new_playpos -= (rate_add);
-        
+        buffer_step++;
     }
-        
+    
     return buffer;
 }
