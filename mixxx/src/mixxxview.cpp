@@ -66,6 +66,7 @@
 #include "defs_promo.h"
 #include "librarytablemodel.h"
 #include "rhythmboxtrackmodel.h"
+#include "rhythmboxplaylistmodel.h"
 #include "browsetablemodel.h"
 #include "tracksourcesmodel.h"
 
@@ -79,6 +80,7 @@ LibraryTableModel* pLibraryTableModel) : QWidget(parent)
     m_pPlayer2 = player2;
     m_pLibraryTableModel = pLibraryTableModel;
     m_pRhythmboxTrackModel = new RhythmboxTrackModel();
+    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -986,7 +988,7 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 	
 	if (m_pLibraryTrackSourcesModel == 0)
 	{
-		m_pLibraryTrackSourcesModel = new TrackSourcesModel();
+		m_pLibraryTrackSourcesModel = new TrackSourcesModel(m_pRhythmboxTrackModel, m_pRhythmboxPlaylistModel);
 		m_pLibraryTrackSourcesView->setModel(m_pLibraryTrackSourcesModel);	
 	}
 
@@ -994,7 +996,9 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
             this, SLOT(slotActivateLibrary()));
     connect(m_pLibraryTrackSourcesView, SIGNAL(cheeseburgerItemActivated()),
             this, SLOT(slotActivateCheeseburger()));
-
+    connect(m_pLibraryTrackSourcesView, SIGNAL(rhythmboxPlaylistItemActivated(QString)),
+            this, SLOT(slotActiveRhythmboxPlaylist(QString)));
+    
 	//Setup colors: 
 	
 	//Foreground color
@@ -1089,4 +1093,12 @@ void MixxxView::slotActivateCheeseburger()
 
     //m_pTrackTableView->setModel(NULL);
     m_pTrackTableView->setModel(m_pRhythmboxTrackModel);
+}
+
+void MixxxView::slotActiveRhythmboxPlaylist(QString playlist)
+{
+    qDebug() << "Slotting it up with the RB playlist:" << playlist;
+    
+    m_pRhythmboxPlaylistModel->setPlaylist(playlist);
+    m_pTrackTableView->setModel(m_pRhythmboxPlaylistModel);
 }

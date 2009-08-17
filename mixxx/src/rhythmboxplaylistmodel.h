@@ -1,5 +1,5 @@
 /***************************************************************************
-                           rhythmboxtracksource.h
+                           rhythmboxPlaylistsource.h
                               -------------------
      begin                : 8/15/2009
      copyright            : (C) 2009 Albert Santoni
@@ -15,21 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RHYTHMBOXTRACKMODEL_H
-#define RHYTHMBOXTRACKMODEL_H
+#ifndef RHYTHMBOXPLAYLISTMODEL_H
+#define RHYTHMBOXPLAYLISTMODEL_H
 
 #include <QtSql>
 #include <QtXml>
 #include "trackmodel.h"
+#include "rhythmboxtrackmodel.h"
 
 class TrackInfoObject;
-class QSqlDatabase;
 
 
 /**
-   @author Albert Santoni
+   @author Phillip Whelan
+   Code copied originally from RhythmBoxTrackModel
 */
-class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
+class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
 {
     enum Columns {
         COLUMN_ARTIST = 0,
@@ -44,8 +45,8 @@ class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
 
     Q_OBJECT
     public:
-    RhythmboxTrackModel();
-    virtual ~RhythmboxTrackModel();
+    RhythmboxPlaylistModel(RhythmboxTrackModel *);
+    virtual ~RhythmboxPlaylistModel();
 
     //QAbstractTableModel stuff
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
@@ -54,14 +55,14 @@ class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
     virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
     virtual int columnCount(const QModelIndex& parent) const;
 
-    //Track Model stuff
+    //Playlist Model stuff
 	virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
 	virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual TrackInfoObject *getTrackByLocation(const QString& location) const;
 	virtual void search(const QString& searchText);
 	virtual void removeTrack(const QModelIndex& index);
 	virtual void addTrack(const QModelIndex& index, QString location);
-	
+	virtual QList<QString> getPlaylists();
+    virtual void setPlaylist(QString playlist);
 	
 /*
  	void scanPath(QString path);
@@ -80,8 +81,10 @@ signals:
  	void finishedLoading();
  
 private:
-    QDomNodeList m_entryNodes;
-    QMap <QString, QDomNode> m_mTracksByLocation;
+    QDomNodeList m_playlistNodes;
+    RhythmboxTrackModel *m_pRhythmbox;
+    QMap<QString, QDomNodeList> m_mPlaylists;
+    QString m_sCurrentPlaylist;
 };
 
 #endif
