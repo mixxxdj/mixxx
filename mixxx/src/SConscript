@@ -582,7 +582,7 @@ if platform == 'linux':
 		"""
 		env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
-        env.ParseConfig('pkg-config QtSql --silence-errors --cflags --libs')
+		env.ParseConfig('pkg-config QtSql --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
@@ -600,6 +600,7 @@ if platform == 'linux':
 		'QtSvg',
 		'QtSql',
 		'QtScript',
+		'QtXmlPatterns'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
