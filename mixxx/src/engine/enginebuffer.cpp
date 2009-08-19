@@ -161,7 +161,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
-    m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
+    
+    //m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
+    m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
     //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch =
         _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
@@ -235,8 +237,7 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     // Der... have to have a scale engine assigned to call setPitchIndpTimeStretch
     // -madjester
     
-    m_pScale = m_pScaleST;
-    ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+    //((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
     if (b == true)
     {
         m_pScale = m_pScaleST;
