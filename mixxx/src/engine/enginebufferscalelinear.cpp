@@ -29,6 +29,8 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_dTempo = 0.0f;
     m_fOldTempo = 1.0f;
     m_fOldBaseRate = 1.0f;
+    m_fPreviousL = 0.0f;
+    m_fPreviousR = 0.0f;
     
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
 }
@@ -100,14 +102,14 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     long unscaled_samples_needed = buf_size + (long)(floor((float)buf_size * ((float)fabs(m_dBaseRate) - 1.0)));
     unscaled_samples_needed = long(ceil(fabs(buf_size * m_dBaseRate)));
 
-    Q_ASSERT(buf_size >= RATE_LERP_LENGTH);
-    if (buf_size >= RATE_LERP_LENGTH) {
-        unscaled_samples_needed = ceil(
-            (buf_size - RATE_LERP_LENGTH) * fabs(m_dBaseRate) +
-            0.5f * RATE_LERP_LENGTH * (m_dBaseRate + m_fOldBaseRate));
-    } else {
+    // Q_ASSERT(buf_size >= RATE_LERP_LENGTH);
+    // if (buf_size >= RATE_LERP_LENGTH) {
+    //     unscaled_samples_needed = ceil(
+    //         (buf_size - RATE_LERP_LENGTH) * fabs(m_dBaseRate) +
+    //         0.5f * RATE_LERP_LENGTH * (m_dBaseRate + m_fOldBaseRate));
+    // } else {
             
-    }
+    // }
     //unscaled_samples_needed = buf_size + floor(buf_size * (fabs(m_dBaseRate) - 1.0f));
     
     if (!even(unscaled_samples_needed))
@@ -116,20 +118,23 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     Q_ASSERT(unscaled_samples_needed != 0);
     
     int buffer_size = 0;
-    double buffer_index= 0;
+    double buffer_index = 0;
 
-    // CSAMPLE previous_l = 0;
-    // CSAMPLE previous_r = 0;
+    long current_sample = 0;
+    long prev_sample = 0;
         
     for (int i = 0; i < buf_size;) {
-        long prev = floor(buffer_index);
-        if (!even(prev)) prev--;
-        long next = prev + 2;
+        prev_sample = current_sample;
+        current_sample = floor(buffer_index);
+        Q_ASSERT(current_sample % 2 == 0);
+        Q_ASSERT(current_sample >= 0);
 
-        Q_ASSERT(prev >= 0);
-        Q_ASSERT(next >= 0);
-                                                                       
-        if (next > buffer_size) {
+        if (prev_sample != current_sample) {
+            m_fPreviousL = buffer_int[prev_sample];
+            m_fPreviousR = buffer_int[prev_sample+1];
+        }
+        
+        if (current_sample+1 >= buffer_size) {
             Q_ASSERT(unscaled_samples_needed > 0);
             int samples_to_read = math_min(kiLinearScaleReadAheadLength,
                                            unscaled_samples_needed);
@@ -152,20 +157,17 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         }
         rate_add = rate_add_new;
 
-        CSAMPLE frac = new_playpos - floor(new_playpos);
-            
+        CSAMPLE frac = buffer_index - floor(buffer_index);
+                
         //Perform linear interpolation
-        buffer[i] = buffer_int[prev] + frac*(buffer_int[next] - buffer_int[prev]);
-        buffer[i+1] = buffer_int[prev+1] + frac*(buffer_int[next+1] - buffer_int[prev+1]);
+        buffer[i] = m_fPreviousL + frac * (buffer_int[current_sample] - m_fPreviousL);
+        buffer[i+1] = m_fPreviousR + frac * (buffer_int[current_sample+1] - m_fPreviousR);
         i += 2;
-
-        // buffer[i] = previous_l + frac*(buffer_int[next] - previous_l);
-        // buffer[i+1] = previous_r + frac*(buffer_int[next+1] - previous_r);
-        // previous_l = buffer_int[next];
-        // previous_r = buffer_int[next+1];
 
         new_playpos += rate_add;
         buffer_index += fabs(rate_add);
+
+        
     }
     
     Q_ASSERT(unscaled_samples_needed == 0);

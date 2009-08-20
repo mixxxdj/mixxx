@@ -51,6 +51,7 @@ private:
     
     /** Buffer for handling calls to ReadAheadManager */
     CSAMPLE *buffer_int;
+    CSAMPLE m_fPreviousL, m_fPreviousR;
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
 };
