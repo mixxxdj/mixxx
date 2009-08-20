@@ -1,9 +1,14 @@
 #include <QtCore>
-#include "enginebufferscale.h"
-#include "enginebufferscaledummy.h"
+
+#include "engine/enginebufferscaledummy.h"
+
+#include "engine/enginebufferscale.h"
+#include "engine/readaheadmanager.h"
 
 
-EngineBufferScaleDummy::EngineBufferScaleDummy() : EngineBufferScale()
+EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager)
+    : EngineBufferScale(),
+      m_pReadAheadManager(pReadAheadManager)
 {
 	new_playpos = 0.0f;
 }
@@ -44,31 +49,21 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
                                        CSAMPLE* pBase,
                                        unsigned long iBaseLength)
 {
-	unsigned long baseplaypos = ((long)playpos) % iBaseLength; // Playpos wraps within the base buffer
-													  // This is the position within base
 
-	long numSamplesToCopy = buf_size; // If we can copy a whole chunk
-	if ((baseplaypos + buf_size) > iBaseLength) 	  // At the end of a buffer, only copy as much as we can fit
-		numSamplesToCopy = (iBaseLength - baseplaypos); // Copy however many samples are left
-		
-	// Write to the modded position inside the base
-    // also remember to convert to bytes from samples
-	memcpy(buffer, &pBase[baseplaypos], numSamplesToCopy * sizeof(CSAMPLE));
+    int samples_remaining = buf_size;
+    CSAMPLE* buffer_back = buffer;
+    while (samples_remaining > 0) {
+        int read_samples = m_pReadAheadManager->getNextSamples(m_dBaseRate*m_dTempo,
+                                                               buffer_back,
+                                                               samples_remaining);
+        samples_remaining -= read_samples;
+        buffer_back += read_samples;
+    }
 
-	//If we've hit the end of the circular "base" buffer, copy the remaining samples
-	//that we need from the start of the circular buffer over.  
-	//In other words, pBase is a circular buffer and we need exactly buf_size 
-    //samples so we take some from the beggining
-	if (numSamplesToCopy < buf_size)
-	{
-	    //qDebug() << "Filling the rest of the buffer: " << numSamplesToCopy << buf_size - numSamplesToCopy;
-	    memcpy(&buffer[numSamplesToCopy], &pBase[0], (buf_size - numSamplesToCopy) * sizeof(CSAMPLE));
-	    numSamplesToCopy = buf_size;
-	}
-
-	//Update the "play position"
-	new_playpos = ((long)(playpos + numSamplesToCopy*m_dBaseRate*m_dTempo));
-	
+    if (m_dBaseRate * m_dTempo < 0)
+        new_playpos = -buf_size;
+    else 
+        new_playpos = buf_size;
 /*
         //START OF BASIC/ROCKSOLID LINEAR INTERPOLATION CODE
         

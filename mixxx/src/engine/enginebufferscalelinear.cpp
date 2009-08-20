@@ -90,73 +90,81 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_new = 2.*m_dBaseRate;
     float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new; 
-    int buffer_step = 0;
     
     m_fOldBaseRate = m_dBaseRate;           //Update the old base rate because we only need to
                                             //interpolate/ramp up the pitch changes once.
     
     // Determine position in read_buffer to start from
     new_playpos = playpos;
+
+    long unscaled_samples_needed = buf_size + (long)(floor((float)buf_size * ((float)fabs(m_dBaseRate) - 1.0)));
+
+    unscaled_samples_needed = long(ceil(fabs(buf_size * m_dBaseRate)));
+    //unscaled_samples_needed = buf_size + floor(buf_size * (fabs(m_dBaseRate) - 1.0f));
     
+    if (!even(unscaled_samples_needed))
+        unscaled_samples_needed++;
     
-    // Prepare buffer
-    CSAMPLE* pbuf = buffer;
-    long get_samples = buf_size + (long)(floor((float)buf_size * ((float)m_dBaseRate - 1.0)));
-    if ( !even(get_samples))
-        get_samples++;
+    Q_ASSERT(unscaled_samples_needed >= 0);
+    Q_ASSERT(unscaled_samples_needed != 0);
     
-    int i = 0;
-    
-    
-    while ( get_samples > 0 )
-    {
-        int iAvailSamples = m_pReadAheadManager
-                    ->getNextSamples((m_bBackwards ? -1.0f : 1.0f) * m_dBaseRate * m_dTempo,
-                                     buffer_int, math_min(kiLinearScaleReadAheadLength, get_samples));
+    int buffer_size = 0;
+    double buffer_index= 0;
+
+    // CSAMPLE previous_l = 0;
+    // CSAMPLE previous_r = 0;
         
-        get_samples -= iAvailSamples;
+    for (int i = 0; i < buf_size;) {
+        long prev = floor(buffer_index);
+        if (!even(prev)) prev--;
+        long next = prev + 2;
+
+        Q_ASSERT(prev >= 0);
+        Q_ASSERT(next >= 0);
         
-        
-        while (1)
-        {
-            i++; 
-            
-            long prev = (long)floor(new_playpos-playpos-(buffer_step*kiLinearScaleReadAheadLength)) % READBUFFERSIZE;
-            if (!even(prev)) prev--;
-            long next = (prev+2) % READBUFFERSIZE;
-            
-            // Break out of loop to get more samples
-            if ( next > iAvailSamples )
-                break;
-            
-            //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-            //prevvents the change from being discontinuous and helps improve sound
-            //quality.
-            if (i < RATE_LERP_LENGTH)
-            {
-                rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
-            }
-            else
-                rate_add = rate_add_new;
-            
-            
-            CSAMPLE frac = (new_playpos - floor(new_playpos))/2;
-            
-            //Perform linear interpolation
-            *pbuf++ = buffer_int[prev] + frac*(buffer_int[next] - buffer_int[prev]);
-            *pbuf++ = buffer_int[prev+1] + frac*(buffer_int[next+1] - buffer_int[prev+1]);
-            
-            
-            // Calculate playpos and execute the forward code in the fast-path
-            if ( !m_bBackwards )
-                new_playpos += (rate_add);
-            else
-                new_playpos -= (rate_add);
-            
+        /* Fetch enough audio into the internal buffer to access the next
+         * sample
+         */
+        if (next > buffer_size) {
+            Q_ASSERT(unscaled_samples_needed > 0);
+            int samples_to_read = math_min(kiLinearScaleReadAheadLength,
+                                           unscaled_samples_needed);
+            buffer_size = m_pReadAheadManager->getNextSamples(m_dBaseRate,
+                                                              buffer_int,
+                                                              samples_to_read);
+            unscaled_samples_needed -= buffer_size;
+            buffer_index = 0;
+            continue;
         }
-        
-        buffer_step++;
+
+        //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
+        //prevvents the change from being discontinuous and helps improve sound
+        //quality.
+        if (i < RATE_LERP_LENGTH) {
+            rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
+        }
+        else {
+            rate_add = rate_add_new;
+        }
+        rate_add = rate_add_new;
+
+        CSAMPLE frac = new_playpos - floor(new_playpos);
+            
+        //Perform linear interpolation
+        buffer[i] = buffer_int[prev] + frac*(buffer_int[next] - buffer_int[prev]);
+        buffer[i+1] = buffer_int[prev+1] + frac*(buffer_int[next+1] - buffer_int[prev+1]);
+        i += 2;
+
+        // buffer[i] = previous_l + frac*(buffer_int[next] - previous_l);
+        // buffer[i+1] = previous_r + frac*(buffer_int[next+1] - previous_r);
+        // previous_l = buffer_int[next];
+        // previous_r = buffer_int[next+1];
+
+        new_playpos += rate_add;
+        buffer_index += fabs(rate_add);
     }
+    
+    Q_ASSERT(unscaled_samples_needed == 0);
     
     return buffer;
 }
