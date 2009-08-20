@@ -22,10 +22,12 @@
 #include <qobject.h>
 #include "enginebufferscale.h"
 
+class ReadAheadManager;
+
 class EngineBufferScaleDummy : public EngineBufferScale 
 {
 public:
-    EngineBufferScaleDummy();
+    EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleDummy();
     
     /** Set base tempo, ie. normal playback speed. */
@@ -41,8 +43,9 @@ public:
                    unsigned long buf_size,
                    CSAMPLE* pBase,
                    unsigned long iBaseLength);
-    
-protected:
+
+private:
+    ReadAheadManager* m_pReadAheadManager;
 
 };
 
