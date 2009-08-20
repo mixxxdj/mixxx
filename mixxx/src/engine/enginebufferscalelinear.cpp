@@ -98,12 +98,20 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     new_playpos = playpos;
 
     long unscaled_samples_needed = buf_size + (long)(floor((float)buf_size * ((float)fabs(m_dBaseRate) - 1.0)));
+    unscaled_samples_needed = long(ceil(fabs(buf_size * m_dBaseRate)));
 
-    unscaled_samples_needed = long(fabs(buf_size * m_dBaseRate));
+    Q_ASSERT(buf_size >= RATE_LERP_LENGTH);
+    if (buf_size >= RATE_LERP_LENGTH) {
+        unscaled_samples_needed = ceil(
+            (buf_size - RATE_LERP_LENGTH) * fabs(m_dBaseRate) +
+            0.5f * RATE_LERP_LENGTH * (m_dBaseRate + m_fOldBaseRate));
+    } else {
+            
+    }
     //unscaled_samples_needed = buf_size + floor(buf_size * (fabs(m_dBaseRate) - 1.0f));
     
     if (!even(unscaled_samples_needed))
-        unscaled_samples_needed--;
+        unscaled_samples_needed++;
     Q_ASSERT(unscaled_samples_needed >= 0);
     Q_ASSERT(unscaled_samples_needed != 0);
     
@@ -142,6 +150,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         else {
             rate_add = rate_add_new;
         }
+        rate_add = rate_add_new;
 
         CSAMPLE frac = new_playpos - floor(new_playpos);
             
