@@ -50,6 +50,10 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
                                        unsigned long iBaseLength)
 {
 
+    if (m_dBaseRate * m_dTempo == 0.0f) {
+        memset(buffer, 0, sizeof(CSAMPLE) * buf_size);
+        return buffer;
+    }
     int samples_remaining = buf_size;
     CSAMPLE* buffer_back = buffer;
     while (samples_remaining > 0) {
@@ -60,10 +64,12 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
         buffer_back += read_samples;
     }
 
-    if (m_dBaseRate * m_dTempo < 0)
-        new_playpos = -buf_size;
-    else 
+    if (m_dBaseRate * m_dTempo < 0) {
+        new_playpos = -long(buf_size);
+    } else {
         new_playpos = buf_size;
+    }
+    
 /*
         //START OF BASIC/ROCKSOLID LINEAR INTERPOLATION CODE
         
