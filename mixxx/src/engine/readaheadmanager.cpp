@@ -86,7 +86,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     if (in_reverse) {
         // TODO(rryan) pull this into MixxxUtil or something
         CSAMPLE temp1, temp2;
-        for (int j = 0; j < samples_read/2; j++) {
+        for (int j = 0; j < samples_read/2; j += 2) {
             const int endpos = samples_read-1-j-1;
             temp1 = base_buffer[j];
             temp2 = base_buffer[j+1];
