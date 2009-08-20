@@ -124,6 +124,8 @@ public:
     QString getInfo() const;
     /** Set duration in seconds */
     void setDuration(int);
+    
+    /** Getter/Setter methods for metadata */
     /** Return title */
     QString getTitle() const;
     /** Set title */
@@ -132,6 +134,23 @@ public:
     QString getArtist() const;
     /** Set artist */
     void setArtist(QString);
+    /** Return album */
+    QString getAlbum() const;
+    /** Set album */
+    void setAlbum(QString);
+    /** Return Year */
+    QString getYear() const;
+    /** Set year */
+    void setYear(QString);
+    /** Return genre */
+    QString getGenre() const;
+    /** Set genre */
+    void setGenre(QString);
+    /** Return Track Number */
+    QString getTrackNumber() const;
+    /** Set Track Number */
+    void setTrackNumber(QString);
+    
     /** Return filename */
     QString getFilename() const;
     /** Set filename */
@@ -204,10 +223,21 @@ private:
     /** Full path to the file */
     QString m_sLocation;
 
+
+    /** Metadata */
+    /** Album */
+    QString m_sAlbum;
     /** Artist */
     QString m_sArtist;
     /** Title */
     QString m_sTitle;
+    /** Genre */
+    QString m_sGenre;
+    /** Year */
+    QString m_sYear;
+    /** Track Number */
+    QString m_sTrackNumber;
+    
     /** File type */
     QString m_sType;
     /** User comment */
