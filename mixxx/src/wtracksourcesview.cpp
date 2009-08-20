@@ -3,8 +3,12 @@
 #include <QtGui>
 #include "wtracksourcesview.h"
 
-WTrackSourcesView::WTrackSourcesView() : QListView()
+WTrackSourcesView::WTrackSourcesView() : QTreeView()
 {
+    //Set some properties
+    setHeaderHidden(true);
+    
+    //Connect some signals
     connect(this, SIGNAL(activated(const QModelIndex&)), 
             this, SLOT(activatedSignalProxy(const QModelIndex&)));
     connect(this, SIGNAL(clicked(const QModelIndex&)), 
@@ -25,6 +29,14 @@ void WTrackSourcesView::activatedSignalProxy(const QModelIndex& index)
     else if (model()->data(index).toString() == tr("Cheeseburger"))
     {
         emit(cheeseburgerItemActivated());
+    }
+    else if (model()->data(index).toString() == tr("Liberry"))
+    {
+        // Ignore
+    }
+    else
+    {
+        emit(rhythmboxPlaylistItemActivated(model()->data(index).toString()));
     }
 }
 

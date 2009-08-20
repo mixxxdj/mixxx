@@ -20,10 +20,14 @@ LibraryTableModel::LibraryTableModel(QWidget* parent, TrackCollection* pTrackCol
 	removeColumn(this->fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX));
 	removeColumn(this->fieldIndex(LIBRARYTABLE_SAMPLERATE));
 	removeColumn(this->fieldIndex(LIBRARYTABLE_CHANNELS));
+	removeColumn(this->fieldIndex(LIBRARYTABLE_TRACKNUMBER));
 
 	//Set the column heading labels, rename them for translations and have proper capitalization
     setHeaderData(this->fieldIndex(LIBRARYTABLE_ARTIST), Qt::Horizontal, tr("Artist"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_TITLE), Qt::Horizontal, tr("Title"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_ALBUM), Qt::Horizontal, tr("Album"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_GENRE), Qt::Horizontal, tr("Genre"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR), Qt::Horizontal, tr("Year"));            
     setHeaderData(this->fieldIndex(LIBRARYTABLE_LOCATION), Qt::Horizontal, tr("Location"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_COMMENT), Qt::Horizontal, tr("Comment"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_DURATION), Qt::Horizontal, tr("Duration"));

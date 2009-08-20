@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QtGui>
 
-class WTrackSourcesView : public QListView
+class WTrackSourcesView : public QTreeView
 {
     Q_OBJECT
     public:
@@ -18,6 +18,7 @@ class WTrackSourcesView : public QListView
     signals:
         void libraryItemActivated();
         void cheeseburgerItemActivated();
+        void rhythmboxPlaylistItemActivated(QString);
     private:
         
 };
