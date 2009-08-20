@@ -260,7 +260,6 @@ finally:
 sources = Split("""
                 
                 input.cpp
-                trackplaylistlist.cpp
                 mixxxkeyboard.cpp
                 configobject.cpp
                 controlobjectthread.cpp
@@ -281,7 +280,6 @@ sources = Split("""
                 dlgprefplaylist.cpp
                 dlgprefnomidi.cpp
                 dlgprefcontrols.cpp
-                dlgbpmtap.cpp
                 dlgprefbpm.cpp
                 dlgbpmscheme.cpp
                 dlgabout.cpp
@@ -374,7 +372,6 @@ sources = Split("""
                 peaklist.cpp
                 rotary.cpp
                 trackcollection.cpp
-                trackplaylist.cpp
                 wtracktableview.cpp
                 wtracksourcesview.cpp
                 tracksourcesmodel.cpp
@@ -382,7 +379,6 @@ sources = Split("""
                 browsetablemodel.cpp
               
                 xmlparse.cpp
-                trackimporter.cpp
                 parser.cpp
                 parserpls.cpp
                 parserm3u.cpp
@@ -417,7 +413,6 @@ sources = Split("""
                 recording/enginerecord.cpp
                 recording/writeaudiofile.cpp
                 wtracktablefilter.cpp
-                wplaylistlistmodel.cpp
                 durationdelegate.cpp
                 libraryscanner.cpp
                 libraryscannerdlg.cpp
