@@ -379,6 +379,9 @@ sources = Split("""
                 browsetablemodel.cpp
                 rhythmboxtrackmodel.cpp
                 rhythmboxplaylistmodel.cpp
+                library/libraryfeature.cpp
+                library/playlistfeature.cpp
+                library/sidebarmodel.cpp
               
                 xmlparse.cpp
                 parser.cpp
