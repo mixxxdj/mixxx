@@ -69,6 +69,10 @@
 #include "browsetablemodel.h"
 #include "tracksourcesmodel.h"
 
+// TODO(rryan) this shouldnt even be needed here, just temporary scaffolding
+#include "library/sidebarmodel.h"
+#include "library/playlistfeature.h"
+
 
 MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> * pConfig, Player* player1, Player* player2, 
 LibraryTableModel* pLibraryTableModel) : QWidget(parent)
@@ -984,51 +988,59 @@ void MixxxView::setupTabWidget(QDomNode node)
 void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
 	
-	if (m_pLibraryTrackSourcesModel == 0)
-	{
-		m_pLibraryTrackSourcesModel = new TrackSourcesModel();
-		m_pLibraryTrackSourcesView->setModel(m_pLibraryTrackSourcesModel);	
+    if (m_pLibraryTrackSourcesModel == 0) {
+	m_pLibraryTrackSourcesModel = new TrackSourcesModel();
+	if (false) {
+	    SidebarModel* sbm = new SidebarModel(this);
+	    sbm->addLibraryFeature(new PlaylistFeature());
+	    m_pLibraryTrackSourcesView->setModel(sbm);
+	    connect(m_pLibraryTrackSourcesView, SIGNAL(clicked(const QModelIndex&)),
+		    sbm, SLOT(clicked(const QModelIndex&)));
+	} else {
+	    m_pLibraryTrackSourcesView->setModel(m_pLibraryTrackSourcesModel);
 	}
-
+    }
+    
+    
     connect(m_pLibraryTrackSourcesView, SIGNAL(libraryItemActivated()),
             this, SLOT(slotActivateLibrary()));
     connect(m_pLibraryTrackSourcesView, SIGNAL(cheeseburgerItemActivated()),
             this, SLOT(slotActivateCheeseburger()));
-
-	//Setup colors: 
-	
-	//Foreground color
+    
+    //Setup colors: 
+    
+    //Foreground color
     QColor fgc(0,255,0);
-    if (!WWidget::selectNode(node, "FgColor").isNull())
-    {
-        fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-		
-		//m_pLibraryTrackSourcesView->setForegroundColor(WSkinColor::getCorrectColor(fgc));
+    if (!WWidget::selectNode(node, "FgColor").isNull()) {
 	
-	    // Row colors
-	    if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
+	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+	
+	//m_pLibraryTrackSourcesView->setForegroundColor(WSkinColor::getCorrectColor(fgc));
+	
+	// Row colors
+	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
 	    {
 	        QColor r1;
 	        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-			r1 = WSkinColor::getCorrectColor(r1);
-		    QColor r2;
-		    r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-			r2 = WSkinColor::getCorrectColor(r2);
+		r1 = WSkinColor::getCorrectColor(r1);
+		QColor r2;
+		r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+		r2 = WSkinColor::getCorrectColor(r2);
 		
-			// For now make text the inverse of the background so it's readable
-			// In the future this should be configurable from the skin with this
-			// as the fallback option
-			QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-
+		// For now make text the inverse of the background so it's readable
+		// In the future this should be configurable from the skin with this
+		// as the fallback option
+		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
+		
 	        QPalette Rowpalette = palette();
 	        Rowpalette.setColor(QPalette::Base, r1);
 	        Rowpalette.setColor(QPalette::AlternateBase, r2);
-			Rowpalette.setColor(QPalette::Text, text);
-	
+		Rowpalette.setColor(QPalette::Text, text);
+		
 	        m_pLibraryTrackSourcesView->setPalette(Rowpalette);
 	    }
-	}
-
+    }
+    
 } 
 
 WTrackTableView* MixxxView::getTrackTableView()
