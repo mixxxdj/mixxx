@@ -18,6 +18,7 @@ class WTrackSourcesView : public QTreeView
     signals:
         void libraryItemActivated();
         void cheeseburgerItemActivated();
+        void rhythmboxPlaylistItemActivated(QString);
     private:
         
 };
