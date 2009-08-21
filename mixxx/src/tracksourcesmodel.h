@@ -5,14 +5,18 @@
 #include <QtCore>
 #include <QtGui>
 
+#include "rhythmboxtrackmodel.h"
+#include "rhythmboxplaylistmodel.h"
+
 class TrackSourcesModel : public QStandardItemModel
 {
     public:
-        TrackSourcesModel();
+        TrackSourcesModel(RhythmboxTrackModel *, RhythmboxPlaylistModel *);
         ~TrackSourcesModel();
     private:
         QStandardItem* m_pLibraryItem;
         QStandardItem* m_pCheeseburgerItem;
         QStandardItem* m_pRhythmboxLibraryItem;
+        QMap<QString, QStandardItem *> m_pRhythmboxPlaylistItems;
 };
 #endif

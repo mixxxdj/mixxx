@@ -66,6 +66,7 @@
 #include "defs_promo.h"
 #include "librarytablemodel.h"
 #include "rhythmboxtrackmodel.h"
+#include "rhythmboxplaylistmodel.h"
 #include "browsetablemodel.h"
 #include "tracksourcesmodel.h"
 
@@ -83,6 +84,7 @@ LibraryTableModel* pLibraryTableModel) : QWidget(parent)
     m_pPlayer2 = player2;
     m_pLibraryTableModel = pLibraryTableModel;
     m_pRhythmboxTrackModel = new RhythmboxTrackModel();
+    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -989,7 +991,7 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
 	
     if (m_pLibraryTrackSourcesModel == 0) {
-	m_pLibraryTrackSourcesModel = new TrackSourcesModel();
+	m_pLibraryTrackSourcesModel = new TrackSourcesModel(m_pRhythmboxTrackModel, m_pRhythmboxPlaylistModel);
 	if (false) {
 	    SidebarModel* sbm = new SidebarModel(this);
 	    sbm->addLibraryFeature(new PlaylistFeature());
@@ -1000,15 +1002,15 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 	    m_pLibraryTrackSourcesView->setModel(m_pLibraryTrackSourcesModel);
 	}
     }
-    
-    
+
     connect(m_pLibraryTrackSourcesView, SIGNAL(libraryItemActivated()),
-            this, SLOT(slotActivateLibrary()));
+	    this, SLOT(slotActivateLibrary()));
     connect(m_pLibraryTrackSourcesView, SIGNAL(cheeseburgerItemActivated()),
-            this, SLOT(slotActivateCheeseburger()));
+	    this, SLOT(slotActivateCheeseburger()));
+    connect(m_pLibraryTrackSourcesView, SIGNAL(rhythmboxPlaylistItemActivated(QString)),
+            this, SLOT(slotActiveRhythmboxPlaylist(QString)));
     
     //Setup colors: 
-    
     //Foreground color
     QColor fgc(0,255,0);
     if (!WWidget::selectNode(node, "FgColor").isNull()) {
@@ -1101,4 +1103,12 @@ void MixxxView::slotActivateCheeseburger()
 
     //m_pTrackTableView->setModel(NULL);
     m_pTrackTableView->setModel(m_pRhythmboxTrackModel);
+}
+
+void MixxxView::slotActiveRhythmboxPlaylist(QString playlist)
+{
+    qDebug() << "Slotting it up with the RB playlist:" << playlist;
+    
+    m_pRhythmboxPlaylistModel->setPlaylist(playlist);
+    m_pTrackTableView->setModel(m_pRhythmboxPlaylistModel);
 }

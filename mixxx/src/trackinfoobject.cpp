@@ -27,7 +27,6 @@
 #include "bpm/bpmscheme.h"
 #include "bpm/bpmreceiver.h"
 #include "soundsourceproxy.h"
-#include "trackplaylist.h"
 //#include "wtracktable.h"
 //#include "wtracktableitem.h"
 
