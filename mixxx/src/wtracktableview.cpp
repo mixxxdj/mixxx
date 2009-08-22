@@ -6,8 +6,8 @@
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "trackmodel.h"
-#include "librarytablemodel.h"
+#include "library/trackmodel.h"
+#include "library/librarytablemodel.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "wtracktableview.h"
