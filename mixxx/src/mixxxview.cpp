@@ -49,7 +49,6 @@
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
-#include "trackcollection.h"
 #include "trackinfoobject.h"
 #include "player.h"
 
@@ -64,11 +63,12 @@
 #include "ladspaview.h"
 #endif
 #include "defs_promo.h"
-#include "librarytablemodel.h"
-#include "rhythmboxtrackmodel.h"
-#include "rhythmboxplaylistmodel.h"
-#include "browsetablemodel.h"
-#include "tracksourcesmodel.h"
+#include "library/trackcollection.h"
+#include "library/librarytablemodel.h"
+#include "library/rhythmboxtrackmodel.h"
+#include "library/rhythmboxplaylistmodel.h"
+#include "library/browsetablemodel.h"
+#include "library/tracksourcesmodel.h"
 
 // TODO(rryan) this shouldnt even be needed here, just temporary scaffolding
 #include "library/sidebarmodel.h"
