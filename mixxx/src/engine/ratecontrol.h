@@ -9,7 +9,7 @@
 #include "configobject.h"
 #include "engine/enginecontrol.h"
 
-const int RATE_TEMP_STEP = 250.;
+const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
 
 class Rotary;
@@ -38,7 +38,7 @@ public:
     static void setPerm(double v);
     /** Set rate change when perm rate small button is pressed */
     static void setPermSmall(double v);
-
+    
 public slots:
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
@@ -54,6 +54,17 @@ private:
     double getJogFactor();
     double getWheelFactor();
     double getScratchFactor();
+    
+    /** Set rate change of the temporary pitch rate */
+    void setRateTemp(double v);
+    /** Add a value to the temporary pitch rate */
+    void addRateTemp(double v);
+    /** Subtract a value from the temporary pitch rate */
+    void subRateTemp(double v);
+    /** Reset the temporary pitch rate */
+    void resetRateTemp(void);
+    /** Get the 'Raw' Temp Rate */
+    double getTempRate(void);
     
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
@@ -84,6 +95,8 @@ private:
     double m_dTempRateChange;
     /** Set the Temporary Rate Change Mode */
     bool m_bRateTempMode;
+    /** Temporary pitchrate, added to the permanent rate for calculateRate */
+    double m_dRateTemp;
     
     /** Old playback rate. Stored in this variable while a temp pitch change
       * buttons is in effect. It does not work to just decrease the pitch slider

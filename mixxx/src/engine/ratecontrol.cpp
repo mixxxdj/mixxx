@@ -21,7 +21,8 @@ RateControl::RateControl(const char* _group,
     EngineControl(_group, _config),
     m_bTempPress(false), m_bTempDown(false), m_bTempRelease(false),
     m_bRateTempMode(true),
-    m_dOldRate(0.0f) 
+    m_dOldRate(0.0f),
+    m_dRateTemp(0.0)
 {
     
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -308,15 +309,17 @@ double RateControl::calculateRate(double baserate, bool paused) {
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
-        // There are three rate effects we apply: wheel, scratch, and jog.
+        // There are four rate effects we apply: wheel, scratch, jog and temp.
         // Wheel: a linear additive effect
         // Scratch: a rate multiplier
         // Jog: a linear additive effect whose value is filtered 
-            
+        // Temp: pitch bend
+
         rate = (1. + getRawRate()) * baserate;
         rate += wheelFactor;
         rate *= scratchFactor;
         rate += jogFactor;
+        rate += (getTempRate()) * baserate;
 
         // If we are reversing, flip the rate.
         if (m_pReverseButton->get()) {
@@ -366,22 +369,18 @@ double RateControl::process(const double rate,
         else 
         {
             // set the rate change for the new ramped pitchbending behaviour
-            m_dTempRateChange = m_pRateDir->get() *
-                            (
-                                ( m_dTemp / (100. * m_pRateRange->get())) /
-                                ( RATE_TEMP_STEP / countSamples )
-                            );
+            m_dTempRateChange = ((double)countSamples / (double)RATE_TEMP_STEP);
         }
-            
+        
     }
     
     if ((m_bTempPress) && (m_bTempRelease == false) && (m_bRateTempMode)) 
     {
         // apply ramped pitchbending
         if ( buttonRateTempUp->get())
-            m_pRateSlider->add(m_dTempRateChange);
+            addRateTemp(m_dTempRateChange);
         if ( buttonRateTempDown->get())
-            m_pRateSlider->sub(m_dTempRateChange);
+            subRateTemp(m_dTempRateChange);
     }
     
     if ((m_bTempRelease))
@@ -390,8 +389,39 @@ double RateControl::process(const double rate,
         m_bTempPress = false;
         m_bTempRelease = false;
         
-        m_pRateSlider->set(m_dOldRate);
+        if ( m_bRateTempMode == 0 )
+            m_pRateSlider->set(m_dOldRate);
+        else
+           resetRateTemp();
     }
     
     return 1;
+}
+
+double RateControl::getTempRate() {
+    return (m_pRateDir->get() * (m_dRateTemp * m_pRateRange->get()));
+}
+
+void RateControl::setRateTemp(double v)
+{
+    m_dRateTemp = v;
+    if ( m_dRateTemp < -1.0 )
+        m_dRateTemp = -1.0;
+    if ( m_dRateTemp > 1.0 )
+        m_dRateTemp = 1.0; 
+}
+
+void RateControl::addRateTemp(double v)
+{
+    setRateTemp(m_dRateTemp + v);
+}
+
+void RateControl::subRateTemp(double v)
+{
+    setRateTemp(m_dRateTemp - v);
+}
+
+void RateControl::resetRateTemp(void)
+{
+    setRateTemp(0.0);
 }
