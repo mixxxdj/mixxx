@@ -18,6 +18,8 @@ public:
     virtual ~SidebarModel();
     
     void addLibraryFeature(LibraryFeature* feature);
+    QModelIndex getDefaultSelection();
+    void activateDefaultSelection();
     
     // Required for QAbstractItemModel
     QModelIndex index(int row, int column,

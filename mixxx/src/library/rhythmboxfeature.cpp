@@ -15,7 +15,7 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 QVariant RhythmboxFeature::title() {
-    return "Rhythmbox";
+    return tr("Rhythmbox");
 }
 
 QIcon RhythmboxFeature::getIcon() {
