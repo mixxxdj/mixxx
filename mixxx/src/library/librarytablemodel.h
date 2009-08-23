@@ -30,18 +30,18 @@ const QString LIBRARYTABLE_CHANNELS = "channels";
 
 class LibraryTableModel : public QSqlTableModel, public virtual TrackModel
 {
-    public:
-        LibraryTableModel(QWidget* parent, TrackCollection* pTrackCollection);
-        virtual ~LibraryTableModel();
-        virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
-        virtual QString getTrackLocation(const QModelIndex& index) const;
-		virtual void search(const QString& searchText);
-		virtual void removeTrack(const QModelIndex& index);
-		virtual void addTrack(const QModelIndex& index, QString location);
-		QMimeData* mimeData(const QModelIndexList &indexes) const;
-		Qt::ItemFlags flags(const QModelIndex &index) const;
-    private:
-        TrackCollection* m_pTrackCollection;
+public:
+    LibraryTableModel(QWidget* parent, TrackCollection* pTrackCollection);
+    virtual ~LibraryTableModel();
+    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual void search(const QString& searchText);
+    virtual void removeTrack(const QModelIndex& index);
+    virtual void addTrack(const QModelIndex& index, QString location);
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+private:
+    TrackCollection* m_pTrackCollection;
 };
 
 #endif

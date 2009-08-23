@@ -197,10 +197,10 @@ TrackInfoObject * RhythmboxTrackModel::getTrack(const QModelIndex& index) const
 
 TrackInfoObject * RhythmboxTrackModel::getTrackByLocation(const QString& location) const
 {
-    TrackInfoObject *track = new TrackInfoObject();
-    
     if ( !m_mTracksByLocation.contains(location))
         return NULL;
+
+    TrackInfoObject *track = new TrackInfoObject();
     
     QDomNode songNode = m_mTracksByLocation[location];
     track->setLocation(QUrl(songNode.firstChildElement("location").text()).toLocalFile());

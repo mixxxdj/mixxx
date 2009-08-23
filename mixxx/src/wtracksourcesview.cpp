@@ -9,10 +9,10 @@ WTrackSourcesView::WTrackSourcesView() : QTreeView()
     setHeaderHidden(true);
     
     //Connect some signals
-    connect(this, SIGNAL(activated(const QModelIndex&)), 
-            this, SLOT(activatedSignalProxy(const QModelIndex&)));
-    connect(this, SIGNAL(clicked(const QModelIndex&)), 
-            this, SLOT(activatedSignalProxy(const QModelIndex&)));
+    // connect(this, SIGNAL(activated(const QModelIndex&)), 
+    //         this, SLOT(activatedSignalProxy(const QModelIndex&)));
+    // connect(this, SIGNAL(clicked(const QModelIndex&)), 
+    //         this, SLOT(activatedSignalProxy(const QModelIndex&)));
 }
 
 WTrackSourcesView::~WTrackSourcesView()

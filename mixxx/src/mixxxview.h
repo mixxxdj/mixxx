@@ -57,7 +57,7 @@ class WaveformRenderer;
 class Player;
 class TrackInfoObject;
 class QStandardItemModel;
-class LibraryTableModel;
+class Library;
 class RhythmboxTrackModel;
 class RhythmboxPlaylistModel;
 
@@ -72,7 +72,7 @@ public:
     MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, 
               QString qSkinPath, ConfigObject<ConfigValue> *pConfig, 
               Player* player1, Player* player2, 
-              LibraryTableModel* pLibraryTableModel);
+              Library* pLibrary);
     ~MixxxView();
 
     /** Check if direct rendering is not available, and display warning */
@@ -111,9 +111,6 @@ public slots:
 	void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
 	void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
 	void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
-    void slotActivateLibrary();
-    void slotActivateCheeseburger();
-    void slotActiveRhythmboxPlaylist(QString);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
@@ -150,14 +147,8 @@ private:
     WTrackSourcesView *m_pLibraryTrackSourcesView;
 	/** The splitter widget that contains the library panes */
 	QSplitter *m_pSplitter; 
-	/** A pointer to the data model representing the song library */
-	LibraryTableModel *m_pLibraryTableModel;
-	/** A pointer to a data model wrapping Rhythmbox's track database */
-	RhythmboxTrackModel *m_pRhythmboxTrackModel;
-    /** A pointer to a data model wrapping Rhythmbox's playlist database */
-    RhythmboxPlaylistModel *m_pRhythmboxPlaylistModel;
-	/** The data model representing the list of library track sources */
-	QStandardItemModel *m_pLibraryTrackSourcesModel;
+    // The library manager
+    Library* m_pLibrary;
 
 	Player* m_pPlayer1;
 	Player* m_pPlayer2;

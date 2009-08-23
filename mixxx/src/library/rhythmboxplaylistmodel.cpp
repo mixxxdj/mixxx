@@ -28,7 +28,8 @@
 #include "defs_audiofiles.h"
 
 RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) :
-    m_pRhythmbox(Rhythhmbox)
+    m_pRhythmbox(Rhythhmbox),
+    m_sCurrentPlaylist("")
 {
     int idx = 0;
     
@@ -219,6 +220,14 @@ TrackInfoObject * RhythmboxPlaylistModel::getTrack(const QModelIndex& index) con
 QList<QString> RhythmboxPlaylistModel::getPlaylists()
 {
     return m_mPlaylists.keys();
+}
+
+int RhythmboxPlaylistModel::numPlaylists() {
+    return m_mPlaylists.size();
+}
+
+QString RhythmboxPlaylistModel::playlistTitle(int n) {
+    return m_mPlaylists.keys().at(n);
 }
 
 void RhythmboxPlaylistModel::setPlaylist(QString playlist)

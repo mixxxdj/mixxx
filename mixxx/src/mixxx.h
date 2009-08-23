@@ -73,11 +73,9 @@ class BpmDetector;
 class QSplashScreen;
 class ScriptEngine;
 class Player;
-class LibraryTableModel;
-class TrackCollection;
 class LibraryScanner;
 class AnalyserQueue;
-
+class Library;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -179,11 +177,9 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueKbd> *kbdconfig;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
+    // The library management object
+    Library* m_pLibrary;
 
-    /** Table model that displays the track library */
-    LibraryTableModel* m_pLibraryTableModel;
-    /** Track database (song library) */
-    TrackCollection* m_pTrackCollection;
     /** file_menu contains all items of the menubar entry "File" */
     QMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */

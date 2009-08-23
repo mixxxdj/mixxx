@@ -5,8 +5,10 @@
 #include "librarytablemodel.h"
 
 
-LibraryTableModel::LibraryTableModel(QWidget* parent, TrackCollection* pTrackCollection) : TrackModel(), QSqlTableModel(parent, pTrackCollection->getDatabase())
-{
+LibraryTableModel::LibraryTableModel(QWidget* parent,
+                                     TrackCollection* pTrackCollection)
+    : TrackModel(),
+      QSqlTableModel(parent, pTrackCollection->getDatabase()) {
 	m_pTrackCollection = pTrackCollection;
 
 	setTable("library");

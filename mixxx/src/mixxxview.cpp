@@ -38,7 +38,7 @@
 #include "widget/wsearchlineedit.h"
 #include "wtracktableview.h"
 #include "wtracksourcesview.h"
-#include "durationdelegate.h"
+
 
 #include "widget/woverview.h"
 #include "mixxxkeyboard.h"
@@ -63,6 +63,7 @@
 #include "ladspaview.h"
 #endif
 #include "defs_promo.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 #include "library/rhythmboxtrackmodel.h"
@@ -73,18 +74,18 @@
 // TODO(rryan) this shouldnt even be needed here, just temporary scaffolding
 #include "library/sidebarmodel.h"
 #include "library/playlistfeature.h"
+#include "library/rhythmboxfeature.h"
 
 
-MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> * pConfig, Player* player1, Player* player2, 
-LibraryTableModel* pLibraryTableModel) : QWidget(parent)
-{
+MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
+		     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
+		     Player* player1, Player* player2,
+		     Library* pLibrary) : QWidget(parent) {
     view = 0;
     m_pconfig = pConfig;
     m_pPlayer1 = player1;
     m_pPlayer2 = player2;
-    m_pLibraryTableModel = pLibraryTableModel;
-    m_pRhythmboxTrackModel = new RhythmboxTrackModel();
-    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
+    m_pLibrary = pLibrary;
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -127,7 +128,7 @@ LibraryTableModel* pLibraryTableModel) : QWidget(parent)
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
     m_pLibraryTrackSourcesView = 0;
-    m_pLibraryTrackSourcesModel = 0;
+
 
     setupColorScheme(docElem, pConfig);
 
@@ -797,7 +798,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidget = new QStackedWidget(this);
 
                     //Create the pages that go in the tab widget
-                    m_pTabWidgetLibraryPage = new QWidget();
                     m_pTabWidgetLibraryPage = new QWidget(this);
                     //m_pTabWidgetEffectsPage = new QWidget();
                     //m_pDlgLADSPA = new DlgLADSPA(this);
@@ -815,20 +815,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (m_pTrackTableView == 0) {
                     m_pTrackTableView = new WTrackTableView(this, pConfig);
 
-		    //m_pTrackTableView->setModel(new BrowseTableModel());
-		    m_pTrackTableView->setModel(m_pLibraryTableModel);
- 	            
-		    //Set up custom view delegates to display things in the track table in special ways.
-		    const int durationColumnIndex = m_pLibraryTableModel->fieldIndex(LIBRARYTABLE_DURATION);
-		    //Set up the duration delegate to handle displaying the track durations in hh:mm:ss rather than what's
-		    //pulled from the database (which is just the duration in seconds).
-		    DurationDelegate *delegate = new DurationDelegate();
-		    m_pTrackTableView->setItemDelegateForColumn(durationColumnIndex, delegate);
-		    
-		    m_pTrackTableView->restoreVScrollBarPos(); //Needs to be done after the data model is set.
-		    //Also note that calling restoreVScrollBarPos() here seems to slow down Mixxx's startup
-		    //somewhat. Might be causing some massive SQL query to run at startup.
-		    
 		    //Add the library page to the tab widget.
 		    // TODO(asantoni) : this used to be addTab
 		    //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
@@ -842,9 +828,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		
 		if (m_pLibraryTrackSourcesView == 0) {
 		    m_pLibraryTrackSourcesView = new WTrackSourcesView();
-                 	
 		    setupTrackSourceViewWidget(node);
 		}
+
+		m_pLibrary->bindWidget(m_pLibraryTrackSourcesView,
+				       m_pTrackTableView);
  
 		if (m_pSplitter == 0) {
 		    m_pSplitter = new QSplitter();
@@ -989,27 +977,7 @@ void MixxxView::setupTabWidget(QDomNode node)
 
 void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
-	
-    if (m_pLibraryTrackSourcesModel == 0) {
-	m_pLibraryTrackSourcesModel = new TrackSourcesModel(m_pRhythmboxTrackModel, m_pRhythmboxPlaylistModel);
-	if (false) {
-	    SidebarModel* sbm = new SidebarModel(this);
-	    sbm->addLibraryFeature(new PlaylistFeature());
-	    m_pLibraryTrackSourcesView->setModel(sbm);
-	    connect(m_pLibraryTrackSourcesView, SIGNAL(clicked(const QModelIndex&)),
-		    sbm, SLOT(clicked(const QModelIndex&)));
-	} else {
-	    m_pLibraryTrackSourcesView->setModel(m_pLibraryTrackSourcesModel);
-	}
-    }
 
-    connect(m_pLibraryTrackSourcesView, SIGNAL(libraryItemActivated()),
-	    this, SLOT(slotActivateLibrary()));
-    connect(m_pLibraryTrackSourcesView, SIGNAL(cheeseburgerItemActivated()),
-	    this, SLOT(slotActivateCheeseburger()));
-    connect(m_pLibraryTrackSourcesView, SIGNAL(rhythmboxPlaylistItemActivated(QString)),
-            this, SLOT(slotActiveRhythmboxPlaylist(QString)));
-    
     //Setup colors: 
     //Foreground color
     QColor fgc(0,255,0);
@@ -1089,26 +1057,3 @@ void MixxxView::slotUpdateTrackTextCh2(TrackInfoObject* pTrack)
 		m_pTextCh2->setText(pTrack->getInfo());
 }
 
-void MixxxView::slotActivateLibrary()
-{
-    qDebug() << "Activating library model...";
-
-    //Show the library in the track table.
-    m_pTrackTableView->setModel(m_pLibraryTableModel);
-}
-
-void MixxxView::slotActivateCheeseburger()
-{
-    qDebug() << "I can has cheeseburger data model?";
-
-    //m_pTrackTableView->setModel(NULL);
-    m_pTrackTableView->setModel(m_pRhythmboxTrackModel);
-}
-
-void MixxxView::slotActiveRhythmboxPlaylist(QString playlist)
-{
-    qDebug() << "Slotting it up with the RB playlist:" << playlist;
-    
-    m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    m_pTrackTableView->setModel(m_pRhythmboxPlaylistModel);
-}
