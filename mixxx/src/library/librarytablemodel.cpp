@@ -5,7 +5,7 @@
 #include "librarytablemodel.h"
 
 
-LibraryTableModel::LibraryTableModel(QWidget* parent,
+LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
     : TrackModel(),
       QSqlTableModel(parent, pTrackCollection->getDatabase()) {

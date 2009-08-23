@@ -16,6 +16,18 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
 }
 
+QModelIndex SidebarModel::getDefaultSelection() {
+    if (m_sFeatures.size() == 0)
+        return QModelIndex();
+    return createIndex(0, 0, this);
+}
+
+void SidebarModel::activateDefaultSelection() {
+    if (m_sFeatures.size() > 0) {
+        m_sFeatures[0]->activate();
+    }
+}
+
 QModelIndex SidebarModel::index(int row, int column,
                                 const QModelIndex& parent) const {
     //qDebug("SidebarModel::index row=%d column=%d parent=%8x", row, column, &parent);

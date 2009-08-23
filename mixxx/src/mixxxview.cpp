@@ -69,13 +69,6 @@
 #include "library/rhythmboxtrackmodel.h"
 #include "library/rhythmboxplaylistmodel.h"
 #include "library/browsetablemodel.h"
-#include "library/tracksourcesmodel.h"
-
-// TODO(rryan) this shouldnt even be needed here, just temporary scaffolding
-#include "library/sidebarmodel.h"
-#include "library/playlistfeature.h"
-#include "library/rhythmboxfeature.h"
-
 
 MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 		     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,

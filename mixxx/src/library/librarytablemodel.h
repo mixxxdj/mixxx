@@ -31,7 +31,7 @@ const QString LIBRARYTABLE_CHANNELS = "channels";
 class LibraryTableModel : public QSqlTableModel, public virtual TrackModel
 {
 public:
-    LibraryTableModel(QWidget* parent, TrackCollection* pTrackCollection);
+    LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~LibraryTableModel();
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
