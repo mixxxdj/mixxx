@@ -63,6 +63,10 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
 	virtual void addTrack(const QModelIndex& index, QString location);
 	virtual QList<QString> getPlaylists();
     virtual void setPlaylist(QString playlist);
+
+    int numPlaylists();
+    QString playlistTitle(int n);
+    
 	
 /*
  	void scanPath(QString path);

@@ -4,7 +4,6 @@
 #ifndef PLAYLISTFEATURE_H
 #define PLAYLISTFEATURE_H
 
-#include <QObject>
 #include <QList>
 
 #include "library/libraryfeature.h"

@@ -38,7 +38,7 @@
 
 #include "player.h"
 #include "wtracktableview.h"
-#include "library/trackcollection.h"
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
 
@@ -197,13 +197,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame;
     setCentralWidget(frame);
-    
-    //Create the track database            
-    m_pTrackCollection = new TrackCollection();
-    
-    //Create the data models that expose the track database.
-    m_pLibraryTableModel = new LibraryTableModel(NULL, m_pTrackCollection);
 
+    m_pLibrary = new Library(this);
+    
 	//Create the "players" (virtual playback decks)
 	m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
 	m_pPlayer2 = new Player(config, buffer2, "[Channel2]");	
@@ -211,15 +207,17 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 	//Connect the player to the track collection so that when a track is unloaded, it's data
 	//(eg. waveform summary) is saved back to the database.	
 	connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pTrackCollection, SLOT(updateTrackInDatabase(TrackInfoObject*)));
+            m_pLibrary->getTrackCollection(),
+            SLOT(updateTrackInDatabase(TrackInfoObject*)));
 	connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pTrackCollection, SLOT(updateTrackInDatabase(TrackInfoObject*)));
+            m_pLibrary->getTrackCollection(),
+            SLOT(updateTrackInDatabase(TrackInfoObject*)));
 	
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
-    				   m_pLibraryTableModel);
+    				   m_pLibrary);
 
     //Scan the library directory. FIXME: Should be only when stuff's changed... or in background
-    m_pLibraryScanner = new LibraryScanner(m_pTrackCollection);
+    m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
     m_pLibraryScanner->scan(config->getValueString(ConfigKey("[Playlist]","Directory")));
 
     // Call inits to invoke all other construction parts
@@ -1254,7 +1252,7 @@ void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
 void MixxxApp::slotLoadPlayer1(QString location)
 {
 	// Try to get TrackInfoObject* from library, identified by location.
-	TrackInfoObject* pTrack = m_pTrackCollection->getTrack(location);
+	TrackInfoObject* pTrack = m_pLibrary->getTrackCollection()->getTrack(location);
 	// If not, create a new TrackInfoObject*
 	if (pTrack == NULL)
 	{
@@ -1267,7 +1265,7 @@ void MixxxApp::slotLoadPlayer1(QString location)
 void MixxxApp::slotLoadPlayer2(QString location)
 {
 	// Try to get TrackInfoObject* from library, identified by location.
-	TrackInfoObject* pTrack = m_pTrackCollection->getTrack(location);
+	TrackInfoObject* pTrack = m_pLibrary->getTrackCollection()->getTrack(location);
 	// If not, create a new TrackInfoObject*
 	if (pTrack == NULL)
 	{

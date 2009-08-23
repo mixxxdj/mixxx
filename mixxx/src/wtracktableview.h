@@ -3,10 +3,12 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QAbstractItemModel>
 
 #include "configobject.h"
 
 class TrackInfoObject;
+class TrackModel;
 
 const QString WTRACKTABLEVIEW_HEADERSTATE_KEY = "HeaderState"; /** ConfigValue key for QTable headerview state */
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -26,6 +28,7 @@ public slots:
     void slotSearch(const QString& searchText);
     void saveVScrollBarPos();
     void restoreVScrollBarPos();
+    void loadTrackModel(QAbstractItemModel* model);
 private slots:
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotLoadPlayer1();

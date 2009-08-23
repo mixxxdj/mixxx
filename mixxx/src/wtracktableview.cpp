@@ -87,6 +87,11 @@ WTrackTableView::~WTrackTableView()
  	delete m_pPropertiesAct;
  	//delete m_pRenamePlaylistAct;
 }
+
+void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    setModel(model);
+}
  
 void WTrackTableView::createActions()
 {
