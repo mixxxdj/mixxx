@@ -76,10 +76,14 @@ WTrackTableView::~WTrackTableView()
     QByteArray headerState = this->horizontalHeader()->saveState();
     QByteArray headerStateBase64 = headerState.toBase64();
     QString headerStateString = QString(headerStateBase64);
-    m_pConfig->set(ConfigKey(LIBRARY_CONFIGVALUE, WTRACKTABLEVIEW_HEADERSTATE_KEY), ConfigValue(headerStateString));
+    m_pConfig->set(ConfigKey(LIBRARY_CONFIGVALUE,
+                             WTRACKTABLEVIEW_HEADERSTATE_KEY),
+                   ConfigValue(headerStateString));
  
     //Save the vertical scrollbar position.
-    m_pConfig->set(ConfigKey(LIBRARY_CONFIGVALUE, WTRACKTABLEVIEW_VSCROLLBARPOS_KEY), ConfigValue(this->verticalScrollBar()->value()));
+    m_pConfig->set(ConfigKey(LIBRARY_CONFIGVALUE,
+                             WTRACKTABLEVIEW_VSCROLLBARPOS_KEY),
+                   ConfigValue(this->verticalScrollBar()->value()));
  
  	delete m_pPlayQueueAct;
  	delete m_pPlayer1Act;
@@ -109,7 +113,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //Needs to be done after the data model is set. Also note that calling
     //restoreVScrollBarPos() here seems to slow down Mixxx's startup
     //somewhat. Might be causing some massive SQL query to run at startup.
-    pTableView->restoreVScrollBarPos();
+    //restoreVScrollBarPos();
 
 }
  

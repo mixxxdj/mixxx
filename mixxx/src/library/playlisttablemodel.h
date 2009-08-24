@@ -2,6 +2,7 @@
 #define PLAYLISTTABLEMODEL_H
 
 #include <QtSql>
+#include <QItemDelegate>
 #include <QtCore>
 #include "trackmodel.h"
 
@@ -31,19 +32,21 @@ const QString LIBRARYTABLE_CHANNELS = "channels";
 
 class PlaylistTableModel : public QSqlRelationalTableModel, public virtual TrackModel
 {
-    public:
-        PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId);
-        virtual ~PlaylistTableModel();
-        virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
-        virtual QString getTrackLocation(const QModelIndex& index) const;
-		virtual void search(const QString& searchText);
-		virtual void removeTrack(const QModelIndex& index);
-		virtual void addTrack(const QModelIndex& index, QString location);
-		QMimeData* mimeData(const QModelIndexList &indexes) const;
-		Qt::ItemFlags flags(const QModelIndex &index) const;
-    private:
-        TrackCollection* m_pTrackCollection;
-        int m_iPlaylistId;
+public:
+    PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId);
+    virtual ~PlaylistTableModel();
+    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual void search(const QString& searchText);
+    virtual void removeTrack(const QModelIndex& index);
+    virtual void addTrack(const QModelIndex& index, QString location);
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    QItemDelegate* delegateForColumn(int i);
+    
+private:
+    TrackCollection* m_pTrackCollection;
+    int m_iPlaylistId;
 };
 
 #endif
