@@ -221,6 +221,7 @@ void CachingReader::newTrack(TrackInfoObject* pTrack) {
 int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Check for bogus sample numbers
     Q_ASSERT(sample >= 0);
+    Q_ASSERT(num_samples >= 0);
 
     // If asked to read 0 samples, don't do anything. (this is a perfectly
     // reasonable request that happens sometimes.
@@ -263,9 +264,24 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         if (start_chunk != chunk_num) {
             Q_ASSERT(chunk_start_sample == current_sample);
         }
+
+        if (chunk_remaining_samples < 0) {
+            qDebug() << "fuck"
+                     << "Current-length" << current->length
+                     << "chunk_offset" << chunk_offset
+                     << "chunk_number" << current->chunk_number
+                     << "current_sample" << current_sample
+                     << "current_start_sample" << chunk_start_sample
+                     << "start_chunk" << start_chunk
+                     << "chunk_num" << chunk_num
+                     << "end_chunk" << end_chunk;
+        }
+        Q_ASSERT(chunk_remaining_samples >= 0);
+        Q_ASSERT(samples_remaining >= 0);
         
-        int samples_to_read = math_min(samples_remaining,
-                                       chunk_remaining_samples);
+        int samples_to_read = math_max(0, math_min(samples_remaining,
+                                                   chunk_remaining_samples));
+        Q_ASSERT(samples_to_read >= 0);
         Q_ASSERT(samples_to_read % 2 == 0);
 
         CSAMPLE *data = current->data + chunk_offset;
@@ -286,12 +302,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
-    for (int i=0; i<samples_remaining; i++) {
-        buffer[i] = 0.0f;
-    }
-    samples_remaining = 0;
+    // for (int i=0; i<samples_remaining; i++) {
+    //     buffer[i] = 0.0f;
+    // }
+    //samples_remaining = 0;
 
-    Q_ASSERT(samples_remaining == 0);
+    //Q_ASSERT(samples_remaining == 0);
     return num_samples - samples_remaining;
 }
 
