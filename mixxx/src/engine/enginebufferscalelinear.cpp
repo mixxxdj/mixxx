@@ -128,8 +128,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     long current_sample = 0;
     long prev_sample = 0;
     int fuckups = 0;
-        
-    for (int i = 0; i < buf_size;) {
+    bool last_read_failed = false;
+
+    int i;
+    for (i = 0; i < buf_size;) {
         prev_sample = current_sample;
         current_sample = floor(buffer_index);
         if (!even(current_sample))
@@ -153,9 +155,13 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             buffer_size = m_pReadAheadManager->getNextSamples(m_dBaseRate,
                                                               buffer_int,
                                                               samples_to_read);
+            if (buffer_size == 0 && last_read_failed) {
+                break;
+            }
+            last_read_failed = buffer_size == 0;
+            
             unscaled_samples_needed -= buffer_size;
             buffer_index = buffer_index - floor(buffer_index);
-            buffer_index = 0;
             continue;
         }
 
@@ -178,11 +184,16 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
         new_playpos += rate_add;
         buffer_index += fabs(rate_add);
-
-        
     }
-    
-    Q_ASSERT(unscaled_samples_needed == 0);
+    // If we broke out of the loop, zero the remaining samples
+    for (; i < buf_size; i += 2) {
+        buffer[i] = 0.0f;
+        buffer[i+1] = 0.0f;
+    }
+
+    // It's possible that we will exit this function without having satisfied
+    // this requirement. We may be trying to read past the end of the file.
+    //Q_ASSERT(unscaled_samples_needed == 0);
     
     return buffer;
 }
