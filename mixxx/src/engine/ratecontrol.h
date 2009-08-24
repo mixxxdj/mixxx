@@ -85,16 +85,31 @@ private:
     ControlObject* m_pJog;
     Rotary* m_pJogFilter;
 
-    /** Is true if a rate temp button is pressed */    
-    bool m_bTempPress;
-    /** Is true if a rate button was released */
-    bool m_bTempRelease;
-    /** Is true if a rate button is down */
-    bool m_bTempDown;
+
+    enum PITCHBEND_DIRECTION {
+        PITCHBEND_NONE = 0,
+        PITCHBEND_UP = 1,
+        PITCHBEND_DOWN = 2,
+        PITCHBEND_BOTH = 3
+    };
+    
+    enum PITCHBEND_MODE {
+        PITCHBEND_OLD = 0,
+        PITCHBEND_REAL = 1
+    };
+    
+    
+    /** The current pitchbend direction */
+    int m_ePbCurrent;
+    /**  The pitchbend buttons which are pressed */
+    int m_ePbPressed;
+    
+    /** This is true if we've already started to pitch bend */
+    int m_bTempStarted;
     /** Set to the rate change used for rate temp */
     double m_dTempRateChange;
     /** Set the Temporary Rate Change Mode */
-    bool m_bRateTempMode;
+    enum PITCHBEND_MODE m_eRateTempMode = PITCHBEND_REAL;
     /** Temporary pitchrate, added to the permanent rate for calculateRate */
     double m_dRateTemp;
     
