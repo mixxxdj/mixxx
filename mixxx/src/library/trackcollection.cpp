@@ -63,6 +63,31 @@ bool TrackCollection::checkForTables()
      		   "cuepoint integer, bpm float, "
      		   "wavesummaryhex blob, "
  			   "channels integer)");
+ 			   
+    query.exec("CREATE TABLE Playlists (id INTEGER primary key, "
+           "name varchar(48), date_created datetime, "
+           "date_modified datetime)");	
+
+    query.exec("CREATE TABLE PlaylistTracks (id INTEGER primary key, "
+           "playlist_id INTEGER REFERENCES Playlists(id),"
+           "track_id INTEGER REFERENCES library(id), "
+           "position INTEGER)");	
+
+
+    //Create an example playlist
+    query.prepare("INSERT INTO Playlists (name)"
+                  "VALUES (:name)");
+ 				 // ":date_created, :date_modified)");
+    query.bindValue(":name", "Example Playlist #1");
+    query.exec();
+ 	
+    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
+                  "VALUES (:playlist_id, :track_id, :position)");
+    query.bindValue(":playlist_id", 1);
+    query.bindValue(":track_id", 1);
+    query.bindValue(":position", 0);        
+    query.exec();           	   
+           	   
     return true;
 }
  
