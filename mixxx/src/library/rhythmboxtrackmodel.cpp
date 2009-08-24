@@ -3,7 +3,6 @@
 #include <QtSql>
 #include <QtDebug>
 #include <QtXmlPatterns/QXmlQuery>
-#include <QtXmlPatterns/QXmlResultItems>
 
 
 #include "rhythmboxtrackmodel.h"
@@ -15,7 +14,6 @@
 RhythmboxTrackModel::RhythmboxTrackModel()
 {
     QXmlQuery query;
-    QXmlQuery entries;
     QString res;
     QDomDocument rhythmdb;
     
@@ -35,8 +33,8 @@ RhythmboxTrackModel::RhythmboxTrackModel()
         return;
     
     /*
-     * Use QXmlQuery to execute and XPath query. Check the version to
-     * make sure.
+     * Use QXmlQuery to execute an XPath query. We add the version to
+     * the XPath query to make sure it is the schema we expect.
      */
     query.setFocus(&db);
     query.setQuery("rhythmdb[@version='1.6']/entry[@type='song']");
