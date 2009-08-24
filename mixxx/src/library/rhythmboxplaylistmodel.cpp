@@ -20,8 +20,9 @@
 #include <QtSql>
 #include <QtDebug>
 
-#include "rhythmboxtrackmodel.h"
-#include "rhythmboxplaylistmodel.h"
+#include "durationdelegate.h"
+#include "library/rhythmboxtrackmodel.h"
+#include "library/rhythmboxplaylistmodel.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
@@ -215,6 +216,13 @@ TrackInfoObject * RhythmboxPlaylistModel::getTrack(const QModelIndex& index) con
     QString location = pnode.toElement().text();
     
  	return m_pRhythmbox->getTrackByLocation(location);
+}
+
+QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
+    if (i == RhythmboxPlaylistModel::COLUMN_DURATION) {
+        return new DurationDelegate();
+    }
+    return NULL;
 }
 
 QList<QString> RhythmboxPlaylistModel::getPlaylists()

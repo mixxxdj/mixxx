@@ -48,7 +48,6 @@ private:
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_sFeatures;
-    LibraryTableModel* m_pLibraryTableModel;
 };
 
 #endif /* LIBRARY_H */
