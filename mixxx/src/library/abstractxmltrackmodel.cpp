@@ -71,32 +71,6 @@ QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) con
             return QVariant();
         
         return getTrackColumnData(songNode, index);
-        
-        /* This is what the getTrackColumn implementation should look like
-         QString getTrackColumn(QDomNode songNode, const QModelIndex & index)
-         {
-            switch (index.column()) {
-                case RhythmboxTrackModel::COLUMN_ARTIST: 
-                    return songNode.firstChildElement("artist").text();
-                case RhythmboxTrackModel::COLUMN_TITLE:
-                    return songNode.firstChildElement("title").text();
-                case RhythmboxTrackModel::COLUMN_ALBUM:
-                    return songNode.firstChildElement("album").text();
-                case RhythmboxTrackModel::COLUMN_DATE:
-                    return songNode.firstChildElement("date").text();
-                case RhythmboxTrackModel::COLUMN_GENRE:
-                    return songNode.firstChildElement("genre").text();
-                case RhythmboxTrackModel::COLUMN_LOCATION:
-                    return songNode.firstChildElement("location").text();
-                case RhythmboxTrackModel::COLUMN_DURATION:
-                    return songNode.firstChildElement("duration").text();
-                
-                default:
-                    return QVariant();
-            }
-         }
-        */
-        
     }
     
     return QVariant();
@@ -186,5 +160,5 @@ void AbstractXmlTrackModel::search(const QString& searchText)
 
 void AbstractXmlTrackModel::addColumnName(int index, QString name)
 {
-    m_ColumnNames[index] = name;
+    m_ColumnNames.insert(index, name);
 }

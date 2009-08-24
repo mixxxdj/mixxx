@@ -21,6 +21,8 @@
 #include <QtSql>
 #include <QtXml>
 #include "trackmodel.h"
+#include "abstractxmltrackmodel.h"
+
 
 class TrackInfoObject;
 class QSqlDatabase;
@@ -29,7 +31,7 @@ class QSqlDatabase;
 /**
    @author Albert Santoni
 */
-class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
+class RhythmboxTrackModel : public AbstractXmlTrackModel
 {
     enum Columns {
         COLUMN_ARTIST = 0,
@@ -43,46 +45,23 @@ class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
     };
 
     Q_OBJECT
-    public:
+public:
     RhythmboxTrackModel();
     virtual ~RhythmboxTrackModel();
+    virtual QItemDelegate* delegateForColumn(const int i);
 
-    //QAbstractTableModel stuff
-    virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
-    virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
-    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-    virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
-    virtual int columnCount(const QModelIndex& parent) const;
+protected:
+    virtual TrackInfoObject *parseTrackNode(QDomNode node) const;
+    /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
+    virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const;
+    /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
 
-    //Track Model stuff
-	virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
-	virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual TrackInfoObject *getTrackByLocation(const QString& location) const;
-	virtual void search(const QString& searchText);
-	virtual void removeTrack(const QModelIndex& index);
-	virtual void addTrack(const QModelIndex& index, QString location);
-    QItemDelegate* delegateForColumn(const int i);
-	
-	
-/*
- 	void scanPath(QString path);
- 	bool trackExistsInDatabase(QString file_location);
- 
- 	QList<TrackInfoObject*> dumpDB();
- 	
- 	QSqlDatabase getDatabase();
- */
 public slots:
-
 
 signals:
  	void startedLoading();
  	void progressLoading(QString path);
  	void finishedLoading();
- 
-private:
-    QDomNodeList m_entryNodes;
-    QMap <QString, QDomNode> m_mTracksByLocation;
 };
 
 #endif
