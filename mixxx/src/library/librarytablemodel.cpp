@@ -26,7 +26,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 	removeColumn(fieldIndex(LIBRARYTABLE_CHANNELS));
 	removeColumn(fieldIndex(LIBRARYTABLE_TRACKNUMBER));
 
-	//Set the column heading labels, rename them for translations and have proper capitalization
+	//Set the column heading labels, rename them for translations and have
+	//proper capitalization
     setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
                   Qt::Horizontal, tr("Artist"));
     setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
@@ -127,8 +128,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
     if (!index.isValid())
       return Qt::ItemIsEnabled;
 
-	//Enable dragging songs from this data model to elsewhere (like the waveform widget to
-	//load a track into a Player).
+	//Enable dragging songs from this data model to elsewhere (like the waveform
+	//widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     /** FIXME: This doesn't seem to work - Albert */

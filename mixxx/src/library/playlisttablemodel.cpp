@@ -126,3 +126,7 @@ Qt::ItemFlags PlaylistTableModel::flags(const QModelIndex &index) const
 
     return defaultFlags;
 }
+
+QItemDelegate* PlaylistTableModel::delegateForColumn(int i) {
+    return NULL;
+}
