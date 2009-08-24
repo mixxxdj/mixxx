@@ -19,8 +19,8 @@ double RateControl::m_dPermSmall = 0.001;
 RateControl::RateControl(const char* _group,
                          const ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
-    m_bTempPress(false), m_bTempDown(false), m_bTempRelease(false),
-    m_bRateTempMode(true),
+    m_bTempStarted(false),
+    m_bRateTempMode(PITCHBEND_REAL),
     m_dOldRate(0.0f),
     m_dRateTemp(0.0)
 {
@@ -198,52 +198,60 @@ void RateControl::slotControlRatePermUpSmall(double)
 void RateControl::slotControlRateTempDown(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDown->get() && !m_bTempPress)
+    if (buttonRateTempDown->get() && !(m_ePbPressed & RateControl::PITCHBEND_DOWN))
     {
-        m_bTempPress = true;
+        m_ePbPressed |= RateControl::PITCHBEND_DOWN;
+        m_ePbCurrent = RateControl::PITCHBEND_DOWN;
     }
     else if (!buttonRateTempDown->get())
     {
-        m_bTempRelease = true;
+        m_ePbPressed &= ~RateControl::PITCHBEND_DOWN;
+        m_ePbCurrent = m_ePbPressed;
     }
 }
 
 void RateControl::slotControlRateTempDownSmall(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDownSmall->get() && !m_bTempPress)
+    if (buttonRateTempDownSmall->get() && !(m_ePbPressed & RateControl::PITCHBEND_DOWN))
     {
-        m_bTempPress = true;
+        m_ePbPressed |= RateControl::PITCHBEND_DOWN;
+        m_ePbCurrent = RateControl::PITCHBEND_DOWN;
     }
     else if (!buttonRateTempDownSmall->get())
     {
-        m_bTempRelease = true;
+        m_ePbPressed &= ~RateControl::PITCHBEND_DOWN;
+        m_ePbCurrent = m_ePbPressed;
     }
 }
 
 void RateControl::slotControlRateTempUp(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUp->get() && !m_bTempPress)
+    if (buttonRateTempUp->get() && !(m_ePbPressed & RateControl::PITCHBEND_UP))
     {
-        m_bTempPress = true;
+        m_ePbPressed |= RateControl::PITCHBEND_UP;
+        m_ePbCurrent = RateControl::PITCHBEND_UP;
     }
     else if (!buttonRateTempUp->get())
     {
-        m_bTempRelease = true;
+        m_ePbPressed &= ~RateControl::PITCHBEND_UP;
+        m_ePbCurrent = m_ePbPressed;
     }
 }
 
 void RateControl::slotControlRateTempUpSmall(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUpSmall->get() && !m_bTempPress)
+    if (buttonRateTempUpSmall->get() && !(m_ePbPressed & RateControl::PITCHBEND_UP))
     {
-        m_bTempPress = true;
+        m_ePbPressed |= RateControl::PITCHBEND_UP;
+        m_ePbCurrent = RateControl::PITCHBEND_UP;
     }
     else if (!buttonRateTempUpSmall->get())
     {
-        m_bTempRelease = true;
+        m_ePbPressed &= ~RateControl::PITCHBEND_UP;
+        m_ePbCurrent = m_ePbPressed;
     }
 }
 
@@ -342,15 +350,22 @@ double RateControl::process(const double rate,
      * and pitch shift stepping, which is the old behaviour.
      */
     
-    if ( m_bTempPress && !m_bTempDown ) 
+    /*
+     * Initialize certain values necessary for pitchbending. Most of this
+     * code should be handled inside a slot, but we'd need to connect to
+     * the troublesome Latency ControlObject... Either the Master or Soundcard
+     * one.
+     */
+    
+    if ((m_ePbPressed) && (!m_bTempStarted)) 
     {
+        m_bTempStarted = true;
         m_dOldRate = m_pRateSlider->get();
-        m_bTempDown = true;
         
-        if ( m_bRateTempMode == 0 ) 
+        
+        if ( m_eRateTempMode == PITCHBEND_OLD ) 
         {
             // old temporary pitch shift behaviour
-            
             double change = m_pRateDir->get() * m_dTemp / 
                                     (100. * m_pRateRange->get());
             double csmall = m_pRateDir->get() * m_dTempSmall / 
@@ -374,22 +389,20 @@ double RateControl::process(const double rate,
         
     }
     
-    if ((m_bTempPress) && (m_bTempRelease == false) && (m_bRateTempMode)) 
+    if ((m_ePbCurrent) && (m_eRateTempMode == PITCHBEND_REAL))
     {
         // apply ramped pitchbending
-        if ( buttonRateTempUp->get())
+        if ( m_ePbCurrent == RateControl::PITCHBEND_UP )
             addRateTemp(m_dTempRateChange);
-        if ( buttonRateTempDown->get())
+        else if ( m_ePbCurrent == RateControl::PITCHBEND_DOWN )
             subRateTemp(m_dTempRateChange);
     }
-    
-    if ((m_bTempRelease))
+    else if ( m_bTempStarted )
     {
-        m_bTempDown = false;
-        m_bTempPress = false;
-        m_bTempRelease = false;
+        // No buttons pressed, so time to deinitialize
+        m_bTempStarted = false;
         
-        if ( m_bRateTempMode == 0 )
+        if ( m_bRateTempMode == PITCHBEND_OLD )
             m_pRateSlider->set(m_dOldRate);
         else
            resetRateTemp();
