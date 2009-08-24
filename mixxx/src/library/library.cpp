@@ -23,7 +23,7 @@ Library::Library(QObject* parent) {
     //m_pLibraryTableModel = new LibraryTableModel(NULL, m_pTrackCollection);
     m_pSidebarModel = new SidebarModel(parent);
     addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
-    addFeature(new PlaylistFeature(this));
+    addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new RhythmboxFeature(this));
 }
 
