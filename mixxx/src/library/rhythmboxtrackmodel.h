@@ -61,6 +61,7 @@ class RhythmboxTrackModel : public QAbstractTableModel, public TrackModel
 	virtual void search(const QString& searchText);
 	virtual void removeTrack(const QModelIndex& index);
 	virtual void addTrack(const QModelIndex& index, QString location);
+    QItemDelegate* delegateForColumn(const int i);
 	
 	
 /*

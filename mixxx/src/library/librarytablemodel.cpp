@@ -1,8 +1,10 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include "trackcollection.h"
-#include "librarytablemodel.h"
+
+#include "library/trackcollection.h"
+#include "library/librarytablemodel.h"
+#include "durationdelegate.h"
 
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
@@ -14,27 +16,37 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 	setTable("library");
 	
 	//Hide columns in the tablemodel that we don't want to show.
-	removeColumn(this->fieldIndex(LIBRARYTABLE_ID)); 
-	removeColumn(this->fieldIndex(LIBRARYTABLE_FILENAME));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_URL));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_LENGTHINBYTES));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_CUEPOINT));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_SAMPLERATE));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_CHANNELS));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_TRACKNUMBER));
+	removeColumn(fieldIndex(LIBRARYTABLE_ID)); 
+	removeColumn(fieldIndex(LIBRARYTABLE_FILENAME));
+	removeColumn(fieldIndex(LIBRARYTABLE_URL));
+	removeColumn(fieldIndex(LIBRARYTABLE_LENGTHINBYTES));
+	removeColumn(fieldIndex(LIBRARYTABLE_CUEPOINT));
+	removeColumn(fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX));
+	removeColumn(fieldIndex(LIBRARYTABLE_SAMPLERATE));
+	removeColumn(fieldIndex(LIBRARYTABLE_CHANNELS));
+	removeColumn(fieldIndex(LIBRARYTABLE_TRACKNUMBER));
 
 	//Set the column heading labels, rename them for translations and have proper capitalization
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_ARTIST), Qt::Horizontal, tr("Artist"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_TITLE), Qt::Horizontal, tr("Title"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_ALBUM), Qt::Horizontal, tr("Album"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_GENRE), Qt::Horizontal, tr("Genre"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR), Qt::Horizontal, tr("Year"));            
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_LOCATION), Qt::Horizontal, tr("Location"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_COMMENT), Qt::Horizontal, tr("Comment"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_DURATION), Qt::Horizontal, tr("Duration"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_BITRATE), Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_BPM), Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
+                  Qt::Horizontal, tr("Artist"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
+                  Qt::Horizontal, tr("Title"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
+                  Qt::Horizontal, tr("Album"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
+                  Qt::Horizontal, tr("Genre"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
+                  Qt::Horizontal, tr("Year"));            
+    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
+                  Qt::Horizontal, tr("Location"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
+                  Qt::Horizontal, tr("Comment"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
+                  Qt::Horizontal, tr("Duration"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
+                  Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
+                  Qt::Horizontal, tr("BPM"));
 
    	select(); //Populate the data model.
 }
@@ -55,21 +67,21 @@ void LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
 	return m_pTrackCollection->getTrack(location);
 }
 
 QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 {
-	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
 	return location;
 }
 
 void LibraryTableModel::removeTrack(const QModelIndex& index)
 {
-	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
 	m_pTrackCollection->removeTrack(location);
 	select(); //Repopulate the data model.
@@ -78,10 +90,18 @@ void LibraryTableModel::removeTrack(const QModelIndex& index)
 void LibraryTableModel::search(const QString& searchText)
 {
 	if (searchText == "")
-		this->setFilter("");
+		setFilter("");
 	else
-		this->setFilter("artist LIKE \'%" + searchText + "%\' OR "
+		setFilter("artist LIKE \'%" + searchText + "%\' OR "
 						"title  LIKE \'%" + searchText + "%\'");
+}
+
+QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
+    if (i == fieldIndex(LIBRARYTABLE_DURATION)) {
+        // TODO(rryan) hm. this will never be deleted
+        return new DurationDelegate();
+    }
+    return NULL;
 }
 
 QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
@@ -112,7 +132,7 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     /** FIXME: This doesn't seem to work - Albert */
-    const int bpmColumnIndex = this->fieldIndex(LIBRARYTABLE_BPM);
+    const int bpmColumnIndex = fieldIndex(LIBRARYTABLE_BPM);
     if (index.column() == bpmColumnIndex)
     {
         return defaultFlags | Qt::ItemIsEditable;
