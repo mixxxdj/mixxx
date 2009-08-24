@@ -19,6 +19,7 @@
 #include <QtGui>
 #include <QtSql>
 #include <QtDebug>
+#include <QtXmlPatterns/QXmlQuery>
 
 #include "rhythmboxtrackmodel.h"
 #include "rhythmboxplaylistmodel.h"
@@ -32,7 +33,9 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
     m_sCurrentPlaylist("")
 {
     int idx = 0;
-    
+    QDomDocument rhythmplaylistdb;
+    QXmlQuery query;
+    QString res;
     
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
     if ( ! db.exists()) {
@@ -44,32 +47,34 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
     
-    QDomDocument rhythmplaylistdb;
-    rhythmplaylistdb.setContent(&db);
+    /*
+     * Use QXmlQuery to execute an XPath query. We add the version to
+     * the XPath query to make sure it is the schema we expect.
+     */
+    query.setFocus(&db);
+    query.setQuery("rhythmdb-playlists/playlist[@type='static']");
+    if ( ! query.isValid())
+        return;
+    
+    query.evaluateTo(&res);
     db.close();
     
+    rhythmplaylistdb.setContent("<rhythmdb-playlists>" + res + "</rhythmdb-playlists>");
     m_playlistNodes = rhythmplaylistdb.elementsByTagName("playlist");
     
     
-    /* Filter out non song entries */
+    /* Add Playlists to the internal playlist map */
     while (( idx < m_playlistNodes.count())) {
         QDomNode n = m_playlistNodes.item(idx);
         QDomElement e = n.toElement();
         
-        if (( e.isNull()) || ( e.attribute("type") != "static" )) {
-            qDebug() << "Removing playlist " << e.attribute("name")
-                        << "with type" << e.attribute("type");
-            n.parentNode().removeChild(n);
-        }
-        else {
-            qDebug() << "Adding Playlist" << e.attribute("name");
-            QString playlist = e.attribute("name");
-            
-            m_mPlaylists[playlist] = n.childNodes();
-            m_sCurrentPlaylist = playlist;
-            
-            idx++;
-        }
+        qDebug() << "Adding Rhythmbox Playlist" << e.attribute("name");
+        QString playlist = e.attribute("name");
+        
+        m_mPlaylists[playlist] = n.childNodes();
+        m_sCurrentPlaylist = playlist;
+        
+        idx++;
     }
     
     
