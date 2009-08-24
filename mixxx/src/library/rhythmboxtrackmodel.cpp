@@ -4,7 +4,7 @@
 #include <QtDebug>
 #include <QtXmlPatterns/QXmlQuery>
 
-
+#include "durationdelegate.h"
 #include "rhythmboxtrackmodel.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
@@ -165,6 +165,13 @@ int RhythmboxTrackModel::columnCount(const QModelIndex& parent) const
 void RhythmboxTrackModel::addTrack(const QModelIndex& index, QString location)
 {
     //Should do nothing... hmmm
+}
+
+QItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i) {
+    if (i == RhythmboxTrackModel::COLUMN_DURATION) {
+        return new DurationDelegate();
+    }
+    return NULL;
 }
 
 /** Removes a track from the library track collection. */
