@@ -1,5 +1,6 @@
 /* -*- mode:C++; indent-tabs-mode:s; tab-width:4; c-basic-offset:4; -*- */
 
+#include <QItemDelegate>
 #include <QtCore>
 #include <QtGui>
 #include <QtXml>
@@ -90,7 +91,26 @@ WTrackTableView::~WTrackTableView()
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     qDebug() << "WTrackTableView::loadTrackModel()" << model;
+
+    TrackModel* track_model = dynamic_cast<TrackModel*>(model);
+    
     setModel(model);
+
+    for (int i = 0; i < model->columnCount(); ++i) {
+        QItemDelegate* delegate = track_model->delegateForColumn(i);
+        // We need to delete the old delegates, since the docs say the view will
+        // not take ownership of them.
+        QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
+        // If delegate is NULL, it will unset the delegate for the column
+        setItemDelegateForColumn(i, delegate);
+        delete old_delegate;
+    }
+
+    //Needs to be done after the data model is set. Also note that calling
+    //restoreVScrollBarPos() here seems to slow down Mixxx's startup
+    //somewhat. Might be causing some massive SQL query to run at startup.
+    pTableView->restoreVScrollBarPos();
+
 }
  
 void WTrackTableView::createActions()
