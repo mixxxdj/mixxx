@@ -19,6 +19,7 @@ public:
     virtual void addTrack(const QModelIndex& index, QString location);
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
+    QItemDelegate* delegateForColumn(const int i);
 private:
     TrackCollection* m_pTrackCollection;
 };

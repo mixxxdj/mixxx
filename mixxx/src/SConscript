@@ -376,6 +376,7 @@ sources = Split("""
                 library/trackcollection.cpp
                 library/librarytablemodel.cpp
                 library/browsetablemodel.cpp
+                library/abstractxmltrackmodel.cpp
                 library/rhythmboxtrackmodel.cpp
                 library/rhythmboxplaylistmodel.cpp
                 library/playlisttablemodel.cpp
@@ -638,7 +639,7 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 	
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
 				'/Library/Frameworks/Qt3Support.framework/Headers/',

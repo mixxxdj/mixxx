@@ -74,7 +74,7 @@ protected:
     /* Implemented by AbstractXmlTrackModel implementations to parse the DOM Node into a TrackInfoObject */
     virtual TrackInfoObject *parseTrackNode(QDomNode node) const = 0;
     /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
-    virtual QString getTrackColumnData(QDomNode node, const QModelIndex& index) const = 0;
+    virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const = 0;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
     void addColumnName(int index, QString name);
     

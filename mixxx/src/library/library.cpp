@@ -20,8 +20,9 @@
 Library::Library(QObject* parent) {
 
     m_pTrackCollection = new TrackCollection();
-    //m_pLibraryTableModel = new LibraryTableModel(NULL, m_pTrackCollection);
     m_pSidebarModel = new SidebarModel(parent);
+    // TODO -- turn this construction / adding of features into a static method
+    // or something -- CreateDefaultLibrary
     addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new RhythmboxFeature(this));
@@ -29,32 +30,11 @@ Library::Library(QObject* parent) {
 
 Library::~Library() {
     delete m_pSidebarModel;
-    //delete m_pLibraryTableModel;
     delete m_pTrackCollection;
 }
 
 void Library::bindWidget(WTrackSourcesView* pSourcesView,
                          WTrackTableView* pTableView) {
-
-    //pTableView->setModel(m_pLibraryTableModel);
-    
-    //Set up custom view delegates to display things in the track table in
-    //special ways.
-    
-    // const int durationColumnIndex =
-    //     m_pLibraryTableModel->fieldIndex(LIBRARYTABLE_DURATION);
-
-    //Set up the duration delegate to handle displaying the track durations in
-    //hh:mm:ss rather than what's pulled from the database (which is just the
-    //duration in seconds).
-    // DurationDelegate *delegate = new DurationDelegate();
-    // pTableView->setItemDelegateForColumn(durationColumnIndex, delegate);
-
-    //Needs to be done after the data model is set. Also note that calling
-    //restoreVScrollBarPos() here seems to slow down Mixxx's startup
-    //somewhat. Might be causing some massive SQL query to run at startup.
-    pTableView->restoreVScrollBarPos();
-
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
 
@@ -65,6 +45,7 @@ void Library::bindWidget(WTrackSourcesView* pSourcesView,
     connect(pSourcesView, SIGNAL(activated(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
 
+    // Enable the default selection
     pSourcesView->selectionModel()->select(m_pSidebarModel->getDefaultSelection(),
                                            QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
