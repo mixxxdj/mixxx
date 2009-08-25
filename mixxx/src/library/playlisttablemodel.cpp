@@ -10,8 +10,36 @@ PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackC
 	m_pTrackCollection = pTrackCollection;
     m_iPlaylistId = playlistId;
 
-	setTable("PlaylistTracks");
-	//setFilter("playlist_id = " + QString(m_iPlaylistId));
+    QString playlistTableName = "playlist_" + m_iPlaylistId;
+
+ 	QSqlQuery query;
+ 	//Update everything but "location", since that's what we identify the track by.
+    query.prepare("CREATE VIEW " + playlistTableName + " AS "
+                  "SELECT " + 
+                  LIBRARYTABLE_ARTIST + "," + 
+                  LIBRARYTABLE_TITLE + "," +
+                  LIBRARYTABLE_ALBUM + "," +
+                  LIBRARYTABLE_YEAR + "," +
+                  LIBRARYTABLE_DURATION + "," +
+                  LIBRARYTABLE_GENRE + "," +
+                  LIBRARYTABLE_TRACKNUMBER + "," +
+                  LIBRARYTABLE_BPM + "," +
+                  LIBRARYTABLE_LOCATION + "," +
+                  LIBRARYTABLE_COMMENT + " "
+                  "FROM library "
+                  "INNER JOIN PlaylistTracks "
+                  "ON library.id=PlaylistTracks.track_id "
+                  "ORDER BY position");
+                  //"SET artist=:artist, ");
+    //query.bindValue(":id", 1001); 
+    query.exec();
+     
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << __FILE__ << query.lastError();
+    }
+
+    setTable(playlistTableName);
 	
 	//Hide columns in the tablemodel that we don't want to show.
 	/*
@@ -57,32 +85,30 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
 {
-    //FIXME
-    /*
-	const int positionColumnIndex = this->fieldIndex("position");
-	QString location = index.sibling(index.row(), positionColumnIndex).data().toString();
-	return m_pTrackCollection->getTrack(location);*/
+    //FIXME: use position instead of location for playlist tracks?
+    
+	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+	return m_pTrackCollection->getTrack(location);
 	
 }
 
 QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 {
-	//FIXME
-	
-	/*const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+    //FIXME: use position instead of location for playlist tracks?
+	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	return location; */
+	return location; 
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    //FIXME
+    //FIXME: use position instead of location for playlist tracks?
     
-	/*const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
 	m_pTrackCollection->removeTrack(location);
 	select(); //Repopulate the data model.
-	*/
 }
 
 void PlaylistTableModel::search(const QString& searchText)
