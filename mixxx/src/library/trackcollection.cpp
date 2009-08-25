@@ -392,3 +392,4 @@ void TrackCollection::slotCancelLibraryScan()
  	//Note that this does not need to be protected by a mutex since integer operations are atomic.
  	bCancelLibraryScan = 1;
   }
+  
