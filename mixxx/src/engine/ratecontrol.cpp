@@ -20,8 +20,10 @@ RateControl::RateControl(const char* _group,
                          const ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
     m_bTempStarted(false),
-    m_bRateTempMode(PITCHBEND_REAL),
+    m_eRateTempMode(PITCHBEND_REAL),
     m_dOldRate(0.0f),
+    m_ePbPressed(0),
+    m_ePbCurrent(0),
     m_dRateTemp(0.0)
 {
     
@@ -402,10 +404,10 @@ double RateControl::process(const double rate,
         // No buttons pressed, so time to deinitialize
         m_bTempStarted = false;
         
-        if ( m_bRateTempMode == PITCHBEND_OLD )
+        if ( m_eRateTempMode == PITCHBEND_OLD )
             m_pRateSlider->set(m_dOldRate);
         else
-           resetRateTemp();
+            resetRateTemp();
     }
     
     return 1;
