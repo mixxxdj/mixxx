@@ -109,7 +109,7 @@ private:
     /** Set to the rate change used for rate temp */
     double m_dTempRateChange;
     /** Set the Temporary Rate Change Mode */
-    enum PITCHBEND_MODE m_eRateTempMode = PITCHBEND_REAL;
+    enum PITCHBEND_MODE m_eRateTempMode;
     /** Temporary pitchrate, added to the permanent rate for calculateRate */
     double m_dRateTemp;
     
