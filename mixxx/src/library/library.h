@@ -11,22 +11,27 @@
 #include <QObject>
 #include <QAbstractItemModel>
 
+#include "configobject.h"
+
 class TrackModel;
 class TrackCollection;
+class TrackInfoObject;
 class SidebarModel;
 class LibraryFeature;
 class LibraryTableModel;
 class WLibrarySidebar;
-class WTrackTableView;
+class WLibrary;
+class WSearchLineEdit;
 
 class Library : public QObject {
     Q_OBJECT
 public:
-    Library(QObject* parent = NULL);
+    Library(QObject* parent,
+            ConfigObject<ConfigValue>* pConfig);
     virtual ~Library();
     
-    //void bindWidget(LibraryWidget* widget);
-    void bindWidget(WLibrarySidebar* sidebarView, WTrackTableView* tableView);
+    void bindWidget(WLibrarySidebar* sidebarWidget, 
+                    WLibrary* libraryWidget);
     void addFeature(LibraryFeature* feature);
     
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
@@ -36,18 +41,29 @@ public:
     TrackCollection* getTrackCollection() {
         return m_pTrackCollection;
     }
-    
+
     //static Library* buildDefaultLibrary();
 
 public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
+    void slotSearch(const QString&);
+    void slotSearchCleared();
+    void slotSearchStarting();
+    void slotLoadTrack(TrackInfoObject* pTrack);
+    void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
 signals:
     void showTrackModel(QAbstractItemModel* model);
+    void search(const QString&);
+    void searchCleared();
+    void searchStarting();
+    void loadTrack(TrackInfoObject* tio);
+    void loadTrackToPlayer(TrackInfoObject* tio, int n);
     
 private:
+    ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
-    QList<LibraryFeature*> m_sFeatures;
+    QList<LibraryFeature*> m_features;
 };
 
 #endif /* LIBRARY_H */

@@ -13,6 +13,7 @@
 #include <QAbstractItemModel>
 
 class TrackModel;
+class TrackInfoObject;
 
 class LibraryFeature : public QObject {
   Q_OBJECT

@@ -7,8 +7,7 @@ class TrackInfoObject;
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
-class TrackModel
-{
+class TrackModel {
 public:
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const = 0;
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;

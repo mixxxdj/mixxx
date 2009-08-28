@@ -198,7 +198,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this);
+    m_pLibrary = new Library(this, config);
     
 	//Create the "players" (virtual playback decks)
 	m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
@@ -292,13 +292,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     if (view->m_pWaveformRendererCh2)
           connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
                   view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
-    
- 	WTrackTableView* pTrackTableView = view->getTrackTableView();
- 	connect(pTrackTableView, SIGNAL(loadTrackIntoPlayer1(TrackInfoObject*)),
-            m_pPlayer1, SLOT(slotLoadTrack(TrackInfoObject*)));
- 	connect(pTrackTableView, SIGNAL(loadTrackIntoPlayer2(TrackInfoObject*)),
-            m_pPlayer2, SLOT(slotLoadTrack(TrackInfoObject*)));
- 	connect(pTrackTableView, SIGNAL(loadTrackIntoNextAvailablePlayer(TrackInfoObject*)),
+
+    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
+    connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
  			this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
 
     // Setup state of End of track controls from config database
@@ -1241,6 +1238,15 @@ void MixxxApp::slotLadspa()
 #endif
 }
 
+void MixxxApp::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
+    // TODO(XXX) In the future, when we support multiple decks, this method will
+    // be less of a hack.
+    if (player == 1) {
+        m_pPlayer1->slotLoadTrack(pTrack);
+    } else if (player == 2) {
+        m_pPlayer2->slotLoadTrack(pTrack);
+    }
+}
 void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
 {
 	if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
