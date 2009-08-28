@@ -21,7 +21,7 @@ class ControlPushButton;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
+    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     ~RateControl();
     double process(const double dRate, 
                    const double currentSample,
@@ -98,6 +98,11 @@ private:
         PITCHBEND_REAL = 1
     };
     
+    enum PITCHBEND_RAMPBACK_MODE {
+        PITCHBEND_RAMPBACK_NONE,
+        PITCHBEND_RAMPBACK_SPEED,
+        PITCHBEND_RAMPBACK_PERIOD
+    };
     
     /** The current pitchbend direction */
     int m_ePbCurrent;
@@ -110,8 +115,14 @@ private:
     double m_dTempRateChange;
     /** Set the Temporary Rate Change Mode */
     enum PITCHBEND_MODE m_eRateTempMode;
+    /** The Rate Temp Sensitivity, the higher it is the slower it gets */
+    int m_iRateTempStep;
     /** Temporary pitchrate, added to the permanent rate for calculateRate */
     double m_dRateTemp;
+    /** */
+    enum PITCHBEND_RAMPBACK_MODE m_eRampBackMode;
+    /** Return speed for temporary rate change */
+    double m_dRateTempRampbackChange;
     
     /** Old playback rate. Stored in this variable while a temp pitch change
       * buttons is in effect. It does not work to just decrease the pitch slider
@@ -120,6 +131,8 @@ private:
       * slider */
     double m_dOldRate;
 
+    /** Handle for configuration */
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* RATECONTROL_H */
