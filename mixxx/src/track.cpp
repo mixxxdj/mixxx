@@ -77,8 +77,8 @@
 #endif
 
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, 
-			 EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
-			 AnalyserQueue* analyserQueue)
+             EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
+             AnalyserQueue* analyserQueue)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -91,7 +91,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_iLibraryIdx = 0;   //FIXME: Deprecated, can safely remove.
     m_iPlayqueueIdx = 0; //FIXME: Deprecated, can safely remove.
 
-	m_analyserQueue = analyserQueue;
+    m_analyserQueue = analyserQueue;
 
     m_pTrackCollection = new TrackCollection();
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
@@ -109,7 +109,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
     m_qPromoPlaylist.setTrackCollection(m_pTrackCollection);
 
-	m_timerID = 0;
+    m_timerID = 0;
 
 #ifdef __IPOD__
     m_qIPodPlaylist.setTrackCollection(m_pTrackCollection);
@@ -180,16 +180,16 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 /*
         connect( m_pView->m_pLineEditSearch,
                 SIGNAL( textChanged( const QString & )),
-		m_pView->m_pTrackTableView,
-		SLOT(slotFilter(const QString &)));
+        m_pView->m_pTrackTableView,
+        SLOT(slotFilter(const QString &)));
 */
 
         savedRowPosition = 0;
         m_timerID = startTimer(250);   // Update the TrackTableView filter a maximum of 4 times a second.
 
-	// add EventFilter to do a selectAll text when the LineEditSearch gains focus
-	m_pView->m_pLineEditSearch-> installEventFilter(this);
-	m_pView->installEventFilter(this);
+    // add EventFilter to do a selectAll text when the LineEditSearch gains focus
+    m_pView->m_pLineEditSearch-> installEventFilter(this);
+    m_pView->installEventFilter(this);
 
         // Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
@@ -269,7 +269,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     connect(m_pBuffer1->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)), this, SLOT(slotFinishLoadingPlayer1(TrackInfoObject*, bool)));
     connect(m_pBuffer2->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)), this, SLOT(slotFinishLoadingPlayer2(TrackInfoObject*, bool)));
 
-	m_pView->m_pTrackTableView->repaintEverything();
+    m_pView->m_pTrackTableView->repaintEverything();
 
 }
 
@@ -278,10 +278,10 @@ Track::~Track()
 }
 
 void Track::appShuttingDown() {
-	
-	if (m_timerID != 0) {
-		killTimer(m_timerID);
-	}
+    
+    if (m_timerID != 0) {
+        killTimer(m_timerID);
+    }
 }
 
 void Track::resizeColumnsForLibraryMode()
@@ -397,30 +397,30 @@ void Track::initPromoTracks()
  */
 void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
 {
-	//Load settings, and set defaults for anything that we failed to find
-	QDomDocument doc("promotracks");
-	QFile file(xmlPath);
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		return;
-	}
-	if (!doc.setContent(&file)) {
-		file.close();
-		return;
-	}
-	file.close();
+    //Load settings, and set defaults for anything that we failed to find
+    QDomDocument doc("promotracks");
+    QFile file(xmlPath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+    if (!doc.setContent(&file)) {
+        file.close();
+        return;
+    }
+    file.close();
 
-	// print out the element names of all elements that are direct children
-	// of the outermost element.
-	QDomElement docElem = doc.documentElement();
+    // print out the element names of all elements that are direct children
+    // of the outermost element.
+    QDomElement docElem = doc.documentElement();
 
-	QDomNode n = docElem.firstChild();
-	while(!n.isNull()) {
-		QDomElement e = n.toElement(); // try to convert the node to an element.
-		if(!e.isNull()) {
-			if (e.tagName() == "track")
-			{
-				QString filename = promoDirPath + "/" + e.text();
+    QDomNode n = docElem.firstChild();
+    while(!n.isNull()) {
+        QDomElement e = n.toElement(); // try to convert the node to an element.
+        if(!e.isNull()) {
+            if (e.tagName() == "track")
+            {
+                QString filename = promoDirPath + "/" + e.text();
                 float bpm = e.attribute("bpm").toFloat();
                 QString url = e.attribute("url");
                 //TODO: Load comment, but don't overwrite it if the track is already
@@ -429,21 +429,21 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
 
                 //Grab the track from the TrackCollection and add it's metadata...
 
-				TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
+                TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
                 if (newTrack)
                 {
                     newTrack->setBpm(bpm);
                     newTrack->setURL(url);
                     //newTrack->setComment(from XML)
-					 m_qPromoPlaylist.append(newTrack);
+                     m_qPromoPlaylist.append(newTrack);
                 }
             }
 
-		}
-		n = n.nextSibling();
-	}
+        }
+        n = n.nextSibling();
+    }
 
-	qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
+    qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
 
 }
 
@@ -632,8 +632,8 @@ void Track::slotScanLibrary()
 
     #ifdef __C_METRICS__
 
-	cm_writemsg_ascii(MIXXXCMETRICS_LIBRARY_SCAN_TIME,
-	                  baElapsed.data());
+    cm_writemsg_ascii(MIXXXCMETRICS_LIBRARY_SCAN_TIME,
+                      baElapsed.data());
     #endif
 }
 
@@ -845,7 +845,7 @@ void Track::slotDeletePlaylist(QString qName)
 #if QT_VERSION >= 0x040400
         m_qPlaylists.removeOne(list);
 #else
-	m_qPlaylists.removeAt(m_qPlaylists.indexOf(list));
+    m_qPlaylists.removeAt(m_qPlaylists.indexOf(list));
 #endif
         delete list;
     }
@@ -980,7 +980,7 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bSt
     pTrackInfoObject->setVisualResampleRate(m_pVisualResampleCh1->get());
 
     // Queue the track for BPM/Waveform/Wavesummary/etc. analysis
-	m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
+    m_analyserQueue->queueAnalyseTrack(pTrackInfoObject);
 
     // Set Engine file BPM and duration ControlObjects
     pTrackInfoObject->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));
@@ -1251,7 +1251,7 @@ void Track::slotLoadSelectedTrackCh1(double v)
         if (row < 0 || row >= m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->size()) return; // prevent QList out-of-bounds asserts
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
         // If there is one, load it
-	if (pTrack) slotLoadPlayer1(pTrack);
+    if (pTrack) slotLoadPlayer1(pTrack);
     }
 }
 
@@ -1264,7 +1264,7 @@ void Track::slotLoadSelectedTrackCh2(double v)
         // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
-	    // If there is one, load it
+        // If there is one, load it
         if (pTrack) slotLoadPlayer2(pTrack);
     }
 }
