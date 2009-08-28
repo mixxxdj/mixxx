@@ -1,5 +1,3 @@
-/* -*- mode:C++; indent-tabs-mode:s; tab-width:4; c-basic-offset:4; -*- */
-
 #include <QItemDelegate>
 #include <QtCore>
 #include <QtGui>

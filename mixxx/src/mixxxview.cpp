@@ -1,4 +1,3 @@
-/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 /***************************************************************************
                           mixxxview.cpp  -  description
                              -------------------
@@ -37,7 +36,7 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wsearchlineedit.h"
 #include "wtracktableview.h"
-#include "wtracksourcesview.h"
+#include "widget/wlibrarysidebar.h"
 
 
 #include "widget/woverview.h"
@@ -120,7 +119,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
-    m_pLibraryTrackSourcesView = 0;
+    m_pLibrarySidebar = 0;
 
 
     setupColorScheme(docElem, pConfig);
@@ -637,13 +636,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		p->show();
             }
 
-
-
-
-
-
-
-
             // persistent: m_pNumberPosCh1, m_pNumberPosCh2
             else if (node.nodeName()=="NumberPos")
             {
@@ -819,19 +811,19 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
 		}
 		
-		if (m_pLibraryTrackSourcesView == 0) {
-		    m_pLibraryTrackSourcesView = new WTrackSourcesView();
+		if (m_pLibrarySidebar == 0) {
+		    m_pLibrarySidebar = new WLibrarySidebar();
 		    setupTrackSourceViewWidget(node);
 		}
 
-		m_pLibrary->bindWidget(m_pLibraryTrackSourcesView,
+		m_pLibrary->bindWidget(m_pLibrarySidebar,
 				       m_pTrackTableView);
  
 		if (m_pSplitter == 0) {
 		    m_pSplitter = new QSplitter();
  
 		    //Add the track sources view to the splitter.
-		    m_pSplitter->addWidget(m_pLibraryTrackSourcesView);
+		    m_pSplitter->addWidget(m_pLibrarySidebar);
                  	
 		    //Add the track table widget to the splitter.
 		    m_pSplitter->addWidget(m_pTrackTableView);
@@ -848,15 +840,14 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                                                     3,    //Span 3 cols
                                                     0);   //Default alignment
 
-                    
                     /*
                     //XXX: Re-enable this to get the tab widget back, post 1.7.0 release.
                     //Add the library page to the tab widget.
                     m_pTabWidget->addWidget(m_pTabWidgetLibraryPage, tr("Library"));
                     
                     //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));   
-		    */             
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));
+		    */
                 }
                 
                 //Move the tab widget into position and size it properly.
@@ -978,7 +969,7 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 	
 	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
 	
-	//m_pLibraryTrackSourcesView->setForegroundColor(WSkinColor::getCorrectColor(fgc));
+	//m_pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
 	
 	// Row colors
 	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
@@ -1000,7 +991,7 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 	        Rowpalette.setColor(QPalette::AlternateBase, r2);
 		Rowpalette.setColor(QPalette::Text, text);
 		
-	        m_pLibraryTrackSourcesView->setPalette(Rowpalette);
+	        m_pLibrarySidebar->setPalette(Rowpalette);
 	    }
     }
     

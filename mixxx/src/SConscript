@@ -372,7 +372,7 @@ sources = Split("""
                 peaklist.cpp
                 rotary.cpp
                 wtracktableview.cpp
-                wtracksourcesview.cpp
+                widget/wlibrarysidebar.cpp
                 library/trackcollection.cpp
                 library/librarytablemodel.cpp
                 library/browsetablemodel.cpp

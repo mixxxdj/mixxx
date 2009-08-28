@@ -16,7 +16,7 @@ class TrackCollection;
 class SidebarModel;
 class LibraryFeature;
 class LibraryTableModel;
-class WTrackSourcesView;
+class WLibrarySidebar;
 class WTrackTableView;
 
 class Library : public QObject {
@@ -26,7 +26,7 @@ public:
     virtual ~Library();
     
     //void bindWidget(LibraryWidget* widget);
-    void bindWidget(WTrackSourcesView* sourcesView, WTrackTableView* tableView);
+    void bindWidget(WLibrarySidebar* sidebarView, WTrackTableView* tableView);
     void addFeature(LibraryFeature* feature);
     
     // TODO(rryan) Transitionary only -- the only reason this is here is so the

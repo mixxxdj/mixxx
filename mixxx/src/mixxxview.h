@@ -21,11 +21,9 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-
-
-//Added by qt3to4:
 #include <Q3ValueList>
 #include <QList>
+
 #include "configobject.h"
 #include "imgsource.h"
 
@@ -42,7 +40,6 @@ class WNumberBpm;
 class QDomNode;
 class QDomElement;
 class MixxxKeyboard;
-/*new classes for new visual layout*/
 class QComboBox;
 class QLineEdit;
 class QPushButton;
@@ -51,8 +48,9 @@ class QTabWidget;
 class QSplitter;
 class QStackedWidget;
 class WTrackTableView;
-class WTrackSourcesView;
-class DlgLADSPA; class LADSPAView;
+class WLibrarySidebar;
+class DlgLADSPA;
+class LADSPAView;
 class WaveformRenderer;
 class Player;
 class TrackInfoObject;
@@ -144,7 +142,7 @@ private:
     /** The track table view widget */
     WTrackTableView *m_pTrackTableView;
     /** The pane on the left in the library, whatever you want to call it. */
-    WTrackSourcesView *m_pLibraryTrackSourcesView;
+    WLibrarySidebar* m_pLibrarySidebar;
 	/** The splitter widget that contains the library panes */
 	QSplitter *m_pSplitter; 
     // The library manager
