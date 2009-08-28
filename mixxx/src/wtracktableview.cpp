@@ -95,6 +95,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
+
+    Q_ASSERT(model);
+    Q_ASSERT(track_model);
     
     setModel(model);
 
@@ -107,12 +110,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         setItemDelegateForColumn(i, delegate);
         delete old_delegate;
     }
-
-    //Needs to be done after the data model is set. Also note that calling
-    //restoreVScrollBarPos() here seems to slow down Mixxx's startup
-    //somewhat. Might be causing some massive SQL query to run at startup.
-    //restoreVScrollBarPos();
-
 }
  
 void WTrackTableView::createActions()
