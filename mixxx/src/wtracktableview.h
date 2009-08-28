@@ -1,11 +1,11 @@
 #ifndef WTRACKTABLEVIEW_H
 #define WTRACKTABLEVIEW_H
 
-#include <QtCore>
-#include <QtGui>
 #include <QAbstractItemModel>
+#include <QTableView>
 
 #include "configobject.h"
+#include "library/libraryview.h"
 
 class TrackInfoObject;
 class TrackModel;
@@ -15,17 +15,15 @@ const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigVal
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 
-class WTrackTableView : public QTableView
+class WTrackTableView : public QTableView, public LibraryView
 {
     Q_OBJECT
-    
  	public:
     WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * pConfig);
     ~WTrackTableView();
     void setup(QDomNode node);
     void contextMenuEvent(QContextMenuEvent * event);
 public slots:
-    void slotSearch(const QString& searchText);
     void saveVScrollBarPos();
     void restoreVScrollBarPos();
     void loadTrackModel(QAbstractItemModel* model);
@@ -35,9 +33,8 @@ private slots:
     void slotLoadPlayer2();
     void slotRemove();
 signals:
-    void loadTrackIntoPlayer1(TrackInfoObject*);
-    void loadTrackIntoPlayer2(TrackInfoObject*);
-    void loadTrackIntoNextAvailablePlayer(TrackInfoObject*);
+    void loadTrack(TrackInfoObject* pTrack);
+    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
 private:
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);

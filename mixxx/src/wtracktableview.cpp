@@ -144,7 +144,6 @@ void WTrackTableView::setup(QDomNode node)
 {
     //NOTE: Position and size are now managed by a QLayout
     //      inside mixxxview.cpp's tab widget.
-
   // Foreground color
     QColor fgc(0,255,0);
     if (!WWidget::selectNode(node, "FgColor").isNull())
@@ -185,46 +184,33 @@ void WTrackTableView::setup(QDomNode node)
  
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 {
- 	//model()->
- 	qDebug() << model()->data(index);
- 	
- 	//Whoa, you need to use dynamic_cast here. For real.
- 	TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
- 	if (trackModel) {
- 		TrackInfoObject* track = trackModel->getTrack(index);		
- 		if (track != NULL) {
- 			//Load the track into the next available (non-playing) Player.
- 			emit(loadTrackIntoNextAvailablePlayer(track));
- 		}
- 	}
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    TrackInfoObject* pTrack = NULL;
+    if (trackModel && (pTrack = trackModel->getTrack(index))) {
+        emit(loadTrack(pTrack));
+    }
 }
  
-void WTrackTableView::slotLoadPlayer1()
-{
- 	if (m_selectedIndices.size() > 0)
-        {
-            TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-            if (trackModel) {
-                TrackInfoObject* selectedTrack = trackModel->getTrack(m_selectedIndices.at(0));	
-                if (selectedTrack != NULL) {
-                    emit(loadTrackIntoPlayer1(selectedTrack));
-                }
-            }
+void WTrackTableView::slotLoadPlayer1() {
+    if (m_selectedIndices.size() > 0) {
+        TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+        TrackInfoObject* pTrack = NULL;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(m_selectedIndices.at(0)))) {
+            emit(loadTrackToPlayer(pTrack, 1));
         }
+    }
 }
  
-void WTrackTableView::slotLoadPlayer2()
-{
- 	if (m_selectedIndices.size() > 0)
-        {
-            TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-            if (trackModel) {
-                TrackInfoObject* selectedTrack = trackModel->getTrack(m_selectedIndices.at(0));	
-                if (selectedTrack != NULL) {
-                    emit(loadTrackIntoPlayer2(selectedTrack));
-                }
-            }
+void WTrackTableView::slotLoadPlayer2() {
+ 	if (m_selectedIndices.size() > 0) {
+        TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+        TrackInfoObject* pTrack = NULL;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(m_selectedIndices.at(0)))) {
+            emit(loadTrackToPlayer(pTrack, 2));
         }
+    }
 }
  
 void WTrackTableView::slotRemove()
@@ -250,13 +236,6 @@ void WTrackTableView::slotRemove()
                     }
             }
         }
-}
-void WTrackTableView::slotSearch(const QString& searchText)
-{		
- 	TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
- 	if (trackModel) {
- 		trackModel->search(searchText);
- 	}
 }
  
 void WTrackTableView::saveVScrollBarPos()

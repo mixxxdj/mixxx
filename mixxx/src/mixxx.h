@@ -135,8 +135,11 @@ class MixxxApp : public QMainWindow
 	QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-    /** Load a track into the next available (non-playing) Player */
-    void slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*);
+    // Load a track into the next available (non-playing) Player
+    void slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* track);
+    // Load a track into the specified player. Does nothing if an invalid player
+    // is specified. player is indexed from 1.
+    void slotLoadTrackToPlayer(TrackInfoObject* track, int player);
     /** Load a track into Player 1 */
     void slotLoadPlayer1(QString location);
     /** Load a track into Player 2 */
