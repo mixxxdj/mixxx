@@ -1,509 +1,536 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DlgPrefControlsDlg</class>
- <widget class="QWidget" name="DlgPrefControlsDlg" >
-  <property name="geometry" >
+ <widget class="QWidget" name="DlgPrefControlsDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>427</width>
-    <height>505</height>
+    <width>591</width>
+    <height>534</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form1</string>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" >
-    <layout class="QGridLayout" >
-     <item row="0" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2" >
-       <property name="enabled" >
+  <layout class="QGridLayout">
+   <item row="0" column="0">
+    <layout class="QGridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Skin</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="0" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxSkinconf" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="0" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSkinconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
       </widget>
      </item>
-     <item row="1" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_4" >
-       <property name="enabled" >
+     <item row="1" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2_4">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Scheme</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxSchemeconf" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="1" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSchemeconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
       </widget>
      </item>
-     <item row="2" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_2" >
-       <property name="enabled" >
+     <item row="2" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Waveform display</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxVisuals" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="2" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxVisuals">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
       </widget>
      </item>
-     <item row="3" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_3" >
-       <property name="enabled" >
+     <item row="3" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2_3">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Position display</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="3" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxPosition" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="3" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxPosition">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
       </widget>
      </item>
-     <item row="4" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_3_3" >
-       <property name="enabled" >
+     <item row="4" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2_3_3">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Scale BPM display</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxScaleBpm" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="4" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxScaleBpm">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="toolTip" >
+       <property name="toolTip">
         <string>Scale BPM display according to playback rate</string>
        </property>
        <item>
-        <property name="text" >
+        <property name="text">
          <string>Yes</string>
         </property>
        </item>
        <item>
-        <property name="text" >
+        <property name="text">
          <string>No</string>
         </property>
        </item>
       </widget>
      </item>
-     <item row="5" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_3_2" >
-       <property name="enabled" >
+     <item row="5" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2_3_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Tool tips</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxTooltips" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="5" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxTooltips">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
        <item>
-        <property name="text" >
+        <property name="text">
          <string>On</string>
         </property>
        </item>
        <item>
-        <property name="text" >
+        <property name="text">
          <string>Off</string>
         </property>
        </item>
       </widget>
      </item>
-     <item row="6" column="0" >
-      <widget class="QLabel" name="TextLabel6" >
-       <property name="enabled" >
+     <item row="6" column="0">
+      <widget class="QLabel" name="TextLabel6">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Pitch/Rate slider range</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxRateRange" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="6" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxRateRange">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
       </widget>
      </item>
-     <item row="7" column="0" >
-      <widget class="QLabel" name="TextLabel6_2" >
-       <property name="enabled" >
+     <item row="7" column="0">
+      <widget class="QLabel" name="TextLabel6_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Pitch/Rate slider direction</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxRateDir" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <item row="7" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxRateDir">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
       </widget>
      </item>
-     <item row="8" column="0" >
-      <widget class="QLabel" name="label" >
-       <property name="text" >
+     <item row="9" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
         <string>Cue behaviour</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxCueDefault" />
+     <item row="9" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxCueDefault"/>
      </item>
-     <item row="9" column="0" >
-      <widget class="QLabel" name="textLabelCueRecall" >
-       <property name="text" >
+     <item row="10" column="0">
+      <widget class="QLabel" name="textLabelCueRecall">
+       <property name="text">
         <string>Auto Recall Cue</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxCueRecall" />
+     <item row="10" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxCueRecall"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Pitchbend sensitivity</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QSlider" name="SliderPitchbendSensitivity">
+       <property name="minimum">
+        <number>100</number>
+       </property>
+       <property name="maximum">
+        <number>2500</number>
+       </property>
+       <property name="singleStep">
+        <number>50</number>
+       </property>
+       <property name="value">
+        <number>250</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
-   <item row="1" column="0" >
-    <layout class="QGridLayout" >
-     <item row="0" column="0" >
-      <widget class="QLabel" name="textLabel" >
-       <property name="maximumSize" >
+   <item row="1" column="0">
+    <layout class="QGridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="textLabel">
+       <property name="maximumSize">
         <size>
          <width>16777215</width>
          <height>20</height>
         </size>
        </property>
-       <property name="text" >
+       <property name="text">
         <string/>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>true</bool>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="3" column="0" >
-    <layout class="QGridLayout" >
-     <item row="0" column="0" colspan="2" >
-      <widget class="QLabel" name="TextLabel6_2_3" >
-       <property name="enabled" >
+   <item row="3" column="0">
+    <layout class="QGridLayout">
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="TextLabel6_2_3">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Temporary pitch/rate buttons</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="0" column="3" colspan="2" >
-      <widget class="QLabel" name="TextLabel6_2_3_3" >
-       <property name="enabled" >
+     <item row="0" column="3" colspan="2">
+      <widget class="QLabel" name="TextLabel6_2_3_3">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Permanent pitch/rate buttons</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="1" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_3_2" >
-       <property name="enabled" >
+     <item row="1" column="0">
+      <widget class="QLabel" name="TextLabel6_2_3_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Left click</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="1" column="1" >
-      <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft" >
-       <property name="toolTip" >
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft">
+       <property name="toolTip">
         <string>Temporary rate change (between 1 and 8000) when left clicking</string>
        </property>
-       <property name="accelerated" >
+       <property name="accelerated">
         <bool>true</bool>
        </property>
-       <property name="decimals" >
+       <property name="decimals">
         <number>1</number>
        </property>
-       <property name="minimum" >
+       <property name="minimum">
         <double>0.100000000000000</double>
        </property>
-       <property name="maximum" >
+       <property name="maximum">
         <double>10.000000000000000</double>
        </property>
-       <property name="singleStep" >
+       <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="1" column="3" >
-      <widget class="QLabel" name="TextLabel6_2_3_2_3" >
-       <property name="enabled" >
+     <item row="1" column="3">
+      <widget class="QLabel" name="TextLabel6_2_3_2_3">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Left click</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="1" column="4" >
-      <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft" >
-       <property name="toolTip" >
+     <item row="1" column="4">
+      <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft">
+       <property name="toolTip">
         <string>Permanent rate change (between 1 and 8000) when left clicking</string>
        </property>
-       <property name="accelerated" >
+       <property name="accelerated">
         <bool>true</bool>
        </property>
-       <property name="decimals" >
+       <property name="decimals">
         <number>1</number>
        </property>
-       <property name="minimum" >
+       <property name="minimum">
         <double>0.100000000000000</double>
        </property>
-       <property name="maximum" >
+       <property name="maximum">
         <double>10.000000000000000</double>
        </property>
-       <property name="singleStep" >
+       <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="2" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_3_2_2" >
-       <property name="enabled" >
+     <item row="2" column="0">
+      <widget class="QLabel" name="TextLabel6_2_3_2_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Right click</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="2" column="1" >
-      <widget class="QDoubleSpinBox" name="spinBoxTempRateRight" >
-       <property name="toolTip" >
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="spinBoxTempRateRight">
+       <property name="toolTip">
         <string>Temporary rate change (between 1 and 8000) when right clicking</string>
        </property>
-       <property name="accelerated" >
+       <property name="accelerated">
         <bool>true</bool>
        </property>
-       <property name="decimals" >
+       <property name="decimals">
         <number>1</number>
        </property>
-       <property name="minimum" >
+       <property name="minimum">
         <double>0.100000000000000</double>
        </property>
-       <property name="maximum" >
+       <property name="maximum">
         <double>10.000000000000000</double>
        </property>
-       <property name="singleStep" >
+       <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="2" column="3" >
-      <widget class="QLabel" name="TextLabel6_2_3_2_2_2" >
-       <property name="enabled" >
+     <item row="2" column="3">
+      <widget class="QLabel" name="TextLabel6_2_3_2_2_2">
+       <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="font" >
+       <property name="font">
         <font/>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Right click</string>
        </property>
-       <property name="wordWrap" >
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="2" column="4" >
-      <widget class="QDoubleSpinBox" name="spinBoxPermRateRight" >
-       <property name="toolTip" >
+     <item row="2" column="4">
+      <widget class="QDoubleSpinBox" name="spinBoxPermRateRight">
+       <property name="toolTip">
         <string>Permanent rate change (between 1 and 8000) when right clicking</string>
        </property>
-       <property name="accelerated" >
+       <property name="accelerated">
         <bool>true</bool>
        </property>
-       <property name="decimals" >
+       <property name="decimals">
         <number>1</number>
        </property>
-       <property name="minimum" >
+       <property name="minimum">
         <double>0.100000000000000</double>
        </property>
-       <property name="maximum" >
+       <property name="maximum">
         <double>10.000000000000000</double>
        </property>
-       <property name="singleStep" >
+       <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="3" column="0" >
+     <item row="3" column="0">
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>40</height>
@@ -515,7 +542,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <resources/>
  <connections/>

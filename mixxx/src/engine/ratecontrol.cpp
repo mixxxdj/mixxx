@@ -17,14 +17,17 @@ double RateControl::m_dPerm = 0.01;
 double RateControl::m_dPermSmall = 0.001;
 
 RateControl::RateControl(const char* _group,
-                         const ConfigObject<ConfigValue>* _config) :
+                         ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
     m_bTempStarted(false),
     m_eRateTempMode(PITCHBEND_REAL),
     m_dOldRate(0.0f),
     m_ePbPressed(0),
     m_ePbCurrent(0),
-    m_dRateTemp(0.0)
+    m_dRateTemp(0.0),
+    m_dRateTempRampbackChange(0.0),
+    m_eRampBackMode(PITCHBEND_RAMPBACK_NONE),
+    m_pConfig(_config)
 {
     
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -106,7 +109,6 @@ RateControl::RateControl(const char* _group,
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
     m_pJogFilter->setFilterLength(5);
-
 }
 
 RateControl::~RateControl() {
@@ -385,8 +387,14 @@ double RateControl::process(const double rate,
         }
         else 
         {
-            // set the rate change for the new ramped pitchbending behaviour
-            m_dTempRateChange = ((double)countSamples / (double)RATE_TEMP_STEP);
+            // I need to connect to the correct slots so I can avoid 
+            // this and calculate all of it at initialization
+            
+            m_iRateTempStep = m_pConfig->getValueString(ConfigKey("[Controls]","PitchbendSensitivity")).toInt();
+            m_dTempRateChange = ((double)countSamples / ((double)m_iRateTempStep / 100));
+            
+            if (m_eRampBackMode == PITCHBEND_RAMPBACK_PERIOD)
+                m_dRateTempRampbackChange = 0.0;
         }
         
     }
@@ -399,15 +407,44 @@ double RateControl::process(const double rate,
         else if ( m_ePbCurrent == RateControl::PITCHBEND_DOWN )
             subRateTemp(m_dTempRateChange);
     }
-    else if ( m_bTempStarted )
+    else if ((m_bTempStarted) || ((m_eRampBackMode != PITCHBEND_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
     {
         // No buttons pressed, so time to deinitialize
         m_bTempStarted = false;
         
+        
         if ( m_eRateTempMode == PITCHBEND_OLD )
             m_pRateSlider->set(m_dOldRate);
-        else
-            resetRateTemp();
+        else {
+            
+            if ((m_eRampBackMode == PITCHBEND_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0 ))
+            {
+                qDebug() << "countSamples:" << countSamples;
+                
+                
+                int period = 2;
+                if (period)
+                    m_dRateTempRampbackChange = fabs(m_dRateTemp / (double)period);
+                else {
+                    resetRateTemp();
+                    return 1;
+                }
+                
+            }
+            
+            if ((m_eRampBackMode != PITCHBEND_RAMPBACK_NONE))
+            {
+                
+                if ( fabs(m_dRateTemp) < m_dRateTempRampbackChange)
+                    resetRateTemp();
+                else if ( m_dRateTemp > 0 )
+                    subRateTemp(m_dRateTempRampbackChange);
+                else
+                    addRateTemp(m_dRateTempRampbackChange);
+            }
+            else
+                resetRateTemp();
+        }
     }
     
     return 1;

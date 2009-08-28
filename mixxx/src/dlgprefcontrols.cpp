@@ -253,6 +253,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Update combo box
     ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
 
+    // Update Pitchbend Sensitivity
+    SliderPitchbendSensitivity->setValue((m_pConfig->getValueString(ConfigKey("[Controls]","PitchbendSensitivity")).toInt()));
+
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdateSchemes();
@@ -475,5 +478,8 @@ void DlgPrefControls::slotApply()
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
+    
+    m_pConfig->set(ConfigKey("[Controls]","PitchbendSensitivity"), 
+                        ConfigValue(SliderPitchbendSensitivity->value()));
 }
 
