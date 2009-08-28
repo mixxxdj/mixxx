@@ -15,7 +15,7 @@
 #include "library/playlistfeature.h"
 
 #include "wtracktableview.h"
-#include "wtracksourcesview.h"
+#include "widget/wlibrarysidebar.h"
 
 Library::Library(QObject* parent) {
 
@@ -33,20 +33,20 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
-void Library::bindWidget(WTrackSourcesView* pSourcesView,
+void Library::bindWidget(WLibrarySidebar* pSidebarView,
                          WTrackTableView* pTableView) {
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
 
     // Setup the sources view
-    pSourcesView->setModel(m_pSidebarModel);
-    connect(pSourcesView, SIGNAL(clicked(const QModelIndex&)),
+    pSidebarView->setModel(m_pSidebarModel);
+    connect(pSidebarView, SIGNAL(clicked(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-    connect(pSourcesView, SIGNAL(activated(const QModelIndex&)),
+    connect(pSidebarView, SIGNAL(activated(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
 
     // Enable the default selection
-    pSourcesView->selectionModel()->select(m_pSidebarModel->getDefaultSelection(),
+    pSidebarView->selectionModel()->select(m_pSidebarModel->getDefaultSelection(),
                                            QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
 }
