@@ -83,7 +83,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
         feature->bindWidget(pSidebarWidget, pLibraryWidget);
-    }b
+    }
 
 }
 
