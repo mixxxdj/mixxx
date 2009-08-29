@@ -14,6 +14,8 @@
 
 class TrackModel;
 class TrackInfoObject;
+class WLibrarySidebar;
+class WLibrary;
 
 class LibraryFeature : public QObject {
   Q_OBJECT
@@ -25,15 +27,20 @@ class LibraryFeature : public QObject {
     virtual int numChildren() = 0;
     virtual QVariant child(int n) = 0;
 
+    // Reimplement this to register custom views with the library widget.
+    virtual void bindWidget(WLibrarySidebar* sidebarWidget, 
+                            WLibrary* libraryWidget) {
+    }
+
 public slots:
     virtual void activate() = 0;
     virtual void activateChild(int n) = 0;
     virtual void onRightClick(QModelIndex index) = 0;
     virtual void onClick(QModelIndex index) = 0;
 signals:
-    virtual void featureUpdated();
-    virtual void showTrackModel(QAbstractItemModel* model);
-    virtual void showView(QString view);
+    void featureUpdated();
+    void showTrackModel(QAbstractItemModel* model);
+    void switchToView(const QString& view);
 };
 
 #endif /* LIBRARYFEATURE_H */

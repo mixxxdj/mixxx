@@ -31,7 +31,7 @@ public slots:
     // Show the view registered with the given name. Does nothing if the current
     // view is the specified view, or if the name does not specify any
     // registered view.
-    void switchToView(QString name);
+    void switchToView(const QString& name);
 
 private:
     QMap<QString, QWidget*> m_sViewMap;

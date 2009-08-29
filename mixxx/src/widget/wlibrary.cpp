@@ -32,7 +32,7 @@ void WLibrary::setup(QDomNode node) {
     }
 }
 
-void WLibrary::switchToView(QString name) {
+void WLibrary::switchToView(const QString& name) {
     qDebug() << "WLibrary::switchToView" << name;
     if (m_sViewMap.contains(name)) {
 
