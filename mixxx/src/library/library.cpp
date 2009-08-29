@@ -61,7 +61,10 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
-    pLibraryWidget->switchToView(m_sTrackViewName);
+    
+    connect(this, SIGNAL(switchToView(const QString&)),
+            pLibraryWidget, SLOT(switchToView(const QString&)));
+    emit(switchToView(m_sTrackViewName));
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
@@ -76,6 +79,12 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
 
+    QListIterator<LibraryFeature*> feature_it(m_features);
+    while(feature_it.hasNext()) {
+        LibraryFeature* feature = feature_it.next();
+        feature->bindWidget(pSidebarWidget, pLibraryWidget);
+    }b
+
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -84,11 +93,18 @@ void Library::addFeature(LibraryFeature* feature) {
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
+    connect(feature, SIGNAL(switchToView(const QString&)),
+            this, SLOT(slotSwitchToView(const QString&)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     qDebug() << "Library::slotShowTrackModel" << model;
     emit(showTrackModel(model));
+}
+
+void Library::slotSwitchToView(const QString& view) {
+    qDebug() << "Library::slotSwitchToView" << view;
+    emit(switchToView(view));
 }
 
 void Library::slotSearch(const QString& text) {

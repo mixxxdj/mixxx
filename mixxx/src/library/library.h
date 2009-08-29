@@ -46,6 +46,7 @@ public:
 
 public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
+    void slotSwitchToView(const QString& view);
     void slotSearch(const QString&);
     void slotSearchCleared();
     void slotSearchStarting();
@@ -53,6 +54,7 @@ public slots:
     void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
 signals:
     void showTrackModel(QAbstractItemModel* model);
+    void switchToView(const QString& view);
     void search(const QString&);
     void searchCleared();
     void searchStarting();
