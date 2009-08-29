@@ -18,9 +18,11 @@
 
 #include <qapplication.h>
 
-#include "midiscriptengine.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "mididevice.h"
+#include "midiscriptengine.h"
+
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
@@ -30,9 +32,9 @@
 #endif
 
 
-MidiScriptEngine::MidiScriptEngine(MidiObject* midi_object) :
+MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_pEngine(NULL),
-    m_pMidiObject(midi_object)
+    m_pMidiDevice(midiDevice)
 {
 }
 
@@ -88,11 +90,13 @@ void MidiScriptEngine::initializeScriptEngine() {
     //qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
     //qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
 
+    qDebug() << "MIDI Device in script engine is:" << m_pMidiDevice->getName();
+
     // Make this MidiScriptEngine instance available to scripts as
     // 'engine'.
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
-    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiObject));
+    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiDevice));
 
 }
 

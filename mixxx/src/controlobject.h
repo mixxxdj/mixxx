@@ -24,8 +24,8 @@
 //#include <qaccel.h>
 #include <q3ptrqueue.h>
 #include <QMutex>
+#include "midimessage.h"
 #include "configobject.h"
-#include "midiobject.h"
 #include "controlobjectthread.h"
 
 class QWidget;

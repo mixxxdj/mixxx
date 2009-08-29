@@ -36,7 +36,8 @@
 #include "dlgprefrecord.h"
 #include "mixxx.h"
 #include "track.h"
-#include "midiobject.h"
+#include "mididevicemanager.h"
+#include "mididevice.h"
 #include <QTabWidget>
 
 #include <QTabBar>
@@ -46,10 +47,10 @@
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                SoundManager * soundman, Track *track,
-                               MidiObject * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
+                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
-    m_pMidiObject = midi;
+    m_pMidiDeviceManager = midi;
 
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
@@ -108,7 +109,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotShow()));
     connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
-    connect(m_pMidiObject, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
+    connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
@@ -372,16 +373,16 @@ void DlgPreferences::destroyMidiWidgets()
 
 void DlgPreferences::setupMidiWidgets()
 {
-
-	//TODO: For each MIDI device, create a MIDI dialog and put a little link to it in the treepane on the left
-	QList<QString>* deviceList = m_pMidiObject->getDeviceList();
-	QListIterator<QString> it(*deviceList);
+	//For each MIDI device, create a MIDI dialog and put a little link to it in the treepane on the left
+	QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(false, true);
+	QListIterator<MidiDevice*> it(deviceList);
 	
 	while (it.hasNext())
 	  {
-	    QString curDeviceName = QString(it.next()); //make a copy of it.next() so that the original list getting freed doesn't kill us
+	    MidiDevice* currentDevice = it.next();
+	    QString curDeviceName = currentDevice->getName();
 	    //qDebug() << "curDeviceName: " << curDeviceName;
-	    DlgPrefMidiBindings* midiDlg = new DlgPrefMidiBindings(this, *m_pMidiObject, curDeviceName, config);
+	    DlgPrefMidiBindings* midiDlg = new DlgPrefMidiBindings(this, currentDevice, m_pMidiDeviceManager, config);
 	    wmidiBindingsForDevice.append(midiDlg);
 	    pagesWidget->addWidget(midiDlg);
 	    connect(this, SIGNAL(showDlg()), midiDlg, SLOT(slotUpdate()));

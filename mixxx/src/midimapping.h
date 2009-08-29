@@ -4,6 +4,7 @@
                            -------------------
     begin                : Sat Jan 17 2009
     copyright            : (C) 2009 Sean M. Pappalardo
+                           (C) 2009 Albert Santoni
     email                : pegasus@c64.org
 
 ***************************************************************************/
@@ -20,7 +21,7 @@
 #ifndef MIDIMAPPING_H
 #define MIDIMAPPING_H
 
-#include "midiobject.h"
+#include "mididevice.h"
 #include "midimessage.h"
 #include "mixxxcontrol.h"
 #include "midiinputmapping.h"
@@ -44,12 +45,13 @@ class MidiMapping : public QObject
 
     public:
     /** Constructor also loads & applies the default XML MIDI mapping file */
-    MidiMapping(MidiObject &midi_object);
+    MidiMapping(MidiDevice* outputMidiDevice=NULL);
     ~MidiMapping();
+    void setOutputMidiDevice(MidiDevice* outputMidiDevice);
 
     void loadInitialPreset();
-    void loadPreset(QString path);
-    void loadPreset(QDomElement root);
+    void loadPreset(QString path, bool forceLoad=false);
+    void loadPreset(QDomElement root, bool forceLoad=false);
 
     void savePreset(QString path = BINDINGS_PATH);
     void applyPreset();
@@ -87,12 +89,17 @@ class MidiMapping : public QObject
     void clearOutputMidiMapping(int index);
     void clearOutputMidiMapping(MixxxControl control);
     void clearOutputMidiMapping(int index, int count);
+#ifdef __MIDISCRIPT__
+    void restartScriptEngine();
+    MidiScriptEngine *getMidiScriptEngine() { return m_pScriptEngine; };
+#endif
 
 public slots:
     void finishMidiLearn(MidiMessage message);
     void beginMidiLearn(MixxxControl control);
     void cancelMidiLearn();
-
+	void slotScriptEngineReady();
+	
 signals:
     void inputMappingChanged();
     void inputMappingChanged(int startIndex, int endIndex);
@@ -133,15 +140,21 @@ private:
     QList<QString> m_pScriptFileNames;
     QList<QString> m_pScriptFunctionPrefixes;
     MidiScriptEngine *m_pScriptEngine;
+
+    QMutex m_scriptEngineInitializedMutex;
+    QWaitCondition m_scriptEngineInitializedCondition;
 #endif
     QMutex m_mappingLock;
     QDomElement m_Bindings;
-    MidiObject &m_rMidiObject;
     MidiInputMapping m_inputMapping;
     MidiOutputMapping m_outputMapping;
     MidiInputMappingTableModel* m_pMidiInputMappingTableModel;
     MidiOutputMappingTableModel* m_pMidiOutputMappingTableModel;
     MixxxControl m_controlToLearn;
+    QString m_deviceName; /** Name of the device to look for in the <controller> XML nodes... */
+    MidiDevice* m_pOutputMidiDevice; /** We need a pointer back to an _output_ MIDI device so our
+                                         LED handlers know where to fire MIDI messages. Note that
+                                         this can be NULL if there is no output MIDI device! */
 };
 
 #endif

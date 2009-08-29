@@ -9,6 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+#include <math.h>
 #include "wnumberrate.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

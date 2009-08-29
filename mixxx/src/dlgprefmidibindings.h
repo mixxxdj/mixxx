@@ -21,7 +21,6 @@
 #include "ui_dlgprefmidibindingsdlg.h"
 #include "dlgmidilearning.h"
 #include "configobject.h"
-#include "midiobject.h"
 
 //Forward declarations
 class MidiChannelDelegate;
@@ -30,11 +29,14 @@ class MidiNoDelegate;
 class MidiOptionDelegate;
 class ControlGroupDelegate;
 class ControlValueDelegate;
+class MidiDevice;
+class MidiDeviceManager;
 
 class DlgPrefMidiBindings : public QWidget, public Ui::DlgPrefMidiBindingsDlg  {
     Q_OBJECT
 public:
-    DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QString deviceName,
+    DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice,
+                        MidiDeviceManager* midiDeviceManager,
     					ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefMidiBindings();
 
@@ -59,12 +61,11 @@ public slots:
 
 private:
     void setRowBackground(int row, QColor color);
-    void loadPreset(QString path);
     void savePreset(QString path);
     void enumeratePresets();
-
+    void enumerateOutputDevices();
+    
     int currentGroupRow;
-    MidiObject &m_rMidi;
     MidiChannelDelegate* m_pMidiChannelDelegate;
     MidiStatusDelegate* m_pMidiStatusDelegate;
     MidiNoDelegate* m_pMidiNoDelegate;
@@ -73,7 +74,8 @@ private:
     ControlValueDelegate* m_pControlValueDelegate;
     QAction* m_deleteMIDIInputRowAction; /** Used for setting up the shortcut for delete button */
     ConfigObject<ConfigValue> *m_pConfig;
-    QString m_deviceName;
+    MidiDevice* m_pMidiDevice;
+    MidiDeviceManager* m_pMidiDeviceManager;
     DlgMidiLearning* m_pDlgMidiLearning;
 };
 
