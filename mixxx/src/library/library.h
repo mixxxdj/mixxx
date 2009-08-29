@@ -64,6 +64,7 @@ private:
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
+    const static QString m_sTrackViewName;
 };
 
 #endif /* LIBRARY_H */
