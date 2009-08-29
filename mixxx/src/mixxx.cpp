@@ -45,6 +45,8 @@
 #include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
+#include "mididevicemanager.h"
+
 #include "upgrade.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
@@ -95,7 +97,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     soundmanager = 0;
     m_pTrack = 0;
     prefDlg = 0;
-    midi = 0;
+    m_pMidiDeviceManager = 0;
     
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
     config = versionUpgrade();  // This static function is located in upgrade.cpp
@@ -267,15 +269,15 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
-    // Initialise MIDI and open the MIDI device
-    MidiDeviceHandler * midiHandler = new MidiDeviceHandler();
-    midi = midiHandler->getMidiPtr();
-    QString midiDevice = config->getValueString(ConfigKey("[Midi]","Device"));
-    if (midiDevice != "")
-    	midi->devOpen(midiDevice);
+    // Initialise midi
+    m_pMidiDeviceManager = new MidiDeviceManager(config);
+    //TODO: Try to open MIDI devices?
+    m_pMidiDeviceManager->queryDevices();
+    m_pMidiDeviceManager->setupDevices();
+
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, midi, config);
+    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, m_pMidiDeviceManager, config);
     prefDlg->setHidden(true);
 
 #ifdef __LADSPA__
@@ -374,6 +376,9 @@ MixxxApp::~MixxxApp()
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
+	qDebug() << "delete MidiDeviceManager";
+	delete m_pMidiDeviceManager;
+
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
     qDebug() << "delete master, " << qTime.elapsed();
@@ -390,10 +395,6 @@ MixxxApp::~MixxxApp()
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
-//     qDebug() << "delete midi";
-    qDebug() << "delete midi, " << qTime.elapsed();
-    delete midi;
-//    qDebug() << "delete midiconfig";
 
     qDebug() << "delete view, " << qTime.elapsed();
     delete view;

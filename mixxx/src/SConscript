@@ -215,7 +215,6 @@ vars.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
@@ -318,10 +317,7 @@ sources = Split("""
 		analyserwaveform.cpp
                 
                 main.cpp
-                midiobject.cpp
                 midimapping.cpp
-                midiobjectnull.cpp
-                mididevicehandler.cpp
                 midiinputmappingtablemodel.cpp
                 midioutputmappingtablemodel.cpp
                 midichanneldelegate.cpp
@@ -428,17 +424,6 @@ sources = Split("""
 #elif 'win' in platform:
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
-#Compile platform specific MIDI support
-#   Linux moved to the flag parsing area since it depends on the rawmidi flag
-if 'win' in platform:
-	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
-	env.Append(CXXFLAGS = '-D__WINMIDI__')
-elif platform == 'osx':
-	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
-	env.Append(CXXFLAGS = '-D__COREMIDI__')
-elif platform == 'bsd':
-	print 'Warning: Mixxx has no support for BSD midi (yet).' #uuuuhhhh not a very good solution
-
 #Set up the library path on Windows:
 if platform == 'win64':
 	env.Append(CPPPATH='#/../mixxx-win64lib') #If you add more directories, separate them with a semicolon (;)
@@ -474,20 +459,6 @@ elif platform == 'osx':
 #Check for dependencies if we're not doing a clean...
 #if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
 conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
-
-
-#PortMidi backend support
-flags_portmidi = getFlags(env, 'portmidi', 0)
-if int(flags_portmidi):
-	if not conf.CheckLib(['portmidi', 'libportmidi']):
-		print "Did not find portmidi or it\'s development headers, exiting!"
-		Exit(1)
-	#if not conf.CheckLib(['porttime', 'libporttime']):
-	#	print "Did not find porttime or it\'s development headers, exiting!"
-	#	Exit(1)
-	sources += Split("""midiobjectportmidi.cpp """); 
-	env.Append(CPPDEFINES = '__PORTMIDI__')
-
 
 
 #TODO: Add all of the other configure checks as custom_tests properly.
@@ -554,6 +525,20 @@ if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHe
 #Check if FFMPEG was enabled
 CheckFFMPEG(conf, sources)
 
+#Check for PortTime
+if not conf.CheckLib(['porttime', 'libporttime']):
+	print "Did not find PortTime or it\'s development headers, exiting!"
+	Exit(1)
+
+#Check for PortMIDI
+if not conf.CheckLib('portmidi'):
+	print "Did not find PortMidi or it\'s development headers, exiting!"
+	Exit(1)
+
+sources += Split("""mididevice.cpp """); 
+sources += Split("""mididevicemanager.cpp """); 
+sources += Split("""midideviceportmidi.cpp """); 
+env.Append(CPPDEFINES = '__PORTMIDI__')
 
 #Platform-specific checks for Linux...
 if platform == 'linux':
@@ -597,8 +582,7 @@ if platform == 'linux':
 		#'QtWebKit',
 		],
 		debug=False,
-		)
-		
+		)		
 
 	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
@@ -1181,18 +1165,6 @@ else:
 	env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 	print "Debugging message output... disabled"
 
-#ALSA API selection
-if platform == 'linux':
-	flags_rawmidi = getFlags(env, 'rawmidi', 0)
-	if int(flags_rawmidi):
-		build_flags += 'rawmidi '
-		sources += Split("""midiobjectalsa.cpp """)  #ALSA RawMIDI support for Linux
-		env.Append(CXXFLAGS = '-D__ALSAMIDI__')
-		print "ALSA API... RawMIDI"
-	else:
-		sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
-		env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
-		print "ALSA API... Sequencer"
 
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
 flags_msvshacks = getFlags(env, 'msvshacks', 0)
