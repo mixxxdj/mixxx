@@ -19,6 +19,10 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
+// This is is the name which we use to register the WTrackTableView with the
+// WLibrary
+const QString Library::m_sTrackViewName = QString("WTrackTableView");
+
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig) {
     m_pTrackCollection = new TrackCollection();
@@ -33,6 +37,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
 Library::~Library() {
     delete m_pSidebarModel;
     delete m_pTrackCollection;
+    QMutableListIterator<LibraryFeature*> features_it(m_features);;
+    while(features_it.hasNext()) {
+        LibraryFeature* feature = features_it.next();
+        features_it.remove();
+        delete feature;
+    }
 }
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
@@ -50,8 +60,8 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             this, SLOT(slotLoadTrack(TrackInfoObject*)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
-    pLibraryWidget->registerView("TRACK", pTrackTableView);
-    pLibraryWidget->switchToView("TRACK");
+    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
+    pLibraryWidget->switchToView(m_sTrackViewName);
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
@@ -69,6 +79,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
 }
 
 void Library::addFeature(LibraryFeature* feature) {
+    Q_ASSERT(feature);
     m_features.push_back(feature);
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
