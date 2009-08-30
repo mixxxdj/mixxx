@@ -5,41 +5,12 @@
 #include "playlisttablemodel.h"
 
 
-PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId) : TrackModel(), QSqlRelationalTableModel(parent, pTrackCollection->getDatabase())
+PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId) : TrackModel(), QSqlTableModel(parent, pTrackCollection->getDatabase())
 {
 	m_pTrackCollection = pTrackCollection;
-    m_iPlaylistId = playlistId;
-
-    QString playlistTableName = "playlist_" + m_iPlaylistId;
-
- 	QSqlQuery query;
- 	//Update everything but "location", since that's what we identify the track by.
-    query.prepare("CREATE VIEW " + playlistTableName + " AS "
-                  "SELECT " + 
-                  LIBRARYTABLE_ARTIST + "," + 
-                  LIBRARYTABLE_TITLE + "," +
-                  LIBRARYTABLE_ALBUM + "," +
-                  LIBRARYTABLE_YEAR + "," +
-                  LIBRARYTABLE_DURATION + "," +
-                  LIBRARYTABLE_GENRE + "," +
-                  LIBRARYTABLE_TRACKNUMBER + "," +
-                  LIBRARYTABLE_BPM + "," +
-                  LIBRARYTABLE_LOCATION + "," +
-                  LIBRARYTABLE_COMMENT + " "
-                  "FROM library "
-                  "INNER JOIN PlaylistTracks "
-                  "ON library.id=PlaylistTracks.track_id "
-                  "ORDER BY position");
-                  //"SET artist=:artist, ");
-    //query.bindValue(":id", 1001); 
-    query.exec();
-     
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << query.lastError();
-    }
-
-    setTable(playlistTableName);
+    //m_iPlaylistId = playlistId;
+    
+    setPlaylist(playlistId);
 	
 	//Hide columns in the tablemodel that we don't want to show.
 	/*
@@ -67,12 +38,66 @@ PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackC
     setHeaderData(this->fieldIndex(LIBRARYTABLE_BPM), Qt::Horizontal, tr("BPM"));
     */
     
-   	select(); //Populate the data model.
+
 }
 
 PlaylistTableModel::~PlaylistTableModel()
 {
 }
+
+
+void PlaylistTableModel::setPlaylist(int playlistId)
+{
+    qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+    m_iPlaylistId = playlistId;
+
+    QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
+
+ 	QSqlQuery query;
+    //query.prepare("DROP VIEW " + playlistTableName);
+    //query.exec();
+
+    //Escape the playlist name
+    QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
+    QSqlField playlistNameField("name", QVariant::String);
+    playlistNameField.setValue(playlistTableName);
+
+    query.prepare("CREATE TEMPORARY VIEW " + driver->formatValue(playlistNameField) + " AS "
+                  "SELECT "
+                  "position, "
+                  "playlist_id, " + //DEBUG
+                  LIBRARYTABLE_ARTIST + "," + 
+                  LIBRARYTABLE_TITLE + "," +
+                  LIBRARYTABLE_ALBUM + "," +
+                  LIBRARYTABLE_YEAR + "," +
+                  LIBRARYTABLE_DURATION + "," +
+                  LIBRARYTABLE_GENRE + "," +
+                  LIBRARYTABLE_TRACKNUMBER + "," +
+                  LIBRARYTABLE_BPM + "," +
+                  LIBRARYTABLE_LOCATION + "," +
+                  LIBRARYTABLE_COMMENT + " "
+                  "FROM library "
+                  "INNER JOIN PlaylistTracks "
+                  "ON library.id=PlaylistTracks.track_id "
+                  "WHERE PlaylistTracks.playlist_id=" + QString("%1").arg(playlistId) + " "
+                  "ORDER BY PlaylistTracks.position ");
+    //query.bindValue(":playlist_name", playlistTableName);
+    //query.bindValue(":playlist_id", m_iPlaylistId); 
+    query.exec();
+    
+    //qDebug() << query.executedQuery();
+     
+    //Print out any SQL error, if there was one.
+    /*
+    if (query.lastError().isValid()) {
+     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+    }*/
+
+    setTable(playlistTableName);
+    
+   	select(); //Populate the data model.
+}
+
 
 void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {

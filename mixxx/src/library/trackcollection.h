@@ -71,11 +71,24 @@ class TrackCollection : public QObject
 
  	void scanPath(QString path);
  	bool trackExistsInDatabase(QString file_location);
+ 	int getTrackId(QString location);
  
  	QList<TrackInfoObject*> dumpDB();
  	
  	QSqlDatabase getDatabase();
- 
+ 	/** Create a playlist */
+    void createPlaylist(QString name);
+    /** Delete a playlist */
+    void deletePlaylist(int playlistId);
+    /** Append a track to a playlist */
+    void appendTrackToPlaylist(int trackId, int playlistId);
+    void appendTrackToPlaylist(QString location, int playlistId);
+    /** Find out how many playlists exist. */
+    unsigned int playlistCount();
+    /** Get the name of the playlist at the given position */
+    QString getPlaylistName(unsigned int position);
+    /** Get the id of the playlist at position */
+    int getPlaylistId(int position);
 public slots:
  	bool checkForTables();
  	/** Saves a track's info back to the database */

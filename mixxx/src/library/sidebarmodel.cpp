@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QUrl>
 
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
@@ -14,6 +15,7 @@ SidebarModel::~SidebarModel() {
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
+    connect(feature, SIGNAL(featureUpdated()), this, SLOT(refreshData()));
 }
 
 QModelIndex SidebarModel::getDefaultSelection() {
@@ -26,6 +28,16 @@ void SidebarModel::activateDefaultSelection() {
     if (m_sFeatures.size() > 0) {
         m_sFeatures[0]->activate();
     }
+}
+
+void SidebarModel::refreshData()
+{
+    //Reset all the model indices and refresh all the data.
+    //TODO: Could do something nicer when a feature's children change,
+    //      but the features know nothing about their model indices,
+    //      so they can't do stuff like beginInsertRow() to help the
+    //      model manage the indices.
+    reset();
 }
 
 QModelIndex SidebarModel::index(int row, int column,
@@ -110,6 +122,60 @@ void SidebarModel::clicked(const QModelIndex& index) {
                 }
             }
         }
-        
     }
+}
+
+void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
+    qDebug() << "SidebarModel::rightClicked() index=" << index;
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+            //dunno what to do... - Albert
+            //m_sFeatures[index.row()]->activate();
+           m_sFeatures[index.row()]->onRightClick(globalPos, index);
+        } else {
+            for (int i = 0; i < m_sFeatures.size(); ++i) {
+                if (m_sFeatures[i] == index.internalPointer()) {
+                    m_sFeatures[i]->onRightClick(globalPos, index);
+                }
+            }
+        }
+    }
+}
+
+bool SidebarModel::dropAccept(const QModelIndex& index, QUrl url)
+{
+    //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+            //m_sFeatures[index.row()]->activate();
+            return false;
+        } else {
+            for (int i = 0; i < m_sFeatures.size(); ++i) {
+                if (m_sFeatures[i] == index.internalPointer()) {
+                    return m_sFeatures[i]->dropAccept(index, url);
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
+{
+    //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+            //m_sFeatures[index.row()]->activate();
+            return false;
+        } else {
+            for (int i = 0; i < m_sFeatures.size(); ++i) {
+                if (m_sFeatures[i] == index.internalPointer()) {
+                    return m_sFeatures[i]->dragMoveAccept(index, url);
+                }
+            }
+        }
+    }
+    
+    return false;
 }

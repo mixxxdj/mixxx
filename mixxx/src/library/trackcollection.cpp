@@ -32,7 +32,8 @@ TrackCollection::TrackCollection()
 
 TrackCollection::~TrackCollection()
 {
-    m_db.close();    
+    m_db.close();
+    qDebug() << "TrackCollection destructed";
 }
 
 bool TrackCollection::checkForTables()
@@ -50,6 +51,7 @@ bool TrackCollection::checkForTables()
     //TODO: Check if the table exists...
     //      If it doesn't exist, create it.
  
+
  	QSqlQuery query;
  	//Little bobby tables
     query.exec("CREATE TABLE library (id INTEGER primary key, "
@@ -64,29 +66,34 @@ bool TrackCollection::checkForTables()
      		   "wavesummaryhex blob, "
  			   "channels integer)");
  			   
-    query.exec("CREATE TABLE Playlists (id INTEGER primary key, "
-           "name varchar(48), date_created datetime, "
-           "date_modified datetime)");	
 
+    query.exec("CREATE TABLE Playlists (id INTEGER primary key, "
+           "name varchar(48), position INTEGER, "
+           "date_created datetime, "
+           "date_modified datetime)");
+
+    
     query.exec("CREATE TABLE PlaylistTracks (id INTEGER primary key, "
            "playlist_id INTEGER REFERENCES Playlists(id),"
            "track_id INTEGER REFERENCES library(id), "
-           "position INTEGER)");	
-
+           "position INTEGER)");
 
     //Create an example playlist
+    /*
     query.prepare("INSERT INTO Playlists (name)"
                   "VALUES (:name)");
  				 // ":date_created, :date_modified)");
     query.bindValue(":name", "Example Playlist #1");
-    query.exec();
+    query.exec();*/
  	
+ 	/*
     query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
                   "VALUES (:playlist_id, :track_id, :position)");
     query.bindValue(":playlist_id", 1);
     query.bindValue(":track_id", 1);
     query.bindValue(":position", 0);        
-    query.exec();           	   
+    query.exec();
+    */
            	   
     return true;
 }
@@ -102,9 +109,9 @@ void TrackCollection::addTrack(QString location)
  	}
   }
   
-  void TrackCollection::addTrack(TrackInfoObject * pTrack)
-  {
- 
+void TrackCollection::addTrack(TrackInfoObject * pTrack)
+{
+
  	//qDebug() << "TrackCollection::addTrack(), inserting into DB";
  
     //Start the transaction
@@ -334,13 +341,33 @@ void TrackCollection::scanPath(QString path)
 }
 
   
-  TrackInfoObject * TrackCollection::getTrack(QString location)
-  {
+TrackInfoObject * TrackCollection::getTrack(QString location)
+{
     QSqlQuery query("SELECT * FROM library WHERE location==\"" + location + "\"");
  	TrackInfoObject* track = getTrackFromDB(query);
  
     return track;
 }
+ 
+/** Retrieve the track id for the track that's located at "location" on disk.
+    @return the track id for the track located at location, or -1 if the track
+            is not in the database.
+*/
+int TrackCollection::getTrackId(QString location)
+{
+    QSqlQuery query("SELECT id FROM library WHERE location==\"" + location + "\"");
+ 	
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+    }
+     
+    int track_id = -1;
+    if (query.next()) {
+        track_id = query.value(query.record().indexOf("id")).toInt(); 
+    }
+    return track_id;
+} 
  
 /** Saves a track's info back to the database */
 void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
@@ -393,3 +420,231 @@ void TrackCollection::slotCancelLibraryScan()
  	bCancelLibraryScan = 1;
   }
   
+/** Create a playlist with the given name.
+    @param name The name of the playlist to be created.
+*/
+void TrackCollection::createPlaylist(QString name)
+{
+
+    //Start the transaction
+    QSqlDatabase::database().transaction();
+
+    //Find out the highest position for the existing playlists so we know what
+    //position this playlist should have.
+    QSqlQuery query;
+    query.prepare("SELECT (position) FROM Playlists "
+                  "ORDER BY position DESC");
+    query.exec(); 
+    
+    //Get the id of the last playlist.
+    int position = 0;
+    if (query.next()) {
+        position = query.value(query.record().indexOf("position")).toInt();
+        position++; //Append after the last playlist.
+    }
+    
+    qDebug() << "inserting playlist" << name << "at position" << position;
+
+    query.prepare("INSERT INTO Playlists (name, position) "
+                  "VALUES (:name, :position)");
+ 				 // ":date_created, :date_modified)");
+    query.bindValue(":name", name);
+    query.bindValue(":position", position);
+    query.exec();
+
+    //Start the transaction
+    QSqlDatabase::database().commit();
+    
+    qDebug() << query.lastQuery();
+    
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+    }
+    /*
+    query.prepare("SELECT FROM Playlists (id)"
+              "WHERE name=(:name)");
+    query.bindValue(":name", name);
+    query.exec(); */
+    
+    /*
+    //Get the id of the newly created playlist.
+    query.prepare("SELECT last_insert_rowid()");
+    query.exec();
+    
+    int id = -1;
+    while (query.next()) {
+        id = query.value(query.record().indexOf("id")).toInt();
+    }*/
+    
+    
+    return;
+}
+
+/** Find out the name of the playlist at the given position */
+QString TrackCollection::getPlaylistName(unsigned int position)
+{
+    QSqlDatabase::database().transaction();
+    QSqlQuery query;
+    query.prepare("SELECT (name) FROM Playlists "
+                  "WHERE position=(:position)");
+    query.bindValue(":position", position);
+    query.exec(); 
+    
+    QSqlDatabase::database().commit();
+    
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << "getPlaylistName:" << query.lastError();
+     	return "";
+    }    
+    
+    //Get the name field
+    QString name;
+    query.next();
+    name = query.value(query.record().indexOf("name")).toString();
+    
+    return name;
+}
+
+/** Delete a playlist */
+void TrackCollection::deletePlaylist(int playlistId)
+{
+    QSqlDatabase::database().transaction();
+
+    //Get the playlist id for this 
+    QSqlQuery query;
+    
+    //Delete the row in the Playlists table.
+    query.prepare("DELETE FROM Playlists "
+                  "WHERE id=(:id)");
+    query.bindValue(":id", playlistId);
+    query.exec();    
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << "deletePlaylist" << query.lastError();
+     	return;
+    }    
+    
+    //Delete the tracks in this playlist from the PlaylistTracks table.
+    query.prepare("DELETE FROM PlaylistTracks "
+                  "WHERE playlist_id=(:id)");
+    query.bindValue(":id", playlistId);
+    query.exec();    
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << "deletePlaylist" << query.lastError();
+     	return;
+    }    
+    
+    QSqlDatabase::database().commit();
+    //TODO: Crap, we need to shuffle the positions of all the playlists?
+}
+
+/** Wrapper provided for convenience. :-) */
+void TrackCollection::appendTrackToPlaylist(QString location, int playlistId)
+{
+    if (!trackExistsInDatabase(location))
+    {
+        addTrack(location);
+    }
+    //Get id of track
+    int trackId = getTrackId(location);
+    
+    appendTrackToPlaylist(trackId, playlistId);
+}
+
+/** Append a track to a playlist */
+void TrackCollection::appendTrackToPlaylist(int trackId, int playlistId)
+{
+    qDebug() << "appendTrackToPlaylist, track:" << trackId << "playlist:" << playlistId;
+
+    //Start the transaction
+    QSqlDatabase::database().transaction();
+
+    //Find out the highest position existing in the playlist so we know what
+    //position this track should have.
+    QSqlQuery query;
+    query.prepare("SELECT (position) FROM PlaylistTracks "
+              "WHERE playlist_id=(:id) "
+              "ORDER BY position DESC");
+    query.bindValue(":id", playlistId);
+    query.exec(); 
+ 
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << "appendTrackToPlaylist" << query.lastError();
+     	//return;
+    }     
+    
+    //TODO: RJ suggestions
+    //select max(position) as position from PlaylistTracks;
+    //where playlist_id = this_playlist
+ 
+    //Get the position of the highest playlist...
+    int position = 0;
+    if (query.next()) {
+        position = query.value(query.record().indexOf("position")).toInt();
+    }
+    position++; //Append after the last song.            
+        
+            
+    //Insert the song into the PlaylistTracks table
+    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
+                  "VALUES (:playlist_id, :track_id, :position)");
+    query.bindValue(":playlist_id", playlistId);
+    query.bindValue(":track_id", trackId);
+    query.bindValue(":position", position);        
+    query.exec(); 
+    
+    //Start the transaction
+    QSqlDatabase::database().commit();	   
+}
+
+/** Find out how many playlists exist. */
+unsigned int TrackCollection::playlistCount()
+{
+    QSqlQuery query;
+    query.prepare("SELECT * FROM Playlists");
+    query.exec();
+    
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+    }
+    
+ 	int numRecords = 0;
+    while (query.next()) {
+ 		numRecords++;
+    }
+    
+    //qDebug() << numRecords << "playlists found.";
+    
+    return numRecords;
+}
+
+int TrackCollection::getPlaylistId(int position)
+{
+    //Find out the highest position existing in the playlist so we know what
+    //position this track should have.
+    QSqlQuery query;
+    query.prepare("SELECT (id) FROM Playlists "
+              "WHERE position=(:position)");
+    query.bindValue(":position", position);
+    query.exec();   
+    
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+     	return -1;
+    }    
+    
+    //Get the id field
+    int playlistId;
+    query.next();
+    playlistId = query.value(query.record().indexOf("id")).toInt();
+    
+    return playlistId;
+}

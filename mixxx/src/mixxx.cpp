@@ -426,6 +426,10 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete view, " << qTime.elapsed();
     delete view;
 
+    //Delete the library after the view so there are no dangling pointers to the data models.
+    qDebug() << "delete library" << qTime.elapsed();
+    delete m_pLibrary;
+
     //HACK: Save config again. We saved it once before doing some dangerous stuff. We only really want to
     //      save it here, but the first one was just a precaution. The earlier one can be removed when
     //      stuff is more stable at exit.

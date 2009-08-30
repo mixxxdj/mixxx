@@ -30,6 +30,11 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
     if (m_tioq.isEmpty()) {
         m_qwait.wait(&m_qm);
+        
+        if (m_exit) {
+            m_qm.unlock();
+            return NULL;
+        }
     }
 
     TrackInfoObject* tio = m_tioq.dequeue();
@@ -95,8 +100,9 @@ void AnalyserQueue::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
 	while (!m_exit) {
-
 		TrackInfoObject* next = dequeueNextBlocking();
+		if (m_exit)
+		    return;
         
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
@@ -163,6 +169,14 @@ AnalyserQueue* AnalyserQueue::createBPMAnalyserQueue(ConfigObject<ConfigValue> *
 
 AnalyserQueue::~AnalyserQueue() {
     QListIterator<Analyser*> it(m_aq);
+    
+    stop();
+
+	m_qm.lock();
+	m_qwait.wakeAll();
+	m_qm.unlock();
+	
+	wait(); //Wait until thread has actually stopped before proceeding.
     
     while (it.hasNext()) {
         Analyser* an = it.next();

@@ -29,10 +29,12 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole ) const;
-
+    bool dropAccept(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(const QModelIndex& index, QUrl url);
 public slots:
     void clicked(const QModelIndex& index);
-        
+    void rightClicked(const QPoint& globalPos, const QModelIndex& index);     
+    void refreshData();   
 private:
     QList<LibraryFeature*> m_sFeatures;
 };

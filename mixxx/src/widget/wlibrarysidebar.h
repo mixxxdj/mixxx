@@ -9,6 +9,14 @@ class WLibrarySidebar : public QTreeView {
   public:
     WLibrarySidebar(QWidget* parent = 0);
     virtual ~WLibrarySidebar();
+    void contextMenuEvent(QContextMenuEvent * event);
+
+    void dragMoveEvent(QDragMoveEvent * event);
+    void dragEnterEvent(QDragEnterEvent * event);
+    void dropEvent(QDropEvent * event);
+
+    signals:
+        void rightClicked(const QPoint&, const QModelIndex&);
 };
 
 #endif /* WLIBRARYSIDEBAR_H */

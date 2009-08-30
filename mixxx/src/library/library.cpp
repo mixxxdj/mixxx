@@ -36,7 +36,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
 
 Library::~Library() {
     delete m_pSidebarModel;
-    delete m_pTrackCollection;
+    //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
+    //           Qt does it for us due to the way RJ wrote all this stuff.
+    //delete m_pTrackCollection;
     QMutableListIterator<LibraryFeature*> features_it(m_features);;
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
@@ -72,7 +74,9 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(activated(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-
+    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+            
     // Enable the default selection
     pSidebarWidget->selectionModel()
         ->select(m_pSidebarModel->getDefaultSelection(),
@@ -84,7 +88,6 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
         LibraryFeature* feature = feature_it.next();
         feature->bindWidget(pSidebarWidget, pLibraryWidget);
     }
-
 }
 
 void Library::addFeature(LibraryFeature* feature) {

@@ -283,7 +283,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
-    qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         event->acceptProposedAction();
@@ -296,7 +296,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
  */
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
 {
-    qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         event->acceptProposedAction();

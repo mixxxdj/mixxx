@@ -30,11 +30,12 @@ const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
 const QString LIBRARYTABLE_CHANNELS = "channels";
 */
 
-class PlaylistTableModel : public QSqlRelationalTableModel, public virtual TrackModel
+class PlaylistTableModel : public QSqlTableModel, public virtual TrackModel
 {
 public:
     PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId);
     virtual ~PlaylistTableModel();
+    void setPlaylist(int playlistId);
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
