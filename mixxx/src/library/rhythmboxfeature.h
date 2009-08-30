@@ -19,11 +19,13 @@ class RhythmboxFeature : public LibraryFeature {
     QIcon getIcon();
     int numChildren();
     QVariant child(int n);
-
+    bool dropAccept(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(const QModelIndex& index, QUrl url);   
+     
 public slots:
     void activate();
     void activateChild(int n);
-    void onRightClick(QModelIndex index);
+    void onRightClick(const QPoint& globalPos, QModelIndex index);
     void onClick(QModelIndex index);
     
 private:

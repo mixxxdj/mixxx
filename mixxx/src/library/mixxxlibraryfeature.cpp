@@ -14,7 +14,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
-
+    //delete m_pLibraryTableModel;
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -42,10 +42,20 @@ void MixxxLibraryFeature::activateChild(int n) {
 
 }
 
-void MixxxLibraryFeature::onRightClick(QModelIndex index) {
+void MixxxLibraryFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
 
 }
 
 void MixxxLibraryFeature::onClick(QModelIndex index) {
 
+}
+
+bool MixxxLibraryFeature::dropAccept(const QModelIndex& index, QUrl url)
+{
+    return false;
+}
+
+bool MixxxLibraryFeature::dragMoveAccept(const QModelIndex& index, QUrl url)
+{
+    return false;
 }

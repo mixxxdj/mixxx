@@ -43,7 +43,15 @@ void RhythmboxFeature::activateChild(int n) {
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
-void RhythmboxFeature::onRightClick(QModelIndex index) {
+void RhythmboxFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
 }
 void RhythmboxFeature::onClick(QModelIndex index) {
 }
+bool RhythmboxFeature::dropAccept(const QModelIndex& index, QUrl url) {
+    return false;
+}
+bool RhythmboxFeature::dragMoveAccept(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+

@@ -109,13 +109,22 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
+    //Ok, so the list of indexes we're given contains separates indexes for 
+    //each column, so even if only one row is selected, we'll have like 7 indexes.
+    //We need to only count each row once:
+    QList<int> rows;
+    
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
-            QUrl url(getTrackLocation(index));
-            if (!url.isValid())
-              qDebug() << "ERROR invalid url\n";
-            else
-              urls.append(url);
+            if (!rows.contains(index.row())) //Only add a URL once per row.
+            {
+                rows.push_back(index.row());
+                QUrl url(getTrackLocation(index));
+                if (!url.isValid())
+                  qDebug() << "ERROR invalid url\n";
+                else
+                  urls.append(url);
+            }
         }
     }
     mimeData->setUrls(urls);
