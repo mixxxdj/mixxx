@@ -168,7 +168,7 @@ StantonSCS1m.playButton2 = function (channel, control, value, status) {
 }
 
 StantonSCS1m.playButton = function (channel, control, value, status, deck) {
-    print("Play button"+deck);
+    if (StantonSCS1m.debug) print("Play button"+deck);
     var byte1 = 0x90 + channel;
     if ((status & 0xF0) == 0x90) {    // If button down
         StantonSCS1m.modifier["play"+deck]=1;
@@ -192,7 +192,7 @@ StantonSCS1m.cueButton2 = function (channel, control, value, status) {
 }
 
 StantonSCS1m.cueButton = function (channel, control, value, status, deck) {
-    print("Cue button"+deck);
+    if (StantonSCS1m.debug) print("Cue button"+deck);
     var byte1 = 0x90 + channel;
     if ((status & 0xF0) != 0x80) {    // If button down
         engine.setValue("[Channel"+deck+"]","cue_default",1);
