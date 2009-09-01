@@ -40,8 +40,8 @@
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice, 
                                          MidiDeviceManager* midiDeviceManager,
-										 ConfigObject<ConfigValue> *pConfig) :
-							QWidget(parent), Ui::DlgPrefMidiBindingsDlg() {
+                                         ConfigObject<ConfigValue> *pConfig) :
+                            QWidget(parent), Ui::DlgPrefMidiBindingsDlg() {
     setupUi(this);
     m_pConfig = pConfig;
     m_pMidiDevice = midiDevice;
@@ -139,17 +139,17 @@ void DlgPrefMidiBindings::enumerateOutputDevices()
     
     comboBoxOutputDevice->addItem(MIXXX_TEXT_NO_OUTPUT_DEVICE);
 
-	//For each MIDI output device, insert an item into the output device combobox.
-	QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(true, false);
-	QListIterator<MidiDevice*> it(deviceList);
-	
-	while (it.hasNext())
-	  {
-	    MidiDevice* currentDevice = it.next();
-	    QString curDeviceName = currentDevice->getName();
-	    //qDebug() << "curDeviceName: " << curDeviceName;
+    //For each MIDI output device, insert an item into the output device combobox.
+    QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(true, false);
+    QListIterator<MidiDevice*> it(deviceList);
+    
+    while (it.hasNext())
+      {
+        MidiDevice* currentDevice = it.next();
+        QString curDeviceName = currentDevice->getName();
+        //qDebug() << "curDeviceName: " << curDeviceName;
         comboBoxOutputDevice->addItem(curDeviceName);
-	  }    
+      }    
 }
 
 void DlgPrefMidiBindings::enumeratePresets()
@@ -239,11 +239,11 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
                 tr("Are you sure you'd like to load the " + name + " mapping?\n"
                    "This will overwrite your existing MIDI mapping."),  
                    QMessageBox::Yes | QMessageBox::No);
-                              
+
          if (result == QMessageBox::No) {
             //Select the "..." item again in the combobox.
             comboBoxPreset->setCurrentIndex(0);
-            return;                     
+            return;
          }
     }
     
@@ -270,15 +270,15 @@ void DlgPrefMidiBindings::slotExportXML() {
 
 void DlgPrefMidiBindings::slotEnableDevice()
 {
-	//Just tell MidiObject to close the old device and open this device
-	m_pMidiDevice->close();
-	m_pMidiDevice->open();
-	m_pConfig->set(ConfigKey("[Midi]","Device"), m_pMidiDevice->getName());
-	btnActivateDevice->setEnabled(false);
-	toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
-	groupBoxPresets->setEnabled(true); //Enable presets group box.
-	
-	//TODO: Should probably check if open() actually succeeded.
+    //Just tell MidiObject to close the old device and open this device
+    m_pMidiDevice->close();
+    m_pMidiDevice->open();
+    m_pConfig->set(ConfigKey("[Midi]","Device"), m_pMidiDevice->getName());
+    btnActivateDevice->setEnabled(false);
+    toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
+    groupBoxPresets->setEnabled(true); //Enable presets group box.
+    
+    //TODO: Should probably check if open() actually succeeded.
 }
 
 void DlgPrefMidiBindings::slotAddInputBinding() 
@@ -326,29 +326,29 @@ void DlgPrefMidiBindings::slotAddInputBinding()
 
 void DlgPrefMidiBindings::slotRemoveInputBinding()
 {
-	QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
-	if (selectedIndices.size() > 0)
-	{
-		MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
-		if (tableModel) {
-		
-			QModelIndex curIndex;
-			//The model indices are sorted so that we remove the rows from the table
+    QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0)
+    {
+        MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
+        if (tableModel) {
+        
+            QModelIndex curIndex;
+            //The model indices are sorted so that we remove the rows from the table
             //in ascending order. This is necessary because if row A is above row B in
             //the table, and you remove row A, the model index for row B will change.
             //Sorting the indices first means we don't have to worry about this.
             qSort(selectedIndices);
 
             //Going through the model indices in descending order (see above comment for explanation).
-			QListIterator<QModelIndex> it(selectedIndices);
-			it.toBack();
-			while (it.hasPrevious())
-			{
-				curIndex = it.previous();
-				tableModel->removeRow(curIndex.row());
-			}
-		}
-	}
+            QListIterator<QModelIndex> it(selectedIndices);
+            it.toBack();
+            while (it.hasPrevious())
+            {
+                curIndex = it.previous();
+                tableModel->removeRow(curIndex.row());
+            }
+        }
+    }
 }
 
 void DlgPrefMidiBindings::slotClearAllInputBindings() {
@@ -373,30 +373,30 @@ void DlgPrefMidiBindings::slotAddOutputBinding() {
 
 void DlgPrefMidiBindings::slotRemoveOutputBinding()
 {
-	QModelIndexList selectedIndices = m_pOutputMappingTableView->selectionModel()->selectedRows();
-	if (selectedIndices.size() > 0)
-	{
-		MidiOutputMappingTableModel* tableModel =
-		                    dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
-		if (tableModel) {
-			QModelIndex curIndex;
-			//The model indices are sorted so that we remove the rows from the table
+    QModelIndexList selectedIndices = m_pOutputMappingTableView->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0)
+    {
+        MidiOutputMappingTableModel* tableModel =
+                            dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
+        if (tableModel) {
+            QModelIndex curIndex;
+            //The model indices are sorted so that we remove the rows from the table
             //in ascending order. This is necessary because if row A is above row B in
             //the table, and you remove row A, the model index for row B will change.
             //Sorting the indices first means we don't have to worry about this.
             //qSort(selectedIndices);
 
             //Going through the model indices in descending order (see above comment for explanation).
-			QListIterator<QModelIndex> it(selectedIndices);
-			it.toBack();
-			while (it.hasPrevious())
-			{
-				curIndex = it.previous();
-				qDebug() << "Dlg: removing row" << curIndex.row();
-				tableModel->removeRow(curIndex.row());
-			}
-		}
-	}
+            QListIterator<QModelIndex> it(selectedIndices);
+            it.toBack();
+            while (it.hasPrevious())
+            {
+                curIndex = it.previous();
+                qDebug() << "Dlg: removing row" << curIndex.row();
+                tableModel->removeRow(curIndex.row());
+            }
+        }
+    }
 }
 
 void DlgPrefMidiBindings::slotClearAllOutputBindings() {

@@ -33,10 +33,10 @@
 class MidiDevicePortMidi : public MidiDevice, public QThread {
 public:
     MidiDevicePortMidi(MidiMapping* mapping, 
-					   const PmDeviceInfo* inputDeviceInfo, 
-					   const PmDeviceInfo* outputDeviceInfo, 
-					   int inputDeviceIndex,
-					   int outputDeviceIndex);
+                       const PmDeviceInfo* inputDeviceInfo, 
+                       const PmDeviceInfo* outputDeviceInfo, 
+                       int inputDeviceIndex,
+                       int outputDeviceIndex);
     ~MidiDevicePortMidi();
     int open();
     int close();
@@ -48,12 +48,12 @@ protected:
     const PmDeviceInfo* m_pOutputDeviceInfo;
     int m_iInputDeviceIndex;
     int m_iOutputDeviceIndex;
-	PortMidiStream *m_pInputStream;
-	PortMidiStream *m_pOutputStream;
-	PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
-	static QList<QString> m_deviceList;
-	QMutex m_mutex;
-	bool m_bStopRequested;
+    PortMidiStream *m_pInputStream;
+    PortMidiStream *m_pOutputStream;
+    PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
+    static QList<QString> m_deviceList;
+    QMutex m_mutex;
+    bool m_bStopRequested;
 };
 
 #endif
