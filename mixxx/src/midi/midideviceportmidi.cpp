@@ -58,7 +58,7 @@ MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping,
 
 MidiDevicePortMidi::~MidiDevicePortMidi()
 {
-	close();
+	if (m_bIsOpen) close();
 }
 
 int MidiDevicePortMidi::open()
@@ -126,9 +126,8 @@ int MidiDevicePortMidi::open()
 
 int MidiDevicePortMidi::close()
 {
-	m_mutex.lock();
 	m_bStopRequested = true;
-
+	m_mutex.lock();
 	
 	if (m_pInputStream)
 	{
@@ -159,12 +158,12 @@ int MidiDevicePortMidi::close()
 
 void MidiDevicePortMidi::run()
 {
+	QThread::currentThread()->setObjectName(QString("MidiDevicePortMidi %1").arg(m_strDeviceName));
 	int numEvents = 0;
 	bool stopRunning = false;
 	
 
-	
-	do 
+	do
 	{
 		m_mutex.lock();
 		if (m_pInputStream)
@@ -176,7 +175,7 @@ void MidiDevicePortMidi::run()
 				//if (Pm_MessageStatus(m_midiBuffer[i].message) == 0x90) //Note on, channel 1
 				{
 					unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
-					unsigned char type = status & 0xF0;
+					unsigned char opcode = status & 0xF0;
 					unsigned char channel = status & 0x0F;
 					unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
 					unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
@@ -189,8 +188,8 @@ void MidiDevicePortMidi::run()
 		
 		usleep(5000); //Sleep this thread for 5 milliseconds between checking for new MIDI events.
 		
-    	stopRunning = m_bStopRequested; //Cache locally for thread-safety.
-        m_mutex.unlock(); //Have to unlock inside the loop to give the other thread a chance to lock.
+		stopRunning = m_bStopRequested; //Cache locally for thread-safety.
+		m_mutex.unlock(); //Have to unlock inside the loop to give the other thread a chance to lock.
 		
 	} while (!stopRunning);
 	
@@ -201,7 +200,8 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 {
 	if (m_pOutputStream)
 	{
-		//TODO: Send short message
+		PmError err = Pm_WriteShort(m_pOutputStream, 0, word);
+		if( err != pmNoError ) qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
 	}
 }
 
@@ -210,6 +210,7 @@ void MidiDevicePortMidi::sendSysexMsg(unsigned char data[], unsigned int length)
 {
 	if (m_pOutputStream)
 	{
-		//TODO: Send sysex message
+		PmError err = Pm_WriteSysEx(m_pOutputStream, 0, data);
+		if( err != pmNoError ) qDebug() << "PortMidi sendSysexMsg error:" << Pm_GetErrorText(err);
 	} 
 }

@@ -42,10 +42,9 @@
 #include "soundmanager.h"
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
-#include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
-#include "mididevicemanager.h"
+#include "midi/mididevicemanager.h"
 
 #include "upgrade.h"
 

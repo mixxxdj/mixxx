@@ -21,7 +21,7 @@
 #include "controlobject.h"
 #include "configobject.h"
 #include "defs.h"
-#include "midimessage.h"
+#include "midi/midimessage.h"
 #include <qdatetime.h>
 
 /**

@@ -42,11 +42,11 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice) : QObject() {
 #ifdef __MIDISCRIPT__
     //Start the scripting engine.
     m_pScriptEngine = NULL;
-    restartScriptEngine();
     m_pOutputMidiDevice = outputMidiDevice;
     if (m_pOutputMidiDevice)
         m_deviceName = m_pOutputMidiDevice->getName(); //Name of the device to look for the <controller> block for in the XML.
-    
+        
+    restartScriptEngine();
 #endif
     m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(this);
     m_pMidiOutputMappingTableModel = new MidiOutputMappingTableModel(this);
