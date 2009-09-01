@@ -33,22 +33,22 @@ static QString toHex(QString numberStr) {
 
 MidiDevice::MidiDevice(MidiMapping* mapping) : QObject()
 {
-	m_bIsOutputDevice = false;
-	m_bIsInputDevice = false;
-	m_pMidiMapping = mapping;
-	m_pCorrespondingOutputDevice = NULL;
-	m_bIsOpen = false;
+    m_bIsOutputDevice = false;
+    m_bIsInputDevice = false;
+    m_pMidiMapping = mapping;
+    m_pCorrespondingOutputDevice = NULL;
+    m_bIsOpen = false;
     m_bMidiLearn = false;
 
     if (m_pMidiMapping == NULL)
         m_pMidiMapping = new MidiMapping(this);
         
 #ifndef __MIDISCRIPT__
-     m_pMidiMapping->loadInitialPreset();	// Only do this here if NOT using MIDI scripting
+     m_pMidiMapping->loadInitialPreset();    // Only do this here if NOT using MIDI scripting
 #endif
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
-	
+    
 }
 
 MidiDevice::~MidiDevice()

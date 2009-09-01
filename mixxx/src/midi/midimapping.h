@@ -98,8 +98,8 @@ public slots:
     void finishMidiLearn(MidiMessage message);
     void beginMidiLearn(MixxxControl control);
     void cancelMidiLearn();
-	void slotScriptEngineReady();
-	
+    void slotScriptEngineReady();
+    
 signals:
     void inputMappingChanged();
     void inputMappingChanged(int startIndex, int endIndex);
