@@ -44,9 +44,10 @@ Q_OBJECT
 		QString getName() { return m_strDeviceName; };
 		void setMidiMapping(MidiMapping* mapping);
 		MidiMapping* getMidiMapping() { return m_pMidiMapping; };
-		void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
-   	 	virtual void sendShortMsg(unsigned int word) = 0;
-	    virtual void sendSysexMsg(unsigned char data[], unsigned int length) = 0;	
+		Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
+   	 	virtual void sendShortMsg(unsigned int word);
+	    virtual void sendSysexMsg(unsigned char data[], unsigned int length);
+	    Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
 	    bool getMidiLearnStatus();
 	    void receive(MidiStatusByte status, char channel, char control, char value);
 
@@ -59,9 +60,9 @@ Q_OBJECT
 	protected:
 		/** Verbose device name, in format "[index]. [device name]". Suitable for display in GUI. */
 		QString m_strDeviceName;
-		/** Flag indicating if this device support MIDI output */
+		/** Flag indicating if this device supports MIDI output */
 		bool m_bIsOutputDevice;
-		/** Flag indicating if this device support MIDI input */
+		/** Flag indicating if this device supports MIDI input */
 		bool m_bIsInputDevice;
 		/** MIDI Mapping for this MIDI device, maps MIDI messages onto Mixxx controls */
 		MidiMapping* m_pMidiMapping;

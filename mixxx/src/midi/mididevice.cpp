@@ -70,11 +70,12 @@ void MidiDevice::setMidiMapping(MidiMapping* mapping)
 
 void MidiDevice::setOutputDevice(MidiDevice* outputDevice)
 {
-    Q_ASSERT(this->isInputDevice()); //The object we're in should be an input device.
+    Q_ASSERT(this->isInputDevice()); //The object we're in should support input.
     Q_ASSERT(outputDevice->isOutputDevice());
     
     m_pCorrespondingOutputDevice = outputDevice;
-    m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
+    // This IF avoids endless recursion if the input and output are the same MidiDevice
+    if (outputDevice != this) m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
 }
 
 
@@ -82,6 +83,27 @@ void MidiDevice::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
+}
+
+void MidiDevice::sendShortMsg(unsigned int word) {
+    qDebug() << "MIDI short message sending not yet implemented for this API or platform";
+}
+
+void MidiDevice::sendSysexMsg(QList<int> data, unsigned int length) {
+    unsigned char * sysexMsg;
+    sysexMsg = new unsigned char [length];
+
+    for (unsigned int i=0; i<length; i++) {
+        sysexMsg[i] = data.at(i);
+//         qDebug() << "sysexMsg" << i << "=" << sysexMsg[i] << ", data=" << data.at(i);
+    }
+
+    sendSysexMsg(sysexMsg,length);
+    delete[] sysexMsg;
+}
+
+void MidiDevice::sendSysexMsg(unsigned char data[], unsigned int length) {
+    qDebug() << "MIDI system exclusive message sending not yet implemented for this API or platform";
 }
 
 bool MidiDevice::getMidiLearnStatus() {
@@ -132,7 +154,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //FIXME: SEAN - The script engine will live inside the MidiMapping! Update this code accordingly.
     
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
-        // qDebug() << "MidiObject: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
+        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
 
         if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, control, value, status)) {
             qDebug() << "MidiDevice: Invalid script function" << configKey.item;

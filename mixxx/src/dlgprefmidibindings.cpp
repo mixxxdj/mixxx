@@ -16,20 +16,20 @@
  ***************************************************************************/
 #include <QtGui>
 #include <QDebug>
-#include "midiinputmappingtablemodel.h"
-#include "midioutputmappingtablemodel.h"
-#include "midichanneldelegate.h"
-#include "midistatusdelegate.h"
-#include "midinodelegate.h"
-#include "midioptiondelegate.h"
+#include "midi/midiinputmappingtablemodel.h"
+#include "midi/midioutputmappingtablemodel.h"
+#include "midi/midichanneldelegate.h"
+#include "midi/midistatusdelegate.h"
+#include "midi/midinodelegate.h"
+#include "midi/midioptiondelegate.h"
 #include "controlgroupdelegate.h"
 #include "controlvaluedelegate.h"
 #include "dlgprefmidibindings.h"
-#include "mididevice.h"
-#include "mididevicemanager.h"
+#include "midi/mididevice.h"
+#include "midi/mididevicemanager.h"
 #include "widget/wwidget.h"
 #include "configobject.h"
-#include "midimapping.h"
+#include "midi/midimapping.h"
 
 #ifdef __MIDISCRIPT__
 #include "script/midiscriptengine.h"

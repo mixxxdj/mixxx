@@ -20,7 +20,7 @@
 
 #include "controlobject.h"
 #include "controlobjectthread.h"
-#include "mididevice.h"
+#include "../midi/mididevice.h"
 #include "midiscriptengine.h"
 
 

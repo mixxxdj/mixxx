@@ -23,7 +23,7 @@
 #include "dlgprefmidibindings.h"
 #include "mididevicemanager.h"
 
-#define DEVICE_CONFIG_PATH QDir::homePath().append("/").append(".MixxxMIDIDevices")
+#define DEVICE_CONFIG_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIDevices")
 
 MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObject()
 {
@@ -69,6 +69,7 @@ void MidiDeviceManager::closeDevices()
 	QListIterator<MidiDevice*> dev_it(m_devices);
 	while (dev_it.hasNext())
 	{
+		qDebug() << "Closing MIDI device" << dev_it.peekNext()->getName();
 		dev_it.next()->close();
 	}
 }

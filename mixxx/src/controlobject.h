@@ -24,7 +24,7 @@
 //#include <qaccel.h>
 #include <q3ptrqueue.h>
 #include <QMutex>
-#include "midimessage.h"
+#include "midi/midimessage.h"
 #include "configobject.h"
 #include "controlobjectthread.h"
 

@@ -36,8 +36,8 @@
 #include "dlgprefrecord.h"
 #include "mixxx.h"
 #include "track.h"
-#include "mididevicemanager.h"
-#include "mididevice.h"
+#include "midi/mididevicemanager.h"
+#include "midi/mididevice.h"
 #include <QTabWidget>
 
 #include <QTabBar>

@@ -316,17 +316,19 @@ sources = Split("""
 		analyserbpm.cpp
 		analyserwaveform.cpp
                 
+                midi/midimapping.cpp
+                midi/midiinputmappingtablemodel.cpp
+                midi/midioutputmappingtablemodel.cpp
+                midi/midichanneldelegate.cpp
+                midi/midistatusdelegate.cpp
+                midi/midinodelegate.cpp
+                midi/midioptiondelegate.cpp
+                midi/midimessage.cpp
+                midi/midiledhandler.cpp
+                
                 main.cpp
-                midimapping.cpp
-                midiinputmappingtablemodel.cpp
-                midioutputmappingtablemodel.cpp
-                midichanneldelegate.cpp
-                midistatusdelegate.cpp
-                midinodelegate.cpp
-                midioptiondelegate.cpp
                 controlgroupdelegate.cpp
                 controlvaluedelegate.cpp
-                midimessage.cpp
                 mixxxcontrol.cpp
                 mixxx.cpp
                 mixxxview.cpp
@@ -402,7 +404,6 @@ sources = Split("""
                 imgcolor.cpp
                 
                 trackinfoobject.cpp
-                midiledhandler.cpp
                 sounddevice.cpp
                 soundmanager.cpp
                 sounddeviceportaudio.cpp
@@ -535,9 +536,9 @@ if not conf.CheckLib('portmidi'):
 	print "Did not find PortMidi or it\'s development headers, exiting!"
 	Exit(1)
 
-sources += Split("""mididevice.cpp """); 
-sources += Split("""mididevicemanager.cpp """); 
-sources += Split("""midideviceportmidi.cpp """); 
+sources += Split("""midi/mididevice.cpp """); 
+sources += Split("""midi/mididevicemanager.cpp """); 
+sources += Split("""midi/midideviceportmidi.cpp """); 
 env.Append(CPPDEFINES = '__PORTMIDI__')
 
 #Platform-specific checks for Linux...
