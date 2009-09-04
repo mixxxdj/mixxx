@@ -1101,7 +1101,10 @@ if int(flags_optimize):
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
 				if 'makerelease' in COMMAND_LINE_TARGETS:
-					env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+					# env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+					# AMD64 architecture is used by all consumer 64-bit CPUs, even Intel ones.
+					# IA64 is the Itanium processors, which we don't expect anyone to be using for DJing. :)
+					env.Append(CXXFLAGS = '/Ox /favor:AMD64 /MP')
 				else:
 					env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
 	else:
