@@ -1032,7 +1032,7 @@ void MixxxApp::slotHelpAbout()
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
     QString credits =
-    "<p align=\"center\"><b>Mixxx 1.7.0 Development Team</b></p>"
+    QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -1118,7 +1118,7 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>";
+"</p>").arg(VERSION);
 
 
     about->textBrowser->setHtml(credits);
