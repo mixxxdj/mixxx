@@ -14,6 +14,8 @@
 #include <windows.h> // for Sleep()  on Windows
 #endif
 
+#include "defs_version.h"
+
 #include "track.h"
 #include "trackinfoobject.h"
 #include "trackcollection.h"
