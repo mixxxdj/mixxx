@@ -316,16 +316,6 @@ QString ConfigObject<ValueType>::getConfigPath()
 #endif
 #ifdef __WINDOWS__
     // On Windows, set the config dir relative to the application dir
-// #ifndef MSCVER // TODO: figure out why this code block is incompatiable with MSVC - maybe GetModuleFileName should be GetModuleFileNameW???
-//     wchar_t str[MAX_PATH];        
-//     GetModuleFileName(0, str, MAX_PATH);
-//     std::wstring path(str);
-//     qConfigPath = QFileInfo(QString::fromStdWString(path)).dirPath();
-// #else // MSVC
-//     char* str = new char[200];
-//     GetModuleFileName(NULL, str, 200);
-//     qConfigPath = QFileInfo(str).dirPath();
-// #endif
     qConfigPath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
@@ -335,7 +325,8 @@ QString ConfigObject<ValueType>::getConfigPath()
     qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
     qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
 #endif
-    }
+    }	
+	if (qConfigPath.length() == 0) qCritical() << "qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??";
     // If the directory does not end with a "/", add one
     if (!qConfigPath.endsWith("/"))
         qConfigPath.append("/");
