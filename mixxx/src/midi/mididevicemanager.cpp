@@ -55,7 +55,7 @@ QList<MidiDevice*> MidiDeviceManager::getDeviceList(bool bOutputDevices, bool bI
         
         if ((bOutputDevices == device->isOutputDevice()) ||
             (bInputDevices == device->isInputDevice())) {
-            bMatchedCriteria = true;        
+            bMatchedCriteria = true;
         }
     
         if (bMatchedCriteria)

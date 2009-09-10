@@ -126,6 +126,8 @@ int MidiDevicePortMidi::open()
 
 int MidiDevicePortMidi::close()
 {
+    shutdown();
+
     m_bStopRequested = true;
     m_mutex.lock();
     

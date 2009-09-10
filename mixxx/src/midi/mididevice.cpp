@@ -58,6 +58,11 @@ MidiDevice::~MidiDevice()
 
 }
 
+void MidiDevice::shutdown()
+{
+    m_pMidiMapping->scriptShutdown();
+}
+
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
 {
     m_pMidiMapping = mapping;

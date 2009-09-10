@@ -53,22 +53,30 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice) : QObject() {
 }
 
 MidiMapping::~MidiMapping() {
-#ifdef __MIDISCRIPT__
-    // Call each script's shutdown function if it exists
-    QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
-    while (prefixIt.hasNext()) {
-        QString shutName = prefixIt.next();
-        if (shutName!="") {
-            shutName.append(".shutdown");
-            qDebug() << "MidiMapping: Executing" << shutName;
-            if (!m_pScriptEngine->execute(shutName))
-                qWarning() << "MidiMapping: No" << shutName << "function in script";
-        }
-    }
-    qDebug() << "MidiDevice: Deleting MIDI script engine...";
-    delete m_pScriptEngine;
-#endif
+    
 }
+
+#ifdef __MIDISCRIPT__
+void MidiMapping::scriptShutdown() {
+    if(m_pScriptEngine) {
+        // Call each script's shutdown function if it exists
+        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
+        while (prefixIt.hasNext()) {
+            QString shutName = prefixIt.next();
+            if (shutName!="") {
+                shutName.append(".shutdown");
+                qDebug() << "MidiMapping: Executing" << shutName;
+                if (!m_pScriptEngine->execute(shutName))
+                    qWarning() << "MidiMapping: No" << shutName << "function in script";
+            }
+        }
+        qDebug() << "MidiMapping: Deleting MIDI script engine...";
+        MidiScriptEngine *engine = m_pScriptEngine;
+        m_pScriptEngine = NULL;
+        delete engine;
+    }
+}
+#endif
 
 void MidiMapping::setOutputMidiDevice(MidiDevice* outputMidiDevice)
 {
