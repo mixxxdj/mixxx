@@ -90,6 +90,7 @@ class MidiMapping : public QObject
     void clearOutputMidiMapping(MixxxControl control);
     void clearOutputMidiMapping(int index, int count);
 #ifdef __MIDISCRIPT__
+    void scriptShutdown();
     void restartScriptEngine();
     MidiScriptEngine *getMidiScriptEngine() { return m_pScriptEngine; };
 #endif
