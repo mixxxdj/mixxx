@@ -6,7 +6,7 @@
   !echo ""
   !echo "Usage error: "
   !echo "  /DBINDIR=X -- must be provided.  Where X is one of SCons -> 'dist', Qmake/QtC -> 'bin', Qmake/Crosscompile -> 'bin-win32')"
-  !echo "  [/DRELEASE=1] -- optional, if set to 1 then the Installer is labeled without date and SVN Build number"
+  !echo "  [/DRELEASE=1] -- optional, if set to 1 then the Installer is labeled without date and BZR Build number"
   !echo ""
   !error "Error: Incorrect Usage"
 !endif
@@ -16,17 +16,16 @@
 !ifdef RELEASE
 	!define VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_BUGFIX}"
 !else
-	# TODO: make a switch or figure out a way to get "bzr revno" in place of svnversion for new builds based off of Bazaar VCS.
 	!ifndef BUILD_REV
-		!tempfile SVN_VERION_TMPFILE
-		!system 'svnversion > "${SVN_VERION_TMPFILE}"'
-		!searchparse /noerrors /file ${SVN_VERION_TMPFILE} `` BUILD_REV `:`
-		!delfile "${SVN_VERION_TMPFILE}"
+		!tempfile BZR_VERION_TMPFILE
+		!system 'bzr revno > "${BZR_VERION_TMPFILE}"'
+		!searchparse /noerrors /file ${BZR_VERION_TMPFILE} `` BUILD_REV `:`
+		!delfile "${BZR_VERION_TMPFILE}"
 	!endif
-	!define VERSION "SVN${BUILD_REV}-${NOW}"
+	!define VERSION "BZR-${BUILD_REV}-${NOW}"
 !endif
 
-!echo '${VER_MAJOR}.${VER_MINOR}.${VER_BUGFIX} SVN: ${BUILD_REV}'
+!echo '${VER_MAJOR}.${VER_MINOR}.${VER_BUGFIX} BZR: ${BUILD_REV}'
 
 ;Include Modern UI
 !include "MUI.nsh"
@@ -86,20 +85,20 @@ Section "Mixxx (required)" SecMixxx
   File "COPYING"
 
   SetOutPath $INSTDIR\midi
-  File /r /x .svn res\midi\*.*
+  File /r /x .bzr res\midi\*.*
 
   SetOutPath $INSTDIR\keyboard
-  File /r /x .svn res\keyboard\*.*
+  File /r /x .bzr res\keyboard\*.*
 
   SetOutPath $INSTDIR\skins
-  File /r /x .svn res\skins\*.*
+  File /r /x .bzr res\skins\*.*
 
   SetOutPath $INSTDIR\ladspa_presets
-  File /r /x .svn res\ladspa_presets\*.*
+  File /r /x .bzr res\ladspa_presets\*.*
 
   ;Disabled for initial 1.6.0 release
   ;SetOutPath $INSTDIR\promo
-  ;File  /x .svn "dist\promo\*"
+  ;File  /x .bzr "dist\promo\*"
 
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"

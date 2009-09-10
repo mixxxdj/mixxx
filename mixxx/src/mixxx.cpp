@@ -82,9 +82,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
-            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+            buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else
-            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+            buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
     }
     
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
