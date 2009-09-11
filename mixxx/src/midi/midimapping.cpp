@@ -609,9 +609,9 @@ void MidiMapping::savePreset(QString path) {
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
     // Construct the DOM from the table
-    buildDomElement();
+    QDomDocument docBindings = buildDomElement();
     // Save the DOM to the XML file
-    m_Bindings.save(outputstream, 4);
+    docBindings.save(outputstream, 4);
     output.close();
     m_mappingLock.unlock();
 }
@@ -661,70 +661,95 @@ void MidiMapping::clearPreset() {
 /* buildDomElement()
  * Updates the DOM with what is currently in the table
  */
- void MidiMapping::buildDomElement() {
-     // We should hold the mapping lock.
-     Q_ASSERT(!m_mappingLock.tryLock());
-     
-     clearPreset(); // Create blank document
-
-     const QString wtfbbqdevicename = "Last used";
+ QDomDocument MidiMapping::buildDomElement() {
+    // We should hold the mapping lock.
+    Q_ASSERT(!m_mappingLock.tryLock());
+    
+    clearPreset(); // Create blank document
+    
+    
+    const QString wtfbbqdevicename = "Last used";
+    
+    QDomDocument doc("Bindings");
+    QString blank = "<MixxxMIDIPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\" mixxxVersion=\"" + QString(VERSION) + "+\">\n"
+                    "</MixxxMIDIPreset>\n";
+    
+    doc.setContent(blank);
+    
+    QDomElement rootNode = doc.documentElement();
+    QDomElement controller = doc.createElement("controller");
+    controller.setAttribute("id", wtfbbqdevicename);
+    rootNode.appendChild(controller);
+    
 #ifdef __MIDISCRIPT__
-      //This sucks, put this code inside MidiScriptEngine instead of here,
-      // and just ask MidiScriptEngine to spit it out for us.
-     qDebug() << "MidiMapping: Writing script block!";
-     for (int i = 0; i < m_pScriptFileNames.count(); i++) {
-         qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
-          QString filename = m_pScriptFileNames[i];
-          if (filename != REQUIRED_MAPPING_FILE) { //Don't need to write anything for the required mapping file.
-              QString functionPrefix = m_pScriptFunctionPrefixes[i];
-              //and now for the worst XML code since... WWidget...
-              QDomDocument sucksBalls;
-              QDomElement scriptFile = sucksBalls.createElement("file");
-              scriptFile.setAttribute("filename", filename);
-              scriptFile.setAttribute("functionprefix", functionPrefix);
-
-              //Add the XML dom element to the right spot in the XML document.
-              addMidiScriptInfo(scriptFile, wtfbbqdevicename);
-          }
-     }
+    //This sucks, put this code inside MidiScriptEngine instead of here,
+    // and just ask MidiScriptEngine to spit it out for us.
+    qDebug() << "MidiMapping: Writing script block!";
+    
+    QDomElement scriptFiles = doc.createElement("scriptfiles");
+    controller.appendChild(scriptFiles);
+    
+    
+    for (int i = 0; i < m_pScriptFileNames.count(); i++) {
+        qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
+        QString filename = m_pScriptFileNames[i];
+        
+        
+        //Don't need to write anything for the required mapping file.
+        if (filename != REQUIRED_MAPPING_FILE) {
+            QString functionPrefix = m_pScriptFunctionPrefixes[i];
+            QDomElement scriptFile = doc.createElement("file");
+            
+            
+            scriptFile.setAttribute("filename", filename);
+            scriptFile.setAttribute("functionprefix", functionPrefix);
+            
+            scriptFiles.appendChild(scriptFile);
+        }
+    }
 #endif
-
+    
+    QDomElement controls = doc.createElement("controls");
+    controller.appendChild(controls);
+    
+    
     //Iterate over all of the command/control pairs in the input mapping
-     QHashIterator<MidiMessage, MixxxControl> it(m_inputMapping);
-     while (it.hasNext()) {
-         it.next();
-         QDomElement controlNode;
-         QDomDocument nodeMaker;
-
-         //Create <control> block
-         controlNode = nodeMaker.createElement("control");
-
-         //Save the MidiMessage and MixxxControl objects as XML
-         it.key().serializeToXML(controlNode);
-         it.value().serializeToXML(controlNode);
-
-          //Add the control node we just created to the XML document in the proper spot
-         addControl(controlNode, m_deviceName); //FIXME: This is crap...
-     }
-
-     //Iterate over all of the control/command pairs in the OUTPUT mapping
-     QHashIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
-     while (outIt.hasNext()) {
-         outIt.next();
-         QDomElement outputNode;
-         QDomDocument nodeMaker;
-
-         //Create <output> block
-         outputNode = nodeMaker.createElement("output");
-
-         //Save the MidiMessage and MixxxControl objects as XML
-         outIt.key().serializeToXML(outputNode, true);
-         outIt.value().serializeToXML(outputNode, true);
-
-          //Add the control node we just created to the XML document in the proper spot
-         addOutput(outputNode, m_deviceName); //FIXME: This is also crappy...
-     }
- }
+    QHashIterator<MidiMessage, MixxxControl> it(m_inputMapping);
+    while (it.hasNext()) {
+        it.next();
+        
+        QDomElement controlNode = doc.createElement("control");
+        
+        //Save the MidiMessage and MixxxControl objects as XML
+        it.key().serializeToXML(controlNode);
+        it.value().serializeToXML(controlNode);
+        
+        //Add the control node we just created to the XML document in the proper spot
+        controls.appendChild(controlNode);
+    }
+    
+    
+    QDomElement outputs = doc.createElement("outputs");
+    controller.appendChild(controls);
+    
+    //Iterate over all of the control/command pairs in the OUTPUT mapping
+    QHashIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
+    while (outIt.hasNext()) {
+        outIt.next();
+        
+        QDomElement outputNode = doc.createElement("output");
+        
+        
+        //Save the MidiMessage and MixxxControl objects as XML
+        outIt.key().serializeToXML(outputNode, true);
+        outIt.value().serializeToXML(outputNode, true);
+        
+        //Add the control node we just created to the XML document in the proper spot
+        outputs.appendChild(outputNode);
+    }
+    
+    return doc;
+}
 
 /* -------- ------------------------------------------------------
    Purpose: Adds an input MIDI mapping block to the XML.
