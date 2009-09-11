@@ -123,7 +123,7 @@ private:
                                       MidiMessage command,
                                       bool shouldEmit);
     void clearPreset();
-    void buildDomElement();
+    QDomDocument buildDomElement();
     void addControl(QDomElement& control, QString device);
     void addOutput(QDomElement& output, QString device);
     void addMidiScriptInfo(QDomElement &scriptFile, QString device); //Sucks

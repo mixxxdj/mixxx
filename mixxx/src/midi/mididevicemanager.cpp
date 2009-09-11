@@ -22,6 +22,8 @@
 #include "midideviceportmidi.h"
 #include "dlgprefmidibindings.h"
 #include "mididevicemanager.h"
+#include "../mixxxcontrol.h"
+#include "midimapping.h"
 
 #define DEVICE_CONFIG_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIDevices")
 
@@ -34,6 +36,22 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 
 MidiDeviceManager::~MidiDeviceManager()
 {
+    QList<MidiDevice*> deviceList = getDeviceList(false, true);
+    QListIterator<MidiDevice*> it(deviceList);
+    
+    
+    while (it.hasNext())
+    {
+        MidiDevice *cur= it.next();
+        MidiMapping *mapping = cur->getMidiMapping();
+        QString name = cur->getName();
+        
+        mapping->savePreset(
+                QDir::homePath().append("/").append(SETTINGS_PATH).
+                append(name.right(name.size()-3).replace(" ", "-") + ".midi.xml")
+        );
+    }
+    
     closeDevices();
 }
 
