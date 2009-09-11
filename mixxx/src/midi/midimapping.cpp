@@ -730,7 +730,7 @@ void MidiMapping::clearPreset() {
     
     
     QDomElement outputs = doc.createElement("outputs");
-    controller.appendChild(controls);
+    controller.appendChild(outputs);
     
     //Iterate over all of the control/command pairs in the OUTPUT mapping
     QHashIterator<MixxxControl, MidiMessage> outIt(m_outputMapping);
