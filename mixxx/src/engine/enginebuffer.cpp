@@ -512,7 +512,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // step is just processing a list of EngineControls
         m_pRateControl->process(rate, filepos_play,
                                 file_length_old, 
-                                ((double)m_pSampleRate->get() / iBufferSize));
+                                (iBufferSize / (double)m_pSampleRate->get())
+        );
         
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
