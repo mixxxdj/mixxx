@@ -48,7 +48,7 @@ MidiDeviceManager::~MidiDeviceManager()
         
         mapping->savePreset(
                 QDir::homePath().append("/").append(SETTINGS_PATH).
-                append(name.right(name.size()-3).replace(" ", "-") + ".midi.xml")
+                append(name.right(name.size()-3).replace(" ", "_") + ".midi.xml")
         );
     }
     
@@ -167,53 +167,38 @@ void MidiDeviceManager::queryDevices()
 /** Open whatever MIDI devices are selected in the preferences. */
 int MidiDeviceManager::setupDevices()
 {
-    qDebug() << "MidiDeviceManager::setupDevices()";
     int err = 0;
-    QListIterator<MidiDevice*> deviceIt(m_devices);
-    MidiDevice *device;
-
-    while (deviceIt.hasNext())
+    QList<MidiDevice*> deviceList = getDeviceList(false, true);
+    QListIterator<MidiDevice*> it(deviceList);
+    
+    qDebug() << "MidiDeviceManager::setupDevices()";
+    
+    
+    while (it.hasNext())
     {
-        device = deviceIt.next();
-        bool bNeedToOpenDeviceForOutput = 0;
-        bool bNeedToOpenDeviceForInput = 0;
-
-        //Close the device in case it was open.
-        device->close();
+        MidiDevice *cur= it.next();
+        MidiMapping *mapping = cur->getMidiMapping();
+        QString name = cur->getName();
         
-        //Open whatever devices are selected in the prefs.
-        //TODO:
-        // - make sure the prefs forces m_pDeviceSettings to save...
+        if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" )
+            continue;
         
-        qDebug() << device->getName() << "RxEnabled:" << m_pDeviceSettings->getValueString(ConfigKey("[" + device->getName() + "]","RxEnable"));
+        qDebug() << "Opening Device:" << cur->getName();
         
-        if (m_pDeviceSettings->getValueString(ConfigKey("[" + device->getName() + "]","RxEnable")) == "Enabled")
-        {
-            bNeedToOpenDeviceForInput = true;
-            //m_pPrimaryMidiDevice = device; //XXX: Hack while our code still sucks
-        }
-        if (m_pDeviceSettings->getValueString(ConfigKey("[" + device->getName() + "]","TxEnable")) == "Enabled")
-        {
-            bNeedToOpenDeviceForOutput = true;
-        }
         
-        //Open the device.
-        if (bNeedToOpenDeviceForOutput || bNeedToOpenDeviceForInput)
-        {
-            err = device->open();
-            if (err != 0)
-                return err;
-            else
-            {
-                //iNumDevicesOpenedForOutput += (int)bNeedToOpenDeviceForOutput;
-                //iNumDevicesOpenedForInput += (int)bNeedToOpenDeviceForInput;
-            }
-        }
+        cur->close();
+        cur->open();
+        
+        mapping->loadPreset(
+                QDir::homePath().append("/").append(SETTINGS_PATH).
+                append(name.right(name.size()-3).replace(" ", "-") + ".midi.xml"),
+                true
+        );
+        
+        mapping->applyPreset();
+        
     }
-
-    //qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
-    //qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
-
+    
     return 0;
 }
 
