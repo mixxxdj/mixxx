@@ -273,7 +273,9 @@ void DlgPrefMidiBindings::slotEnableDevice()
     //Just tell MidiObject to close the old device and open this device
     m_pMidiDevice->close();
     m_pMidiDevice->open();
-    m_pConfig->set(ConfigKey("[Midi]","Device"), m_pMidiDevice->getName());
+    
+    m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 1);
+    
     btnActivateDevice->setEnabled(false);
     toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
     groupBoxPresets->setEnabled(true); //Enable presets group box.
