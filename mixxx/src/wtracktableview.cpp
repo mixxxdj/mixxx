@@ -35,14 +35,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
-    
-    //Drag and drop setup
-    //TODO: Enable this stuff, make it work with new sqlite library.
-    setDragEnabled(true);
-    setDragDropMode(QAbstractItemView::DragDrop);
-    setDropIndicatorShown(true);
-    setAcceptDrops(true);
-    viewport()->setAcceptDrops(true);
+   
 
     //Create all the context menu actions (stuff that shows up when you right-click)
     createActions();
@@ -101,6 +94,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     
     setModel(model);
 
+    //Setup delegates according to what the model tells us
     for (int i = 0; i < model->columnCount(); ++i) {
         QItemDelegate* delegate = track_model->delegateForColumn(i);
         // We need to delete the old delegates, since the docs say the view will
@@ -110,6 +104,28 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         setItemDelegateForColumn(i, delegate);
         delete old_delegate;
     }
+    
+    //Set up drag and drop behaviour according to whether or not the 
+    //track model says it supports it.
+    
+    //Defaults
+    setAcceptDrops(true);
+    setDragDropMode(QAbstractItemView::DragOnly);
+    setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
+
+    TrackModel::CapabilitiesFlags caps = track_model->getCapabilities();
+    if ((caps & TrackModel::TRACKMODELCAPS_RECEIVEDROPS) > 0) {
+        setDragDropMode(QAbstractItemView::DragDrop);
+        setDropIndicatorShown(true);
+        setAcceptDrops(true);
+        //viewport()->setAcceptDrops(true);    
+    }
+    
+    //Possible giant fuckup alert - It looks like Qt has something like these caps built-in,
+    //see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum   and the flags(...) function
+    //that we're already using in LibraryTableModel. I haven't been able to get it to
+    //stop us from using a model as a drag target though, so my hax above may not be 
+    //completely unjustified.
 }
  
 void WTrackTableView::createActions()
@@ -393,7 +409,6 @@ void WTrackTableView::dropEvent(QDropEvent * event)
         event->acceptProposedAction();
         //emit(trackDropped(name));
 
-        //repaintEverything();
     } else
         event->ignore();
 }

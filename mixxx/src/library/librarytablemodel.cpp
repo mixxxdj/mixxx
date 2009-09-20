@@ -150,3 +150,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 
     return defaultFlags;
 }
+
+TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
+{
+    return TRACKMODELCAPS_RECEIVEDROPS; 
+}

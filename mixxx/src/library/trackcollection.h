@@ -44,6 +44,8 @@ const QString LIBRARYTABLE_SAMPLERATE = "samplerate";
 const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
 const QString LIBRARYTABLE_CHANNELS = "channels";
 
+const QString PLAYLISTTRACKSTABLE_POSITION = "position";
+
 /**
    @author Albert Santoni
 */
