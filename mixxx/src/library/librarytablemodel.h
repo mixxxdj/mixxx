@@ -20,6 +20,7 @@ public:
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
 private:
     TrackCollection* m_pTrackCollection;
 };

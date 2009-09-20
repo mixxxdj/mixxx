@@ -63,9 +63,9 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     playlistNameField.setValue(playlistTableName);
 
     query.prepare("CREATE TEMPORARY VIEW " + driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  "position, "
-                  "playlist_id, " + //DEBUG
+                  "SELECT " + 
+                  PLAYLISTTRACKSTABLE_POSITION + "," +  
+                  //"playlist_id, " + //DEBUG
                   LIBRARYTABLE_ARTIST + "," + 
                   LIBRARYTABLE_TITLE + "," +
                   LIBRARYTABLE_ALBUM + "," +
@@ -180,4 +180,9 @@ Qt::ItemFlags PlaylistTableModel::flags(const QModelIndex &index) const
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(int i) {
     return NULL;
+}
+
+TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
+{
+    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER;
 }
