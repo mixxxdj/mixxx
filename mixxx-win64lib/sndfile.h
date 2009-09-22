@@ -301,8 +301,8 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 ** header file to be compiler by both GCC and the microsoft compiler.
 */
 
-#ifdef _MSCVER
-typedef __int64_t	sf_count_t ;
+#if (defined (_MSCVER) || defined (_MSC_VER))
+typedef __int64	sf_count_t ;
 #define SF_COUNT_MAX		0x7fffffffffffffffi64
 #else
 typedef __int64	sf_count_t ;
@@ -550,6 +550,10 @@ sf_count_t	sf_seek 		(SNDFILE *sndfile, sf_count_t frames, int whence) ;
 int sf_set_string (SNDFILE *sndfile, int str_type, const char* str) ;
 
 const char* sf_get_string (SNDFILE *sndfile, int str_type) ;
+
+/* Return the library version string. */
+
+const char * sf_version_string (void) ;
 
 /* Functions for reading/writing the waveform data of a sound file.
 */

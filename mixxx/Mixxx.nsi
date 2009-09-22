@@ -26,18 +26,17 @@ Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ; Disable the Nullsoft Installer branding text at the bottom.
 BrandingText " "
 
-; The file to write
+; The file to write and default installation directory
 !ifdef x64
     OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+    InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 !else
     OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+    InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 !endif
 
 ; Use best compression
 SetCompressor /SOLID lzma
-
-; The default installation directory
-InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -46,6 +45,12 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 ;Interface Settings
 !define MUI_ABORTWARNING
+
+!define MUI_HEADERIMAGE
+;!define MUI_HEADERIMAGE_RIGHT
+!define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
+!define MUI_HEADERIMAGE_BITMAP "res\images\mixxx_install_logo.bmp"
+!define MUI_ICON "res\images\icon.ico"
 
 ; Pages
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
@@ -84,19 +89,23 @@ Section "Mixxx (required)" SecMixxx
   File "dist\mixxx.exe"
   File "dist\*.dll"
   
-  ; NOTE: you need to copy the below files into the applicable directory manually
-  ; (Visual C++ 2005 is msvc?80.dll, Visual C++ 2008 is msvc?90.dll)
+  ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
+  ; and place the appropriate versions of the listed DLL files and their manifest files
+  ; into the mixxx-win[64]lib directory for packaging before making the installer
+  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest, Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   
   !ifdef x64    ; x64 versions
-    File "..\mixxx-win64lib\msvcm*.dll"
-    File "..\mixxx-win64lib\msvcp*.dll"
-    File "..\mixxx-win64lib\msvcr*.dll"
+    File ..\mixxx-win64lib\msvcr*.dll
+    File ..\mixxx-win64lib\msvcp*.dll
+    File /nonfatal ..\mixxx-win64lib\msvcm*.dll
+    File ..\mixxx-win64lib\Microsoft.VC*.CRT.manifest
   !else         ; x86 versions
-    File "..\mixxx-winlib\msvcm*.dll"
-    File "..\mixxx-winlib\msvcp*.dll"
-    File "..\mixxx-winlib\msvcr*.dll"
+    File ..\mixxx-winlib\msvcr*.dll
+    File ..\mixxx-winlib\msvcp*.dll
+    File /nonfatal ..\mixxx-winlib\msvcm*.dll
+    File ..\mixxx-winlib\Microsoft.VC*.CRT.manifest
   !endif
 
   ; And documentation, licence etc.
@@ -106,18 +115,18 @@ Section "Mixxx (required)" SecMixxx
   File "COPYING"
 
   SetOutPath $INSTDIR\midi
-  File /r /x ".svn" /x ".bzr" res\midi\*.*
+  File /r /x ".svn" /x ".bzr" dist\midi\*.*
 
   ;Disabled for initial 1.6.0 release
   ;SetOutPath $INSTDIR\promo
   ;File "dist\promo\*"
 
   SetOutPath $INSTDIR\keyboard
-  File "res\keyboard\Standard.kbd.cfg"
-  File "res\keyboard\Old.kbd.cfg"
+  File "dist\keyboard\Standard.kbd.cfg"
+  File "dist\keyboard\Old.kbd.cfg"
 
   SetOutPath "$INSTDIR\skins"
-  File /r /x ".svn" /x ".bzr" res\skins\*.*
+  File /r /x ".svn" /x ".bzr" dist\skins\*.*
 
   ; Write the installation path into the registry
   ;WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"

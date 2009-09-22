@@ -1,6 +1,6 @@
 // Functions common to all controllers go in this file
 
-nop = function () {}    // Only here so you don't get a syntax error on load
+nop = function () {}    // Only here so you don't get a syntax error on load if the file was otherwise empty
 
 // ----------------- Prototype enhancements ---------------------
 
@@ -17,11 +17,29 @@ String.prototype.toInt = function() {
 
 function secondstominutes(secs)
 {
-    var m = (secs / 60) | 0;
+   var m = (secs / 60) | 0;
 
    return (m < 10 ? "0" + m : m) 
           + ":"
           + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
+}
+
+function msecondstominutes(msecs)
+{
+    var m = (msecs / 60000) | 0;
+    msecs %= 60000;
+    var secs = (msecs / 1000) | 0;
+    msecs %= 1000;
+    msecs = Math.round(msecs * 100 / 1000);
+    if (msecs==100) msecs=99;
+    
+    print("secs="+secs+", msecs="+msecs);
+
+    return (m < 10 ? "0" + m : m) 
+        + ":"
+        + ( secs < 10 ? "0" + secs : secs )
+        + "."
+        + ( msecs < 10 ? "0" + msecs : msecs);
 }
 
 function script() {}
@@ -41,6 +59,7 @@ script.absoluteNonLin = function (value, low, mid, high) {
     else return 1+(value-63)/(64/(high-mid));
 }
 
+// DEPRECATED
 // Used to control an EQ setting (0..1..4) from an absolute control (0..127)
 script.absoluteEQ = function (group, key, value) {
     if (value<=64) engine.setValue(group, key, value/64);
@@ -106,20 +125,6 @@ bpm.tapButton = function(deck) {
     
     engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
 //     print("Script: BPM="+average);
-
-//         print("StantonSCS3d: BPM="+(60/tapDelta));
-//         var fRateScale = (60/tapDelta)/engine.getValue("[Channel"+deck+"]","bpm");
-//         fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
-//         bpm.tap.push(fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
-//         
-//         if (bpm.tap.length>8) bpm.tap.shift();
-//         var sum = 0;
-//         for (i=0; i<bpm.tap.length; i++) {
-//             sum += bpm.tap[i];
-//         }
-//         var average = sum/bpm.tap.length;
-//         
-//         engine.setValue("[Channel"+deck+"]","rate",average);
 }
 
 
@@ -224,7 +229,7 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     if (wheelValue>=0 && wheelValue<10 && scratch.variables["prevControlValue"]>117 && scratch.variables["prevControlValue"]<=127) scratch.variables["wrapCount"]+=1;
     if (wheelValue>117 && wheelValue<=127 && scratch.variables["prevControlValue"]>=0 && scratch.variables["prevControlValue"]<10) scratch.variables["wrapCount"]-=1;
     
-//     From radimark: change = (new - old + 192) % 128 - 64
+//     From radiomark: change = (new - old + 192) % 128 - 64
     
     scratch.variables["prevControlValue"]=wheelValue;
     wheelValue += scratch.variables["wrapCount"]*128;

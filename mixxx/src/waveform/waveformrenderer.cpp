@@ -92,15 +92,21 @@ WaveformRenderer::WaveformRenderer(const char* group) :
 
     m_pRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
     if(m_pRate != NULL) {
-        connect(m_pRate, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateRate(double)));
+        connect(m_pRate, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateRate(double)));
     }
 
     m_pRateRange = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
     if(m_pRateRange != NULL) {
-        connect(m_pRateRange, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateRateRange(double)));
+        connect(m_pRateRange, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateRateRange(double)));
     }
 
     m_pRateDir = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    if (m_pRateDir) {
+        connect(m_pRateDir, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateRateDir(double)));
+    }
 
     if(0)
         start();
@@ -181,6 +187,10 @@ void WaveformRenderer::slotUpdateRate(double v) {
 
 void WaveformRenderer::slotUpdateRateRange(double v) {
     m_dRateRange = v;
+}
+
+void WaveformRenderer::slotUpdateRateDir(double v) {
+    m_dRateDir = v;
 }
 
 void WaveformRenderer::slotUpdateLatency(double v) {
@@ -465,9 +475,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     //qDebug() << m_dPlayPosAdjust;
 
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
-    double rateDir = 1;
-    if(m_pRateDir) rateDir = m_pRateDir->get();
-    double rateAdjust = rateDir * math_min(0.99, m_dRate * m_dRateRange);
+    double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
 
     if(m_pSampleBuffer == NULL) {
         fetchWaveformFromTrack();

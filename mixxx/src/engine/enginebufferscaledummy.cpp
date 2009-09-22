@@ -69,14 +69,14 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
     } else {
         new_playpos = buf_size;
     }
-    
+
 /*
         //START OF BASIC/ROCKSOLID LINEAR INTERPOLATION CODE
-        
+
         //This code was ripped from EngineBufferScaleLinear so we could experiment
         //with it and understand how it works. We also wanted to test to see if this
         //minimal subset of the code was stable, and it is. -- Albert 04/23/08
-         
+
         float rate_add = 2 * m_dBaseRate * m_dTempo; //2 channels * baserate * tempo
         int i;
         new_playpos = playpos;

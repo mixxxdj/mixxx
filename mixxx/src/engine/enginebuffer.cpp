@@ -71,10 +71,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScale(NULL),
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
+    m_bScalerChanged(false),
     m_fLastSampleValue(0.),
     m_bLastBufferPaused(true),
     m_bResetPitchIndpTimeStretch(true) {
-    
+
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"), true);
     connect(playButton, SIGNAL(valueChanged(double)),
@@ -105,7 +106,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     wheelTouchSwitch->setToggleButton(true);
     // BJW Whether to revert to PitchIndpTimeStretch after scratching
     m_bResetPitchIndpTimeStretch = false;
-    
+
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)),
@@ -114,7 +115,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Control used to communicate ratio playpos to GUI thread
     visualPlaypos =
         new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
-    
+
     // m_pTrackEnd is used to signal when at end of file during playback
     m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
 
@@ -131,10 +132,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
-    
-    
 
-    
+
+
+
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
 
     // Create the Cue Controller TODO(rryan) : this has to happen before Reader
@@ -151,7 +152,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
-    
+
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
             this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
@@ -161,9 +162,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
-    
-    //m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
-    m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
+
+    m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
+    //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
     //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch =
         _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
@@ -190,12 +191,12 @@ EngineBuffer::~EngineBuffer()
     delete wheelTouchSwitch;
     delete playposSlider;
     delete visualPlaypos;
-    
+
     delete m_pTrackEnd;
     delete m_pTrackEndMode;
 
     delete m_pTrackSamples;
-        
+
     delete m_pScaleLinear;
     delete m_pScaleST;
 
@@ -218,7 +219,7 @@ double EngineBuffer::getAbsPlaypos()
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
-    m_qPlayposMutex.lock(); //Just to be safe - Albert
+    pause.lock(); //Just to be safe - Albert
 
     // Change sound scale mode
 
@@ -232,22 +233,15 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //causes some weird bad pointer somewhere, which will either cause
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
-    
-    
-    // Der... have to have a scale engine assigned to call setPitchIndpTimeStretch
-    // -madjester
-    
-    //((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
-    if (b == true)
-    {
+
+    if (b == true) {
         m_pScale = m_pScaleST;
-    }
-    else
-    {
+        ((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
+    } else {
         m_pScale = m_pScaleLinear;
     }
-    m_qPlayposMutex.unlock();
-
+    m_bScalerChanged = true;
+    pause.unlock();
 }
 
 double EngineBuffer::getBpm()
@@ -303,7 +297,7 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
-    
+
     m_pTrackSamples->set(iTrackNumSamples);
     emit(trackLoaded(pTrack));
 }
@@ -366,14 +360,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // - Process EndOfTrack mode if we're at the end of a track
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
-    
+
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
-        
+
         // Is a touch sensitive wheel being touched?
         bool wheelTouchSensorEnabled = wheelTouchSwitch->get() && wheelTouchSensor->get();
 
@@ -388,7 +382,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // TODO(rryan) : review this touch sensitive business with the Mixxx
         // team to see if this is what we actually want.
-        
+
         // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
         // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
         // the wheel's motion is amplified to produce a scrub effect. Also note that playback speed factors like
@@ -412,17 +406,19 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
-        
+
         double rate = m_pRateControl->calculateRate(baserate, paused);
         //qDebug() << "rate" << rate << " paused" << paused;
-        
+
         // If the rate has changed, set it in the scale object
-        if (rate != rate_old) {
+        if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
             rate_old = rate;
             rate = baserate*m_pScale->setTempo(rate/baserate);
             m_pScale->setBaseRate(baserate);
             rate_old = rate;
+            // Scaler is up to date now.
+            m_bScalerChanged = false;
         }
 
         bool at_start = filepos_play <= 0;
@@ -434,7 +430,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = rate == 0 ||
             (at_start && backwards) ||
             (at_end && !backwards);
-        
+
         // If paused, then ramp out.
         if (bCurBufferPaused) {
             // If this is the first process() since being paused, then ramp out.
@@ -442,25 +438,25 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 rampOut(pOut, iBufferSize);
             }
         // Otherwise, scale the audio.
-        } else { // if (bCurBufferPaused)            
+        } else { // if (bCurBufferPaused)
             CSAMPLE *output;
             double idx;
 
             Q_ASSERT(even(iBufferSize));
-            
+
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
             Q_ASSERT(round(filepos_play) == filepos_play);
             // Even.
             Q_ASSERT(even(filepos_play));
-            
+
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(0,
                                      iBufferSize,
                                      0,
                                      0);
             idx = m_pScale->getNewPlaypos();
-                
+
             // qDebug() << "sourceSamples used " << iSourceSamples
             //          <<" idx " << idx
             //          << ", buffer pos " << iBufferStartSample
@@ -473,7 +469,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // for(int i=0; i<iBufferSize; i++) {
             //     pOutput[i] = output[i];
             // }
-            
+
             // Adjust filepos_play by the amount we processed.
             filepos_play += idx;
 
@@ -533,13 +529,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool end_of_track = (at_start && backwards) ||
             (at_end && !backwards);
-        
+
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
             !m_pTrackEnd->get() &&
             ((at_start && backwards) ||
              (at_end && !backwards))) {
-            
+
             // If end of track mode is set to next, signal EndOfTrack to TrackList,
             // otherwise start looping, pingpong or stop the track
             int m = (int)m_pTrackEndMode->get();
@@ -553,7 +549,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             case TRACK_END_MODE_NEXT:
                 m_pTrackEnd->set(1.);
                 break;
-                
+
             case TRACK_END_MODE_LOOP:
                 //qDebug() << "loop";
                 if(filepos_play <= 0)
@@ -584,7 +580,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             rampOut(pOut, iBufferSize);
         bCurBufferPaused = true;
     }
-    
+
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -623,7 +619,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         pOutput[i]=0.;
         ++i;
-    } 
+    }
 }
 
 void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
@@ -644,7 +640,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // rateEngine)
     if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
         playposSlider->set(fFractionalPlaypos);
-        
+
         if(rate != rateEngine->get())
             rateEngine->set(rate);
 

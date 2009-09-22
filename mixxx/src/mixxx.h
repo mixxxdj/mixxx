@@ -236,6 +236,7 @@ class MixxxApp : public QMainWindow
     DlgLADSPA *ladspaDlg;
 #endif
 
+    int noSoundDlg(void);
     // Fullscreen patch
     QPoint winpos;
 };
