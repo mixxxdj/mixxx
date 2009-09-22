@@ -86,14 +86,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_samplerates.push_back("44100");
     m_samplerates.push_back("48000");
     m_samplerates.push_back("96000");
-
-#ifdef __PORTAUDIO__
-    PaError err = Pa_Initialize();
-    if (err != paNoError)
-    {
-        qDebug() << "Error:" << Pa_GetErrorText(err);
-    }
-#endif
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -153,7 +145,7 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
             }
             if (bInputDevices)
             {
-                if (device->getNumInputChannels() <= 0)
+                if (device->getNumInputChannels() <= 1) //Ignore mono input and no-input devices
                     bMatchedCriteria = false;
             }
 
@@ -254,6 +246,10 @@ void SoundManager::clearDeviceList()
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
+    
+#ifdef __PORTAUDIO__
+    Pa_Terminate();
+#endif
 }
 
 /** Returns a list of samplerates we will attempt to support.
@@ -271,6 +267,13 @@ void SoundManager::queryDevices()
     clearDeviceList();
 
 #ifdef __PORTAUDIO__
+    PaError err = Pa_Initialize();
+    if (err != paNoError)
+    {
+        qDebug() << "Error:" << Pa_GetErrorText(err);
+        return;
+    }
+    
     int iNumDevices;
     iNumDevices = Pa_GetDeviceCount();
     if(iNumDevices < 0)
@@ -465,7 +468,8 @@ int SoundManager::setupDevices()
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
-    return (iNumDevicesOpenedForOutput == 0); //Returns non-zero if we have no output devices
+    //Returns non-zero if we have no output devices
+    return (iNumDevicesOpenedForOutput == 0);
 }
 
 void SoundManager::sync()
@@ -533,6 +537,7 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer2 = inputBuffer;
     }
 
+/*
     //If we have two stereo input streams (interlaced as one), then
     //break them up into two separate interlaced streams
     if (iFrameSize == 4)
@@ -548,10 +553,12 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
         vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
+*/
+    else { //More than two channels of input (iFrameSize > 2)
 
-/*
+        //Do crazy deinterleaving of the audio into the correct m_pReceiverBuffers.
+
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-
         for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Deinterlace the input audio data from the portaudio buffer
@@ -566,10 +573,16 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 				for(iChannel = 0; iChannel < recv.channels; iChannel++)	//this will make sure a sample from each channel is copied
 				{
 					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			        m_pReceiverBuffers[type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
+			        m_pReceiverBuffers[recv.type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
                 }
 			}
         }
+        //Set the pointers to point to the de-interlaced input audio
+        vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+        vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    }
+
+/*
 
 */
 

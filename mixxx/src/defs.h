@@ -17,7 +17,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "1.7.0-beta1"
+#define VERSION "Trunk"
 #define MIXXX_PROMO_DIR "promo"
 
 #include <math.h>

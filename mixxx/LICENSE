@@ -13,7 +13,7 @@ license for which can currently be found at:
 
 On Windows you may receive a copy of the Microsoft Visual Studio runtime
 libraries. These are distributed only for the purpose of allowing 
-Mixxx to run as per the license agreement for Visual Studio 2005 and
+Mixxx to run as per the license agreement for Visual Studio 2005/2008 and
 are copyright of Microsoft.
 
 The source code for Mixxx itself is licensed under the GPL as follows:

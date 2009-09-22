@@ -116,7 +116,9 @@ void DlgPrefVinyl::slotShow()
 
     //(Re)Initialize the signal quality indicators
     m_signalWidget1.resetWidget();
+    m_signalWidget1.startDrawing();
     m_signalWidget2.resetWidget();
+    m_signalWidget2.startDrawing();
 
 }
 
@@ -124,6 +126,8 @@ void DlgPrefVinyl::slotShow()
 void DlgPrefVinyl::slotClose()
 {
     //Stop updating the vinyl control signal indicators when the prefs dialog is closed.
+    m_signalWidget1.stopDrawing();
+    m_signalWidget2.stopDrawing();
     m_timecodeQuality1->disconnect(this);
     m_timecodeQuality2->disconnect(this);
     m_vinylControlInput1L->disconnect(this);
