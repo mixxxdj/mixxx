@@ -634,8 +634,7 @@ CONFIG(m4a) {
             ../mixxx-winlib/mp4v2/include/mpeg4ip_version.h \
             ../mixxx-winlib/mp4v2/include/mpeg4ip_win32.h
         LIBS += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
-            ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
-#             ../mixxx-winlib/faad2/mingw-bin/libfaad.a
+            ../mixxx-winlib/libfaad2.dll
     } else {
         LIBS += -lmp4v2 \
             -lfaad
@@ -725,7 +724,7 @@ win32 {
     # MinGW run-time
     DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll $$(QTDIR)/../mingw/bin/libexpat-1.dll
     CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
-        ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
+        ../mixxx-winlib/libfaad2.dll
     # Qt4 libraries
     debug {
         DLLs += $$(QTDIR)/bin/Qt3Supportd4.dll \
