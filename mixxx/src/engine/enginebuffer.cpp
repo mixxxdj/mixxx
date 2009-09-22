@@ -514,10 +514,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // really care about. It will try very hard to keep these in memory
         hintReader(rate, iBufferSize);
 
-        // And wake it up so that it processes our hints (hopefully) before the
-        // next callback.
-        m_pReader->wake();
-
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
         updateIndicators(rate, iBufferSize);
@@ -579,6 +575,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             rampOut(pOut, iBufferSize);
         bCurBufferPaused = true;
     }
+
+    // Wake up the reader so that it processes our hints / loads new files (hopefully) before the
+    // next callback.
+    m_pReader->wake();
 
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
