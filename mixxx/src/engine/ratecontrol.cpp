@@ -16,20 +16,21 @@ double RateControl::m_dTempSmall = 0.001;
 double RateControl::m_dPerm = 0.01;
 double RateControl::m_dPermSmall = 0.001;
 
+int RateControl::m_iRateRampSensitivity = 250;
+enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_OLD;
+
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
-    m_bTempStarted(false),
-    m_eRateTempMode(PITCHBEND_REAL),
-    m_dOldRate(0.0f),
-    m_ePbPressed(0),
     m_ePbCurrent(0),
+    m_ePbPressed(0),
+    m_bTempStarted(false),
     m_dRateTemp(0.0),
+    m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
-    m_eRampBackMode(PITCHBEND_RAMPBACK_NONE),
+    m_dOldRate(0.0f),
     m_pConfig(_config)
 {
-    
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
@@ -109,6 +110,16 @@ RateControl::RateControl(const char* _group,
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
     m_pJogFilter->setFilterLength(5);
+    
+    // Update Internal Settings
+    // Set Pitchbend Mode
+    m_eRateRampMode = (RateControl::RATERAMP_MODE)
+        m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt();
+    
+    // Set the Sensitivity
+    m_iRateRampSensitivity = 
+        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+    
 }
 
 RateControl::~RateControl() {
@@ -135,6 +146,24 @@ RateControl::~RateControl() {
     delete m_pScratch;
     delete m_pJog;
     delete m_pJogFilter;
+}
+
+void RateControl::setRateRamp(bool realMode)
+{
+    if ( realMode )
+        m_eRateRampMode = RateControl::RATERAMP_LINEAR;
+    else
+        m_eRateRampMode = RateControl::RATERAMP_OLD;
+}
+
+void RateControl::setRateRampSensitivity(int sense)
+{
+    if ( sense < 100 )
+        m_iRateRampSensitivity = 100;
+    else if ( sense > 2500 )
+        m_iRateRampSensitivity = 2500;
+    else
+        m_iRateRampSensitivity = sense;
 }
 
 void RateControl::setTemp(double v) {
@@ -202,14 +231,14 @@ void RateControl::slotControlRatePermUpSmall(double)
 void RateControl::slotControlRateTempDown(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDown->get() && !(m_ePbPressed & RateControl::PITCHBEND_DOWN))
+    if (buttonRateTempDown->get() && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
     {
-        m_ePbPressed |= RateControl::PITCHBEND_DOWN;
-        m_ePbCurrent = RateControl::PITCHBEND_DOWN;
+        m_ePbPressed |= RateControl::RATERAMP_DOWN;
+        m_ePbCurrent = RateControl::RATERAMP_DOWN;
     }
     else if (!buttonRateTempDown->get())
     {
-        m_ePbPressed &= ~RateControl::PITCHBEND_DOWN;
+        m_ePbPressed &= ~RateControl::RATERAMP_DOWN;
         m_ePbCurrent = m_ePbPressed;
     }
 }
@@ -217,14 +246,14 @@ void RateControl::slotControlRateTempDown(double)
 void RateControl::slotControlRateTempDownSmall(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDownSmall->get() && !(m_ePbPressed & RateControl::PITCHBEND_DOWN))
+    if (buttonRateTempDownSmall->get() && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
     {
-        m_ePbPressed |= RateControl::PITCHBEND_DOWN;
-        m_ePbCurrent = RateControl::PITCHBEND_DOWN;
+        m_ePbPressed |= RateControl::RATERAMP_DOWN;
+        m_ePbCurrent = RateControl::RATERAMP_DOWN;
     }
     else if (!buttonRateTempDownSmall->get())
     {
-        m_ePbPressed &= ~RateControl::PITCHBEND_DOWN;
+        m_ePbPressed &= ~RateControl::RATERAMP_DOWN;
         m_ePbCurrent = m_ePbPressed;
     }
 }
@@ -232,14 +261,14 @@ void RateControl::slotControlRateTempDownSmall(double)
 void RateControl::slotControlRateTempUp(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUp->get() && !(m_ePbPressed & RateControl::PITCHBEND_UP))
+    if (buttonRateTempUp->get() && !(m_ePbPressed & RateControl::RATERAMP_UP))
     {
-        m_ePbPressed |= RateControl::PITCHBEND_UP;
-        m_ePbCurrent = RateControl::PITCHBEND_UP;
+        m_ePbPressed |= RateControl::RATERAMP_UP;
+        m_ePbCurrent = RateControl::RATERAMP_UP;
     }
     else if (!buttonRateTempUp->get())
     {
-        m_ePbPressed &= ~RateControl::PITCHBEND_UP;
+        m_ePbPressed &= ~RateControl::RATERAMP_UP;
         m_ePbCurrent = m_ePbPressed;
     }
 }
@@ -247,14 +276,14 @@ void RateControl::slotControlRateTempUp(double)
 void RateControl::slotControlRateTempUpSmall(double)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUpSmall->get() && !(m_ePbPressed & RateControl::PITCHBEND_UP))
+    if (buttonRateTempUpSmall->get() && !(m_ePbPressed & RateControl::RATERAMP_UP))
     {
-        m_ePbPressed |= RateControl::PITCHBEND_UP;
-        m_ePbCurrent = RateControl::PITCHBEND_UP;
+        m_ePbPressed |= RateControl::RATERAMP_UP;
+        m_ePbCurrent = RateControl::RATERAMP_UP;
     }
     else if (!buttonRateTempUpSmall->get())
     {
-        m_ePbPressed &= ~RateControl::PITCHBEND_UP;
+        m_ePbPressed &= ~RateControl::RATERAMP_UP;
         m_ePbCurrent = m_ePbPressed;
     }
 }
@@ -367,7 +396,7 @@ double RateControl::process(const double rate,
         m_dOldRate = m_pRateSlider->get();
         
         
-        if ( m_eRateTempMode == PITCHBEND_OLD ) 
+        if ( m_eRateRampMode == RATERAMP_OLD ) 
         {
             // old temporary pitch shift behaviour
             double change = m_pRateDir->get() * m_dTemp / 
@@ -377,47 +406,47 @@ double RateControl::process(const double rate,
             
             
             if (buttonRateTempUp->get())
-                m_pRateSlider->add(change);
+                addRateTemp(change);
             else if (buttonRateTempDown->get())
-                m_pRateSlider->sub(change);
+                subRateTemp(change);
             else if (buttonRateTempUpSmall->get())
-                m_pRateSlider->add(csmall);
+                addRateTemp(csmall);
             else if (buttonRateTempDownSmall->get())
-                m_pRateSlider->sub(csmall);
+                subRateTemp(csmall);
         }
         else 
         {
-            // I need to connect to the correct slots so I can avoid 
-            // this and calculate all of it at initialization
+            m_dTempRateChange = ((double)countSamples / ((double)m_iRateRampSensitivity / 100));
             
-            m_iRateTempStep = m_pConfig->getValueString(ConfigKey("[Controls]","PitchbendSensitivity")).toInt();
-            m_dTempRateChange = ((double)countSamples / ((double)m_iRateTempStep / 100));
-            
-            if (m_eRampBackMode == PITCHBEND_RAMPBACK_PERIOD)
+            if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
                 m_dRateTempRampbackChange = 0.0;
         }
         
     }
     
-    if ((m_ePbCurrent) && (m_eRateTempMode == PITCHBEND_REAL))
+    if ((m_ePbCurrent) && (m_eRateRampMode == RATERAMP_LINEAR))
     {
         // apply ramped pitchbending
-        if ( m_ePbCurrent == RateControl::PITCHBEND_UP )
+        if ( m_ePbCurrent == RateControl::RATERAMP_UP )
             addRateTemp(m_dTempRateChange);
-        else if ( m_ePbCurrent == RateControl::PITCHBEND_DOWN )
+        else if ( m_ePbCurrent == RateControl::RATERAMP_DOWN )
             subRateTemp(m_dTempRateChange);
     }
-    else if ((m_bTempStarted) || ((m_eRampBackMode != PITCHBEND_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
+    else if ((!m_ePbCurrent) && (m_eRateRampMode == RATERAMP_OLD))
+    {
+        resetRateTemp();
+    }
+    else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
     {
         // No buttons pressed, so time to deinitialize
         m_bTempStarted = false;
         
         
-        if ( m_eRateTempMode == PITCHBEND_OLD )
+        if ( m_eRateRampMode == RATERAMP_OLD )
             m_pRateSlider->set(m_dOldRate);
         else {
             
-            if ((m_eRampBackMode == PITCHBEND_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0 ))
+            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0 ))
             {
                 qDebug() << "countSamples:" << countSamples;
                 
@@ -432,7 +461,7 @@ double RateControl::process(const double rate,
                 
             }
             
-            if ((m_eRampBackMode != PITCHBEND_RAMPBACK_NONE))
+            if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE))
             {
                 
                 if ( fabs(m_dRateTemp) < m_dRateTempRampbackChange)
