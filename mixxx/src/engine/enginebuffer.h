@@ -114,7 +114,7 @@ signals:
 private slots:
     void slotTrackLoaded(TrackInfoObject *pTrack,
                          int iSampleRate, int iNumSamples);
-    
+
 private:
 
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
@@ -127,11 +127,11 @@ private:
 
     /** Holds the name of the control group */
     const char* group;
-    ConfigObject<ConfigValue>* m_pConfig; 
+    ConfigObject<ConfigValue>* m_pConfig;
 
     /** Pointer to the loop control object */
     LoopingControl* m_pLoopingControl;
-    
+
     /** Pointer to the rate control object */
     RateControl* m_pRateControl;
 
@@ -171,7 +171,7 @@ private:
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
-                 
+
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
     /** Buffer and absolute playpos shared among threads */
@@ -184,13 +184,15 @@ private:
 
     /** Pointer to cue object */
     EngineBufferCue *m_pEngineBufferCue;
-    
+
     /** Object used to perform waveform scaling (sample rate conversion) */
     EngineBufferScale *m_pScale;
     /** Object used for linear interpolation scaling of the audio */
     EngineBufferScaleLinear *m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
     EngineBufferScaleST *m_pScaleST;
+    // Indicates whether the scaler has changed since the last process()
+    bool m_bScalerChanged;
 
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */

@@ -18,9 +18,9 @@
 #ifndef MIDIOBJECTCOREMIDI_H
 #define MIDIOBJECTCOREMIDI_H
 
-#include "midiobject.h"
-
-#include <QtCore>
+// NOTE: The #include order is important: the CoreMIDI headers
+//       have to be included before Qt headers (CoreMIDI uses qDebug
+//       as a define, and Qt has a qDebug() function!)
 
 #include <CoreFoundation/CoreFoundation.h>
 // #include <CoreAudio/CoreAudio.h>
@@ -28,6 +28,10 @@
 // #include <AudioToolbox/AUGraph.h>
 // #include <CoreMIDI/CoreMIDI.h>
 #include <CoreMIDI/MIDIServices.h>
+
+#include "midiobject.h"
+
+#include <QtCore>
 
 #define COREMIDI_SYSEX_QUEUE_SIZE 32 
 

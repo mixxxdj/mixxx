@@ -87,49 +87,73 @@
                     <status>0x90</status>
                     <midino>0x29</midino>
                     <group>[Channel1]</group>
-                    <key>play</key>
+                    <key>StantonSCS1m.playButton1</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x80</status>
                     <midino>0x29</midino>
                     <group>[Channel1]</group>
-                    <key>play</key>
+                    <key>StantonSCS1m.playButton1</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x90</status>
                     <midino>0x2a</midino>
                     <group>[Channel2]</group>
-                    <key>play</key>
+                    <key>StantonSCS1m.playButton2</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x80</status>
                     <midino>0x2a</midino>
                     <group>[Channel2]</group>
-                    <key>play</key>
+                    <key>StantonSCS1m.playButton2</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x90</status>
                     <midino>0x2d</midino>
                     <group>[Channel1]</group>
-                    <key>cue_default</key>
+                    <key>StantonSCS1m.cueButton1</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x80</status>
                     <midino>0x2d</midino>
                     <group>[Channel1]</group>
-                    <key>cue_default</key>
+                    <key>StantonSCS1m.cueButton1</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x90</status>
                     <midino>0x2e</midino>
                     <group>[Channel2]</group>
-                    <key>cue_default</key>
+                    <key>StantonSCS1m.cueButton2</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0x80</status>
                     <midino>0x2e</midino>
                     <group>[Channel2]</group>
-                    <key>cue_default</key>
+                    <key>StantonSCS1m.cueButton2</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
                 </control>
                 <control>
                     <status>0xB0</status>

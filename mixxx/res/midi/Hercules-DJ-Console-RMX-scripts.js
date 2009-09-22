@@ -14,8 +14,8 @@ HerculesRMX.ledOff = 0x00;
 HerculesRMX.scratchMode = false;
 HerculesRMX.playlistJogScrollMode = false;
 HerculesRMX.decayLast = new Date().getTime();
-HerculesRMX.decayInterval = 300;
-HerculesRMX.decayRate = 1.5;
+HerculesRMX.decayInterval = 50;
+HerculesRMX.decayRate = 300;
 HerculesRMX.cueButton = { "[Channel1]": false, "[Channel2]": false};
 HerculesRMX.cuePlay = { "[Channel1]": false, "[Channel2]": false};
 // TODO HerculesRMX controls should be divided into groups...  then signals should directed 

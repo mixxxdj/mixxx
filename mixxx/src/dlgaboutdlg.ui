@@ -130,12 +130,31 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>20</x>
      <y>290</y>
-     <width>121</width>
+     <width>91</width>
      <height>18</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;a href=&quot;http://mixxx.sourceforge.net&quot;&gt;Official Website&lt;/a&gt;</string>
+    <string>&lt;a href="http://mixxx.org/">Official Website&lt;/a></string>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
+   </property>
+   <property name="textInteractionFlags">
+    <set>Qt::LinksAccessibleByMouse</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>290</y>
+     <width>31</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;a href="irc://irc.freenode.net/#mixxx">IRC&lt;/a></string>
    </property>
    <property name="openExternalLinks">
     <bool>true</bool>
