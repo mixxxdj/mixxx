@@ -12,6 +12,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/rhythmboxfeature.h"
+#include "library/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 
@@ -32,6 +33,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new RhythmboxFeature(this));
+    addFeature(new ITunesFeature(this));
 }
 
 Library::~Library() {

@@ -380,11 +380,13 @@ sources = Split("""
                 library/abstractxmltrackmodel.cpp
                 library/rhythmboxtrackmodel.cpp
                 library/rhythmboxplaylistmodel.cpp
+                library/itunestrackmodel.cpp
                 library/playlisttablemodel.cpp
                 library/libraryfeature.cpp
                 library/mixxxlibraryfeature.cpp
                 library/playlistfeature.cpp
                 library/rhythmboxfeature.cpp
+                library/itunesfeature.cpp
                 library/sidebarmodel.cpp
                 library/libraryscanner.cpp
                 library/libraryscannerdlg.cpp
