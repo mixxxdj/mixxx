@@ -171,6 +171,7 @@ MidiObjectALSASeq::~MidiObjectALSASeq()
     wait();
     
     shutdown(); // From parent MidiObject
+    devClose();
     
     int err;
     err = snd_seq_free_queue(m_handle, m_queue);
@@ -228,8 +229,8 @@ void MidiObjectALSASeq::devOpen(QString device)
                         //qDebug() << "Connecting input " + sPortName + " to Mixxx";
                         snd_seq_connect_from(m_handle, m_input, iAlsaClient, iAlsaPort);
 //                         sActivePortNames.append(sPortName);
-                        sActivePorts.insert(sPortName, iAlsaClient);
-                        sActivePorts.insert(sPortName, iAlsaPort);
+                        sActivePorts.insert(sPortName+"in", iAlsaPort);
+                        sActivePorts.insert(sPortName+"in", iAlsaClient);
                     }
                     else {
                         //Disconnect Mixxx from any other input ports (might be annoying, but lets us be safe.)
@@ -257,8 +258,8 @@ void MidiObjectALSASeq::devOpen(QString device)
                         //qDebug() << "Connecting output " + sPortName + " to Mixxx";
                         // Output port may be different
                         snd_seq_connect_to(m_handle, m_input, iAlsaClient, iAlsaPort);
-                        sActivePorts.insert(sPortName, iAlsaClient);
-                        sActivePorts.insert(sPortName, iAlsaPort);
+                        sActivePorts.insert(sPortName+"out", iAlsaPort);
+                        sActivePorts.insert(sPortName+"out", iAlsaClient);
                     }
                     else {
                         //Disconnect Mixxx from any other output ports (might be annoying, but lets us be safe.)
@@ -287,13 +288,20 @@ void MidiObjectALSASeq::devOpen(QString device)
 
 void MidiObjectALSASeq::devClose()
 {
-    if (!sActivePorts.contains(m_deviceName)) return;
-    QList<int> values = sActivePorts.values(m_deviceName);
+    QList<int> values;
+    if (sActivePorts.contains(m_deviceName+"in")) {
+        values = sActivePorts.values(m_deviceName+"in");
+        qDebug() << "Disconnecting" << m_deviceName << "input on" << values;
+        snd_seq_disconnect_from(m_handle, m_input, values.at(0), values.at(1));
+        sActivePorts.remove(m_deviceName+"in");
+    }
     
-    snd_seq_disconnect_from(m_handle, m_input, values.at(3), values.at(2));
-    snd_seq_disconnect_to(m_handle, m_input, values.at(1), values.at(0));
-    
-    sActivePorts.remove(m_deviceName);
+    if (sActivePorts.contains(m_deviceName+"out")) {
+        values = sActivePorts.values(m_deviceName+"out");
+        qDebug() << "Disconnecting" << m_deviceName << "output on" << values;
+        snd_seq_disconnect_to(m_handle, m_input, values.at(0), values.at(1));
+        sActivePorts.remove(m_deviceName+"out");
+    }
 }
 
 void MidiObjectALSASeq::run()
@@ -385,7 +393,7 @@ void MidiObjectALSASeq::run()
 void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     snd_seq_event_t ev;
     int byte1, byte2, byte3;
-
+    
     // Safely retrieve the message sequence from the input
     byte1 = word & 0xff;
     byte2 = (word>>8) & 0xff;
@@ -399,39 +407,61 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     snd_seq_ev_clear(&ev);
     snd_seq_ev_set_source(&ev, m_input);
 
-//     snd_seq_real_time time;
-//     time.tv_sec = time.tv_nsec = 0;
-//     snd_seq_ev_schedule_real(&ev, m_queue, 1, &time);
-    snd_seq_ev_set_direct(&ev);
+    // For using real-time mode
+    snd_seq_real_time time;
+    time.tv_sec = 0;
+    time.tv_nsec = 1;
+    snd_seq_ev_schedule_real(&ev, m_queue, 1, &time);
 
+    // For using tick mode
+    //static int tick = 0;
+    //snd_seq_ev_schedule_tick(&ev, m_queue, 1, tick++);
+
+    // For using direct mode
+    //snd_seq_ev_set_direct(&ev);
+    
     // Send to all subscribers
     //snd_seq_ev_set_dest(&ev, SND_SEQ_ADDRESS_SUBSCRIBERS, 0);
     snd_seq_ev_set_subs(&ev);
-    
+
     // Decide which event type to choose
     switch ((byte1 & 0xf0)) {
     case 0x80:  // Note off
         snd_seq_ev_set_noteoff(&ev, byte1&0xf, byte2, byte3);
-        snd_seq_event_output_direct(m_handle, &ev);
-//         snd_seq_event_output(m_handle, &ev);
-//         snd_seq_drain_output(m_handle);
         break;
     case 0x90:  // Note on
         snd_seq_ev_set_noteon(&ev, byte1&0xf, byte2, byte3);
-        snd_seq_event_output_direct(m_handle, &ev);
-//         snd_seq_event_output(m_handle, &ev);
-//         snd_seq_drain_output(m_handle);
         break;
     case 0xb0:  // Control Change
         snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
-        snd_seq_event_output_direct(m_handle, &ev);
-//         snd_seq_event_output(m_handle, &ev);
-//         snd_seq_drain_output(m_handle);
         break;
     default:
         qDebug() << QString("Unhandled status byte %1 in sendShortMsg").arg(QString::number(byte1, 16).toUpper());
-        break;
+        return;
     }
+
+    // For direct output
+    //result = snd_seq_event_output_direct(m_handle, &ev);
+
+    // For scheduled output
+    int result = snd_seq_event_output(m_handle, &ev);
+        
+    if (result < 0) {
+        qDebug() << "sendShortMsg: event_output failed! -- message:"
+                 << word << "result:" << result;
+    }
+        
+    result = snd_seq_drain_output(m_handle);
+
+    if (result > 0) {
+        qDebug() << "sendShortMsg: drain_output failed: " << result;
+    }
+
+    // result = snd_seq_sync_output_queue(m_handle);
+    // if (result != 0) {
+    //     qDebug() << "Sync output failed: " << result;
+    // }
+
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
@@ -442,9 +472,13 @@ void MidiObjectALSASeq::sendSysexMsg(unsigned char data[], unsigned int length) 
     snd_seq_ev_clear(&ev);
     snd_seq_ev_set_source(&ev, m_input);
 
-//     snd_seq_real_time time;
-//     time.tv_sec = time.tv_nsec = 0;
-//     snd_seq_ev_schedule_real(&ev, m_queue, 1, &time);
+    // For scheduled output
+    // snd_seq_real_time time;
+    // time.tv_sec = 0;
+    // time.tv_nsec = 1;
+    // snd_seq_ev_schedule_real(&ev, m_queue, 1, &time);
+
+    // For direct output
     snd_seq_ev_set_direct(&ev);
 
     // Send to all subscribers
@@ -453,7 +487,21 @@ void MidiObjectALSASeq::sendSysexMsg(unsigned char data[], unsigned int length) 
     
     // Do it
     snd_seq_ev_set_sysex(&ev,length,data);
+    
+    // For direct output
     snd_seq_event_output_direct(m_handle, &ev);
-//     snd_seq_event_output(m_handle, &ev);
-//     snd_seq_drain_output(m_handle);
+    
+    // For scheduled output
+    // int result = snd_seq_event_output(m_handle, &ev);
+        
+    // if (result < 0) {
+    //     qDebug() << "sendSysexMsg: event_output failed! -- message len"
+    //              << length << "result:" << result;
+    // }
+    
+    // result = snd_seq_drain_output(m_handle);
+    
+    // if (result > 0) {
+    //     qDebug() << "sendShortMsg: drain_output failed: " << result;
+    // }    
 }

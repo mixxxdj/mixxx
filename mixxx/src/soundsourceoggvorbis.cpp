@@ -71,8 +71,8 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
     }
 #endif
 
-    // extract metadata
-    vorbis_info * vi=ov_info(&vf,-1);
+    // lookup the ogg's channels and samplerate
+    vorbis_info * vi = ov_info(&vf, -1);
 
     channels = vi->channels;
     SRATE = vi->rate;
@@ -84,19 +84,23 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
         return;
     }
 
+    // ov_pcm_total returns the total number of frames in the ogg file. The
+    // frame is the channel-independent measure of samples. The total samples in
+    // the file is channels * ov_pcm_total. rryan 7/2009 I verified this by
+    // hand. a 30 second long 48khz mono ogg and a 48khz stereo ogg both report
+    // 1440000 for ov_pcm_total.
     ogg_int64_t ret = ov_pcm_total(&vf, -1);
-    if(ret >= 0)
-    {
-      filelength = ret * 2; //*2? why?
+    
+    if (ret >= 0) {
+        // We pretend that the file is stereo to the rest of the world.
+        filelength = ret * 2; 
     }
     else //error
     {
       if (ret == OV_EINVAL) {
           //The file is not seekable. Not sure if any action is needed.
       }
-
     }
-
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
@@ -113,16 +117,22 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis()
 
 long SoundSourceOggVorbis::seek(long filepos)
 {
+    // In our speak, filepos is a sample in the file abstraction (i.e. it's
+    // stereo no matter what). filepos/2 is the frame we want to seek to.
     Q_ASSERT(filepos%2==0);
     
     if (ov_seekable(&vf)){
-        if(ov_pcm_seek(&vf, filepos >> 1) != 0) {
-            qDebug() << "ogg vorbis: Seek ERR on seekable.";
+        if(ov_pcm_seek(&vf, filepos/2) != 0) {
+            // This is totally common (i.e. you're at EOF). Let's not leave this
+            // qDebug on.
+            
+            // qDebug() << "ogg vorbis: Seek ERR on seekable.";
         }
-
-        // Even if an error occured, return them the current position
-        // because that's what we promised.
-        return ov_pcm_tell(&vf) << 1;
+        
+        // Even if an error occured, return them the current position because
+        // that's what we promised. (Double it because ov_pcm_tell returns
+        // frames and we pretend to the world that everything is stereo)
+        return ov_pcm_tell(&vf) * 2;
     } else{
         qDebug() << "ogg vorbis: Seek ERR.";
         return 0;
@@ -143,7 +153,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     char *pRead  = (char*) destination;
     SAMPLE *dest   = (SAMPLE*) destination;
     
-    unsigned int index=0,ret=0,needed=0;
+    
 
     // 'needed' is size of buffer in bytes. 'size' is size in SAMPLEs,
     // which is 2 bytes.  If the stream is mono, we read 'size' bytes,
@@ -158,22 +168,27 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // size is the maximum space in words that we have in
     // destination. For stereo files, read the full buffer (size*2
     // bytes). For mono files, only read half the buffer (size bytes),
-    // and we will double the buffer to be in stereo later. 
-    needed = size * channels;
+    // and we will double the buffer to be in stereo later.
+    unsigned int needed = size * channels;
 
+    unsigned int index=0,ret=0;
+    
     // loop until requested number of samples has been retrieved
     while (needed > 0) {
-        index  += ret;
-        needed -= ret;
-
         // read samples into buffer
         ret = ov_read(&vf, pRead+index, needed, OV_ENDIAN_ARG, 2, 1, &current_section);
-        
+
         if (ret <= 0) {
             // An error or EOF occured, break out and return what we have sofar.
             break;
         }
+
+        index  += ret;
+        needed -= ret;
     }
+
+    // As of here, index is the total bytes read. (index/2/channels) is the
+    // total frames read.
 
     // convert into stereo if file is mono
     if (channels == 1) {
@@ -184,14 +199,15 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
         // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
         // so the first iteration touches the very ends of destination
         // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
-
-        // index is the total bytes read, so index/2 is the total words read
-        
         for(int i=(index/2-1); i>=0; i--) {
             dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
         }
-    }
+        
+        // Pretend we read twice as many bytes as we did, since we just repeated
+        // each pair of bytes.
+        index *= 2;
+    } 
 
     // index is the total bytes read, so the words read is index/2
     return index / 2;
@@ -200,7 +216,6 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 /*
    Parse the the file to get metadata
  */
-
 int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 {
     QString filename = Track->getLocation();

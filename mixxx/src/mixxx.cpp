@@ -33,7 +33,7 @@
 #include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"
-#include "bpm/bpmdetector.h"
+// #include "bpm/bpmdetector.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
 
@@ -80,9 +80,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
-            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+            buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else
-            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+            buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
     }
     
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
@@ -282,20 +282,17 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #endif
 
     // Try open player device If that fails, the preference panel is opened.
-    if (soundmanager->setupDevices() != 0)
+    while (soundmanager->setupDevices() != 0)
     {
 
 #ifdef __C_METRICS__
-	    cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
-	                      "Mixxx failed to open audio device(s) on startup.");
+        cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
+                          "Mixxx failed to open audio device(s) on startup.");
 #endif
 
-        QMessageBox::warning(this, tr("Mixxx"),
-                                   tr("Failed to open your audio device(s).\n"
-                                      "Please verify your selection in the preferences."),
-                                   QMessageBox::Ok,
-                                   QMessageBox::Ok);
-         prefDlg->show();
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        if ( noSoundDlg() != 0 )
+            exit(0);
     }
 
     //setFocusPolicy(QWidget::StrongFocus);
@@ -422,6 +419,69 @@ MixxxApp::~MixxxApp()
 //    _exit(0);
 //#endif
 }
+
+int MixxxApp::noSoundDlg(void)
+{
+    QMessageBox msgBox;
+	msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle("Sound Device Busy");
+    msgBox.setText( "<html>Mixxx cannot access the sound device <b>"+
+                    config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
+                    "</b>. "+
+                    "Another application is using the sound device or it is "+
+                    "not plugged in."+
+                    "<ul>"+
+                        "<li>"+
+                            "<b>Retry</b> after closing the other application "+
+                            "or reconnecting the sound device"+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Reconfigure</b> Mixxx to use another sound device."+
+                        "</li>" +
+                        "<li>"+
+                            "Get <b>Help</b> from the Mixxx Wiki."+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Exit</b> without saving your settings."+
+                        "</li>" +
+                    "</ul></html>"
+    );
+
+    QPushButton *retryButton = msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
+    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton *wikiButton = msgBox.addButton(tr("Help"), QMessageBox::ActionRole);
+    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+
+    while(1)
+    {
+        msgBox.exec();
+        
+        if (msgBox.clickedButton() == retryButton) {
+            soundmanager->queryDevices();
+            return 0;
+        } else if (msgBox.clickedButton() == wikiButton) {
+            QDesktopServices::openUrl(QUrl("http://mixxx.org/wiki/doku.php/troubleshooting#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
+            wikiButton->setEnabled(false);
+        } else if (msgBox.clickedButton() == reconfigureButton) {
+            msgBox.hide();
+            soundmanager->queryDevices();
+            
+            // This way of opening the dialog allows us to use it synchronously
+            prefDlg->setWindowModality(Qt::ApplicationModal);
+            prefDlg->exec();
+            if ( prefDlg->result() == QDialog::Accepted) {
+                soundmanager->queryDevices();
+                return 0;
+            }
+            
+            msgBox.show();
+            
+        } else if (msgBox.clickedButton() == exitButton) {
+            return 1;
+        }
+    }
+}
+
 
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
@@ -969,7 +1029,7 @@ void MixxxApp::slotHelpAbout()
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
     QString credits =
-    "<p align=\"center\"><b>Mixxx 1.7.0 Development Team</b></p>"
+    "<p align=\"center\"><b>Mixxx "+ QString(VERSION) +" Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -977,6 +1037,7 @@ void MixxxApp::slotHelpAbout()
 "RJ Ryan<br>"
 "Sean Pappalardo<br>"
 "Nick Guenther<br>"
+"Phillip Whelan<br>"
 "Zach Elko<br>"
 "Tom Care<br>"
 "Pawel Bartkiewicz<br>"
@@ -992,7 +1053,6 @@ void MixxxApp::slotHelpAbout()
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
 "Mathieu Rene<br>"
-"Phillip Whelan<br>"
 "Miko Kiiski<br>"
 "Navaho Gunleg<br>"
 "Gavin Pryke<br>"
@@ -1004,6 +1064,7 @@ void MixxxApp::slotHelpAbout()
 "Hercules<br>"
 "Echo Digital Audio<br>"
 "Adam Bellinson<br>"
+"Alexandre Bancel<br>"
 "Melanie Thielker<br>"
 "Julien Rosener<br>"
 "Pau Arum&iacute;<br>"
@@ -1011,7 +1072,7 @@ void MixxxApp::slotHelpAbout()
 "Seb Ruiz<br>"
 "Joseph Mattiello<br>"
 "</p>"
-
+        
 "<p align=\"center\"><b>Past Developers</b></p>"
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
