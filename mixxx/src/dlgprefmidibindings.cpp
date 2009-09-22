@@ -32,7 +32,7 @@
 #include "midi/midimapping.h"
 
 #ifdef __MIDISCRIPT__
-#include "script/midiscriptengine.h"
+#include "midi/midiscriptengine.h"
 #endif
 
 

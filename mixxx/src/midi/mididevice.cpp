@@ -17,6 +17,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <qapplication.h>   // For command line arguments
 #include "mididevice.h"
 #include "midimapping.h"
 #include "midimessage.h"
@@ -24,7 +25,7 @@
 #include "controlobject.h"
 
 #ifdef __MIDISCRIPT__
-#include "script/midiscriptengine.h"
+#include "midiscriptengine.h"
 #endif
 
 static QString toHex(QString numberStr) {
@@ -46,6 +47,10 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QObject()
 #ifndef __MIDISCRIPT__
      m_pMidiMapping->loadInitialPreset();    // Only do this here if NOT using MIDI scripting
 #endif
+    // Get --midiDebug command line option
+    QStringList commandLineArgs = QApplication::arguments();
+    m_midiDebug = commandLineArgs.indexOf("--midiDebug");
+    
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
     
@@ -128,7 +133,11 @@ void MidiDevice::disableMidiLearn() {
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
-    //qDebug() << "MidiDevice::receive() status: " << toHex(QString::number((int)status)) << " ch: " << toHex(QString::number((int)channel)) << ", ctrl: " << toHex(QString::number((int)control)) << ", val: " << toHex(QString::number((int)value));
+    if (midiDebugging()) qDebug() << QString("MIDI ch %1: status: %2, ctrl: %3, val: %4")
+        .arg(QString::number(channel+1, 16).toUpper())
+        .arg(QString::number(status & 255, 16).toUpper())
+        .arg(QString::number(control, 16).toUpper())
+        .arg(QString::number(value, 16).toUpper());
 
     MidiMessage inputCommand(status, control, channel);
 
@@ -190,4 +199,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     return;
 }
 
-
+bool MidiDevice::midiDebugging() {
+    if (m_midiDebug != -1) return true;
+    else return false;
+}

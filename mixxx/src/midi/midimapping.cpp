@@ -1054,7 +1054,7 @@ void MidiMapping::restartScriptEngine()
     }
     //XXX Memory leak :(
 
-    qDebug () << "Restarting script engine with output device:" << m_pOutputMidiDevice->getName();
+    qDebug () << "Starting script engine with output device" << m_pOutputMidiDevice->getName();
 
     m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice);
     

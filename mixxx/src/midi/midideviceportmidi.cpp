@@ -63,7 +63,7 @@ MidiDevicePortMidi::~MidiDevicePortMidi()
 
 int MidiDevicePortMidi::open()
 {
-     m_bStopRequested = false;
+    m_bStopRequested = false;
     
     if (m_strDeviceName == MIXXX_PORTMIDI_NO_DEVICE_STRING)
         return -1;
@@ -79,7 +79,7 @@ int MidiDevicePortMidi::open()
     {    
         if (m_bIsInputDevice)
         {
-            qDebug() << "MidiObjectPortMidi: Opening" << m_pInputDeviceInfo->name << "for input";
+            if (midiDebugging()) qDebug() << "MidiDevicePortMidi: Opening" << m_pInputDeviceInfo->name << "index" << m_iInputDeviceIndex << "for input";
 
             err = Pm_OpenInput( &m_pInputStream,
                     m_iInputDeviceIndex,
@@ -99,7 +99,7 @@ int MidiDevicePortMidi::open()
     {
         if (m_bIsOutputDevice)
         {
-            qDebug() << "MidiObjectPortMidi: Opening" << m_pOutputDeviceInfo->name << "for output";
+            if (midiDebugging()) qDebug() << "MidiDevicePortMidi: Opening" << m_pOutputDeviceInfo->name << "index" << m_iOutputDeviceIndex << "for output";
 
             err = Pm_OpenOutput( &m_pOutputStream,
                     m_iOutputDeviceIndex,
@@ -160,7 +160,7 @@ int MidiDevicePortMidi::close()
 
 void MidiDevicePortMidi::run()
 {
-    QThread::currentThread()->setObjectName(QString("MidiDevicePortMidi %1").arg(m_strDeviceName));
+    QThread::currentThread()->setObjectName(QString("PM %1").arg(m_strDeviceName));
     int numEvents = 0;
     bool stopRunning = false;
     
