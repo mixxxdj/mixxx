@@ -38,6 +38,10 @@ public:
     static void setPerm(double v);
     /** Set rate change when perm rate small button is pressed */
     static void setPermSmall(double v);
+    /** Set Rate Ramp Mode */
+    static void setRateRamp(bool);
+    /** Set Rate Ramp Sensitivity */
+    static void setRateRampSensitivity(int);
     
 public slots:
     void slotControlRatePermDown(double);
@@ -86,41 +90,41 @@ private:
     Rotary* m_pJogFilter;
 
 
-    enum PITCHBEND_DIRECTION {
-        PITCHBEND_NONE = 0,
-        PITCHBEND_UP = 1,
-        PITCHBEND_DOWN = 2,
-        PITCHBEND_BOTH = 3
+    enum RATERAMP_DIRECTION {
+        RATERAMP_NONE = 0,
+        RATERAMP_UP = 1,
+        RATERAMP_DOWN = 2,
+        RATERAMP_BOTH = 3
     };
     
-    enum PITCHBEND_MODE {
-        PITCHBEND_OLD = 0,
-        PITCHBEND_REAL = 1
+    enum RATERAMP_MODE {
+        RATERAMP_OLD = 0,
+        RATERAMP_LINEAR = 1
     };
     
-    enum PITCHBEND_RAMPBACK_MODE {
-        PITCHBEND_RAMPBACK_NONE,
-        PITCHBEND_RAMPBACK_SPEED,
-        PITCHBEND_RAMPBACK_PERIOD
+    enum RATERAMP_RAMPBACK_MODE {
+        RATERAMP_RAMPBACK_NONE,
+        RATERAMP_RAMPBACK_SPEED,
+        RATERAMP_RAMPBACK_PERIOD
     };
     
-    /** The current pitchbend direction */
+    /** The current rate ramping direction */
     int m_ePbCurrent;
-    /**  The pitchbend buttons which are pressed */
+    /**  The rate ramping buttons which are pressed */
     int m_ePbPressed;
     
-    /** This is true if we've already started to pitch bend */
+    /** This is true if we've already started to ramp the rate */
     int m_bTempStarted;
     /** Set to the rate change used for rate temp */
     double m_dTempRateChange;
     /** Set the Temporary Rate Change Mode */
-    enum PITCHBEND_MODE m_eRateTempMode;
+    static enum RATERAMP_MODE m_eRateRampMode;
     /** The Rate Temp Sensitivity, the higher it is the slower it gets */
-    int m_iRateTempStep;
+    static int m_iRateRampSensitivity;
     /** Temporary pitchrate, added to the permanent rate for calculateRate */
     double m_dRateTemp;
     /** */
-    enum PITCHBEND_RAMPBACK_MODE m_eRampBackMode;
+    enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     /** Return speed for temporary rate change */
     double m_dRateTempRampbackChange;
     
