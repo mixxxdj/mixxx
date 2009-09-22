@@ -69,7 +69,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   LIBRARYTABLE_ARTIST + "," + 
                   LIBRARYTABLE_TITLE + "," +
                   LIBRARYTABLE_ALBUM + "," +
-                  LIBRARYTABLE_YEAR + "," +
+                  LIBRARYTABLE_YEAR + "," +	
                   LIBRARYTABLE_DURATION + "," +
                   LIBRARYTABLE_GENRE + "," +
                   LIBRARYTABLE_TRACKNUMBER + "," +
@@ -104,7 +104,10 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 	//Note: The model index is ignored when adding to the library track collection.
 	//      The position in the library is determined by whatever it's being sorted by,
 	//      and there's no arbitrary "unsorted" view.
-	m_pTrackCollection->addTrack(location);
+	//m_pTrackCollection->addTrack(location);
+	const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+	int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+	m_pTrackCollection->insertTrackIntoPlaylist(location, m_iPlaylistId, position);
 	select(); //Repopulate the data model.
 }
 
@@ -127,12 +130,10 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
-{
-    //FIXME: use position instead of location for playlist tracks?
-    
-	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
-	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	m_pTrackCollection->removeTrack(location);
+{    
+	const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+	int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+	m_pTrackCollection->removeTrackFromPlaylist(m_iPlaylistId, position);
 	select(); //Repopulate the data model.
 }
 
