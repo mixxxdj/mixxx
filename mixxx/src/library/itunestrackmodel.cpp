@@ -22,7 +22,15 @@ ITunesTrackModel::ITunesTrackModel()
      * Try and open the ITunes DB. An API call which tells us where
      * the file is would be nice.
      */
-    QFile db(QDir::homePath() + "/.itunes.xml");
+    QString itunesXmlPath;
+#ifdef __APPLE__
+    itunesXmlPath = QDir::homePath() + "/Music/iTunes/iTunes\ Music\ Library.xml";
+#else 
+    itunesXmlPath = QDir::homePath() + "/.itunes.xml";
+#endif 
+
+
+    QFile db(itunesXmlPath);
     if ( ! db.exists())
         return;
     
@@ -147,7 +155,13 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     pTrack->setYear(findValueByKey(songNode,"Year"));
     pTrack->setGenre(findValueByKey(songNode,"Genre"));
     pTrack->setDuration(findValueByKey(songNode,"Total Time").toUInt());
-    pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
+
+    QString strloc = findValueByKey(songNode,"Location");
+    QByteArray strlocbytes = strloc.toUtf8();
+    QUrl location = QUrl::fromEncoded(strlocbytes);
+    //Strip the crappy localhost from the URL since Qt barfs on this :(
+    pTrack->setLocation(location.toLocalFile().remove("//localhost"));
+    //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
     
     return pTrack;
 }
