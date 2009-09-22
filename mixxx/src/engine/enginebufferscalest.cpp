@@ -210,15 +210,16 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
                 if (last_read_failed)
                     break;
                 last_read_failed = true;
+                m_pSoundTouch->flush();
             }
         }
     }
-        
+
     //Feed more samples into SoundTouch until it has processed enough to
-    //fill the audio buffer that we need to fill. 
+    //fill the audio buffer that we need to fill.
     //SoundTouch::numSamples() returns the number of _FRAMES_ that
     //are in its FIFO audio buffer...
-        
+
 
     // Calculate new playpos
 
@@ -232,10 +233,10 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     {
         qDebug() << __FILE__ << "- only wrote" << total_received_frames << "frames instead of requested" << buf_size;
     }
-    
+
     //for (unsigned long i = 0; i < buf_size; i++)
     //    qDebug() << buffer[i];
-    
+
     if (m_bBackwards)
         new_playpos = playpos - m_dTempo*m_dBaseRate*total_received_frames*2;
     else

@@ -21,7 +21,7 @@
 
 #define RATE_LERP_LENGTH 200
 
-EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager) : 
+EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager) :
     EngineBufferScale(),
     m_pReadAheadManager(pReadAheadManager)
 {
@@ -31,7 +31,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_fOldBaseRate = 1.0f;
     m_fPreviousL = 0.0f;
     m_fPreviousR = 0.0f;
-    
+
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
 }
 
@@ -91,17 +91,17 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 {
     float rate_add_new = 2.*m_dBaseRate;
     float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
-    float rate_add = rate_add_new; 
-    
+    float rate_add = rate_add_new;
+
     m_fOldBaseRate = m_dBaseRate;           //Update the old base rate because we only need to
                                             //interpolate/ramp up the pitch changes once.
-    
+
     // Determine position in read_buffer to start from
     new_playpos = playpos;
 
     long unscaled_samples_needed = buf_size + (long)(floor((float)buf_size * ((float)fabs(m_dBaseRate) - 1.0)));
     unscaled_samples_needed = long(ceil(fabs(buf_size * m_dBaseRate)));
-    
+
     //unscaled_samples_needed = buf_size + floor(buf_size * (fabs(m_dBaseRate) - 1.0f));
 
     // Simulate the loop to estimate how many samples we need
@@ -115,13 +115,14 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         }
         samples += fabs(rate_add);
     }
+
     rate_add = rate_add_new;
     unscaled_samples_needed = ceil(samples);
     if (!even(unscaled_samples_needed))
         unscaled_samples_needed++;
     Q_ASSERT(unscaled_samples_needed >= 0);
     Q_ASSERT(unscaled_samples_needed != 0);
-    
+
     int buffer_size = 0;
     double buffer_index = 0;
 
@@ -143,7 +144,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             m_fPreviousL = buffer_int[prev_sample];
             m_fPreviousR = buffer_int[prev_sample+1];
         }
-        
+
         if (current_sample+1 >= buffer_size) {
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
@@ -159,7 +160,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
                 break;
             }
             last_read_failed = buffer_size == 0;
-            
+
             unscaled_samples_needed -= buffer_size;
             buffer_index = buffer_index - floor(buffer_index);
             continue;
@@ -176,7 +177,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         }
 
         CSAMPLE frac = buffer_index - floor(buffer_index);
-                
+
         //Perform linear interpolation
         buffer[i] = m_fPreviousL + frac * (buffer_int[current_sample] - m_fPreviousL);
         buffer[i+1] = m_fPreviousR + frac * (buffer_int[current_sample+1] - m_fPreviousR);
@@ -194,6 +195,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // It's possible that we will exit this function without having satisfied
     // this requirement. We may be trying to read past the end of the file.
     //Q_ASSERT(unscaled_samples_needed == 0);
-    
+
     return buffer;
 }
