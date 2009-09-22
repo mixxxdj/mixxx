@@ -91,6 +91,10 @@ class TrackCollection : public QObject
     QString getPlaylistName(unsigned int position);
     /** Get the id of the playlist at position */
     int getPlaylistId(int position);
+    /** Remove a track from a playlist */
+    void removeTrackFromPlaylist(int playlistId, int position);
+    /** Insert a track into a specific position in a playlist */
+    void insertTrackIntoPlaylist(QString location, int playlistId, int position);
 public slots:
  	bool checkForTables();
  	/** Saves a track's info back to the database */

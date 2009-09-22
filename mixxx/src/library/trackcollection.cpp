@@ -648,3 +648,15 @@ int TrackCollection::getPlaylistId(int position)
     
     return playlistId;
 }
+
+void TrackCollection::removeTrackFromPlaylist(int playlistId, int position)
+{
+    //FIXME stub!
+    qDebug() << "STUB: TrackCollection::removeTrackFromPlaylist";
+}
+
+void TrackCollection::insertTrackIntoPlaylist(QString location, int playlistId, int position)
+{
+    //FIXME stub!
+    qDebug() << "STUB: TrackCollection::insertTrackIntoPlaylist";
+}

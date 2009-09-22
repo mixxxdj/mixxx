@@ -326,10 +326,31 @@ void WTrackTableView::dropEvent(QDropEvent * event)
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url;
 
+        //qDebug() << (int)this << (int)event->source() << event->possibleActions();
+
         //Drag and drop within this widget (track reordering)
-        if (event->source() == this && event->possibleActions() & Qt::MoveAction)
+        if (event->source() == this)
         {
-/*
+        
+            qDebug() << "track reordering" << __FILE__ << __LINE__;
+
+            m_selectedIndices = this->selectionModel()->selectedRows();
+            //TODO: Iterate over selected indices like the 1.7 code below?
+            
+            TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+			if (trackModel && (trackModel->getCapabilities() & TrackModel::TRACKMODELCAPS_REORDER)) 
+			{
+	            foreach (url, urls)
+	            {
+	                QModelIndex destIndex = this->indexAt(event->pos());
+
+	                //trackModel->moveTrack(destIndex, url.toLocalFile());
+
+	            }
+			}
+
+/*   //OLD CODE FROM 1.7. Probably still useful, just haven't realized it yet. :) - Albert Sept 21, 2009
+                 
             m_selectedIndices = this->selectionModel()->selectedRows();
 
             QList<TrackInfoObject*> selectedTracks;
