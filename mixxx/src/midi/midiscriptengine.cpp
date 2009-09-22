@@ -16,11 +16,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <qapplication.h>
-
 #include "controlobject.h"
 #include "controlobjectthread.h"
-#include "../midi/mididevice.h"
+#include "mididevice.h"
 #include "midiscriptengine.h"
 
 
@@ -342,7 +340,7 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
         if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
             QStringList field = line.split(" ");
-            qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
+            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
 //             functionList.append(field[0]);
             m_scriptFunctions.append(field[0]);
         }

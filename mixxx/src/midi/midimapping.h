@@ -29,7 +29,7 @@
 #include <QTableWidget>
 
 #ifdef __MIDISCRIPT__
-#include "script/midiscriptengine.h"
+#include "midiscriptengine.h"
 #endif
 
 //Forward declarations

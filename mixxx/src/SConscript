@@ -1065,7 +1065,7 @@ if int(flags_midiscript):
 	print "MIDI Scripting... enabled"
 
 	build_flags += 'midiscript '
-	sources += Split("""script/midiscriptengine.cpp""")
+	sources += Split("""midi/midiscriptengine.cpp""")
 	env.Append(CPPPATH = '$QTDIR/include/QtScript')
 	env.Append(CPPDEFINES = '__MIDISCRIPT__')
 else:

@@ -51,6 +51,7 @@ Q_OBJECT
         Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
         bool getMidiLearnStatus();
         void receive(MidiStatusByte status, char channel, char control, char value);
+        bool midiDebugging();
 
     public slots:
         void disableMidiLearn();
@@ -75,7 +76,7 @@ Q_OBJECT
             protocol that treats input and output ports on a single device as complete separate entities. This
             helps us group those back together for sanity/usability. */
         MidiDevice* m_pCorrespondingOutputDevice;
-
+        int m_midiDebug;
 };
 
 #endif

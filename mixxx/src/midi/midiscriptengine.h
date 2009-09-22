@@ -20,7 +20,7 @@
 #include <QEvent>
 #include <QtScript>
 #include "configobject.h"
-#include "../midi/midimessage.h"
+#include "midimessage.h"
 class MidiDevice;
 
 //Forward declaration(s)
