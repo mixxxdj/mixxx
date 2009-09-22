@@ -85,7 +85,7 @@ long SoundSourceM4A::seek(long filepos){
     if (filelength == -1)
         return 0;
 
-    //qDebug() << "SSM4A::seek()" << filepos;
+    qDebug() << "SSM4A::seek()" << filepos;
 
     // qDebug() << "MP4SEEK: seek time:" << filepos / (channels * SRATE) ;
 
@@ -111,18 +111,20 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
     int total_bytes_to_decode = size * 2;
     int total_bytes_decoded = 0;
-    int num_samples_req = 4096;
+    int num_bytes_req = 4096;
     char* buffer = (char*)destination;
     do {
-        if (total_bytes_decoded + num_samples_req > total_bytes_to_decode)
-            num_samples_req = total_bytes_to_decode - total_bytes_decoded;
+        if (total_bytes_decoded + num_bytes_req > total_bytes_to_decode)
+            num_bytes_req = total_bytes_to_decode - total_bytes_decoded;
 
         // (char *)&destination[total_bytes_decoded/2],
         int numRead = mp4_read(&ipd,
                                buffer,
-                               num_samples_req);
-        if(numRead <= 0)
+                               num_bytes_req);
+        if(numRead <= 0) {
+            qDebug() << "EOF";
             break;
+        }
         buffer += numRead;
         total_bytes_decoded += numRead;
     } while (total_bytes_decoded < total_bytes_to_decode);
