@@ -63,11 +63,11 @@ void CachingReader::initialize() {
     m_pSample = new SAMPLE[kSamplesPerChunk];
 
     Q_ASSERT(kSamplesPerChunk * sizeof(CSAMPLE) == kChunkLength);
-    
+
     int total_chunks = memory_to_use / kChunkLength;
 
     qDebug() << "CachingReader using" << memory_to_use << "bytes.";
-    
+
     m_iRawMemoryBufferLength = kSamplesPerChunk * total_chunks;
     m_pRawMemoryBuffer = new CSAMPLE[m_iRawMemoryBufferLength];
 
@@ -95,10 +95,10 @@ void CachingReader::freeChunk(Chunk* pChunk) {
     // We'll tolerate not being in allocatedChunks because sometime you free a
     // chunk right after you allocated it.
     Q_ASSERT(removed <= 1);
-    
+
     removed = m_recentlyUsedChunks.removeAll(pChunk);
     Q_ASSERT(removed <= 1);
-    
+
     pChunk->chunk_number = -1;
     pChunk->length = 0;
     m_freeChunks.push_back(pChunk);
@@ -107,7 +107,7 @@ void CachingReader::freeChunk(Chunk* pChunk) {
 void CachingReader::freeAllChunks() {
     m_allocatedChunks.clear();
     m_recentlyUsedChunks.clear();
-    
+
     for (int i=0; i < m_chunks.size(); i++) {
         Chunk* c = m_chunks[i];
         if (!m_freeChunks.contains(c)) {
@@ -145,12 +145,12 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
         Q_ASSERT(chunk_number == chunk->chunk_number);
 
         int times = m_recentlyUsedChunks.removeAll(chunk);
-        
+
         if (times != 1) {
             qDebug() << "WARNING: chunk" << chunk_number
                      << "was in recently used list" << times << "times";
         }
-        
+
         m_recentlyUsedChunks.push_front(chunk);
     }
 
@@ -177,15 +177,15 @@ Chunk* CachingReader::getChunk(int chunk_number) {
             m_recentlyUsedChunks.push_front(chunk);
         }
     }
-    
+
     return chunk;
 }
 
 bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
-    
+
     if (m_pCurrentSoundSource == NULL || pChunk == NULL || chunk_number < 0)
         return false;
-    
+
     // Stereo samples
     int sample_position = sampleForChunk(chunk_number);
     int samples_remaining = m_iTrackNumSamples - sample_position;
@@ -208,7 +208,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
 
     pChunk->chunk_number = chunk_number;
     pChunk->length = samples_read;
-    
+
     return true;
 }
 
@@ -228,7 +228,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     if (num_samples == 0) {
         return 0;
     }
-    
+
     int start_chunk = chunkForSample(sample);
     int end_chunk = chunkForSample(sample + num_samples - 1);
 
@@ -251,13 +251,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             // samples requested with zeroes.
             break;
         }
-        
+
         int chunk_start_sample = sampleForChunk(chunk_num);
         int chunk_offset = current_sample - chunk_start_sample;
         int chunk_remaining_samples = current->length - chunk_offset;
 
         // More sanity checks
-
         Q_ASSERT(current_sample >= chunk_start_sample);
         Q_ASSERT(current_sample % 2 == 0);
 
@@ -265,22 +264,14 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             Q_ASSERT(chunk_start_sample == current_sample);
         }
 
-        if (chunk_remaining_samples < 0) {
-            qDebug() << "fuck"
-                     << "Current-length" << current->length
-                     << "chunk_offset" << chunk_offset
-                     << "chunk_number" << current->chunk_number
-                     << "current_sample" << current_sample
-                     << "current_start_sample" << chunk_start_sample
-                     << "start_chunk" << start_chunk
-                     << "chunk_num" << chunk_num
-                     << "end_chunk" << end_chunk;
-        }
-        Q_ASSERT(chunk_remaining_samples >= 0);
         Q_ASSERT(samples_remaining >= 0);
-        
+        // It is completely possible that chunk_remaining_samples is less than
+        // zero. If the caller is trying to read from beyond the end of the
+        // file, then this can happen. We should tolerate it.
+
         int samples_to_read = math_max(0, math_min(samples_remaining,
                                                    chunk_remaining_samples));
+        // samples_to_read should be non-negative and even
         Q_ASSERT(samples_to_read >= 0);
         Q_ASSERT(samples_to_read % 2 == 0);
 
@@ -292,7 +283,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // for (int i=0; i < samples_to_read; i++) {
         //     buffer[i] = data[i];
         // }
-        
+
         buffer += samples_to_read;
         current_sample += samples_to_read;
         samples_remaining -= samples_to_read;
@@ -302,12 +293,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
-    // for (int i=0; i<samples_remaining; i++) {
-    //     buffer[i] = 0.0f;
-    // }
-    //samples_remaining = 0;
+    for (int i=0; i<samples_remaining; i++) {
+        buffer[i] = 0.0f;
+    }
+    samples_remaining = 0;
 
-    //Q_ASSERT(samples_remaining == 0);
+    Q_ASSERT(samples_remaining == 0);
     return num_samples - samples_remaining;
 }
 
@@ -350,7 +341,7 @@ void CachingReader::run() {
         if (pLoadTrack != NULL) {
             loadTrack(pLoadTrack);
         }
-        
+
         hintList.clear();
         m_hintQueueMutex.lock();
         while (!m_hintQueue.isEmpty()) {

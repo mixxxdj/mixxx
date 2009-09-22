@@ -19,7 +19,7 @@ ReadAheadManager::~ReadAheadManager() {
 int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                                      int requested_samples) {
     Q_ASSERT(even(requested_samples));
-    
+
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
     int samples_needed = requested_samples;
@@ -34,7 +34,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
                                                         m_iCurrentPosition,
                                                         0, 0);
-                                                           
+
     if (next_loop.second != kNoTrigger) {
         int samples_available;
         if (in_reverse) {
@@ -57,7 +57,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     // Sanity checks
     Q_ASSERT(start_sample >= 0);
     Q_ASSERT(samples_needed >= 0);
-    
+
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
 
@@ -75,7 +75,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             getTrigger(dRate,
                        m_iCurrentPosition,
                        0, 0);
-        
+
         if ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
             (!in_reverse && m_iCurrentPosition >= loop_trigger)) {
             m_iCurrentPosition = loop_target;
@@ -96,7 +96,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             base_buffer[endpos+1] = temp2;
         }
     }
-    
+
     return samples_read;
 }
 
@@ -127,12 +127,12 @@ QPair<int, double> ReadAheadManager::getSoonestTrigger(double dRate,
         bool trigger_active = (trigger != kNoTrigger &&
                                ((in_reverse && trigger <= iCurrentSample) ||
                                 (!in_reverse && trigger >= iCurrentSample)));
-        
+
         if (trigger_active &&
             (next_trigger == kNoTrigger ||
              (in_reverse && trigger > next_trigger) ||
              (!in_reverse && trigger < next_trigger))) {
-            
+
             next_trigger = trigger;
             next_trigger_index = i;
         }
