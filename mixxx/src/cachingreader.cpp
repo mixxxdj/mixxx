@@ -35,6 +35,8 @@ CachingReader::CachingReader(const char* _group,
     m_pCurrentSoundSource(NULL),
     m_iTrackSampleRate(0),
     m_iTrackNumSamples(0),
+    m_mruChunk(NULL),
+    m_lruChunk(NULL),
     m_pRawMemoryBuffer(NULL),
     m_iRawMemoryBufferLength(0),
     m_bQuit(false) {
@@ -49,7 +51,7 @@ CachingReader::~CachingReader() {
     m_readerMutex.lock();
     m_freeChunks.clear();
     m_allocatedChunks.clear();
-    m_recentlyUsedChunks.clear();
+    m_lruChunk = m_mruChunk = NULL;
 
     delete [] m_pSample;
 
@@ -89,12 +91,57 @@ void CachingReader::initialize() {
         c->chunk_number = -1;
         c->length = 0;
         c->data = bufferStart;
+        c->next_lru = NULL;
+        c->prev_lru = NULL;
 
         m_chunks.push_back(c);
         m_freeChunks.push_back(c);
 
         bufferStart += kSamplesPerChunk;
     }
+}
+
+// static
+Chunk* CachingReader::removeFromLRUList(Chunk* chunk, Chunk* head) {
+    Q_ASSERT(chunk);
+
+    Chunk* next = chunk->next_lru;
+    Chunk* prev = chunk->prev_lru;
+
+    if (next) {
+        next->prev_lru = prev;
+    }
+
+    if (prev) {
+        prev->next_lru = next;
+    }
+
+    chunk->next_lru = NULL;
+    chunk->prev_lru = NULL;
+
+    if (chunk == head)
+        return next;
+
+    return head;
+}
+
+// static
+Chunk* CachingReader::insertIntoLRUList(Chunk* chunk, Chunk* head) {
+    Q_ASSERT(chunk);
+
+    // Chunk is the new head of the list, so connect the head as the next from
+    // chunk.
+    chunk->next_lru = head;
+    chunk->prev_lru = NULL;
+
+    // If there are any elements in the list, point their prev pointer back at
+    // chunk since it is the new head
+    if (head) {
+        head->prev_lru = chunk;
+    }
+
+    // Chunk is the new head
+    return chunk;
 }
 
 
@@ -105,8 +152,12 @@ void CachingReader::freeChunk(Chunk* pChunk) {
     // chunk right after you allocated it.
     Q_ASSERT(removed <= 1);
 
-    removed = m_recentlyUsedChunks.removeAll(pChunk);
-    Q_ASSERT(removed <= 1);
+    // If this is the LRU chunk then set its previous LRU chunk to the LRU
+    if (m_lruChunk == pChunk) {
+        m_lruChunk = pChunk->prev_lru;
+    }
+
+    m_mruChunk = removeFromLRUList(pChunk, m_mruChunk);
 
     pChunk->chunk_number = -1;
     pChunk->length = 0;
@@ -115,13 +166,15 @@ void CachingReader::freeChunk(Chunk* pChunk) {
 
 void CachingReader::freeAllChunks() {
     m_allocatedChunks.clear();
-    m_recentlyUsedChunks.clear();
+    m_mruChunk = NULL;
 
     for (int i=0; i < m_chunks.size(); i++) {
         Chunk* c = m_chunks[i];
         if (!m_freeChunks.contains(c)) {
             c->chunk_number = -1;
             c->length = 0;
+            c->next_lru = NULL;
+            c->prev_lru = NULL;
             m_freeChunks.push_back(c);
         }
     }
@@ -136,7 +189,9 @@ Chunk* CachingReader::allocateChunk() {
 Chunk* CachingReader::allocateChunkExpireLRU() {
     Chunk* chunk = allocateChunk();
     if (chunk == NULL) {
-        freeChunk(m_recentlyUsedChunks.last());
+        Q_ASSERT(m_lruChunk);
+        //qDebug() << "Expiring LRU" << m_lruChunk->chunk_number;
+        freeChunk(m_lruChunk);
         chunk = allocateChunk();
         Q_ASSERT(chunk);
     }
@@ -153,14 +208,13 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
         // Make sure we're all in agreement here.
         Q_ASSERT(chunk_number == chunk->chunk_number);
 
-        int times = m_recentlyUsedChunks.removeAll(chunk);
-
-        if (times != 1) {
-            qDebug() << "WARNING: chunk" << chunk_number
-                     << "was in recently used list" << times << "times";
+        // If this is the LRU chunk then set the previous LRU to the new LRU
+        if (chunk == m_lruChunk && chunk->prev_lru != NULL) {
+            m_lruChunk = chunk->prev_lru;
         }
-
-        m_recentlyUsedChunks.push_front(chunk);
+        // Remove the chunk from the list and insert it at the head.
+        m_mruChunk = removeFromLRUList(chunk, m_mruChunk);
+        m_mruChunk = insertIntoLRUList(chunk, m_mruChunk);
     }
 
     return chunk;
@@ -182,8 +236,16 @@ Chunk* CachingReader::getChunk(int chunk_number) {
         } else {
             Q_ASSERT(chunk_number == chunk->chunk_number);
             m_allocatedChunks.insert(chunk_number, chunk);
-            Q_ASSERT(!m_recentlyUsedChunks.contains(chunk));
-            m_recentlyUsedChunks.push_front(chunk);
+
+            // Insert the chunk into the LRU list
+            m_mruChunk = insertIntoLRUList(chunk, m_mruChunk);
+
+            // If this chunk has no next LRU then it is the LRU. This only
+            // happens if this is the first allocated chunk.
+            if (chunk->next_lru == NULL) {
+                m_lruChunk = chunk;
+            }
+
         }
     }
 
@@ -321,7 +383,7 @@ void CachingReader::hint(QList<Hint>& hintList) {
     m_hintQueueMutex.lock();
     QListIterator<Hint> iterator(hintList);
     while (iterator.hasNext()) {
-        Hint& hint = iterator.next();
+        const Hint& hint = iterator.next();
         m_hintQueue.enqueue(hint);
     }
     m_hintQueueMutex.unlock();
@@ -358,9 +420,14 @@ void CachingReader::run() {
         }
 
         hintList.clear();
+
         m_hintQueueMutex.lock();
-        while (!m_hintQueue.isEmpty()) {
-            hintList.push_back(m_hintQueue.takeFirst());
+        if (m_pCurrentSoundSource == NULL) {
+            m_hintQueue.clear();
+        } else {
+            while (!m_hintQueue.isEmpty()) {
+                hintList.push_back(m_hintQueue.takeFirst());
+            }
         }
         m_hintQueueMutex.unlock();
 
@@ -432,6 +499,11 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_pCurrentTrack = pTrack;
     m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
+
+    // Before emitting trackLoaded, clear the hint queue.
+    m_hintQueueMutex.lock();
+    m_hintQueue.clear();
+    m_hintQueueMutex.unlock();
 
     // Emit that the track is loaded.
     emit(trackLoaded(pTrack, m_iTrackSampleRate, m_iTrackNumSamples));
