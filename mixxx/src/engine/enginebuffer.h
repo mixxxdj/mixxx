@@ -42,6 +42,8 @@ class EngineBufferScaleST;
 class EngineBufferCue;
 class TrackInfoObject;
 
+struct Hint;
+
 /**
   *@author Tue and Ken Haste Andersen
 */
@@ -144,8 +146,13 @@ private:
 
     /** Pointer to other EngineBuffer */
     EngineBuffer* m_pOtherEngineBuffer;
-    /** Pointer to reader */
+
+    // The reader used to read audio files
     CachingReader* m_pReader;
+
+    // List of hints to provide to the CachingReader
+    QList<Hint> m_hintList;
+
     /** The current sample to play in the file. */
     double filepos_play;
     /** Copy of rate_exchange, used to check if rate needs to be updated */

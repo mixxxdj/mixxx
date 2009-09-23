@@ -38,7 +38,7 @@ typedef struct Chunk {
 class CachingReader : public QThread {
     Q_OBJECT
 
-    public:
+  public:
 
     CachingReader(const char* _group,
                   ConfigObject<ConfigValue>* _config);
@@ -51,17 +51,18 @@ class CachingReader : public QThread {
     int getTrackNumSamples();
 
     int read(int sample, int num_samples, CSAMPLE* buffer);
-    void hint(int sample, int length, int priority);
+    void hint(Hint& hint);
+    void hint(QList<Hint>& hintList);
     void newTrack(TrackInfoObject* pTrack);
     void wake();
 
-signals:
+  signals:
     void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
 
-protected:
+  protected:
     void run();
 
-private:
+  private:
 
     const static int kChunkLength, kSamplesPerChunk;
 

@@ -20,6 +20,7 @@
 #include "controlpushbutton.h"
 #include "controlobject.h"
 #include "mathstuff.h"
+#include "cachingreader.h"
 
 #include "engine/enginecontrol.h"
 #include "engine/enginebuffercue.h"
@@ -72,12 +73,12 @@ EngineBufferCue::EngineBufferCue(const char* _group,
     buttonCueCDJ = new ControlPushButton(ConfigKey(_group, "cue_cdj"));
     connect(buttonCueCDJ, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlCueCDJ(double)));
-    
+
     // Cue button generic handler
     buttonCueDefault = new ControlPushButton(ConfigKey(_group, "cue_default"));
     connect(buttonCueDefault, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlCueDefault(double)));
-    
+
     // Cue behavior setting. 1 means Simple Mode, 0 means CDJ Mode
     m_pControlCueDefault = new ControlObject(ConfigKey(_group,"cue_mode"));
 }
@@ -93,6 +94,14 @@ EngineBufferCue::~EngineBufferCue()
     delete buttonCueCDJ;
     delete m_pControlCueDefault;
     delete cuePoint;
+}
+
+void EngineBufferCue::hintReader(QList<Hint>& hintList) {
+    Hint cue_hint;
+    cue_hint.sample = cuePoint->get();
+    cue_hint.length = 0;
+    cue_hint.priority = 10;
+    hintList.append(cue_hint);
 }
 
 void EngineBufferCue::saveCuePoint(double cue)
@@ -116,7 +125,7 @@ void EngineBufferCue::slotControlCueSet(double v)
         if (!even((int)cue))
             cue--;
         cuePoint->set(cue);
-    
+
         saveCuePoint(cue);
    }
 }
@@ -211,7 +220,7 @@ void EngineBufferCue::slotControlCueCDJ(double v) {
      * If pressed while stopped and not at cue, set new cue point.
      * TODO: If play is pressed while holding cue, the deck is now playing.
      */
-    
+
     if ((v==0. && playButton->get()==1.) || playButton->get()==1.)
     // If we are previewing on button release, or the track is currently playing
     // and cue is pressed
@@ -226,7 +235,7 @@ void EngineBufferCue::slotControlCueCDJ(double v) {
         // Get current cue for comparison
         double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
         if (!even((int)cue)) cue--;
-        
+
         if (cue == cuePoint->get()) {
             // If at cue point, start playing
             playButton->set(1.);
