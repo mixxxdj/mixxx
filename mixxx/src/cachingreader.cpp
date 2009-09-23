@@ -38,9 +38,9 @@ CachingReader::CachingReader(const char* _group,
     m_pRawMemoryBuffer(NULL),
     m_iRawMemoryBufferLength(0),
     m_bQuit(false) {
-    m_pTrackEnd = new ControlObjectThread(ControlObject::getControl(ConfigKey(_group,"TrackEnd")));
+    m_pTrackEnd = new ControlObjectThread(
+        ControlObject::getControl(ConfigKey(_group,"TrackEnd")));
     initialize();
-
 }
 
 CachingReader::~CachingReader() {
@@ -311,13 +311,19 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     return num_samples - samples_remaining;
 }
 
-void CachingReader::hint(int sample, int length, int priority) {
+void CachingReader::hint(Hint& hint) {
     m_hintQueueMutex.lock();
-    Hint hint;
-    hint.sample = sample;
-    hint.length = length;
-    hint.priority = priority;
     m_hintQueue.enqueue(hint);
+    m_hintQueueMutex.unlock();
+}
+
+void CachingReader::hint(QList<Hint>& hintList) {
+    m_hintQueueMutex.lock();
+    QListIterator<Hint> iterator(hintList);
+    while (iterator.hasNext()) {
+        Hint& hint = iterator.next();
+        m_hintQueue.enqueue(hint);
+    }
     m_hintQueueMutex.unlock();
 }
 
@@ -360,10 +366,33 @@ void CachingReader::run() {
 
         while (!hintList.isEmpty()) {
             Hint hint = hintList.takeLast();
+
+            // To prevent every bit of code having to guess how many samples
+            // forward it makes sense to keep in memory, the hinter can provide
+            // either 0 for a forward hint or -1 for a backward hint. We should
+            // be calculating an appropriate number of samples to go backward as
+            // some function of the latency, but for now just leave this as a
+            // constant. 2048 is a pretty good number of samples because 25ms
+            // latency corresponds to 1102.5 mono samples and we need double
+            // that for stereo samples.
+            const int default_samples = 2048;
+
+            if (hint.length == 0) {
+                hint.length = default_samples;
+            } else if (hint.length == -1) {
+                hint.sample -= default_samples;
+                hint.length = default_samples;
+                if (hint.sample < 0) {
+                    hint.length += hint.sample;
+                    hint.sample = 0;
+                }
+            }
+            Q_ASSERT(hint.sample >= 0);
+            Q_ASSERT(hint.length >= 0);
             int start_chunk = chunkForSample(hint.sample);
             int end_chunk = chunkForSample(hint.sample + hint.length);
 
-            for (int current = start_chunk; current <= end_chunk; current++) {
+            for (int current = start_chunk; current <= end_chunk; ++current) {
                 // This will ensure the chunk is in the cache.
                 getChunk(current);
             }
