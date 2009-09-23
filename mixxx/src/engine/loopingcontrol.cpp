@@ -100,7 +100,6 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
     // If the loop is enabled, then this is high priority because we will loop
     // sometime potentially very soon! The current audio itself is priority 1,
     // but we will issue ourselves at priority 2.
-    loop_hint.priority = 2 : 10;
     if (m_bLoopingEnabled) {
         // If we're looping, hint the loop in and loop out, in case we reverse
         // into it. We could save information from process to tell which
@@ -118,7 +117,7 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
         loop_hint.priority = 10;
         loop_hint.sample = m_iLoopStartSample;
         loop_hint.length = 0; // Let it issue the default length
-        hint_list.append(loop_hint);
+        hintList.append(loop_hint);
     }
 }
 

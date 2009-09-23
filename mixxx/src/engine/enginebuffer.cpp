@@ -318,7 +318,11 @@ void EngineBuffer::slotControlSeek(double change)
         new_playpos--;
 
     // Seek reader
-    m_pReader->hint(new_playpos, 1000, 0);
+    Hint seek_hint;
+    seek_hint.sample = new_playpos;
+    seek_hint.length = 0;
+    seek_hint.priority = 1;
+    m_pReader->hint(seek_hint);
     m_pReader->wake();
     setNewPlaypos(new_playpos);
 }
@@ -572,8 +576,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Wake up the reader so that it processes our hints / loads new files (hopefully) before the
-    // next callback.
+    // Wake up the reader so that it processes our hints / loads new files
+    // (hopefully) before the next callback.
     m_pReader->wake();
 
     // Force ramp in if this is the first buffer during a play
@@ -664,7 +668,7 @@ void EngineBuffer::hintReader(const double dRate,
 
     // Make sure that we have enough samples to do n more process() calls
     // without reading again either forward or reverse.
-    int n = 5; // 5? 10? 20? who knows!
+    int n = 1; // 5? 10? 20? who knows!
     int length_to_cache = iSourceSamples * n;
     current_position.length = length_to_cache * 2;
     current_position.sample = filepos_play - length_to_cache;

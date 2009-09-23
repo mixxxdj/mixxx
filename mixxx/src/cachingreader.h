@@ -33,6 +33,8 @@ typedef struct Chunk {
     int chunk_number;
     int length;
     CSAMPLE* data;
+    Chunk* prev_lru;
+    Chunk* next_lru;
 } Chunk;
 
 class CachingReader : public QThread {
@@ -65,6 +67,8 @@ class CachingReader : public QThread {
   private:
 
     const static int kChunkLength, kSamplesPerChunk;
+    static Chunk* removeFromLRUList(Chunk* chunk, Chunk* head);
+    static Chunk* insertIntoLRUList(Chunk* chunk, Chunk* head);
 
     void initialize();
     void stop();
@@ -131,7 +135,9 @@ class CachingReader : public QThread {
     // Keeps track of what Chunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
     QHash<int, Chunk*> m_allocatedChunks;
-    QLinkedList<Chunk*> m_recentlyUsedChunks;
+
+    Chunk* m_mruChunk;
+    Chunk* m_lruChunk;
 
     CSAMPLE* m_pRawMemoryBuffer;
     int m_iRawMemoryBufferLength;
