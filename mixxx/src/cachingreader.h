@@ -1,4 +1,4 @@
-// cachingreader.h 
+// cachingreader.h
 // Created 7/9/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef CACHINGREADER_H
@@ -20,6 +20,7 @@
 
 class SoundSource;
 class TrackInfoObject;
+class ControlObjectThread;
 
 
 typedef struct Hint {
@@ -56,7 +57,7 @@ class CachingReader : public QThread {
 
 signals:
     void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
-    
+
 protected:
     void run();
 
@@ -68,7 +69,7 @@ private:
     void stop();
 
     void loadTrack(TrackInfoObject *pTrack);
-    
+
     // Queue of recent hints, and the corresponding lock.
     QMutex m_hintQueueMutex;
     QQueue<Hint> m_hintQueue;
@@ -76,12 +77,12 @@ private:
     // Queue of Tracks to load, and the corresponding lock.
     QMutex m_trackQueueMutex;
     QQueue<TrackInfoObject*> m_trackQueue;
-    
+
     // Held when the Reader is working: read() vs. run()
     QMutex m_readerMutex;
     QWaitCondition m_readerWait;
 
-    // 
+    //
     // Everything below this line is guarded by m_readerMutex, make sure you
     // hold it if you touch them.
     //
@@ -109,7 +110,7 @@ private:
         return int(floor(double(sample_number) / double(kSamplesPerChunk)));
         //return sample_number / kSamplesPerChunk;
     }
-    
+
     int sampleForChunk(int chunk_number) {
         return chunk_number * kSamplesPerChunk;
     }
@@ -118,6 +119,7 @@ private:
     const ConfigObject<ConfigValue>* m_pConfig;
 
     TrackInfoObject* m_pCurrentTrack;
+    ControlObjectThread* m_pTrackEnd;
     SoundSource* m_pCurrentSoundSource;
     int m_iTrackSampleRate;
     int m_iTrackNumSamples;
