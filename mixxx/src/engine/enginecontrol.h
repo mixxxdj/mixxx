@@ -5,10 +5,12 @@
 #define ENGINECONTROL_H
 
 #include <QObject>
+#include <QList>
 
 #include "configobject.h"
 
 class EngineBuffer;
+struct Hint;
 
 const double kNoTrigger = -1;
 
@@ -24,7 +26,7 @@ const double kNoTrigger = -1;
  * callback from the sound engine. This implies that any ControlObject accesses
  * made in either of these methods are mutually exclusive, since one is
  * exclusively in the call graph of the other.
- * 
+ *
  * Furthermore, most slots that are connected to Mixxx ControlObjects are safe
  * to process without locking EngineBuffer/EngineControl owned values, since
  * Mixxx only synchronizes ControlObjects in the SoundManager callback, and thus
@@ -36,9 +38,14 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     public:
 
-    EngineControl(const char * _group, const ConfigObject<ConfigValue> * _config);
+    EngineControl(const char * _group,
+                  const ConfigObject<ConfigValue> * _config);
     virtual ~EngineControl();
-    
+
+    // Called by EngineBuffer::process every latency period. See the above
+    // comments for information about guarantees that hold during this call. An
+    // EngineControl can perform any upkeep operations that are necessary during
+    // this call.
     virtual double process(const double dRate,
                            const double dCurrentSample,
                            const double dTotalSamples,
@@ -54,30 +61,19 @@ class EngineControl : public QObject {
                               const double dTotalSamples,
                               const int iBufferSize);
 
-    void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {
-        m_pOtherEngineBuffer = pOtherEngineBuffer;
-    }
-    
-    void setCurrentSample(const double dCurrentSample) {
-        m_dCurrentSample = dCurrentSample;
-    }
-    
-    double getCurrentSample() {
-        return m_dCurrentSample;
-    }
+    // hintReader allows the EngineControl to provide hints to the reader to
+    // indicate that the given portion of a song is a potential imminent seek
+    // target.
+    virtual void hintReader(QList<Hint>& hintList);
+
+    void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer);
+    void setCurrentSample(const double dCurrentSample);
+    double getCurrentSample();
 
 protected:
-    const char* getGroup() {
-        return m_pGroup;
-    }
-
-    const ConfigObject<ConfigValue>* getConfig() {
-        return m_pConfig;
-    }
-
-    EngineBuffer* getOtherEngineBuffer() {
-        return m_pOtherEngineBuffer;
-    }
+    const char* getGroup();
+    const ConfigObject<ConfigValue>* getConfig();
+    EngineBuffer* getOtherEngineBuffer();
 
 private:
     const char* m_pGroup;
@@ -85,6 +81,5 @@ private:
     double m_dCurrentSample;
     EngineBuffer* m_pOtherEngineBuffer;
 };
-
 
 #endif /* ENGINECONTROL_H */
