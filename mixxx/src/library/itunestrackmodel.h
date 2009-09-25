@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #ifndef ITUNESTRACKMODEL_H
-#define ITUNESBOXTRACKMODEL_H
+#define ITUNESTRACKMODEL_H
 
 #include <QtSql>
 #include <QtXml>

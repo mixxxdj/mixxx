@@ -88,6 +88,12 @@ void LibraryTableModel::removeTrack(const QModelIndex& index)
 	select(); //Repopulate the data model.
 }
 
+void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
+{
+    //Does nothing because we don't support reordering tracks in the library,
+    //and getCapabilities() reports that.
+}
+
 void LibraryTableModel::search(const QString& searchText)
 {
 	if (searchText == "")

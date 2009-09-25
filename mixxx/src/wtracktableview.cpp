@@ -344,7 +344,9 @@ void WTrackTableView::dropEvent(QDropEvent * event)
 	            {
 	                QModelIndex destIndex = this->indexAt(event->pos());
 
-	                //trackModel->moveTrack(destIndex, url.toLocalFile());
+                    //TODO: Finish me - Albert
+                    //QModelIndex sourceIndex = m_selectedIndices //Use a foreach to iterate over these
+	                //trackModel->moveTrack(destIndex, sourceIndex) //url.toLocalFile());
 
 	            }
 			}
