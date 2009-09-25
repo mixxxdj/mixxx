@@ -137,6 +137,11 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
 	select(); //Repopulate the data model.
 }
 
+void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
+{
+
+}
+
 void PlaylistTableModel::search(const QString& searchText)
 {
     //FIXME: Need to keep filtering by playlist_id too

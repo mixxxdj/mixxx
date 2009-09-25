@@ -117,6 +117,12 @@ void AbstractXmlTrackModel::removeTrack(const QModelIndex& index)
     //Should do nothing... hmmm
 }
 
+void AbstractXmlTrackModel::moveTrack(const QModelIndex& sourceIndex,
+                                      const QModelIndex& destIndex)
+{
+    //Should do nothing... hmmm
+}
+
 QString AbstractXmlTrackModel::getTrackLocation(const QModelIndex& index) const
 {
     TrackInfoObject *track;
