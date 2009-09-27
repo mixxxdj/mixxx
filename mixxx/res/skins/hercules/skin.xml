@@ -199,6 +199,18 @@
   <MarkerColor>#0000ff</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
   <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Visual>
@@ -214,6 +226,18 @@
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
   <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Text>

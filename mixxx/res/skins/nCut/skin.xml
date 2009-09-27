@@ -1109,6 +1109,18 @@
   <MarkerColor>#ffffff</MarkerColor>
   <CueColor>#ff0000</CueColor>
   <FisheyeColor>#404040</FisheyeColor>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Visual>
@@ -1123,6 +1135,18 @@
   <MarkerColor>#ffffff</MarkerColor>
   <CueColor>#ff0000</CueColor>
   <FisheyeColor>#404040</FisheyeColor>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
 <!--

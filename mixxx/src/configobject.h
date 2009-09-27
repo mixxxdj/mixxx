@@ -48,7 +48,7 @@ class ConfigKey
 public:
     ConfigKey();
     ConfigKey(QString g, QString i);
-
+    static ConfigKey parseCommaSeparated(QString key);
     QString group, item;
 };
 

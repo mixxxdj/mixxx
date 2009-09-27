@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QDomNode>
 #include <QImage>
+#include <QListIterator>
 #include <QObject>
 
 #include <time.h>
@@ -34,7 +35,7 @@ void WaveformRenderer::run() {
     double msecs_old = 0, msecs_elapsed = 0;
 
     while(!m_bQuit) {
-        
+
         if(m_iLatency != 0 && m_dPlayPos != -1 && m_dPlayPosOld != -1 && m_iNumSamples != 0) {
             QTime now = QTime::currentTime();
             double msecs_elapsed = m_playPosTime.msecsTo(now);
@@ -42,14 +43,15 @@ void WaveformRenderer::run() {
             double adjust = (m_dPlayPos - m_dPlayPosOld) * math_min(1.0f, timeratio);
             m_dPlayPosAdjust = adjust;
         }
-        
+
         QThread::msleep(6);
     }
-    
+
 }
 
 WaveformRenderer::WaveformRenderer(const char* group) :
     QThread(),
+    m_pGroup(group),
     m_iWidth(0),
     m_iHeight(0),
     m_iNumSamples(0),
@@ -71,38 +73,42 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_iDupes(0),
     m_bQuit(false)
 {
-    m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"visual_playposition")));
+    m_pPlayPos = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"visual_playposition")));
     if(m_pPlayPos != NULL)
-        connect(m_pPlayPos, SIGNAL(valueChanged(double)), this, SLOT(slotUpdatePlayPos(double)));
+        connect(m_pPlayPos, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdatePlayPos(double)));
 
 
-    m_pLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
+    m_pLatency = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]","latency")));
     if(m_pLatency != NULL)
-        connect(m_pLatency, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateLatency(double)));
-    
+        connect(m_pLatency, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateLatency(double)));
+
     m_pRenderBackground = new WaveformRenderBackground(group, this);
     m_pRenderSignal = new WaveformRenderSignal(group, this);
     m_pRenderSignalPixmap = new WaveformRenderSignalPixmap(group, this);
     m_pRenderBeat = new WaveformRenderBeat(group, this);
-    m_pRenderCue = new WaveformRenderMark(group, ConfigKey(group, "cue_point"), this);
-    m_pRenderLoopStart = new WaveformRenderMark(group, ConfigKey(group, "loop_start_position"), this);
-    m_pRenderLoopEnd = new WaveformRenderMark(group, ConfigKey(group, "loop_end_position"), this);
 
     m_pCOVisualResample = new ControlObject(ConfigKey(group, "VisualResample"));
 
-    m_pRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
+    m_pRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "rate")));
     if(m_pRate != NULL) {
         connect(m_pRate, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateRate(double)));
     }
 
-    m_pRateRange = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
+    m_pRateRange = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "rateRange")));
     if(m_pRateRange != NULL) {
         connect(m_pRateRange, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateRateRange(double)));
     }
 
-    m_pRateDir = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    m_pRateDir = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "rate_dir")));
     if (m_pRateDir) {
         connect(m_pRateDir, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateRateDir(double)));
@@ -117,7 +123,7 @@ WaveformRenderer::~WaveformRenderer() {
     // Wait for the thread to quit
     m_bQuit = true;
     QThread::wait();
-    
+
     if(m_pCOVisualResample)
         delete m_pCOVisualResample;
     m_pCOVisualResample = NULL;
@@ -125,7 +131,7 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pRate)
         delete m_pRate;
     m_pRate = NULL;
-    
+
     if(m_pRateRange)
         delete m_pRateRange;
     m_pRateRange = NULL;
@@ -145,37 +151,23 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pRenderSignalPixmap)
         delete m_pRenderSignalPixmap;
     m_pRenderSignalPixmap = NULL;
-    
+
     if(m_pRenderSignal)
         delete m_pRenderSignal;
     m_pRenderSignal = NULL;
-    
+
     if(m_pRenderBeat)
         delete m_pRenderBeat;
     m_pRenderBeat = NULL;
-
-    if(m_pRenderCue)
-        delete m_pRenderCue;
-    m_pRenderCue = NULL;
-
-    if(m_pRenderLoopStart)
-        delete m_pRenderLoopStart;
-    m_pRenderLoopStart = NULL;
-    
-    if(m_pRenderLoopEnd)
-        delete m_pRenderLoopEnd;
-    m_pRenderLoopEnd = NULL;
-
 }
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {
     m_iPlayPosTimeOld = m_iPlayPosTime;
     m_playPosTimeOld = m_playPosTime;
-    m_dPlayPosOld = m_dPlayPos;    
+    m_dPlayPosOld = m_dPlayPos;
     m_dPlayPos = v;
     m_iPlayPosTime = clock();
     m_playPosTime = QTime::currentTime();
-
 
     m_iDupes = 0;
     m_dPlayPosAdjust = 0;
@@ -208,9 +200,12 @@ void WaveformRenderer::resize(int w, int h) {
     m_pRenderSignal->resize(w,h);
     m_pRenderSignalPixmap->resize(w,h);
     m_pRenderBeat->resize(w,h);
-    m_pRenderCue->resize(w,h);
-    m_pRenderLoopStart->resize(w,h);
-    m_pRenderLoopEnd->resize(w,h);
+
+    QListIterator<RenderObject*> iter(m_renderObjects);
+    while (iter.hasNext()) {
+        RenderObject* ro = iter.next();
+        ro->resize(w,h);
+    }
 }
 
 void WaveformRenderer::setupControlObjects() {
@@ -222,7 +217,7 @@ void WaveformRenderer::setupControlObjects() {
     // Let a sample be a sample in the original song.
     // Let a downsample be a sample in the downsampled buffer
     // Let a pixel be a pixel on the screen.
-    
+
     // W samples -> X downsamples -> Y pixels
 
     // We start with the restriction that we desire 1 second of
@@ -244,7 +239,7 @@ void WaveformRenderer::setupControlObjects() {
     // We combine 1 and 2 into one constraint:
 
     // (f/z) = mn, or  f = m * n * z
-    
+
     // REQUIRE : M * N * Z = F
     // M : DOWNSAMPLES PER PIXEL
     // N : SAMPLES PER DOWNSAMPLE
@@ -258,10 +253,10 @@ void WaveformRenderer::setupControlObjects() {
 
     double m = m_iSubpixelsPerPixel; // M DOWNSAMPLES PER PIXEL
     double z = m_iPixelsPerSecond; // Z PIXELS REPRESENTS 1 SECOND OF DATA
-        
+
     m_pCOVisualResample->set(m*z);
 
-    qDebug() << "WaveformRenderer::setupControlObjects - VisualResample: " << m*z;
+    //qDebug() << "WaveformRenderer::setupControlObjects - VisualResample: " << m*z;
 
 }
 
@@ -270,12 +265,8 @@ void WaveformRenderer::setup(QDomNode node) {
     bgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
     bgColor = WSkinColor::getCorrectColor(bgColor);
 
-    qDebug() << "Got bgColor " << bgColor;
-    
     signalColor.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
     signalColor = WSkinColor::getCorrectColor(signalColor);
-
-    qDebug() << "Got signalColor " << signalColor;
 
     colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
     colorMarker = WSkinColor::getCorrectColor(colorMarker);
@@ -286,13 +277,28 @@ void WaveformRenderer::setup(QDomNode node) {
     colorCue.setNamedColor(WWidget::selectNodeQString(node, "CueColor"));
     colorCue = WSkinColor::getCorrectColor(colorCue);
 
+    while (m_renderObjects.size() > 0) {
+        RenderObject* ro = m_renderObjects.takeFirst();
+        delete ro;
+    }
+
+    // Process any <Mark> nodes
+    QDomNode child = node.firstChild();
+    while (!child.isNull()) {
+        if (child.nodeName() == "Mark") {
+            WaveformRenderMark* pMark = new WaveformRenderMark(m_pGroup, this);
+            if (m_pTrack != NULL)
+                pMark->newTrack(m_pTrack);
+            pMark->setup(child);
+            m_renderObjects.push_back(pMark);
+        }
+        child = child.nextSibling();
+    }
+
     m_pRenderBackground->setup(node);
     m_pRenderSignal->setup(node);
     m_pRenderSignalPixmap->setup(node);
     m_pRenderBeat->setup(node);
-    m_pRenderCue->setup(node);
-    m_pRenderLoopStart->setup(node);
-    m_pRenderLoopEnd->setup(node);
 }
 
 
@@ -305,7 +311,7 @@ void WaveformRenderer::precomputePixmap() {
     int monoSamples = (m_iNumSamples >> 3);
     qDebug() << monoSamples << " samples for qimage";
     QImage qi(monoSamples, m_iHeight, QImage::Format_RGB32);
-    
+
     QPainter paint;
     paint.begin(&qi);
 
@@ -319,7 +325,7 @@ void WaveformRenderer::precomputePixmap() {
         //paint.drawLine(QLine(i,0,i,m_iHeight/2));
         //paint.drawLine(QLine(i,0,i,m_iHeight/2));
     //}
-    
+
     for(int i=0;i<monoSamples;i++) {
         //SAMPLE sampl = (*m_pSampleBuffer)[i*2];
         //SAMPLE sampr = (*m_pSampleBuffer)[i*2+1];
@@ -333,7 +339,7 @@ void WaveformRenderer::precomputePixmap() {
     qi.save("/home/rryan/foo.bmp", "BMP", 100);
     m_pImage = qi;
 
-    
+
     return;
 
     /*
@@ -347,7 +353,7 @@ void WaveformRenderer::precomputePixmap() {
     } else {
         qDebug() << " Build a pixmap " << pm->size();
     }
-    
+
     QPainter paint;
     paint.begin(pm);
 
@@ -358,7 +364,7 @@ void WaveformRenderer::precomputePixmap() {
     paint.translate(0,m_iHeight/2);
     paint.scale(1.0,-1.0);
     //paint.drawLine(QLine(0,0,resultSamples/2,0));
-    
+
     for(int i=0;i<m_iNumSamples/2;i++) {
         SAMPLE sampl = (*m_pSampleBuffer)[i*2];
         SAMPLE sampr = (*m_pSampleBuffer)[i*2+1];
@@ -367,12 +373,12 @@ void WaveformRenderer::precomputePixmap() {
         paint.drawLine(QLine(i,-sampr,i,sampl));
     }
     paint.end();
-    
+
     */
 }
 
 bool WaveformRenderer::fetchWaveformFromTrack() {
-    
+
     if(!m_pTrack)
         return false;
 
@@ -394,10 +400,10 @@ void WaveformRenderer::drawSignalPixmap(QPainter *pPainter) {
     //return;
     if(m_pImage.isNull())
         return;
-    
+
     //double dCurPos = m_pPlayPos->get();
     int iCurPos = (int)(m_dPlayPos*m_pImage.width());
-        
+
     int halfw = m_iWidth/2;
     int halfh = m_iHeight/2;
 
@@ -440,14 +446,14 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     if(m_iWidth == 0 || m_iHeight == 0)
         return;
 
-    
+
     /*
     if(m_dPlayPos != -1 && m_dPlayPosOld != -1 && m_iNumSamples != 0) {
         static double elatency = ControlObject::getControl(ConfigKey("[Master]","latency"))->get();
         double latency = elatency;
         latency *= 4;
         latency *= CLOCKS_PER_SEC / 1000.0;
-        
+
         //int latency = m_iPlayPosTime - m_iPlayPosTimeOld;
         double timeelapsed = (clock() - m_iPlayPosTime);
         double timeratio = 0;
@@ -458,7 +464,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
         double timerun = m_iPlayPosTime - m_iPlayPosTimeOld;
 
-        
+
         playposadjust = ((m_dPlayPos*m_iNumSamples) - (m_dPlayPosOld*m_iNumSamples)) * timeelapsed;
         playposadjust /= (latency*m_iNumSamples);
 
@@ -494,21 +500,23 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     // Now scale so that positive-y points up.
     pPainter->scale(1.0,-1.0);
-    
+
     // Draw the center horizontal line under the signal.
     pPainter->drawLine(QLine(0,0,m_iWidth,0));
 
     m_pRenderSignal->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
-    
 
     // Draw various markers.
-    m_pRenderBeat->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
-    m_pRenderCue->draw(pPainter,pEvent, m_pSampleBuffer, playpos, rateAdjust);
-    m_pRenderLoopStart->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
-    m_pRenderLoopEnd->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
-    
+    m_pRenderBeat->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+
+    QListIterator<RenderObject*> iter(m_renderObjects);
+    while (iter.hasNext()) {
+        RenderObject* ro = iter.next();
+        ro->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    }
+
     pPainter->setPen(colorMarker);
-    
+
     // Draw the center vertical line
     pPainter->drawLine(QLineF(m_iWidth/2.0,m_iHeight/2.0,m_iWidth/2.0,-m_iHeight/2.0));
 
@@ -526,9 +534,12 @@ void WaveformRenderer::slotNewTrack(TrackInfoObject* pTrack) {
     m_pRenderSignal->newTrack(pTrack);
     m_pRenderSignalPixmap->newTrack(pTrack);
     m_pRenderBeat->newTrack(pTrack);
-    m_pRenderCue->newTrack(pTrack);
-    m_pRenderLoopStart->newTrack(pTrack);
-    m_pRenderLoopEnd->newTrack(pTrack);
+
+    QListIterator<RenderObject*> iter(m_renderObjects);
+    while (iter.hasNext()) {
+        RenderObject* ro = iter.next();
+        ro->newTrack(pTrack);
+    }
 }
 
 int WaveformRenderer::getPixelsPerSecond() {
@@ -538,4 +549,3 @@ int WaveformRenderer::getPixelsPerSecond() {
 int WaveformRenderer::getSubpixelsPerPixel() {
     return m_iSubpixelsPerPixel;
 }
-
