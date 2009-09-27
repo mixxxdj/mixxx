@@ -103,7 +103,7 @@ void WaveformRenderMark::setup(QDomNode node) {
         // As a fallback, grab the mark color from the parent's MarkerColor
         markColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
         qDebug() << "Didn't get mark Color, using parent's MarkerColor:"
-                 << textColor;
+                 << markColor;
         m_markColor.setNamedColor(markColor);
         // m_markColor = QColor(255 - m_markColor.red(),
         //                      255 - m_markColor.green(),
@@ -250,7 +250,8 @@ void WaveformRenderMark::setupMarkPixmap() {
     QColor color = m_textColor;
     color = QColor(0xff - color.red(),
                    0xff - color.green(),
-                   0xff - color.blue());
+                   0xff - color.blue(),
+                   128);
     painter.setPen(color);
     painter.setBrush(QBrush(color));
 
