@@ -50,7 +50,7 @@ class QGridLayout;
 class QTabWidget;
 class QStackedWidget;
 class WTrackTableView;
-class DlgLADSPA; class LADSPAView;
+class LADSPAView;
 class WaveformRenderer;
 
 /**
@@ -129,7 +129,6 @@ private:
     QGridLayout* m_pEffectsPageLayout;
 
 #ifdef __LADSPA__
-    DlgLADSPA* m_pDlgLADSPA;
     LADSPAView* m_pLADSPAView;
 #endif
 };
