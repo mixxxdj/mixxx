@@ -21,7 +21,7 @@ RateControl::RateControl(const char* _group,
     EngineControl(_group, _config),
     m_bTempPress(false),
     m_dOldRate(0.0f) {
-    
+
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
@@ -46,23 +46,23 @@ RateControl::RateControl(const char* _group,
     connect(m_pBackButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlFastBack(double)));
     m_pBackButton->set(0);
-    
+
     // Permanent rate-change buttons
     buttonRatePermDown =
         new ControlPushButton(ConfigKey(_group,"rate_perm_down"));
     connect(buttonRatePermDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermDown(double)));
-    
+
     buttonRatePermDownSmall =
         new ControlPushButton(ConfigKey(_group,"rate_perm_down_small"));
     connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermDownSmall(double)));
-    
+
     buttonRatePermUp =
         new ControlPushButton(ConfigKey(_group,"rate_perm_up"));
     connect(buttonRatePermUp, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermUp(double)));
-    
+
     buttonRatePermUpSmall =
         new ControlPushButton(ConfigKey(_group,"rate_perm_up_small"));
     connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)),
@@ -73,17 +73,17 @@ RateControl::RateControl(const char* _group,
         new ControlPushButton(ConfigKey(_group,"rate_temp_down"));
     connect(buttonRateTempDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempDown(double)));
-    
+
     buttonRateTempDownSmall =
         new ControlPushButton(ConfigKey(_group,"rate_temp_down_small"));
     connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempDownSmall(double)));
-    
+
     buttonRateTempUp =
         new ControlPushButton(ConfigKey(_group,"rate_temp_up"));
     connect(buttonRateTempUp, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUp(double)));
-    
+
     buttonRateTempUpSmall =
         new ControlPushButton(ConfigKey(_group,"rate_temp_up_small"));
     connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
@@ -114,7 +114,7 @@ RateControl::~RateControl() {
     delete m_pReverseButton;
     delete m_pForwardButton;
     delete m_pBackButton;
-    
+
     delete buttonRateTempDown;
     delete buttonRateTempDownSmall;
     delete buttonRateTempUp;
@@ -289,7 +289,7 @@ double RateControl::getJogFactor() {
     // Since m_pJog is an accumulator, reset it since we've used its value.
     if(jogValue != 0.)
         m_pJog->set(0.);
-        
+
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;
 
@@ -306,7 +306,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
     double scratchFactor = getScratchFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
-    
+
     if (searching) {
         // If searching is in progress, it overrides the playback rate.
         rate = m_pRateSearch->get();
@@ -314,17 +314,17 @@ double RateControl::calculateRate(double baserate, bool paused) {
         if (scratchFactor == 1.)
             scratchFactor = 0;
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
-        rate = scratchFactor * (wheelFactor/10. + jogFactor) * baserate;
+        rate = scratchFactor * jogFactor * baserate + wheelFactor/10.;
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
         // There are three rate effects we apply: wheel, scratch, and jog.
         // Wheel: a linear additive effect
         // Scratch: a rate multiplier
-        // Jog: a linear additive effect whose value is filtered 
-            
+        // Jog: a linear additive effect whose value is filtered
+
         rate = (1. + getRawRate()) * baserate;
-        rate += wheelFactor;
+        rate += wheelFactor/10.;
         rate *= scratchFactor;
         rate += jogFactor;
 
@@ -333,7 +333,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
             rate = -rate;
         }
     }
-    
+
     return rate;
 }
 
