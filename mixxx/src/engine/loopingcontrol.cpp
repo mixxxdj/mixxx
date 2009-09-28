@@ -18,24 +18,36 @@ LoopingControl::LoopingControl(const char * _group,
         : EngineControl(_group, _config) {
 
     m_bLoopingEnabled = false;
-    m_iLoopStartSample = 0;
-    m_iLoopEndSample = 0;
+    m_iLoopStartSample = kNoTrigger;
+    m_iLoopEndSample = kNoTrigger;
 
     //Create loop-in, loop-out, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(_group, "loop_in"), true);
-    connect(m_pLoopInButton, SIGNAL(valueChanged(double)), this, SLOT(slotLoopIn(double)));
+    connect(m_pLoopInButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopIn(double)));
     m_pLoopInButton->set(0);
 
     m_pLoopOutButton = new ControlPushButton(ConfigKey(_group, "loop_out"), true);
-    connect(m_pLoopOutButton, SIGNAL(valueChanged(double)), this, SLOT(slotLoopOut(double)));
+    connect(m_pLoopOutButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopOut(double)));
     m_pLoopOutButton->set(0);
 
     m_pReloopExitButton = new ControlPushButton(ConfigKey(_group, "reloop_exit"), true);
-    connect(m_pReloopExitButton, SIGNAL(valueChanged(double)), this, SLOT(slotReloopExit(double)));
+    connect(m_pReloopExitButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReloopExit(double)));
     m_pReloopExitButton->set(0);
 
-    m_pCOLoopStartPosition = new ControlObject(ConfigKey(_group, "loop_start_position"));
-    m_pCOLoopEndPosition = new ControlObject(ConfigKey(_group, "loop_end_position"));
+    m_pCOLoopStartPosition =
+            new ControlObject(ConfigKey(_group, "loop_start_position"));
+    m_pCOLoopStartPosition->set(kNoTrigger);
+    connect(m_pCOLoopStartPosition, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopStartPos(double)));
+
+    m_pCOLoopEndPosition =
+            new ControlObject(ConfigKey(_group, "loop_end_position"));
+    m_pCOLoopEndPosition->set(kNoTrigger);
+    connect(m_pCOLoopEndPosition, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopEndPos(double)));
 }
 
 LoopingControl::~LoopingControl() {
@@ -54,10 +66,12 @@ double LoopingControl::process(const double dRate,
     double retval = currentSample;
     if(m_bLoopingEnabled) {
         if (reverse) {
-            if (currentSample <= m_iLoopStartSample)
+            if (m_iLoopEndSample != -1 &&
+                currentSample <= m_iLoopStartSample)
                 retval = m_iLoopEndSample;
         } else {
-            if (currentSample >= m_iLoopEndSample)
+            if (m_iLoopStartSample != -1 &&
+                currentSample >= m_iLoopEndSample)
                 retval = m_iLoopStartSample;
         }
     }
@@ -105,19 +119,25 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
         // into it. We could save information from process to tell which
         // direction we're going in, but that this is much simpler, and hints
         // aren't that bad to make anyway.
-        loop_hint.priority = 2;
-        loop_hint.sample = m_iLoopStartSample;
-        loop_hint.length = 0; // Let it issue the default length
-        hintList.append(loop_hint);
-        loop_hint.priority = 10;
-        loop_hint.sample = m_iLoopEndSample;
-        loop_hint.length = -1; // Let it issue the default (backwards) length
-        hintList.append(loop_hint);
+        if (m_iLoopStartSample >= 0) {
+            loop_hint.priority = 2;
+            loop_hint.sample = m_iLoopStartSample;
+            loop_hint.length = 0; // Let it issue the default length
+            hintList.append(loop_hint);
+        }
+        if (m_iLoopEndSample >= 0) {
+            loop_hint.priority = 10;
+            loop_hint.sample = m_iLoopEndSample;
+            loop_hint.length = -1; // Let it issue the default (backwards) length
+            hintList.append(loop_hint);
+        }
     } else {
-        loop_hint.priority = 10;
-        loop_hint.sample = m_iLoopStartSample;
-        loop_hint.length = 0; // Let it issue the default length
-        hintList.append(loop_hint);
+        if (m_iLoopStartSample >= 0) {
+            loop_hint.priority = 10;
+            loop_hint.sample = m_iLoopStartSample;
+            loop_hint.length = 0; // Let it issue the default length
+            hintList.append(loop_hint);
+        }
     }
 }
 
@@ -135,7 +155,9 @@ void LoopingControl::slotLoopOut(double val) {
         //set loop out position and start looping
         m_iLoopEndSample = m_iCurrentSample;
         m_pCOLoopEndPosition->set(m_iLoopEndSample);
-        m_bLoopingEnabled = true;
+        if (m_iLoopStartSample != -1 &&
+            m_iLoopEndSample != -1)
+            m_bLoopingEnabled = true;
         qDebug() << "set loop_out to " << m_iLoopStartSample;
     }
 }
@@ -148,8 +170,31 @@ void LoopingControl::slotReloopExit(double val) {
             qDebug() << "reloop_exit looping off";
         } else {
             // If we're not looping, jump to the loop-in point and start looping
-            m_bLoopingEnabled = true;
+            if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1)
+                m_bLoopingEnabled = true;
             qDebug() << "reloop_exit looping on";
         }
     }
+}
+
+void LoopingControl::slotLoopStartPos(double pos) {
+    int newpos = pos;
+    if (newpos == -1.0f) {
+        m_bLoopingEnabled = false;
+    }
+    if (newpos >= 0 && !even(newpos)) {
+        newpos--;
+    }
+    m_iLoopStartSample = newpos;
+}
+
+void LoopingControl::slotLoopEndPos(double pos) {
+    int newpos = pos;
+    if (newpos == -1.0f) {
+        m_bLoopingEnabled = false;
+    }
+    if (newpos >= 0 && !even(newpos)) {
+        newpos--;
+    }
+    m_iLoopEndSample = newpos;
 }
