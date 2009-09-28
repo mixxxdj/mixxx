@@ -70,23 +70,23 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-    
+
     QString buildRevision, buildFlags;
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
     #endif
-    
+
     #ifdef BUILD_FLAGS
       buildFlags = BUILD_FLAGS;
     #endif
-    
+
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
             buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else
             buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
     }
-    
+
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
     setWindowIcon(QIcon(":/images/icon.svg"));
@@ -96,7 +96,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pTrack = 0;
     prefDlg = 0;
     midi = 0;
-    
+
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
     config = versionUpgrade();  // This static function is located in upgrade.cpp
     QString qConfigPath = config->getConfigPath();
@@ -118,7 +118,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
                     break;
   	 }
       }
-    }	
+    }
     config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(metricsAgree));
 
     // If the user agrees...
@@ -278,11 +278,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, midi, config);
     prefDlg->setHidden(true);
 
-#ifdef __LADSPA__
-    ladspaDlg = new DlgLADSPA(this);
-    ladspaDlg->setHidden(true);
-#endif
-
     // Try open player device If that fails, the preference panel is opened.
     while (soundmanager->setupDevices() != 0)
     {
@@ -316,7 +311,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
     channel2->setEngineBuffer(buffer2);
-    
+
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif
@@ -457,7 +452,7 @@ int MixxxApp::noSoundDlg(void)
     while(1)
     {
         msgBox.exec();
-        
+
         if (msgBox.clickedButton() == retryButton) {
             soundmanager->queryDevices();
             return 0;
@@ -467,7 +462,7 @@ int MixxxApp::noSoundDlg(void)
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
             soundmanager->queryDevices();
-            
+
             // This way of opening the dialog allows us to use it synchronously
             prefDlg->setWindowModality(Qt::ApplicationModal);
             prefDlg->exec();
@@ -475,9 +470,9 @@ int MixxxApp::noSoundDlg(void)
                 soundmanager->queryDevices();
                 return 0;
             }
-            
+
             msgBox.show();
-            
+
         } else if (msgBox.clickedButton() == exitButton) {
             return 1;
         }
@@ -549,10 +544,6 @@ void MixxxApp::initActions()
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), this);
 #endif
-#ifdef __LADSPA__
-    ladspaShow = new QAction(tr("Show LADSPA window"), this);
-#endif
-
 
     fileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     fileLoadSongPlayer1->setWhatsThis(tr("Open\n\nOpens a song in player 1"));
@@ -625,11 +616,6 @@ void MixxxApp::initActions()
     macroStudio->setWhatsThis(tr("Show Studio\n\nMakes the macro studio visible"));
      connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
 #endif
-#ifdef __LADSPA__
-    ladspaShow->setStatusTip(tr("Shows the LADSPA window"));
-    ladspaShow->setWhatsThis(tr("Show LADSPA window\n\nMakes the LADSPA window visible"));
-    connect(ladspaShow, SIGNAL(activated()), this, SLOT(slotLadspa()));
-#endif
 }
 
 void MixxxApp::initMenuBar()
@@ -642,9 +628,6 @@ void MixxxApp::initMenuBar()
     helpMenu=new QMenu("&Help");
 #ifdef __SCRIPT__
     macroMenu=new QMenu("&Macro");
-#endif
-#ifdef __LADSPA__
-//    ladspaMenu=new QMenu("LADSPA");
 #endif
 
     // menuBar entry fileMenu
@@ -689,9 +672,6 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroMenu->addAction(macroStudio);
 #endif
-#ifdef __LADSPA__
-    // ladspaMenu->addAction(ladspaShow);
-#endif
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(libraryMenu);
@@ -700,9 +680,6 @@ void MixxxApp::initMenuBar()
     //    menuBar()->addMenu(viewMenu);
 #ifdef __SCRIPT__
     menuBar()->addMenu(macroMenu);
-#endif
-#ifdef __LADSPA__
-//    menuBar()->addMenu(ladspaMenu);
 #endif
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
@@ -1074,7 +1051,7 @@ void MixxxApp::slotHelpAbout()
 "Seb Ruiz<br>"
 "Joseph Mattiello<br>"
 "</p>"
-        
+
 "<p align=\"center\"><b>Past Developers</b></p>"
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
@@ -1193,11 +1170,4 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         return QObject::eventFilter(obj, event);
     }
 
-}
-
-void MixxxApp::slotLadspa()
-{
-#ifdef __LADSPA__
-    ladspaDlg->setHidden(false);
-#endif
 }

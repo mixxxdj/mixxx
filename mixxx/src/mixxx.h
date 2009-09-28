@@ -62,10 +62,6 @@
 #include "script/scriptengine.h"
 #endif
 
-#ifdef __LADSPA__
-#include "dlgladspa.h"
-#endif
-
 class WVisual;
 class Track;
 class TrackInfoObject;
@@ -124,20 +120,18 @@ class MixxxApp : public QMainWindow
     /** shows an about dlg*/
     void slotHelpAbout();
     /** visits support section of website*/
-    void slotHelpSupport();    
-    /** shows the LADSPA window */
-    void slotLadspa();
+    void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
 	QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-  
-    
+
+
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
-  
+
   private:
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
@@ -150,7 +144,7 @@ class MixxxApp : public QMainWindow
     QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;
-    
+
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     SoundManager *soundmanager;
@@ -177,9 +171,6 @@ class MixxxApp : public QMainWindow
 
 #ifdef __SCRIPT__
     QMenu *macroMenu;
-#endif
-#ifdef __LADSPA__
-    QMenu *ladspaMenu;
 #endif
 
     /** actions for the application initialized in initActions() and used to en/disable them
@@ -220,9 +211,6 @@ class MixxxApp : public QMainWindow
 #ifdef __SCRIPT__
     QAction *macroStudio;
 #endif
-#ifdef __LADSPA__
-    QAction *ladspaShow;
-#endif
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
@@ -230,10 +218,6 @@ class MixxxApp : public QMainWindow
 
 #ifdef __SCRIPT__
     ScriptEngine *scriptEng;
-#endif
-
-#ifdef __LADSPA__
-    DlgLADSPA *ladspaDlg;
 #endif
 
     int noSoundDlg(void);
