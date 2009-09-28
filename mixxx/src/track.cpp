@@ -228,12 +228,12 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLoopInCh1 = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Channel1]","loop_start_position")));
     m_pLoopInCh2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]","loop_start_position")));
+        ControlObject::getControl(ConfigKey("[Channel2]","loop_start_position")));
     // Get loop out points
     m_pLoopOutCh1 = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Channel1]","loop_end_position")));
     m_pLoopOutCh2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]","loop_end_position")));
+        ControlObject::getControl(ConfigKey("[Channel2]","loop_end_position")));
 
 
     // Play position for each player. Used to determine which track to load next
