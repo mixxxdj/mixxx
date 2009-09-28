@@ -325,6 +325,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url;
+        QModelIndex selectedIndex; //Index of a selected track (iterator)
 
         //qDebug() << (int)this << (int)event->source() << event->possibleActions();
 
@@ -340,15 +341,16 @@ void WTrackTableView::dropEvent(QDropEvent * event)
             TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
 			if (trackModel && (trackModel->getCapabilities() & TrackModel::TRACKMODELCAPS_REORDER)) 
 			{
-	            foreach (url, urls)
+
+	            QModelIndex destIndex = this->indexAt(event->pos());
+	            foreach (selectedIndex, m_selectedIndices)
 	            {
-	                QModelIndex destIndex = this->indexAt(event->pos());
-
-                    //TODO: Finish me - Albert
-                    //QModelIndex sourceIndex = m_selectedIndices //Use a foreach to iterate over these
-	                //trackModel->moveTrack(destIndex, sourceIndex) //url.toLocalFile());
-
+	                trackModel->moveTrack(selectedIndex, destIndex);
 	            }
+	                
+	            /*foreach (url, urls)
+	            {
+	            }*/
 			}
 
 /*   //OLD CODE FROM 1.7. Probably still useful, just haven't realized it yet. :) - Albert Sept 21, 2009
