@@ -75,7 +75,7 @@
 #include "defs_mixxxcmetrics.h"
 #endif
 
-Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, 
+Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config,
 			 EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
 			 AnalyserQueue* analyserQueue)
 {
@@ -219,9 +219,21 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pPlayButtonCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pPlayButtonCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","play")));
 
-    // Get cue points 
-    m_pCuePointCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_point")));
-    m_pCuePointCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_point")));
+    // Get cue points
+    m_pCuePointCh1 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]","cue_point")));
+    m_pCuePointCh2 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel2]","cue_point")));
+    // Get loop in points
+    m_pLoopInCh1 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]","loop_start_position")));
+    m_pLoopInCh2 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]","loop_start_position")));
+    // Get loop out points
+    m_pLoopOutCh1 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]","loop_end_position")));
+    m_pLoopOutCh2 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]","loop_end_position")));
 
 
     // Play position for each player. Used to determine which track to load next
@@ -279,7 +291,7 @@ Track::~Track()
 }
 
 void Track::appShuttingDown() {
-	
+
 	if (m_timerID != 0) {
 		killTimer(m_timerID);
 	}
@@ -946,7 +958,7 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     }
     else return; // empty filename
 
-    
+
 
     // Update score:
     pTrackInfoObject->incTimesPlayed();
@@ -978,7 +990,7 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject)
 
     // Set waveform summary display
     pTrackInfoObject->setOverviewWidget(m_pView->m_pOverviewCh1);
-    
+
     // This has to happen before the AnalyserQueue works on the track.
     pTrackInfoObject->setVisualResampleRate(m_pVisualResampleCh1->get());
 
@@ -991,14 +1003,16 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject)
 
     // Update TrackInfoObject of the helper class
     PlayerInfo::Instance().setTrackInfo(1, pTrackInfoObject);
-    
+
     //Set the cue point, if it was saved.
     m_pCuePointCh1->slotSet(pTrackInfoObject->getCuePoint());
+    m_pLoopInCh1->slotSet(-1);
+    m_pLoopOutCh1->slotSet(-1);
 
     //Seek to cue position if we're not starting at end of song and cue recall is on
     if (!bStartFromEndPos) {
         int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
-        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
+        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load.
             //Note that cueRecall == 0 corresponds to "ON", not OFF.
             float cue_point = pTrackInfoObject->getCuePoint();
             m_pBuffer1->slotControlSeekAbs(cue_point);
@@ -1016,7 +1030,7 @@ void Track::slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject)
     if (m_pTrackPlayer1) {
         m_pTrackPlayer1->setOverviewWidget(0);
         m_pTrackPlayer1->setBpmControlObject(0);
-    }    
+    }
 
     m_pTrackPlayer1 = pTrackInfoObject;
     emit(newTrackPlayer1(pTrackInfoObject));
@@ -1061,7 +1075,7 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject)
 
     // Set waveform summary display
     pTrackInfoObject->setOverviewWidget(m_pView->m_pOverviewCh2);
-    
+
     // This has to happen before the AnalyserQueue works on the track.
     pTrackInfoObject->setVisualResampleRate(m_pVisualResampleCh2->get());
 
@@ -1074,14 +1088,16 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject)
 
     // Update TrackInfoObject of the helper class
     PlayerInfo::Instance().setTrackInfo(2, pTrackInfoObject);
-    
+
     //Set the cue point, if it was saved.
     m_pCuePointCh2->slotSet(pTrackInfoObject->getCuePoint());
-    
+    m_pLoopInCh2->slotSet(-1);
+    m_pLoopOutCh2->slotSet(-1);
+
     //Seek to cue position if we're not starting at end of song and cue recall is on
     if (!bStartFromEndPos) {
         int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
-        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load. 
+        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load.
             //Note that cueRecall == 0 corresponds to "ON", not OFF.
             float cue_point = pTrackInfoObject->getCuePoint();
             m_pBuffer2->slotControlSeekAbs(cue_point);
@@ -1101,7 +1117,7 @@ void Track::slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject)
         m_pTrackPlayer2->setOverviewWidget(0);
         m_pTrackPlayer2->setBpmControlObject(0);
     }
-    
+
     m_pTrackPlayer2 = pTrackInfoObject;
     emit(newTrackPlayer2(pTrackInfoObject));
 
