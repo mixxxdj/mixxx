@@ -106,7 +106,7 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 	//      and there's no arbitrary "unsorted" view.
 	//m_pTrackCollection->addTrack(location);
 	const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-	int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+	int position = index.sibling(index.row(),selectedIndex positionColumnIndex).data().toInt();
 	m_pTrackCollection->insertTrackIntoPlaylist(location, m_iPlaylistId, position);
 	select(); //Repopulate the data model.
 }
@@ -139,7 +139,13 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
-
+    QSqlRecord sourceRecord = this->record(sourceIndex.row());
+    this->removeRows(sourceIndex.row(), 1);
+    
+    this->insertRecord(destIndex.row(), sourceRecord);
+    
+    //TODO: execute a real query to DELETE the sourceIndex.row() row from the PlaylistTracks table.
+    
 }
 
 void PlaylistTableModel::search(const QString& searchText)
