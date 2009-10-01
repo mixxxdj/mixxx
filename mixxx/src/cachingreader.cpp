@@ -230,7 +230,7 @@ Chunk* CachingReader::getChunk(int chunk_number) {
         Q_ASSERT(chunk != NULL);
 
         if (!readChunkFromFile(chunk, chunk_number)) {
-            qDebug() << "Failed to read chunk " << chunk_number;
+            //qDebug() << "Failed to read chunk " << chunk_number;
             freeChunk(chunk);
             return NULL;
         } else {
