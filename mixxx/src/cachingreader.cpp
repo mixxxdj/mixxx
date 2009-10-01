@@ -230,7 +230,7 @@ Chunk* CachingReader::getChunk(int chunk_number) {
         Q_ASSERT(chunk != NULL);
 
         if (!readChunkFromFile(chunk, chunk_number)) {
-            qDebug() << "Failed to read chunk " << chunk_number;
+            //qDebug() << "Failed to read chunk " << chunk_number;
             freeChunk(chunk);
             return NULL;
         } else {
@@ -347,6 +347,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         Q_ASSERT(samples_to_read % 2 == 0);
 
         CSAMPLE *data = current->data + chunk_offset;
+
+        // If we did not decide to read any samples from this chunk then that
+        // means we have exhausted all the samples in the song.
+        if (samples_to_read == 0) {
+            break;
+        }
 
         // TODO(rryan) do a test and see if using memcpy is faster than gcc
         // optimizing the for loop
