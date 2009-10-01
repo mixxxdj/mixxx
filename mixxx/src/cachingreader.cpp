@@ -348,6 +348,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 
         CSAMPLE *data = current->data + chunk_offset;
 
+        // If we did not decide to read any samples from this chunk then that
+        // means we have exhausted all the samples in the song.
+        if (samples_to_read == 0) {
+            break;
+        }
+
         // TODO(rryan) do a test and see if using memcpy is faster than gcc
         // optimizing the for loop
         memcpy(buffer, data, sizeof(*buffer) * samples_to_read);
