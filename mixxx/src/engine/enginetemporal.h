@@ -15,6 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+/** BIG FAT WARNING : 7/4/2009 -- Mixxx hasn't used this in ages, we just keep
+    it around for posterity. */
+
 #ifndef ENGINETEMPORAL_H
 #define ENGINETEMPORAL_H
 

@@ -33,7 +33,7 @@ class ReaderExtractWave;
 class EngineBufferScale : public QObject
 {
 public:
-    EngineBufferScale(ReaderExtractWave *_wave);
+    EngineBufferScale();
     virtual ~EngineBufferScale();
     
     /** Set base tempo, ie. normal playback speed. */
@@ -45,13 +45,12 @@ public:
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
     /** Scale buffer */
-    virtual CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase=0, unsigned long iBaseLength=0) = 0;
+    virtual CSAMPLE *scale(double playpos, 
+                           unsigned long buf_size,
+                           CSAMPLE* pBase,
+                           unsigned long iBaseLength) = 0;
     
 protected:
-    /** Pointer to ReaderExtractWave object */
-    ReaderExtractWave *wave;
-    /** Pointer to ReaderExtractWave buffer */
-    CSAMPLE *wavebuffer;
     /** Tempo and base rate */
     double m_dTempo, m_dBaseRate;
     /** Pointer to internal buffer */
