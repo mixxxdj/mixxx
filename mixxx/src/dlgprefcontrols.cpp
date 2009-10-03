@@ -30,6 +30,7 @@
 #include "widget/wnumberpos.h"
 #include "widget/wnumberbpm.h"
 #include "engine/enginebuffer.h"
+#include "engine/ratecontrol.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
 {
@@ -433,7 +434,7 @@ void DlgPrefControls::slotSetRateTempLeft(double v)
     QString str;
     str = str.setNum(v, 'f', 1);
     m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(str));
-    EngineBuffer::setTemp(v);
+    RateControl::setTemp(v);
 }
 
 void DlgPrefControls::slotSetRateTempRight(double v)
@@ -441,7 +442,7 @@ void DlgPrefControls::slotSetRateTempRight(double v)
     QString str;
     str = str.setNum(v, 'f', 1);
     m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(str));
-    EngineBuffer::setTempSmall(v);
+    RateControl::setTempSmall(v);
 }
 
 void DlgPrefControls::slotSetRatePermLeft(double v)
@@ -449,7 +450,7 @@ void DlgPrefControls::slotSetRatePermLeft(double v)
     QString str;
     str = str.setNum(v, 'f', 1);
     m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(str));
-    EngineBuffer::setPerm(v);
+    RateControl::setPerm(v);
 }
 
 void DlgPrefControls::slotSetRatePermRight(double v)
@@ -457,7 +458,7 @@ void DlgPrefControls::slotSetRatePermRight(double v)
     QString str;
     str = str.setNum(v, 'f', 1);
     m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(str));
-    EngineBuffer::setPermSmall(v);
+    RateControl::setPermSmall(v);
 }
 
 void DlgPrefControls::slotApply()

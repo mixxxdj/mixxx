@@ -9,7 +9,6 @@
 
 
 #include "mixxx.h"
-#include "reader.h"
 #include "trackinfoobject.h"
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
@@ -74,24 +73,6 @@ void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     painter.begin(this);
     
     painter.setRenderHint(QPainter::Antialiasing);
-    /*
-    double absPlaypos;
-    double bufferPlaypos;
-    
-    EngineBuffer *ourBuffer;
-
-    if(QString(m_pGroup) == QString("[Channel1]")) {
-        ourBuffer = mixxx_instance->buffer1;
-    } else {
-        ourBuffer = mixxx_instance->buffer2;
-    }
-    
-    ourBuffer->lockPlayposVars();
-    absPlaypos = ourBuffer->getAbsPlaypos();
-    bufferPlaypos = ourBuffer->getBufferPlaypos();
-    ourBuffer->unlockPlayposVars();
-    m_pWaveformRenderer->slotUpdatePlayPos(absPlaypos/ourBuffer->getReader()->getFileLength());
-    */
     m_pWaveformRenderer->draw(&painter, event);
     
     painter.end();
