@@ -283,16 +283,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Clipping
     clipping->process(m_pMaster, m_pMaster, iBufferSize);
 
-    // Add master to headphone
-    for (int i=0; i<iBufferSize; i++)
-        m_pHead[i] += m_pMaster[i]*cmaster_gain;
-
-    // Head volume and clipping
-    head_volume->process(m_pHead, m_pHead, iBufferSize);
-    head_clipping->process(m_pHead, m_pHead, iBufferSize);
-
-    int j=0;
-
     // Balance values
     float balright = 1.;
     float balleft = 1.;
@@ -308,6 +298,16 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         m_pMaster[i  ] = m_pMaster[i  ]*balleft;
         m_pMaster[i+1] = m_pMaster[i+1]*balright;
     }
+
+    // Add master to headphone
+    for (int i=0; i<iBufferSize; i++)
+        m_pHead[i] += m_pMaster[i]*cmaster_gain;
+
+    // Head volume and clipping
+    head_volume->process(m_pHead, m_pHead, iBufferSize);
+    head_clipping->process(m_pHead, m_pHead, iBufferSize);
+
+    int j=0;
 
     // moved here to take balance into account -elysion
     // Update VU meter (it does not return anything):
