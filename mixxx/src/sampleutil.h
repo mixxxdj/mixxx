@@ -29,6 +29,14 @@ class SampleUtil {
                              const CSAMPLE* pSrc2, CSAMPLE gain2,
                              int iNumSamples);
 
+    // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
+    // multiplied by gain2 plus pSrc3 multiplied by gain3
+    static void add2WithGain(CSAMPLE* pDest,
+                             const CSAMPLE* pSrc1, CSAMPLE gain1,
+                             const CSAMPLE* pSrc2, CSAMPLE gain2,
+                             const CSAMPLE* pSrc3, CSAMPLE gain3,
+                             int iNumSamples);
+
     // Copy pSrc to pDest and multiply each sample by a factor of gain.
     static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                              CSAMPLE gain, int iNumSamples);
@@ -38,6 +46,14 @@ class SampleUtil {
     static void copy2WithGain(CSAMPLE* pDest,
                               const CSAMPLE* pSrc1, CSAMPLE gain1,
                               const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              int iNumSamples);
+
+    // Copy to pDest, each sample of pSrc1 multiplied by gain1 plus pSrc2
+    // multiplied by gain2 plus pSrc3 multiplied by gain3
+    static void copy3WithGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3,
                               int iNumSamples);
 
 
@@ -59,11 +75,22 @@ class SampleUtil {
                                 const CSAMPLE* pSrc1, CSAMPLE gain1,
                                 const CSAMPLE* pSrc2, CSAMPLE gain2,
                                 int iNumSamples);
+    static void sseAdd3WithGain(CSAMPLE* pDest,
+                                const CSAMPLE* pSrc1, CSAMPLE gain1,
+                                const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                const CSAMPLE* pSrc3, CSAMPLE gain3,
+                                int iNumSamples);
+
     static void sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 CSAMPLE gain, int iNumSamples);
     static void sseCopy2WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc1, CSAMPLE gain1,
                                  const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                 int iNumSamples);
+    static void sseCopy3WithGain(CSAMPLE* pDest,
+                                 const CSAMPLE* pSrc1, CSAMPLE gain1,
+                                 const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                 const CSAMPLE* pSrc3, CSAMPLE gain3,
                                  int iNumSamples);
     static void sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
 
