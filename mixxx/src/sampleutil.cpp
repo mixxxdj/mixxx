@@ -326,5 +326,6 @@ void SampleUtil::sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc,
 }
 
 void SampleUtil::setOptimizations(bool opt) {
+    qDebug() << "Opts" << opt;
     m_sOptimizationsOn = opt;
 }
