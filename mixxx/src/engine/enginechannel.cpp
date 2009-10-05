@@ -28,7 +28,8 @@
 #include "enginetemporal.h"
 
 EngineChannel::EngineChannel(const char* group,
-                             ConfigObject<ConfigValue>* pConfig)
+                             ConfigObject<ConfigValue>* pConfig,
+                             EngineChannel::ChannelOrientation defaultOrientation)
         : m_pConfig(pConfig) {
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
@@ -38,6 +39,8 @@ EngineChannel::EngineChannel(const char* group,
     m_pVolume = new EngineVolume(ConfigKey(group, "volume"));
     m_pVUMeter = new EngineVuMeter(group);
     m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"), true);
+    m_pOrientation = new ControlObject(ConfigKey(group, "orientation"));
+    m_pOrientation->set(defaultOrientation);
 }
 
 EngineChannel::~EngineChannel() {
@@ -76,4 +79,16 @@ void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuf
 
 EngineBuffer* EngineChannel::getEngineBuffer() {
     return m_pBuffer;
+}
+
+EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
+    double dOrientation = m_pOrientation->get();
+    if (dOrientation == LEFT) {
+        return LEFT;
+    } else if (dOrientation == CENTER) {
+        return CENTER;
+    } else if (dOrientation == RIGHT) {
+        return RIGHT;
+    }
+    return CENTER;
 }

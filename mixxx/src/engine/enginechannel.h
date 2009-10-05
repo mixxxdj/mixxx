@@ -33,10 +33,19 @@ class ControlPushButton;
 
 class EngineChannel : public EngineObject {
 public:
-    EngineChannel(const char *group, ConfigObject<ConfigValue>* pConfig);
+    enum ChannelOrientation {
+        LEFT = 0,
+        CENTER,
+        RIGHT,
+    };
+
+    EngineChannel(const char *group, ConfigObject<ConfigValue>* pConfig,
+                  ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
     bool isPFL();
+    ChannelOrientation getOrientation();
+
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
@@ -45,6 +54,7 @@ public:
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pPFL;
+    ControlObject* m_pOrientation;
 
     EngineBuffer* m_pBuffer;
     EngineClipping* m_pClipping;

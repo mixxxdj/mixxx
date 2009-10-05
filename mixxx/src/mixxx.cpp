@@ -28,6 +28,7 @@
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
 #include "analyserqueue.h"
+#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
@@ -155,12 +156,21 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
 
-    EngineChannel* channel1 = new EngineChannel("[Channel1]", config);
-    EngineChannel* channel2 = new EngineChannel("[Channel2]", config);
+    EngineChannel* channel1 =
+            new EngineChannel("[Channel1]", config, EngineChannel::LEFT);
+    EngineChannel* channel2 =
+            new EngineChannel("[Channel2]", config, EngineChannel::RIGHT);
+    // EngineChannel* channel3 =
+    //         new EngineChannel("[Channel3]", config, EngineChannel::LEFT);
+    // EngineChannel* channel4 =
+    //         new EngineChannel("[Channel4]", config, EngineChannel::RIGHT);
+
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(config, "[Master]");
     m_pEngine->addChannel(channel1);
     m_pEngine->addChannel(channel2);
+    // m_pEngine->addChannel(channel3);
+    // m_pEngine->addChannel(channel4);
 
     // Initialize player device
 
@@ -798,7 +808,10 @@ void MixxxApp::slotFileLoadSongPlayer1()
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)
             m_pTrack->slotLoadPlayer1(pTrack);
+
     }
+
+
 }
 
 void MixxxApp::slotFileLoadSongPlayer2()

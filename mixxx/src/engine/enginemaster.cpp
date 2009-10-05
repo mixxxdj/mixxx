@@ -17,6 +17,7 @@
 
 #include <QDebug>
 #include <QList>
+#include <QPair>
 
 #include "controlpushbutton.h"
 #include "configobject.h"
@@ -33,6 +34,7 @@
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
+
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
@@ -153,7 +155,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     QListIterator<EngineChannel*> channel_iter(m_channels);
     QList<CSAMPLE*> pflChannels;
-    QList<CSAMPLE*> masterChannels;
+    QList<QPair<CSAMPLE*, EngineChannel::ChannelOrientation> > masterChannels;
     int channel_number = 0;
     while (channel_iter.hasNext()) {
         EngineChannel* channel = channel_iter.next();
@@ -162,7 +164,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         if (channel->isPFL()) {
             pflChannels.push_back(buffer);
         }
-        masterChannels.push_back(buffer);
+        masterChannels.push_back(QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(buffer, channel->getOrientation()));
         channel_number++;
     }
 
@@ -180,28 +182,46 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (masterChannels.size() == 0) {
         memset(m_pMaster, 0, sizeof(m_pMaster[0]) * iBufferSize);
     } else if (masterChannels.size() == 1) {
-        CSAMPLE* buffer = masterChannels[0];
+        QPair<CSAMPLE*, EngineChannel::ChannelOrientation>& channel =
+                masterChannels[0];
+        CSAMPLE* buffer = channel.first;
+        EngineChannel::ChannelOrientation orientation = channel.second;
         memcpy(m_pMaster, buffer, sizeof(m_pMaster[0]) * iBufferSize);
         // Apply gain
-        for (int i = 0; i < iBufferSize; ++i) {
-            m_pMaster[i] *= c1_gain;
+        double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
+        if (gain != 1.0f) {
+            for (int i = 0; i < iBufferSize; ++i) {
+                m_pMaster[i] *= gain;
+            }
         }
     } else if (masterChannels.size() == 2) {
-        CSAMPLE* buffer1 = masterChannels[0];
-        CSAMPLE* buffer2 = masterChannels[1];
+        QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel1 =
+                masterChannels[0];
+        QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel2 =
+                masterChannels[1];
+        CSAMPLE* buffer1 = channel1.first;
+        CSAMPLE* buffer2 = channel2.first;
+        EngineChannel::ChannelOrientation orientation1 = channel1.second;
+        EngineChannel::ChannelOrientation orientation2 = channel2.second;
+        double gain1 = gainForOrientation(orientation1, c1_gain, 1.0f, c2_gain);
+        double gain2 = gainForOrientation(orientation2, c1_gain, 1.0f, c2_gain);
+
         for (int i = 0; i < iBufferSize; ++i) {
-            m_pMaster[i] = (c1_gain * buffer1[i] + c2_gain * buffer2[i]) / 2.0f;
+            m_pMaster[i] = gain1 * buffer1[i] + gain2 * buffer2[i];
         }
     } else {
-        QListIterator<CSAMPLE*> master_iter(masterChannels);
+        QListIterator<QPair<CSAMPLE*, EngineChannel::ChannelOrientation> > master_iter(masterChannels);
         memset(m_pMaster, 0, sizeof(m_pMaster[0]) * iBufferSize);
         for (int i = 0; i < iBufferSize; ++i) {
             master_iter.toFront();
             while(master_iter.hasNext()) {
-                CSAMPLE* buffer = master_iter.next();
-                m_pMaster[i] += buffer[i];
+                QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel =
+                        master_iter.next();
+                CSAMPLE* buffer = channel.first;
+                EngineChannel::ChannelOrientation orientation = channel.second;
+                double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
+                m_pMaster[i] += buffer[i] * gain;
             }
-            m_pMaster[i] /= masterChannels.size();
         }
     }
 
@@ -253,23 +273,26 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //          << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
 
+    // Add master to headphone with appropriate gain
+    for (int i = 0; i < iBufferSize; ++i) {
+        m_pHead[i] += m_pMaster[i]*cmaster_gain;
+    }
+
     if (pflChannels.size() == 0) {
-        memset(m_pHead, 0, sizeof(m_pHead[0]) * iBufferSize);
+        // Do nothing
     } else if (pflChannels.size() == 1) {
-        memcpy(m_pHead, pflChannels[0],
-               sizeof(m_pHead[0]) * iBufferSize);
         // Apply gain TODO(XXX) SSE
+        CSAMPLE* buffer = pflChannels[0];
         for (int i = 0; i < iBufferSize; ++i) {
-            m_pHead[i] *= chead_gain;
+            m_pHead[i] += buffer[i]*chead_gain;
         }
     } else if (pflChannels.size() == 2) {
         CSAMPLE* buffer1 = pflChannels[0];
         CSAMPLE* buffer2 = pflChannels[1];
         for (int i = 0; i < iBufferSize; ++i) {
-            m_pHead[i] = (buffer1[i]*chead_gain + buffer2[i]*chead_gain) / 2.0f;
+            m_pHead[i] += buffer1[i]*chead_gain + buffer2[i]*chead_gain;
         }
     } else {
-        memset(m_pHead, 0, sizeof(m_pHead[0]) * iBufferSize);
         QListIterator<CSAMPLE*> pfl_iter(pflChannels);
         // TODO(XXX) SSE
         for (int i = 0; i < iBufferSize; ++i) {
@@ -279,11 +302,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 m_pHead[i] += buffer[i];
             }
         }
-    }
-
-    // Add master to headphone
-    for (int i = 0; i < iBufferSize; ++i) {
-        m_pHead[i] += m_pMaster[i]*cmaster_gain;
     }
 
     // Head volume and clipping
@@ -308,4 +326,17 @@ const CSAMPLE* EngineMaster::getChannelBuffer(int i) {
         return m_channelBuffers[i];
     }
     return NULL;
+}
+
+// static
+double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                                        double leftGain,
+                                        double centerGain,
+                                        double rightGain) {
+    if (orientation == EngineChannel::LEFT) {
+        return leftGain;
+    } else if (orientation == EngineChannel::RIGHT) {
+        return rightGain;
+    }
+    return centerGain;
 }
