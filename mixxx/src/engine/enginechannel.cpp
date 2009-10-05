@@ -16,6 +16,8 @@
 ***************************************************************************/
 
 #include "controlpushbutton.h"
+#include "enginebuffer.h"
+#include "enginevinylsoundemu.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
 #include "enginepregain.h"
@@ -25,41 +27,53 @@
 #include "enginefilteriir.h"
 #include "enginetemporal.h"
 
-EngineChannel::EngineChannel(const char * group)
-{
-    // Pregain:
-    pregain = new EnginePregain(group);
-
-    // Filters:
-    filter = new EngineFilterBlock(group);
-
-    // Clipping:
-    clipping = new EngineClipping(group);
-
-    // PFL button
-    pfl = new ControlPushButton(ConfigKey(group, "pfl"), true);
+EngineChannel::EngineChannel(const char* group,
+                             ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig) {
+    m_pPregain = new EnginePregain(group);
+    m_pFilter = new EngineFilterBlock(group);
+    m_pClipping = new EngineClipping(group);
+    m_pBuffer = new EngineBuffer(group, pConfig);
+    m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
+    m_pVolume = new EngineVolume(ConfigKey(group, "volume"));
+    m_pVUMeter = new EngineVuMeter(group);
+    m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"), true);
 }
 
-EngineChannel::~EngineChannel()
-{
-    delete pregain;
-    delete filter;
-    delete clipping;
-    delete pfl;
+EngineChannel::~EngineChannel() {
+    delete m_pBuffer;
+    delete m_pClipping;
+    delete m_pFilter;
+    delete m_pPregain;
+    delete m_pVinylSoundEmu;
+    delete m_pVolume;
+    delete m_pVUMeter;
+    delete m_pPFL;
 }
 
-ControlPushButton * EngineChannel::getPFL()
-{
-    return pfl;
+bool EngineChannel::isPFL() {
+    // TODO(XXX) replace with auto-update from slot
+    return m_pPFL->get() == 1.0;
 }
 
-void EngineChannel::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
-{
-    pregain->process(pIn, pOut, iBufferSize);
-    filter->process(pOut, pOut, iBufferSize);
-    clipping->process(pOut, pOut, iBufferSize);
+void EngineChannel::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize) {
+    // Process the raw audio
+    m_pBuffer->process(0, pOut, iBufferSize);
+    // Emulate vinyl sounds
+    m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+    // Apply pregain
+    m_pPregain->process(pIn, pOut, iBufferSize);
+    // Filter the channel with EQs
+    m_pFilter->process(pOut, pOut, iBufferSize);
+    // TODO(XXX) LADSPA
+    // Apply clipping
+    m_pClipping->process(pOut, pOut, iBufferSize);
+    // Update VU meter
+    m_pVUMeter->process(pOut, pOut, iBufferSize);
+    // Apply channel volume
+    m_pVolume->process(pOut, pOut, iBufferSize);
 }
 
-void EngineChannel::setEngineBuffer(EngineBuffer *pEngineBuffer) {
-    Q_ASSERT(pEngineBuffer);
+EngineBuffer* EngineChannel::getEngineBuffer() {
+    return m_pBuffer;
 }

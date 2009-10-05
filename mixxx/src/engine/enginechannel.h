@@ -2,8 +2,8 @@
                           enginechannel.h  -  description
                              -------------------
     begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    copyright            : (C) 2002 by
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,6 +20,7 @@
 
 #include "engineobject.h"
 
+class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
@@ -27,27 +28,31 @@ class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
+class EngineVinylSoundEmu;
 class ControlPushButton;
 
-/**
-  *@author 
-  */
-
-class EngineChannel : public EngineObject  
-{
+class EngineChannel : public EngineObject {
 public:
-    EngineChannel(const char *group);
-    ~EngineChannel();
-    void notify(double) {};
-    ControlPushButton *getPFL();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void setEngineBuffer(EngineBuffer* pEngineBuffer);
-private:
+    EngineChannel(const char *group, ConfigObject<ConfigValue>* pConfig);
+    virtual ~EngineChannel();
 
-    EnginePregain *pregain;
-    EngineFilterBlock *filter;
-    EngineClipping *clipping;
-    ControlPushButton *pfl;
+    bool isPFL();
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+
+    // TODO(XXX) This hack needs to be removed.
+    EngineBuffer* getEngineBuffer();
+
+private:
+    ConfigObject<ConfigValue>* m_pConfig;
+    ControlPushButton* m_pPFL;
+
+    EngineBuffer* m_pBuffer;
+    EngineClipping* m_pClipping;
+    EngineFilterBlock* m_pFilter;
+    EnginePregain* m_pPregain;
+    EngineVinylSoundEmu* m_pVinylSoundEmu;
+    EngineVolume* m_pVolume;
+    EngineVuMeter* m_pVUMeter;
 };
 
 #endif
