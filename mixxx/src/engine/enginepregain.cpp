@@ -40,7 +40,7 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     fGain = fGain/2;
 
     // SampleUtil deals with aliased buffers and gains of 1 or 0.
-    SampleUtil::addWithGain(pOutput, pIn, fGain, iBufferSize);
+    SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
 
     // if (fGain == 1.)
     // {
