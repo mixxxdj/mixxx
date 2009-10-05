@@ -13,6 +13,11 @@ class SampleUtil {
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, int iNumSamples);
 
+    // Apply a different gain to every other sample.
+    static void applyAlternatingGain(CSAMPLE* pBuffer,
+                                     CSAMPLE gain1, CSAMPLE gain2,
+                                     int iNumSamples);
+
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                             CSAMPLE gain, int iNumSamples);
@@ -39,6 +44,29 @@ class SampleUtil {
     // Convert a buffer of SAMPLEs to a buffer of CSAMPLEs. Does not work
     // in-place! pDest and pSrc must not be aliased.
     static void convert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
+
+    static void setOptimizations(bool opt);
+
+  private:
+    static bool m_sOptimizationsOn;
+    static void sseApplyGain(CSAMPLE* pBuffer, CSAMPLE gain, int iNumSamples);
+    static void sseApplyAlternatingGain(CSAMPLE* pBuffer,
+                                        CSAMPLE gain1, CSAMPLE gain2,
+                                        int iNumSamples);
+    static void sseAddWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                               CSAMPLE gain, int iNumSamples);
+    static void sseAdd2WithGain(CSAMPLE* pDest,
+                                const CSAMPLE* pSrc1, CSAMPLE gain1,
+                                const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                int iNumSamples);
+    static void sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                CSAMPLE gain, int iNumSamples);
+    static void sseCopy2WithGain(CSAMPLE* pDest,
+                                 const CSAMPLE* pSrc1, CSAMPLE gain1,
+                                 const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                 int iNumSamples);
+    static void sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
+
 
 };
 
