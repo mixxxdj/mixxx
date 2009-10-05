@@ -17,6 +17,7 @@
 #include "enginevolume.h"
 #include "controllogpotmeter.h"
 #include "configobject.h"
+#include "sampleutil.h"
 
 /*----------------------------------------------------------------
    Volume effect.
@@ -47,7 +48,8 @@ void EngineVolume::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
     }
     else
     {
-        for (int i=0; i<iBufferSize; ++i)
-            pOutput[i] = pIn[i]*volume;
+        SampleUtil::copyWithGain(pOutput, pIn, volume, iBufferSize);
+        // for (int i=0; i<iBufferSize; ++i)
+        //     pOutput[i] = pIn[i]*volume;
     }
 }

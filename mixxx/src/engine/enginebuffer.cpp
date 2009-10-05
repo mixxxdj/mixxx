@@ -606,6 +606,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
+        // TODO(XXX) SSE
         while (i<iLen)
         {
             pOutput[i] = fStep*(iLen-(i+1));
@@ -613,6 +614,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         }
     }
 
+    // TODO(XXX) memset
     // Reset rest of buffer
     while (i<iBufferSize)
     {

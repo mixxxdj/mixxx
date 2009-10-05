@@ -370,6 +370,7 @@ sources = Split("""
 		widget/wpixmapstore.cpp
 				widget/hexspinbox.cpp
 
+                sampleutil.cpp
                 mathstuff.cpp
                 rtthread.cpp
                 windowkaiser.cpp
