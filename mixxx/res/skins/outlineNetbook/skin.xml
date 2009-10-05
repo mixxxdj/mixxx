@@ -17,7 +17,7 @@
      <Amount>-50</Amount>
     </Add>
    </Filters>
-  </Scheme> 
+  </Scheme>
   <Scheme>
    <Name>5pm (Classic Mixxx)</Name>
    <Filters>
@@ -138,7 +138,7 @@
   <State>
    <Number>0</Number>
    <Pressed>loopin-on-Ch1.png</Pressed>
-   <Unpressed>loopin-off-Ch1.png</Unpressed>
+   <Unpressed>loopin-off.png</Unpressed>
   </State>
   <Pos>50,92</Pos>
   <Connection>
@@ -159,7 +159,7 @@
   <State>
    <Number>0</Number>
    <Pressed>loopin-on-Ch2.png</Pressed>
-   <Unpressed>loopin-off-Ch2.png</Unpressed>
+   <Unpressed>loopin-off.png</Unpressed>
   </State>
   <Pos>953,92</Pos>
   <Connection>
@@ -181,7 +181,7 @@
   <State>
    <Number>0</Number>
    <Pressed>loopout-on-Ch1.png</Pressed>
-   <Unpressed>loopout-off-Ch1.png</Unpressed>
+   <Unpressed>loopout-off.png</Unpressed>
   </State>
   <Pos>50,120</Pos>
   <Connection>
@@ -202,7 +202,7 @@
   <State>
    <Number>0</Number>
    <Pressed>loopout-on-Ch2.png</Pressed>
-   <Unpressed>loopout-off-Ch2.png</Unpressed>
+   <Unpressed>loopout-off.png</Unpressed>
   </State>
   <Pos>953,120</Pos>
   <Connection>
@@ -223,7 +223,7 @@
   <State>
    <Number>0</Number>
    <Pressed>reloop-on-Ch1.png</Pressed>
-   <Unpressed>reloop-off-Ch1.png</Unpressed>
+   <Unpressed>reloop-off.png</Unpressed>
   </State>
   <Pos>50,148</Pos>
   <Connection>
@@ -244,7 +244,7 @@
   <State>
    <Number>0</Number>
    <Pressed>reloop-on-Ch2.png</Pressed>
-   <Unpressed>reloop-off-Ch2.png</Unpressed>
+   <Unpressed>reloop-off.png</Unpressed>
   </State>
   <Pos>953,148</Pos>
   <Connection>
