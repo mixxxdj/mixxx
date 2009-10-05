@@ -187,6 +187,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         buffer_index += fabs(rate_add);
     }
     // If we broke out of the loop, zero the remaining samples
+    // TODO(XXX) memset
     for (; i < buf_size; i += 2) {
         buffer[i] = 0.0f;
         buffer[i+1] = 0.0f;
