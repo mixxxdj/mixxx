@@ -18,7 +18,8 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
+#include "engine/enginechannel.h"
 
 class EngineBuffer;
 class EngineVolume;
@@ -56,6 +57,11 @@ public:
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
+
+    static double gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                              double leftGain,
+                              double centerGain,
+                              double rightGain);
 
   private:
     QList<EngineChannel*> m_channels;
