@@ -58,8 +58,10 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer,
                                       CSAMPLE gain1, CSAMPLE gain2,
                                       int iNumSamples) {
     Q_ASSERT(iNumSamples % 2 == 0);
-    if (gain1 == 1.0f && gain2 == 1.0f)
-        return;
+    // This handles gain1 == 1.0 && gain2 == 1.0f as well.
+    if (gain1 == gain2) {
+        return applyGain(pBuffer, gain1, iNumSamples);
+    }
     if (m_sOptimizationsOn)
         return sseApplyAlternatingGain(pBuffer, gain1, gain2, iNumSamples);
 
@@ -196,6 +198,75 @@ void SampleUtil::sseAdd2WithGain(CSAMPLE* pDest,
 #endif
 }
 
+// static
+void SampleUtil::add3WithGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              int iNumSamples) {
+    if (gain1 == 0.0f) {
+        return add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, iNumSamples);
+    } else if (gain2 == 0.0f) {
+        return add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, iNumSamples);
+    } else if (gain3 == 0.0f) {
+        return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
+    }
+
+    if (m_sOptimizationsOn)
+        return sseAdd3WithGain(pDest, pSrc1, gain1, pSrc2, gain2,
+                               pSrc3, gain3, iNumSamples);
+
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
+    }
+}
+
+// static
+void SampleUtil::sseAdd3WithGain(CSAMPLE* pDest,
+                                 const CSAMPLE* pSrc1, CSAMPLE gain1,
+                                 const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                 const CSAMPLE* pSrc3, CSAMPLE gain3,
+                                 int iNumSamples) {
+#ifdef __SSE__
+    __m128 vSrc1Samples;
+    __m128 vSrc2Samples;
+    __m128 vSrc3Samples;
+    __m128 vDestSamples;
+    __m128 vGain1 = _mm_set1_ps(gain1);
+    __m128 vGain2 = _mm_set1_ps(gain2);
+    __m128 vGain3 = _mm_set1_ps(gain3);
+    while (iNumSamples >= 4) {
+        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
+        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
+        vSrc3Samples = _mm_load_ps(pSrc3);
+        vSrc3Samples = _mm_mul_ps(vSrc3Samples, vGain3);
+        vDestSamples = _mm_load_ps(pDest);
+        vDestSamples = _mm_add_ps(vDestSamples, vSrc1Samples);
+        vDestSamples = _mm_add_ps(vDestSamples, vSrc2Samples);
+        vDestSamples = _mm_add_ps(vDestSamples, vSrc3Samples);
+        _mm_store_ps(pDest, vDestSamples);
+        iNumSamples -= 4;
+        pDest += 4;
+        pSrc1 += 4;
+        pSrc2 += 4;
+        pSrc3 += 4;
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        *pDest = *pDest + *pSrc1 * gain1 + *pSrc2 * gain2 + *pSrc3 * gain3;
+        pDest++;
+        pSrc1++;
+        pSrc2++;
+        pSrc3++;
+        iNumSamples--;
+    }
+#endif
+}
+
 
 // static
 void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -210,8 +281,7 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     if (gain == 0.0f) {
         memset(pDest, 0, sizeof(pDest[0]) * iNumSamples);
         return;
-    }
-    if (m_sOptimizationsOn) {
+    }    if (m_sOptimizationsOn) {
         return sseCopyWithGain(pDest, pSrc, gain, iNumSamples);
     }
 
@@ -305,6 +375,74 @@ void SampleUtil::sseCopy2WithGain(CSAMPLE* pDest,
 #endif
 }
 
+// static
+void SampleUtil::copy3WithGain(CSAMPLE* pDest,
+                               const CSAMPLE* pSrc1, CSAMPLE gain1,
+                               const CSAMPLE* pSrc2, CSAMPLE gain2,
+                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                               int iNumSamples) {
+    if (gain1 == 0.0f) {
+        return copy2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, iNumSamples);
+    }
+    if (gain2 == 0.0f) {
+        return copy2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, iNumSamples);
+    }
+    if (gain3 == 0.0f) {
+        return copy2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
+    }
+    if (m_sOptimizationsOn) {
+        return sseCopy3WithGain(pDest, pSrc1, gain1, pSrc2, gain2,
+                                pSrc3, gain3, iNumSamples);
+    }
+
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
+    }
+}
+
+// static
+void SampleUtil::sseCopy3WithGain(CSAMPLE* pDest,
+                                  const CSAMPLE* pSrc1, CSAMPLE gain1,
+                                  const CSAMPLE* pSrc2, CSAMPLE gain2,
+                                  const CSAMPLE* pSrc3, CSAMPLE gain3,
+                                  int iNumSamples) {
+#ifdef __SSE__
+    __m128 vSrc1Samples;
+    __m128 vSrc2Samples;
+    __m128 vSrc3Samples;
+    __m128 vGain1 = _mm_set1_ps(gain1);
+    __m128 vGain2 = _mm_set1_ps(gain2);
+    __m128 vGain3 = _mm_set1_ps(gain3);
+    while (iNumSamples >= 4) {
+        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
+        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
+        vSrc3Samples = _mm_load_ps(pSrc3);
+        vSrc3Samples = _mm_mul_ps(vSrc3Samples, vGain3);
+
+        vSrc1Samples = _mm_add_ps(vSrc1Samples, vSrc2Samples);
+        vSrc1Samples = _mm_add_ps(vSrc1Samples, vSrc3Samples);
+        _mm_store_ps(pDest, vSrc1Samples);
+        iNumSamples -= 4;
+        pDest += 4;
+        pSrc1 += 4;
+        pSrc2 += 4;
+        pSrc3 += 4;
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        *pDest = *pSrc1 * gain1 + *pSrc2 * gain2 + *pSrc3 * gain3;
+        pDest++;
+        pSrc1++;
+        pSrc2++;
+        pSrc3++;
+        iNumSamples--;
+    }
+#endif
+}
 
 // static
 void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
