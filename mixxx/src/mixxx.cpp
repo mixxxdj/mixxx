@@ -27,8 +27,9 @@
 #include "controlnull.h"
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
-#include "engine/enginebuffer.h"
 #include "analyserqueue.h"
+#include "engine/enginemaster.h"
+#include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "track.h"
 #include "trackcollection.h"
@@ -154,22 +155,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
 
-    // Init buffers/readers
-    buffer1 = new EngineBuffer("[Channel1]", config);
-    buffer2 = new EngineBuffer("[Channel2]", config);
-    buffer1->setOtherEngineBuffer(buffer2);
-    buffer2->setOtherEngineBuffer(buffer1);
-
-    // Starting channels:
-    channel1 = new EngineChannel("[Channel1]");
-    channel2 = new EngineChannel("[Channel2]");
-
+    EngineChannel* channel1 = new EngineChannel("[Channel1]", config);
+    EngineChannel* channel2 = new EngineChannel("[Channel2]", config);
     // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
+    m_pEngine = new EngineMaster(config, "[Master]");
+    m_pEngine->addChannel(channel1);
+    m_pEngine->addChannel(channel2);
 
     // Initialize player device
 
-    soundmanager = new SoundManager(config, master);
+    soundmanager = new SoundManager(config, m_pEngine);
     soundmanager->queryDevices();
 
     // Find path of skin
@@ -199,7 +194,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //move(10,10);
     // Call inits to invoke all other construction parts
 
-    view=new MixxxView(frame, kbdconfig, qSkinPath, config);
+    view = new MixxxView(frame, kbdconfig, qSkinPath, config);
 
     // TODO rryan : Move this to WaveformViewerFactory or something.
     /*
@@ -238,12 +233,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
 
+
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")),
                          view,
                          config,
-                         buffer1,
-                         buffer2,
+                         channel1->getEngineBuffer(),
+                         channel2->getEngineBuffer(),
                          AnalyserQueue::createDefaultAnalyserQueue(config));
 
     //WTreeItem::setTrack(m_pTrack);
@@ -306,10 +302,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         m_pTrack->slotLoadPlayer2(args.qlMusicFiles.at(2));
 #endif
 
-    // Initialize visualization of temporal effects
-    channel1->setEngineBuffer(buffer1);
-    channel2->setEngineBuffer(buffer2);
-
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif
@@ -369,17 +361,8 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
-    qDebug() << "delete master, " << qTime.elapsed();
-    delete master;
-    qDebug() << "delete channel1, " << qTime.elapsed();
-    delete channel1;
-    qDebug() << "delete channel2, " << qTime.elapsed();
-    delete channel2;
-
-    qDebug() << "delete buffer1, " << qTime.elapsed();
-    delete buffer1;
-    qDebug() << "delete buffer2, " << qTime.elapsed();
-    delete buffer2;
+    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    delete m_pEngine;
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
@@ -395,8 +378,6 @@ MixxxApp::~MixxxApp()
     delete m_pTrack;
 
     delete prefDlg;
-
-    //   delete m_pBpmDetector;
 
     delete frame;
 

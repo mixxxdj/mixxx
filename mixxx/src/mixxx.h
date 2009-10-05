@@ -17,6 +17,7 @@
 
 #ifndef MIXXX_H
 #define MIXXX_H
+
 // include files for QT
 #include <qaction.h>
 #include <qmenubar.h>
@@ -30,7 +31,6 @@
 #include <qapplication.h>
 //Added by qt3to4:
 #include <QFrame>
-#include <vector>
 #include <qstringlist.h>
 
 #ifdef QT3_SUPPORT
@@ -48,9 +48,6 @@
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
-#include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
-#include "engine/enginemaster.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
 #include "trackplaylist.h"
@@ -62,7 +59,7 @@
 #include "script/scriptengine.h"
 #endif
 
-class WVisual;
+class EngineMaster;
 class Track;
 class TrackInfoObject;
 class PlayerProxy;
@@ -142,13 +139,16 @@ class MixxxApp : public QMainWindow
     QFrame *frame;
 
     QApplication *app;
-    EngineObject *engine;
-    EngineBuffer *buffer1, *buffer2;
 
-    EngineChannel *channel1, *channel2;
-    EngineMaster *master;
+    // The mixing engine.
+    EngineMaster *m_pEngine;
+
+    // The sound manager
     SoundManager *soundmanager;
+
+    // The midi subsystem
     MidiObject *midi;
+
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
     /** Pointer to active keyboard configuration */
