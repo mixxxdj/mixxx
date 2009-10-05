@@ -31,7 +31,7 @@ class SampleUtil {
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2 plus pSrc3 multiplied by gain3
-    static void add2WithGain(CSAMPLE* pDest,
+    static void add3WithGain(CSAMPLE* pDest,
                              const CSAMPLE* pSrc1, CSAMPLE gain1,
                              const CSAMPLE* pSrc2, CSAMPLE gain2,
                              const CSAMPLE* pSrc3, CSAMPLE gain3,
