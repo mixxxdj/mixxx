@@ -682,6 +682,110 @@ bool SampleUtil::sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
     return clamped;
 }
 
+// static
+void SampleUtil::interleaveBuffer(CSAMPLE* pDest,
+                                  const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                  int iNumSamples) {
+    if (m_sOptimizationsOn) {
+        return sseInterleaveBuffer(pDest, pSrc1, pSrc2, iNumSamples);
+    }
+
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[2*i] = pSrc1[i];
+        pDest[2*i+1] = pSrc2[i];
+    }
+}
+
+// static
+void SampleUtil::sseInterleaveBuffer(CSAMPLE* pDest,
+                                     const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                     int iNumSamples) {
+#ifdef __SSE__
+    __m128 vSrc1Samples;
+    __m128 vSrc2Samples;
+    __m128 vLow;
+    __m128 vHigh;
+    while (iNumSamples >= 4) {
+        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc2Samples = _mm_load_ps(pSrc2);
+        // vSrc1Samples is l1,l2,l3,l4
+        // vSrc2Samples is r1,r2,r3,r4
+        vLow = _mm_unpacklo_ps(vSrc1Samples, vSrc2Samples);
+        // vLow is l1,r1,l2,r2
+        vHigh = _mm_unpackhi_ps(vSrc1Samples, vSrc2Samples);
+        // vHigh is l3,r3,l4,r4
+        _mm_store_ps(pDest, vLow);
+        _mm_store_ps(pDest+4, vHigh);
+        iNumSamples -= 4;
+        pSrc1 += 4;
+        pSrc2 += 4;
+        pDest += 8;
+    }
+    while (iNumSamples > 0) {
+        *pDest++ = *pSrc1++;
+        *pDest++ = *pSrc2++;
+        iNumSamples--;
+    }
+#endif
+}
+
+
+// static
+void SampleUtil::deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
+                                  const CSAMPLE* pSrc, int iNumSamples) {
+    if (m_sOptimizationsOn) {
+        return sseDeinterleaveBuffer(pDest1, pDest2, pSrc, iNumSamples);
+    }
+
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest1[i] = pSrc[i*2];
+        pDest2[i] = pSrc[i*2+1];
+    }
+}
+
+// static
+void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
+                                       const CSAMPLE* pSrc, int iNumSamples) {
+#ifdef __SSE__
+    __m128 vSrc1Samples;
+    __m128 vSrc2Samples;
+    __m128 vDst1Samples;
+    __m128 vDst2Samples;
+    while (iNumSamples >= 4) {
+        vSrc1Samples = _mm_load_ps(pSrc);
+        vSrc2Samples = _mm_load_ps(pSrc+4);
+        // vSrc1Samples is l1,r1,l2,r2
+        // vSrc2Samples is l3,r3,l4,r4
+
+        // First shuffle the middle elements of both.
+        vSrc1Samples = _mm_shuffle_ps(vSrc1Samples, vSrc1Samples,
+                                      _MM_SHUFFLE(0, 2, 1, 3));
+        vSrc2Samples = _mm_shuffle_ps(vSrc2Samples, vSrc2Samples,
+                                      _MM_SHUFFLE(0, 2, 1, 3));
+        // vSrc1Samples is now l1,l2,r1,r2
+        // vSrc2Samples is now l3,l4,r3,r4
+
+        // Now move the low half of src2 into the high of src1 to make dst1. To
+        // make dst2, move the high half of src1 into the low half of src2.
+        vDst1Samples = _mm_movelh_ps(vSrc1Samples, vSrc2Samples);
+        vDst2Samples = _mm_movehl_ps(vSrc2Samples, vSrc1Samples);
+        // vDst1Samples is now l1,l2,l3,l4
+        // vDst2Samples is now r1,r2,r3,r4
+
+        _mm_store_ps(pDest1, vDst1Samples);
+        _mm_store_ps(pDest2, vDst2Samples);
+        iNumSamples -= 4;
+        pSrc += 8;
+        pDest1 += 4;
+        pDest2 += 4;
+    }
+    while (iNumSamples > 0) {
+        *pDest1++ = *pSrc++;
+        *pDest2++ = *pSrc++;
+        iNumSamples--;
+    }
+#endif
+}
 
 void SampleUtil::setOptimizations(bool opt) {
     qDebug() << "Opts" << opt;
