@@ -684,19 +684,20 @@ void MidiMapping::clearPreset() {
 #ifdef __MIDISCRIPT__
     //This sucks, put this code inside MidiScriptEngine instead of here,
     // and just ask MidiScriptEngine to spit it out for us.
-    qDebug() << "MidiMapping: Writing script block!";
+//     qDebug() << "MidiMapping: Writing script block!";
     
     QDomElement scriptFiles = doc.createElement("scriptfiles");
     controller.appendChild(scriptFiles);
     
     
     for (int i = 0; i < m_pScriptFileNames.count(); i++) {
-        qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
+//         qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
         QString filename = m_pScriptFileNames[i];
         
         
         //Don't need to write anything for the required mapping file.
         if (filename != REQUIRED_MAPPING_FILE) {
+            qDebug() << "MidiMapping: writing script block for" << filename;
             QString functionPrefix = m_pScriptFunctionPrefixes[i];
             QDomElement scriptFile = doc.createElement("file");
             
