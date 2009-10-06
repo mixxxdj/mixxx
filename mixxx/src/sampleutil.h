@@ -62,7 +62,6 @@ class SampleUtil {
                               const CSAMPLE* pSrc3, CSAMPLE gain3,
                               int iNumSamples);
 
-
     // Convert a buffer of SAMPLEs to a buffer of CSAMPLEs. Does not work
     // in-place! pDest and pSrc must not be aliased.
     static void convert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
