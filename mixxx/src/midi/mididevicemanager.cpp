@@ -120,7 +120,7 @@ void MidiDeviceManager::queryDevices()
         if (deviceInfo->input) deviceDirectionString="Input";
         if (deviceInfo->output) deviceDirectionString="Output";
         
-        qDebug() << "Found" << deviceDirectionString << "device" << deviceInfo->name << "#" << i;
+        qDebug() << "Found" << deviceDirectionString << "device" << "#" << i << deviceInfo->name;
         if (deviceInfo->output) unassignedOutputDevices[i] = deviceInfo->name;
         
         //If we found an input device
@@ -145,7 +145,7 @@ void MidiDeviceManager::queryDevices()
                     
                     unassignedOutputDevices.remove(outputDevIndex);
                     
-                    qDebug() << "   Linking to output MIDI device" << outputName << "#" << outputDevIndex;
+                    qDebug() << "   Linking to output MIDI device #" << outputDevIndex << outputName;
                     break;
                 }
             }

@@ -574,6 +574,7 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
         return false;
     
     // Add the code we evaluated to our index
+    qDebug() << "MidiScriptEngine: Loading" << filename;
     generateScriptFunctions(scriptCode);
 
     return true;
