@@ -448,8 +448,7 @@ void SampleUtil::sseCopy3WithGain(CSAMPLE* pDest,
 void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
                          int iNumSamples) {
     if (m_sOptimizationsOn) {
-        // Not done yet
-        //return sseConvert(pDest, pSrc, iNumSamples);
+        return sseConvert(pDest, pSrc, iNumSamples);
     }
 
     for (int i = 0; i < iNumSamples; ++i) {
@@ -460,8 +459,229 @@ void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
 // static
 void SampleUtil::sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc,
                             int iNumSamples) {
-    // TODO(XXX)
+#ifdef __SSE__
+    __m64 vSrcSamples;
+    __m128 vDestSamples;
+    while (iNumSamples >= 4) {
+        vSrcSamples = *((__m64*)pSrc); // ????
+        vDestSamples = _mm_cvtpi16_ps(vSrcSamples);
+        _mm_store_ps(pDest, vDestSamples);
+        iNumSamples -= 4;
+        pDest += 4;
+        pSrc += 4;
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        *pDest = *pSrc;
+        pDest++;
+        pSrc++;
+        iNumSamples--;
+    }
+#endif
 }
+
+// static
+void SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+                                  const CSAMPLE* pBuffer, int iNumSamples) {
+    Q_ASSERT(iNumSamples % 2 == 0);
+    if (m_sOptimizationsOn) {
+        return sseSumAbsPerChannel(pfAbsL, pfAbsR, pBuffer, iNumSamples);
+    }
+
+    CSAMPLE fAbsL = 0.0f;
+    CSAMPLE fAbsR = 0.0f;
+
+    for (int i = 0; i < iNumSamples/2; ++i) {
+        fAbsL += fabs(pBuffer[i*2]);
+        fAbsR += fabs(pBuffer[i*2+1]);
+    }
+
+    *pfAbsL = fAbsL;
+    *pfAbsR = fAbsR;
+}
+
+void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+                                     const CSAMPLE* pBuffer, int iNumSamples) {
+#ifdef __SSE__
+    CSAMPLE fAbsL = 0.0f;
+    CSAMPLE fAbsR = 0.0f;
+
+    __m128 vSrcSamples;
+    __m128 vSum = _mm_setzero_ps();
+    // This mask will clear the sign bit of a float if ANDed
+    __m128 vSignMask = _mm_set1_ps(0x7fffffff);
+
+    while (iNumSamples >= 4) {
+        vSrcSamples = _mm_load_ps(pBuffer);
+        vSrcSamples = _mm_and_ps(vSrcSamples, vSignMask);
+        vSum = _mm_add_ps(vSum, vSrcSamples);
+        iNumSamples -= 4;
+        pBuffer += 4;
+    }
+    CSAMPLE result[4]; // TODO(XXX) alignment
+    _mm_store_ps(result, vSum);
+    fAbsL = result[0] + result[2];
+    fAbsR = result[1] + result[3];
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples >= 2) {
+        fAbsL += fabs(*pBuffer++);
+        fAbsR += fabs(*pBuffer++);
+        iNumSamples -= 2;
+    }
+
+    *pfAbsL = fAbsL;
+    *pfAbsR = fAbsR;
+#endif
+}
+
+// static
+bool SampleUtil::isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
+                                const CSAMPLE* pBuffer, int iNumSamples) {
+    if (m_sOptimizationsOn) {
+        //return sseIsOutsideRange(fMax, fMin, pBuffer, iNumSamples);
+    }
+
+    bool clamped = false;;
+    for (int i = 0; i < iNumSamples; ++i) {
+        CSAMPLE sample = pBuffer[i];
+        if (sample > fMax) {
+            clamped = true;
+        } else if (sample < fMin) {
+            clamped = true;
+        }
+    }
+    return clamped;
+}
+
+// static
+bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
+                                   const CSAMPLE* pBuffer, int iNumSamples) {
+    bool outside = false;
+#ifdef __SSE__
+    __m128 vSrcSamples;
+    __m128 vClamped = _mm_setzero_ps();
+    __m128 vMax = _mm_set1_ps(fMax);
+    __m128 vMin = _mm_set1_ps(fMin);
+    while (iNumSamples >= 4) {
+        vSrcSamples = _mm_load_ps(pBuffer);
+        vClamped = _mm_or_ps(vClamped, _mm_cmplt_ps(vSrcSamples, vMin));
+        vClamped = _mm_or_ps(vClamped, _mm_cmpgt_ps(vSrcSamples, vMax));
+        iNumSamples -= 4;
+        pBuffer += 4;
+    }
+    CSAMPLE clamp[4]; // TODO(XXX) alignment
+    _mm_store_ps(clamp, vClamped);
+    if (clamp[0] != 0 || clamp[1] != 0 ||
+        clamp[2] != 0 || clamp[3] != 0) {
+        outside = true;
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        CSAMPLE sample = *pBuffer;
+        if (sample > fMax) {
+            outside = true;
+        } else if (sample < fMin) {
+            outside = true;
+        }
+        pBuffer++;
+        iNumSamples--;
+    }
+#endif
+    return outside;
+}
+
+// static
+bool SampleUtil::copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
+                                 CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                 int iNumSamples) {
+    if (m_sOptimizationsOn) {
+        //return sseClampBuffer(fMax, fMin, pSrc, pDest, iNumSamples);
+    }
+
+    bool clamped = false;
+    if (pSrc == pDest) {
+        for (int i = 0; i < iNumSamples; ++i) {
+            CSAMPLE sample = pSrc[i];
+            if (sample > fMax) {
+                clamped = true;
+                pDest[i] = fMax;
+            } else if (sample < fMin) {
+                clamped = true;
+                pDest[i] = fMin;
+            }
+        }
+    } else {
+        for (int i = 0; i < iNumSamples; ++i) {
+            CSAMPLE sample = pSrc[i];
+            if (sample > fMax) {
+                sample = fMax;
+                clamped = true;
+            } else if (sample < fMin) {
+                sample = fMin;
+                clamped = true;
+            }
+            pDest[i] = sample;
+        }
+    }
+    return clamped;
+}
+
+// static
+bool SampleUtil::sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
+                                    CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                    int iNumSamples) {
+    bool clamped = false;
+#ifdef __SSE__
+    __m128 vSrcSamples;
+    __m128 vClamped = _mm_setzero_ps();
+    __m128 vMax = _mm_set1_ps(fMax);
+    __m128 vMin = _mm_set1_ps(fMin);
+    while (iNumSamples >= 4) {
+        vSrcSamples = _mm_load_ps(pSrc);
+        vClamped = _mm_or_ps(vClamped, _mm_cmplt_ps(vSrcSamples, vMin));
+        vClamped = _mm_or_ps(vClamped, _mm_cmpgt_ps(vSrcSamples, vMax));
+        vSrcSamples = _mm_max_ps(vSrcSamples, vMin);
+        vSrcSamples = _mm_min_ps(vSrcSamples, vMax);
+        _mm_store_ps(pDest, vSrcSamples);
+        iNumSamples -= 4;
+        pDest += 4;
+        pSrc += 4;
+    }
+    CSAMPLE clamp[4]; // TODO(XXX) alignment
+    _mm_store_ps(clamp, vClamped);
+    if (clamp[0] != 0 || clamp[1] != 0 ||
+        clamp[2] != 0 || clamp[3] != 0) {
+        clamped = true;
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        CSAMPLE sample = *pSrc;
+        if (sample > fMax) {
+            sample = fMax;
+            clamped = true;
+        } else if (sample < fMin) {
+            sample = fMax;
+            clamped = true;
+        }
+        *pDest = sample;
+        pDest++;
+        pSrc++;
+        iNumSamples--;
+    }
+#endif
+    if (clamped)
+        qDebug() << "clamped";
+    return clamped;
+}
+
 
 void SampleUtil::setOptimizations(bool opt) {
     qDebug() << "Opts" << opt;
