@@ -542,7 +542,7 @@ void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
 bool SampleUtil::isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
                                 const CSAMPLE* pBuffer, int iNumSamples) {
     if (m_sOptimizationsOn) {
-        //return sseIsOutsideRange(fMax, fMin, pBuffer, iNumSamples);
+        return sseIsOutsideRange(fMax, fMin, pBuffer, iNumSamples);
     }
 
     bool clamped = false;;
@@ -601,7 +601,7 @@ bool SampleUtil::copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
                                  CSAMPLE* pDest, const CSAMPLE* pSrc,
                                  int iNumSamples) {
     if (m_sOptimizationsOn) {
-        //return sseClampBuffer(fMax, fMin, pSrc, pDest, iNumSamples);
+        return sseClampBuffer(fMax, fMin, pSrc, pDest, iNumSamples);
     }
 
     bool clamped = false;
