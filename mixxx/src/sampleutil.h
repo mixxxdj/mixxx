@@ -86,6 +86,21 @@ class SampleUtil {
                                 CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 int iNumSamples);
 
+    // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
+    // the number of samples in pSrc1 and pSrc2, and pDest must have at least
+    // space for iNumSamples*2 samples. pDest must not be an alias of pSrc1 or
+    // pSrc2.
+    static void interleaveBuffer(CSAMPLE* pDest,
+                                 const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                 int iNumSamples);
+
+    // Deinterleave the samples in pSrc alternately into pDest1 and
+    // pDest2. iNumSamples must be the number of samples in pDest1 and pDest2,
+    // and pSrc must have at least iNumSamples*2 samples. Neither pDest1 or
+    // pDest2 can be aliases of pSrc.
+    static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
+                                   const CSAMPLE* pSrc, int iNumSamples);
+
     static void setOptimizations(bool opt);
 
   private:
@@ -125,6 +140,11 @@ class SampleUtil {
     static bool sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
                                    CSAMPLE* pDest, const CSAMPLE* pSrc,
                                    int iNumSamples);
+    static void sseInterleaveBuffer(CSAMPLE* pDest,
+                                    const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                    int iNumSamples);
+    static void sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
+                                      const CSAMPLE* pSrc, int iNumSamples);
 
 
 
