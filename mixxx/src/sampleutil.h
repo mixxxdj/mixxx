@@ -10,6 +10,12 @@
 // optimizations where possible.
 class SampleUtil {
   public:
+
+    // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
+    // is 16-byte aligned for use for use with SampleUtil SSE enhanced
+    // functions.
+    static CSAMPLE* alloc(int size);
+
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, int iNumSamples);
 
@@ -61,6 +67,25 @@ class SampleUtil {
     // in-place! pDest and pSrc must not be aliased.
     static void convert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
 
+    // For each pair of samples in pBuffer (l,r) -- stores the sum of the
+    // absolute values of l in pfAbsL, and the sum of the absolute values of r
+    // in pfAbsR.
+    static void sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+                                 const CSAMPLE* pBuffer, int iNumSamples);
+
+    // Returns true if the buffer contains any samples outside of the range
+    // [fMin,fMax].
+    static bool isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
+                               const CSAMPLE* pBuffer, int iNumSamples);
+
+    // Copied every sample in pSrc to pDest, limiting the values in pDest to the
+    // range [fMin, fMax]. If pDest and pSrc are aliases, will not copy -- will
+    // only clamp. Returns true if any samples in pSrc were outside the range
+    // [fMin, fMax].
+    static bool copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
+                                CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                int iNumSamples);
+
     static void setOptimizations(bool opt);
 
   private:
@@ -93,6 +118,14 @@ class SampleUtil {
                                  const CSAMPLE* pSrc3, CSAMPLE gain3,
                                  int iNumSamples);
     static void sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
+    static void sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+                                    const CSAMPLE* pBuffer, int iNumSamples);
+    static bool sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
+                                  const CSAMPLE* pBuffer, int iNumSamples);
+    static bool sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
+                                   CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                   int iNumSamples);
+
 
 
 };
