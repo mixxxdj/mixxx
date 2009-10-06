@@ -601,7 +601,7 @@ bool SampleUtil::copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
                                  CSAMPLE* pDest, const CSAMPLE* pSrc,
                                  int iNumSamples) {
     if (m_sOptimizationsOn) {
-        return sseClampBuffer(fMax, fMin, pSrc, pDest, iNumSamples);
+        return sseCopyClampBuffer(fMax, fMin, pDest, pSrc, iNumSamples);
     }
 
     bool clamped = false;
