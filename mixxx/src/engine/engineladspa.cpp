@@ -69,12 +69,13 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         }
     }
 
-    // TODO(XXX) SSE
-    for (int i = 0; i < m_monoBufferSize; i++)
-    {
-        m_pBufferLeft[0][i] = pIn[2 * i];
-        m_pBufferRight[0][i] = pIn[2 * i + 1];
-    }
+    SampleUtil::deinterleaveBuffer(m_pBufferLeft[0], m_pBufferRight[0],
+                                   pIn, m_monoBufferSize);
+    // for (int i = 0; i < m_monoBufferSize; i++)
+    // {
+    //     m_pBufferLeft[0][i] = pIn[2 * i];
+    //     m_pBufferRight[0][i] = pIn[2 * i + 1];
+    // }
 
     LADSPAInstanceLinkedList::iterator instance = m_Instances.begin();
     while (instance != m_Instances.end())
@@ -113,12 +114,14 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
     }
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    // TODO(XXX) SSE
-    for (int i = 0; i < m_monoBufferSize; i++)
-    {
-        pOutput[2 * i]     = m_pBufferLeft [0][i];
-        pOutput[2 * i + 1] = m_pBufferRight[0][i];
-    }
+    SampleUtil::interleaveBuffer(pOutput,
+                                 m_pBufferLeft[0], m_pBufferRight[0],
+                                 m_monoBufferSize);
+    // for (int i = 0; i < m_monoBufferSize; i++)
+    // {
+    //     pOutput[2 * i]     = m_pBufferLeft [0][i];
+    //     pOutput[2 * i + 1] = m_pBufferRight[0][i];
+    // }
 }
 
 void EngineLADSPA::addInstance(LADSPAInstance * instance)
