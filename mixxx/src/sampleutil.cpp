@@ -1,13 +1,21 @@
 // sampleutil.cpp
 // Created 10/5/2009 by RJ Ryan (rryan@mit.edu)
 
+#ifdef __SSE__
 #include <xmmintrin.h>
+#endif
 
 #include <QtDebug>
 
 #include "sampleutil.h"
 
+#ifdef __SSE__
 bool SampleUtil::m_sOptimizationsOn = true;
+#else
+bool SampleUtil::m_sOptimizationsOn = false;
+#endif
+
+#define assert_aligned(data) (Q_ASSERT(reinterpret_cast<int64_t>(data) % 16 == 0));
 
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer,
@@ -29,9 +37,10 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer,
 }
 
 // static
-void SampleUtil::sseApplyGain(CSAMPLE* pBuffer,
-                              CSAMPLE gain, int iNumSamples) {
+void SampleUtil::sseApplyGain(_ALIGN_16 CSAMPLE* pBuffer,
+                              _ALIGN_16 CSAMPLE gain, int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pBuffer);
     __m128 vSamples;
     __m128 vGain = _mm_set1_ps(gain);
     while (iNumSamples >= 4) {
@@ -76,6 +85,7 @@ void SampleUtil::sseApplyAlternatingGain(CSAMPLE* pBuffer,
                                          CSAMPLE gain1, CSAMPLE gain2,
                                          int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pBuffer);
     __m128 vSamples;
     __m128 vGain = _mm_set_ps(gain1, gain2, gain1, gain2);
     while (iNumSamples >= 4) {
@@ -115,8 +125,10 @@ void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 
 // static
 void SampleUtil::sseAddWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                             CSAMPLE gain, int iNumSamples) {
+                                CSAMPLE gain, int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc);
     __m128 vSrcSamples;
     __m128 vDestSamples;
     __m128 vGain = _mm_set1_ps(gain);
@@ -166,6 +178,9 @@ void SampleUtil::sseAdd2WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc2, CSAMPLE gain2,
                                  int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pSrc1);
+    assert_aligned(pSrc2);
+    assert_aligned(pDest);
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vDestSamples;
@@ -228,6 +243,10 @@ void SampleUtil::sseAdd3WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc3, CSAMPLE gain3,
                                  int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc1);
+    assert_aligned(pSrc2);
+    assert_aligned(pSrc3);
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vSrc3Samples;
@@ -298,6 +317,8 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 void SampleUtil::sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                  CSAMPLE gain, int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc);
     __m128 vSrcSamples;
     __m128 vGain = _mm_set1_ps(gain);
     while (iNumSamples >= 4) {
@@ -347,6 +368,9 @@ void SampleUtil::sseCopy2WithGain(CSAMPLE* pDest,
                                   const CSAMPLE* pSrc2, CSAMPLE gain2,
                                   int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc1);
+    assert_aligned(pSrc2);
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vGain1 = _mm_set1_ps(gain1);
@@ -407,6 +431,10 @@ void SampleUtil::sseCopy3WithGain(CSAMPLE* pDest,
                                   const CSAMPLE* pSrc3, CSAMPLE gain3,
                                   int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc1);
+    assert_aligned(pSrc2);
+    assert_aligned(pSrc3);
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vSrc3Samples;
@@ -460,6 +488,8 @@ void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
 void SampleUtil::sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc,
                             int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc);
     __m64 vSrcSamples;
     __m128 vDestSamples;
     while (iNumSamples >= 4) {
@@ -505,6 +535,7 @@ void SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
 void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
                                      const CSAMPLE* pBuffer, int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pBuffer);
     CSAMPLE fAbsL = 0.0f;
     CSAMPLE fAbsR = 0.0f;
 
@@ -520,7 +551,8 @@ void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         iNumSamples -= 4;
         pBuffer += 4;
     }
-    CSAMPLE result[4]; // TODO(XXX) alignment
+    _ALIGN_16 CSAMPLE result[4]; // TODO(XXX) alignment
+    assert_aligned(result);
     _mm_store_ps(result, vSum);
     fAbsL = result[0] + result[2];
     fAbsR = result[1] + result[3];
@@ -562,6 +594,7 @@ bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
                                    const CSAMPLE* pBuffer, int iNumSamples) {
     bool outside = false;
 #ifdef __SSE__
+    assert_aligned(pBuffer);
     __m128 vSrcSamples;
     __m128 vClamped = _mm_setzero_ps();
     __m128 vMax = _mm_set1_ps(fMax);
@@ -573,7 +606,8 @@ bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
         iNumSamples -= 4;
         pBuffer += 4;
     }
-    CSAMPLE clamp[4]; // TODO(XXX) alignment
+    _ALIGN_16 CSAMPLE clamp[4];
+    assert_aligned(clamp);
     _mm_store_ps(clamp, vClamped);
     if (clamp[0] != 0 || clamp[1] != 0 ||
         clamp[2] != 0 || clamp[3] != 0) {
@@ -638,6 +672,8 @@ bool SampleUtil::sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
                                     int iNumSamples) {
     bool clamped = false;
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc);
     __m128 vSrcSamples;
     __m128 vClamped = _mm_setzero_ps();
     __m128 vMax = _mm_set1_ps(fMax);
@@ -653,7 +689,8 @@ bool SampleUtil::sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
         pDest += 4;
         pSrc += 4;
     }
-    CSAMPLE clamp[4]; // TODO(XXX) alignment
+    _ALIGN_16 CSAMPLE clamp[4];
+    assert_aligned(clamp);
     _mm_store_ps(clamp, vClamped);
     if (clamp[0] != 0 || clamp[1] != 0 ||
         clamp[2] != 0 || clamp[3] != 0) {
@@ -677,8 +714,6 @@ bool SampleUtil::sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
         iNumSamples--;
     }
 #endif
-    if (clamped)
-        qDebug() << "clamped";
     return clamped;
 }
 
@@ -701,6 +736,9 @@ void SampleUtil::sseInterleaveBuffer(CSAMPLE* pDest,
                                      const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
                                      int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc1);
+    assert_aligned(pSrc2);
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vLow;
@@ -747,6 +785,9 @@ void SampleUtil::deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
                                        const CSAMPLE* pSrc, int iNumSamples) {
 #ifdef __SSE__
+    assert_aligned(pDest1);
+    assert_aligned(pDest2);
+    assert_aligned(pSrc);
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vDst1Samples;
