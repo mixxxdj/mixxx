@@ -29,6 +29,7 @@
 #include "midimapping.h"
 #include "midideviceportmidi.h"
 
+QMutex MidiDevicePortMidi::m_sPMLock;   // PortMidi is not thread-safe
 
 MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping, 
                                        const PmDeviceInfo* inputDeviceInfo, 
@@ -133,22 +134,28 @@ int MidiDevicePortMidi::close()
     
     if (m_pInputStream)
     {
+        m_sPMLock.lock();
         PmError err = Pm_Close(m_pInputStream);
         if( err != pmNoError )
         {
             qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            m_sPMLock.unlock();
             return -1;
         }
+        m_sPMLock.unlock();
     }
     
     if (m_pOutputStream)
     {
+        m_sPMLock.lock();
         PmError err = Pm_Close(m_pOutputStream);
         if( err != pmNoError )
         {
             qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            m_sPMLock.unlock();
             return -1;
         }
+        m_sPMLock.unlock();
     }
     
     m_bIsOpen = false;
@@ -170,17 +177,21 @@ void MidiDevicePortMidi::run()
         m_mutex.lock();
         if (m_pInputStream)
         {
+            m_sPMLock.lock();
             numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+            m_sPMLock.unlock();
     
             for (int i = 0; i < numEvents; i++)
             {
                 //if (Pm_MessageStatus(m_midiBuffer[i].message) == 0x90) //Note on, channel 1
                 {
+                    m_sPMLock.lock();
                     unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
                     unsigned char opcode = status & 0xF0;
                     unsigned char channel = status & 0x0F;
                     unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                     unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
+                    m_sPMLock.unlock();
                                     
                     MidiDevice::receive((MidiStatusByte)status, channel, note, velocity);
 
@@ -202,8 +213,10 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 {
     if (m_pOutputStream)
     {
+        m_sPMLock.lock();
         PmError err = Pm_WriteShort(m_pOutputStream, 0, word);
         if( err != pmNoError ) qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
+        m_sPMLock.unlock();
     }
 }
 
@@ -212,7 +225,9 @@ void MidiDevicePortMidi::sendSysexMsg(unsigned char data[], unsigned int length)
 {
     if (m_pOutputStream)
     {
+        m_sPMLock.lock();
         PmError err = Pm_WriteSysEx(m_pOutputStream, 0, data);
         if( err != pmNoError ) qDebug() << "PortMidi sendSysexMsg error:" << Pm_GetErrorText(err);
+        m_sPMLock.unlock();
     } 
 }
