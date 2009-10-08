@@ -63,6 +63,12 @@ MidiDevice::~MidiDevice()
 
 }
 
+void MidiDevice::initialize()
+{
+    qDebug() << "MidiDevice::initialize()";
+    m_pMidiMapping->scriptInitialize();
+}
+
 void MidiDevice::shutdown()
 {
     m_pMidiMapping->scriptShutdown();

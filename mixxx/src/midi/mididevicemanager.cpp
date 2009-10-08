@@ -36,13 +36,19 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 
 MidiDeviceManager::~MidiDeviceManager()
 {
+    saveMappings(true); // Write out MIDI mappings only for currently active devices
+    closeDevices();
+}
+
+void MidiDeviceManager::saveMappings(bool onlyActive) {
+    // Write out MIDI mappings for currently connected devices
     QList<MidiDevice*> deviceList = getDeviceList(false, true);
     QListIterator<MidiDevice*> it(deviceList);
-    
     
     while (it.hasNext())
     {
         MidiDevice *cur= it.next();
+        if (onlyActive && !cur->isOpen()) continue;
         MidiMapping *mapping = cur->getMidiMapping();
         QString name = cur->getName();
         
@@ -51,8 +57,6 @@ MidiDeviceManager::~MidiDeviceManager()
                 append(name.right(name.size()-3).replace(" ", "_") + ".midi.xml")
         );
     }
-    
-    closeDevices();
 }
 
 QList<MidiDevice*> MidiDeviceManager::getDeviceList(bool bOutputDevices, bool bInputDevices)
@@ -186,8 +190,14 @@ int MidiDeviceManager::setupDevices()
         MidiMapping *mapping = cur->getMidiMapping();
         QString name = cur->getName();
         
-        if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" )
+        if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" ) {
+            mapping->loadPreset(
+                QDir::homePath().append("/").append(SETTINGS_PATH).
+                append(name.right(name.size()-3).replace(" ", "-") + ".midi.xml"),
+                true
+            );
             continue;
+        }
         
         qDebug() << "Opening Device:" << cur->getName();
         

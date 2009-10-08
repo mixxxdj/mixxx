@@ -48,6 +48,7 @@ public slots:
     void slotLoadMidiMapping(const QString &name);
     void slotExportXML();
     void slotEnableDevice();
+    void slotDisableDevice();
 
     //Input bindings
     void slotClearAllInputBindings();

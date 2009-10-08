@@ -250,7 +250,7 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
     QString filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
     if (!filename.isNull()) {
         m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);
-        m_pMidiDevice->getMidiMapping()->applyPreset();
+//         m_pMidiDevice->getMidiMapping()->applyPreset();  // It's applied on prefs box close
     }
     m_pInputMappingTableView->update();
     
@@ -270,17 +270,31 @@ void DlgPrefMidiBindings::slotExportXML() {
 
 void DlgPrefMidiBindings::slotEnableDevice()
 {
-    //Just tell MidiObject to close the old device and open this device
+    //Just tell MidiDevice to close and re-open this device
     m_pMidiDevice->close();
     m_pMidiDevice->open();
     
     m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 1);
     
-    btnActivateDevice->setEnabled(false);
+//     btnActivateDevice->setEnabled(false);
     toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
     groupBoxPresets->setEnabled(true); //Enable presets group box.
     
     //TODO: Should probably check if open() actually succeeded.
+}
+
+void DlgPrefMidiBindings::slotDisableDevice()
+{
+    //Just tell MidiDevice to close and this device
+    m_pMidiDevice->close();
+    
+    m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 0);
+    
+//     btnActivateDevice->setEnabled(false);
+    toolBox->setEnabled(false); //Enable MIDI in/out toolbox.
+    groupBoxPresets->setEnabled(false); //Enable presets group box.
+    
+    //TODO: Should probably check if close() actually succeeded.
 }
 
 void DlgPrefMidiBindings::slotAddInputBinding() 
