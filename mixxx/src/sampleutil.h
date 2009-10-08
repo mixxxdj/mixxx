@@ -27,6 +27,8 @@
 #error Please email mixxx-devel@lists.sourceforge.net and tell us what is the equivalent of __attribute__((aligned(16))) for your compiler.
 #endif
 
+#define assert_aligned(data) (Q_ASSERT(reinterpret_cast<int64_t>(data) % 16 == 0));
+
 // A group of utilities for working with samples. Automatically use SSE/SSE2
 // optimizations where possible.
 class SampleUtil {
