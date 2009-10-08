@@ -59,11 +59,16 @@ MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping,
 
 MidiDevicePortMidi::~MidiDevicePortMidi()
 {
-    if (m_bIsOpen) close();
+    close();
 }
 
 int MidiDevicePortMidi::open()
 {
+    if (m_bIsOpen) {
+        qDebug() << "PortMIDI device" << m_strDeviceName << "already open";
+        return -1;
+    }
+    
     m_bStopRequested = false;
     
     if (m_strDeviceName == MIXXX_PORTMIDI_NO_DEVICE_STRING)
@@ -119,14 +124,20 @@ int MidiDevicePortMidi::open()
     }   
     
     m_bIsOpen = true;
+    MidiDevice::initialize();   // As opposed to QThread::initialize :)
     start();
-
+    
     return 0;
 
 }
 
 int MidiDevicePortMidi::close()
 {
+    if (!m_bIsOpen) {
+        qDebug() << "PortMIDI device" << m_strDeviceName << "already closed";
+        return -1;
+    }
+    
     shutdown();
 
     m_bStopRequested = true;

@@ -26,11 +26,13 @@ class DlgPrefMidiBindings;
 /** Manages creation/enumeration/deletion of MidiDevices. */
 class MidiDeviceManager : public QObject
 {
+    Q_OBJECT
 	public:
 		MidiDeviceManager(ConfigObject<ConfigValue> * pConfig);
 		~MidiDeviceManager();
         QList<MidiDevice*> getDeviceList(bool bOutputDevices=true, bool bInputDevice=true);
         QStringList getConfigList(QString path);
+        void saveMappings(bool onlyActive=false);
         void closeDevices();
         void queryDevices();
         int setupDevices();

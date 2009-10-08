@@ -57,6 +57,22 @@ MidiMapping::~MidiMapping() {
 }
 
 #ifdef __MIDISCRIPT__
+void MidiMapping::scriptInitialize() {
+    if(m_pScriptEngine) {
+        // Call each script's init function if it exists
+        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
+        while (prefixIt.hasNext()) {
+            QString initName = prefixIt.next();
+            if (initName!="") {
+                initName.append(".init");
+                qDebug() << "MidiMapping: Executing" << initName;
+                if (!m_pScriptEngine->execute(initName, m_deviceName))
+                    qWarning() << "MidiMapping: No" << initName << "function in script";
+            }
+        }
+    }
+}
+
 void MidiMapping::scriptShutdown() {
     if(m_pScriptEngine) {
         // Call each script's shutdown function if it exists
@@ -524,18 +540,6 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
 
         }
 
-        // Call each script's init function if it exists
-        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
-        while (prefixIt.hasNext()) {
-            QString initName = prefixIt.next();
-            if (initName!="") {
-                initName.append(".init");
-                qDebug() << "MidiMapping: Executing" << initName;
-                if (!m_pScriptEngine->execute(initName, device))
-                    qWarning() << "MidiMapping: No" << initName << "function in script";
-            }
-        }
-
         QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
 
 #endif
@@ -623,6 +627,10 @@ void MidiMapping::savePreset(QString path) {
 void MidiMapping::applyPreset() {
     m_mappingLock.lock();
     MidiLedHandler::destroyHandlers();
+    
+#ifdef __MIDISCRIPT__
+    scriptInitialize();
+#endif
 
     if (m_pOutputMidiDevice != NULL) {
         //^^^ Only execute this code if we have an output device hooked up
@@ -1040,14 +1048,9 @@ void MidiMapping::cancelMidiLearn()
 #ifdef __MIDISCRIPT__
 void MidiMapping::restartScriptEngine()
 {
-
     //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(QThread::currentThreadId(),0,16);
     
-    if(m_pScriptEngine) {
-        MidiScriptEngine *engine = m_pScriptEngine;
-        m_pScriptEngine = NULL;
-        delete engine;
-    }
+    scriptShutdown();   // Shut down the MIDI scripts
 
     //XXX Deadly hack attack:
     if (m_pOutputMidiDevice == NULL) {
@@ -1070,6 +1073,7 @@ void MidiMapping::restartScriptEngine()
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
     
+    scriptInitialize(); // Run the init MIDI scripts
 }
 #endif
 
