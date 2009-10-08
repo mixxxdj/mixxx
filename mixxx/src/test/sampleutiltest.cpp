@@ -365,15 +365,6 @@ TEST_F(SampleUtilTest, sumAbsPerChannel) {
             FillBuffer(buffer, 1.0f, size);
             CSAMPLE fSumL = 0, fSumR = 0;
             SampleUtil::applyAlternatingGain(buffer, 1.0, 2.0, size);
-            float left=0, right=0;
-            for (j = 0; j < size; j += 2) {
-                EXPECT_FLOAT_EQ(buffer[j], 1.0);
-                EXPECT_FLOAT_EQ(buffer[j+1], 2.0);
-                left += buffer[j];
-                right += buffer[j+1];
-            }
-            qDebug() << left << right;
-            qDebug() << "Size is size" << size;
             SampleUtil::sumAbsPerChannel(&fSumL, &fSumR, buffer, size);
             EXPECT_FLOAT_EQ(fSumL, size/2);
             EXPECT_FLOAT_EQ(fSumR, size);
@@ -432,6 +423,23 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
             delete buffer3;
         }
         SampleUtil::setOptimizations(true);
+    }
+}
+
+TEST_F(SampleUtilTest, testBitwiseFabs) {
+    // Test -10k to 10k
+    for (int i = -10000; i < 10000; ++i) {
+        float val = i;
+        int iv = ((int&)val & 0x7FFFFFFF);
+        val = (float&)iv;
+        EXPECT_FLOAT_EQ(val, fabs(i));
+    }
+    // Test -1 to 1
+    for (int i = -10000; i < 10000; ++i) {
+        float val = float(i)/10000.0;
+        int iv = ((int&)val & 0x7FFFFFFF);
+        val = (float&)iv;
+        EXPECT_FLOAT_EQ(val, fabs(float(i)/10000.0));
     }
 }
 
