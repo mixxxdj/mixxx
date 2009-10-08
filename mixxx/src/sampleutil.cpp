@@ -5,6 +5,10 @@
 #include <xmmintrin.h>
 #endif
 
+#ifdef __WINDOWS__
+#pragma intrinsic(fabs)sc
+#endif
+
 #include <QtDebug>
 
 #include "sampleutil.h"
@@ -14,8 +18,6 @@ bool SampleUtil::m_sOptimizationsOn = true;
 #else
 bool SampleUtil::m_sOptimizationsOn = false;
 #endif
-
-#define assert_aligned(data) (Q_ASSERT(reinterpret_cast<int64_t>(data) % 16 == 0));
 
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer,
@@ -74,7 +76,7 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer,
     if (m_sOptimizationsOn)
         return sseApplyAlternatingGain(pBuffer, gain1, gain2, iNumSamples);
 
-    for (int i = 0; i < iNumSamples/2; i += 2) {
+    for (int i = 0; i < iNumSamples; i += 2) {
         pBuffer[i] *= gain1;
         pBuffer[i+1] *= gain2;
     }
@@ -85,9 +87,10 @@ void SampleUtil::sseApplyAlternatingGain(CSAMPLE* pBuffer,
                                          CSAMPLE gain1, CSAMPLE gain2,
                                          int iNumSamples) {
 #ifdef __SSE__
+    Q_ASSERT(iNumSamples % 2 == 0);
     assert_aligned(pBuffer);
     __m128 vSamples;
-    __m128 vGain = _mm_set_ps(gain1, gain2, gain1, gain2);
+    __m128 vGain = _mm_set_ps(gain2, gain1, gain2, gain1);
     while (iNumSamples >= 4) {
         vSamples = _mm_load_ps(pBuffer);
         vSamples = _mm_mul_ps(vSamples, vGain);
@@ -102,10 +105,9 @@ void SampleUtil::sseApplyAlternatingGain(CSAMPLE* pBuffer,
     while (iNumSamples > 0) {
         *pBuffer = *pBuffer * gain1;
         pBuffer++;
-        iNumSamples--;
         *pBuffer = *pBuffer * gain2;
         pBuffer++;
-        iNumSamples--;
+        iNumSamples -= 2;
     }
 #endif
 }
@@ -523,9 +525,9 @@ void SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
     CSAMPLE fAbsL = 0.0f;
     CSAMPLE fAbsR = 0.0f;
 
-    for (int i = 0; i < iNumSamples/2; ++i) {
-        fAbsL += fabs(pBuffer[i*2]);
-        fAbsR += fabs(pBuffer[i*2+1]);
+    for (int i = 0; i < iNumSamples; i += 2) {
+        fAbsL += fabs(pBuffer[i]);
+        fAbsR += fabs(pBuffer[i+1]);
     }
 
     *pfAbsL = fAbsL;
@@ -542,18 +544,27 @@ void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
     __m128 vSrcSamples;
     __m128 vSum = _mm_setzero_ps();
     // This mask will clear the sign bit of a float if ANDed
-    __m128 vSignMask = _mm_set1_ps(0x7fffffff);
+    static long l_bitmask[] = {0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff};
+    const __m128 vSignMask = _mm_loadu_ps((float*)l_bitmask);
+    //_mm_set1_ps(0x7fffffff);
 
+    _ALIGN_16 CSAMPLE result[4]; // TODO(XXX) alignment
     while (iNumSamples >= 4) {
         vSrcSamples = _mm_load_ps(pBuffer);
+        _mm_store_ps(result, vSrcSamples);
+        //qDebug() << "pload" << result[0] << result[1];
         vSrcSamples = _mm_and_ps(vSrcSamples, vSignMask);
+        _mm_store_ps(result, vSrcSamples);
+        //qDebug() << "postand" << result[0] << result[1];
+
         vSum = _mm_add_ps(vSum, vSrcSamples);
         iNumSamples -= 4;
         pBuffer += 4;
     }
-    _ALIGN_16 CSAMPLE result[4]; // TODO(XXX) alignment
+
     assert_aligned(result);
     _mm_store_ps(result, vSum);
+    //qDebug() << result[0] << result[1] << result[2] << result[3];
     fAbsL = result[0] + result[2];
     fAbsR = result[1] + result[3];
     if (iNumSamples > 0) {
@@ -800,9 +811,11 @@ void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 
         // First shuffle the middle elements of both.
         vSrc1Samples = _mm_shuffle_ps(vSrc1Samples, vSrc1Samples,
-                                      _MM_SHUFFLE(0, 2, 1, 3));
+                                      _MM_SHUFFLE(3, 1, 2, 0));
+                                      //_MM_SHUFFLE(0, 2, 1, 3));
         vSrc2Samples = _mm_shuffle_ps(vSrc2Samples, vSrc2Samples,
-                                      _MM_SHUFFLE(0, 2, 1, 3));
+                                      _MM_SHUFFLE(3, 1, 2, 0));
+                                      //_MM_SHUFFLE(0, 2, 1, 3));
         // vSrc1Samples is now l1,l2,r1,r2
         // vSrc2Samples is now l3,l4,r3,r4
 
