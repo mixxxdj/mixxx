@@ -382,4 +382,59 @@ TEST_F(SampleUtilTest, sumAbsPerChannel) {
     }
 }
 
+TEST_F(SampleUtilTest, interleaveBuffer) {
+   while (sseAvailable-- >= 0) {
+        for (int i = 0; i < buffers.size(); ++i) {
+            CSAMPLE* buffer = buffers[i];
+            int size = sizes[i];
+            FillBuffer(buffer, 0.0f, size);
+            CSAMPLE* buffer2 = new CSAMPLE[size];
+            FillBuffer(buffer2, 0.0f, size);
+            for (int j = 0; j < size; j++) {
+                buffer[j] = j;
+                buffer2[j] = -j;
+            }
+            CSAMPLE* buffer3 = new CSAMPLE[size*2];
+            FillBuffer(buffer3, 0.0f, size*2);
+            SampleUtil::interleaveBuffer(buffer3, buffer, buffer2, size);
+
+            for (int j = 0; j < size; j++) {
+                EXPECT_FLOAT_EQ(buffer3[j*2], j);
+                EXPECT_FLOAT_EQ(buffer3[j*2+1], -j);
+            }
+        }
+        SampleUtil::setOptimizations(true);
+    }
+}
+
+TEST_F(SampleUtilTest, deinterleaveBuffer) {
+   while (sseAvailable-- >= 0) {
+        for (int i = 0; i < buffers.size(); ++i) {
+            CSAMPLE* buffer = buffers[i];
+            int size = sizes[i];
+            FillBuffer(buffer, 0.0f, size);
+            CSAMPLE* buffer2 = new CSAMPLE[size];
+            FillBuffer(buffer2, 0.0f, size);
+            CSAMPLE* buffer3 = new CSAMPLE[size*2];
+            FillBuffer(buffer3, 1.0f, size*2);
+            for (int j = 0; j < size; j++) {
+                buffer3[j*2] = j;
+                buffer3[j*2+1] = -j;
+            }
+            SampleUtil::deinterleaveBuffer(buffer, buffer2, buffer3, size);
+
+            for (int j = 0; j < size; j++) {
+                EXPECT_FLOAT_EQ(buffer[j], j);
+                EXPECT_FLOAT_EQ(buffer2[j], -j);
+            }
+
+            delete buffer2;
+            delete buffer3;
+        }
+        SampleUtil::setOptimizations(true);
+    }
+}
+
+
+
 }
