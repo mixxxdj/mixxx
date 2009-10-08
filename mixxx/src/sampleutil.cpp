@@ -543,28 +543,22 @@ void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
 
     __m128 vSrcSamples;
     __m128 vSum = _mm_setzero_ps();
-    // This mask will clear the sign bit of a float if ANDed
-    static long l_bitmask[] = {0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff};
-    const __m128 vSignMask = _mm_loadu_ps((float*)l_bitmask);
-    //_mm_set1_ps(0x7fffffff);
+    // This mask will clear an IEEE754 float's sign bit
+    static _ALIGN_16 int32_t l_bitmask[] =
+            {0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff};
+    const __m128 vSignMask = _mm_load_ps((float*)l_bitmask);
 
-    _ALIGN_16 CSAMPLE result[4]; // TODO(XXX) alignment
     while (iNumSamples >= 4) {
         vSrcSamples = _mm_load_ps(pBuffer);
-        _mm_store_ps(result, vSrcSamples);
-        //qDebug() << "pload" << result[0] << result[1];
         vSrcSamples = _mm_and_ps(vSrcSamples, vSignMask);
-        _mm_store_ps(result, vSrcSamples);
-        //qDebug() << "postand" << result[0] << result[1];
-
         vSum = _mm_add_ps(vSum, vSrcSamples);
         iNumSamples -= 4;
         pBuffer += 4;
     }
 
+    _ALIGN_16 CSAMPLE result[4];
     assert_aligned(result);
     _mm_store_ps(result, vSum);
-    //qDebug() << result[0] << result[1] << result[2] << result[3];
     fAbsL = result[0] + result[2];
     fAbsR = result[1] + result[3];
     if (iNumSamples > 0) {
