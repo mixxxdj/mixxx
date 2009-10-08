@@ -41,12 +41,11 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QObject()
     m_bIsOpen = false;
     m_bMidiLearn = false;
 
-    if (m_pMidiMapping == NULL)
+    if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
+        m_pMidiMapping->setName(m_strDeviceName);
+    }
         
-#ifndef __MIDISCRIPT__
-     m_pMidiMapping->loadInitialPreset();    // Only do this here if NOT using MIDI scripting
-#endif
     // Get --midiDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_midiDebug = commandLineArgs.indexOf("--midiDebug");
@@ -63,15 +62,9 @@ MidiDevice::~MidiDevice()
 
 }
 
-void MidiDevice::initialize()
-{
-    qDebug() << "MidiDevice::initialize()";
-    m_pMidiMapping->scriptInitialize();
-}
-
 void MidiDevice::shutdown()
 {
-    m_pMidiMapping->scriptShutdown();
+    m_pMidiMapping->shutdownScriptEngine();
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)

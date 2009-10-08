@@ -25,7 +25,7 @@
 #include "../mixxxcontrol.h"
 #include "midimapping.h"
 
-#define DEVICE_CONFIG_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIDevices")
+#define DEVICE_CONFIG_PATH BINDINGS_PATH.append("MixxxMIDIDevices")
 
 MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObject()
 {
@@ -36,7 +36,6 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 
 MidiDeviceManager::~MidiDeviceManager()
 {
-    saveMappings(true); // Write out MIDI mappings only for currently active devices
     closeDevices();
 }
 
@@ -50,12 +49,8 @@ void MidiDeviceManager::saveMappings(bool onlyActive) {
         MidiDevice *cur= it.next();
         if (onlyActive && !cur->isOpen()) continue;
         MidiMapping *mapping = cur->getMidiMapping();
-        QString name = cur->getName();
-        
-        mapping->savePreset(
-                QDir::homePath().append("/").append(SETTINGS_PATH).
-                append(name.right(name.size()-3).replace(" ", "_") + ".midi.xml")
-        );
+
+        mapping->savePreset();  // Save to default location for each device
     }
 }
 
@@ -181,36 +176,24 @@ int MidiDeviceManager::setupDevices()
     QList<MidiDevice*> deviceList = getDeviceList(false, true);
     QListIterator<MidiDevice*> it(deviceList);
     
-    qDebug() << "MidiDeviceManager::setupDevices()";
-    
+    qDebug() << "MidiDeviceManager: Setting up devices";
     
     while (it.hasNext())
     {
         MidiDevice *cur= it.next();
         MidiMapping *mapping = cur->getMidiMapping();
         QString name = cur->getName();
-        
-        if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" ) {
-            mapping->loadPreset(
-                QDir::homePath().append("/").append(SETTINGS_PATH).
-                append(name.right(name.size()-3).replace(" ", "-") + ".midi.xml"),
-                true
-            );
-            continue;
-        }
-        
-        qDebug() << "Opening Device:" << cur->getName();
-        
+        mapping->setName(name);
         
         cur->close();
+        mapping->loadPreset(true);  // Force-load the default preset file for each device
+        
+        if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" )
+            continue;
+        
+        qDebug() << "Opening Device:" << name;
+
         cur->open();
-        
-        mapping->loadPreset(
-                QDir::homePath().append("/").append(SETTINGS_PATH).
-                append(name.right(name.size()-3).replace(" ", "-") + ".midi.xml"),
-                true
-        );
-        
         mapping->applyPreset();
         
     }

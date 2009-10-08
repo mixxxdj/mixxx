@@ -205,8 +205,8 @@ void DlgPrefMidiBindings::slotUpdate() {
  */
 void DlgPrefMidiBindings::slotApply() {
     /* User has pressed OK, so write the controls to the DOM, reload the MIDI
-     * bindings, and save the default XML file. */
-    m_pMidiDevice->getMidiMapping()->savePreset();   // use default bindings path
+     * bindings, and save the device's XML file. */
+    m_pMidiDevice->getMidiMapping()->savePreset();
     m_pMidiDevice->getMidiMapping()->applyPreset();
     m_pMidiDevice->disableMidiLearn();
     
@@ -270,13 +270,13 @@ void DlgPrefMidiBindings::slotExportXML() {
 
 void DlgPrefMidiBindings::slotEnableDevice()
 {
-    //Just tell MidiDevice to close and re-open this device
+    //Just tell the MidiDevice to close and re-open
     m_pMidiDevice->close();
     m_pMidiDevice->open();
     
     m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 1);
     
-//     btnActivateDevice->setEnabled(false);
+    btnActivateDevice->setEnabled(false);
     toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
     groupBoxPresets->setEnabled(true); //Enable presets group box.
     
@@ -285,14 +285,13 @@ void DlgPrefMidiBindings::slotEnableDevice()
 
 void DlgPrefMidiBindings::slotDisableDevice()
 {
-    //Just tell MidiDevice to close and this device
+    //Just tell the MidiDevice to close
     m_pMidiDevice->close();
     
     m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 0);
     
-//     btnActivateDevice->setEnabled(false);
-    toolBox->setEnabled(false); //Enable MIDI in/out toolbox.
-    groupBoxPresets->setEnabled(false); //Enable presets group box.
+    toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
+    groupBoxPresets->setEnabled(false); //Disable presets group box.
     
     //TODO: Should probably check if close() actually succeeded.
 }
