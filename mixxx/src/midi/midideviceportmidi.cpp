@@ -124,7 +124,6 @@ int MidiDevicePortMidi::open()
     }   
     
     m_bIsOpen = true;
-    MidiDevice::initialize();   // As opposed to QThread::initialize :)
     start();
     
     return 0;

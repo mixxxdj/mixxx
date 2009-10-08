@@ -36,7 +36,7 @@
 class MidiInputMappingTableModel;
 class MidiOutputMappingTableModel;
 
-#define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("MixxxMIDIBindings.xml")
+#define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("midi/")
 #define MIDI_MAPPING_EXTENSION ".midi.xml"
 
 class MidiMapping : public QObject
@@ -48,12 +48,15 @@ class MidiMapping : public QObject
     MidiMapping(MidiDevice* outputMidiDevice=NULL);
     ~MidiMapping();
     void setOutputMidiDevice(MidiDevice* outputMidiDevice);
+    
+    void setName(QString name);
 
-    void loadInitialPreset();
+    void loadPreset(bool forceLoad=false);
     void loadPreset(QString path, bool forceLoad=false);
     void loadPreset(QDomElement root, bool forceLoad=false);
 
-    void savePreset(QString path = BINDINGS_PATH);
+    void savePreset();
+    void savePreset(QString path);
     void applyPreset();
     
     
@@ -90,8 +93,9 @@ class MidiMapping : public QObject
     void clearOutputMidiMapping(MixxxControl control);
     void clearOutputMidiMapping(int index, int count);
 #ifdef __MIDISCRIPT__
-    void scriptInitialize();
-    void scriptShutdown();
+    void initializeScripts();
+    void startupScriptEngine();
+    void shutdownScriptEngine();
     void restartScriptEngine();
     MidiScriptEngine *getMidiScriptEngine() { return m_pScriptEngine; };
 #endif

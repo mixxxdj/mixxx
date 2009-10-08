@@ -30,14 +30,21 @@
 #include "midiledhandler.h"
 #include "configobject.h"
 
-#define REQUIRED_MAPPING_FILE "midi-mappings-scripts.js"
+#define REQUIRED_SCRIPT_FILE "midi-mappings-scripts.js"
 #define XML_SCHEMA_VERSION "1"
+#define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-3).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
 
 static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
 
 MidiMapping::MidiMapping(MidiDevice* outputMidiDevice) : QObject() {
+    // If BINDINGS_PATH doesn't exist, create it
+    if (!QDir(BINDINGS_PATH).exists()) {
+        qDebug() << "Creating new MIDI presets directory" << BINDINGS_PATH;
+        QDir().mkpath(BINDINGS_PATH);
+    }
+    
     //Q_ASSERT(outputMidiDevice);
 #ifdef __MIDISCRIPT__
     //Start the scripting engine.
@@ -46,7 +53,7 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice) : QObject() {
     if (m_pOutputMidiDevice)
         m_deviceName = m_pOutputMidiDevice->getName(); //Name of the device to look for the <controller> block for in the XML.
         
-    restartScriptEngine();
+    startupScriptEngine();
 #endif
     m_pMidiInputMappingTableModel = new MidiInputMappingTableModel(this);
     m_pMidiOutputMappingTableModel = new MidiOutputMappingTableModel(this);
@@ -57,7 +64,32 @@ MidiMapping::~MidiMapping() {
 }
 
 #ifdef __MIDISCRIPT__
-void MidiMapping::scriptInitialize() {
+void MidiMapping::startupScriptEngine() {
+
+    //XXX Deadly hack attack:
+    if (m_pOutputMidiDevice == NULL) {
+        m_pOutputMidiDevice = new MidiDeviceDummy(this); //Just make some dummy device :(
+    }
+    //XXX Memory leak :(
+
+    qDebug () << "Starting script engine with output device" << m_pOutputMidiDevice->getName();
+
+    m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice);
+    
+    m_pScriptEngine->moveToThread(m_pScriptEngine);
+    
+    connect(m_pScriptEngine, SIGNAL(initialized()),
+            this, SLOT(slotScriptEngineReady()),
+            Qt::DirectConnection);
+    m_scriptEngineInitializedMutex.lock();
+    m_pScriptEngine->start();
+    // Wait until the script engine is initialized
+    m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+    m_scriptEngineInitializedMutex.unlock();
+    
+}
+
+void MidiMapping::initializeScripts() {
     if(m_pScriptEngine) {
         // Call each script's init function if it exists
         QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
@@ -73,7 +105,7 @@ void MidiMapping::scriptInitialize() {
     }
 }
 
-void MidiMapping::scriptShutdown() {
+void MidiMapping::shutdownScriptEngine() {
     if(m_pScriptEngine) {
         // Call each script's shutdown function if it exists
         QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
@@ -433,20 +465,21 @@ void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
 }
 #endif
 
-/* loadInitialPreset()
- * Loads a set of MIDI bindings from either the default file or one specified on the command line.
+/* setName(QString)
+ * Sets the controller name this mapping corresponds to
+ * @param name The controller name this mapping is hooked to
  */
-void MidiMapping::loadInitialPreset() {
-    // Try to read in the current XML bindings file, one from the command line, or create one if nothing is available
-    QStringList commandLineArgs = QApplication::arguments();
-    int loadXML = commandLineArgs.indexOf("--loadXMLfile");
+void MidiMapping::setName(QString name) {
+    m_deviceName = name;
+}
 
-    if (loadXML!=-1) {
-        qDebug() << "MidiMapping: Loading custom MIDI mapping file:" << commandLineArgs.at(loadXML+1);
-        loadPreset(commandLineArgs.at(loadXML+1));
-    }
-    else loadPreset(BINDINGS_PATH);
-    applyPreset();
+/* loadPreset()
+ * Overloaded function for convenience, uses the default device path
+ * @param forceLoad Forces the MIDI mapping to be loaded, regardless of whether or not the controller id
+ *        specified in the mapping matches the device this MidiMapping object is hooked up to.
+ */
+void MidiMapping::loadPreset(bool forceLoad) {
+    loadPreset(DEFAULT_DEVICE_PRESET, forceLoad);
 }
 
 /* loadPreset(QString)
@@ -481,7 +514,6 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
     m_mappingLock.lock();
     
 #ifdef __MIDISCRIPT__
-    restartScriptEngine();
     m_pScriptFileNames.clear();
     m_pScriptFunctionPrefixes.clear();
 #endif
@@ -513,7 +545,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
         QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
 
         // Default currently required file
-        addScriptFile(REQUIRED_MAPPING_FILE,"");
+        addScriptFile(REQUIRED_SCRIPT_FILE,"");
 
         // Look for additional ones
         while (!scriptFile.isNull()) {
@@ -604,6 +636,14 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
 
 }   // END loadPreset(QDomElement)
 
+/* savePreset()
+ * Saves the current table of bindings to the default device XML file.
+ */
+void MidiMapping::savePreset() {
+    qDebug() << "Writing MIDI preset file" << DEFAULT_DEVICE_PRESET;
+    savePreset(DEFAULT_DEVICE_PRESET);
+}
+
 /* savePreset(QString)
  * Given a path, saves the current table of bindings to an XML file.
  */
@@ -625,11 +665,12 @@ void MidiMapping::savePreset(QString path) {
  * the LED handler.
  */
 void MidiMapping::applyPreset() {
+    qDebug() << "MidiMapping::applyPreset()";
     m_mappingLock.lock();
     MidiLedHandler::destroyHandlers();
     
 #ifdef __MIDISCRIPT__
-    scriptInitialize();
+    initializeScripts();
 #endif
 
     if (m_pOutputMidiDevice != NULL) {
@@ -704,7 +745,7 @@ void MidiMapping::clearPreset() {
         
         
         //Don't need to write anything for the required mapping file.
-        if (filename != REQUIRED_MAPPING_FILE) {
+        if (filename != REQUIRED_SCRIPT_FILE) {
             qDebug() << "MidiMapping: writing script block for" << filename;
             QString functionPrefix = m_pScriptFunctionPrefixes[i];
             QDomElement scriptFile = doc.createElement("file");
@@ -1048,32 +1089,8 @@ void MidiMapping::cancelMidiLearn()
 #ifdef __MIDISCRIPT__
 void MidiMapping::restartScriptEngine()
 {
-    //qDebug() << QString("MidiObject: Creating MidiScriptEngine in Thread ID=%1").arg(QThread::currentThreadId(),0,16);
-    
-    scriptShutdown();   // Shut down the MIDI scripts
-
-    //XXX Deadly hack attack:
-    if (m_pOutputMidiDevice == NULL) {
-        m_pOutputMidiDevice = new MidiDeviceDummy(this); //Just make some dummy device :(
-    }
-    //XXX Memory leak :(
-
-    qDebug () << "Starting script engine with output device" << m_pOutputMidiDevice->getName();
-
-    m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice);
-    
-    m_pScriptEngine->moveToThread(m_pScriptEngine);
-    
-    connect(m_pScriptEngine, SIGNAL(initialized()),
-            this, SLOT(slotScriptEngineReady()),
-            Qt::DirectConnection);
-    m_scriptEngineInitializedMutex.lock();
-    m_pScriptEngine->start();
-    // Wait until the script engine is initialized
-    m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
-    m_scriptEngineInitializedMutex.unlock();
-    
-    scriptInitialize(); // Run the init MIDI scripts
+    shutdownScriptEngine();
+    startupScriptEngine();
 }
 #endif
 

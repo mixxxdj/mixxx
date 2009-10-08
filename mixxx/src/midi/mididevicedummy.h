@@ -28,7 +28,7 @@
 /** A dummy implementation of MidiDevice */
 class MidiDeviceDummy : public MidiDevice {
 public:
-    MidiDeviceDummy(MidiMapping* mapping=NULL) : MidiDevice(mapping) { setName("Dummy MIDI Device");};
+    MidiDeviceDummy(MidiMapping* mapping=NULL) : MidiDevice(mapping) { setObjectName("Dummy MIDI Device");};
     ~MidiDeviceDummy() {};
     int open() { return 0; };
     int close() { return 0; };

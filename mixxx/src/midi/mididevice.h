@@ -37,7 +37,6 @@ Q_OBJECT
         virtual ~MidiDevice();
         virtual int open() = 0;
         virtual int close() = 0;
-        void initialize();
         void shutdown();
         bool isOpen() { return m_bIsOpen; };
         bool isOutputDevice() { return m_bIsOutputDevice; };
