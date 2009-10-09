@@ -401,6 +401,7 @@ void DlgPreferences::setupMidiWidgets()
 
 void DlgPreferences::slotApply()
 {
+    m_pMidiDeviceManager->saveMappings();
 //    m_pMixxx->grabKeyboard();
 }
 
