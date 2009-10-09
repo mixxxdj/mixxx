@@ -153,7 +153,6 @@ void MidiMapping::setInputMidiMapping(MidiMessage command, MixxxControl control)
 void MidiMapping::internalSetInputMidiMapping(MidiMessage command, MixxxControl control, bool shouldEmit) {
     // If the command is already in the mapping, it will be replaced
     m_inputMapping.insert(command,control);
-    m_mappingLock.unlock();
     if (shouldEmit)
         emit(inputMappingChanged());
 }
