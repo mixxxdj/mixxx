@@ -44,13 +44,28 @@ void MidiDeviceManager::saveMappings(bool onlyActive) {
     QList<MidiDevice*> deviceList = getDeviceList(false, true);
     QListIterator<MidiDevice*> it(deviceList);
     
+    QList<QString> filenames;
+    
     while (it.hasNext())
     {
         MidiDevice *cur= it.next();
         if (onlyActive && !cur->isOpen()) continue;
         MidiMapping *mapping = cur->getMidiMapping();
-
-        mapping->savePreset();  // Save to default location for each device
+        QString name = cur->getName();
+        
+        // TODO: Make this work with up to 99 devices
+        QString ofilename = name.right(name.size()-3).replace(" ", "_");
+        
+        QString filename = ofilename;
+        
+        int i=1;
+        while (filenames.contains(filename)) {
+            i++;
+            filename = QString("%1--%2").arg(ofilename).arg(i);
+        }
+        
+        filenames.append(filename);
+        mapping->savePreset(BINDINGS_PATH.append(filename + MIDI_MAPPING_EXTENSION));
     }
 }
 
@@ -178,6 +193,8 @@ int MidiDeviceManager::setupDevices()
     
     qDebug() << "MidiDeviceManager: Setting up devices";
     
+    QList<QString> filenames;
+    
     while (it.hasNext())
     {
         MidiDevice *cur= it.next();
@@ -186,7 +203,20 @@ int MidiDeviceManager::setupDevices()
         mapping->setName(name);
         
         cur->close();
-        mapping->loadPreset(true);  // Force-load the default preset file for each device
+        
+        // TODO: Make this work with up to 99 devices
+        QString ofilename = name.right(name.size()-3).replace(" ", "_");
+        
+        QString filename = ofilename;
+        
+        int i=1;
+        while (filenames.contains(filename)) {
+            i++;
+            filename = QString("%1--%2").arg(ofilename).arg(i);
+        }
+        
+        filenames.append(filename);
+        mapping->loadPreset(BINDINGS_PATH.append(filename + MIDI_MAPPING_EXTENSION),true);
         
         if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" )
             continue;

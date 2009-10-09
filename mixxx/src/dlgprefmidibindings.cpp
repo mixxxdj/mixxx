@@ -204,9 +204,9 @@ void DlgPrefMidiBindings::slotUpdate() {
  * Called when the OK button is pressed.
  */
 void DlgPrefMidiBindings::slotApply() {
-    /* User has pressed OK, so write the controls to the DOM, reload the MIDI
-     * bindings, and save the device's XML file. */
-    m_pMidiDevice->getMidiMapping()->savePreset();
+    /* User has pressed OK, so write the controls to the DOM, and reload the MIDI
+     * bindings. */
+//     m_pMidiDevice->getMidiMapping()->savePreset();   // This is done all at once in DlgPreferences::slotApply()
     m_pMidiDevice->getMidiMapping()->applyPreset();
     m_pMidiDevice->disableMidiLearn();
     

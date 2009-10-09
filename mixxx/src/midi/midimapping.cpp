@@ -489,7 +489,7 @@ void MidiMapping::loadPreset(bool forceLoad) {
  *        specified in the mapping matches the device this MidiMapping object is hooked up to.
  */
 void MidiMapping::loadPreset(QString path, bool forceLoad) {
-    qDebug() << "MidiMapping: Loading MIDI XML from" << path;
+    qDebug() << "MidiMapping: Loading MIDI preset from" << path;
     loadPreset(WWidget::openXMLFile(path, "controller"), forceLoad);
 }
 
@@ -640,7 +640,6 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
  * Saves the current table of bindings to the default device XML file.
  */
 void MidiMapping::savePreset() {
-    qDebug() << "Writing MIDI preset file" << DEFAULT_DEVICE_PRESET;
     savePreset(DEFAULT_DEVICE_PRESET);
 }
 
@@ -648,6 +647,7 @@ void MidiMapping::savePreset() {
  * Given a path, saves the current table of bindings to an XML file.
  */
 void MidiMapping::savePreset(QString path) {
+    qDebug() << "Writing MIDI preset file" << path;
     m_mappingLock.lock();
     QFile output(path);
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
