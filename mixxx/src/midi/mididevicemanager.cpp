@@ -1,6 +1,6 @@
 /**
   * @file mididevicemanager.cpp
-  * @author Albert Santoni alberts@mixxx.org
+  * @author Albert Santoni alberts@mixxx.org & Sean Pappalardo pegasus@c64.org
   * @date Thu Dec 18 2008
   * @brief Manages creation/enumeration/deletion of MidiDevices.
   */
@@ -113,6 +113,7 @@ void MidiDeviceManager::closeDevices()
   */
 void MidiDeviceManager::queryDevices()
 {
+    qDebug() << "Scanning MIDI devices:";
     int iNumDevices = Pm_CountDevices();
     
     QListIterator<MidiDevice*> dev_it(m_devices);
@@ -126,20 +127,28 @@ void MidiDeviceManager::queryDevices()
     int inputDevIndex, outputDevIndex;
     QMap<int,QString> unassignedOutputDevices;
     
+    // Build a complete list of output devices for later pairing
+    for (int i = 0; i < iNumDevices; i++)
+    {
+        deviceInfo = Pm_GetDeviceInfo(i);
+        if (deviceInfo->output) {
+            qDebug() << " Found output device" << "#" << i << deviceInfo->name;
+            QString deviceName = deviceInfo->name;
+            // Ignore "To" text in the device names
+            if (deviceName.indexOf("to",0,Qt::CaseInsensitive)!=-1) deviceName = deviceName.right(deviceName.length()-2);
+            unassignedOutputDevices[i] = deviceName;
+        }
+    }
+
+    // Search for input devices and pair them with output devices if applicable
     for (int i = 0; i < iNumDevices; i++)
     {
         deviceInfo = Pm_GetDeviceInfo(i);
         
-        QString deviceDirectionString = "UNKNOWN";
-        if (deviceInfo->input) deviceDirectionString="Input";
-        if (deviceInfo->output) deviceDirectionString="Output";
-        
-        qDebug() << "Found" << deviceDirectionString << "device" << "#" << i << deviceInfo->name;
-        if (deviceInfo->output) unassignedOutputDevices[i] = deviceInfo->name;
-        
         //If we found an input device
         if (deviceInfo->input)
         {
+            qDebug() << " Found input device" << "#" << i << deviceInfo->name;
             inputDeviceInfo = deviceInfo;
             inputDevIndex = i;
             
@@ -147,19 +156,23 @@ void MidiDeviceManager::queryDevices()
             outputDeviceInfo = NULL;
             outputDevIndex = -1;
             
-            //Search for a corresponding output device from the ones already found
-            //since the output devices appear before their corresponding input devices
+            //Search for a corresponding output device
             QMapIterator<int, QString> j(unassignedOutputDevices);
             while (j.hasNext()) {
                 j.next();
+                
+                // Ignore "From" text in the device names
+                QString deviceName = inputDeviceInfo->name;
+                if (deviceName.indexOf("from",0,Qt::CaseInsensitive)!=-1) deviceName = deviceName.right(deviceName.length()-4);
+
                 QByteArray outputName = QString(j.value()).toUtf8();
-                if (strcmp(outputName, inputDeviceInfo->name) == 0) {
+                if (strcmp(outputName, deviceName) == 0) {
                     outputDevIndex = j.key();
                     outputDeviceInfo = Pm_GetDeviceInfo(outputDevIndex);
                     
                     unassignedOutputDevices.remove(outputDevIndex);
                     
-                    qDebug() << "   Linking to output MIDI device #" << outputDevIndex << outputName;
+                    qDebug() << "    Linking to output device #" << outputDevIndex << outputName;
                     break;
                 }
             }

@@ -437,6 +437,7 @@ if platform == 'win32':
 if 'win' in platform:
 	env.Append(CPPPATH='../../lib/ladspa') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
+	env.Append(LIBS='advapi32') # needed for PortMIDI
 #'/subsystem:windows',
 
 if platform == 'bsd':
