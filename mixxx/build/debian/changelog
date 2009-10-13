@@ -1,3 +1,9 @@
+mixxx (1.7.1-0ubuntu1) intrepid; urgency=low
+
+  * New upstream release 
+  
+ -- Albert Santoni <alberts@mixxx.org>  Tue,  13 October 2009 11:21:40 -0800
+
 mixxx (1.7.0-0ubuntu1) intrepid; urgency=low
 
   * New upstream release 
