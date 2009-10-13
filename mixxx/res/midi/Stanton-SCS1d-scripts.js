@@ -2,7 +2,7 @@
 /*      Stanton SCS.1d MIDI controller script vPre              */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.0                                 */
+/*      For Mixxx version 1.7.x                                 */
 /****************************************************************/
 
 function StantonSCS1d() {}
@@ -24,7 +24,7 @@ StantonSCS1d.scratching = {     "sensitivity":0.11,          // How much the aud
 StantonSCS1d.debug = true;  // Enable/disable debugging messages to the console
 StantonSCS1d.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1d.channel = 0;   // MIDI channel the device is on
-StantonSCS1d.swVersion = "1.7.0";   // Mixxx version for display
+StantonSCS1d.swVersion = "1.7";   // Mixxx version for display
 StantonSCS1d.buttons = { "control":27, "browse":28, "vinyl":29, "deckSelect":64 };
 
 StantonSCS1d.platterMode = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // Set vinyl mode on both decks

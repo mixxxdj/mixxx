@@ -2,7 +2,7 @@
 /*      Stanton SCS.3d MIDI controller script v1.21             */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.0                                 */
+/*      For Mixxx version 1.7.x                                 */
 /****************************************************************/
 
 function StantonSCS3d() {}
