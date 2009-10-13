@@ -217,7 +217,7 @@ vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
-vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
+vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 1)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
 if platform == 'linux':
@@ -538,9 +538,16 @@ if not conf.CheckLib('ogg'):
 	Exit(1)
 
 #hack: check for these here, before conf.Finish happens
-have_m4a = conf.CheckLib('mp4v2') or conf.CheckLib('mp4')
+have_mp4 = conf.CheckLib('mp4v2') or conf.CheckLib('mp4')
 have_faad = conf.CheckLib('faad')
-have_m4a = have_m4a and have_faad
+have_m4a = have_mp4 and have_faad
+flags_m4a = getFlags(env, 'm4a', 0)
+if int(flags_m4a) and not have_m4a:
+        if not have_mp4:
+                print 'Did not find libmp4v2 or the libmp4v2 development headers, exiting!'
+        if not have_faad:
+                print 'Did not find libfaad or the libfaad development headers, exiting!'
+        Exit(1)
 
 ## Check for OpenGL (it's messy to do it for all three platforms)
 ## XXX this should *NOT* have hardcoded paths like this
@@ -1119,7 +1126,7 @@ if int(flags_optimize):
 			env.Replace(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 		elif flags_optimize=='4':
 			print "  Intel Core 2 optimizations enabled."
-			env.Replace(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
 		elif flags_optimize=='5':
 			print "  Athlon 3dnow/SSE optimizations enabled (Athlon-4/XP/MP)."
 			env.Replace(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
