@@ -27,7 +27,7 @@ class PlayerInfo : public QObject
     Q_OBJECT
 public:
     static PlayerInfo &Instance();
-    TrackInfoObject *getTrackInfo(int track) const;
+    TrackInfoObject *getTrackInfo(int track);
     void setTrackInfo(int track, TrackInfoObject *trackInfoObj);
 private:
     PlayerInfo();
