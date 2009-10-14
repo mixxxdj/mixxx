@@ -33,7 +33,7 @@ PlayerInfo::~PlayerInfo()
 {
 }
 
-TrackInfoObject *PlayerInfo::getTrackInfo(int track) const
+TrackInfoObject *PlayerInfo::getTrackInfo(int track)
 {
     TrackInfoObject* pRet = NULL;
     m_mutex.lock();
