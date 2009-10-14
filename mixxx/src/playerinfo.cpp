@@ -25,7 +25,8 @@ PlayerInfo &PlayerInfo::Instance()
 }
 
 PlayerInfo::PlayerInfo()
-{
+        : m_pTrack1(NULL),
+          m_pTrack2(NULL) {
 }
 
 PlayerInfo::~PlayerInfo()
@@ -34,30 +35,34 @@ PlayerInfo::~PlayerInfo()
 
 TrackInfoObject *PlayerInfo::getTrackInfo(int track) const
 {
+    TrackInfoObject* pRet = NULL;
+    m_mutex.lock();
     switch (track)
     {
     case 1:
-        return m_pTrack1;
-        break; // not really needed
+        pRet = m_pTrack1;
+        break;
     case 2:
-        return m_pTrack2;
-        break; // not really needed
+        pRet = m_pTrack2;
+        break;
     default:
         // incorrect track number
-        return 0;
+        pRet = NULL;
     }
+    m_mutex.unlock();
+    return pRet;
 }
 
 void PlayerInfo::setTrackInfo(int track, TrackInfoObject *trackInfoObj)
 {
-    if (track==1||track==2) emit trackInfoChanged(track, trackInfoObj);
-    switch (track)
-    {
-    case 1:
-        m_pTrack1 = trackInfoObj;
-        break;
-    case 2:
-        m_pTrack2 = trackInfoObj;
-        break;
+    m_mutex.lock();
+    switch (track) {
+        case 1:
+            m_pTrack1 = trackInfoObj;
+            break;
+        case 2:
+            m_pTrack2 = trackInfoObj;
+            break;
     };
+    m_mutex.unlock();
 }
