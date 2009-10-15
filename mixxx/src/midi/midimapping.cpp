@@ -32,7 +32,7 @@
 
 #define REQUIRED_SCRIPT_FILE "midi-mappings-scripts.js"
 #define XML_SCHEMA_VERSION "1"
-#define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-3).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
+#define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-m_deviceName.indexOf(" ")-1).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
 
 static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
@@ -715,10 +715,7 @@ void MidiMapping::clearPreset() {
     Q_ASSERT(!m_mappingLock.tryLock());
     
     clearPreset(); // Create blank document
-    
-    
-    const QString wtfbbqdevicename = "Last used";
-    
+        
     QDomDocument doc("Bindings");
     QString blank = "<MixxxMIDIPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\" mixxxVersion=\"" + QString(VERSION) + "+\">\n"
                     "</MixxxMIDIPreset>\n";
@@ -727,7 +724,7 @@ void MidiMapping::clearPreset() {
     
     QDomElement rootNode = doc.documentElement();
     QDomElement controller = doc.createElement("controller");
-    controller.setAttribute("id", wtfbbqdevicename);
+    controller.setAttribute("id", m_deviceName.right(m_deviceName.size()-m_deviceName.indexOf(" ")-1));
     rootNode.appendChild(controller);
     
 #ifdef __MIDISCRIPT__

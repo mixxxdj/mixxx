@@ -53,8 +53,7 @@ void MidiDeviceManager::saveMappings(bool onlyActive) {
         MidiMapping *mapping = cur->getMidiMapping();
         QString name = cur->getName();
         
-        // TODO: Make this work with up to 99 devices
-        QString ofilename = name.right(name.size()-3).replace(" ", "_");
+        QString ofilename = name.right(name.size()-name.indexOf(" ")-1).replace(" ", "_");
         
         QString filename = ofilename;
         
@@ -217,8 +216,7 @@ int MidiDeviceManager::setupDevices()
         
         cur->close();
         
-        // TODO: Make this work with up to 99 devices
-        QString ofilename = name.right(name.size()-3).replace(" ", "_");
+        QString ofilename = name.right(name.size()-name.indexOf(" ")-1).replace(" ", "_");
         
         QString filename = ofilename;
         
