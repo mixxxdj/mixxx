@@ -344,7 +344,7 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
 
     if (iBufferSize > 0) encoder->encodeBuffer(pOut, iBufferSize);
 
-    if ( metaDataHasChanged())
+    if (metaDataHasChanged())
         updateMetaData();
 }
 
@@ -464,15 +464,17 @@ bool EngineShoutcast::metaDataHasChanged()
  */
 void EngineShoutcast::updateMetaData()
 {
-    QByteArray baSong;
-    if (m_pMetaData == NULL) {
-        baSong = "";
-    } else {
+    if (!m_pShoutMetaData)
+        return;
+
+    QByteArray baSong = "";
+    if (m_pMetaData != NULL) {
         // convert QStrings to char*s
         QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
         QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
         baSong = baArtist + " - " + baTitle;
     }
+
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     shout_set_metadata(m_pShout, m_pShoutMetaData);
 }
