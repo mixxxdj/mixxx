@@ -25,8 +25,16 @@ class ControlObjectThread;
 // SoundSource will be used 'soon' and so it should be brought into memory by
 // the reader work thread.
 typedef struct Hint {
+    // The sample to ensure is present in memory.
     int sample;
+    // If a range of samples should be present, use length to indicate that the
+    // range (sample, sample+length) should be present in memory.
     int length;
+    // Currently unused -- but in the future could be used to prioritize certain
+    // hints over others. A priority of 1 is the highest priority and should be
+    // used for samples that will be read imminently. Hints for samples that
+    // have the potential to be read (i.e. a cue point) should be issued with
+    // priority >10.
     int priority;
 } Hint;
 
