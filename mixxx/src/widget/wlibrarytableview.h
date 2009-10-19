@@ -10,7 +10,7 @@
 #include "configobject.h"
 #include "library/libraryview.h"
 
-class WLibraryTableView : public QTableView, public LibraryView {
+class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
   public:
     WLibraryTableView(QWidget* parent,
