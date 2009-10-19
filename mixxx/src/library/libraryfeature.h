@@ -11,6 +11,7 @@
 #include <QString>
 #include <QVariant>
 #include <QAbstractItemModel>
+#include <QUrl>
 
 class TrackModel;
 class TrackInfoObject;
@@ -21,8 +22,7 @@ class LibraryFeature : public QObject {
   Q_OBJECT
   public:
     LibraryFeature(QObject* parent = NULL);
-    
-    
+
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
     virtual int numChildren() = 0;
@@ -31,7 +31,7 @@ class LibraryFeature : public QObject {
     virtual bool dragMoveAccept(const QModelIndex& index, QUrl url) = 0;
 
     // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrarySidebar* sidebarWidget, 
+    virtual void bindWidget(WLibrarySidebar* sidebarWidget,
                             WLibrary* libraryWidget) {
     }
 
@@ -44,6 +44,8 @@ signals:
     void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
+    void loadTrack(TrackInfoObject* pTrack);
+    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
 };
 
 #endif /* LIBRARYFEATURE_H */
