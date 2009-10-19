@@ -26,7 +26,6 @@
 #include "probabilityvector.h"
 #include "windowkaiser.h"
 #include "wavesegmentation.h"
-#include "readerextractbeat.h"
 #include <q3memarray.h>
 #include <QtDebug>
 #include <qapplication.h>

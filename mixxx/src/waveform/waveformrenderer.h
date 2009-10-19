@@ -77,6 +77,8 @@ private:
     WaveformRenderSignalPixmap *m_pRenderSignalPixmap;
     WaveformRenderBeat *m_pRenderBeat;
     WaveformRenderMark *m_pRenderCue;
+    WaveformRenderMark *m_pRenderLoopStart;
+    WaveformRenderMark *m_pRenderLoopEnd;
 
     const int m_iSubpixelsPerPixel;
     const int m_iPixelsPerSecond;
