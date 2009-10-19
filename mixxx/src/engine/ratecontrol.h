@@ -18,25 +18,32 @@ class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
 
+// RateControl is an EngineControl that is in charge of managing the rate of
+// playback of a given channel of audio in the Mixxx engine. Using input from
+// various controls, RateControl will calculate the current rate.
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     ~RateControl();
-    double process(const double dRate, 
+
+    // Must be called during each callback of the audio thread so that
+    // RateControl has a chance to update itself.
+    double process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
-                   const double iBufferSize);
+                   const int iBufferSize);
+    // Returns the current engine rate.
     double calculateRate(double baserate, bool paused);
     double getRawRate();
 
-    /** Set rate change when temp rate button is pressed */
+    // Set rate change when temp rate button is pressed
     static void setTemp(double v);
-    /** Set rate change when temp rate small button is pressed */
+    // Set rate change when temp rate small button is pressed
     static void setTempSmall(double v);
-    /** Set rate change when perm rate button is pressed */
+    // Set rate change when perm rate button is pressed
     static void setPerm(double v);
-    /** Set rate change when perm rate small button is pressed */
+    // Set rate change when perm rate small button is pressed
     static void setPermSmall(double v);
     /** Set Rate Ramp Mode */
     static void setRateRamp(bool);
@@ -72,7 +79,7 @@ private:
     
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
-    
+
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,

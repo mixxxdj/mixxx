@@ -1,8 +1,8 @@
 // readaheadmanager.h
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef __READAHEADMANGER_H__
-#define __READAHEADMANGER_H__
+#ifndef READAHEADMANGER_H
+#define READAHEADMANGER_H
 
 #include <QList>
 #include <QMutex>
@@ -13,11 +13,20 @@
 class EngineControl;
 class CachingReader;
 
+// ReadAheadManager is a tool for keeping track of the engine's current position
+// in a file. In the case that the engine needs to read ahead of the current
+// play position (for example, to feed more samples into a library like
+// SoundTouch) then this will keep track of how many samples the engine has
+// consumed. The getNextSamples() method encapsulates the logic of determining
+// whether to take a loop or jump into a single method. Whenever the Engine
+// seeks or the current play position is invalidated somehow, the Engine must
+// call notifySeek to inform the ReadAheadManager to reset itself to the seek
+// point.
 class ReadAheadManager {
 public:
     explicit ReadAheadManager(CachingReader* reader);
     virtual ~ReadAheadManager();
-    
+
     // Call this method to fill buffer with requested_samples out of the
     // lookahead buffer. Provide rate as dRate so that the manager knows the
     // direction the audio is progressing in. Returns the total number of
@@ -34,11 +43,14 @@ public:
 
     void notifySeek(int iSeekPosition);
 private:
+    // A broken method for choosing which EngineControl to trust for determining
+    // when to take loops and jumps. Currently the RAMAN just uses the first
+    // EngineControl.
     QPair<int, double> getSoonestTrigger(double dRate, int iCurrentSample);
-    
+
     QList<EngineControl*> m_sEngineControls;
     int m_iCurrentPosition;
     CachingReader* m_pReader;
 };
 
-#endif // __READAHEADMANGER_H__
+#endif // READAHEADMANGER_H

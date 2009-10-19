@@ -68,6 +68,8 @@ CachingReader::~CachingReader() {
 void CachingReader::initialize() {
     int memory_to_use = 5000000; // 5mb, TODO
 
+    Q_ASSERT(memory_to_use >= kChunkLength);
+
     // Only allocate as many bytes as we will actually use.
     memory_to_use -= (memory_to_use % kChunkLength);
 
@@ -86,6 +88,9 @@ void CachingReader::initialize() {
 
     CSAMPLE* bufferStart = m_pRawMemoryBuffer;
 
+    // Divide up the allocated raw memory buffer into total_chunks
+    // chunks. Initialize each chunk to hold nothing and add it to the free
+    // list.
     for (int i=0; i < total_chunks; i++) {
         Chunk* c = new Chunk;
         c->chunk_number = -1;
@@ -105,6 +110,7 @@ void CachingReader::initialize() {
 Chunk* CachingReader::removeFromLRUList(Chunk* chunk, Chunk* head) {
     Q_ASSERT(chunk);
 
+    // Remove chunk from the doubly-linked list.
     Chunk* next = chunk->next_lru;
     Chunk* prev = chunk->prev_lru;
 
@@ -224,6 +230,7 @@ Chunk* CachingReader::getChunk(int chunk_number) {
 
     Chunk* chunk = lookupChunk(chunk_number);
 
+    // If it wasn't in the cache, read it from file.
     if (chunk == NULL) {
         //qDebug() << "Cache miss on chunk " << chunk_number;
         chunk = allocateChunkExpireLRU();
