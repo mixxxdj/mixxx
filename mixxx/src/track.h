@@ -82,7 +82,7 @@ public:
     TrackPlaylistList* getPlaylists();
     /** Checks if the library directory's "last modified" timestamp has been changed */
     bool checkLibraryLastModified();
-	
+
     /** Current active playlist */
     TrackPlaylist *m_pActivePlaylist; //FIXME wtf public variable?
 
@@ -120,9 +120,9 @@ public slots:
     /** Load the given track in player 2 if it exists */
     void slotLoadPlayer2(QString filename, bool bStartFromEndPos = false);
     /** Finish loading a track into Player1 after Reader has loaded the song into memory */
-    void slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos);
+    void slotFinishLoadingPlayer1(TrackInfoObject* pTrackInfoObject);
     /** Finish loading a track into Player2 after Reader has loaded the song into memory */
-    void slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos);
+    void slotFinishLoadingPlayer2(TrackInfoObject* pTrackInfoObject);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer1(double);
     /** Slot used when playback reaches end of track */
@@ -237,6 +237,10 @@ private:
     ControlObjectThreadMain *m_pNextTrackCh1, *m_pNextTrackCh2, *m_pPrevTrackCh1, *m_pPrevTrackCh2;
     /** Pointer to ControlObject for cue points (NOT the cue buttons - the cue points are the indices of the cue point samples.)*/
     ControlObjectThreadMain *m_pCuePointCh1, *m_pCuePointCh2;
+    // The loop in points for channel 1 and 2
+    ControlObjectThreadMain *m_pLoopInCh1, *m_pLoopInCh2;
+    // The loop out points for channel 1 and 2
+    ControlObjectThreadMain *m_pLoopOutCh1, *m_pLoopOutCh2;
     /** Pointer to ControlObject for playlist navigation/loading into Players */
      ControlObjectThreadMain *m_pLoadSelectedTrackCh1, *m_pLoadSelectedTrackCh2, *m_pLoadSelectedIntoFirstStopped, *m_pSelectNextTrack, *m_pSelectPrevTrack, *m_pSelectTrackKnob, *m_pSelectNextPlaylist, *m_pSelectPrevPlaylist;
     /** Pointer to ControlObject for play position */

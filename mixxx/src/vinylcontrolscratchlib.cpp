@@ -20,7 +20,6 @@
 #include "vinylcontrolscratchlib.h"
 
 #include "DAnalyse.h"
-#include "reader.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 

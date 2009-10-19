@@ -17,11 +17,10 @@
 
 #include "enginebufferscalereal.h"
 #include "mathstuff.h"
-#include "readerextractwave.h"
 #include "engineobject.h"
 #include "controlobject.h"
 
-EngineBufferScaleReal::EngineBufferScaleReal(ReaderExtractWave * wave) : EngineBufferScale(wave)
+EngineBufferScaleReal::EngineBufferScaleReal() : EngineBufferScale()
 {
     m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
     m_pFragmentBuffer = new float[(int)(96000.*2.*kfRealSearchFragmentLength)];
@@ -62,16 +61,10 @@ void EngineBufferScaleReal::clear()
     m_iFragmentLength  = 0;
 }
 
-CSAMPLE * EngineBufferScaleReal::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
-{
+CSAMPLE* EngineBufferScaleReal::scale(double playpos, int buf_size,
+                                      CSAMPLE* pBase, int iBaseLength) {
     if (m_dTempo<1.)
         return buffer;
-
-    if (!pBase)
-    {
-        pBase = wavebuffer;
-        iBaseLength = READBUFFERSIZE;
-    }
 
     // Copy samples to fragment buffer if necessary
     int iWantedFragmentLength = (int)(m_pControlObjectSampleRate->get()*kfRealSearchFragmentLength)*2;
