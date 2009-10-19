@@ -34,7 +34,7 @@ static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
 
-MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(midi_object) {
+MidiMapping::MidiMapping(MidiObject& midi_object) : QObject(), m_rMidiObject(midi_object), m_mappingLock(QMutex::Recursive) {
 #ifdef __MIDISCRIPT__
     m_pScriptEngine = midi_object.getMidiScriptEngine();
 #endif
@@ -170,7 +170,7 @@ void MidiMapping::clearInputMidiMapping(int index) {
         valid = true;
     }
     m_mappingLock.unlock();
-    
+
     if (valid)
         emit(inputMappingChanged());
 }
@@ -182,7 +182,7 @@ void MidiMapping::clearInputMidiMapping(MidiMessage command) {
     m_mappingLock.lock();
     int changed = m_inputMapping.remove(command);
     m_mappingLock.unlock();
-    
+
     if(changed > 0)
         emit(inputMappingChanged());
 }
@@ -330,7 +330,7 @@ void MidiMapping::clearOutputMidiMapping(int index) {
         changed = true;
     }
     m_mappingLock.unlock();
-    
+
     if (changed)
         emit(outputMappingChanged());
 }
@@ -342,7 +342,7 @@ void MidiMapping::clearOutputMidiMapping(MixxxControl control) {
     m_mappingLock.lock();
     int changed = m_outputMapping.remove(control);
     m_mappingLock.unlock();
-    
+
     if(changed > 0)
         emit(outputMappingChanged());
 }
@@ -361,7 +361,7 @@ void MidiMapping::clearOutputMidiMapping(int index, int count) {
         changed += m_outputMapping.remove(control);
     }
     m_mappingLock.unlock();
-    
+
     if(changed > 0)
         emit(outputMappingChanged());
 }
@@ -377,9 +377,7 @@ void MidiMapping::clearOutputMidiMapping(int index, int count) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
-    // No lock necessary since this is private. Assume the lock is held.
-    Q_ASSERT(!m_mappingLock.tryLock());
-    
+    // This assumes that the lock is held.
     m_pScriptFileNames.append(filename);
     m_pScriptFunctionPrefixes.append(functionprefix);
 }
@@ -414,9 +412,9 @@ void MidiMapping::loadPreset(QString path) {
  */
 void MidiMapping::loadPreset(QDomElement root) {
     //qDebug() << QString("MidiMapping: loadPreset() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    
+
     if (root.isNull()) return;
-    
+
     m_pMidiInputMappingTableModel->removeRows(0, m_pMidiInputMappingTableModel->rowCount());
     m_pMidiOutputMappingTableModel->removeRows(0, m_pMidiOutputMappingTableModel->rowCount());
 
@@ -425,7 +423,7 @@ void MidiMapping::loadPreset(QDomElement root) {
     // so when we make a call to them they might in turn call us, causing a
     // deadlock.
     m_mappingLock.lock();
-    
+
 #ifdef __MIDISCRIPT__
     m_rMidiObject.restartScriptEngine();
     m_pScriptEngine = m_rMidiObject.getMidiScriptEngine();
@@ -503,7 +501,7 @@ void MidiMapping::loadPreset(QDomElement root) {
             // Verify script functions are loaded
             if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
                 scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
-                
+
                 QString statusText = QString(midiMessage.getMidiStatusByte());
                 qWarning() << "Error: Function" << mixxxControl.getControlObjectValue()
                            << "was not found in loaded scripts."
@@ -595,7 +593,7 @@ void MidiMapping::applyPreset() {
  * Creates a blank bindings preset.
  */
 void MidiMapping::clearPreset() {
-    Q_ASSERT(!m_mappingLock.tryLock());
+    // Assumes the lock is held.
     // Create a new blank DomNode
     QString blank = "<MixxxMIDIPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\" mixxxVersion=\"" + QString(VERSION) + "+\">\n"
     "</MixxxMIDIPreset>\n";
@@ -609,8 +607,7 @@ void MidiMapping::clearPreset() {
  */
  void MidiMapping::buildDomElement() {
      // We should hold the mapping lock.
-     Q_ASSERT(!m_mappingLock.tryLock());
-     
+
      clearPreset(); // Create blank document
 
      const QString wtfbbqdevicename = "Last used";
@@ -909,17 +906,17 @@ void MidiMapping::finishMidiLearn(MidiMessage message)
     if (!m_controlToLearn.isNull()) { //Ensure we've actually been told to learn
                                       //a control.  Note the ! out front.
         addInputControl(message, m_controlToLearn);
-        
+
         //If we caught a NOTE_ON message, add a binding for NOTE_OFF as well.
         if (message.getMidiStatusByte() == MIDI_STATUS_NOTE_ON) {
             MidiMessage noteOffMessage(message);
             noteOffMessage.setMidiStatusByte(MIDI_STATUS_NOTE_OFF);
             addInputControl(noteOffMessage, m_controlToLearn);
         }
-    
+
         //Reset the saved control.
         m_controlToLearn = MixxxControl();
-    
+
         qDebug() << "MidiMapping: Learning finished!";
 
         shouldEmit = true;
@@ -945,7 +942,7 @@ void MidiMapping::beginMidiLearn(MixxxControl control)
     qDebug() << "MidiMapping: Learning started!";
 
     m_mappingLock.unlock();
-    
+
     //Notify the MIDI device class that it should feed us the next MIDI message...
     emit(midiLearningStarted());
 }
