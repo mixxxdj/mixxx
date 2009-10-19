@@ -131,7 +131,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     
     long current_sample = 0;
     long prev_sample = 0;
-    int fuckups = 0;
     bool last_read_failed = false;
 
     int i = 0;
@@ -153,7 +152,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         if (current_sample+1 >= buffer_size) {
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
-                qDebug() << "Fuckups" << ++fuckups;
                 unscaled_samples_needed = 2;
             }
             

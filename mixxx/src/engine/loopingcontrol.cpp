@@ -146,7 +146,7 @@ void LoopingControl::slotLoopIn(double val) {
         // set loop in position
         m_iLoopStartSample = m_iCurrentSample;
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
-        qDebug() << "set loop_in to " << m_iLoopStartSample;
+        //qDebug() << "set loop_in to " << m_iLoopStartSample;
     }
 }
 
@@ -158,7 +158,7 @@ void LoopingControl::slotLoopOut(double val) {
         if (m_iLoopStartSample != -1 &&
             m_iLoopEndSample != -1)
             m_bLoopingEnabled = true;
-        qDebug() << "set loop_out to " << m_iLoopStartSample;
+        //qDebug() << "set loop_out to " << m_iLoopStartSample;
     }
 }
 
@@ -167,12 +167,12 @@ void LoopingControl::slotReloopExit(double val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
             m_bLoopingEnabled = false;
-            qDebug() << "reloop_exit looping off";
+            //qDebug() << "reloop_exit looping off";
         } else {
             // If we're not looping, jump to the loop-in point and start looping
             if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1)
                 m_bLoopingEnabled = true;
-            qDebug() << "reloop_exit looping on";
+            //qDebug() << "reloop_exit looping on";
         }
     }
 }
