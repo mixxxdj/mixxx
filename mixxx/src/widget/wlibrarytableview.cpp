@@ -38,6 +38,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>*
 }
 
 WLibraryTableView::~WLibraryTableView() {
+    qDebug() << "~WLibraryTableView";
     saveHeaderState();
     saveVScrollBarPosState();
 }
@@ -122,9 +123,11 @@ void WLibraryTableView::saveVScrollBarPosState() {
 }
 
 ConfigKey WLibraryTableView::getHeaderStateKey() {
+    qDebug() << "WARNING -- getHeaderStateKey is not implemented.";
     return ConfigKey();
 }
 
 ConfigKey WLibraryTableView::getVScrollBarPosKey() {
+    qDebug() << "WARNING -- getVScrollBarPosKey is not implemented.";
     return ConfigKey();
 }
