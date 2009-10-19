@@ -47,14 +47,14 @@ def getMixxxVersion():
 	#p = os.popen('grep -m 1 "#define VERSION" %s' % defs) #this is not cross-platform
 	#version = p.readline()
 	#p.close()
-	
+
 	for line in open(str(defs)).readlines():
 		if line.strip().startswith("#define VERSION"):
 			version = line
 			break
 	else:
 		raise ValueError("Version not found")
-	
+
 	#given "#define VERSION "...."" extract "....":
 	version = version.split()[-1].replace('"', '')
 	return version
@@ -98,7 +98,7 @@ def CheckFFMPEG(conf, sources):
 		print "Not working FFMPEG support... enabled"
 	else:
 		print "Not working FFMPEG support... disabled"
-	return	
+	return
 
 
 # Checks for pkg-config on Linux
@@ -258,7 +258,7 @@ finally:
 
 #Mixxx sources to build
 sources = Split("""
-                
+
                 input.cpp
                 mixxxkeyboard.cpp
                 configobject.cpp
@@ -310,12 +310,12 @@ sources = Split("""
                 engine/enginesidechain.cpp
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
-                
+
                 analyserqueue.cpp
 		analyserwavesummary.cpp
 		analyserbpm.cpp
 		analyserwaveform.cpp
-                
+
                 main.cpp
                 midiobject.cpp
                 midimapping.cpp
@@ -335,7 +335,7 @@ sources = Split("""
                 mixxxview.cpp
                 errordialog.cpp
                 upgrade.cpp
-                
+
                 soundsource.cpp
                 soundsourcemp3.cpp
                 soundsourceoggvorbis.cpp
@@ -359,7 +359,7 @@ sources = Split("""
                 widget/wsearchlineedit.cpp
 		widget/wpixmapstore.cpp
 				widget/hexspinbox.cpp
-                
+
                 mathstuff.cpp
                 readerextract.cpp
                 readerextractwave.cpp
@@ -374,6 +374,8 @@ sources = Split("""
                 wtracktableview.cpp
                 widget/wlibrarysidebar.cpp
                 widget/wlibrary.cpp
+                widget/wlibrarytableview.cpp
+                widget/wbrowsetableview.cpp
                 library/trackcollection.cpp
                 library/librarytablemodel.cpp
                 library/browsetablemodel.cpp
@@ -387,11 +389,12 @@ sources = Split("""
                 library/playlistfeature.cpp
                 library/rhythmboxfeature.cpp
                 library/itunesfeature.cpp
+                library/browsefeature.cpp
                 library/sidebarmodel.cpp
                 library/libraryscanner.cpp
                 library/libraryscannerdlg.cpp
                 library/library.cpp
-              
+
                 xmlparse.cpp
                 parser.cpp
                 parserpls.cpp
@@ -409,14 +412,14 @@ sources = Split("""
 		waveform/waveformrenderbackground.cpp
 		waveform/waveformrendersignal.cpp
 		waveform/waveformrendersignalpixmap.cpp
-		waveform/waveformrendermark.cpp	
+		waveform/waveformrendermark.cpp
                 waveform/waveformrenderbeat.cpp
-                
-                
+
+
                 imginvert.cpp
                 imgloader.cpp
                 imgcolor.cpp
-                
+
                 trackinfoobject.cpp
                 player.cpp
                 midiledhandler.cpp
@@ -429,7 +432,7 @@ sources = Split("""
                 wtracktablefilter.cpp
                 durationdelegate.cpp
                 playerinfo.cpp
-                
+
                 segmentation.cpp
                 """)
 
@@ -472,7 +475,7 @@ if platform == 'bsd':
 
 	env.Append(LIBS='pthread')
 	env.Append(LIBS=['ogg', 'vorbis']) #why do we need to do this on OpenBSD and not on Linux? if we don't then CheckLib("vorbisfile") fails
-elif platform == 'osx':	
+elif platform == 'osx':
 	#Non-standard libpaths for fink and certain (most?) darwin ports
 	env.Append(LIBPATH = ['/sw/lib'])
 	env.Append(CPPPATH = ['/sw/include'])
@@ -496,20 +499,20 @@ if int(flags_portmidi):
 	#if not conf.CheckLib(['porttime', 'libporttime']):
 	#	print "Did not find porttime or it\'s development headers, exiting!"
 	#	Exit(1)
-	sources += Split("""midiobjectportmidi.cpp """); 
+	sources += Split("""midiobjectportmidi.cpp """);
 	env.Append(CPPDEFINES = '__PORTMIDI__')
 
 
 
 #TODO: Add all of the other configure checks as custom_tests properly.
-	
+
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
 #XXX all these Exit(1) calls should be turned into a list of libs to look for and then a loop that does the exit if any(conf.CheckLib(lib) for lib in list)
 if not conf.CheckLib('portaudio'):
 	print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 	Exit(1)
-	
+
 if not conf.CheckLib(['id3tag','libid3tag-release']):
 	print 'Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!'
 	Exit(1)
@@ -561,7 +564,7 @@ if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckC
 if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
 	print 'Did not find GLU development files, exiting!'
 	Exit(1)
-	
+
 #Check if FFMPEG was enabled
 CheckFFMPEG(conf, sources)
 
@@ -572,13 +575,13 @@ if platform == 'linux':
 	if os.system("which g++ > /dev/null"): #Checks for non-zero return code
 		print "Did not find g++, exiting!"
 		Exit(1)
-	
+
 	#Check for pkg-config
 	if not conf.CheckForPKGConfig('0.15.0'):
 		print 'pkg-config >= 0.15.0 not found.'
 		Exit(1)
-		
-	#Check for QT >= 4.3	
+
+	#Check for QT >= 4.3
 	if not conf.CheckForPKG('QtCore', '4.3'):
 		print 'QT >= 4.3 not found.'
 		Exit(1)
@@ -595,7 +598,7 @@ if platform == 'linux':
 		"""
 		#Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
 		#(This hopefully respects our qtdir=blah flag while linking now.)
-		
+
 		env.EnableQt4Modules([
 		'QtCore',
 		'QtGui',
@@ -612,7 +615,7 @@ if platform == 'linux':
 		],
 		debug=False,
 		)
-		
+
 
 	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
@@ -637,10 +640,10 @@ if platform == 'linux':
 
 #Platform-specific checks for OS X
 if platform == 'osx':
-	
+
 	env.Append(CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
 	env.Append(LINKFLAGS='-framework OpenGL')
-	
+
 	#QT4
 	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
@@ -650,11 +653,11 @@ if platform == 'osx':
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtSql.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
-	
+
 	#Non-standard libpaths for fink and darwin ports
 	env.Append(LIBPATH = ['/sw/lib'])
 	env.Append(CPPPATH = ['/sw/include'])
-			
+
 	#Check for CoreMIDI
 	if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
 		print 'Did not find CoreMIDI framework, exiting! (Please install it)'
@@ -694,9 +697,9 @@ elif platform == 'bsd':
 elif 'win' in platform:
 	env.Append(CPPDEFINES='__WINDOWS__')
 	env.Append(CPPDEFINES='UNICODE')	# Need this on Windows until we have UTF16 support in Mixxx
-	if platform == 'win32':	
+	if platform == 'win32':
 		env.Append(CPPDEFINES='WIN32')
-	if platform == 'win64':	
+	if platform == 'win64':
 		env.Append(CPPDEFINES='WIN64')
 
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
@@ -813,7 +816,7 @@ else:
 env.Append(CPPPATH=['#lib/kissfft'])
 sources += Split("""#lib/kissfft/kiss_fft.c""")
 
-#libsamplerate - Getting rid of this out of our source tree since we don't use it. 
+#libsamplerate - Getting rid of this out of our source tree since we don't use it.
 #env.Append(CPPPATH='#lib/libsamplerate')
 #sources += Split("""engine/enginebufferscalesrc.cpp #lib/libsamplerate/samplerate.c #lib/libsamplerate/src_linear.c #lib/libsamplerate/src_sinc.c #lib/libsamplerate/src_zoh.c""")
 
@@ -877,7 +880,7 @@ if int(flags_ipod):
 		# env.Append(LIBS = 'glib-2.0')
 		env.ParseConfig('pkg-config libgpod-1.0 --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
-		
+
 	sources += Split("""wipodtracksmodel.cpp """) #IPOD
 	print "iPod support... enabled"
 	build_flags += 'ipod '
@@ -890,27 +893,27 @@ flags_shoutcast = getFlags(env, 'shoutcast', 0)
 if int(flags_shoutcast):
 	shoutmp3 = 0
 	shoutogg = 0
-	
+
 	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
 	conf.CheckLib('shout')
-	
+
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
-	
+
 	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp """ )
 	build_flags += 'shoutcast '
-	
-	
+
+
 	if conf.CheckLib('mp3lame'):
 		env.Append(CPPDEFINES = '__SHOUTCAST_LAME__')
 		sources += Split(""" encodermp3.cpp """)
 		shoutmp3 = 1
-	
+
 	if conf.CheckLib('vorbisenc'):
 		env.Append(CPPDEFINES = '__SHOUTCAST_VORBIS__')
 		sources += Split("""  encodervorbis.cpp """)
 		shoutogg = 1
-	
-	
+
+
 	if shoutmp3 and shoutogg:
 		print "Shoutcast support (OGG/MP3)... enabled"
 	elif shoutmp3:
@@ -919,9 +922,9 @@ if int(flags_shoutcast):
 		print "Shoutcast support (OGG)... enabled"
 	else:
 		print "Shoutcast support... enabled"
-	
+
 	env.Uic4('dlgprefshoutcastdlg.ui')
-	
+
 else:
 	print "Shoutcast support... disabled"
 
@@ -1074,7 +1077,7 @@ if int(flags_script):
 			script/macrolistitem.cpp script/qtscriptinterface.cpp""")
 	env.Append(CPPPATH = '$QTDIR/include/QtScript')
 	env.Append(CPPDEFINES = '__SCRIPT__')
-	
+
 	env.Uic4('script/scriptstudio.ui')
 else:
 	flags_script = 0
@@ -1171,7 +1174,7 @@ else:
 if int(flags_optimize) > 1:
     sources += Split("""#lib/soundtouch-1.4.1/mmx_optimized.cpp #lib/soundtouch-1.4.1/sse_optimized.cpp""")
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
-    
+
 # Enable SoundTouch Windows 3dNow optimizations if we're on AMD
 if 'win' in platform and int(flags_optimize) in (5,6,7):
     sources += Split("""#lib/soundtouch-1.4.1/3dnow_win.cpp""")
@@ -1272,7 +1275,7 @@ try:
 	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
 finally:
 	f.close()
-	
+
 # Print the build flags (useful if the flags have been cached, ie. if you just run "scons"
 # and want to see the flags that you used last time)
 print "================"
@@ -1394,7 +1397,7 @@ if platform in ('linux', 'bsd'):
 		print "Install root: " + install_root
 		if install_root != flags_prefix:
 			unix_share_path = install_root + "/share"
-			unix_bin_path   = install_root + "/bin"			
+			unix_bin_path   = install_root + "/bin"
 		else:
 			unix_share_path = flags_prefix + "/share"
 			unix_bin_path   = flags_prefix + "/bin"
@@ -1419,7 +1422,7 @@ if platform in ('linux', 'bsd'):
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
 		env.Alias('install', promotracks)
-		
+
 		#Delete the old Mixxx installation (because SCONS won't overwrite it)
 		#if 'install' in COMMAND_LINE_TARGETS:
 			#os.system('scons -c install')
@@ -1428,7 +1431,7 @@ if platform in ('linux', 'bsd'):
 			#env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
 			#Copy(unix_share_path + "/.ixxx/skins", skin_files)
 			#Delete(unix_bin_path + "mixxx")
-			
+
 			#Delete(unix_share_path + "/mixxx/midi")
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
@@ -1438,7 +1441,7 @@ if platform == 'osx':
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
 	ARCH="macintel" #XXX should get this from scons or the system somehow?
 	DMG_ICON="#res/osx/VolumeIcon.icns"
-	
+
 	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
 	qt_plugins = [("iconengines", e) for e in ["libqsvgicon.dylib"]] + \
 			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] + \
@@ -1460,7 +1463,7 @@ if platform == 'osx':
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
-		
+
 if 'win' in platform:
 	skins = env.Install("#dist/skins", skin_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
@@ -1490,7 +1493,7 @@ if 'win' in platform:
 			print "Done."
 	import atexit
 	atexit.register(cleanSVNDirsFromDist)
-	
+
 def BuildRelease(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
@@ -1517,10 +1520,10 @@ def BuildRelease(target, source, env):
 
 	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
 		print "\nNow building installer..."
-		
+
 		buildwin64 = ""
 		type(buildwin64) == str
-		
+
 		# Windows registry access to find where NSIS is installed
 		import _winreg
 		hklm = _winreg.ConnectRegistry( None, _winreg.HKEY_LOCAL_MACHINE )
@@ -1529,7 +1532,7 @@ def BuildRelease(target, source, env):
 			nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
 		except WindowsError:
 			nsis_location_handle = None
-		
+
 		if not nsis_location_handle:
 			try:
 				nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
@@ -1543,7 +1546,7 @@ def BuildRelease(target, source, env):
 				buildwin64 = "/Dx64=1"
 			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
 			_winreg.CloseKey(hklm)
-		
+
 			# Call the NSIS build
 			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s Mixxx.nsi' % {'path':nsis_location, \
 'version':env['MIXXX_VERSION'], '64bit':buildwin64}
@@ -1560,7 +1563,7 @@ env.Append(BUILDERS = {'BuildRelease' : versionbld})
 if 'makerelease' in COMMAND_LINE_TARGETS:
 	makerelease = env.BuildRelease('', binary_files)
 	env.Alias('makerelease', makerelease)
-	
+
 #Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
 	print
@@ -1581,50 +1584,50 @@ def BuildUbuntuPackage(target, source, env):
 
 	if ("yes" == "yes"):
 		print "Now building DEB package..."
-		
+
 		mixxx_dir = 'mixxx-' + env['MIXXX_VERSION']
 		mixxx_tarball = 'mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz' #The underscore is super important here to make the deb package work
-		
+
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
 
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 		print "Exporting source tree from HEAD"
 		os.system('bzr export ubuntu/mixxx-tree')
-		
+
 		#print "Copying promo tracks dir"
 		#os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
 
         #bzr exports the whole mixxx branch, including mixxx-winlib, etc. We just want the source:
 		os.chdir('ubuntu/mixxx-tree')
 		os.system('mv ' + 'mixxx ' + mixxx_dir);
-		
+
 		#Temporarily move the debian directory out of the source directory
 		#because it can't be included in the source tarball (which we create next).
 		#print "Moving debian directory"
 		#os.system('rm -f debian')
 		#os.system('mv mixxx-' + env['MIXXX_VERSION'] + '/src/debian .')
-		
+
 		print "Tarring source directory..."
 		os.system("rm -f mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz") #Remove old tarball
 		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz ' + mixxx_dir)
-		
+
 		#Move the debian directory into the right spot.
 		#os.system('mv debian mixxx-' + env['MIXXX_VERSION'])
 		os.system('rm -rf ' + mixxx_dir + '/debian')
 		os.system('mv ' + mixxx_dir + '/build/debian ' + mixxx_dir)
-		
+
 		#Run pbuilder
 		os.chdir(mixxx_dir)
 		os.system('pdebuild')
-		
+
 		#/var/cache/pbuilder/result
 		print
 		# print "Signing the .deb changes file..."
 		# os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
-		
+
 		print "Done! Package and tarballs are in /var/cache/pbuilder/result"
-		
+
 	else:
 		print "Aborted building installer"
 

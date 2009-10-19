@@ -11,6 +11,7 @@
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+#include "library/browsefeature.h"
 #include "library/rhythmboxfeature.h"
 #include "library/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
@@ -28,12 +29,13 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig) {
     m_pTrackCollection = new TrackCollection();
     m_pSidebarModel = new SidebarModel(parent);
-    // TODO -- turn this construction / adding of features into a static method
-    // or something -- CreateDefaultLibrary
+    // TODO(rryan) -- turn this construction / adding of features into a static
+    // method or something -- CreateDefaultLibrary
     addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new RhythmboxFeature(this));
     addFeature(new ITunesFeature(this));
+    addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
 }
 
 Library::~Library() {
@@ -65,7 +67,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
-    
+
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
     emit(switchToView(m_sTrackViewName));
@@ -78,7 +80,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
-            
+
     // Enable the default selection
     pSidebarWidget->selectionModel()
         ->select(m_pSidebarModel->getDefaultSelection(),
@@ -100,6 +102,10 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(switchToView(const QString&)),
             this, SLOT(slotSwitchToView(const QString&)));
+    connect(feature, SIGNAL(loadTrack(TrackInfoObject*)),
+            this, SLOT(slotLoadTrack(TrackInfoObject*)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
