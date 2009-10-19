@@ -2,10 +2,10 @@
 #define WTRACKTABLEVIEW_H
 
 #include <QAbstractItemModel>
-#include <QTableView>
 
 #include "configobject.h"
 #include "library/libraryview.h"
+#include "widget/wlibrarytableview.h"
 
 class TrackInfoObject;
 class TrackModel;
@@ -15,17 +15,14 @@ const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigVal
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 
-class WTrackTableView : public QTableView, public LibraryView
+class WTrackTableView : public WLibraryTableView
 {
     Q_OBJECT
  	public:
-    WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * pConfig);
-    ~WTrackTableView();
-    void setup(QDomNode node);
+    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig);
+    virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
 public slots:
-    void saveVScrollBarPos();
-    void restoreVScrollBarPos();
     void loadTrackModel(QAbstractItemModel* model);
 private slots:
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -35,19 +32,20 @@ private slots:
 signals:
     void loadTrack(TrackInfoObject* pTrack);
     void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+
 private:
+    virtual ConfigKey getHeaderStateKey();
+    virtual ConfigKey getVScrollBarPosKey();
+
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
-    
+
     ConfigObject<ConfigValue> * m_pConfig;
     //QList<QString> m_selectedTrackLocations;
-    QModelIndexList m_selectedIndices;   
- 	    
-    /** The position of the vertical scrollbar slider, eg. before a search is executed */
-    int m_iSavedVScrollBarPos;
- 	    
+    QModelIndexList m_selectedIndices;
+
     //Used for right-click operations
     /**Send to Play Queue Action**/
     QAction *m_pPlayQueueAct;
