@@ -55,7 +55,6 @@
 #include "widget/wskincolor.h"
 #include "mixxx.h"
 #ifdef __LADSPA__
-#include "dlgladspa.h"
 #include "ladspaview.h"
 #endif
 #include "defs_promo.h"
@@ -81,7 +80,7 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
 
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
-    
+
     // Default values for visuals
     //m_pTrackTable = 0;
     m_pTextCh1 = 0;
@@ -127,7 +126,7 @@ MixxxView::~MixxxView()
 	delete m_pVisualCh1;
 	m_pVisualCh1 = NULL;
     }
-    
+
     if(m_pVisualCh2) {
 	m_qWidgetList.remove(m_pVisualCh2);
 	delete m_pVisualCh2;
@@ -138,7 +137,7 @@ MixxxView::~MixxxView()
 	delete m_pWaveformRendererCh1;
 	m_pWaveformRendererCh1 = NULL;
     }
-    
+
     if(m_pWaveformRendererCh2) {
 	delete m_pWaveformRendererCh2;
 	m_pWaveformRendererCh2 = NULL;
@@ -157,8 +156,8 @@ void MixxxView::checkDirectRendering()
     //  * Warn user
 
     // TODO rryan -- re-integrate with 'new' GL viewer
-    
-    
+
+
     if((m_pVisualCh1 &&
 	WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1) == WAVEFORM_GL &&
 	!((WGLWaveformViewer *)m_pVisualCh1)->directRendering()) ||
@@ -173,7 +172,7 @@ void MixxxView::checkDirectRendering()
 		    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
 		}
 	}
-    
+
 }
 
 bool MixxxView::activeWaveform()
@@ -269,9 +268,9 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     QFile file(WWidget::getPath("skin.xml"));
     QFileInfo fi(file);
     QByteArray qbaFilename = fi.fileName().toUtf8();
-    
+
     if (!file.open(QIODevice::ReadOnly))
-    {  
+    {
         qFatal("Could not open skin definition file: %s", qbaFilename.constData());
     }
     if (!skin.setContent(&file))
@@ -437,18 +436,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 parent->setPalette(palette);
                 //parent->setEraseColor(WSkinColor::getCorrectColor(c));
                 parent->setAutoFillBackground(true);
-                
+
     //Next, let's set up the colour palette for Mixxx's non-skinned elements
     //(eg. search box, combobox, toolbar)
     //For what color controls what, see this reference:
     //http://doc.trolltech.com/4.3/qpalette.html
-	
+
     //palette.setColor(QPalette::Text, QColor("white")); //combobox and search box text colour
     //palette.setColor(QPalette::WindowText, QColor("white"));
     //palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c)); //search box background colour
     //palette.setColor(QPalette::Button, WSkinColor::getCorrectColor(c));
-    //parent->setPalette(palette);                
-                
+    //parent->setPalette(palette);
+
             }
             else if (node.nodeName()=="VuMeter")
             {
@@ -467,7 +466,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="Visual")
             {
 		WaveformViewerType type;
-		
+
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
 		    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
@@ -478,9 +477,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    // Hook up [Channel1],wheel Control Object to the Visual Controller
 		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
 		    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
-			
+
 		    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
- 
+
 		    // Things to do whether the waveform was previously created or not
 		    if(type == WAVEFORM_GL) {
 			m_bVisualWaveform = true; // TODO : remove this crust
@@ -500,19 +499,19 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		{
 		    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
 		    m_qWidgetList.append(m_pVisualCh2);
-			
+
 		    m_pVisualCh2->installEventFilter(m_pKeyboard);
-			
+
 		    // Hook up [Channel1],wheel Control Object to the Visual Controller
 		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
 		    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
 
 		    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-		    
+
 		    // Things to do whether the waveform was previously created or not
 		    if(type == WAVEFORM_GL) {
 			m_bVisualWaveform = true; // TODO : remove this crust
-			
+
 			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
 			// TODO rryan re-enable this later
 			/*
@@ -688,7 +687,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         m_pComboBox->addItem( "Free Tracks", TABLE_MODE_PROMO );
                     // m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
                     m_pComboBox->installEventFilter(m_pKeyboard);
-               
+
                     //Add the combo box to the the library page's layout.
                     m_pLibraryPageLayout->addWidget(m_pComboBox, 0, 0, Qt::AlignLeft); //Row 0, col 0
                 }
@@ -717,7 +716,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pLineEditSearch = new WSearchLineEdit(path, this);
                     m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
                 }
-                
+
                 /*
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -746,10 +745,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidgetLibraryPage = new QWidget();
                     m_pTabWidgetLibraryPage = new QWidget(this);
                     //m_pTabWidgetEffectsPage = new QWidget();
-                    //m_pDlgLADSPA = new DlgLADSPA(this);
 
                     m_pLADSPAView = new LADSPAView(this);
-                    m_pTabWidgetEffectsPage = m_pLADSPAView; //m_pDlgLADSPA; 
+                    m_pTabWidgetEffectsPage = m_pLADSPAView;
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
       //              m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
@@ -769,20 +767,20 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     //Add the library page to the tab widget.
                     m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);//, tr("Library"));
-                    
+
                     //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);//, tr("Effects"));      
-                    
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);//, tr("Effects"));
+
                     /*
                     //XXX: Re-enable this to get the tab widget back, post 1.7.0 release.
                     //Add the library page to the tab widget.
                     m_pTabWidget->addWidget(m_pTabWidgetLibraryPage, tr("Library"));
-                    
+
                     //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));   
-		    */             
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));
+		    */
                 }
-                
+
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
 
@@ -819,7 +817,7 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     // the widget list.
     m_pVisualCh1 = NULL;
     m_pVisualCh2 = NULL;
-    
+
     //remove all widget from the list (except permanent one)
     while (!m_qWidgetList.isEmpty()) {
         delete m_qWidgetList.takeFirst();

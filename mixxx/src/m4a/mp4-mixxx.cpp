@@ -9,6 +9,8 @@
 #include <QtCore>
 #include <stdlib.h>
 
+#include "mathstuff.h"
+
 /*
  * Copyright 2006 dnk <dnk@bjum.net>
  *
@@ -256,8 +258,6 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
 		return -1;
 	}
 
-
-
 	if (!aac_data) {
 		qDebug() << "aac_data == NULL";
 		errno = EINVAL;
@@ -388,20 +388,36 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
 
   //qDebug() << "Seeking to" << frame_for_sample << ":" << frame_offset;
 
+  // Invalid sample requested -- return the current position.
   if (frame_for_sample < 1 || frame_for_sample > priv->mp4.num_samples)
     return mp4_current_sample(ip_data);
 
+  // We don't have the current frame decoded -- decode it.
   if (priv->sample_buf_frame != frame_for_sample) {
-      // We don't have the current frame decoded -- decode it.
-      priv->mp4.sample = frame_for_sample;
-      //faacDecPostSeekReset(priv->decoder, priv->mp4.sample);
 
-      // This results in the overflow buffer holding the entire frame.
+      // We might have to 'prime the pump' if this isn't the first frame. The
+      // decoder has internal state that it builds as it plays, and just seeking
+      // to the frame we want will result in poor audio quality (clicks and
+      // pops). This is akin to seeking in a video and seeing MPEG
+      // artifacts. Figure out how many frames we need to go backward -- 1 seems
+      // to work.
+      const int how_many_backwards = 1;
+      int start_frame = math_max(frame_for_sample - how_many_backwards, 1);
+      priv->mp4.sample = start_frame;
+
+      // rryan 9/2009 -- the documentation is sketchy on this, but I think that
+      // it tells the decoder that you are seeking so it should flush its state
+      faacDecPostSeekReset(priv->decoder, priv->mp4.sample);
+
+      // Loop until the current frame is past the frame we intended to read
+      // (i.e. we have decoded how_many_backwards + 1 frames). The desidered
+      // decoded frame will be stored in the overflow buffer, since we're asking
+      // to read 0 bytes.
       int result;
       do {
           result = decode_one_frame(ip_data, 0, 0);
           if (result < 0) qDebug() << "SEEK_ERROR";
-      } while (result == -2);
+      } while (result == -2 || priv->mp4.sample <= frame_for_sample);
 
       if (result == -1 || result == 0) {
           return mp4_current_sample(ip_data);
@@ -410,11 +426,12 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
       qDebug() << "Seek within frame";
   }
 
+  // Now the overflow buffer contains the sample we want to seek to. Fix the
+  // overflow buffer so that the next call to read() will read starting with the
+  // requested sample.
   priv->overflow_buf = priv->sample_buf;
   priv->overflow_buf += frame_offset_bytes;
   priv->overflow_buf_len -= frame_offset_bytes;
-
-  //qDebug() << "seeking from sample" << priv->mp4.sample << "to sample" << sample;
 
   return mp4_current_sample(ip_data);
 }
