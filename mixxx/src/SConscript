@@ -392,6 +392,7 @@ sources = Split("""
                 library/rhythmboxfeature.cpp
                 library/itunesfeature.cpp
                 library/browsefeature.cpp
+                library/browsefilter.cpp
                 library/sidebarmodel.cpp
                 library/libraryscanner.cpp
                 library/libraryscannerdlg.cpp

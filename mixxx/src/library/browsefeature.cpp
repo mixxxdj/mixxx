@@ -4,9 +4,11 @@
 #include <QStringList>
 #include <QTreeView>
 #include <QDirModel>
+#include <QStringList>
 
 #include "trackinfoobject.h"
 #include "library/browsefeature.h"
+#include "library/browsefilter.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "widget/wwidget.h"
@@ -20,10 +22,11 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_fileSystemModel(this),
+          m_proxyModel(this),
           m_pTrackCollection(pTrackCollection) {
     m_fileSystemModel.setReadOnly(true);
     m_fileSystemModel.setFilter(QDir::AllDirs | QDir::AllEntries);
-    m_fileSystemModel.setRootPath("/");
+    m_proxyModel.setSourceModel(&m_fileSystemModel);
     //m_fileSystemModel.setSorting(QDir::DirsFirst | Qir::IgnoreCase);
 }
 
@@ -59,6 +62,7 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                WLibrary* libraryWidget) {
     WBrowseTableView* pBrowseView = new WBrowseTableView(libraryWidget,
                                                          m_pConfig);
+
     connect(pBrowseView, SIGNAL(activated(const QModelIndex &)),
             this, SLOT(onFileActivate(const QModelIndex &)));
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
@@ -67,8 +71,14 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     pBrowseView->setDragEnabled(true);
     pBrowseView->setDragDropMode(QAbstractItemView::DragDrop);
     pBrowseView->setAcceptDrops(false);
+    pBrowseView->setModel(&m_proxyModel);
 
-    pBrowseView->setModel(&m_fileSystemModel);
+    QString startPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    m_fileSystemModel.setRootPath(startPath);
+    QModelIndex startIndex = m_fileSystemModel.index(startPath);
+    QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
+    emit(setRootIndex(proxyIndex));
+
     libraryWidget->registerView("BROWSE", pBrowseView);
 }
 
@@ -86,18 +96,23 @@ void BrowseFeature::onClick(QModelIndex index) {
 }
 
 void BrowseFeature::onFileActivate(const QModelIndex& index) {
-    QString path = m_fileSystemModel.filePath(index);
+    QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
+    QString path = m_fileSystemModel.filePath(sourceIndex);
+    QFileInfo info(path);
+    QString absPath = info.absoluteFilePath();
     qDebug() << "activate()" << path;
 
-    if (m_fileSystemModel.isDir(index)) {
-        m_fileSystemModel.setRootPath(path);
-        emit(setRootIndex(index));
+    if (m_fileSystemModel.isDir(sourceIndex)) {
+        m_fileSystemModel.setRootPath(absPath);
+        QModelIndex absIndex = m_fileSystemModel.index(absPath);
+        QModelIndex absIndexProxy = m_proxyModel.mapFromSource(absIndex);
+        emit(setRootIndex(absIndexProxy));
     } else {
-        TrackInfoObject* track = m_pTrackCollection->getTrack(path);
+        TrackInfoObject* track = m_pTrackCollection->getTrack(absPath);
 
         // The track doesn't exist in the database.
         if (track == NULL) {
-            track = new TrackInfoObject(path);
+            track = new TrackInfoObject(absPath);
         }
 
         emit(loadTrack(track));
