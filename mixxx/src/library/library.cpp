@@ -110,6 +110,7 @@ void Library::addFeature(LibraryFeature* feature) {
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     qDebug() << "Library::slotShowTrackModel" << model;
+    emit(switchToView(m_sTrackViewName));
     emit(showTrackModel(model));
 }
 
