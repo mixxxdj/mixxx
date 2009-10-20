@@ -30,6 +30,8 @@ private:
     TrackInfoObject* m_pLoadedTrack;
 
     ControlObjectThreadMain* m_pCuePoint;
+    ControlObjectThreadMain* m_pLoopInPoint;
+    ControlObjectThreadMain* m_pLoopOutPoint;
     ControlObjectThreadMain* m_pPlayPosition;
     ControlObjectThreadMain* m_pDuration;
     ControlObjectThreadMain* m_pBPM;

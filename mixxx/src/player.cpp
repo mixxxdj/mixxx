@@ -23,23 +23,35 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     connect(m_pEngineBuffer, SIGNAL(trackLoaded(TrackInfoObject*)),
             this, SLOT(slotFinishLoading(TrackInfoObject*)));
 
- 	//Get cue point control objects
-    m_pCuePoint = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel,"cue_point")));
-	//Playback position within the currently loaded track (in this player).
-	m_pPlayPosition = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel, "playposition")));
-	//Duration of the current song
-    m_pDuration = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel, "duration")));
+    //Get cue point control object
+    m_pCuePoint = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_strChannel,"cue_point")));
+    // Get loop point control objects
+    m_pLoopInPoint = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_strChannel,"loop_start_position")));
+    m_pLoopOutPoint = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_strChannel,"loop_end_position")));
+    //Playback position within the currently loaded track (in this player).
+    m_pPlayPosition = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_strChannel, "playposition")));
+    //Duration of the current song
+    m_pDuration = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_strChannel, "duration")));
     //BPM of the current song
-    m_pBPM = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
-
+    m_pBPM = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
 }
 
 Player::~Player()
 {
-	emit(unloadingTrack(m_pLoadedTrack));
-	delete m_pLoadedTrack;
-	delete m_pCuePoint;
-	delete m_pPlayPosition;
+    emit(unloadingTrack(m_pLoadedTrack));
+    // TODO(XXX) Really? Delete the TIO? Seems unsafe until we figure out the
+    // lifetime of TIOs issue.
+    delete m_pLoadedTrack;
+    delete m_pCuePoint;
+    delete m_pLoopInPoint;
+    delete m_pLoopOutPoint;
+    delete m_pPlayPosition;
     delete m_pDuration;
     delete m_pBPM;
 }
@@ -88,6 +100,11 @@ void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
 
     //Set the cue point, if it was saved.
     m_pCuePoint->slotSet(m_pLoadedTrack->getCuePoint());
+
+    // Reset the loop points. TODO(XXX) once loops are stored in the DB, replace
+    // this with the default load loop.
+    m_pLoopInPoint->slotSet(-1);
+    m_pLoopOutPoint->slotSet(-1);
 
     int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
     if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load.
