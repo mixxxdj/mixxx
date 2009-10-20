@@ -6,7 +6,6 @@
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "trackinfoobject.h"
-#include "reader.h"
 #include "engine/enginebuffer.h"
 #include "playerinfo.h"
 #include "soundsourceproxy.h"
@@ -18,11 +17,12 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
       m_pEngineBuffer(buffer),
       m_strChannel(channel),
       m_pLoadedTrack(NULL) {
-    
-	//Tell the reader to notify us when it's done loading a track so we can finish doing stuff.
-	connect(m_pEngineBuffer->getReader(), SIGNAL(finishedLoading(TrackInfoObject*, bool)),
-            this, SLOT(slotFinishLoading(TrackInfoObject*, bool)));
-	
+
+    //Tell the reader to notify us when it's done loading a track so we can
+    //finish doing stuff.
+    connect(m_pEngineBuffer, SIGNAL(trackLoaded(TrackInfoObject*)),
+            this, SLOT(slotFinishLoading(TrackInfoObject*)));
+
  	//Get cue point control objects
     m_pCuePoint = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel,"cue_point")));
 	//Playback position within the currently loaded track (in this player).
@@ -46,27 +46,26 @@ Player::~Player()
 
 void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 {
-	//Disconnect the old track's signals.
-	if (m_pLoadedTrack) {
-		m_pLoadedTrack->disconnect(); 
-		emit(unloadingTrack(m_pLoadedTrack)); //Causes the track's data to be saved back to the library database.
-	}
-	
-	//TODO: Free m_pLoadedTrack, but make sure nobody else still has a pointer to it...
-	//			(ie. I think we should use auto-pointers for TrackInfoObjects...)
-	
-	m_pLoadedTrack = track;
-    
+    //Disconnect the old track's signals.
+    if (m_pLoadedTrack) {
+        m_pLoadedTrack->disconnect();
+        emit(unloadingTrack(m_pLoadedTrack)); //Causes the track's data to be saved back to the library database.
+    }
+
+    //TODO: Free m_pLoadedTrack, but make sure nobody else still has a pointer to it...
+    //			(ie. I think we should use auto-pointers for TrackInfoObjects...)
+
+    m_pLoadedTrack = track;
+
     // Listen for updates to the file's BPM
     connect(m_pLoadedTrack, SIGNAL(bpmUpdated(double)),
             m_pBPM, SLOT(slotSet(double)));
-	
-	//Request a new track from the reader
-	m_pEngineBuffer->getReader()->requestNewTrack(track, bStartFromEndPos);
- 
+
+    //Request a new track from the reader
+    m_pEngineBuffer->loadTrack(track);
 }
 
-void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject, bool bStartFromEndPos)
+void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
 {
     // Read the tags if required
     if(!m_pLoadedTrack->getHeaderParsed())
@@ -90,16 +89,11 @@ void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject, bool bStartFro
     //Set the cue point, if it was saved.
     m_pCuePoint->slotSet(m_pLoadedTrack->getCuePoint());
 
-    //Seek to cue position if we're not starting at end of song and cue recall is on
-    if (!bStartFromEndPos) {
-        int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
-        if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load.
-            //Note that cueRecall == 0 corresponds to "ON", not OFF.
-            float cue_point = m_pLoadedTrack->getCuePoint();
-            long numSamplesInSong = m_pEngineBuffer->getReader()->getFileLength();
-            cue_point = cue_point / (numSamplesInSong);
-            m_pPlayPosition->slotSet(cue_point);
-        }
+    int cueRecall = m_pConfig->getValueString(ConfigKey("[Controls]","CueRecall")).toInt();
+    if (cueRecall == 0) { //If cue recall is ON in the prefs, then we're supposed to seek to the cue point on song load.
+        //Note that cueRecall == 0 corresponds to "ON", not OFF.
+        float cue_point = m_pLoadedTrack->getCuePoint();
+        m_pEngineBuffer->slotControlSeekAbs(cue_point);
     }
 
     emit(newTrackLoaded(m_pLoadedTrack));

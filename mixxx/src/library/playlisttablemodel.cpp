@@ -9,12 +9,12 @@ PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackC
 {
 	m_pTrackCollection = pTrackCollection;
     //m_iPlaylistId = playlistId;
-    
+
     setPlaylist(playlistId);
-	
+
 	//Hide columns in the tablemodel that we don't want to show.
 	/*
-	removeColumn(this->fieldIndex(LIBRARYTABLE_ID)); 
+	removeColumn(this->fieldIndex(LIBRARYTABLE_ID));
 	removeColumn(this->fieldIndex(LIBRARYTABLE_FILENAME));
 	removeColumn(this->fieldIndex(LIBRARYTABLE_URL));
 	removeColumn(this->fieldIndex(LIBRARYTABLE_LENGTHINBYTES));
@@ -30,14 +30,14 @@ PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackC
     setHeaderData(this->fieldIndex(LIBRARYTABLE_TITLE), Qt::Horizontal, tr("Title"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_ALBUM), Qt::Horizontal, tr("Album"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_GENRE), Qt::Horizontal, tr("Genre"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR), Qt::Horizontal, tr("Year"));            
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR), Qt::Horizontal, tr("Year"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_LOCATION), Qt::Horizontal, tr("Location"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_COMMENT), Qt::Horizontal, tr("Comment"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_DURATION), Qt::Horizontal, tr("Duration"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_BITRATE), Qt::Horizontal, tr("Bitrate"));
     setHeaderData(this->fieldIndex(LIBRARYTABLE_BPM), Qt::Horizontal, tr("BPM"));
     */
-    
+
 
 }
 
@@ -63,13 +63,13 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     playlistNameField.setValue(playlistTableName);
 
     query.prepare("CREATE TEMPORARY VIEW " + driver->formatValue(playlistNameField) + " AS "
-                  "SELECT " + 
-                  PLAYLISTTRACKSTABLE_POSITION + "," +  
+                  "SELECT " +
+                  PLAYLISTTRACKSTABLE_POSITION + "," +
                   //"playlist_id, " + //DEBUG
-                  LIBRARYTABLE_ARTIST + "," + 
+                  LIBRARYTABLE_ARTIST + "," +
                   LIBRARYTABLE_TITLE + "," +
                   LIBRARYTABLE_ALBUM + "," +
-                  LIBRARYTABLE_YEAR + "," +	
+                  LIBRARYTABLE_YEAR + "," +
                   LIBRARYTABLE_DURATION + "," +
                   LIBRARYTABLE_GENRE + "," +
                   LIBRARYTABLE_TRACKNUMBER + "," +
@@ -82,11 +82,11 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "WHERE PlaylistTracks.playlist_id=" + QString("%1").arg(playlistId) + " "
                   "ORDER BY PlaylistTracks.position ");
     //query.bindValue(":playlist_name", playlistTableName);
-    //query.bindValue(":playlist_id", m_iPlaylistId); 
+    //query.bindValue(":playlist_id", m_iPlaylistId);
     query.exec();
-    
+
     //qDebug() << query.executedQuery();
-     
+
     //Print out any SQL error, if there was one.
     /*
     if (query.lastError().isValid()) {
@@ -94,7 +94,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     }*/
 
     setTable(playlistTableName);
-    
+
    	select(); //Populate the data model.
 }
 
@@ -106,7 +106,7 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 	//      and there's no arbitrary "unsorted" view.
 	//m_pTrackCollection->addTrack(location);
 	const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-	int position = index.sibling(index.row(),selectedIndex positionColumnIndex).data().toInt();
+	int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
 	m_pTrackCollection->insertTrackIntoPlaylist(location, m_iPlaylistId, position);
 	select(); //Repopulate the data model.
 }
@@ -114,11 +114,11 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
-    
+
 	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
 	return m_pTrackCollection->getTrack(location);
-	
+
 }
 
 QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
@@ -126,11 +126,11 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
     //FIXME: use position instead of location for playlist tracks?
 	const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	return location; 
+	return location;
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
-{    
+{
 	const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
 	int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
 	m_pTrackCollection->removeTrackFromPlaylist(m_iPlaylistId, position);
@@ -141,11 +141,11 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
 {
     QSqlRecord sourceRecord = this->record(sourceIndex.row());
     this->removeRows(sourceIndex.row(), 1);
-    
+
     this->insertRecord(destIndex.row(), sourceRecord);
-    
+
     //TODO: execute a real query to DELETE the sourceIndex.row() row from the PlaylistTracks table.
-    
+
 }
 
 void PlaylistTableModel::search(const QString& searchText)
