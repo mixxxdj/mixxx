@@ -217,7 +217,7 @@ vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
-vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
+vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 1)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
 if platform == 'linux':
@@ -310,6 +310,12 @@ sources = Split("""
                 engine/enginesidechain.cpp
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
+                engine/enginecontrol.cpp
+                engine/ratecontrol.cpp
+                engine/loopingcontrol.cpp
+                engine/bpmcontrol.cpp
+                engine/readaheadmanager.cpp
+                cachingreader.cpp
 
                 analyserqueue.cpp
 		analyserwavesummary.cpp
@@ -361,13 +367,9 @@ sources = Split("""
 				widget/hexspinbox.cpp
 
                 mathstuff.cpp
-                readerextract.cpp
-                readerextractwave.cpp
-                readerevent.cpp
                 rtthread.cpp
                 windowkaiser.cpp
                 probabilityvector.cpp
-                reader.cpp
 
                 peaklist.cpp
                 rotary.cpp
@@ -551,9 +553,16 @@ if not conf.CheckLib('ogg'):
 	Exit(1)
 
 #hack: check for these here, before conf.Finish happens
-have_m4a = conf.CheckLib('mp4')
+have_mp4 = conf.CheckLib('mp4v2') or conf.CheckLib('mp4')
 have_faad = conf.CheckLib('faad')
-have_m4a = have_m4a and have_faad
+have_m4a = have_mp4 and have_faad
+flags_m4a = getFlags(env, 'm4a', 0)
+if int(flags_m4a) and not have_m4a:
+        if not have_mp4:
+                print 'Did not find libmp4v2 or the libmp4v2 development headers, exiting!'
+        if not have_faad:
+                print 'Did not find libfaad or the libfaad development headers, exiting!'
+        Exit(1)
 
 ## Check for OpenGL (it's messy to do it for all three platforms)
 ## XXX this should *NOT* have hardcoded paths like this
@@ -1124,29 +1133,31 @@ if int(flags_optimize):
 	else:
 		print "Optimizations... enabled"
 		build_flags += 'optimize=' + str(flags_optimize) + ' '
+		env.Replace(CFLAGS = '') # replace CFLAGS and CXXFLAGS with our own optimizations.
 		if flags_optimize=='1':
-			env.Append(CXXFLAGS = '-O3')
+			env.Replace(CXXFLAGS = '-O3')
 		elif flags_optimize=='2':
 			print "  P4 MMX/SSE optimizations enabled."
-			env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 		elif flags_optimize=='3':
 			print "  Intel Core Solo/Duo optimizations enabled."
-			env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 		elif flags_optimize=='4':
 			print "  Intel Core 2 optimizations enabled."
-			env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
 		elif flags_optimize=='5':
 			print "  Athlon 3dnow/SSE optimizations enabled (Athlon-4/XP/MP)."
-			env.Append(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 		elif flags_optimize=='6':
 			print "  Athlon 3dnow/SSE/SSE2 optimizations enabled (K8/Opteron/AMD64)."
-			env.Append(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 		elif flags_optimize=='7':
 			print "  Athlon 3dnow/SSE/SSE2/SSE3 optimizations enabled (K8/Opteron/AMD64 w/ SSE3)."
-			env.Append(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 		elif flags_optimize=='8':
 			print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
-			env.Append(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Replace(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		env.Append(CXXFLAGS = ' ') # add a space to the end of CXXFLAGS
 else:
 	print "Optimizations... disabled"
 
@@ -1443,9 +1454,9 @@ if platform == 'osx':
 	DMG_ICON="#res/osx/VolumeIcon.icns"
 
 	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
-	qt_plugins = [("iconengines", e) for e in ["libqsvgicon.dylib"]] + \
-			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] + \
-             [("sqldrivers", e) for e in ["libqsqlite.dylib"]]
+	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
+                      [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
+                      [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
 	#Left out libqmng and libqtiff to save space.
 
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
@@ -1584,42 +1595,53 @@ def BuildUbuntuPackage(target, source, env):
 
 	if ("yes" == "yes"):
 		print "Now building DEB package..."
-
+                print
 		mixxx_dir = 'mixxx-' + env['MIXXX_VERSION']
 		mixxx_tarball = 'mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz' #The underscore is super important here to make the deb package work
 
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
 
+		if os.path.exists('ubuntu/'+mixxx_dir):
+			print "* Cleaning up ubuntu/"+mixxx_dir + " (cwd: " + os.getcwd() + ")"
+			print
+			os.system('rm -rf ubuntu/'+mixxx_dir)
+
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
-		print "Exporting source tree from HEAD"
-		os.system('bzr export ubuntu/mixxx-tree')
 
-		#print "Copying promo tracks dir"
-		#os.system('cp -r promo ubuntu/mixxx-' + env['MIXXX_VERSION'])
+		# Export the source folder
+		print "* Exporting source folder from current workspace (bzr rev: " + getBZRRevision() + ")"
+		print
+		os.system('bzr export ubuntu/'+mixxx_dir + ' .')
 
-        #bzr exports the whole mixxx branch, including mixxx-winlib, etc. We just want the source:
-		os.chdir('ubuntu/mixxx-tree')
-		os.system('mv ' + 'mixxx ' + mixxx_dir);
+		# Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
+		if os.path.exists('post-export-patch'):
+			print "* Applying post export patch"
+			print
+			os.system('cp --dereference -r post-export-patch/* ubuntu/'+mixxx_dir)
 
-		#Temporarily move the debian directory out of the source directory
-		#because it can't be included in the source tarball (which we create next).
-		#print "Moving debian directory"
-		#os.system('rm -f debian')
-		#os.system('mv mixxx-' + env['MIXXX_VERSION'] + '/src/debian .')
-
-		print "Tarring source directory..."
+		os.chdir('ubuntu')
+		# Tar the source code
+		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz ... (this can take a couple minutes)"
+		print
 		os.system("rm -f mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz") #Remove old tarball
-		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz ' + mixxx_dir)
+		os.system('tar --exclude=debian --exclude=debian/* -czf  mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz ' + mixxx_dir)
 
-		#Move the debian directory into the right spot.
-		#os.system('mv debian mixxx-' + env['MIXXX_VERSION'])
-		os.system('rm -rf ' + mixxx_dir + '/debian')
-		os.system('mv ' + mixxx_dir + '/build/debian ' + mixxx_dir)
+		os.chdir(mixxx_dir)
+		# Copy the debian folder from /build/debian to exported source folder root
+		print "* Copying Debian build directory from build/debian to debian (cwd: " + os.getcwd() + ")"
+		print
+		os.system('cp -r build/debian .')
 
 		#Run pbuilder
-		os.chdir(mixxx_dir)
+		print "* Starting pbuilder ...  (cwd: " + os.getcwd() + ")"
+		print
 		os.system('pdebuild')
+
+		# Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
+		os.chdir('../..')
+		print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
+		print
 
 		#/var/cache/pbuilder/result
 		print

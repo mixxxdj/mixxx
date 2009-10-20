@@ -1,10 +1,14 @@
 #include <QtCore>
-#include "enginebufferscale.h"
-#include "readerextractwave.h"
-#include "enginebufferscaledummy.h"
+
+#include "engine/enginebufferscaledummy.h"
+
+#include "engine/enginebufferscale.h"
+#include "engine/readaheadmanager.h"
 
 
-EngineBufferScaleDummy::EngineBufferScaleDummy(ReaderExtractWave *_wave) : EngineBufferScale(_wave)
+EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager)
+    : EngineBufferScale(),
+      m_pReadAheadManager(pReadAheadManager)
 {
 	new_playpos = 0.0f;
 }
@@ -40,48 +44,39 @@ void EngineBufferScaleDummy::clear()
  * @param pBase
  * @param iBaseLength (same units as playpos)
  */
-CSAMPLE *EngineBufferScaleDummy::scale(double playpos, unsigned long buf_size, float *pBase, unsigned long iBaseLength)
+CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
+                                       unsigned long buf_size,
+                                       CSAMPLE* pBase,
+                                       unsigned long iBaseLength)
 {
-    if (!pBase)
-    {
-        pBase = wavebuffer;				//The "base" buffer is really 
-        								//the EngineBuffer's circular 
-        								//audio buffer.
-        iBaseLength = READBUFFERSIZE;	//Length of the base buffer
+
+    if (m_dBaseRate * m_dTempo == 0.0f) {
+        memset(buffer, 0, sizeof(CSAMPLE) * buf_size);
+        return buffer;
     }
-		
-	unsigned long baseplaypos = ((long)playpos) % iBaseLength; // Playpos wraps within the base buffer
-													  // This is the position within base
+    int samples_remaining = buf_size;
+    CSAMPLE* buffer_back = buffer;
+    while (samples_remaining > 0) {
+        int read_samples = m_pReadAheadManager->getNextSamples(m_dBaseRate*m_dTempo,
+                                                               buffer_back,
+                                                               samples_remaining);
+        samples_remaining -= read_samples;
+        buffer_back += read_samples;
+    }
 
-	long numSamplesToCopy = buf_size; // If we can copy a whole chunk
-	if ((baseplaypos + buf_size) > iBaseLength) 	  // At the end of a buffer, only copy as much as we can fit
-		numSamplesToCopy = (iBaseLength - baseplaypos); // Copy however many samples are left
-		
-	// Write to the modded position inside the base
-    // also remember to convert to bytes from samples
-	memcpy(buffer, &pBase[baseplaypos], numSamplesToCopy * sizeof(CSAMPLE));
+    if (m_dBaseRate * m_dTempo < 0) {
+        new_playpos = -long(buf_size);
+    } else {
+        new_playpos = buf_size;
+    }
 
-	//If we've hit the end of the circular "base" buffer, copy the remaining samples
-	//that we need from the start of the circular buffer over.  
-	//In other words, pBase is a circular buffer and we need exactly buf_size 
-    //samples so we take some from the beggining
-	if (numSamplesToCopy < buf_size)
-	{
-	    //qDebug() << "Filling the rest of the buffer: " << numSamplesToCopy << buf_size - numSamplesToCopy;
-	    memcpy(&buffer[numSamplesToCopy], &pBase[0], (buf_size - numSamplesToCopy) * sizeof(CSAMPLE));
-	    numSamplesToCopy = buf_size;
-	}
-
-	//Update the "play position"
-	new_playpos = ((long)(playpos + numSamplesToCopy*m_dBaseRate*m_dTempo));
-	
 /*
         //START OF BASIC/ROCKSOLID LINEAR INTERPOLATION CODE
-        
+
         //This code was ripped from EngineBufferScaleLinear so we could experiment
         //with it and understand how it works. We also wanted to test to see if this
         //minimal subset of the code was stable, and it is. -- Albert 04/23/08
-         
+
         float rate_add = 2 * m_dBaseRate * m_dTempo; //2 channels * baserate * tempo
         int i;
         new_playpos = playpos;

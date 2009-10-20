@@ -49,7 +49,6 @@ class QSplitter;
 class QStackedWidget;
 class WTrackTableView;
 class WLibrarySidebar;
-class DlgLADSPA;
 class LADSPAView;
 class WaveformRenderer;
 class Player;
@@ -68,9 +67,9 @@ class MixxxView : public QWidget
 {
     Q_OBJECT
 public:
-    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, 
-              QString qSkinPath, ConfigObject<ConfigValue> *pConfig, 
-              Player* player1, Player* player2, 
+    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig,
+              QString qSkinPath, ConfigObject<ConfigValue> *pConfig,
+              Player* player1, Player* player2,
               Library* pLibrary);
     ~MixxxView();
 
@@ -79,8 +78,8 @@ public:
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
     /** Return a pointer to the track table view widget. */
-    WTrackTableView* getTrackTableView();  
-         
+    WTrackTableView* getTrackTableView();
+
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
@@ -88,7 +87,7 @@ public:
     /** Pointer to absolute file position widgets */
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
     /** Pointer to BPM display widgets */
-    WNumberBpm *m_pNumberBpmCh1, *m_pNumberBpmCh2;    
+    WNumberBpm *m_pNumberBpmCh1, *m_pNumberBpmCh2;
     /** Pointer to rate slider widgets */
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Pointer to ComboBox*/
@@ -153,7 +152,6 @@ private:
 	Player* m_pPlayer2;
 
 #ifdef __LADSPA__
-    DlgLADSPA* m_pDlgLADSPA;
     LADSPAView* m_pLADSPAView;
 #endif
 };
