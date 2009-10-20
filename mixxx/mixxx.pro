@@ -1,4 +1,5 @@
 CONFIG += debug link_pkgconfig ladspa alsaseqmidi script vinylcontrol m4a
+
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -8,9 +9,11 @@ DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptst
 
 win32-g++ { # Bit ugly, but you can thank MS-DOS shell for f-ing up the normal way of parsing.
     QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\\ Settings/Application\\ Data/Mixxx/\\\"\""
+	DEFINES += __WINDOWS__
 } else {
   win32 { # i586-mingw32msvc-g++ -- cross compiling
     DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
+	DEFINES += __WINDOWS__
   } else {
     DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
   }
@@ -63,8 +66,6 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
-#    $$UI_DIR/ui_dlgprefmididevicedlg.h \
-#    $$UI_DIR/ui_dlgprefmididlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefshoutcastdlg.h \
@@ -120,6 +121,7 @@ HEADERS += src/analyser.h \
     src/waveform/waveformrendermark.h \
     src/waveform/waveformrendersignal.h \
     src/waveform/waveformrendersignalpixmap.h \
+	src/widget/hexspinbox.h \
     src/widget/wabstractcontrol.h \
     src/widget/wdisplay.h \
     src/widget/wglwaveformviewer.h \
@@ -141,11 +143,8 @@ HEADERS += src/analyser.h \
     src/widget/wvumeter.h \
     src/widget/wwaveformviewer.h \
     src/widget/wwidget.h \
-#    src/bpm/bpmdetect.h \
-#    src/bpm/bpmdetector.h \
     src/bpm/bpmreceiver.h \
     src/bpm/bpmscheme.h \
-#    src/bpm/peakfinder.h \
     src/bpm/wavesegmentation.h \
     src/controlgroupdelegate.h \
     src/controlvaluedelegate.h \
@@ -192,11 +191,11 @@ HEADERS += src/analyser.h \
     src/midimapping.h \
     src/midimessage.h \
     src/midinodelegate.h \
+	src/midioptiondelegate.h \
     src/midiobject.h \
     src/midiobjectnull.h \
     src/midioutputmapping.h \
 	src/midioutputmappingtablemodel.h \
-#    src/miditypedelegate.h \
     src/midistatusdelegate.h \
     src/mixxx.h \
     src/mixxxcontrol.h \
@@ -240,7 +239,8 @@ HEADERS += src/analyser.h \
     src/wtracktablemodel.h \
     src/wtracktableview.h \
     src/xmlparse.h \
-    src/errordialog.h
+    src/errordialog.h \
+	src/upgrade.h
 
 SOURCES += src/analyserbpm.cpp \
     src/analyserqueue.cpp \
@@ -283,6 +283,7 @@ SOURCES += src/analyserbpm.cpp \
     src/waveform/waveformrendermark.cpp \
     src/waveform/waveformrendersignal.cpp \
     src/waveform/waveformrendersignalpixmap.cpp \
+	src/widget/hexspinbox.cpp \
     src/widget/wabstractcontrol.cpp \
     src/widget/wdisplay.cpp \
     src/widget/wglwaveformviewer.cpp \
@@ -304,10 +305,7 @@ SOURCES += src/analyserbpm.cpp \
     src/widget/wvumeter.cpp \
     src/widget/wwaveformviewer.cpp \
     src/widget/wwidget.cpp \
-#    src/bpm/bpmdetect.cpp \
-#    src/bpm/bpmdetector.cpp \
     src/bpm/bpmscheme.cpp \
-#    src/bpm/peakfinder.cpp \
     src/bpm/wavesegmentation.cpp \
     src/controlgroupdelegate.cpp \
     src/controlvaluedelegate.cpp \
@@ -348,10 +346,10 @@ SOURCES += src/analyserbpm.cpp \
     src/midimapping.cpp \
     src/midimessage.cpp \
     src/midinodelegate.cpp \
+	src/midioptiondelegate.cpp \
     src/midiobject.cpp \
     src/midiobjectnull.cpp \
 	src/midioutputmappingtablemodel.cpp \
-#    src/miditypedelegate.cpp \
     src/midistatusdelegate.cpp \
     src/mixxx.cpp \
     src/mixxxcontrol.cpp \
@@ -396,8 +394,9 @@ SOURCES += src/analyserbpm.cpp \
     src/wtracktableview.cpp \
     src/xmlparse.cpp \
     src/main.cpp \
-    src/errordialog.cpp
-
+    src/errordialog.cpp \
+	src/upgrade.cpp
+	
 # Soundtouch
 INCLUDEPATH += lib/soundtouch-1.4.1
 SOURCES += lib/soundtouch-1.4.1/SoundTouch.cpp \
@@ -432,7 +431,6 @@ FORMS += src/dlgaboutdlg.ui \
     src/dlgprefeqdlg.ui \
     src/dlgpreferencesdlg.ui \
     src/dlgprefmidibindingsdlg.ui \
-    src/dlgprefmididevicedlg.ui \
     src/dlgprefplaylistdlg.ui \
     src/dlgprefsounddlg.ui \
     src/dlgprefvinyldlg.ui \
@@ -506,16 +504,14 @@ win32 {
     DEFINES += __WINMIDI__
     HEADERS += src/midiobjectwin.h
     SOURCES += src/midiobjectwin.cpp
-    LIBS += ../mixxx-winlib/libsndfile/mingw-bin/libsndfile-1.dll \
-#        ../mixxx-winlib/sndfile.dll \
-#        ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/portaudio-snapshot/mingw-bin/libportaudio-2.dll \
-        ../mixxx-winlib/libmad.a \
-        ../mixxx-winlib/libid3tag.a \
-        ../mixxx-winlib/vorbisfile.dll \
-        ../mixxx-winlib/vorbis.dll \
-        ../mixxx-winlib/libfftw3-3.dll \
-        ../mixxx-winlib/ogg.dll \
+    LIBS += ../mixxx-winlib/libsndfile-1.dll \
+		../mixxx-winlib/portaudio_x86.dll \
+		../mixxx-winlib/libmad.a \ # libmad-0.15.1b
+        ../mixxx-winlib/libid3tag.a \ # libid3tag-0.15.1b
+        ../mixxx-winlib/libvorbisfile.dll \
+        ../mixxx-winlib/libvorbis.dll \
+#        ../mixxx-winlib/libfftw3-3.dll \
+        ../mixxx-winlib/libogg.dll \
         -lwinmm
     INCLUDEPATH += ../mixxx-winlib
 }
@@ -638,8 +634,7 @@ CONFIG(m4a) {
             ../mixxx-winlib/mp4v2/include/mpeg4ip_version.h \
             ../mixxx-winlib/mp4v2/include/mpeg4ip_win32.h
         LIBS += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
-            ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
-#             ../mixxx-winlib/faad2/mingw-bin/libfaad.a
+            ../mixxx-winlib/libfaad2.dll
     } else {
         LIBS += -lmp4v2 \
             -lfaad
@@ -727,9 +722,9 @@ CONFIG(ffmpeg) {
 win32 {
     !exists($$DESTDIR):system( mkdir \"$$replace(DESTDIR, /,$$DIR_SEPARATOR)\" )
     # MinGW run-time
-    DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll
+    DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll $$(QTDIR)/../mingw/bin/libexpat-1.dll
     CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
-        ../mixxx-winlib/faad2/mingw-bin/libfaad2.dll
+        ../mixxx-winlib/libfaad2.dll
     # Qt4 libraries
     debug {
         DLLs += $$(QTDIR)/bin/Qt3Supportd4.dll \
@@ -753,13 +748,13 @@ win32 {
             $$(QTDIR)/bin/QtScript4.dll
     }
     # mixxx-winlibs DLLs
-    DLLs += ../mixxx-winlib/ogg.dll \
+    DLLs += ../mixxx-winlib/libogg.dll \
+		../mixxx-winlib/portaudio_x86.dll \	
 #        ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/portaudio-snapshot/mingw-bin/libportaudio-2.dll \
-        ../mixxx-winlib/libsndfile/mingw-bin/libsndfile-1.dll \
+        ../mixxx-winlib/libsndfile-1.dll \
 #        ../mixxx-winlib/sndfile.dll \
-        ../mixxx-winlib/vorbis.dll \
-        ../mixxx-winlib/vorbisfile.dll
+        ../mixxx-winlib/libvorbis.dll \
+        ../mixxx-winlib/libvorbisfile.dll
 
     # check if DLL exists at target, if not copy it there
     for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {
@@ -771,6 +766,18 @@ win32 {
     system( echo $$TARGET --resourcePath \"$$replace(PWD, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}res\">\"$${PWD}$${DIR_SEPARATOR}$$replace(DESTDIR, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}testrun-$${TARGET}.cmd\" )
 }
 
+# Get info from BZR about the current branch
+BZR_REVNO = $$system( bzr revno )
+BZR_INFO = $$system( bzr info )
+for(BZR_INFO_BITS, BZR_INFO) {
+	BZR_BRANCH_URL = $${BZR_INFO_BITS}
+}
+BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
+BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)
+message(BRANCH_NAME is $$BZR_BRANCH_NAME)
+message(REVISION is $$BZR_REVNO)
+message(BRANCH_URL is $$BZR_BRANCH_URL)
+
 win32 {
     # Makefile target to build an NSIS Installer...
     # TODO: either fix this to work in a cross-compile or make a seperate cross-compile NSIS target
@@ -778,18 +785,15 @@ win32 {
     # SH Usage: make -f Makefile.Debug nsis
     nsis.target = nsis
     exists($$BUILDDIR/gdb.exe):INCLUDE_GDB = -DINCLUDE_GDB
-    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DBINDIR=\"$$BUILDDIR\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DGCC -DBINDIR=\"$$BUILDDIR\" -DBUILD_REV=\"$$BZR_BRANCH_NAME-$$BZR_REVNO\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
     # nsis.depends =
     QMAKE_EXTRA_UNIX_TARGETS += nsis
 }
 
-# .mixxx_flags.svn -- Do this near the end so we capture all additions to the DEFINES variable
-message( Generating .mixxx_flags.svn with contents: $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"' )
-system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>.mixxx_flags.svn )
-
-# .mixxx_version.svn
-BUILD_REV = $$system( svnversion )
+# build.h
+BUILD_REV = $${BZR_BRANCH_NAME} : $${BZR_REVNO}
 isEmpty( BUILD_REV ):BUILD_REV = Killroy was here
 BUILD_REV += - built via qmake/Qt Creator
-message( Generating .mixxx_version.svn with contents: $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"' )
-system( echo $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"'>.mixxx_version.svn )
+message( Generating src$${DIR_SEPARATOR}build.h with contents: $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"' )
+system( echo $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"'>src$${DIR_SEPARATOR}build.h )
+system( echo $${LITERAL_HASH}define BUILD_FLAGS '"'$$replace(DEFINES,__,)'"'>>src$${DIR_SEPARATOR}build.h )

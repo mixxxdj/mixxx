@@ -18,16 +18,21 @@
 #include <QtCore>
 #include "enginebufferscalelinear.h"
 #include "mathstuff.h"
-#include "readerextractwave.h"
 
 #define RATE_LERP_LENGTH 200
 
-EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave * wave) : EngineBufferScale(wave)
+EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager) :
+    EngineBufferScale(),
+    m_pReadAheadManager(pReadAheadManager)
 {
     m_dBaseRate = 0.0f;
     m_dTempo = 0.0f;
     m_fOldTempo = 1.0f;
     m_fOldBaseRate = 1.0f;
+    m_fPreviousL = 0.0f;
+    m_fPreviousR = 0.0f;
+
+    buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -81,19 +86,12 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 }
 
 /** Stretch a buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
+CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
+                                         CSAMPLE* pBase, unsigned long iBaseLength)
 {
-    if (!pBase)
-    {
-        pBase = wavebuffer;				//The "base" buffer is really 
-        								//the EngineBuffer's circular 
-        								//audio buffer.
-        iBaseLength = READBUFFERSIZE;	//Length of the base buffer
-    }
-    
     float rate_add_new = 2.*m_dBaseRate;
     float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
-    float rate_add = rate_add_new; 
+    float rate_add = rate_add_new;
 
     m_fOldBaseRate = m_dBaseRate;           //Update the old base rate because we only need to
                                             //interpolate/ramp up the pitch changes once.
@@ -101,75 +99,100 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // Determine position in read_buffer to start from
     new_playpos = playpos;
 
-    // Prepare buffer
-    if (m_bBackwards)
-    {
-        for (unsigned long i=0; i<buf_size; i+=2)
-        {
-            long prev = (long)(floor(new_playpos)+READBUFFERSIZE)%READBUFFERSIZE;
-            if (!even(prev)) prev--;
-            long next = (prev-2+READBUFFERSIZE)%READBUFFERSIZE;
+    long unscaled_samples_needed = buf_size + (long)(floor((float)buf_size * ((float)fabs(m_dBaseRate) - 1.0)));
+    unscaled_samples_needed = long(ceil(fabs(buf_size * m_dBaseRate)));
 
-            //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-            //prevents the change from being discontinuous and helps improve sound
-            //quality.
-            if (i < RATE_LERP_LENGTH)
-            {
-                rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
-            }
-            else
-                rate_add = rate_add_new;
-            
-            CSAMPLE frac = new_playpos-floor(new_playpos);
-            
-            //Hermite interpolation, see the comments in the "else" block below.
-            //buffer[i  ] = hermite4(frac, wavebuffer[math_min(prev-2, 0)], wavebuffer[prev], wavebuffer[next], wavebuffer[(next+2)%READBUFFERSIZE]); 
-            //buffer[i+1] = hermite4(frac, wavebuffer[math_min(prev-1, 1)], wavebuffer[prev+1], wavebuffer[(next+1)%READBUFFERSIZE], wavebuffer[(next+3)%READBUFFERSIZE]); 
-            
-            //Perform linear interpolation
-            buffer[i  ] = wavebuffer[prev  ] + frac*(wavebuffer[next  ]-wavebuffer[prev  ]);
-            buffer[i+1] = wavebuffer[prev+1] + frac*(wavebuffer[next+1]-wavebuffer[prev+1]);
+    //unscaled_samples_needed = buf_size + floor(buf_size * (fabs(m_dBaseRate) - 1.0f));
 
-            new_playpos += rate_add;
+    // Simulate the loop to estimate how many samples we need
+    double samples = 0;
+    for (int j = 0; j < buf_size; j+=2) {
+        if (j < RATE_LERP_LENGTH) {
+            rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*j + rate_add_old;
         }
-    }
-    else
-    {
-        for (unsigned long i=0; i<buf_size; i+=2)
-        {
-            long prev = (long)floor(new_playpos)%READBUFFERSIZE;
-            if (!even(prev)) prev--;
-            long next = (prev+2)%READBUFFERSIZE;
-          
-            //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-            //prevents the change from being discontinuous and helps improve sound
-            //quality.
-            if (i < RATE_LERP_LENGTH)
-            {
-                rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
-            }
-            else
-                rate_add = rate_add_new;
-
-            CSAMPLE frac = (new_playpos - floor(new_playpos))/2;
-            
-            /* //Hermite interpolation - experimented with this to see if there was any noticeable increase
-             *                           in sound quality, but I couldn't hear any (the literature generally
-             *                           agrees that that is the case too) - Albert 04/27/08
-            buffer[i  ] = hermite4(frac, wavebuffer[math_min(prev-2, 0)], 
-                                   wavebuffer[prev], wavebuffer[next], wavebuffer[(next+2)%READBUFFERSIZE]); 
-            buffer[i+1] = hermite4(frac, wavebuffer[math_min(prev-1, 1)], 
-                                   wavebuffer[prev+1], wavebuffer[(next+1)%READBUFFERSIZE], wavebuffer[(next+3)%READBUFFERSIZE]); 
-            */
-            
-            //Perform linear interpolation
-            buffer[i  ] = wavebuffer[prev  ] + frac*(wavebuffer[next  ]-wavebuffer[prev  ]);
-            buffer[i+1] = wavebuffer[prev+1] + frac*(wavebuffer[next+1]-wavebuffer[prev+1]);
-
-            new_playpos += rate_add;
+        else {
+            rate_add = rate_add_new;
         }
+        samples += fabs(rate_add);
     }
+
+    rate_add = rate_add_new;
+    unscaled_samples_needed = ceil(samples);
+    if (!even(unscaled_samples_needed))
+        unscaled_samples_needed++;
+    Q_ASSERT(unscaled_samples_needed >= 0);
+    Q_ASSERT(unscaled_samples_needed != 0);
+
+    int buffer_size = 0;
+    double buffer_index = 0;
+
+    long current_sample = 0;
+    long prev_sample = 0;
+    bool last_read_failed = false;
+
+    int i;
+    for (i = 0; i < buf_size;) {
+        prev_sample = current_sample;
+        current_sample = floor(buffer_index);
+        if (!even(current_sample))
+            current_sample++;
+        Q_ASSERT(current_sample % 2 == 0);
+        Q_ASSERT(current_sample >= 0);
+
+        if (prev_sample != current_sample) {
+            m_fPreviousL = buffer_int[prev_sample];
+            m_fPreviousR = buffer_int[prev_sample+1];
+        }
+
+        if (current_sample+1 >= buffer_size) {
+            //Q_ASSERT(unscaled_samples_needed > 0);
+            if (unscaled_samples_needed == 0) {
+                unscaled_samples_needed = 2;
+            }
+            int samples_to_read = math_min(kiLinearScaleReadAheadLength,
+                                           unscaled_samples_needed);
+            buffer_size = m_pReadAheadManager->getNextSamples(m_dBaseRate,
+                                                              buffer_int,
+                                                              samples_to_read);
+            if (buffer_size == 0 && last_read_failed) {
+                break;
+            }
+            last_read_failed = buffer_size == 0;
+
+            unscaled_samples_needed -= buffer_size;
+            buffer_index = buffer_index - floor(buffer_index);
+            continue;
+        }
+
+        //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
+        //prevvents the change from being discontinuous and helps improve sound
+        //quality.
+        if (i < RATE_LERP_LENGTH) {
+            rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
+        }
+        else {
+            rate_add = rate_add_new;
+        }
+
+        CSAMPLE frac = buffer_index - floor(buffer_index);
+
+        //Perform linear interpolation
+        buffer[i] = m_fPreviousL + frac * (buffer_int[current_sample] - m_fPreviousL);
+        buffer[i+1] = m_fPreviousR + frac * (buffer_int[current_sample+1] - m_fPreviousR);
+        i += 2;
+
+        new_playpos += rate_add;
+        buffer_index += fabs(rate_add);
+    }
+    // If we broke out of the loop, zero the remaining samples
+    for (; i < buf_size; i += 2) {
+        buffer[i] = 0.0f;
+        buffer[i+1] = 0.0f;
+    }
+
+    // It's possible that we will exit this function without having satisfied
+    // this requirement. We may be trying to read past the end of the file.
+    //Q_ASSERT(unscaled_samples_needed == 0);
 
     return buffer;
 }
-

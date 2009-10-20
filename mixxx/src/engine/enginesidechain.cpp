@@ -100,9 +100,12 @@ void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
         //Save the number of samples written because m_iBufferEnd gets reset in swapBuffers:
         int iNumSamplesWritten = SIDECHAIN_BUFFER_SIZE - m_iBufferEnd;
 
-        //m_backBufferLock.lock(); //This will block the callback thread if the buffering overflows.
+        // This will block the callback thread if the buffering overflows. As of
+        // 10/2009 this lock is only used to protect the buffer pointers, so it
+        // won't cause blocking.
+        m_backBufferLock.lock();
         swapBuffers(); //Swaps buffers and resets m_iBufferEnd to zero.
-        //m_backBufferLock.unlock();
+        m_backBufferLock.unlock();
 
         //Since we swapped buffers, we now have a full buffer that needs processing.
         m_waitLock.lock();
@@ -160,7 +163,7 @@ void EngineSideChain::run()
         }
         m_stopLock.unlock();
 
-        
+
         //This portion of the code should be able to touch the buffer without having to use
         //the m_bufferLock mutex, because the buffers should have been swapped.
 
@@ -171,6 +174,14 @@ void EngineSideChain::run()
         //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow,
                                    //so don't even think about enabling this. (I'm leaving it here as a
                                    //warning to anyone who wants to work on this code in the future.) - Albert
+
+        // We need to use this lock when copying the pointer to the buffer or
+        // else we could end up with a bogus pointer. We don't have to hold the
+        // lock during the processing though.
+
+        m_backBufferLock.lock();
+        CSAMPLE* pBuffer = m_filledBuffer;
+        m_backBufferLock.unlock();
 
 #ifdef __SHOUTCAST__
 
@@ -190,11 +201,11 @@ void EngineSideChain::run()
         if (shoutcast) {
             if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f)
                 shoutcast->updateFromPreferences();
-            shoutcast->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
+            shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
         }
 #endif
 
-        rec->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
+        rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
 
         //m_backBufferLock.unlock();
 

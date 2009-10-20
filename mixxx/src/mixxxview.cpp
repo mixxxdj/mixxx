@@ -58,7 +58,6 @@
 #include "widget/wskincolor.h"
 #include "mixxx.h"
 #ifdef __LADSPA__
-#include "dlgladspa.h"
 #include "ladspaview.h"
 #endif
 #include "defs_promo.h"
@@ -94,7 +93,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
-    
+
     // Default values for visuals
     m_pTextCh1 = 0;
     m_pTextCh2 = 0;
@@ -135,17 +134,17 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
  	 //Connect the players to the waveform overview widgets so they
  	 //update when a new track is loaded.
  	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-		m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));   
+		m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
 	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
 		m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-	
-	//Connect the players to some other widgets, so they get updated when a 
+
+	//Connect the players to some other widgets, so they get updated when a
 	//new track is loaded.
 	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)), this,
-			SLOT(slotUpdateTrackTextCh1(TrackInfoObject*)));	
+			SLOT(slotUpdateTrackTextCh1(TrackInfoObject*)));
 	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)), this,
 			SLOT(slotUpdateTrackTextCh2(TrackInfoObject*)));
-	
+
 	//Setup a connection that allows us to connect the TrackInfoObjects that
 	//get loaded into the players to the waveform overview widgets. We don't
 	//want the TrackInfoObjects talking directly to the GUI code, so this is
@@ -176,7 +175,7 @@ MixxxView::~MixxxView()
 	delete m_pVisualCh1;
 	m_pVisualCh1 = NULL;
     }
-    
+
     if(m_pVisualCh2) {
 	m_qWidgetList.remove(m_pVisualCh2);
 	delete m_pVisualCh2;
@@ -187,7 +186,7 @@ MixxxView::~MixxxView()
 	delete m_pWaveformRendererCh1;
 	m_pWaveformRendererCh1 = NULL;
     }
-    
+
     if(m_pWaveformRendererCh2) {
 	delete m_pWaveformRendererCh2;
 	m_pWaveformRendererCh2 = NULL;
@@ -206,8 +205,8 @@ void MixxxView::checkDirectRendering()
     //  * Warn user
 
     // TODO rryan -- re-integrate with 'new' GL viewer
-    
-    
+
+
     if((m_pVisualCh1 &&
 	WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1) == WAVEFORM_GL &&
 	!((WGLWaveformViewer *)m_pVisualCh1)->directRendering()) ||
@@ -222,7 +221,7 @@ void MixxxView::checkDirectRendering()
 		    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
 		}
 	}
-    
+
 }
 
 bool MixxxView::activeWaveform()
@@ -318,9 +317,9 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     QFile file(WWidget::getPath("skin.xml"));
     QFileInfo fi(file);
     QByteArray qbaFilename = fi.fileName().toUtf8();
-    
+
     if (!file.open(QIODevice::ReadOnly))
-    {  
+    {
         qFatal("Could not open skin definition file: %s", qbaFilename.constData());
     }
     if (!skin.setContent(&file))
@@ -488,18 +487,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 parent->setPalette(palette);
                 //parent->setEraseColor(WSkinColor::getCorrectColor(c));
                 parent->setAutoFillBackground(true);
-                
+
     //Next, let's set up the colour palette for Mixxx's non-skinned elements
     //(eg. search box, combobox, toolbar)
     //For what color controls what, see this reference:
     //http://doc.trolltech.com/4.3/qpalette.html
-	
+
     //palette.setColor(QPalette::Text, QColor("white")); //combobox and search box text colour
     //palette.setColor(QPalette::WindowText, QColor("white"));
     //palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c)); //search box background colour
     //palette.setColor(QPalette::Button, WSkinColor::getCorrectColor(c));
-    //parent->setPalette(palette);                
-                
+    //parent->setPalette(palette);
+
             }
             else if (node.nodeName()=="VuMeter")
             {
@@ -518,7 +517,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="Visual")
             {
 		WaveformViewerType type;
-		
+
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
 		    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
@@ -529,9 +528,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    // Hook up [Channel1],wheel Control Object to the Visual Controller
 		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
 		    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
-			
+
 		    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
- 
+
 		    // Things to do whether the waveform was previously created or not
 		    if(type == WAVEFORM_GL) {
 			m_bVisualWaveform = true; // TODO : remove this crust
@@ -551,19 +550,19 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		{
 		    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
 		    m_qWidgetList.append(m_pVisualCh2);
-			
+
 		    m_pVisualCh2->installEventFilter(m_pKeyboard);
-			
+
 		    // Hook up [Channel1],wheel Control Object to the Visual Controller
 		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
 		    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
 
 		    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-		    
+
 		    // Things to do whether the waveform was previously created or not
 		    if(type == WAVEFORM_GL) {
 			m_bVisualWaveform = true; // TODO : remove this crust
-			
+
 			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
 			// TODO rryan re-enable this later
 			/*
@@ -703,7 +702,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     if (m_pOverviewCh1 == 0) {
                         m_pOverviewCh1 = new WOverview(this);
                         //m_qWidgetList.append(m_pOverviewCh1);
-                    
+
                     }
                     m_pOverviewCh1->setup(node);
 		    m_pOverviewCh1->show();
@@ -712,7 +711,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 {
                     if (m_pOverviewCh2 == 0) {
                         m_pOverviewCh2 = new WOverview(this);
-                        //m_qWidgetList.append(m_pOverviewCh2);     
+                        //m_qWidgetList.append(m_pOverviewCh2);
                     }
                     m_pOverviewCh2->setup(node);
 		    m_pOverviewCh2->show();
@@ -733,7 +732,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //    m_pComboBox->addItem( "Free Tracks", TABLE_MODE_PROMO );
                     // m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
                     m_pComboBox->installEventFilter(m_pKeyboard);
-               
+
                     //Add the combo box to the the library page's layout.
                     m_pLibraryPageLayout->addWidget(m_pComboBox, 0, 0, Qt::AlignLeft); //Row 0, col 0
                 }
@@ -762,7 +761,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pLineEditSearch = new WSearchLineEdit(path, this);
                     m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
                 }
-                
+
                 /*
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -792,14 +791,13 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //Create the tab widget to store the various panes in
                     //(library, effects, etc.)
                     m_pTabWidget = new QStackedWidget(this);
-		    
+
 		    // Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget(this);
                     //m_pTabWidgetEffectsPage = new QWidget();
-                    //m_pDlgLADSPA = new DlgLADSPA(this);
 
                     m_pLADSPAView = new LADSPAView(this);
-                    m_pTabWidgetEffectsPage = m_pLADSPAView; //m_pDlgLADSPA; 
+                    m_pTabWidgetEffectsPage = m_pLADSPAView;
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
                     //m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
@@ -809,18 +807,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
 		    // Build the Library widgets
 		    m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
-		    
+
 		    m_pLibraryWidget = new WLibrary(m_pSplitter);
 		    m_pLibraryWidget->installEventFilter(m_pKeyboard);
-		    
+
 		    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
 		    m_pLibrarySidebar->installEventFilter(m_pKeyboard);
-		    
+
 		    setupTrackSourceViewWidget(node);
 
 		    m_pLibrary->bindWidget(m_pLibrarySidebar,
 					   m_pLibraryWidget);
-		    
+
 		    //Add the library sidebar to the splitter.
 		    m_pSplitter->addWidget(m_pLibrarySidebar);
 		    //Add the library widget to the splitter.
@@ -831,7 +829,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    splitterSizes.push_back(50);
 		    splitterSizes.push_back(500);
 		    m_pSplitter->setSizes(splitterSizes);
-                 	
+
 		    // Add the splitter to the library page's layout, so it's
 		    // positioned/sized automatically
 		    m_pLibraryPageLayout->addWidget(m_pSplitter,
@@ -842,23 +840,23 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
 		    // TODO(XXX) Re-enable this to get the tab widget back, post
 		    // 1.7.0 release.
-		    
+
 		    // Add the library page to the tab widget.
 		    //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
 		    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
-		    
+
 		    // Add the effects page to the tab widget.
 		    //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
 		    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
                 }
-		    
+
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
 
 		// Applies the node settings to every view registered in the
 		// Library widget.
 		m_pLibraryWidget->setup(node);
-		
+
 		m_pTabWidget->show();
             }
             // set default value (only if it changes from the standard value)
@@ -868,7 +866,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     currentControl->setDefaultValue(0.);
                 }
                 else if (compareConfigKeys(node, "[Channel1],volume")||
-                           compareConfigKeys(node, "[Channel2],volume"))
+                         compareConfigKeys(node, "[Channel2],volume"))
                 {
                     currentControl->setDefaultValue(127.);
                 }
@@ -889,7 +887,7 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     // the widget list.
     m_pVisualCh1 = NULL;
     m_pVisualCh2 = NULL;
-    
+
     //remove all widget from the list (except permanent one)
     while (!m_qWidgetList.isEmpty()) {
         delete m_qWidgetList.takeFirst();
@@ -960,20 +958,20 @@ void MixxxView::setupTabWidget(QDomNode node)
         m_pTabWidget->setFixedSize(x,y);
     }
 }
- 
+
 
 void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
 
-    //Setup colors: 
+    //Setup colors:
     //Foreground color
     QColor fgc(0,255,0);
     if (!WWidget::selectNode(node, "FgColor").isNull()) {
-	
+
 	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-	
+
 	//m_pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
-	
+
 	// Row colors
 	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
 	    {
@@ -983,27 +981,27 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 		QColor r2;
 		r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
 		r2 = WSkinColor::getCorrectColor(r2);
-		
+
 		// For now make text the inverse of the background so it's readable
 		// In the future this should be configurable from the skin with this
 		// as the fallback option
 		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-		
+
 	        QPalette Rowpalette = palette();
 	        Rowpalette.setColor(QPalette::Base, r1);
 	        Rowpalette.setColor(QPalette::AlternateBase, r2);
 		Rowpalette.setColor(QPalette::Text, text);
-		
+
 	        m_pLibrarySidebar->setPalette(Rowpalette);
 	    }
     }
-    
-} 
+
+}
 
 void MixxxView::slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack)
 {
 	//Note: This slot gets called when Player emits a newTrackLoaded() signal.
-	
+
 	//Connect the track to the waveform overview widget, so it updates when the wavesummary is finished
 	//generating.
 	connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
@@ -1016,7 +1014,7 @@ void MixxxView::slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack)
 void MixxxView::slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack)
 {
 	//Note: This slot gets called when Player emits a newTrackLoaded() signal.
-	
+
 	//Connect the track to the waveform overview widget, so it updates when the wavesummary is finished
 	//generating.
 	connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
