@@ -4,16 +4,18 @@
 #ifndef BROWSEFEATURE_H
 #define BROWSEFEATURE_H
 
+#include <QSortFilterProxyModel>
 #include <QFileSystemModel>
 
 #include "configobject.h"
+#include "library/browsefilter.h"
 #include "library/libraryfeature.h"
 
 class TrackCollection;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
-public:
+  public:
     BrowseFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
@@ -27,7 +29,7 @@ public:
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
                             WLibrary* libraryWidget);
 
-public slots:
+  public slots:
     void activate();
     void activateChild(int n);
     void onRightClick(const QPoint& globalPos, QModelIndex index);
@@ -36,9 +38,10 @@ public slots:
     void onFileActivate(const QModelIndex&);
   signals:
     void setRootIndex(const QModelIndex&);
-private:
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     QFileSystemModel m_fileSystemModel;
+    BrowseFilter m_proxyModel;
     TrackCollection* m_pTrackCollection;
 };
 
