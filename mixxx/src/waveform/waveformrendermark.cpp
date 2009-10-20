@@ -160,7 +160,7 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);
     QPen oldPen = pPainter->pen();
-    pPainter->setPen(m_markColor);
+    QBrush oldBrush = pPainter->brush();
 
     double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
@@ -173,7 +173,25 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
 
         if (abs(i) < subpixelHalfWidth) {
             double x = (i+subpixelHalfWidth);
+            QPen newPen = QPen(m_markColor);
+            newPen.setWidth(subpixelsPerPixel*2);
+            pPainter->setPen(newPen);
             pPainter->drawLine(QLineF(x, halfh, x, -halfh));
+
+            pPainter->setPen(m_markColor);
+            pPainter->setBrush(QBrush(m_markColor));
+            QPolygonF topTriangle;
+            QPolygonF bottomTriangle;
+            int triWidth = subpixelsPerPixel * 8;
+            int triHeight = 15;
+            topTriangle << QPointF(x - 1 - triWidth/2.0f, halfh)
+                        << QPointF(x + 1 + triWidth/2.0f, halfh)
+                        << QPointF(x, halfh - triHeight);
+            bottomTriangle << QPointF(x - triWidth/2.0f, -halfh)
+                           << QPointF(x + 1 + triWidth/2.0f, -halfh)
+                           << QPointF(x, -halfh + triHeight);
+            pPainter->drawPolygon(topTriangle);
+            pPainter->drawPolygon(bottomTriangle);
 
             if (!m_markPixmap.isNull()) {
                 pPainter->scale(subpixelsPerPixel, -1.0);
@@ -202,6 +220,7 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
     }
 
     pPainter->setPen(oldPen);
+    pPainter->setBrush(oldBrush);
     pPainter->restore();
 }
 
@@ -214,7 +233,7 @@ void WaveformRenderMark::setupMarkPixmap() {
     //QFont font("Helvetica");
     QFont font; // Uses the application default
     font.setPointSize(8);
-    font.setWeight(QFont::Bold);
+    //font.setWeight(QFont::Bold);
     //font.setLetterSpacing(QFont::AbsoluteSpacing, -1);
 
     QFontMetrics metrics(font);
