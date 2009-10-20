@@ -18,6 +18,7 @@
 #define PLAYERINFO_H
 
 #include <QObject>
+#include <QMutex>
 
 class TrackInfoObject;
 
@@ -26,15 +27,14 @@ class PlayerInfo : public QObject
     Q_OBJECT
 public:
     static PlayerInfo &Instance();
-    TrackInfoObject *getTrackInfo(int track) const;
+    TrackInfoObject *getTrackInfo(int track);
     void setTrackInfo(int track, TrackInfoObject *trackInfoObj);
-signals:
-    void trackInfoChanged(int, TrackInfoObject *);
 private:
     PlayerInfo();
     ~PlayerInfo();
     PlayerInfo(PlayerInfo const&);
     PlayerInfo &operator= (PlayerInfo const&);
+    QMutex m_mutex;
     TrackInfoObject *m_pTrack1;
     TrackInfoObject *m_pTrack2;
 };
