@@ -1,5 +1,6 @@
 #include "wsearchlineedit.h"
 
+#include <QtDebug>
 #include <QStyle>
 #include <QFont>
 
@@ -15,7 +16,7 @@ WSearchLineEdit::WSearchLineEdit(QString& skinpath, QWidget* parent) : QLineEdit
 
 	m_place = true;
 	showPlaceholder();
-	
+
 	//Set up a timer to search after a few hundred milliseconds timeout.
 	//This stops us from thrashing the database if you type really fast.
 	m_searchTimer.setSingleShot(true);
@@ -65,6 +66,23 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 	}
 }
 
+void WSearchLineEdit::restoreSearch(const QString& text) {
+    qDebug() << "WSearchLineEdit::restoreSearch(" << text << ")";
+    blockSignals(true);
+    setText(text);
+    blockSignals(false);
+    if (text == "") {
+        m_place = true;
+        showPlaceholder();
+    } else {
+        QPalette palette = this->palette();
+        palette.setColor(this->foregroundRole(), Qt::black);
+        setPalette(palette);
+        m_place = false;
+    }
+    updateCloseButton(text);
+}
+
 void WSearchLineEdit::slotSetupTimer(const QString& text)
 {
 	m_searchTimer.stop();
@@ -85,7 +103,7 @@ void WSearchLineEdit::showPlaceholder() {
 	blockSignals(false);
     QPalette palette = this->palette();
 	palette.setColor(this->foregroundRole(), Qt::lightGray);
-	setPalette(palette);    
+	setPalette(palette);
 	emit(searchCleared());
 }
 

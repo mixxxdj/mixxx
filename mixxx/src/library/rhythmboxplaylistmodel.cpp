@@ -37,17 +37,17 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
     QDomDocument rhythmplaylistdb;
     QXmlQuery query;
     QString res;
-    
+
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
     if ( ! db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
         if ( ! db.exists())
             return;
     }
-    
+
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
-    
+
     /*
      * Use QXmlQuery to execute an XPath query. We add the version to
      * the XPath query to make sure it is the schema we expect.
@@ -56,32 +56,32 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
     query.setQuery("rhythmdb-playlists/playlist[@type='static']");
     if ( ! query.isValid())
         return;
-    
+
     query.evaluateTo(&res);
     db.close();
-    
+
     rhythmplaylistdb.setContent("<rhythmdb-playlists>" + res + "</rhythmdb-playlists>");
     m_playlistNodes = rhythmplaylistdb.elementsByTagName("playlist");
-    
-    
+
+
     /* Add Playlists to the internal playlist map */
     while (( idx < m_playlistNodes.count())) {
         QDomNode n = m_playlistNodes.item(idx);
         QDomElement e = n.toElement();
-        
+
         qDebug() << "Adding Rhythmbox Playlist" << e.attribute("name");
         QString playlist = e.attribute("name");
-        
+
         m_mPlaylists[playlist] = n.childNodes();
         m_sCurrentPlaylist = playlist;
-        
+
         idx++;
     }
-    
-    
+
+
     qDebug() << rhythmplaylistdb.doctype().name();
     qDebug() << "RhythmboxPlaylistModel: m_playlistNodes size is" << m_playlistNodes.size();
-    
+
     QMapIterator<QString, QDomNodeList>iter (m_mPlaylists);
     while (iter.hasNext())
     {
@@ -104,18 +104,18 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
 {
     if ( m_sCurrentPlaylist == "" )
         return QVariant();
-    
+
     if (!index.isValid())
         return QVariant();
-    
+
     TrackInfoObject *pTrack = getTrack(index);
     if ( pTrack == NULL )
         return QVariant();
-    
-    
+
+
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
-            case RhythmboxPlaylistModel::COLUMN_ARTIST: 
+            case RhythmboxPlaylistModel::COLUMN_ARTIST:
                 return pTrack->getArtist();
             case RhythmboxPlaylistModel::COLUMN_TITLE:
                 return pTrack->getTitle();
@@ -129,13 +129,13 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
                 return pTrack->getLocation();
             case RhythmboxPlaylistModel::COLUMN_DURATION:
                 return pTrack->getDuration();
-            
-            
+
+
             default:
                 return QVariant();
         }
     }
-        
+
     return QVariant();
 }
 
@@ -144,37 +144,37 @@ QVariant RhythmboxPlaylistModel::headerData ( int section, Qt::Orientation orien
     /* Only respond to requests for column header display names */
     if ( role != Qt::DisplayRole )
         return QVariant();
-    
+
     if (orientation == Qt::Horizontal)
     {
-        switch (section) 
+        switch (section)
         {
             case RhythmboxPlaylistModel::COLUMN_ARTIST:
                 return QString("Artist");
-            
+
             case RhythmboxPlaylistModel::COLUMN_TITLE:
                 return QString("Title");
-            
+
             case RhythmboxPlaylistModel::COLUMN_ALBUM:
                 return QString("Album");
-            
+
             case RhythmboxPlaylistModel::COLUMN_DATE:
                 return QString("Date");
-            
+
             case RhythmboxPlaylistModel::COLUMN_GENRE:
                 return QString("Genre");
-            
+
             case RhythmboxPlaylistModel::COLUMN_LOCATION:
                 return QString("Location");
-            
+
             case RhythmboxPlaylistModel::COLUMN_DURATION:
                 return QString("Duration");
-            
+
             default:
                 return QString("Unknown");
         }
     }
-    
+
     return QVariant();
 }
 
@@ -183,10 +183,10 @@ int RhythmboxPlaylistModel::rowCount ( const QModelIndex & parent ) const
     // FIXME
     //if ( !m_mPlaylists.containts(m_sCurrentPlaylist))
     //    return 0;
-    
+
     if ( m_sCurrentPlaylist == "" )
         return 0;
-    
+
     return m_mPlaylists[m_sCurrentPlaylist].size();
 }
 
@@ -224,7 +224,7 @@ TrackInfoObject * RhythmboxPlaylistModel::getTrack(const QModelIndex& index) con
     QDomNodeList playlistTrackList = m_mPlaylists[m_sCurrentPlaylist];
     QDomNode pnode = playlistTrackList.at(index.row());
     QString location = pnode.toElement().text();
-    
+
  	return m_pRhythmbox->getTrackByLocation(location);
 }
 
@@ -254,12 +254,16 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist)
         m_sCurrentPlaylist = playlist;
     else
         m_sCurrentPlaylist = "";
-    
+
     // force the layout to update
     emit(layoutChanged());
 }
 
 void RhythmboxPlaylistModel::search(const QString& searchText)
 {
+    m_currentSearch = searchText;
+}
 
+const QString RhythmboxPlaylistModel::currentSearch() {
+    return m_currentSearch;
 }

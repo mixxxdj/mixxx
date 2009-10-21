@@ -59,24 +59,25 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
 	virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
 	virtual QString getTrackLocation(const QModelIndex& index) const;
 	virtual void search(const QString& searchText);
+    virtual const QString currentSearch();
 	virtual void removeTrack(const QModelIndex& index);
 	virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     QItemDelegate* delegateForColumn(const int i);
-    
+
 	virtual QList<QString> getPlaylists();
     virtual void setPlaylist(QString playlist);
 
     int numPlaylists();
     QString playlistTitle(int n);
-    
-	
+
+
 /*
  	void scanPath(QString path);
  	bool trackExistsInDatabase(QString file_location);
- 
+
  	QList<TrackInfoObject*> dumpDB();
- 	
+
  	QSqlDatabase getDatabase();
  */
 public slots:
@@ -86,12 +87,13 @@ signals:
  	void startedLoading();
  	void progressLoading(QString path);
  	void finishedLoading();
- 
+
 private:
     QDomNodeList m_playlistNodes;
     RhythmboxTrackModel *m_pRhythmbox;
     QMap<QString, QDomNodeList> m_mPlaylists;
     QString m_sCurrentPlaylist;
+    QString m_currentSearch;
 };
 
 #endif

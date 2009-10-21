@@ -52,12 +52,13 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
     virtual int columnCount(const QModelIndex& parent) const;
 
     //Track Model stuff
-	virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
-	virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual TrackInfoObject *getTrackByLocation(const QString& location) const;
-	virtual void search(const QString& searchText);
-	virtual void removeTrack(const QModelIndex& index);
-	virtual void addTrack(const QModelIndex& index, QString location);
+    virtual void search(const QString& searchText);
+    virtual const QString currentSearch();
+    virtual void removeTrack(const QModelIndex& index);
+    virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
 public slots:
@@ -78,11 +79,13 @@ protected:
     virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const = 0;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
     void addColumnName(int index, QString name);
-    
+
     /* The list of song nodes */
     QDomNodeList m_trackNodes;
     /* A map of the song DOM nodes by track location */
     QMap <QString, QDomNode> m_mTracksByLocation;
+    // The most recent search executed.
+    QString m_currentSearch;
 };
 
 #endif

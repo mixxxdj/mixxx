@@ -93,7 +93,9 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 }
 
 void BrowseFeature::activate() {
+
     emit(switchToView("BROWSE"));
+    emit(restoreSearch(m_currentSearch));
 }
 
 void BrowseFeature::activateChild(int n) {
@@ -148,13 +150,15 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
 }
 
 void BrowseFeature::searchStarting() {
-
+    m_currentSearch = "";
 }
 
 void BrowseFeature::search(const QString& text) {
+    m_currentSearch = text;
     m_proxyModel.setFilterFixedString(text);
 }
 
 void BrowseFeature::searchCleared() {
+    m_currentSearch = "";
     m_proxyModel.setFilterRegExp(QRegExp());
 }

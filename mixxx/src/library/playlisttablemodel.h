@@ -39,16 +39,18 @@ public:
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
+    virtual const QString currentSearch();
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(int i);
-    TrackModel::CapabilitiesFlags getCapabilities() const; 
+    TrackModel::CapabilitiesFlags getCapabilities() const;
 private:
     TrackCollection* m_pTrackCollection;
     int m_iPlaylistId;
+    QString m_currentSearch;
 };
 
 #endif

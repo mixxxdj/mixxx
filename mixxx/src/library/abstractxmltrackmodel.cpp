@@ -59,20 +59,20 @@ QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) con
 {
     if (!index.isValid())
         return QVariant();
-    
+
     if (m_trackNodes.size() < index.row())
         return QVariant();
-    
+
     QDomNode songNode = m_trackNodes.at(index.row());
-    
-    
+
+
     if (role == Qt::DisplayRole) {
         if ( index.column() > m_ColumnNames.size())
             return QVariant();
-        
+
         return getTrackColumnData(songNode, index);
     }
-    
+
     return QVariant();
 }
 
@@ -81,15 +81,15 @@ QVariant AbstractXmlTrackModel::headerData ( int section, Qt::Orientation orient
     /* Only respond to requests for column header display names */
     if ( role != Qt::DisplayRole )
         return QVariant();
-    
+
     if (orientation == Qt::Horizontal)
     {
         if ( section > m_ColumnNames.size())
             return QVariant();
-        
+
         return m_ColumnNames[section];
     }
-    
+
     return QVariant();
 }
 
@@ -102,7 +102,7 @@ int AbstractXmlTrackModel::columnCount(const QModelIndex& parent) const
 {
     if (parent != QModelIndex()) //Some weird thing for table-based models.
         return 0;
-    
+
     return m_ColumnNames.size();
 }
 
@@ -127,12 +127,12 @@ QString AbstractXmlTrackModel::getTrackLocation(const QModelIndex& index) const
 {
     TrackInfoObject *track;
     QString location;
-    
+
     track = getTrack(index);
     location = track->getLocation();
-    
+
     delete track;
-    
+
     return location;
 }
 
@@ -146,7 +146,7 @@ TrackInfoObject * AbstractXmlTrackModel::getTrackByLocation(const QString& locat
 {
     if ( !m_mTracksByLocation.contains(location))
         return NULL;
-    
+
     QDomNode songNode = m_mTracksByLocation[location];
     return parseTrackNode(songNode);
 }
@@ -161,7 +161,13 @@ TrackInfoObject *AbstractXmlTrackModel::parseTrackNode(QDomNode node)
 
 void AbstractXmlTrackModel::search(const QString& searchText)
 {
-    //FIXME
+    m_currentSearch = searchText;
+    // TODO(XXX) Implement searching
+}
+
+const QString AbstractXmlTrackModel::currentSearch()
+{
+    return m_currentSearch;
 }
 
 void AbstractXmlTrackModel::addColumnName(int index, QString name)

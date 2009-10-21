@@ -37,12 +37,11 @@ public slots:
     void search(const QString&);
     void searchStarting();
     void searchCleared();
-
+  signals:
+    void searchActivated(const QString&);
 private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;
-    QMap<QString, QString> m_searchMap;
-    QString m_currentView;
 };
 
 #endif /* WLIBRARY_H */

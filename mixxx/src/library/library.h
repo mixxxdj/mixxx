@@ -49,11 +49,13 @@ public slots:
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackInfoObject* pTrack);
     void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void slotRestoreSearch(const QString& text);
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackInfoObject* tio);
     void loadTrackToPlayer(TrackInfoObject* tio, int n);
+    void restoreSearch(const QString&);
 
 private:
     ConfigObject<ConfigValue>* m_pConfig;
