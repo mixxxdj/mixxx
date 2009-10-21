@@ -25,8 +25,10 @@ void DurationDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         int seconds = totalSeconds % 60;
         int mins = totalSeconds / 60;
         //int hours = mins / 60; //Not going to worry about this for now. :)
+
         //Construct a nicely formatted duration string now.
-        duration = QString("%1:%2").arg(mins).arg(seconds);
+        QChar fillChar = QLatin1Char('0');
+        duration = QString("%1:%2").arg(mins).arg(seconds, 2, 10, fillChar);
 
         //Paint the highlight colour if this delegate is selected.
         if (option.state & QStyle::State_Selected)
