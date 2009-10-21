@@ -7,7 +7,9 @@
 #include "widget/wlibrary.h"
 #include "library/libraryview.h"
 
-WLibrary::WLibrary(QWidget* parent) : QStackedWidget(parent) {
+WLibrary::WLibrary(QWidget* parent)
+        : QStackedWidget(parent),
+          m_mutex(QMutex::Recursive) {
 
 }
 
@@ -40,10 +42,8 @@ void WLibrary::switchToView(const QString& name) {
     qDebug() << "WLibrary::switchToView" << name;
     if (m_viewMap.contains(name)) {
         QWidget* widget = m_viewMap[name];
-        qDebug() << widget << " current:" << currentWidget();
         if (widget != NULL && currentWidget() != widget) {
-            setCurrentWidget(m_viewMap[name]);
-            m_currentView = name;
+            setCurrentWidget(widget);
         }
     }
 }
@@ -52,7 +52,6 @@ void WLibrary::search(const QString& name) {
     QMutexLocker lock(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
-    m_searchMap[m_currentView] = name;
     lock.unlock();
     view->onSearch(name);
 }
@@ -61,7 +60,6 @@ void WLibrary::searchCleared() {
     QMutexLocker lock(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
-    m_searchMap.remove(m_currentView);
     lock.unlock();
     view->onSearchCleared();
 }
@@ -70,7 +68,6 @@ void WLibrary::searchStarting() {
     QMutexLocker lock(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
-    m_searchMap[m_currentView] = "";
     lock.unlock();
     view->onSearchStarting();
 }

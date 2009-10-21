@@ -101,12 +101,17 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrack(TrackInfoObject*)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
+    connect(feature, SIGNAL(restoreSearch(const QString&)),
+            this, SLOT(slotRestoreSearch(const QString&)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     qDebug() << "Library::slotShowTrackModel" << model;
-    emit(switchToView(m_sTrackViewName));
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    Q_ASSERT(trackModel);
     emit(showTrackModel(model));
+    emit(switchToView(m_sTrackViewName));
+    emit(restoreSearch(trackModel->currentSearch()));
 }
 
 void Library::slotSwitchToView(const QString& view) {
@@ -120,4 +125,8 @@ void Library::slotLoadTrack(TrackInfoObject* pTrack) {
 
 void Library::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
     emit(loadTrackToPlayer(pTrack, player));
+}
+
+void Library::slotRestoreSearch(const QString& text) {
+    emit(restoreSearch(text));
 }

@@ -61,4 +61,5 @@ void WBrowseTableView::onSearchCleared() {
 
 void WBrowseTableView::onSearch(const QString& text) {
     emit(search(text));
+
 }

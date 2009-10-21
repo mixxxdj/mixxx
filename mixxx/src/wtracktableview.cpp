@@ -200,7 +200,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-    trackModel->search(text);
+    if (trackModel)
+        trackModel->search(text);
 }
 
 void WTrackTableView::onSearchStarting() {
@@ -209,6 +210,9 @@ void WTrackTableView::onSearchStarting() {
 
 void WTrackTableView::onSearchCleared() {
     restoreVScrollBarPos();
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    if (trackModel)
+        trackModel->search("");
 }
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/

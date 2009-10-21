@@ -49,6 +49,7 @@ class BrowseFeature : public LibraryFeature {
     QFileSystemModel m_fileSystemModel;
     BrowseFilter m_proxyModel;
     TrackCollection* m_pTrackCollection;
+    QString m_currentSearch;
 };
 
 #endif /* BROWSEFEATURE_H */

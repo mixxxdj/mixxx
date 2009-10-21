@@ -14,9 +14,9 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 	m_pTrackCollection = pTrackCollection;
 
 	setTable("library");
-	
+
 	//Hide columns in the tablemodel that we don't want to show.
-	removeColumn(fieldIndex(LIBRARYTABLE_ID)); 
+	removeColumn(fieldIndex(LIBRARYTABLE_ID));
 	removeColumn(fieldIndex(LIBRARYTABLE_FILENAME));
 	removeColumn(fieldIndex(LIBRARYTABLE_URL));
 	removeColumn(fieldIndex(LIBRARYTABLE_LENGTHINBYTES));
@@ -37,7 +37,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));            
+                  Qt::Horizontal, tr("Year"));
     setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -94,18 +94,23 @@ void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
     //and getCapabilities() reports that.
 }
 
-void LibraryTableModel::search(const QString& searchText)
-{
-	if (searchText == "")
-		setFilter("");
-	else
-		setFilter("artist LIKE \'%" + searchText + "%\' OR "
-						"title  LIKE \'%" + searchText + "%\'");
+void LibraryTableModel::search(const QString& searchText) {
+    m_currentSearch = searchText;
+    if (searchText == "")
+        setFilter("");
+    else
+        setFilter("artist LIKE \'%" + searchText + "%\' OR "
+                  "title  LIKE \'%" + searchText + "%\'");
+}
+
+const QString LibraryTableModel::currentSearch() {
+    qDebug() << "LibraryTableModel::currentSearch(): " << m_currentSearch;
+    return m_currentSearch;
 }
 
 QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
     if (i == fieldIndex(LIBRARYTABLE_DURATION)) {
-        // TODO(rryan) hm. this will never be deleted
+        // The caller now owns this.
         return new DurationDelegate();
     }
     return NULL;
@@ -115,11 +120,11 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
-    //Ok, so the list of indexes we're given contains separates indexes for 
+    //Ok, so the list of indexes we're given contains separates indexes for
     //each column, so even if only one row is selected, we'll have like 7 indexes.
     //We need to only count each row once:
     QList<int> rows;
-    
+
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
             if (!rows.contains(index.row())) //Only add a URL once per row.
@@ -159,5 +164,5 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS; 
+    return TRACKMODELCAPS_RECEIVEDROPS;
 }

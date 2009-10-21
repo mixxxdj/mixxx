@@ -151,13 +151,17 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
 void PlaylistTableModel::search(const QString& searchText)
 {
     //FIXME: Need to keep filtering by playlist_id too
-        //SQL is "playlist_id = " + QString(m_iPlaylistId)
+    //SQL is "playlist_id = " + QString(m_iPlaylistId)
+    m_currentSearch = searchText;
+    if (searchText == "")
+        this->setFilter("");
+    else
+        this->setFilter("artist LIKE \'%" + searchText + "%\' OR "
+                        "title  LIKE \'%" + searchText + "%\'");
+}
 
-	if (searchText == "")
-		this->setFilter("");
-	else
-		this->setFilter("artist LIKE \'%" + searchText + "%\' OR "
-						"title  LIKE \'%" + searchText + "%\'");
+const QString PlaylistTableModel::currentSearch() {
+    return m_currentSearch;
 }
 
 QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {

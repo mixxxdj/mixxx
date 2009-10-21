@@ -15,6 +15,7 @@ public:
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
+    virtual const QString currentSearch();
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
@@ -24,6 +25,7 @@ public:
     TrackModel::CapabilitiesFlags getCapabilities() const;
 private:
     TrackCollection* m_pTrackCollection;
+    QString m_currentSearch;
 };
 
 #endif
