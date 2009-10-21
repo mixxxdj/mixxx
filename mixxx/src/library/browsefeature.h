@@ -34,8 +34,11 @@ class BrowseFeature : public LibraryFeature {
     void activateChild(int n);
     void onRightClick(const QPoint& globalPos, QModelIndex index);
     void onClick(QModelIndex index);
+
+    // Called when a file in browse view is selected to be loaded into a player.
+    void loadToPlayer(const QModelIndex& index, int player);
     // Called when a file in the browse view is activated.
-    void onFileActivate(const QModelIndex&);
+    void onFileActivate(const QModelIndex& index);
   signals:
     void setRootIndex(const QModelIndex&);
   private:

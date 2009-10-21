@@ -10,6 +10,8 @@
 #include "configobject.h"
 #include "library/libraryview.h"
 
+class TrackInfoObject;
+
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
 
@@ -20,6 +22,10 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
                       ConfigKey vScrollBarPosKey);
     virtual ~WLibraryTableView();
     virtual void setup(QDomNode node);
+
+  signals:
+    void loadTrack(TrackInfoObject* pTrack);
+    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
 
   public slots:
     void saveVScrollBarPos();
