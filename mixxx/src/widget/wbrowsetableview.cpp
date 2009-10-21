@@ -7,18 +7,12 @@
 
 WBrowseTableView::WBrowseTableView(QWidget* parent,
                                    ConfigObject<ConfigValue>* pConfig)
-        : WLibraryTableView(parent, pConfig) {
-
+        : WLibraryTableView(parent, pConfig,
+                            ConfigKey("[Library]", "BrowseHeaderState"),
+                            ConfigKey("[Library]", "BrowseVScrollBarPos")) {
 }
 
 WBrowseTableView::~WBrowseTableView() {
 
 }
 
-ConfigKey WBrowseTableView::getHeaderStateKey() {
-    return ConfigKey("[Library]", "BrowseHeaderState");
-}
-
-ConfigKey WBrowseTableView::getVScrollBarPosKey() {
-    return ConfigKey("[Library]", "BrowseVScrollBarPos");
-}

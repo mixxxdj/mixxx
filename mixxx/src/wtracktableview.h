@@ -34,9 +34,6 @@ signals:
     void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
 
 private:
-    virtual ConfigKey getHeaderStateKey();
-    virtual ConfigKey getVScrollBarPosKey();
-
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);

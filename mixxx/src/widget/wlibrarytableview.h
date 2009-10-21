@@ -12,9 +12,12 @@
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
+
   public:
     WLibraryTableView(QWidget* parent,
-                      ConfigObject<ConfigValue>* pConfig);
+                      ConfigObject<ConfigValue>* pConfig,
+                      ConfigKey headerStateKey,
+                      ConfigKey vScrollBarPosKey);
     virtual ~WLibraryTableView();
     virtual void setup(QDomNode node);
 
@@ -23,15 +26,13 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void restoreVScrollBarPos();
 
   private:
-    virtual ConfigKey getHeaderStateKey();
-    virtual ConfigKey getVScrollBarPosKey();
-
     void loadHeaderState();
     void saveHeaderState();
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
 
     ConfigObject<ConfigValue>* m_pConfig;
+    ConfigKey m_headerStateKey, m_vScrollBarPosKey;
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
     int m_iSavedVScrollBarPos;

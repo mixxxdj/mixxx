@@ -13,7 +13,11 @@
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig)
-        : WLibraryTableView(parent, pConfig),
+        : WLibraryTableView(parent, pConfig,
+                            ConfigKey(LIBRARY_CONFIGVALUE,
+                                      WTRACKTABLEVIEW_HEADERSTATE_KEY),
+                            ConfigKey(LIBRARY_CONFIGVALUE,
+                                      WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig) {
 
     //Disable editing
@@ -37,16 +41,6 @@ WTrackTableView::~WTrackTableView()
  	delete m_pRemoveAct;
  	delete m_pPropertiesAct;
  	//delete m_pRenamePlaylistAct;
-}
-
-ConfigKey WTrackTableView::getHeaderStateKey() {
-    return ConfigKey(LIBRARY_CONFIGVALUE,
-                     WTRACKTABLEVIEW_HEADERSTATE_KEY);
-}
-
-ConfigKey WTrackTableView::getVScrollBarPosKey() {
-    return ConfigKey(LIBRARY_CONFIGVALUE,
-                     WTRACKTABLEVIEW_VSCROLLBARPOS_KEY);
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
