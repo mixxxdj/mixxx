@@ -432,7 +432,6 @@ sources = Split("""
                 dlgprefrecord.cpp
                 recording/enginerecord.cpp
                 recording/writeaudiofile.cpp
-                wtracktablefilter.cpp
                 durationdelegate.cpp
                 playerinfo.cpp
 

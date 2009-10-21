@@ -9,11 +9,17 @@
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"
 
-WLibraryTableView::WLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
+WLibraryTableView::WLibraryTableView(QWidget* parent,
+                                     ConfigObject<ConfigValue>* pConfig,
+                                     ConfigKey headerStateKey,
+                                     ConfigKey vScrollBarPosKey)
         : QTableView(parent),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_headerStateKey(headerStateKey),
+          m_vScrollBarPosKey(vScrollBarPosKey) {
 
     //Setup properties for table
+    //getHeaderStateKey();
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -74,20 +80,17 @@ void WLibraryTableView::setup(QDomNode node) {
 void WLibraryTableView::loadHeaderState() {
     //Attempt to load and restore the state of the table's header (eg. column
     //positions/sizes).
-    ConfigKey headerStateKey = getHeaderStateKey();
-
-    QString base64HeaderState = m_pConfig->getValueString(headerStateKey);
+    QString base64HeaderState = m_pConfig->getValueString(m_headerStateKey);
     QByteArray headerState = base64HeaderState.toAscii();
     headerState = QByteArray::fromBase64(headerState);
     horizontalHeader()->restoreState(headerState);
 }
 
 void WLibraryTableView::saveHeaderState() {
-    ConfigKey headerStateKey = getHeaderStateKey();
     QByteArray headerState = this->horizontalHeader()->saveState();
     QByteArray headerStateBase64 = headerState.toBase64();
     QString headerStateString = QString(headerStateBase64);
-    m_pConfig->set(headerStateKey, ConfigValue(headerStateString));
+    m_pConfig->set(m_headerStateKey, ConfigValue(headerStateString));
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {
@@ -95,8 +98,7 @@ void WLibraryTableView::loadVScrollBarPosState() {
     // position across restarts of Mixxx. Now that we have different views for
     // each mode, the views should just maintain their scrollbar position when
     // you switch views. We should discuss this.
-    ConfigKey scrollbarStateKey = getVScrollBarPosKey();
-    m_iSavedVScrollBarPos = m_pConfig->getValueString(scrollbarStateKey).toInt();
+    m_iSavedVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
 
 
 }
@@ -116,18 +118,7 @@ void WLibraryTableView::saveVScrollBarPos() {
 
 void WLibraryTableView::saveVScrollBarPosState() {
     //Save the vertical scrollbar position.
-    ConfigKey scrollbarStateKey = getVScrollBarPosKey();
-
     int scrollbarPosition = verticalScrollBar()->value();
-    m_pConfig->set(scrollbarStateKey, ConfigValue(scrollbarPosition));
+    m_pConfig->set(m_vScrollBarPosKey, ConfigValue(scrollbarPosition));
 }
 
-ConfigKey WLibraryTableView::getHeaderStateKey() {
-    qDebug() << "WARNING -- getHeaderStateKey is not implemented.";
-    return ConfigKey();
-}
-
-ConfigKey WLibraryTableView::getVScrollBarPosKey() {
-    qDebug() << "WARNING -- getVScrollBarPosKey is not implemented.";
-    return ConfigKey();
-}
