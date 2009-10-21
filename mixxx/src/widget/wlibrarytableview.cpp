@@ -99,8 +99,6 @@ void WLibraryTableView::loadVScrollBarPosState() {
     // each mode, the views should just maintain their scrollbar position when
     // you switch views. We should discuss this.
     m_iSavedVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
-
-
 }
 
 void WLibraryTableView::restoreVScrollBarPos() {
