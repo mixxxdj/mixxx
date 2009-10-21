@@ -53,13 +53,8 @@ Library::~Library() {
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
                          WLibrary* pLibraryWidget) {
-
     WTrackTableView* pTrackTableView =
         new WTrackTableView(pLibraryWidget, m_pConfig);
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(restoreVScrollBarPos()));
-	connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(saveVScrollBarPos()));
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackInfoObject*)),
@@ -117,21 +112,6 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 void Library::slotSwitchToView(const QString& view) {
     qDebug() << "Library::slotSwitchToView" << view;
     emit(switchToView(view));
-}
-
-void Library::slotSearch(const QString& text) {
-    qDebug() << "Library::search" << text;
-    emit(search(text));
-}
-
-void Library::slotSearchCleared() {
-    qDebug() << "Library::searchCleared";
-    emit(searchCleared());
-}
-
-void Library::slotSearchStarting() {
-    qDebug() << "Library::searchStarting";
-    emit(searchStarting());
 }
 
 void Library::slotLoadTrack(TrackInfoObject* pTrack) {

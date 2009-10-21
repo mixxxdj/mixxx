@@ -159,11 +159,11 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
 	// Connect search box signals to the library
 	connect(m_pLineEditSearch, SIGNAL(search(const QString&)),
-            m_pLibrary, SLOT(slotSearch(const QString&)));
+          m_pLibraryWidget, SLOT(search(const QString&)));
 	connect(m_pLineEditSearch, SIGNAL(searchCleared()),
-            m_pLibrary, SLOT(slotSearchCleared()));
+          m_pLibraryWidget, SLOT(searchCleared()));
 	connect(m_pLineEditSearch, SIGNAL(searchStarting()),
-            m_pLibrary, SLOT(slotSearchStarting()));
+          m_pLibraryWidget, SLOT(searchStarting()));
 }
 
 MixxxView::~MixxxView()

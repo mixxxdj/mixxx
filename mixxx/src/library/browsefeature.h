@@ -39,6 +39,9 @@ class BrowseFeature : public LibraryFeature {
     void loadToPlayer(const QModelIndex& index, int player);
     // Called when a file in the browse view is activated.
     void onFileActivate(const QModelIndex& index);
+    void searchStarting();
+    void search(const QString&);
+    void searchCleared();
   signals:
     void setRootIndex(const QModelIndex&);
   private:

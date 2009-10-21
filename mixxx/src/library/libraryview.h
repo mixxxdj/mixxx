@@ -12,6 +12,9 @@
 class LibraryView {
 public:
     virtual void setup(QDomNode node) = 0;
+    virtual void onSearchStarting() = 0;
+    virtual void onSearchCleared() = 0;
+    virtual void onSearch(const QString& text) = 0;
 };
 
 #endif /* LIBRARYVIEW_H */

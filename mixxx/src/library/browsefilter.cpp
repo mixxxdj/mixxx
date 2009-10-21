@@ -1,6 +1,7 @@
 // browsefilter.cpp
 // Created 10/20/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QtDebug>
 #include <QFileSystemModel>
 
 #include "defs_audiofiles.h"
@@ -8,17 +9,28 @@
 
 BrowseFilter::BrowseFilter(QObject* parent)
         : QSortFilterProxyModel(parent),
-          m_regexp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive){
+          m_regexp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive) {
+    setFilterCaseSensitivity(Qt::CaseInsensitive);
 }
 
 BrowseFilter::~BrowseFilter() {
 
 }
 
-bool BrowseFilter::filterAcceptsRow(int row,
-                                    const QModelIndex& parent) const {
+void BrowseFilter::setProxyParent(const QModelIndex& proxyParent) {
+    m_sourceParent = mapToSource(proxyParent);
+}
+
+bool BrowseFilter::filterAcceptsRow(int sourceRow,
+                                    const QModelIndex& sourceParent) const {
+
+    // If we do not accept the hierarchy above m_parent, then nothing will be
+    // shown.
+    if (sourceParent != m_sourceParent)
+        return true;
+
     // TODO(XXX) Assumes the model's 0'th column is the filename.
-    QModelIndex index = sourceModel()->index(row, 0, parent);
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     QString name = sourceModel()->data(index).toString();
 
     // Exclude .
@@ -31,13 +43,14 @@ bool BrowseFilter::filterAcceptsRow(int row,
 
     bool isDir = ((QFileSystemModel*)sourceModel())->isDir(index);
 
-    // TODO(XXX) match directory on search string
-    if (isDir)
+    // Only include directories that match the search string.
+    if (isDir && name.contains(filterRegExp()))
         return true;
 
+    // Skip files that don't match the extension filter.
     if (!name.contains(m_regexp))
         return false;
 
-    // TODO(XXX) exclude files that dont match the search string
-    return true;
+    // Only include files that match the search string.
+    return name.contains(filterRegExp());
 }

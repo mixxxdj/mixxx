@@ -27,6 +27,8 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
     m_fileSystemModel.setReadOnly(true);
     m_fileSystemModel.setFilter(QDir::AllDirs | QDir::AllEntries);
     m_proxyModel.setSourceModel(&m_fileSystemModel);
+    connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
+            &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
     //m_fileSystemModel.setSorting(QDir::DirsFirst | Qir::IgnoreCase);
 }
 
@@ -69,6 +71,12 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
             this, SLOT(loadToPlayer(const QModelIndex&, int)));
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             pBrowseView, SLOT(setRootIndex(const QModelIndex&)));
+    connect(pBrowseView, SIGNAL(search(const QString&)),
+            this, SLOT(search(const QString&)));
+    connect(pBrowseView, SIGNAL(searchCleared()),
+            this, SLOT(searchCleared()));
+    connect(pBrowseView, SIGNAL(searchStarting()),
+            this, SLOT(searchStarting()));
 
     pBrowseView->setDragEnabled(true);
     pBrowseView->setDragDropMode(QAbstractItemView::DragDrop);
@@ -137,4 +145,16 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
 
         emit(loadTrackToPlayer(track, player));
     }
+}
+
+void BrowseFeature::searchStarting() {
+
+}
+
+void BrowseFeature::search(const QString& text) {
+    m_proxyModel.setFilterFixedString(text);
+}
+
+void BrowseFeature::searchCleared() {
+    m_proxyModel.setFilterRegExp(QRegExp());
 }

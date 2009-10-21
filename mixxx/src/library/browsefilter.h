@@ -8,14 +8,19 @@
 #include <QSortFilterProxyModel>
 
 class BrowseFilter : public QSortFilterProxyModel {
+    Q_OBJECT
   public:
     BrowseFilter(QObject* parent = 0);
     virtual ~BrowseFilter();
 
     bool filterAcceptsRow(int sourceRow,
                           const QModelIndex& parent) const;
+  public slots:
+    // Set the filter's root to the Proxy index proxyParent
+    void setProxyParent(const QModelIndex& proxyParent);
   private:
     QRegExp m_regexp;
+    QModelIndex m_sourceParent;
 };
 
 

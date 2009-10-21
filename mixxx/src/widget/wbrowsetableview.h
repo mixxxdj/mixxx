@@ -16,8 +16,14 @@ class WBrowseTableView : public virtual WLibraryTableView {
     virtual ~WBrowseTableView();
 
     void contextMenuEvent(QContextMenuEvent * event);
+    void onSearchStarting();
+    void onSearchCleared();
+    void onSearch(const QString& text);
   signals:
     void loadToPlayer(const QModelIndex&, int);
+    void search(const QString&);
+    void searchStarting();
+    void searchCleared();
   private slots:
     void slotLoadPlayer1();
     void slotLoadPlayer2();

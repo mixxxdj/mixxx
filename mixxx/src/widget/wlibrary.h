@@ -1,4 +1,4 @@
-// wlibrary.h 
+// wlibrary.h
 // Created 8/28/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef WLIBRARY_H
@@ -6,6 +6,7 @@
 
 #include <QDomNode>
 #include <QMap>
+#include <QMutex>
 #include <QStackedWidget>
 #include <QString>
 
@@ -33,8 +34,15 @@ public slots:
     // registered view.
     void switchToView(const QString& name);
 
+    void search(const QString&);
+    void searchStarting();
+    void searchCleared();
+
 private:
-    QMap<QString, QWidget*> m_sViewMap;
+    QMutex m_mutex;
+    QMap<QString, QWidget*> m_viewMap;
+    QMap<QString, QString> m_searchMap;
+    QString m_currentView;
 };
 
 #endif /* WLIBRARY_H */
