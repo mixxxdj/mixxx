@@ -49,5 +49,16 @@ void WBrowseTableView::slotLoadPlayer2() {
     }
 }
 
+void WBrowseTableView::onSearchStarting() {
+    emit(searchStarting());
+    saveVScrollBarPos();
+}
 
+void WBrowseTableView::onSearchCleared() {
+    restoreVScrollBarPos();
+    emit(searchCleared());
+}
 
+void WBrowseTableView::onSearch(const QString& text) {
+    emit(search(text));
+}

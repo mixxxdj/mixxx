@@ -198,6 +198,19 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     menu.exec(event->globalPos());
 }
 
+void WTrackTableView::onSearch(const QString& text) {
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    trackModel->search(text);
+}
+
+void WTrackTableView::onSearchStarting() {
+    saveVScrollBarPos();
+}
+
+void WTrackTableView::onSearchCleared() {
+    restoreVScrollBarPos();
+}
+
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {

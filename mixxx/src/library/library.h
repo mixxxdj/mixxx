@@ -29,11 +29,11 @@ public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig);
     virtual ~Library();
-    
-    void bindWidget(WLibrarySidebar* sidebarWidget, 
+
+    void bindWidget(WLibrarySidebar* sidebarWidget,
                     WLibrary* libraryWidget);
     void addFeature(LibraryFeature* feature);
-    
+
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
     // fixed by moving the waveform renderers inside player and connecting the
@@ -47,20 +47,14 @@ public:
 public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
-    void slotSearch(const QString&);
-    void slotSearchCleared();
-    void slotSearchStarting();
     void slotLoadTrack(TrackInfoObject* pTrack);
     void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void search(const QString&);
-    void searchCleared();
-    void searchStarting();
     void loadTrack(TrackInfoObject* tio);
     void loadTrackToPlayer(TrackInfoObject* tio, int n);
-    
+
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;

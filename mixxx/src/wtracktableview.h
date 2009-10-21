@@ -22,6 +22,9 @@ class WTrackTableView : public WLibraryTableView
     WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
+    void onSearchStarting();
+    void onSearchCleared();
+    void onSearch(const QString& text);
 public slots:
     void loadTrackModel(QAbstractItemModel* model);
 private slots:
