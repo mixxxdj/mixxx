@@ -65,6 +65,8 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     connect(pBrowseView, SIGNAL(activated(const QModelIndex &)),
             this, SLOT(onFileActivate(const QModelIndex &)));
+    connect(pBrowseView, SIGNAL(loadToPlayer(const QModelIndex&, int)),
+            this, SLOT(loadToPlayer(const QModelIndex&, int)));
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             pBrowseView, SLOT(setRootIndex(const QModelIndex&)));
 
@@ -116,5 +118,23 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
         }
 
         emit(loadTrack(track));
+    }
+}
+
+void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
+    QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
+    QString path = m_fileSystemModel.filePath(sourceIndex);
+    QFileInfo info(path);
+    QString absPath = info.absoluteFilePath();
+
+    if (!m_fileSystemModel.isDir(sourceIndex)) {
+        TrackInfoObject* track = m_pTrackCollection->getTrack(absPath);
+
+        // The track doesn't exist in the database.
+        if (track == NULL) {
+            track = new TrackInfoObject(absPath);
+        }
+
+        emit(loadTrackToPlayer(track, player));
     }
 }
