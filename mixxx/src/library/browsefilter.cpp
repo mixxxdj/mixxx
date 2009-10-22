@@ -11,6 +11,7 @@ BrowseFilter::BrowseFilter(QObject* parent)
         : QSortFilterProxyModel(parent),
           m_regexp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive) {
     setFilterCaseSensitivity(Qt::CaseInsensitive);
+    setSortCaseSensitivity(Qt::CaseInsensitive);
 }
 
 BrowseFilter::~BrowseFilter() {
@@ -43,8 +44,10 @@ bool BrowseFilter::filterAcceptsRow(int sourceRow,
 
     bool isDir = ((QFileSystemModel*)sourceModel())->isDir(index);
 
+    QRegExp filter = filterRegExp();
+
     // Only include directories that match the search string.
-    if (isDir && name.contains(filterRegExp()))
+    if (isDir && name.contains(filter))
         return true;
 
     // Skip files that don't match the extension filter.
@@ -52,5 +55,21 @@ bool BrowseFilter::filterAcceptsRow(int sourceRow,
         return false;
 
     // Only include files that match the search string.
-    return name.contains(filterRegExp());
+    return name.contains(filter);
+}
+
+bool BrowseFilter::lessThan(const QModelIndex& left,
+                            const QModelIndex& right) const {
+
+    // Always sort directories first.
+    QFileSystemModel* model = (QFileSystemModel*)sourceModel();
+    bool isLeftDir = model->isDir(left);
+    bool isRightDir = model->isDir(right);
+
+    if (isLeftDir && !isRightDir)
+        return true;
+    if (!isLeftDir && isRightDir)
+        return false;
+
+    return QSortFilterProxyModel::lessThan(left, right);
 }

@@ -160,5 +160,5 @@ void BrowseFeature::search(const QString& text) {
 
 void BrowseFeature::searchCleared() {
     m_currentSearch = "";
-    m_proxyModel.setFilterRegExp(QRegExp());
+    m_proxyModel.setFilterFixedString("");
 }
