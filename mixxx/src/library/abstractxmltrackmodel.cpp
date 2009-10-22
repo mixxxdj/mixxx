@@ -65,7 +65,6 @@ QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) con
 
     QDomNode songNode = m_trackNodes.at(index.row());
 
-
     if (role == Qt::DisplayRole) {
         if ( index.column() > m_ColumnNames.size())
             return QVariant();

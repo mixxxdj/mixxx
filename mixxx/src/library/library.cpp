@@ -4,7 +4,6 @@
 #include <QItemSelectionModel>
 
 #include "trackinfoobject.h"
-#include "durationdelegate.h"
 #include "library/library.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"

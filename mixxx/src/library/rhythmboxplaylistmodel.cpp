@@ -21,7 +21,6 @@
 #include <QtDebug>
 #include <QtXmlPatterns/QXmlQuery>
 
-#include "durationdelegate.h"
 #include "library/rhythmboxtrackmodel.h"
 #include "library/rhythmboxplaylistmodel.h"
 #include "xmlparse.h"
@@ -112,7 +111,7 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     if ( pTrack == NULL )
         return QVariant();
 
-
+    int totalSeconds, seconds, mins;
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
             case RhythmboxPlaylistModel::COLUMN_ARTIST:
@@ -128,9 +127,16 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
             case RhythmboxPlaylistModel::COLUMN_LOCATION:
                 return pTrack->getLocation();
             case RhythmboxPlaylistModel::COLUMN_DURATION:
-                return pTrack->getDuration();
+                // TODO(XXX) Pull this out into a MixxxUtil or something.
 
+                //Let's reformat this song length into a human readable MM:SS format.
+                totalSeconds = pTrack->getDuration();
+                seconds = totalSeconds % 60;
+                mins = totalSeconds / 60;
+                //int hours = mins / 60; //Not going to worry about this for now. :)
 
+                //Construct a nicely formatted duration string now.
+                return QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
             default:
                 return QVariant();
         }
@@ -229,9 +235,6 @@ TrackInfoObject * RhythmboxPlaylistModel::getTrack(const QModelIndex& index) con
 }
 
 QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
-    if (i == RhythmboxPlaylistModel::COLUMN_DURATION) {
-        return new DurationDelegate();
-    }
     return NULL;
 }
 

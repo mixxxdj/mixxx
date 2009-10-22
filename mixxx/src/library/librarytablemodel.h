@@ -19,6 +19,9 @@ public:
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
+    virtual QVariant data(const QModelIndex& item, int role) const;
+
+
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);
