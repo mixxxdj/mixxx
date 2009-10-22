@@ -7,10 +7,10 @@
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "library/searchthread.h"
+#include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
 
 class TrackInfoObject;
-class TrackModel;
 
 const QString WTRACKTABLEVIEW_HEADERSTATE_KEY = "HeaderState"; /** ConfigValue key for QTable headerview state */
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -46,6 +46,7 @@ private:
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
 
     ConfigObject<ConfigValue> * m_pConfig;
     //QList<QString> m_selectedTrackLocations;

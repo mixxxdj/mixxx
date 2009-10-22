@@ -15,7 +15,7 @@ SearchThread::SearchThread(QObject* parent)
 }
 
 SearchThread::~SearchThread() {
-
+    stop();
 }
 
 void SearchThread::enqueueSearch(TrackModel* pModel, QString search) {
@@ -30,11 +30,14 @@ void SearchThread::enqueueSearch(TrackModel* pModel, QString search) {
 void SearchThread::stop() {
     QMutexLocker lock(&m_mutex);
     m_bQuit = true;
+    m_waitCondition.wakeAll();
 }
 
 void SearchThread::run() {
     while (!m_bQuit) {
         m_mutex.lock();
+        if (m_bQuit)
+            break;
         if (m_searchQueue.isEmpty()) {
             m_waitCondition.wait(&m_mutex);
         }
