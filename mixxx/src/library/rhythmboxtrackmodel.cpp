@@ -63,13 +63,13 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_trackNodes.size();
 
 
-    addColumnName(RhythmboxTrackModel::COLUMN_ARTIST, "Artist");
-    addColumnName(RhythmboxTrackModel::COLUMN_TITLE, "Title");
-    addColumnName(RhythmboxTrackModel::COLUMN_ALBUM, "Album");
-    addColumnName(RhythmboxTrackModel::COLUMN_DATE, "Date");
-    addColumnName(RhythmboxTrackModel::COLUMN_GENRE, "Genre");
-    addColumnName(RhythmboxTrackModel::COLUMN_LOCATION, "Location");
-    addColumnName(RhythmboxTrackModel::COLUMN_DURATION, "Duration");
+    addColumnName(RhythmboxTrackModel::COLUMN_ARTIST, tr("Artist"));
+    addColumnName(RhythmboxTrackModel::COLUMN_TITLE, tr("Title"));
+    addColumnName(RhythmboxTrackModel::COLUMN_ALBUM, tr("Album"));
+    addColumnName(RhythmboxTrackModel::COLUMN_DATE, tr("Date"));
+    addColumnName(RhythmboxTrackModel::COLUMN_GENRE, tr("Genre"));
+    addColumnName(RhythmboxTrackModel::COLUMN_LOCATION, tr("Location"));
+    addColumnName(RhythmboxTrackModel::COLUMN_DURATION, tr("Duration"));
 
 }
 

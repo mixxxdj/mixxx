@@ -45,27 +45,31 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
 
     Q_OBJECT
     public:
-    RhythmboxPlaylistModel(RhythmboxTrackModel *);
+    RhythmboxPlaylistModel(RhythmboxTrackModel*);
     virtual ~RhythmboxPlaylistModel();
 
     //QAbstractTableModel stuff
-    virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
-    virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
-    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-    virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const;
+    virtual QVariant data(const QModelIndex & index,
+                          int role = Qt::DisplayRole) const;
+    virtual QVariant headerData(int section,
+                                Qt::Orientation orientation,
+                                int role = Qt::DisplayRole) const;
+    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& parent) const;
 
     //Playlist Model stuff
-	virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
-	virtual QString getTrackLocation(const QModelIndex& index) const;
-	virtual void search(const QString& searchText);
+    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual void search(const QString& searchText);
     virtual const QString currentSearch();
-	virtual void removeTrack(const QModelIndex& index);
-	virtual void addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
+    virtual void removeTrack(const QModelIndex& index);
+    virtual void addTrack(const QModelIndex& index, QString location);
+    virtual void moveTrack(const QModelIndex& sourceIndex,
+                           const QModelIndex& destIndex);
     QItemDelegate* delegateForColumn(const int i);
 
-	virtual QList<QString> getPlaylists();
+    virtual QList<QString> getPlaylists();
     virtual void setPlaylist(QString playlist);
 
     int numPlaylists();
