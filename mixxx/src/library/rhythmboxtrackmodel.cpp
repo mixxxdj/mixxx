@@ -71,6 +71,11 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     addColumnName(RhythmboxTrackModel::COLUMN_LOCATION, tr("Location"));
     addColumnName(RhythmboxTrackModel::COLUMN_DURATION, tr("Duration"));
 
+    addSearchColumn(RhythmboxTrackModel::COLUMN_ARTIST);
+    addSearchColumn(RhythmboxTrackModel::COLUMN_TITLE);
+    addSearchColumn(RhythmboxTrackModel::COLUMN_ALBUM);
+    addSearchColumn(RhythmboxTrackModel::COLUMN_GENRE);
+    addSearchColumn(RhythmboxTrackModel::COLUMN_LOCATION);
 }
 
 RhythmboxTrackModel::~RhythmboxTrackModel()

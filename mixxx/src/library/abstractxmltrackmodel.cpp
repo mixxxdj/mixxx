@@ -164,6 +164,10 @@ void AbstractXmlTrackModel::search(const QString& searchText)
     // TODO(XXX) Implement searching
 }
 
+const QList<int>& AbstractXmlTrackModel::searchColumns() const {
+    return m_searchColumns;
+}
+
 const QString AbstractXmlTrackModel::currentSearch()
 {
     return m_currentSearch;
@@ -172,4 +176,8 @@ const QString AbstractXmlTrackModel::currentSearch()
 void AbstractXmlTrackModel::addColumnName(int index, QString name)
 {
     m_ColumnNames.insert(index, name);
+}
+
+void AbstractXmlTrackModel::addSearchColumn(int index) {
+    m_searchColumns.push_back(index);
 }

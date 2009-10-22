@@ -20,6 +20,8 @@
 
 #include <QtSql>
 #include <QtXml>
+#include <QList>
+
 #include "trackmodel.h"
 #include "rhythmboxtrackmodel.h"
 
@@ -63,6 +65,7 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
+    virtual const QList<int>& searchColumns() const;
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
@@ -84,13 +87,13 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
 
  	QSqlDatabase getDatabase();
  */
-public slots:
+  public slots:
 
 
-signals:
- 	void startedLoading();
- 	void progressLoading(QString path);
- 	void finishedLoading();
+  signals:
+    void startedLoading();
+    void progressLoading(QString path);
+    void finishedLoading();
 
 private:
     QDomNodeList m_playlistNodes;

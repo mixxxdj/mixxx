@@ -1,6 +1,7 @@
 #ifndef TRACKMODEL_H
 #define TRACKMODEL_H
 
+#include <QList>
 #include <QItemDelegate>
 
 class TrackInfoObject;
@@ -23,16 +24,20 @@ public:
 
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const = 0;
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;
-    bool isTrackModel() { return true;};
+    bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;
     virtual const QString currentSearch() = 0;
+    virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
     virtual void removeTrack(const QModelIndex& index) = 0;
     virtual void addTrack(const QModelIndex& index, QString location) = 0;
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex) = 0;
     virtual QItemDelegate* delegateForColumn(const int i) = 0;
-    virtual ~TrackModel() {};
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const { return TRACKMODELCAPS_NONE; } ;
+    virtual ~TrackModel() {}
+    virtual TrackModel::CapabilitiesFlags getCapabilities() const { return TRACKMODELCAPS_NONE; }
+
+  private:
+    QList<int> m_emptyColumns;
 };
 
 #endif

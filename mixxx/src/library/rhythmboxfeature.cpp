@@ -1,5 +1,6 @@
 #include <QtDebug>
 
+#include "library/proxytrackmodel.h"
 #include "library/rhythmboxtrackmodel.h"
 #include "library/rhythmboxplaylistmodel.h"
 #include "library/rhythmboxfeature.h"
@@ -7,7 +8,12 @@
 RhythmboxFeature::RhythmboxFeature(QObject* parent)
     : LibraryFeature(parent) {
     m_pRhythmboxTrackModel = new RhythmboxTrackModel();
+    m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
+    m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+
     m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
+    m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
+    m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
@@ -32,7 +38,7 @@ QVariant RhythmboxFeature::child(int n) {
 
 void RhythmboxFeature::activate() {
     qDebug("RhythmboxFeature::activate()");
-    emit(showTrackModel(m_pRhythmboxTrackModel));
+    emit(showTrackModel(m_pTrackModelProxy));
 }
 
 void RhythmboxFeature::activateChild(int n) {
@@ -40,7 +46,7 @@ void RhythmboxFeature::activateChild(int n) {
     QString playlist = m_pRhythmboxPlaylistModel->playlistTitle(n);
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pRhythmboxPlaylistModel));
+    emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
 void RhythmboxFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {

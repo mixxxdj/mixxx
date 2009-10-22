@@ -5,6 +5,7 @@
 #define PROXYTRACKMODEL_H
 
 #include <QSortFilterProxyModel>
+#include <QAbstractItemModel>
 
 #include "library/trackmodel.h"
 
@@ -17,7 +18,7 @@
 // QSortFilterProxyModel.
 class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel {
   public:
-    ProxyTrackModel(TrackModel* pTrackModel);
+    ProxyTrackModel(QAbstractItemModel* pTrackModel);
     virtual ~ProxyTrackModel();
 
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
@@ -30,6 +31,9 @@ class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel 
                            const QModelIndex& destIndex);
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
+
+    bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const;
+
   private:
     TrackModel* m_pTrackModel;
     QString m_currentSearch;
