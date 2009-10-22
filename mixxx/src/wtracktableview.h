@@ -6,6 +6,7 @@
 
 #include "configobject.h"
 #include "library/libraryview.h"
+#include "library/searchthread.h"
 #include "widget/wlibrarytableview.h"
 
 class TrackInfoObject;
@@ -49,6 +50,8 @@ private:
     ConfigObject<ConfigValue> * m_pConfig;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
+
+    SearchThread m_searchThread;
 
     //Used for right-click operations
     /**Send to Play Queue Action**/

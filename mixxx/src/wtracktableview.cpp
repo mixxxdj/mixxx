@@ -18,7 +18,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_HEADERSTATE_KEY),
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_searchThread(this) {
 
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -206,8 +207,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
-    if (trackModel)
-        trackModel->search(text);
+    if (trackModel) {
+        m_searchThread.enqueueSearch(trackModel, text);
+    }
 }
 
 void WTrackTableView::onSearchStarting() {
@@ -217,8 +219,9 @@ void WTrackTableView::onSearchStarting() {
 void WTrackTableView::onSearchCleared() {
     restoreVScrollBarPos();
     TrackModel* trackModel = getTrackModel();
-    if (trackModel)
-        trackModel->search("");
+    if (trackModel) {
+        m_searchThread.enqueueSearch(trackModel, "");
+    }
 }
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/

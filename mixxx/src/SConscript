@@ -398,6 +398,7 @@ sources = Split("""
                 library/libraryscanner.cpp
                 library/libraryscannerdlg.cpp
                 library/library.cpp
+                library/searchthread.cpp
 
                 xmlparse.cpp
                 parser.cpp
