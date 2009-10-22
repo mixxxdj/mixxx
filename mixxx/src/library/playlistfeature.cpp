@@ -7,17 +7,13 @@
 #include "library/playlistfeature.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
-    : LibraryFeature(parent) {
-    playlists.push_back("My Rox");
-    playlists.push_back("Trance");
-    playlists.push_back("Technoize");
-    
-    m_pTrackCollection = pTrackCollection;
+        : LibraryFeature(parent),
+          m_pTrackCollection(pTrackCollection) {
     m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection, 1);
-    
+
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()), this, SLOT(slotCreatePlaylist()));
-    
+
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()), this, SLOT(slotDeletePlaylist()));
 }
@@ -44,10 +40,10 @@ int PlaylistFeature::numChildren() {
 QVariant PlaylistFeature::child(int n) {
     //qDebug() << m_pTrackCollection->getPlaylistName(n);
     //Q_ASSERT(n < numChildren());
-    
+
     if (n < 0 || n >= numChildren())
         return QVariant(QVariant::Invalid); //As per QAbstractItemModel specs
-        
+
     return m_pTrackCollection->getPlaylistName(n); //QVariant(playlists[n]);
 }
 
@@ -66,7 +62,7 @@ void PlaylistFeature::activateChild(int n) {
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
-    
+
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -82,14 +78,14 @@ void PlaylistFeature::onClick(QModelIndex index) {
 
 void PlaylistFeature::slotCreatePlaylist()
 {
-    QString name = QInputDialog::getText(NULL, tr("New Playlist"), tr("Playlist name:"), QLineEdit::Normal, tr("New Playlist")); 
+    QString name = QInputDialog::getText(NULL, tr("New Playlist"), tr("Playlist name:"), QLineEdit::Normal, tr("New Playlist"));
     if (name == "")
         return;
     else {
         m_pTrackCollection->createPlaylist(name);
         qDebug() << "TODO: Force the view to refresh" << __FILE__ << ":" << __LINE__;
     }
-    
+
     emit(featureUpdated());
 }
 
@@ -102,23 +98,23 @@ void PlaylistFeature::slotDeletePlaylist()
         m_pTrackCollection->deletePlaylist(playlistId);
 
     }
-    
+
     emit(featureUpdated());
 }
 
 bool PlaylistFeature::dropAccept(const QModelIndex& index, QUrl url)
 {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    
+
     int playlistId = m_pTrackCollection->getPlaylistId(index.row());
     m_pTrackCollection->appendTrackToPlaylist(url.toLocalFile(), playlistId);
-    
+
     return true;
 }
 
 bool PlaylistFeature::dragMoveAccept(const QModelIndex& index, QUrl url)
 {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    
+
     return true;
 }
