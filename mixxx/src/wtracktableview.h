@@ -2,6 +2,7 @@
 #define WTRACKTABLEVIEW_H
 
 #include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
 
 #include "configobject.h"
 #include "library/libraryview.h"
@@ -42,9 +43,13 @@ private:
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
 
+    // Returns the current TrackModel, or returns NULL if none is set.
+    TrackModel* getTrackModel();
+
     ConfigObject<ConfigValue> * m_pConfig;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
+    QSortFilterProxyModel m_proxyModel;
 
     //Used for right-click operations
     /**Send to Play Queue Action**/

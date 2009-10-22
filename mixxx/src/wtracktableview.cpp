@@ -18,7 +18,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_HEADERSTATE_KEY),
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_proxyModel(this) {
 
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -26,6 +27,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     //Create all the context menu actions (stuff that shows up when you
     //right-click)
     createActions();
+
+    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    setModel(&m_proxyModel);
 
     //Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
@@ -50,8 +54,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     Q_ASSERT(model);
     Q_ASSERT(track_model);
-
-    setModel(model);
+    m_proxyModel.setSourceModel(model);
 
     //Setup delegates according to what the model tells us
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -113,30 +116,36 @@ void WTrackTableView::createActions()
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 {
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
+    TrackModel* trackModel = getTrackModel();
     TrackInfoObject* pTrack = NULL;
-    if (trackModel && (pTrack = trackModel->getTrack(index))) {
+    if (trackModel && (pTrack = trackModel->getTrack(sourceIndex))) {
         emit(loadTrack(pTrack));
     }
 }
 
 void WTrackTableView::slotLoadPlayer1() {
+
     if (m_selectedIndices.size() > 0) {
-        TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+        QModelIndex sourceIndex =
+                m_proxyModel.mapToSource(m_selectedIndices.at(0));
+        TrackModel* trackModel = getTrackModel();
         TrackInfoObject* pTrack = NULL;
         if (trackModel &&
-            (pTrack = trackModel->getTrack(m_selectedIndices.at(0)))) {
+            (pTrack = trackModel->getTrack(sourceIndex))) {
             emit(loadTrackToPlayer(pTrack, 1));
         }
     }
 }
 
 void WTrackTableView::slotLoadPlayer2() {
- 	if (m_selectedIndices.size() > 0) {
-        TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    if (m_selectedIndices.size() > 0) {
+        QModelIndex sourceIndex =
+                m_proxyModel.mapToSource(m_selectedIndices.at(0));
+        TrackModel* trackModel = getTrackModel();
         TrackInfoObject* pTrack = NULL;
         if (trackModel &&
-            (pTrack = trackModel->getTrack(m_selectedIndices.at(0)))) {
+            (pTrack = trackModel->getTrack(sourceIndex))) {
             emit(loadTrackToPlayer(pTrack, 2));
         }
     }
@@ -144,27 +153,35 @@ void WTrackTableView::slotLoadPlayer2() {
 
 void WTrackTableView::slotRemove()
 {
- 	if (m_selectedIndices.size() > 0)
-        {
-            TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-            if (trackModel) {
-                QModelIndex curIndex;
-                //The model indices are sorted so that we remove the tracks from the table
-                //in ascending order. This is necessary because if track A is above track B in
-                //the table, and you remove track A, the model index for track B will change.
-                //Sorting the indices first means we don't have to worry about this.
-                qSort(m_selectedIndices);
+    if (m_selectedIndices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            QModelIndexList sourceIndices;
+            QModelIndex index;
+            foreach (index, m_selectedIndices) {
+                sourceIndices.append(m_proxyModel.mapToSource(index));
+            }
 
-                //Going through the model indices in descending order (see above comment for explanation).
-                QListIterator<QModelIndex> it(m_selectedIndices);
-                it.toBack();
-                while (it.hasPrevious())
-                    {
-                        curIndex = it.previous();
-                        trackModel->removeTrack(curIndex);
-                    }
+            QModelIndex curIndex;
+            //The model indices are sorted so that we remove the tracks from the
+            //table in ascending order. This is necessary because if track A is
+            //above track B in the table, and you remove track A, the model
+            //index for track B will change.  Sorting the indices first means we
+            //don't have to worry about this.
+            qSort(sourceIndices);
+
+            //Going through the model indices in descending order (see above
+            //comment for explanation).
+            QListIterator<QModelIndex> it(sourceIndices);
+            it.toBack();
+            while (it.hasPrevious())
+            {
+                curIndex = it.previous();
+                trackModel->removeTrack(curIndex);
             }
         }
+    }
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
@@ -175,12 +192,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     //Gray out some stuff if multiple songs were selected.
     if (m_selectedIndices.count() != 1) {
         m_pPlayer1Act->setEnabled(false);
-		m_pPlayer2Act->setEnabled(false);
-		m_pPropertiesAct->setEnabled(false);
+        m_pPlayer2Act->setEnabled(false);
+        m_pPropertiesAct->setEnabled(false);
     } else {
-		m_pPlayer1Act->setEnabled(true);
-		m_pPlayer2Act->setEnabled(true);
-		m_pPropertiesAct->setEnabled(true);
+        m_pPlayer1Act->setEnabled(true);
+        m_pPlayer2Act->setEnabled(true);
+        m_pPropertiesAct->setEnabled(true);
     }
 
     //Gray out player 1 and/or player 2 if those players are playing.
@@ -199,7 +216,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 }
 
 void WTrackTableView::onSearch(const QString& text) {
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    TrackModel* trackModel = getTrackModel();
     if (trackModel)
         trackModel->search(text);
 }
@@ -210,7 +227,7 @@ void WTrackTableView::onSearchStarting() {
 
 void WTrackTableView::onSearchCleared() {
     restoreVScrollBarPos();
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    TrackModel* trackModel = getTrackModel();
     if (trackModel)
         trackModel->search("");
 }
@@ -257,22 +274,23 @@ void WTrackTableView::dropEvent(QDropEvent * event)
             m_selectedIndices = this->selectionModel()->selectedRows();
             //TODO: Iterate over selected indices like the 1.7 code below?
 
-            TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-			if (trackModel && (trackModel->getCapabilities() & TrackModel::TRACKMODELCAPS_REORDER))
-			{
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel && (trackModel->getCapabilities() & TrackModel::TRACKMODELCAPS_REORDER))
+            {
 
-	            QModelIndex destIndex = this->indexAt(event->pos());
-	            foreach (selectedIndex, m_selectedIndices)
-	            {
-	                trackModel->moveTrack(selectedIndex, destIndex);
-	            }
+                QModelIndex destIndex = m_proxyModel.mapToSource(this->indexAt(event->pos()));
+                foreach (selectedIndex, m_selectedIndices)
+                {
+                    QModelIndex sourceIndex = m_proxyModel.mapToSource(selectedIndex);
+                    trackModel->moveTrack(sourceIndex, destIndex);
+                }
 
-	            /*foreach (url, urls)
-	            {
-	            }*/
-			}
+                /*foreach (url, urls)
+                  {
+                  }*/
+            }
 
-/*   //OLD CODE FROM 1.7. Probably still useful, just haven't realized it yet. :) - Albert Sept 21, 2009
+            /*   //OLD CODE FROM 1.7. Probably still useful, just haven't realized it yet. :) - Albert Sept 21, 2009
 
             m_selectedIndices = this->selectionModel()->selectedRows();
 
@@ -325,34 +343,42 @@ void WTrackTableView::dropEvent(QDropEvent * event)
         }
         else
         {
-            //Reset the selected tracks (if you had any tracks highlighted, it clears them)
+            //Reset the selected tracks (if you had any tracks highlighted, it
+            //clears them)
             this->selectionModel()->clear();
 
             //Drag-and-drop from an external application
             //eg. dragging a track from Windows Explorer onto the track table.
 
-            TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-			if (trackModel) {
-	            foreach (url, urls)
-	            {
-	                QModelIndex destIndex = this->indexAt(event->pos());
-	                //TrackInfoObject* draggedTrack = m_pTrack->getTrackCollection()->getTrack(url.toLocalFile());
-	                //if (draggedTrack) //Make sure the track was valid
-	                //{
-	                //if (model()->insertRow(destIndex.row(), url.toLocalFile()))
-	                trackModel->addTrack(destIndex, url.toLocalFile());
-	                {
-	                    //this->selectionModel()->select(destIndex, QItemSelectionModel::Select |
-	                    //                                          QItemSelectionModel::Rows);
-	                }
-	                //}
-	            }
-			}
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel) {
+                foreach (url, urls)
+                {
+                    QModelIndex destIndex = m_proxyModel.mapToSource(this->indexAt(event->pos()));
+                    //TrackInfoObject* draggedTrack = m_pTrack->getTrackCollection()->getTrack(url.toLocalFile());
+                    //if (draggedTrack) //Make sure the track was valid
+                    //{
+                    //if (model()->insertRow(destIndex.row(), url.toLocalFile()))
+                    trackModel->addTrack(destIndex, url.toLocalFile());
+                    {
+                        //this->selectionModel()->select(destIndex, QItemSelectionModel::Select |
+                        //                                          QItemSelectionModel::Rows);
+                    }
+                    //}
+                }
+            }
         }
 
         event->acceptProposedAction();
         //emit(trackDropped(name));
 
-    } else
+    } else {
         event->ignore();
+    }
+}
+
+TrackModel* WTrackTableView::getTrackModel() {
+    QAbstractItemModel* model = m_proxyModel.sourceModel();
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    return trackModel;
 }
