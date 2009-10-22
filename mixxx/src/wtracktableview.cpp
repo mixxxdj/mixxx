@@ -230,7 +230,20 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
-        event->acceptProposedAction();
+        if (event->source() == this) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel
+                && (trackModel->getCapabilities() &
+                    TrackModel::TRACKMODELCAPS_REORDER)) {
+                event->acceptProposedAction();
+            } else {
+                event->ignore();
+            }
+        } else {
+            event->acceptProposedAction();
+        }
+    } else {
+        event->ignore();
     }
 }
 
@@ -243,7 +256,20 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
-        event->acceptProposedAction();
+        if (event->source() == this) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel
+                && (trackModel->getCapabilities() &
+                    TrackModel::TRACKMODELCAPS_REORDER)) {
+                event->acceptProposedAction();
+            } else {
+                event->ignore();
+            }
+        } else {
+            event->acceptProposedAction();
+        }
+    } else {
+        event->ignore();
     }
 }
 
