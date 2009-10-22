@@ -91,7 +91,6 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
 
 RhythmboxPlaylistModel::~RhythmboxPlaylistModel()
 {
-
 }
 
 Qt::ItemFlags RhythmboxPlaylistModel::flags ( const QModelIndex & index ) const
@@ -156,28 +155,28 @@ QVariant RhythmboxPlaylistModel::headerData ( int section, Qt::Orientation orien
         switch (section)
         {
             case RhythmboxPlaylistModel::COLUMN_ARTIST:
-                return QString("Artist");
+                return QString(tr("Artist"));
 
             case RhythmboxPlaylistModel::COLUMN_TITLE:
-                return QString("Title");
+                return QString(tr("Title"));
 
             case RhythmboxPlaylistModel::COLUMN_ALBUM:
-                return QString("Album");
+                return QString(tr("Album"));
 
             case RhythmboxPlaylistModel::COLUMN_DATE:
-                return QString("Date");
+                return QString(tr("Date"));
 
             case RhythmboxPlaylistModel::COLUMN_GENRE:
-                return QString("Genre");
+                return QString(tr("Genre"));
 
             case RhythmboxPlaylistModel::COLUMN_LOCATION:
-                return QString("Location");
+                return QString(tr("Location"));
 
             case RhythmboxPlaylistModel::COLUMN_DURATION:
-                return QString("Duration");
+                return QString(tr("Duration"));
 
             default:
-                return QString("Unknown");
+                return QString(tr("Unknown"));
         }
     }
 
