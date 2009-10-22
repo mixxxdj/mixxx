@@ -4,7 +4,6 @@
 #include <QtDebug>
 #include <QtXmlPatterns/QXmlQuery>
 
-#include "durationdelegate.h"
 #include "rhythmboxtrackmodel.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
@@ -16,8 +15,8 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     QXmlQuery query;
     QString res;
     QDomDocument rhythmdb;
-    
-    
+
+
     /*
      * Try and open the Rhythmbox DB. An API call which tells us where
      * the file is would be nice.
@@ -28,10 +27,10 @@ RhythmboxTrackModel::RhythmboxTrackModel()
         if ( ! db.exists())
             return;
     }
-    
+
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
-    
+
     /*
      * Use QXmlQuery to execute an XPath query. We add the version to
      * the XPath query to make sure it is the schema we expect.
@@ -40,30 +39,30 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     query.setQuery("rhythmdb[@version='1.6']/entry[@type='song']");
     if ( ! query.isValid())
         return;
-    
+
     query.evaluateTo(&res);
     db.close();
-    
-    
+
+
     /*
      * Parse the result as an XML file. These shennanigans actually
      * reduce the load time from a minute to a matter of seconds.
      */
     rhythmdb.setContent("<rhythmdb version='1.6'>" + res + "</rhythmdb>");
     m_trackNodes = rhythmdb.elementsByTagName("entry");
-    
-    
+
+
     for (int i = 0; i < m_trackNodes.count(); i++) {
         QDomNode n = m_trackNodes.at(i);
         QString location = n.firstChildElement("location").text();
-        
+
         m_mTracksByLocation[location] = n;
     }
-    
+
     qDebug() << rhythmdb.doctype().name();
     qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_trackNodes.size();
-    
-    
+
+
     addColumnName(RhythmboxTrackModel::COLUMN_ARTIST, "Artist");
     addColumnName(RhythmboxTrackModel::COLUMN_TITLE, "Title");
     addColumnName(RhythmboxTrackModel::COLUMN_ALBUM, "Album");
@@ -71,7 +70,7 @@ RhythmboxTrackModel::RhythmboxTrackModel()
     addColumnName(RhythmboxTrackModel::COLUMN_GENRE, "Genre");
     addColumnName(RhythmboxTrackModel::COLUMN_LOCATION, "Location");
     addColumnName(RhythmboxTrackModel::COLUMN_DURATION, "Duration");
-    
+
 }
 
 RhythmboxTrackModel::~RhythmboxTrackModel()
@@ -80,16 +79,38 @@ RhythmboxTrackModel::~RhythmboxTrackModel()
 }
 
 QItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i) {
-    if (i == RhythmboxTrackModel::COLUMN_DURATION) {
-        return new DurationDelegate();
-    }
     return NULL;
+}
+
+QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
+    if (!item.isValid())
+        return QVariant();
+
+    QVariant value = AbstractXmlTrackModel::data(item, role);
+
+    if (role == Qt::DisplayRole &&
+        item.column() == COLUMN_DURATION) {
+
+        if (qVariantCanConvert<int>(value)) {
+            // TODO(XXX) Pull this out into a MixxxUtil or something.
+
+            //Let's reformat this song length into a human readable MM:SS format.
+            int totalSeconds = qVariantValue<int>(value);
+            int seconds = totalSeconds % 60;
+            int mins = totalSeconds / 60;
+            //int hours = mins / 60; //Not going to worry about this for now. :)
+
+            //Construct a nicely formatted duration string now.
+            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+        }
+    }
+    return value;
 }
 
 QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
     switch (index.column()) {
-        case RhythmboxTrackModel::COLUMN_ARTIST: 
+        case RhythmboxTrackModel::COLUMN_ARTIST:
             return songNode.firstChildElement("artist").text();
         case RhythmboxTrackModel::COLUMN_TITLE:
             return songNode.firstChildElement("title").text();
@@ -103,7 +124,7 @@ QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModel
             return songNode.firstChildElement("location").text();
         case RhythmboxTrackModel::COLUMN_DURATION:
             return songNode.firstChildElement("duration").text();
-        
+
         default:
             return QVariant();
     }
@@ -112,8 +133,8 @@ QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModel
 TrackInfoObject *RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
 {
     TrackInfoObject *pTrack = new TrackInfoObject();
-    
-    
+
+
     pTrack->setArtist(songNode.firstChildElement("artist").text());
     pTrack->setTitle(songNode.firstChildElement("title").text());
     pTrack->setAlbum(songNode.firstChildElement("album").text());
@@ -121,6 +142,6 @@ TrackInfoObject *RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
     pTrack->setLocation(QUrl(songNode.firstChildElement("location").text()).toLocalFile());
-    
+
     return pTrack;
 }
