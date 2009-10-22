@@ -19,6 +19,9 @@ class BrowseFilter : public QSortFilterProxyModel {
     // Set the filter's root to the Proxy index proxyParent
     void setProxyParent(const QModelIndex& proxyParent);
   private:
+    bool lessThan(const QModelIndex& left,
+                  const QModelIndex& right) const;
+
     QRegExp m_regexp;
     QModelIndex m_sourceParent;
 };
