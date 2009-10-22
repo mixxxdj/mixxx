@@ -13,12 +13,16 @@
 // that the sorting and filtering of the QSortFilterProxyModel can be completely
 // transparent to the user of the TrackModel. The ProxyTrackModel will
 // automatically translate any QModelIndex's to their source index before
-// calling the composed TrackModel. The TrackModel search signals will NOT be
-// delivered to the composed TrackModel because filtering is handled by the
-// QSortFilterProxyModel.
+// calling the composed TrackModel. If the bHandleSearches flag is set, the
+// TrackModel search calls will not be delivered to the composed TrackModel
+// because filtering is handled by the QSortFilterProxyModel.
 class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel {
   public:
-    ProxyTrackModel(QAbstractItemModel* pTrackModel);
+    // Construct a new ProxyTrackModel with pTrackModel as the TrackModel it
+    // composes. If bHandleSearches is true, then search signals will not be
+    // delivered to pTrackModel -- instead the ProxyTrackModel will do its own
+    // filtering.
+    ProxyTrackModel(QAbstractItemModel* pTrackModel, bool bHandleSearches=true);
     virtual ~ProxyTrackModel();
 
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
@@ -37,6 +41,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel 
   private:
     TrackModel* m_pTrackModel;
     QString m_currentSearch;
+    bool m_bHandleSearches;
 };
 
 #endif /* PROXYTRACKMODEL_H */

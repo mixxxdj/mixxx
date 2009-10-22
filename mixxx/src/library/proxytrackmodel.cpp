@@ -5,7 +5,9 @@
 
 #include "library/proxytrackmodel.h"
 
-ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel) {
+ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
+                                 bool bHandleSearches)
+        : m_bHandleSearches(bHandleSearches) {
     m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);
     Q_ASSERT(m_pTrackModel && pTrackModel);
     setSourceModel(pTrackModel);
@@ -25,12 +27,19 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 void ProxyTrackModel::search(const QString& searchText) {
-    m_currentSearch = searchText;
-    setFilterFixedString(searchText);
+    if (m_bHandleSearches) {
+        m_currentSearch = searchText;
+        setFilterFixedString(searchText);
+    } else {
+        m_pTrackModel->search(searchText);
+    }
 }
 
 const QString ProxyTrackModel::currentSearch() {
-    return m_currentSearch;
+    if (m_bHandleSearches) {
+        return m_currentSearch;
+    }
+    return m_pTrackModel->currentSearch();
 }
 
 void ProxyTrackModel::removeTrack(const QModelIndex& index) {
@@ -60,6 +69,10 @@ TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                                        const QModelIndex& sourceParent) const {
+
+    if (!m_bHandleSearches)
+        return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
