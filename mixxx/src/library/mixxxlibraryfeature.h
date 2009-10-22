@@ -7,6 +7,7 @@
 #include "library/libraryfeature.h"
 
 class LibraryTableModel;
+class ProxyTrackModel;
 class TrackCollection;
 
 class MixxxLibraryFeature : public LibraryFeature {
@@ -20,7 +21,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     QIcon getIcon();
     int numChildren();
     QVariant child(int n);
-    bool dropAccept(const QModelIndex& index, QUrl url);    
+    bool dropAccept(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
 public slots:
     void activate();
@@ -30,6 +31,7 @@ public slots:
 
 private:
     LibraryTableModel* m_pLibraryTableModel;
+    ProxyTrackModel* m_pLibraryTableModelProxy;
 };
 
 

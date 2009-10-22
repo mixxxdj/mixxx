@@ -10,10 +10,12 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent)
     m_pRhythmboxTrackModel = new RhythmboxTrackModel();
     m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
     m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
     m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
     m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 }
 
 RhythmboxFeature::~RhythmboxFeature() {

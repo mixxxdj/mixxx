@@ -2,14 +2,18 @@
 #include <QMenu>
 #include <QInputDialog>
 
+#include "library/playlistfeature.h"
+
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
-#include "library/playlistfeature.h"
+#include "library/proxytrackmodel.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection) {
     m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection, 1);
+    m_pPlaylistModelProxy = new ProxyTrackModel(m_pPlaylistTableModel, false);
+    m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()), this, SLOT(slotCreatePlaylist()));
@@ -58,7 +62,7 @@ void PlaylistFeature::activateChild(int n) {
     //Switch the playlist table model's playlist.
     int playlistId = m_pTrackCollection->getPlaylistId(n);
     m_pPlaylistTableModel->setPlaylist(playlistId);
-    emit(showTrackModel(m_pPlaylistTableModel));
+    emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {

@@ -78,6 +78,12 @@ ITunesTrackModel::ITunesTrackModel()
     addColumnName(ITunesTrackModel::COLUMN_LOCATION, "Location");
     addColumnName(ITunesTrackModel::COLUMN_DURATION, "Duration");
 
+    addSearchColumn(ITunesTrackModel::COLUMN_ARTIST);
+    addSearchColumn(ITunesTrackModel::COLUMN_TITLE);
+    addSearchColumn(ITunesTrackModel::COLUMN_ALBUM);
+    addSearchColumn(ITunesTrackModel::COLUMN_GENRE);
+    addSearchColumn(ITunesTrackModel::COLUMN_LOCATION);
+
     for (int i = 0; i < m_trackNodes.count(); i++) {
         QDomNode n;
 

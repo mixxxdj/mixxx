@@ -49,7 +49,6 @@ private:
     ConfigObject<ConfigValue> * m_pConfig;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
-    QSortFilterProxyModel m_proxyModel;
 
     //Used for right-click operations
     /**Send to Play Queue Action**/

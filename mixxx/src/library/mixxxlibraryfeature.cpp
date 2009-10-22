@@ -3,14 +3,18 @@
 
 #include <QtDebug>
 
-#include "library/trackcollection.h"
-#include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
+
+#include "library/librarytablemodel.h"
+#include "library/proxytrackmodel.h"
+#include "library/trackcollection.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
     : LibraryFeature(parent),
-      m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)) {
+      m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
+      m_pLibraryTableModelProxy(new ProxyTrackModel(m_pLibraryTableModel, false)) {
+    m_pLibraryTableModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
@@ -35,7 +39,7 @@ QVariant MixxxLibraryFeature::child(int n) {
 
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
-    emit(showTrackModel(m_pLibraryTableModel));
+    emit(showTrackModel(m_pLibraryTableModelProxy));
 }
 
 void MixxxLibraryFeature::activateChild(int n) {

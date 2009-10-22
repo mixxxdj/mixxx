@@ -10,6 +10,7 @@
 #include "library/libraryfeature.h"
 
 class PlaylistTableModel;
+class ProxyTrackModel;
 class TrackCollection;
 
 class PlaylistFeature : public LibraryFeature {
@@ -33,6 +34,7 @@ public slots:
     void slotDeletePlaylist();
  private:
     PlaylistTableModel* m_pPlaylistTableModel;
+    ProxyTrackModel* m_pPlaylistModelProxy;
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
