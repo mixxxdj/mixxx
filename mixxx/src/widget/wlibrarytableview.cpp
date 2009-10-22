@@ -19,7 +19,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
     //Setup properties for table
-    //getHeaderStateKey();
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -27,8 +26,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 
     setWordWrap(false);
     setShowGrid(false);
-    setCornerButtonEnabled ( false );
-    setSortingEnabled ( true );
+    setCornerButtonEnabled(false);
+    setSortingEnabled (true);
 
     horizontalHeader()->setSortIndicatorShown(true);
     //Allow the columns to be reordered.
@@ -36,7 +35,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 
     verticalHeader()->hide();
     verticalHeader()->setDefaultSectionSize(20);
-    setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOn);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     loadHeaderState();
     loadVScrollBarPosState();

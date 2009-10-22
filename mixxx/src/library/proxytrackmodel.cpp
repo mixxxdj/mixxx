@@ -1,10 +1,14 @@
 // proxytrackmodel.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QVariant>
+
 #include "library/proxytrackmodel.h"
 
-ProxyTrackModel::ProxyTrackModel(TrackModel* pTrackModel)
-        : m_pTrackModel(pTrackModel) {
+ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel) {
+    m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);
+    Q_ASSERT(m_pTrackModel && pTrackModel);
+    setSourceModel(pTrackModel);
 }
 
 ProxyTrackModel::~ProxyTrackModel() {
@@ -54,3 +58,26 @@ TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
     return m_pTrackModel->getCapabilities();
 }
 
+bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
+                                       const QModelIndex& sourceParent) const {
+    const QList<int>& filterColumns = m_pTrackModel->searchColumns();
+    QAbstractItemModel* itemModel =
+            dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
+    bool rowMatches = false;
+
+    QRegExp filter = filterRegExp();
+    QListIterator<int> iter(filterColumns);
+
+    while (!rowMatches && iter.hasNext()) {
+        int i = iter.next();
+        QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
+        QVariant data = itemModel->data(index);
+        if (qVariantCanConvert<QString>(data)) {
+            QString strData = qVariantValue<QString>(data);
+            if (strData.contains(filter))
+                rowMatches = true;
+        }
+    }
+
+    return rowMatches;
+}

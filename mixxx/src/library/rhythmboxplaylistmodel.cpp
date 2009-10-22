@@ -269,3 +269,7 @@ void RhythmboxPlaylistModel::search(const QString& searchText)
 const QString RhythmboxPlaylistModel::currentSearch() {
     return m_currentSearch;
 }
+
+const QList<int>& RhythmboxPlaylistModel::searchColumns() const {
+    return m_pRhythmbox->searchColumns();
+}
