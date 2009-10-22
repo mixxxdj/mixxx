@@ -19,10 +19,10 @@
 #define TRACKCOLLECTION_H
 
 #include <QtSql>
+#include <QSqlDatabase>
 
 class TrackInfoObject;
 class BpmDetector;
-class QSqlDatabase;
 
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
@@ -75,9 +75,9 @@ class TrackCollection : public QObject
  	void scanPath(QString path);
  	bool trackExistsInDatabase(QString file_location);
  	int getTrackId(QString location);
- 
+
  	QList<TrackInfoObject*> dumpDB();
- 	
+
  	QSqlDatabase getDatabase();
  	/** Create a playlist */
     void createPlaylist(QString name);
@@ -100,16 +100,16 @@ public slots:
  	bool checkForTables();
  	/** Saves a track's info back to the database */
  	void updateTrackInDatabase(TrackInfoObject*);
- 
+
  	TrackInfoObject *getTrackFromDB(QSqlQuery &query);
- 	
+
  	void slotCancelLibraryScan();
- 
+
 signals:
  	void startedLoading();
  	void progressLoading(QString path);
  	void finishedLoading();
- 
+
 private:
     BpmDetector* m_pBpmDetector;
     QSqlDatabase m_db;
