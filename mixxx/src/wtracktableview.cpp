@@ -5,7 +5,6 @@
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "library/trackmodel.h"
 #include "library/librarytablemodel.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
@@ -36,12 +35,13 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
 WTrackTableView::~WTrackTableView()
 {
- 	delete m_pPlayQueueAct;
- 	delete m_pPlayer1Act;
- 	delete m_pPlayer2Act;
- 	delete m_pRemoveAct;
- 	delete m_pPropertiesAct;
- 	//delete m_pRenamePlaylistAct;
+    m_searchThread.stop();
+    delete m_pPlayQueueAct;
+    delete m_pPlayer1Act;
+    delete m_pPlayer2Act;
+    delete m_pRemoveAct;
+    delete m_pPropertiesAct;
+    //delete m_pRenamePlaylistAct;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -73,8 +73,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 
-    TrackModel::CapabilitiesFlags caps = track_model->getCapabilities();
-    if ((caps & TrackModel::TRACKMODELCAPS_RECEIVEDROPS) > 0) {
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RECEIVEDROPS)) {
         setDragDropMode(QAbstractItemView::DragDrop);
         setDropIndicatorShown(true);
         setAcceptDrops(true);
@@ -231,10 +230,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
-            TrackModel* trackModel = getTrackModel();
-            if (trackModel
-                && (trackModel->getCapabilities() &
-                    TrackModel::TRACKMODELCAPS_REORDER)) {
+            if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 event->acceptProposedAction();
             } else {
                 event->ignore();
@@ -257,10 +253,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
-            TrackModel* trackModel = getTrackModel();
-            if (trackModel
-                && (trackModel->getCapabilities() &
-                    TrackModel::TRACKMODELCAPS_REORDER)) {
+            if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 event->acceptProposedAction();
             } else {
                 event->ignore();
@@ -292,10 +285,9 @@ void WTrackTableView::dropEvent(QDropEvent * event)
             m_selectedIndices = this->selectionModel()->selectedRows();
             //TODO: Iterate over selected indices like the 1.7 code below?
 
-            TrackModel* trackModel = getTrackModel();
-            if (trackModel && (trackModel->getCapabilities() & TrackModel::TRACKMODELCAPS_REORDER))
-            {
 
+            if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+                TrackModel* trackModel = getTrackModel();
                 QModelIndex destIndex = indexAt(event->pos());
                 foreach (selectedIndex, m_selectedIndices)
                 {
@@ -397,4 +389,10 @@ void WTrackTableView::dropEvent(QDropEvent * event)
 TrackModel* WTrackTableView::getTrackModel() {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
+}
+
+bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) {
+    TrackModel* trackModel = getTrackModel();
+    return trackModel &&
+            (trackModel->getCapabilities() & capabilities) == capabilities;
 }
