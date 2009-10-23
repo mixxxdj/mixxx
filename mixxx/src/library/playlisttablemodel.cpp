@@ -11,34 +11,6 @@ PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackC
     //m_iPlaylistId = playlistId;
 
     setPlaylist(playlistId);
-
-	//Hide columns in the tablemodel that we don't want to show.
-	/*
-	removeColumn(this->fieldIndex(LIBRARYTABLE_ID));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_FILENAME));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_URL));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_LENGTHINBYTES));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_CUEPOINT));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_SAMPLERATE));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_CHANNELS));
-	removeColumn(this->fieldIndex(LIBRARYTABLE_TRACKNUMBER));
-
-
-	//Set the column heading labels, rename them for translations and have proper capitalization
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_ARTIST), Qt::Horizontal, tr("Artist"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_TITLE), Qt::Horizontal, tr("Title"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_ALBUM), Qt::Horizontal, tr("Album"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_GENRE), Qt::Horizontal, tr("Genre"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR), Qt::Horizontal, tr("Year"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_LOCATION), Qt::Horizontal, tr("Location"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_COMMENT), Qt::Horizontal, tr("Comment"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_DURATION), Qt::Horizontal, tr("Duration"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_BITRATE), Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_BPM), Qt::Horizontal, tr("BPM"));
-    */
-
-
 }
 
 PlaylistTableModel::~PlaylistTableModel()
@@ -96,6 +68,19 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     setTable(playlistTableName);
 
    	select(); //Populate the data model.
+
+	//Set the column heading labels, rename them for translations and have proper capitalization
+    setHeaderData(this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::Horizontal, tr("#"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_ARTIST), Qt::Horizontal, tr("Artist"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_TITLE), Qt::Horizontal, tr("Title"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_ALBUM), Qt::Horizontal, tr("Album"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_GENRE), Qt::Horizontal, tr("Genre"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR), Qt::Horizontal, tr("Year"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_LOCATION), Qt::Horizontal, tr("Location"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_COMMENT), Qt::Horizontal, tr("Comment"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_DURATION), Qt::Horizontal, tr("Duration"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_BITRATE), Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(this->fieldIndex(LIBRARYTABLE_BPM), Qt::Horizontal, tr("BPM"));
 }
 
 
