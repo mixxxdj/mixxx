@@ -21,6 +21,8 @@
 #include <QtSql>
 #include <QSqlDatabase>
 
+#include "library/dao/cratedao.h"
+
 class TrackInfoObject;
 class BpmDetector;
 
@@ -78,7 +80,7 @@ class TrackCollection : public QObject
 
  	QList<TrackInfoObject*> dumpDB();
 
- 	QSqlDatabase getDatabase();
+ 	QSqlDatabase& getDatabase();
  	/** Create a playlist */
     void createPlaylist(QString name);
     /** Delete a playlist */
@@ -105,6 +107,8 @@ public slots:
 
  	void slotCancelLibraryScan();
 
+    CrateDAO& getCrateDAO();
+
 signals:
  	void startedLoading();
  	void progressLoading(QString path);
@@ -113,6 +117,7 @@ signals:
 private:
     BpmDetector* m_pBpmDetector;
     QSqlDatabase m_db;
+    CrateDAO m_crateDao;
     /** Flag to raise when library scan should be cancelled */
     int bCancelLibraryScan;
 };
