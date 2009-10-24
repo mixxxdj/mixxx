@@ -142,7 +142,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     QSqlRecord sourceRecord = this->record(sourceIndex.row());
     //sourceRecord.setValue("position", destIndex.row());
     //this->removeRows(sourceIndex.row(), 1);
-    
+
 
     //this->insertRecord(destIndex.row(), sourceRecord);
 
@@ -167,7 +167,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     //Find out the highest position existing in the playlist so we know what
     //position this track should have.
     QSqlQuery query;
-    
+
     //Insert the song into the PlaylistTracks table
 
     /** ALGORITHM for code below
@@ -184,19 +184,19 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     */
 
     QString queryString;
-    if (newPosition < oldPosition) { 
-        queryString = 
-            QString("UPDATE PlaylistTracks SET position=-1 " 
+    if (newPosition < oldPosition) {
+        queryString =
+            QString("UPDATE PlaylistTracks SET position=-1 "
                     "WHERE position=%1 AND "
                     "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
         query.exec(queryString);
         //qDebug() << queryString;
-        
+
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                             "WHERE position > %1 AND "
                             "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
         query.exec(queryString);
-        
+
         queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
                             "WHERE position >= %1 AND " //position < %2 AND "
                             "playlist_id=%3").arg(newPosition).arg(m_iPlaylistId);
@@ -212,27 +212,27 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
         queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                               "WHERE position = %1 AND "
                               "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
-        //qDebug() << queryString; 
+        //qDebug() << queryString;
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                               "WHERE position > %1 AND position <= %2 AND "
                               "playlist_id=%3").arg(oldPosition).arg(newPosition).arg(m_iPlaylistId);
         query.exec(queryString);
-        
+
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
                               "WHERE position=-1 AND "
                               "playlist_id=%2").arg(newPosition).arg(m_iPlaylistId);
         query.exec(queryString);
     }
 
-    QSqlDatabase::database().commit();	   
+    QSqlDatabase::database().commit();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-    
+
     select();
 }
 
@@ -256,13 +256,21 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
+    //Ok, so the list of indexes we're given contains separates indexes for
+    //each column, so even if only one row is selected, we'll have like 7 indexes.
+    //We need to only count each row once:
+    QList<int> rows;
+
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
-            QUrl url(getTrackLocation(index));
-            if (!url.isValid())
-              qDebug() << "ERROR invalid url\n";
-            else
-              urls.append(url);
+            if (!rows.contains(index.row())) {
+                rows.push_back(index.row());
+                QUrl url(getTrackLocation(index));
+                if (!url.isValid())
+                    qDebug() << "ERROR invalid url\n";
+                else
+                    urls.append(url);
+            }
         }
     }
     mimeData->setUrls(urls);
