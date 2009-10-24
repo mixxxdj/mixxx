@@ -1,24 +1,19 @@
-// playlistfeature.h
-// Created 8/17/09 by RJ Ryan (rryan@mit.edu)
-
-#ifndef PLAYLISTFEATURE_H
-#define PLAYLISTFEATURE_H
+#ifndef CRATEFEATURE_H
+#define CRATEFEATURE_H
 
 #include <QSqlTableModel>
+#include <QModelIndex>
 #include <QAction>
-#include <QList>
 
 #include "library/libraryfeature.h"
 
-class PlaylistTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
-class PlaylistFeature : public LibraryFeature {
+class CrateFeature : public LibraryFeature {
     Q_OBJECT
-public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~PlaylistFeature();
+  public:
+    CrateFeature(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~CrateFeature();
 
     QVariant title();
     QIcon getIcon();
@@ -36,17 +31,15 @@ public slots:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
-    void slotCreatePlaylist();
-    void slotDeletePlaylist();
+    void slotCreateCrate();
+    void slotDeleteCrate();
 
- private:
-    PlaylistTableModel* m_pPlaylistTableModel;
-    ProxyTrackModel* m_pPlaylistModelProxy;
+  private:
     TrackCollection* m_pTrackCollection;
-    QAction *m_pCreatePlaylistAction;
-    QAction *m_pDeletePlaylistAction;
-    QSqlTableModel m_playlistTableModel;
+    QAction *m_pCreateCrateAction;
+    QAction *m_pDeleteCrateAction;
+    QSqlTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
 };
 
-#endif /* PLAYLISTFEATURE_H */
+#endif /* CRATEFEATURE_H */

@@ -4,6 +4,8 @@
 #ifndef ITUNESFEATURE_H
 #define ITUNESBOXFEATURE_H
 
+#include <QStringListModel>
+
 #include "library/libraryfeature.h"
 
 //class ITunesPlaylistModel;
@@ -18,21 +20,25 @@ class ITunesFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    int numChildren();
-    QVariant child(int n);
-    bool dropAccept(const QModelIndex& index, QUrl url);
-    bool dragMoveAccept(const QModelIndex& index, QUrl url);
+
+    bool dropAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(QUrl url);
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+
+    QAbstractItemModel* getChildModel();
 
 public slots:
     void activate();
-    void activateChild(int n);
-    void onRightClick(const QPoint& globalPos, QModelIndex index);
-    void onClick(QModelIndex index);
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
 private:
     ITunesTrackModel* m_pITunesTrackModel;
     ProxyTrackModel* m_pTrackModelProxy;
     //ITunesPlaylistModel* m_pITunesPlaylistModel;
+    QStringListModel m_childModel;
 };
 
 #endif /* ITUNESFEATURE_H */
