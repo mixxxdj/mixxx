@@ -92,6 +92,8 @@ class TrackCollection : public QObject
     unsigned int playlistCount();
     /** Get the name of the playlist at the given position */
     QString getPlaylistName(unsigned int position);
+    // Get the playlist id by its name
+    int getPlaylistIdFromName(QString name);
     /** Get the id of the playlist at position */
     int getPlaylistId(int position);
     /** Remove a track from a playlist */

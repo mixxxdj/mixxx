@@ -6,7 +6,7 @@
 WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
     //Set some properties
     setHeaderHidden(true);
-    
+
     //Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
@@ -39,11 +39,12 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
     qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-            qDebug() << event->mimeData();
-            
+    qDebug() << event->mimeData();
+
     if (event->mimeData()->hasUrls())
     {
         QList<QUrl> urls(event->mimeData()->urls());
+
         QUrl url;
 
         //Drag and drop within this widget
@@ -56,7 +57,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
         {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
-	        if (sidebarModel) {
+            if (sidebarModel) {
                 foreach (url, urls)
                 {
                     QModelIndex destIndex = this->indexAt(event->pos());
@@ -69,12 +70,12 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
                         break;
                     }
                 }
-	        }
-	        if (accepted)
+            }
+            if (accepted)
                 event->acceptProposedAction();
             else
                 event->ignore();
-         }
+        }
     }
     else
         event->ignore();
@@ -82,7 +83,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 
 /** Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view */
 void WLibrarySidebar::dropEvent(QDropEvent * event)
-{    
+{
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url;
@@ -100,31 +101,33 @@ void WLibrarySidebar::dropEvent(QDropEvent * event)
 
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
-            
+
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = false;
-			if (sidebarModel) {
-	            foreach (url, urls)
-	            {
-	                QModelIndex destIndex = this->indexAt(event->pos());
+            if (sidebarModel) {
+                foreach (url, urls)
+                {
+                    qDebug() << "dropEvent" << url;
+                    QModelIndex destIndex = indexAt(event->pos());
                     if (sidebarModel->dropAccept(destIndex, url))
                     {
                         accepted = true;
-                        
+
                     }
-	            }
-			}
-			
-			if (accepted)
-			    event->acceptProposedAction();
-			else
-			    event->ignore();
+                }
+            }
+
+            if (accepted)
+                event->acceptProposedAction();
+            else
+                event->ignore();
         }
 
 
         //emit(trackDropped(name));
 
         //repaintEverything();
-    } else
+    } else {
         event->ignore();
+    }
 }
