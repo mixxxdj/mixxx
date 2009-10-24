@@ -4,6 +4,7 @@
 #ifndef BROWSEFEATURE_H
 #define BROWSEFEATURE_H
 
+#include <QStringListModel>
 #include <QSortFilterProxyModel>
 #include <QFileSystemModel>
 
@@ -20,20 +21,24 @@ class BrowseFeature : public LibraryFeature {
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~BrowseFeature();
+
     QVariant title();
     QIcon getIcon();
-    int numChildren();
-    QVariant child(int n);
-    bool dropAccept(const QModelIndex& index, QUrl url);
-    bool dragMoveAccept(const QModelIndex& index, QUrl url);
+
+    bool dropAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(QUrl url);
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
                             WLibrary* libraryWidget);
+    QAbstractItemModel* getChildModel();
 
   public slots:
     void activate();
-    void activateChild(int n);
-    void onRightClick(const QPoint& globalPos, QModelIndex index);
-    void onClick(QModelIndex index);
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
     // Called when a file in browse view is selected to be loaded into a player.
     void loadToPlayer(const QModelIndex& index, int player);
@@ -49,6 +54,7 @@ class BrowseFeature : public LibraryFeature {
     QFileSystemModel m_fileSystemModel;
     BrowseFilter m_proxyModel;
     TrackCollection* m_pTrackCollection;
+    QStringListModel m_childModel;
     QString m_currentSearch;
 };
 

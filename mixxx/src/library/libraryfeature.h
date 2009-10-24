@@ -25,21 +25,23 @@ class LibraryFeature : public QObject {
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
-    virtual int numChildren() = 0;
-    virtual QVariant child(int n) = 0;
-    virtual bool dropAccept(const QModelIndex& index, QUrl url) = 0;
-    virtual bool dragMoveAccept(const QModelIndex& index, QUrl url) = 0;
+
+    virtual bool dropAccept(QUrl url) = 0;
+    virtual bool dropAcceptChild(const QModelIndex& index, QUrl url) = 0;
+    virtual bool dragMoveAccept(QUrl url) = 0;
+    virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) = 0;
 
     // Reimplement this to register custom views with the library widget.
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
                             WLibrary* libraryWidget) {
     }
+    virtual QAbstractItemModel* getChildModel() = 0;
 
 public slots:
     virtual void activate() = 0;
-    virtual void activateChild(int n) = 0;
-    virtual void onRightClick(const QPoint& globalPos, QModelIndex index) = 0;
-    virtual void onClick(QModelIndex index) = 0;
+    virtual void activateChild(const QModelIndex& index) = 0;
+    virtual void onRightClick(const QPoint& globalPos) = 0;
+    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index) = 0;
 signals:
     void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
