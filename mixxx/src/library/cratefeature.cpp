@@ -8,6 +8,9 @@
 #include "library/cratefeature.h"
 
 #include "library/trackcollection.h"
+#include "widget/wlibrarytextedit.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
@@ -58,12 +61,21 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
 
+void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
+                              WLibrary* libraryWidget) {
+    WLibraryTextEdit* edit = new WLibraryTextEdit(libraryWidget);
+    connect(this, SIGNAL(showText(const QString&)),
+            edit, SLOT(setText(const QString&)));
+    libraryWidget->registerView("CRATEHOME", edit);
+}
+
 QAbstractItemModel* CrateFeature::getChildModel() {
     return &m_crateTableModel;
 }
 
 void CrateFeature::activate() {
-
+    emit(showText("Crate help and management page goes here."));
+    emit(switchToView("CRATEHOME"));
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
