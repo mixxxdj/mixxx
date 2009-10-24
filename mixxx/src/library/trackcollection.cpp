@@ -513,6 +513,21 @@ QString TrackCollection::getPlaylistName(unsigned int position)
     return name;
 }
 
+int TrackCollection::getPlaylistIdFromName(QString name) {
+    QSqlQuery query;
+    query.prepare("SELECT id FROM Playlists WHERE name=:name");
+    query.bindValue(":name", name);
+    if (query.exec()) {
+        if (query.next()) {
+            return query.value(query.record().indexOf("id")).toInt();
+        }
+    } else {
+        qDebug() << "getPlaylistIdFromName:" << query.lastError();
+    }
+    return -1;
+}
+
+
 /** Delete a playlist */
 void TrackCollection::deletePlaylist(int playlistId)
 {
