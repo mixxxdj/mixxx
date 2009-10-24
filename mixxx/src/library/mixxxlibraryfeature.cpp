@@ -18,6 +18,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
+    // TODO(XXX) delete these
     //delete m_pLibraryTableModel;
 }
 
@@ -29,12 +30,8 @@ QIcon MixxxLibraryFeature::getIcon() {
     return QIcon();
 }
 
-int MixxxLibraryFeature::numChildren() {
-    return 0;
-}
-
-QVariant MixxxLibraryFeature::child(int n) {
-    return QVariant();
+QAbstractItemModel* MixxxLibraryFeature::getChildModel() {
+    return &m_childModel;
 }
 
 void MixxxLibraryFeature::activate() {
@@ -42,24 +39,30 @@ void MixxxLibraryFeature::activate() {
     emit(showTrackModel(m_pLibraryTableModelProxy));
 }
 
-void MixxxLibraryFeature::activateChild(int n) {
+void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 
 }
 
-void MixxxLibraryFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
-
+void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
 }
 
-void MixxxLibraryFeature::onClick(QModelIndex index) {
-
+void MixxxLibraryFeature::onRightClickChild(const QPoint& globalPos,
+                                            QModelIndex index) {
 }
 
-bool MixxxLibraryFeature::dropAccept(const QModelIndex& index, QUrl url)
-{
+bool MixxxLibraryFeature::dropAccept(QUrl url) {
     return false;
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(const QModelIndex& index, QUrl url)
-{
+bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
+
+bool MixxxLibraryFeature::dragMoveAcceptChild(const QModelIndex& index,
+                                              QUrl url) {
     return false;
 }

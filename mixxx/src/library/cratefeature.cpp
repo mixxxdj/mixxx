@@ -23,6 +23,8 @@ CrateFeature::CrateFeature(QObject* parent,
             this, SLOT(slotDeleteCrate()));
 
     m_crateTableModel.setTable("crates");
+    m_crateTableModel.removeColumn(m_crateTableModel.fieldIndex("id"));
+    m_crateTableModel.removeColumn(m_crateTableModel.fieldIndex("show"));
     m_crateTableModel.setSort(m_crateTableModel.fieldIndex("name"),
                               Qt::AscendingOrder);
     m_crateTableModel.setFilter("show = 1");
@@ -40,21 +42,19 @@ QIcon CrateFeature::getIcon() {
     return QIcon();
 }
 
-int CrateFeature::numChildren() {
-    return m_crateTableModel.rowCount();
-}
-
-QVariant CrateFeature::child(int n) {
-    int nameColumn = m_crateTableModel.fieldIndex("name");
-    QModelIndex nameIndex = m_crateTableModel.index(n, nameColumn);
-    return m_crateTableModel.data(nameIndex);
-}
-
-bool CrateFeature::dropAccept(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dropAccept(QUrl url) {
     return false;
 }
 
-bool CrateFeature::dragMoveAccept(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+bool CrateFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
+
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
 
@@ -66,11 +66,18 @@ void CrateFeature::activate() {
 
 }
 
-void CrateFeature::activateChild(int n) {
+void CrateFeature::activateChild(const QModelIndex& index) {
 
 }
 
-void CrateFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
+void CrateFeature::onRightClick(const QPoint& globalPos) {
+    m_lastRightClickedIndex = QModelIndex();
+    QMenu menu(NULL);
+    menu.addAction(m_pCreateCrateAction);
+    menu.exec(globalPos);
+}
+
+void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -80,11 +87,6 @@ void CrateFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
     menu.addAction(m_pDeleteCrateAction);
     menu.exec(globalPos);
 }
-
-void CrateFeature::onClick(QModelIndex index) {
-
-}
-
 
 void CrateFeature::slotCreateCrate() {
 
@@ -105,10 +107,9 @@ void CrateFeature::slotCreateCrate() {
 }
 
 void CrateFeature::slotDeleteCrate() {
-    int n = m_lastRightClickedIndex.row();
-    int idColumn = m_crateTableModel.fieldIndex("id");
-    QModelIndex idIndex = m_crateTableModel.index(n, idColumn);
-    int crateId = m_crateTableModel.data(idIndex).toInt();
+    QString crateName = m_lastRightClickedIndex.data().toString();
+    int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
+
     if (m_pTrackCollection->getCrateDAO().deleteCrate(crateId)) {
         m_crateTableModel.select();
         emit(featureUpdated());

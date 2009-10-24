@@ -10,16 +10,28 @@
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_playlistTableModel(this, pTrackCollection->getDatabase()) {
     m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection, 1);
     m_pPlaylistModelProxy = new ProxyTrackModel(m_pPlaylistTableModel, false);
     m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
-    connect(m_pCreatePlaylistAction, SIGNAL(triggered()), this, SLOT(slotCreatePlaylist()));
+    connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotCreatePlaylist()));
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
-    connect(m_pDeletePlaylistAction, SIGNAL(triggered()), this, SLOT(slotDeletePlaylist()));
+    connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDeletePlaylist()));
+
+    m_playlistTableModel.setTable("Playlists");
+    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("id"));
+    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("position"));
+    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_created"));
+    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_modified"));
+    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("position"),
+                                 Qt::AscendingOrder);
+    m_playlistTableModel.select();
 }
 
 PlaylistFeature::~PlaylistFeature() {
@@ -36,37 +48,30 @@ QIcon PlaylistFeature::getIcon() {
     return QIcon(":/images/library/rhythmbox.png");
 }
 
-int PlaylistFeature::numChildren() {
-    //qDebug() << "PlaylistFeature::numChildren()" << m_pTrackCollection->playlistCount();
-    return m_pTrackCollection->playlistCount();//playlists.size();
-}
-
-QVariant PlaylistFeature::child(int n) {
-    //qDebug() << m_pTrackCollection->getPlaylistName(n);
-    //Q_ASSERT(n < numChildren());
-
-    if (n < 0 || n >= numChildren())
-        return QVariant(QVariant::Invalid); //As per QAbstractItemModel specs
-
-    return m_pTrackCollection->getPlaylistName(n); //QVariant(playlists[n]);
-}
-
 void PlaylistFeature::activate() {
     qDebug("PlaylistFeature::activate()");
 }
 
-void PlaylistFeature::activateChild(int n) {
-    qDebug("PlaylistFeature::activateChild(%d)", n);
-    //qDebug() << "Activating " << playlists[n];
+void PlaylistFeature::activateChild(const QModelIndex& index) {
+    qDebug() << "PlaylistFeature::activateChild()" << index;
 
     //Switch the playlist table model's playlist.
-    int playlistId = m_pTrackCollection->getPlaylistId(n);
+    QString playlistName = index.data().toString();
+    int playlistId = m_pTrackCollection->getPlaylistIdFromName(playlistName);
     m_pPlaylistTableModel->setPlaylist(playlistId);
     emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
-void PlaylistFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
+void PlaylistFeature::onRightClick(const QPoint& globalPos) {
+    m_lastRightClickedIndex = QModelIndex();
 
+    //Create the right-click menu
+    QMenu menu(NULL);
+    menu.addAction(m_pCreatePlaylistAction);
+    menu.exec(globalPos);
+}
+
+void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -77,48 +82,52 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
     menu.addAction(m_pDeletePlaylistAction);
     menu.exec(globalPos);
 }
-void PlaylistFeature::onClick(QModelIndex index) {
-}
 
-void PlaylistFeature::slotCreatePlaylist()
-{
+void PlaylistFeature::slotCreatePlaylist() {
     QString name = QInputDialog::getText(NULL, tr("New Playlist"), tr("Playlist name:"), QLineEdit::Normal, tr("New Playlist"));
     if (name == "")
         return;
     else {
         m_pTrackCollection->createPlaylist(name);
-        qDebug() << "TODO: Force the view to refresh" << __FILE__ << ":" << __LINE__;
+        m_playlistTableModel.select();
     }
-
     emit(featureUpdated());
 }
 
 void PlaylistFeature::slotDeletePlaylist()
 {
-    qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.row();
+    qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_pTrackCollection->getPlaylistId(m_lastRightClickedIndex.row());
+        int playlistId = m_pTrackCollection->getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
         Q_ASSERT(playlistId >= 0);
         m_pTrackCollection->deletePlaylist(playlistId);
-
+        m_playlistTableModel.select();
     }
 
     emit(featureUpdated());
 }
 
-bool PlaylistFeature::dropAccept(const QModelIndex& index, QUrl url)
-{
+bool PlaylistFeature::dropAccept(QUrl url) {
+    return false;
+}
+
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-
-    int playlistId = m_pTrackCollection->getPlaylistId(index.row());
+    QString playlistName = index.data().toString();
+    int playlistId = m_pTrackCollection->getPlaylistIdFromName(playlistName);
     m_pTrackCollection->appendTrackToPlaylist(url.toLocalFile(), playlistId);
-
     return true;
 }
 
-bool PlaylistFeature::dragMoveAccept(const QModelIndex& index, QUrl url)
-{
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
+bool PlaylistFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
 
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    //TODO: Filter by supported formats regex and reject anything that doesn't match.
     return true;
+}
+
+QAbstractItemModel* PlaylistFeature::getChildModel() {
+    return &m_playlistTableModel;
 }

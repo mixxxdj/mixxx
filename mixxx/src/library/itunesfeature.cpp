@@ -13,6 +13,8 @@ ITunesFeature::ITunesFeature(QObject* parent)
     m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
     //m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
+
+    // TODO(XXX) Populate m_childModel with playlist names.
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -27,39 +29,43 @@ QIcon ITunesFeature::getIcon() {
     return QIcon(":/images/library/rhythmbox.png");
 }
 
-int ITunesFeature::numChildren() {
-    //return m_pITunesPlaylistModel->numPlaylists();
-    return 0;
-}
-
-QVariant ITunesFeature::child(int n) {
-    //return QVariant(m_pITunesPlaylistModel->playlistTitle(n));
-}
-
 void ITunesFeature::activate() {
     qDebug("ITunesFeature::activate()");
     emit(showTrackModel(m_pTrackModelProxy));
 }
 
-void ITunesFeature::activateChild(int n) {
+void ITunesFeature::activateChild(const QModelIndex& index) {
     /*
     qDebug("ITunesFeature::activateChild(%d)", n);
-    QString playlist = m_pITunesPlaylistModel->playlistTitle(n);
+    QString playlist = index.data();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
     emit(showTrackModel(m_pITunesPlaylistModel));
     */
 }
 
-void ITunesFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
+QAbstractItemModel* ITunesFeature::getChildModel() {
+    return &m_childModel;
 }
 
-void ITunesFeature::onClick(QModelIndex index) {
+void ITunesFeature::onRightClick(const QPoint& globalPos) {
 }
 
-bool ITunesFeature::dropAccept(const QModelIndex& index, QUrl url) {
+void ITunesFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+}
+
+bool ITunesFeature::dropAccept(QUrl url) {
     return false;
 }
-bool ITunesFeature::dragMoveAccept(const QModelIndex& index, QUrl url) {
+
+bool ITunesFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+bool ITunesFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
+
+bool ITunesFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }

@@ -4,6 +4,8 @@
 #ifndef RHYTHMBOXFEATURE_H
 #define RHYTHMBOXFEATURE_H
 
+#include <QStringListModel>
+
 #include "library/libraryfeature.h"
 
 class RhythmboxPlaylistModel;
@@ -18,22 +20,26 @@ class RhythmboxFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    int numChildren();
-    QVariant child(int n);
-    bool dropAccept(const QModelIndex& index, QUrl url);
-    bool dragMoveAccept(const QModelIndex& index, QUrl url);
+
+    bool dropAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(QUrl url);
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+
+    QAbstractItemModel* getChildModel();
 
 public slots:
     void activate();
-    void activateChild(int n);
-    void onRightClick(const QPoint& globalPos, QModelIndex index);
-    void onClick(QModelIndex index);
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
 private:
     RhythmboxTrackModel* m_pRhythmboxTrackModel;
     RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
     ProxyTrackModel* m_pTrackModelProxy;
     ProxyTrackModel* m_pPlaylistModelProxy;
+    QStringListModel m_childModel;
 };
 
 #endif /* RHYTHMBOXFEATURE_H */

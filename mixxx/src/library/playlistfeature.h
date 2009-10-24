@@ -4,6 +4,7 @@
 #ifndef PLAYLISTFEATURE_H
 #define PLAYLISTFEATURE_H
 
+#include <QSqlTableModel>
 #include <QAction>
 #include <QList>
 
@@ -18,26 +19,33 @@ class PlaylistFeature : public LibraryFeature {
 public:
     PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~PlaylistFeature();
+
     QVariant title();
     QIcon getIcon();
-    int numChildren();
-    QVariant child(int n);
-    bool dropAccept(const QModelIndex& index, QUrl url);
-    bool dragMoveAccept(const QModelIndex& index, QUrl url);
+
+    bool dropAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(QUrl url);
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+
+    QAbstractItemModel* getChildModel();
+
 public slots:
     void activate();
-    void activateChild(int n);
-    void onRightClick(const QPoint& globalPos, QModelIndex index);
-    void onClick(QModelIndex index);
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
     void slotCreatePlaylist();
     void slotDeletePlaylist();
+
  private:
     PlaylistTableModel* m_pPlaylistTableModel;
     ProxyTrackModel* m_pPlaylistModelProxy;
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
+    QSqlTableModel m_playlistTableModel;
     QModelIndex m_lastRightClickedIndex;
 };
 
