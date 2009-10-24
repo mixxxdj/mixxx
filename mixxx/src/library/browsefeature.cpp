@@ -44,19 +44,23 @@ QIcon BrowseFeature::getIcon() {
     return QIcon();
 }
 
-int BrowseFeature::numChildren() {
-    return 0;
+QAbstractItemModel* BrowseFeature::getChildModel() {
+    return &m_childModel;
 }
 
-QVariant BrowseFeature::child(int n) {
-    return QVariant();
-}
-
-bool BrowseFeature::dropAccept(const QModelIndex& index, QUrl url) {
+bool BrowseFeature::dropAccept(QUrl url) {
     return false;
 }
 
-bool BrowseFeature::dragMoveAccept(const QModelIndex& index, QUrl url) {
+bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+bool BrowseFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
+
+bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
 
@@ -93,18 +97,17 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 }
 
 void BrowseFeature::activate() {
-
     emit(switchToView("BROWSE"));
     emit(restoreSearch(m_currentSearch));
 }
 
-void BrowseFeature::activateChild(int n) {
+void BrowseFeature::activateChild(const QModelIndex&) {
 }
 
-void BrowseFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
+void BrowseFeature::onRightClick(const QPoint& globalPos) {
 }
 
-void BrowseFeature::onClick(QModelIndex index) {
+void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
 }
 
 void BrowseFeature::onFileActivate(const QModelIndex& index) {

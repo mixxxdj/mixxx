@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QStringList>
 
 #include "library/proxytrackmodel.h"
 #include "library/rhythmboxtrackmodel.h"
@@ -16,6 +17,12 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent)
     m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
     m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+    QStringList list;
+    for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
+        list << m_pRhythmboxPlaylistModel->playlistTitle(i);
+    }
+    m_childModel.setStringList(list);
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
@@ -30,12 +37,8 @@ QIcon RhythmboxFeature::getIcon() {
     return QIcon(":/images/library/rhythmbox.png");
 }
 
-int RhythmboxFeature::numChildren() {
-    return m_pRhythmboxPlaylistModel->numPlaylists();
-}
-
-QVariant RhythmboxFeature::child(int n) {
-    return QVariant(m_pRhythmboxPlaylistModel->playlistTitle(n));
+QAbstractItemModel* RhythmboxFeature::getChildModel() {
+    return &m_childModel;
 }
 
 void RhythmboxFeature::activate() {
@@ -43,22 +46,33 @@ void RhythmboxFeature::activate() {
     emit(showTrackModel(m_pTrackModelProxy));
 }
 
-void RhythmboxFeature::activateChild(int n) {
-    qDebug("RhythmboxFeature::activateChild(%d)", n);
-    QString playlist = m_pRhythmboxPlaylistModel->playlistTitle(n);
+void RhythmboxFeature::activateChild(const QModelIndex& index) {
+    qDebug() << "RhythmboxFeature::activateChild()" << index;
+    QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
-void RhythmboxFeature::onRightClick(const QPoint& globalPos, QModelIndex index) {
+void RhythmboxFeature::onRightClick(const QPoint& globalPos) {
 }
-void RhythmboxFeature::onClick(QModelIndex index) {
+
+void RhythmboxFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
 }
-bool RhythmboxFeature::dropAccept(const QModelIndex& index, QUrl url) {
+
+bool RhythmboxFeature::dropAccept(QUrl url) {
     return false;
 }
-bool RhythmboxFeature::dragMoveAccept(const QModelIndex& index, QUrl url) {
+
+bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+bool RhythmboxFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
+
+bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
 

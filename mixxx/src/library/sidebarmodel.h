@@ -1,4 +1,4 @@
-// sidebarmodel.h 
+// sidebarmodel.h
 // Created 8/21/09 by RJ Ryan (rryan@mit.edu)
 
 #ifndef SIDEBARMODEL_H
@@ -13,14 +13,14 @@ class LibraryFeature;
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
-public:
+  public:
     explicit SidebarModel(QObject* parent = 0);
     virtual ~SidebarModel();
-    
+
     void addLibraryFeature(LibraryFeature* feature);
     QModelIndex getDefaultSelection();
     void activateDefaultSelection();
-    
+
     // Required for QAbstractItemModel
     QModelIndex index(int row, int column,
                       const QModelIndex& parent = QModelIndex()) const;
@@ -31,11 +31,30 @@ public:
                   int role = Qt::DisplayRole ) const;
     bool dropAccept(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
-public slots:
+  public slots:
     void clicked(const QModelIndex& index);
-    void rightClicked(const QPoint& globalPos, const QModelIndex& index);     
-    void refreshData();   
-private:
+    void rightClicked(const QPoint& globalPos, const QModelIndex& index);
+    void refreshData();
+
+  public slots:
+    // Slots for every single QAbstractItemModel signal
+    // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);
+    // void slotColumnsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
+    // void slotColumnsInserted(const QModelIndex & parent, int start, int end);
+    // void slotColumnsRemoved(const QModelIndex & parent, int start, int end);
+    void slotDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
+    //void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
+    // void slotLayoutAboutToBeChanged();
+    // void slotLayoutChanged();
+    // void slotModelAboutToBeReset();
+    // void slotModelReset();
+    void slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end);
+    void slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+    void slotRowsInserted(const QModelIndex& parent, int start, int end);
+    void slotRowsRemoved(const QModelIndex& parent, int start, int end);
+
+  private:
+    QModelIndex translateSourceIndex(const QModelIndex& parent);
     QList<LibraryFeature*> m_sFeatures;
 };
 
