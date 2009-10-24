@@ -30,6 +30,8 @@ public:
 
     QAbstractItemModel* getChildModel();
 
+    void bindWidget(WLibrarySidebar* sidebarWidget,
+                    WLibrary* libraryWidget);
 public slots:
     void activate();
     void activateChild(const QModelIndex& index);

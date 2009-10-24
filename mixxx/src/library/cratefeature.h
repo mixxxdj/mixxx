@@ -23,9 +23,14 @@ class CrateFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    QAbstractItemModel* getChildModel();
+    void bindWidget(WLibrarySidebar* sidebarWidget,
+                    WLibrary* libraryWidget);
 
-public slots:
+    QAbstractItemModel* getChildModel();
+  signals:
+    void showText(const QString& text);
+
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
