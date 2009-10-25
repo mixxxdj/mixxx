@@ -378,6 +378,7 @@ sources = Split("""
                 widget/wlibrary.cpp
                 widget/wlibrarytableview.cpp
                 widget/wbrowsetableview.cpp
+                widget/wlibrarytextedit.cpp
                 library/trackcollection.cpp
                 library/librarytablemodel.cpp
                 library/browsetablemodel.cpp
