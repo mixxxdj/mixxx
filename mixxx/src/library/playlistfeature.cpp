@@ -4,6 +4,9 @@
 
 #include "library/playlistfeature.h"
 
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextedit.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/proxytrackmodel.h"
@@ -48,8 +51,19 @@ QIcon PlaylistFeature::getIcon() {
     return QIcon(":/images/library/rhythmbox.png");
 }
 
+
+void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
+                                 WLibrary* libraryWidget) {
+    WLibraryTextEdit* edit = new WLibraryTextEdit(libraryWidget);
+    // connect(this, SIGNAL(showText(const QString&)),
+    //         edit, SLOT(setText(const QString&)));
+    edit->setText("Playlist help page goes here.");
+    libraryWidget->registerView("PLAYLISTHOME", edit);
+}
+
 void PlaylistFeature::activate() {
     qDebug("PlaylistFeature::activate()");
+    emit(switchToView("PLAYLISTHOME"));
 }
 
 void PlaylistFeature::activateChild(const QModelIndex& index) {
