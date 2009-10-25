@@ -8,6 +8,9 @@
 
 #include "library/dao/dao.h"
 
+#define CRATE_TABLE "crates"
+#define CRATE_TRACKS_TABLE "crate_tracks"
+
 class CrateDAO : public virtual DAO {
   public:
     CrateDAO(QSqlDatabase& database);

@@ -5,7 +5,7 @@
 #include "playlisttablemodel.h"
 
 
-PlaylistTableModel::PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId) : TrackModel(), QSqlTableModel(parent, pTrackCollection->getDatabase())
+PlaylistTableModel::PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection, int playlistId) : TrackModel(), QSqlTableModel(parent, pTrackCollection->getDatabase())
 {
 	m_pTrackCollection = pTrackCollection;
     //m_iPlaylistId = playlistId;

@@ -8,9 +8,6 @@
 
 #include "library/dao/cratedao.h"
 
-#define CRATE_TABLE "crates"
-#define CRATE_TRACKS_TABLE "crate_tracks"
-
 CrateDAO::CrateDAO(QSqlDatabase& database)
         : m_database(database) {
 
