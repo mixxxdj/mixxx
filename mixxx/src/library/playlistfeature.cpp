@@ -92,6 +92,11 @@ void PlaylistFeature::slotCreatePlaylist() {
         m_playlistTableModel.select();
     }
     emit(featureUpdated());
+    
+    //Switch the view to the new playlist.
+    int playlistId = m_pTrackCollection->getPlaylistIdFromName(name);
+    m_pPlaylistTableModel->setPlaylist(playlistId);
+    emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
 void PlaylistFeature::slotDeletePlaylist()
