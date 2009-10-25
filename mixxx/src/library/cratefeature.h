@@ -6,6 +6,7 @@
 #include <QAction>
 
 #include "library/libraryfeature.h"
+#include "library/cratetablemodel.h"
 
 class TrackCollection;
 
@@ -43,7 +44,8 @@ class CrateFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
-    QSqlTableModel m_crateTableModel;
+    QSqlTableModel m_crateListTableModel;
+    CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
 };
 

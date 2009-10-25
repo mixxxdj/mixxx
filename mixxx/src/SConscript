@@ -402,6 +402,7 @@ sources = Split("""
                 library/library.cpp
                 library/searchthread.cpp
                 library/dao/cratedao.cpp
+                library/cratetablemodel.cpp
 
                 xmlparse.cpp
                 parser.cpp

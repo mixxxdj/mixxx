@@ -33,7 +33,7 @@ const QString LIBRARYTABLE_CHANNELS = "channels";
 class PlaylistTableModel : public QSqlTableModel, public virtual TrackModel
 {
 public:
-    PlaylistTableModel(QWidget* parent, TrackCollection* pTrackCollection, int playlistId);
+    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection, int playlistId);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
