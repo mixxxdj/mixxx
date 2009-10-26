@@ -108,7 +108,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
-    m_pComboBox = 0;
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
@@ -720,40 +719,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 }
             }
 
-	    // persistent: m_pComboBox
-            else if (node.nodeName()=="ComboBox")
-            {
-                if (m_pComboBox == 0) {
-                    m_pComboBox = new QComboBox(this);
-                    //m_pComboBox->addItem( "Library" , TABLE_MODE_LIBRARY );
-                    //m_pComboBox->addItem( "Play Queue", TABLE_MODE_PLAYQUEUE );
-                    //m_pComboBox->addItem( "Browse", TABLE_MODE_BROWSE );
-                    //m_pComboBox->addItem( "Playlists", TABLE_MODE_PLAYLISTS );
-                    //QDir promoDir(m_pconfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
-                    //if (promoDir.exists())
-                    //    m_pComboBox->addItem( "Free Tracks", TABLE_MODE_PROMO );
-                    // m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
-                    m_pComboBox->installEventFilter(m_pKeyboard);
-
-                    //Add the combo box to the the library page's layout.
-                    m_pLibraryPageLayout->addWidget(m_pComboBox, 0, 0, Qt::AlignLeft); //Row 0, col 0
-                }
-                /*
-                // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.indexOf(",")).toInt();
-                int y = pos.mid(pos.indexOf(",")+1).toInt();
-                m_pComboBox->move(x,y);
-                */
-
-                // Size
-                QString size = WWidget::selectNodeQString(node, "Size");
-                int x = size.left(size.indexOf(",")).toInt();
-                int y = size.mid(size.indexOf(",")+1).toInt();
-                m_pComboBox->setFixedSize(x,y);
-                m_pComboBox->show();
-            }
-
             // persistent: m_pLineEditSearch
             else if (node.nodeName()=="Search")
             {
@@ -904,7 +869,6 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
     if (m_pOverviewCh2) m_pOverviewCh2->hide();
-    if (m_pComboBox) m_pComboBox->hide();
     if (m_pLineEditSearch) m_pLineEditSearch->hide();
     if (m_pTabWidget) m_pTabWidget->hide();
 

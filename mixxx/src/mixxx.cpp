@@ -419,6 +419,9 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete view, " << qTime.elapsed();
     delete view;
 
+    qDebug() << "delete library scanner" <<  qTime.elapsed();
+    delete m_pLibraryScanner;
+
     //Delete the library after the view so there are no dangling pointers to the data models.
     qDebug() << "delete library" << qTime.elapsed();
     delete m_pLibrary;

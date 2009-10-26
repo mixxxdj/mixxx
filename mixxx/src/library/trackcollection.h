@@ -74,7 +74,8 @@ class TrackCollection : public QObject
     TrackInfoObject* getTrack(QString location);
 	int getSize();
 
- 	void scanPath(QString path);
+ 	/** Import the files in a given diretory, without recursing into subdirectories */
+ 	void importDirectory(QString directory);
  	bool trackExistsInDatabase(QString file_location);
  	int getTrackId(QString location);
 

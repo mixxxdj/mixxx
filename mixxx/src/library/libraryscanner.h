@@ -35,6 +35,7 @@ class LibraryScanner : public QThread
         void run();
         void scan(QString libraryPath);
         void scan();
+        void recursiveScan(QString dirPath);
     signals:
         void scanFinished();
     private:

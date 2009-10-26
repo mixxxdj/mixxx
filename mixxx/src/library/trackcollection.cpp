@@ -285,7 +285,8 @@ QList<TrackInfoObject*> TrackCollection::dumpDB()
     return tracks;
 }
 
-void TrackCollection::scanPath(QString path)
+/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories. */
+void TrackCollection::importDirectory(QString directory)
 {
  	//qDebug() << "TrackCollection::scanPath(" << path << ")";
  	bCancelLibraryScan = false; //Reset the flag
@@ -294,53 +295,52 @@ void TrackCollection::scanPath(QString path)
  	QFileInfoList files;
 
  	//Check to make sure the path exists.
- 	QDir dir(path);
+ 	QDir dir(directory);
  	if (dir.exists()) {
- 		files = dir.entryInfoList(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot); //TODO: entryInfoList takes a sorting parameter. Might want to use that.
+ 		files = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
  	} else {
- 		qDebug() << "Error: Scan path does not exist." << path;
+ 		qDebug() << "Error: Import path does not exist." << directory;
  		return;
  	}
 
  	//The directory exists, so get a list of the contents of the directory and go through it.
  	QListIterator<QFileInfo> it(files);
  	while (it.hasNext())
+    {
+	    QFileInfo file = it.next(); //TODO: THIS IS SLOW!
+        //If a flag was raised telling us to cancel the library scan then stop.
+        if (bCancelLibraryScan == 1)
         {
-    	    QFileInfo file = it.next(); //TODO: THIS IS SLOW!
-            //If a flag was raised telling us to cancel the library scan then stop.
-            if (bCancelLibraryScan == 1)
-                {
-                    return;
-                }
-
-            if (file.isDir()) { //Recurse into directories
-                emit(progressLoading(file.fileName()));
-                scanPath(file.absoluteFilePath());
-            }
-            else if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
-                //If the file already exists in the database, continue and go on to the next file.
-                if (this->trackExistsInDatabase(file.absoluteFilePath()))
-                    {
-                        continue;
-                    }
-                //Load the song into a TrackInfoObject.
-                emit(progressLoading(file.fileName()));
-                //qDebug() << "Loading" << file.fileName();
-
-                TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
-                if (pTrack) {
-                    //Add the song to the database.
-                    this->addTrack(pTrack);
-                    delete pTrack;
-                }
-            } else {
-                //qDebug() << "Skipping" << file.fileName() << "because it did not match thesupported audio files filter:" << MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX;
-            }
-
+            return;
         }
+
+        if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
+            //If the file already exists in the database, continue and go on to the next file.
+            if (this->trackExistsInDatabase(file.absoluteFilePath()))
+            {
+                continue;
+            }
+            //Load the song into a TrackInfoObject.
+            emit(progressLoading(file.fileName()));
+            //qDebug() << "Loading" << file.fileName();
+
+            TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
+            if (pTrack) {
+                //Add the song to the database.
+                this->addTrack(pTrack);
+                delete pTrack;
+            }
+        } else {
+            //qDebug() << "Skipping" << file.fileName() << 
+            //    "because it did not match thesupported audio files filter:" << 
+            //    MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX;
+        }
+
+    }
     emit(finishedLoading());
 
 }
+
 
 
 TrackInfoObject * TrackCollection::getTrack(QString location)
@@ -380,7 +380,8 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
  	//Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
- 				  "title=:title, album=:album, :year=filename=:filename, "
+ 				  "title=:title, album=:album, year=:year, genre=:genre, "
+ 				  "tracknumber=:tracknumber, filename=:filename, "
  				  "comment=:comment, url=:url, duration=:duration, "
  				  "length_in_bytes=:length_in_bytes, "
  				  "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
