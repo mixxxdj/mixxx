@@ -25,6 +25,7 @@ RateControl::RateControl(const char* _group,
     m_ePbCurrent(0),
     m_ePbPressed(0),
     m_bTempStarted(false),
+    m_dTempRateChange(0.0),
     m_dRateTemp(0.0),
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
@@ -98,6 +99,10 @@ RateControl::RateControl(const char* _group,
     connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUpSmall(double)));
 
+    // We need the sample rate so we can guesstimate something close
+    // what latency is.
+    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
 
@@ -374,7 +379,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
 double RateControl::process(const double rate,
                             const double currentSample,
                             const double totalSamples,
-                            const double countSamples) 
+                            const int bufferSamples) 
 {
     /* 
      * Code to handle temporary rate change buttons.
@@ -389,6 +394,9 @@ double RateControl::process(const double rate,
      * the troublesome Latency ControlObject... Either the Master or Soundcard
      * one.
      */
+    
+    double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
+    
     
     if ((m_ePbPressed) && (!m_bTempStarted)) 
     {
@@ -416,7 +424,7 @@ double RateControl::process(const double rate,
         }
         else 
         {
-            m_dTempRateChange = ((double)countSamples / ((double)m_iRateRampSensitivity / 100));
+            m_dTempRateChange = ((double)latrate / ((double)m_iRateRampSensitivity / 100.));
             
             if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
                 m_dRateTempRampbackChange = 0.0;
@@ -448,9 +456,6 @@ double RateControl::process(const double rate,
             
             if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0 ))
             {
-                qDebug() << "countSamples:" << countSamples;
-                
-                
                 int period = 2;
                 if (period)
                     m_dRateTempRampbackChange = fabs(m_dRateTemp / (double)period);

@@ -507,9 +507,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
         m_pRateControl->process(rate, filepos_play,
-                                file_length_old, 
-                                (iBufferSize / (double)m_pSampleRate->get())
-        );
+                                file_length_old,
+                                iBufferSize);
         
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
