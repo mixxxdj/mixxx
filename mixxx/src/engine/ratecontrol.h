@@ -32,7 +32,7 @@ public:
     double process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
-                   const int iBufferSize);
+                   const int bufferSamples);
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused);
     double getRawRate();
@@ -96,11 +96,12 @@ private:
     ControlObject* m_pJog;
     Rotary* m_pJogFilter;
 
+    ControlObject *m_pSampleRate;
 
     enum RATERAMP_DIRECTION {
         RATERAMP_NONE = 0,
-        RATERAMP_UP = 1,
-        RATERAMP_DOWN = 2,
+        RATERAMP_DOWN = 1,
+        RATERAMP_UP = 2,
         RATERAMP_BOTH = 3
     };
     
