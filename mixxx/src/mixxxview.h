@@ -90,9 +90,6 @@ public:
     WNumberBpm *m_pNumberBpmCh1, *m_pNumberBpmCh2;
     /** Pointer to rate slider widgets */
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
-    /** Pointer to ComboBox*/
-    QComboBox *m_pComboBox;
-    //WComboBox *m_pComboBox;
     /** Pointer to SearchBox */
     QLabel *m_pSearchLabel;
     QLineEdit *m_pLineEditSearch;
