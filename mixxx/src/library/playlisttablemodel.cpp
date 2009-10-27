@@ -142,9 +142,11 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
 
     qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
 
-    //Invalid for the position to be 0 or less. (Happens when the tracked is dropped out of bounds.)
+    //Invalid for the position to be 0 or less. 
     if (newPosition < 0)
         return;
+    else if (newPosition == 0) //Dragged out of bounds, which is past the end of the rows...
+        newPosition = rowCount();
 
     //Start the transaction
     QSqlDatabase::database().transaction();
