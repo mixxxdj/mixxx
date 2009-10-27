@@ -161,7 +161,6 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
 
-
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
     //FIXME: SEAN - The script engine will live inside the MidiMapping! Update this code accordingly.
@@ -169,7 +168,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
         // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
 
-        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, control, value, status)) {
+        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, control, value, status, mixxxControl.getControlObjectGroup())) {
             qDebug() << "MidiDevice: Invalid script function" << configKey.item;
         }
         return;
