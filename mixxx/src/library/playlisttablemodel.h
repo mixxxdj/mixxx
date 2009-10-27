@@ -33,13 +33,14 @@ const QString LIBRARYTABLE_CHANNELS = "channels";
 class PlaylistTableModel : public QSqlTableModel, public virtual TrackModel
 {
 public:
-    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection, int playlistId);
+    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
+    virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);

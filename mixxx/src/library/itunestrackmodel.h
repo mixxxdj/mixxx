@@ -51,6 +51,7 @@ public:
     ITunesTrackModel();
     virtual ~ITunesTrackModel();
     virtual QItemDelegate* delegateForColumn(const int i);
+    virtual bool isColumnInternal(int column);
 
 protected:
     virtual TrackInfoObject *parseTrackNode(QDomNode node) const;

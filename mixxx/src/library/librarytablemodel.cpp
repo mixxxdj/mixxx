@@ -7,25 +7,14 @@
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
-    : TrackModel(),
-      QSqlTableModel(parent, pTrackCollection->getDatabase()) {
-	m_pTrackCollection = pTrackCollection;
+        : TrackModel(),
+          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          m_pTrackCollection(pTrackCollection) {
 
-	setTable("library");
+    setTable("library");
 
-	//Hide columns in the tablemodel that we don't want to show.
-	removeColumn(fieldIndex(LIBRARYTABLE_ID));
-	removeColumn(fieldIndex(LIBRARYTABLE_FILENAME));
-	removeColumn(fieldIndex(LIBRARYTABLE_URL));
-	removeColumn(fieldIndex(LIBRARYTABLE_LENGTHINBYTES));
-	removeColumn(fieldIndex(LIBRARYTABLE_CUEPOINT));
-	removeColumn(fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX));
-	removeColumn(fieldIndex(LIBRARYTABLE_SAMPLERATE));
-	removeColumn(fieldIndex(LIBRARYTABLE_CHANNELS));
-	removeColumn(fieldIndex(LIBRARYTABLE_TRACKNUMBER));
-
-	//Set the column heading labels, rename them for translations and have
-	//proper capitalization
+    //Set the column heading labels, rename them for translations and have
+    //proper capitalization
     setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
                   Qt::Horizontal, tr("Artist"));
     setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
@@ -46,8 +35,10 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   Qt::Horizontal, tr("Bitrate"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
+                  Qt::Horizontal, tr("Track #"));
 
-   	select(); //Populate the data model.
+    select(); //Populate the data model.
 }
 
 LibraryTableModel::~LibraryTableModel()
@@ -104,6 +95,21 @@ void LibraryTableModel::search(const QString& searchText) {
 const QString LibraryTableModel::currentSearch() {
     qDebug() << "LibraryTableModel::currentSearch(): " << m_currentSearch;
     return m_currentSearch;
+}
+
+bool LibraryTableModel::isColumnInternal(int column) {
+
+    if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
+        (column == fieldIndex(LIBRARYTABLE_FILENAME)) ||
+        (column == fieldIndex(LIBRARYTABLE_URL)) ||
+        (column == fieldIndex(LIBRARYTABLE_LENGTHINBYTES)) ||
+        (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
+        (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
+        (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
+        (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
+        return true;
+    }
+    return false;
 }
 
 QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {

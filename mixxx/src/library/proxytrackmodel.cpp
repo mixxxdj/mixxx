@@ -43,6 +43,10 @@ const QString ProxyTrackModel::currentSearch() {
     return m_pTrackModel->currentSearch();
 }
 
+bool ProxyTrackModel::isColumnInternal(int column) {
+    return m_pTrackModel->isColumnInternal(column);
+}
+
 void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     QModelIndex indexSource = mapToSource(index);
     m_pTrackModel->removeTrack(indexSource);

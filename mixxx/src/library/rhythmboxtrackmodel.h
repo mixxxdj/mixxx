@@ -49,6 +49,7 @@ public:
     RhythmboxTrackModel();
     virtual ~RhythmboxTrackModel();
     virtual QItemDelegate* delegateForColumn(const int i);
+    virtual bool isColumnInternal(int column);
     virtual QVariant data(const QModelIndex& item, int role) const;
 
 protected:

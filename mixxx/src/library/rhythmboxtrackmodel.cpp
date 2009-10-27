@@ -112,6 +112,10 @@ QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
     return value;
 }
 
+bool RhythmboxTrackModel::isColumnInternal(int column) {
+    return false;
+}
+
 QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
     switch (index.column()) {

@@ -144,6 +144,10 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     return QVariant();
 }
 
+bool RhythmboxPlaylistModel::isColumnInternal(int column) {
+    return false;
+}
+
 QVariant RhythmboxPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
     /* Only respond to requests for column header display names */
