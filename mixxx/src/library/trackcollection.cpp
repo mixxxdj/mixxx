@@ -673,8 +673,21 @@ int TrackCollection::getPlaylistId(int position)
 
 void TrackCollection::removeTrackFromPlaylist(int playlistId, int position)
 {
-    //FIXME stub!
-    qDebug() << "STUB: TrackCollection::removeTrackFromPlaylist";
+    QSqlDatabase::database().transaction();
+    QSqlQuery query;
+    //Delete the track from the playlist.
+    query.prepare("DELETE FROM PlaylistTracks "
+                  "WHERE playlist_id=(:id) AND position=(:position)");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+    query.exec();
+    
+    QString queryString;
+    queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
+                  "WHERE position>=%1 AND "
+                  "playlist_id=%2").arg(position).arg(playlistId);
+    query.exec(queryString);
+    QSqlDatabase::database().commit();
 }
 
 void TrackCollection::insertTrackIntoPlaylist(QString location, int playlistId, int position)
