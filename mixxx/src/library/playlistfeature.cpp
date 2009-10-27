@@ -15,7 +15,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistTableModel(this, pTrackCollection->getDatabase()) {
-    m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection, 1);
+    m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection);
     m_pPlaylistModelProxy = new ProxyTrackModel(m_pPlaylistTableModel, false);
     m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
@@ -106,7 +106,7 @@ void PlaylistFeature::slotCreatePlaylist() {
         m_playlistTableModel.select();
     }
     emit(featureUpdated());
-    
+
     //Switch the view to the new playlist.
     int playlistId = m_pTrackCollection->getPlaylistIdFromName(name);
     m_pPlaylistTableModel->setPlaylist(playlistId);

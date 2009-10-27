@@ -10,7 +10,9 @@
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
         : QSqlTableModel(pParent, pTrackCollection->getDatabase()),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_iCrateId(-1),
+          m_currentSearch("") {
 
 }
 
@@ -45,33 +47,43 @@ void CrateTableModel::setCrate(int crateId) {
     queryString = queryString.arg(tableName).arg(crateId);
     query.prepare(queryString);
 
+
+
     if (!query.exec()) {
+        // TODO(XXX) feedback
         qDebug() << "Error creating temporary view for crate "
                  << crateId << ":" << query.executedQuery() << query.lastError();
     }
+    qDebug() << query.executedQuery();
 
     setTable(tableName);
     select();
 
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_ARTIST),
+    qDebug() << fieldIndex(LIBRARYTABLE_TRACKNUMBER);
+
+    setHeaderData(fieldIndex(LIBRARYTABLE_ID),
+                  Qt::Horizontal, tr("ID"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
                   Qt::Horizontal, tr("Artist"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_TITLE),
+    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
                   Qt::Horizontal, tr("Title"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_ALBUM),
+    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
                   Qt::Horizontal, tr("Album"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_GENRE),
+    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_YEAR),
+    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_LOCATION),
+    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
                   Qt::Horizontal, tr("Location"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_COMMENT),
+    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
                   Qt::Horizontal, tr("Comment"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_DURATION),
+    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
                   Qt::Horizontal, tr("Duration"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_BITRATE),
+    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
+                  Qt::Horizontal, tr("Track #"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
                   Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(this->fieldIndex(LIBRARYTABLE_BPM),
+    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
 }
 
@@ -86,6 +98,7 @@ void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     if (success) {
         select();
     } else {
+        // TODO(XXX) feedback
         qDebug() << "CrateTableModel::addTrack could not add track"
                  << location << "to crate" << m_iCrateId;
     }
@@ -97,16 +110,19 @@ TrackInfoObject* CrateTableModel::getTrack(const QModelIndex& index) const {
 }
 
 QString CrateTableModel::getTrackLocation(const QModelIndex& index) const {
-    const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+    const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
     QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
     return location;
 }
 
 void CrateTableModel::removeTrack(const QModelIndex& index) {
-    const int trackIdIndex = this->fieldIndex(LIBRARYTABLE_ID);
+    const int trackIdIndex = fieldIndex(LIBRARYTABLE_ID);
     int trackId = index.sibling(index.row(), trackIdIndex).data().toInt();
-    m_pTrackCollection->getCrateDAO().removeTrackFromCrate(trackId, m_iCrateId);
-    select();
+    if (m_pTrackCollection->getCrateDAO().removeTrackFromCrate(trackId, m_iCrateId)) {
+        select();
+    } else {
+        // TODO(XXX) feedback
+    }
 }
 
 void CrateTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -118,14 +134,21 @@ void CrateTableModel::search(const QString& searchText) {
     m_currentSearch = searchText;
 
     if (searchText == "")
-        this->setFilter("");
+        setFilter("");
     else
-        this->setFilter(LIBRARYTABLE_ARTIST + " LIKE \'%" + searchText + "%\' OR " +
-                        LIBRARYTABLE_TITLE + " LIKE \'%" + searchText + "%\'");
+        setFilter(LIBRARYTABLE_ARTIST + " LIKE \'%" + searchText + "%\' OR " +
+                  LIBRARYTABLE_TITLE + " LIKE \'%" + searchText + "%\'");
 }
 
 const QString CrateTableModel::currentSearch() {
     return m_currentSearch;
+}
+
+bool CrateTableModel::isColumnInternal(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_ID)) {
+        return true;
+    }
+    return false;
 }
 
 QMimeData* CrateTableModel::mimeData(const QModelIndexList &indexes) const {

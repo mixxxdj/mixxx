@@ -66,6 +66,7 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
     virtual const QList<int>& searchColumns() const;
+    virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,

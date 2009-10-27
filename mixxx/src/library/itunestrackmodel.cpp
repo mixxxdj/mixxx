@@ -149,6 +149,10 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
     }
 }
 
+bool ITunesTrackModel::isColumnInternal(int column) {
+    return false;
+}
+
 TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
     TrackInfoObject *pTrack = new TrackInfoObject();

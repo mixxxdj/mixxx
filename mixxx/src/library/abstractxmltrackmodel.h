@@ -58,6 +58,7 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
     virtual void search(const QString& searchText);
     virtual const QList<int>& searchColumns() const;
     virtual const QString currentSearch();
+    virtual bool isColumnInternal(int column) = 0;
     virtual void removeTrack(const QModelIndex& index);
     virtual void addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);

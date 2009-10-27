@@ -54,8 +54,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setModel(model);
 
-    //Setup delegates according to what the model tells us
+    // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
+        //Setup delegates according to what the model tells us
         QItemDelegate* delegate = track_model->delegateForColumn(i);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
@@ -63,10 +64,17 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // If delegate is NULL, it will unset the delegate for the column
         setItemDelegateForColumn(i, delegate);
         delete old_delegate;
+
+        // Show or hide the column based on whether it should be shown or not.
+        if (track_model->isColumnInternal(i)) {
+            qDebug() << "Hiding column" << i;
+            horizontalHeader()->showSection(i);
+            horizontalHeader()->hideSection(i);
+        }
     }
 
-    //Set up drag and drop behaviour according to whether or not the
-    //track model says it supports it.
+    // Set up drag and drop behaviour according to whether or not the track
+    // model says it supports it.
 
     //Defaults
     setAcceptDrops(true);
@@ -80,11 +88,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         //viewport()->setAcceptDrops(true);
     }
 
-    //Possible giant fuckup alert - It looks like Qt has something like these caps built-in,
-    //see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum   and the flags(...) function
-    //that we're already using in LibraryTableModel. I haven't been able to get it to
-    //stop us from using a model as a drag target though, so my hax above may not be
-    //completely unjustified.
+    //Possible giant fuckup alert - It looks like Qt has something like these
+    //caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
+    //the flags(...) function that we're already using in LibraryTableModel. I
+    //haven't been able to get it to stop us from using a model as a drag target
+    //though, so my hax above may not be completely unjustified.
 }
 
 void WTrackTableView::createActions()

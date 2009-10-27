@@ -27,6 +27,8 @@ public:
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;
     virtual const QString currentSearch() = 0;
+    virtual bool isColumnInternal(int column) = 0;
+    virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
     virtual void removeTrack(const QModelIndex& index) = 0;
     virtual void addTrack(const QModelIndex& index, QString location) = 0;
