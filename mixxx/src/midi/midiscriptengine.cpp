@@ -164,9 +164,10 @@ bool MidiScriptEngine::execute(QString function, QString data) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function, char channel,
                                char control, char value,
-                               MidiStatusByte status) {
+                               MidiStatusByte status,
+                               QString group) {
     m_scriptEngineLock.lock();
-    bool ret = safeExecute(function, channel, control, value, status);
+    bool ret = safeExecute(function, channel, control, value, status, group);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -239,7 +240,8 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, char channel,
                                    char control, char value,
-                                   MidiStatusByte status) {
+                                   MidiStatusByte status,
+                                   QString group) {
     //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
@@ -263,6 +265,7 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
     args << QScriptValue(m_pEngine, control);
     args << QScriptValue(m_pEngine, value);
     args << QScriptValue(m_pEngine, status);
+    args << QScriptValue(m_pEngine, group);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
