@@ -5,6 +5,8 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 
+const QString DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
+
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(),
@@ -43,6 +45,9 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   Qt::Horizontal, tr("BPM"));
     setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
                   Qt::Horizontal, tr("Track #"));
+    
+    //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
+    search("");
 
     select(); //Populate the data model.
 }
@@ -92,9 +97,10 @@ void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
 void LibraryTableModel::search(const QString& searchText) {
     m_currentSearch = searchText;
     if (searchText == "")
-        setFilter("");
+        setFilter(DEFAULT_LIBRARYFILTER);
     else
-        setFilter("artist LIKE \'%" + searchText + "%\' OR "
+        setFilter(DEFAULT_LIBRARYFILTER + " " + 
+                  "artist LIKE \'%" + searchText + "%\' OR "
                   "title  LIKE \'%" + searchText + "%\'");
 }
 
