@@ -412,16 +412,13 @@ QString TrackInfoObject::getDurationStr() const
 void TrackInfoObject::setLocation(QString location)
 {
 	m_sLocation = location;
+	QFileInfo fileInfo(location);
+	m_sFilename = fileInfo.fileName();
 }
 
 QString TrackInfoObject::getLocation() const
 {
     return m_sLocation;
-}
-
-void TrackInfoObject::setFilename(QString filename)
-{
-	m_sFilename = filename;
 }
 
 float TrackInfoObject::getBpm() const

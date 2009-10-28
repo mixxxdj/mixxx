@@ -8,10 +8,16 @@
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(),
-          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          QSqlRelationalTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection) {
 
     setTable("library");
+
+    //Set up a relation which maps our location column (which is a foreign key into the track_locations)
+    //table. We tell Qt that our LIBRARYTABLE_LOCATION column maps into the row of the 
+    //track_locations table that has the id equal to our location col. It then grabs the "location" col
+    //from that row and shows it... 
+    setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
     //Set the column heading labels, rename them for translations and have
     //proper capitalization
@@ -100,12 +106,12 @@ const QString LibraryTableModel::currentSearch() {
 bool LibraryTableModel::isColumnInternal(int column) {
 
     if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
-        (column == fieldIndex(LIBRARYTABLE_FILENAME)) ||
         (column == fieldIndex(LIBRARYTABLE_URL)) ||
         (column == fieldIndex(LIBRARYTABLE_LENGTHINBYTES)) ||
         (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
         (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
+        (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
         return true;
     }

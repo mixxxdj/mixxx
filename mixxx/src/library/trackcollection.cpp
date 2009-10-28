@@ -50,21 +50,26 @@ bool TrackCollection::checkForTables()
 
     //TODO: Check if the table exists...
     //      If it doesn't exist, create it.
-
-
  	QSqlQuery query;
+    query.exec("CREATE TABLE track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, " 
+               "location varchar(512) UNIQUE, "
+               "filename varchar(512), "
+               "fs_deleted INTEGER)");
+
+
  	//Little bobby tables
-    query.exec("CREATE TABLE library (id INTEGER primary key, "
+    query.exec("CREATE TABLE library (id INTEGER primary key AUTOINCREMENT, "
                "artist varchar(48), title varchar(48), "
                "album varchar(48), year varchar(16), "
                "genre varchar(32), tracknumber varchar(3), "
- 			   "filename varchar(512), location varchar(512), "
+ 			   "location varchar(512) REFERENCES TrackLocations(location), "
  			   "comment varchar(20), url varchar(256), "
  			   "duration integer, length_in_bytes integer, "
      		   "bitrate integer, samplerate integer, "
      		   "cuepoint integer, bpm float, "
      		   "wavesummaryhex blob, "
- 			   "channels integer)");
+ 			   "channels integer, "
+ 			   "mixxx_deleted integer)");
 
 
     query.exec("CREATE TABLE Playlists (id INTEGER primary key, "
@@ -77,23 +82,6 @@ bool TrackCollection::checkForTables()
            "playlist_id INTEGER REFERENCES Playlists(id),"
            "track_id INTEGER REFERENCES library(id), "
            "position INTEGER)");
-
-    //Create an example playlist
-    /*
-    query.prepare("INSERT INTO Playlists (name)"
-                  "VALUES (:name)");
- 				 // ":date_created, :date_modified)");
-    query.bindValue(":name", "Example Playlist #1");
-    query.exec();*/
-
- 	/*
-    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
-                  "VALUES (:playlist_id, :track_id, :position)");
-    query.bindValue(":playlist_id", 1);
-    query.bindValue(":track_id", 1);
-    query.bindValue(":position", 0);
-    query.exec();
-    */
 
     m_crateDao.initialize();
 
@@ -115,17 +103,52 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 {
 
  	//qDebug() << "TrackCollection::addTrack(), inserting into DB";
+    Q_ASSERT(pTrack); //Why you be giving me NULL pTracks 
 
     //Start the transaction
     QSqlDatabase::database().transaction();
 
  	QSqlQuery query;
-    query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, filename, "
+ 	int trackLocationId = -1;
+
+    //Insert the track location into the corresponding table. This will fail silently
+    //if the location is already in the table because it has a UNIQUE constraint.
+    query.prepare("INSERT INTO track_locations (location, filename, fs_deleted) "
+                  "VALUES (:location, :filename, :fs_deleted)");
+    query.bindValue(":location", pTrack->getLocation());
+    query.bindValue(":filename", pTrack->getFilename());    
+    query.bindValue(":fs_deleted", 0); 
+    query.exec();
+  	
+ 	//Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+    }
+    
+    //Get the id of the track location, so we can make the Library table reference it.
+    query.prepare("SELECT id FROM track_locations WHERE location=:location");
+    query.bindValue(":location", pTrack->getLocation());
+    query.exec();
+    while (query.next()) {
+        trackLocationId = query.value(query.record().indexOf("id")).toInt();
+    }
+
+ 	//Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+    }
+    
+    //Failure of this assert indicates that we were unable to insert the track location
+    //into the table AND we could not retrieve the id of that track location from
+    //the same table. "It shouldn't happen"... unless I screwed up - Albert :)
+    Q_ASSERT(trackLocationId >= 0);
+    	
+    query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
  				  "location, comment, url, duration, length_in_bytes, "
  				  "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
  				  "channels) "
                   "VALUES (:artist, "
- 				  ":title, :album, :year, :genre, :tracknumber, :filename, "
+ 				  ":title, :album, :year, :genre, :tracknumber, "
  				  ":location, :comment, :url, :duration, :length_in_bytes, "
  				  ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":channels)");
@@ -136,8 +159,7 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
-    query.bindValue(":filename", pTrack->getFilename());
-    query.bindValue(":location", pTrack->getLocation());
+    query.bindValue(":location", trackLocationId);
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
@@ -168,13 +190,16 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 */
 bool TrackCollection::trackExistsInDatabase(QString file_location)
 {
- 	QSqlQuery query("SELECT * FROM library WHERE location==\"" + file_location + "\"");
+ 	QSqlQuery query("SELECT * FROM track_locations WHERE location==\"" + file_location + "\"");
+
+    //TODO: Modify this to check mixxx_deleted in the Library table, using an extra bool
+    //      parameter for this function? -- Albert Oct 27/09
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
- 	int numRecords = 0;
+ 	int numRecords = 0; 	
     while (query.next()) {
  		numRecords++;
     }
@@ -191,7 +216,17 @@ QSqlDatabase& TrackCollection::getDatabase()
   /** Removes a track from the library track collection. */
 void TrackCollection::removeTrack(QString location)
 {
-    QSqlQuery query("DELETE FROM library WHERE location==\"" + location + "\"");
+    QSqlQuery query;
+    
+    //Get the id of the track location, so we can make the Library table reference it.
+    int trackLocationId = -1;
+    query.exec("SELECT * FROM track_locations WHERE location=" + location);
+    while (query.next()) {
+        trackLocationId = query.value(query.record().indexOf("id")).toInt();
+    }
+    Q_ASSERT(trackLocationId >= 0);
+    
+    query.prepare("DELETE FROM library WHERE location==" + QString("%1").arg(trackLocationId));
     query.exec();
 
     //Print out any SQL error, if there was one.
@@ -211,7 +246,8 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-
+    
+    int locationId = -1;
     while (query.next()) {
      	track = new TrackInfoObject();
         QString artist = query.value(query.record().indexOf("artist")).toString();
@@ -220,8 +256,7 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
         QString year = query.value(query.record().indexOf("year")).toString();
         QString genre = query.value(query.record().indexOf("genre")).toString();
         QString tracknumber = query.value(query.record().indexOf("tracknumber")).toString();
-        QString filename = query.value(query.record().indexOf("filename")).toString();
-        QString location = query.value(query.record().indexOf("location")).toString();
+        locationId = query.value(query.record().indexOf("location")).toInt();
         QString comment = query.value(query.record().indexOf("comment")).toString();
         QString url = query.value(query.record().indexOf("url")).toString();
         int duration = query.value(query.record().indexOf("duration")).toInt();
@@ -234,15 +269,13 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
         //int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
         int channels = query.value(query.record().indexOf("channels")).toInt();
 
-
         track->setArtist(artist);
         track->setTitle(title);
         track->setAlbum(album);
         track->setYear(year);
         track->setGenre(genre);
         track->setTrackNumber(tracknumber);
-        track->setFilename(filename);
-        track->setLocation(location);
+
         track->setComment(comment);
         track->setURL(url);
         track->setDuration(duration);
@@ -254,8 +287,14 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
         track->setWaveSummary(wavesummaryhex, NULL, false);
         //track->setTimesPlayed //Doesn't exist wtfbbq
         track->setChannels(channels);
-
     }
+    
+    Q_ASSERT(locationId >= 0);
+    query.exec("SELECT * FROM track_locations WHERE id=" + QString("%1").arg(locationId));
+    while (query.next()) {
+        track->setLocation(query.value(query.record().indexOf("location")).toString());
+    }
+        
     return track;
 
 
@@ -357,18 +396,28 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
 */
 int TrackCollection::getTrackId(QString location)
 {
-    QSqlQuery query("SELECT id FROM library WHERE location==\"" + location + "\"");
+    //Start the transaction
+    QSqlDatabase::database().transaction();
 
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+    QSqlQuery query;
+    //Get the id of the track location, so we can get the Library table's track entry.
+    int trackLocationId = -1;
+    query.exec("SELECT * FROM track_locations WHERE location=" + location);
+    while (query.next()) {
+        trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
+    Q_ASSERT(trackLocationId >= 0);
 
-    int track_id = -1;
-    if (query.next()) {
-        track_id = query.value(query.record().indexOf("id")).toInt();
+    int libraryTrackId = -1;
+    query.exec("SELECT * FROM Library WHERE location=" + QString("%1").arg(trackLocationId));
+    while (query.next()) {
+        libraryTrackId = query.value(query.record().indexOf("id")).toInt();
     }
-    return track_id;
+    Q_ASSERT(libraryTrackId >= 0);
+    
+    QSqlDatabase::database().commit();
+
+    return libraryTrackId;
 }
 
 /** Saves a track's info back to the database */
@@ -377,17 +426,26 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
  	qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
  	QSqlQuery query;
+ 	
+ 	//Get the id of the track location, so we can get the Library table's track entry.
+    int trackLocationId = -1;
+    query.exec("SELECT * FROM track_locations WHERE location=\"" + pTrack->getLocation() + "\"");
+    while (query.next()) {
+        trackLocationId = query.value(query.record().indexOf("id")).toInt();
+    }
+    Q_ASSERT(trackLocationId >= 0);
+    
  	//Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
  				  "title=:title, album=:album, year=:year, genre=:genre, "
- 				  "tracknumber=:tracknumber, filename=:filename, "
+ 				  "tracknumber=:tracknumber, "
  				  "comment=:comment, url=:url, duration=:duration, "
  				  "length_in_bytes=:length_in_bytes, "
  				  "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
  				  "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
                   "channels=:channels "
-                  "WHERE location==\"" + pTrack->getLocation() + "\"");
+                  "WHERE location==" + QString("%1").arg(trackLocationId));
     //query.bindValue(":id", 1001);
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -395,7 +453,6 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
-    query.bindValue(":filename", pTrack->getFilename());
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
