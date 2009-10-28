@@ -7,7 +7,7 @@
 
 class TrackCollection;
 
-class LibraryTableModel : public QSqlTableModel, public virtual TrackModel
+class LibraryTableModel : public QSqlRelationalTableModel, public virtual TrackModel
 {
 public:
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);

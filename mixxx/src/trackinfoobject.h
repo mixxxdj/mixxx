@@ -153,8 +153,6 @@ public:
     
     /** Return filename */
     QString getFilename() const;
-    /** Set filename */
-    void setFilename(QString filanem);
     /** Return true if the file exist */
     bool exists()  const;
     /** Return number of times the track has been played */
