@@ -146,12 +146,12 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
  				  "location, comment, url, duration, length_in_bytes, "
  				  "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
- 				  "channels) "
+ 				  "channels, mixxx_deleted) "
                   "VALUES (:artist, "
  				  ":title, :album, :year, :genre, :tracknumber, "
  				  ":location, :comment, :url, :duration, :length_in_bytes, "
  				  ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
-                  ":channels)");
+                  ":channels, :mixxx_deleted)");
     //query.bindValue(":id", 1001);
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -171,7 +171,20 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":wavesummaryhex", *(pTrack->getWaveSummary()));
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
     query.bindValue(":channels", pTrack->getChannels());
-
+    query.bindValue(":mixxx_deleted", 0);
+    
+    query.exec();
+       
+ 	//If addTrack() is called on a track that already exists in the library but has been "removed"
+ 	//(ie. mixxx_deleted is 1), then the above INSERT will fail silently. What we really want to
+ 	//do is just mark the track as undeleted, by setting mixxx_deleted to 0.
+ 	//addTrack() will not get called on files that are already in the library during a rescan
+ 	//(even if mixxx_deleted=1). However, this function WILL get called when a track is 
+ 	//dragged and dropped onto the library or when manually imported from the File... menu.
+ 	//This allows people to re-add tracks that they "removed"...  
+    query.prepare("UPDATE library "
+                  "SET mixxx_deleted=0 "
+                  "WHERE location==" + QString("%1").arg(trackLocationId));
     query.exec();
 
     //Commit the transaction
@@ -180,7 +193,7 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
-    }
+    }   
 
 }
 
@@ -190,7 +203,10 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 */
 bool TrackCollection::trackExistsInDatabase(QString file_location)
 {
- 	QSqlQuery query("SELECT * FROM track_locations WHERE location==\"" + file_location + "\"");
+    QSqlQuery query; 
+    query.prepare("SELECT id FROM track_locations WHERE location=:location");
+    query.bindValue(":location", file_location);
+    query.exec();
 
     //TODO: Modify this to check mixxx_deleted in the Library table, using an extra bool
     //      parameter for this function? -- Albert Oct 27/09
@@ -220,13 +236,17 @@ void TrackCollection::removeTrack(QString location)
     
     //Get the id of the track location, so we can make the Library table reference it.
     int trackLocationId = -1;
-    query.exec("SELECT * FROM track_locations WHERE location=" + location);
+    query.exec("SELECT * FROM track_locations WHERE location=\"" + location + "\"");
     while (query.next()) {
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
     Q_ASSERT(trackLocationId >= 0);
     
-    query.prepare("DELETE FROM library WHERE location==" + QString("%1").arg(trackLocationId));
+    //query.prepare("DELETE FROM library WHERE location==" + QString("%1").arg(trackLocationId));
+    //Mark the track as deleted!
+    query.prepare("UPDATE library "
+                  "SET mixxx_deleted=1 "
+                  "WHERE location==" + QString("%1").arg(trackLocationId));
     query.exec();
 
     //Print out any SQL error, if there was one.
@@ -358,6 +378,11 @@ void TrackCollection::importDirectory(QString directory)
             if (this->trackExistsInDatabase(file.absoluteFilePath()))
             {
                 continue;
+                //Note that by checking if the track _exists_ in the DB, we also prevent Mixxx from
+                //re-adding tracks that have been "removed" from the library. (That's tracks
+                //where the mixxx_deleted column is 1. When you right-click and select 
+                //"Remove..." in the library, it sets that flag on the track in the DB rather
+                //than actually deleting the row.)
             }
             //Load the song into a TrackInfoObject.
             emit(progressLoading(file.fileName()));
@@ -383,8 +408,26 @@ void TrackCollection::importDirectory(QString directory)
 
 
 TrackInfoObject * TrackCollection::getTrack(QString location)
-{
-    QSqlQuery query("SELECT * FROM library WHERE location==\"" + location + "\"");
+{	    
+    QSqlQuery query;
+    //Get the id of the track location, so we can get the Library table's track entry.
+    int trackLocationId = -1;
+    query.prepare("SELECT id FROM track_locations WHERE location=:location");
+    query.bindValue(":location", location);
+    query.exec();
+    while (query.next()) {
+        trackLocationId = query.value(query.record().indexOf("id")).toInt();
+        qDebug() << "got id" << trackLocationId;
+    }
+    qDebug() << query.executedQuery();
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << query.lastError();
+    }
+
+    Q_ASSERT(trackLocationId >= 0);
+    
+    query.exec("SELECT * FROM Library WHERE location=" + QString("%1").arg(trackLocationId));
  	TrackInfoObject* track = getTrackFromDB(query);
 
     return track;
@@ -402,7 +445,8 @@ int TrackCollection::getTrackId(QString location)
     QSqlQuery query;
     //Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
-    query.exec("SELECT * FROM track_locations WHERE location=" + location);
+    query.prepare("SELECT * FROM track_locations WHERE location=:location");
+    query.bindValue(":location", location);
     while (query.next()) {
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
@@ -429,7 +473,9 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
  	
  	//Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
-    query.exec("SELECT * FROM track_locations WHERE location=\"" + pTrack->getLocation() + "\"");
+    query.prepare("SELECT * FROM track_locations WHERE location=:location");
+    query.bindValue(":location", pTrack->getLocation());
+    query.exec();
     while (query.next()) {
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
@@ -598,10 +644,7 @@ void TrackCollection::deletePlaylist(int playlistId)
     query.prepare("DELETE FROM Playlists "
                   "WHERE id=(:id)");
     query.bindValue(":id", playlistId);
-    query.exec();
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
+    if (!query.exec()) {
      	qDebug() << "deletePlaylist" << query.lastError();
      	return;
     }
@@ -610,10 +653,7 @@ void TrackCollection::deletePlaylist(int playlistId)
     query.prepare("DELETE FROM PlaylistTracks "
                   "WHERE playlist_id=(:id)");
     query.bindValue(":id", playlistId);
-    query.exec();
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
+    if (!query.exec()) {
      	qDebug() << "deletePlaylist" << query.lastError();
      	return;
     }
