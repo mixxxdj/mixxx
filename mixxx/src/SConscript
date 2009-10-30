@@ -43,7 +43,7 @@ def getBZRRevision():
 	return os.popen("bzr revno").readline().strip()
 
 def getMixxxVersion():
-	defs = File('#src/defs.h') #have to handle out-of-tree building, that's why the '#' :(
+	defs = File('#src/defs_version.h') #have to handle out-of-tree building, that's why the '#' :(
 	#p = os.popen('grep -m 1 "#define VERSION" %s' % defs) #this is not cross-platform
 	#version = p.readline()
 	#p.close()
@@ -240,7 +240,7 @@ for getenv in ['CXXFLAGS', 'CCFLAGS', 'LINKFLAGS', 'LIBPATH', 'CPPPATH']:
 #env.Append(CPPDEFINES=[('BUILD_REV', '"%s"' % getBZRRevision())]) #doing this forces a rebuild of everything whenever a commit happens -- not much fun
 ## instead, embed BZR version into build
 ## Put version info into a file, so it doesn't force a rebuild of everything :)
-f = open("build.h","w+")
+f = open("build.h","w")
 try:
 	f.write('#define BUILD_REV "' + getBZRRevision() + '"\n')
 finally:
@@ -1087,7 +1087,10 @@ if int(flags_optimize):
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
 				if 'makerelease' in COMMAND_LINE_TARGETS:
-					env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+					# env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+					# AMD64 architecture is used by all consumer 64-bit CPUs, even Intel ones.
+					# IA64 is the Itanium processors, which we don't expect anyone to be using for DJing. :)
+					env.Append(CXXFLAGS = '/Ox /favor:AMD64 /MP')
 				else:
 					env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
 	else:
@@ -1210,7 +1213,7 @@ else:
 #env.Append(CPPDEFINES=[('BUILD_FLAGS', "'%s'" % build_flags)])
 
 ### Put flags info into a file
-f = open("build.h","w+")
+f = open("build.h","a")
 try:
 	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
 finally:
@@ -1438,7 +1441,7 @@ def BuildRelease(target, source, env):
 	print
 	print "You have built version ", env['MIXXX_VERSION']
 	print
-	if flags_msvcdebug>0:
+	if int(flags_msvcdebug):
 		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
 		print
 	print "Binary has size ",

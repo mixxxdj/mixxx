@@ -92,8 +92,8 @@ struct timecode_def_t timecode_def[] = {
     {
         "traktor_a",
         "Traktor Scratch, side A",
-        2000,
         23,
+        2000,
         {6, 12, 18},
         3,
         POLARITY_NEGATIVE,
@@ -105,8 +105,8 @@ struct timecode_def_t timecode_def[] = {
     {
         "traktor_b",
         "Traktor Scratch, side B",
-        2000,
-        23,        
+        23,
+        2000,        
         {6, 12, 18},
         3,
         POLARITY_NEGATIVE,
