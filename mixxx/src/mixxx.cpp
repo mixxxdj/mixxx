@@ -45,6 +45,7 @@
 #include "recording/defs_recording.h"
 
 #include "midi/mididevicemanager.h"
+#include "defs_version.h"
 
 #include "upgrade.h"
 
@@ -83,9 +84,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
-            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+            buildRevision = "(bzr r" + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else
-            buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+            buildRevision = "(bzr r" + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
     }
     
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
@@ -1031,7 +1032,7 @@ void MixxxApp::slotHelpAbout()
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
     QString credits =
-    "<p align=\"center\"><b>Mixxx 1.7.0 Development Team</b></p>"
+    QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -1117,7 +1118,7 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>";
+"</p>").arg(VERSION);
 
 
     about->textBrowser->setHtml(credits);

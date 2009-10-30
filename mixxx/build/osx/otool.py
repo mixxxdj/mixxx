@@ -64,7 +64,7 @@ def otool(binary):
 	"Do not run this on object code archive (.a) files, it is not designed for that."
 	#if not os.path.exists(binary): raise Exception("'%s' not found." % binary)
 	if not type(binary) == str: raise ValueError("otool() requires a path (as a string)")
-	stdin, stdout, stderr = os.popen3('/usr/bin/otool -L "%s"' % binary) # NOTE: I hard coded path to otool because otherwise this fails during Hudson builds
+	stdin, stdout, stderr = os.popen3('otool -L "%s"' % binary)
 	try:
 		header = stdout.readline() #discard the first line since it is just the name of the file or an error message (or if reading .as, the first item on the list)
 		if not binary+":\n" == header:

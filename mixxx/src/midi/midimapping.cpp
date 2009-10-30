@@ -19,6 +19,7 @@
 ***************************************************************************/
 
 #include <qapplication.h>
+#include "defs_version.h"
 #include "widget/wwidget.h"    // FIXME: This should be xmlparse.h
 #include "mixxxcontrol.h"
 #include "midimessage.h"
