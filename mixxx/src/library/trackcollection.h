@@ -22,6 +22,7 @@
 #include <QSqlDatabase>
 
 #include "library/dao/cratedao.h"
+#include "library/dao/cuedao.h"
 
 class TrackInfoObject;
 class BpmDetector;
@@ -55,7 +56,7 @@ const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 class TrackCollection : public QObject
 {
     Q_OBJECT
-    public:
+  public:
     TrackCollection();
     ~TrackCollection();
     /** Add a track to the database */
@@ -65,24 +66,24 @@ class TrackCollection : public QObject
     void removeTrack(QString location);
 
     /** Get a track from the database, identified by id. Returns 0 if the track was
-      * not found */
+     * not found */
     //TrackInfoObject *getTrack(int id);
 
     /** Get a track from the database, identified by pathname. Returns 0 if
-      * the track was not found. If the track is not in the database, a TIO is
-      * created and added to the database */
+     * the track was not found. If the track is not in the database, a TIO is
+     * created and added to the database */
     TrackInfoObject* getTrack(QString location);
-	int getSize();
+    int getSize();
 
- 	/** Import the files in a given diretory, without recursing into subdirectories */
- 	void importDirectory(QString directory);
- 	bool trackExistsInDatabase(QString file_location);
- 	int getTrackId(QString location);
+    /** Import the files in a given diretory, without recursing into subdirectories */
+    void importDirectory(QString directory);
+    bool trackExistsInDatabase(QString file_location);
+    int getTrackId(QString location);
 
- 	QList<TrackInfoObject*> dumpDB();
+    QList<TrackInfoObject*> dumpDB();
 
- 	QSqlDatabase& getDatabase();
- 	/** Create a playlist */
+    QSqlDatabase& getDatabase();
+    /** Create a playlist */
     void createPlaylist(QString name);
     /** Delete a playlist */
     void deletePlaylist(int playlistId);
@@ -101,14 +102,18 @@ class TrackCollection : public QObject
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
     void insertTrackIntoPlaylist(QString location, int playlistId, int position);
-public slots:
- 	bool checkForTables();
- 	/** Saves a track's info back to the database */
- 	void updateTrackInDatabase(TrackInfoObject*);
+  public slots:
+    bool checkForTables();
+    /** Saves a track's info back to the database */
+    void updateTrackInDatabase(TrackInfoObject*);
 
- 	TrackInfoObject *getTrackFromDB(QSqlQuery &query);
+    // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
+    // method the first parameter here won't be necessary.
+    void saveTrackCues(int trackId, TrackInfoObject*);
 
- 	void slotCancelLibraryScan();
+    TrackInfoObject *getTrackFromDB(QSqlQuery &query);
+
+    void slotCancelLibraryScan();
 
     CrateDAO& getCrateDAO();
 
@@ -121,6 +126,7 @@ private:
     BpmDetector* m_pBpmDetector;
     QSqlDatabase m_db;
     CrateDAO m_crateDao;
+    CueDAO m_cueDao;
     /** Flag to raise when library scan should be cancelled */
     int bCancelLibraryScan;
 };
