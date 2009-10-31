@@ -21,6 +21,7 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 #include <Q3MemArray>
+#include <QMutexLocker>
 #include <QtDebug>
 #include "trackinfoobject.h"
 // #include "bpm/bpmdetector.h"
@@ -40,7 +41,7 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sLocation) 
+TrackInfoObject::TrackInfoObject(const QString sLocation)
 	: m_sLocation(sLocation),
 	m_chordData() {
     m_sArtist = "";
@@ -437,7 +438,7 @@ void TrackInfoObject::setBpm(float f)
     m_qMutex.unlock();
 
     generateBpmFactors();
-    
+
     //Tell the GUI to update the bpm label...
     qDebug() << "TrackInfoObject: emitting bpmUpdated signal!";
     emit(bpmUpdated(f));
@@ -948,4 +949,25 @@ void TrackInfoObject::setCuePoint(float cue)
 float TrackInfoObject::getCuePoint()
 {
     return m_fCuePoint;
+}
+
+void TrackInfoObject::addCue(Cue* cue) {
+    QMutexLocker lock(&m_qMutex);
+    if (!m_cuePoints.contains(cue)) {
+        m_cuePoints.push_back(cue);
+    }
+}
+
+void TrackInfoObject::removeCue(Cue* cue) {
+    QMutexLocker lock(&m_qMutex);
+    m_cuePoints.remove(cue);
+}
+
+const QList<Cue*>& TrackInfoObject::getCuePoints() {
+    return m_cuePoints;
+}
+
+void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
+    QMutexLocker lock(&m_qMutex);
+    m_cuePoints = cuePoints;
 }

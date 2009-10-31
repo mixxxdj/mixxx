@@ -18,13 +18,16 @@
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
-#include <qobject.h>
+#include <QList>
+#include <QObject>
 #include <q3memarray.h>
 #include <q3valuelist.h>
-#include <qmutex.h>
+#include <QMutex>
 #include <QVector>
 
 #include "defs.h"
+
+#include "library/dao/cue.h"
 
 class QString;
 class QDomElement;
@@ -37,6 +40,7 @@ class BpmDetector;
 class BpmReceiver;
 class BpmScheme;
 class TrackPlaylist;
+class Cue;
 
 //template <class T> class Segmentation;
 #include "segmentation.h"
@@ -124,7 +128,7 @@ public:
     QString getInfo() const;
     /** Set duration in seconds */
     void setDuration(int);
-    
+
     /** Getter/Setter methods for metadata */
     /** Return title */
     QString getTitle() const;
@@ -150,7 +154,7 @@ public:
     QString getTrackNumber() const;
     /** Set Track Number */
     void setTrackNumber(QString);
-    
+
     /** Return filename */
     QString getFilename() const;
     /** Return true if the file exist */
@@ -192,23 +196,32 @@ public:
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
     /** Set pointer to ControlObject holding duration value in engine */
-	QString getFilepath() const;
+    QString getFilepath() const;
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
     /** Get saved the cue point */
     float getCuePoint();
+
+    // Calls for managing the track's cue points
+    void addCue(Cue* cue);
+    void removeCue(Cue* cue);
+    const QList<Cue*>& getCuePoints();
+    void setCuePoints(QList<Cue*> cuePoints);
+
+
+
     /** Set the track's full file path */
     void setLocation(QString location);
-    
+
 	const Segmentation<QString>* getChordData() { return &m_chordData; }
 	void setChordData(Segmentation<QString> cd) {
-		m_chordData = cd; 
+		m_chordData = cd;
 	}
 
 signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
-    
+
 
 private:
     /** Method for parsing information from knowing only the file name.
@@ -235,7 +248,7 @@ private:
     QString m_sYear;
     /** Track Number */
     QString m_sTrackNumber;
-    
+
     /** File type */
     QString m_sType;
     /** User comment */
@@ -274,6 +287,9 @@ private:
     int m_iId;
     /** Cue point in samples or something */
     float m_fCuePoint;
+
+    // The list of cue points for the track
+    QList<Cue*> m_cuePoints;
 
     /** Pointer to visual waveform info */
     QVector<float> *m_pVisualWave;

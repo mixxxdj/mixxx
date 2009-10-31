@@ -10,10 +10,11 @@
 #include "defs_audiofiles.h"
 
 TrackCollection::TrackCollection()
-        : m_crateDao(m_db) {
+        : m_crateDao(m_db),
+          m_cueDao(m_db) {
     bCancelLibraryScan = 0;
 
- 	//Create the SQLite database connection.
+    //Create the SQLite database connection.
     m_db = QSqlDatabase::addDatabase("QSQLITE");
 
     qDebug() << QSqlDatabase::drivers();
@@ -51,7 +52,7 @@ bool TrackCollection::checkForTables()
     //TODO: Check if the table exists...
     //      If it doesn't exist, create it.
  	QSqlQuery query;
-    query.exec("CREATE TABLE track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, " 
+    query.exec("CREATE TABLE track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "location varchar(512) UNIQUE, "
                "filename varchar(512), "
                "fs_deleted INTEGER)");
@@ -62,48 +63,49 @@ bool TrackCollection::checkForTables()
                "artist varchar(48), title varchar(48), "
                "album varchar(48), year varchar(16), "
                "genre varchar(32), tracknumber varchar(3), "
- 			   "location varchar(512) REFERENCES TrackLocations(location), "
- 			   "comment varchar(20), url varchar(256), "
- 			   "duration integer, length_in_bytes integer, "
-     		   "bitrate integer, samplerate integer, "
-     		   "cuepoint integer, bpm float, "
-     		   "wavesummaryhex blob, "
- 			   "channels integer, "
- 			   "mixxx_deleted integer)");
+               "location varchar(512) REFERENCES TrackLocations(location), "
+               "comment varchar(20), url varchar(256), "
+               "duration integer, length_in_bytes integer, "
+               "bitrate integer, samplerate integer, "
+               "cuepoint integer, bpm float, "
+               "wavesummaryhex blob, "
+               "channels integer, "
+               "mixxx_deleted integer)");
 
 
     query.exec("CREATE TABLE Playlists (id INTEGER primary key, "
-           "name varchar(48), position INTEGER, "
-           "date_created datetime, "
-           "date_modified datetime)");
+               "name varchar(48), position INTEGER, "
+               "date_created datetime, "
+               "date_modified datetime)");
 
 
     query.exec("CREATE TABLE PlaylistTracks (id INTEGER primary key, "
-           "playlist_id INTEGER REFERENCES Playlists(id),"
-           "track_id INTEGER REFERENCES library(id), "
-           "position INTEGER)");
+               "playlist_id INTEGER REFERENCES Playlists(id),"
+               "track_id INTEGER REFERENCES library(id), "
+               "position INTEGER)");
 
     m_crateDao.initialize();
+    m_cueDao.initialize();
 
     return true;
 }
 
 void TrackCollection::addTrack(QString location)
 {
-	QFileInfo file(location);
-	TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
- 	if (pTrack) {
- 		//Add the song to the database.
- 		this->addTrack(pTrack);
- 		delete pTrack;
- 	}
-  }
+    QFileInfo file(location);
+    TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
+    if (pTrack) {
+        //Add the song to the database.
+        this->addTrack(pTrack);
+        delete pTrack;
+    }
+}
 
 void TrackCollection::addTrack(TrackInfoObject * pTrack)
 {
 
  	//qDebug() << "TrackCollection::addTrack(), inserting into DB";
-    Q_ASSERT(pTrack); //Why you be giving me NULL pTracks 
+    Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
 
     //Start the transaction
     QSqlDatabase::database().transaction();
@@ -116,15 +118,15 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     query.prepare("INSERT INTO track_locations (location, filename, fs_deleted) "
                   "VALUES (:location, :filename, :fs_deleted)");
     query.bindValue(":location", pTrack->getLocation());
-    query.bindValue(":filename", pTrack->getFilename());    
-    query.bindValue(":fs_deleted", 0); 
+    query.bindValue(":filename", pTrack->getFilename());
+    query.bindValue(":fs_deleted", 0);
     query.exec();
-  	
+
  	//Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-    
+
     //Get the id of the track location, so we can make the Library table reference it.
     query.prepare("SELECT id FROM track_locations WHERE location=:location");
     query.bindValue(":location", pTrack->getLocation());
@@ -137,20 +139,20 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-    
+
     //Failure of this assert indicates that we were unable to insert the track location
     //into the table AND we could not retrieve the id of that track location from
     //the same table. "It shouldn't happen"... unless I screwed up - Albert :)
     Q_ASSERT(trackLocationId >= 0);
-    	
+
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
- 				  "location, comment, url, duration, length_in_bytes, "
- 				  "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
- 				  "channels, mixxx_deleted) "
+                  "location, comment, url, duration, length_in_bytes, "
+                  "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
+                  "channels, mixxx_deleted) "
                   "VALUES (:artist, "
- 				  ":title, :album, :year, :genre, :tracknumber, "
- 				  ":location, :comment, :url, :duration, :length_in_bytes, "
- 				  ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
+                  ":title, :album, :year, :genre, :tracknumber, "
+                  ":location, :comment, :url, :duration, :length_in_bytes, "
+                  ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":channels, :mixxx_deleted)");
     //query.bindValue(":id", 1001);
     query.bindValue(":artist", pTrack->getArtist());
@@ -172,16 +174,29 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":mixxx_deleted", 0);
-    
+
     query.exec();
-       
+
+    query.prepare("SELECT id from library WHERE location = :location_id");
+    query.bindValue(":location_id", trackLocationId);
+
+    if (query.exec()) {
+        if (query.next()) {
+            int trackId = query.value(0).toInt();
+            saveTrackCues(trackId, pTrack);
+        }
+    } else {
+        qDebug() << "Could not get track ID to save the track cue points:"
+                 << query.lastError();
+    }
+
  	//If addTrack() is called on a track that already exists in the library but has been "removed"
  	//(ie. mixxx_deleted is 1), then the above INSERT will fail silently. What we really want to
  	//do is just mark the track as undeleted, by setting mixxx_deleted to 0.
  	//addTrack() will not get called on files that are already in the library during a rescan
- 	//(even if mixxx_deleted=1). However, this function WILL get called when a track is 
+ 	//(even if mixxx_deleted=1). However, this function WILL get called when a track is
  	//dragged and dropped onto the library or when manually imported from the File... menu.
- 	//This allows people to re-add tracks that they "removed"...  
+ 	//This allows people to re-add tracks that they "removed"...
     query.prepare("UPDATE library "
                   "SET mixxx_deleted=0 "
                   "WHERE location==" + QString("%1").arg(trackLocationId));
@@ -193,7 +208,7 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
-    }   
+    }
 
 }
 
@@ -203,7 +218,7 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 */
 bool TrackCollection::trackExistsInDatabase(QString file_location)
 {
-    QSqlQuery query; 
+    QSqlQuery query;
     query.prepare("SELECT id FROM track_locations WHERE location=:location");
     query.bindValue(":location", file_location);
     query.exec();
@@ -215,7 +230,7 @@ bool TrackCollection::trackExistsInDatabase(QString file_location)
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
- 	int numRecords = 0; 	
+ 	int numRecords = 0;
     while (query.next()) {
  		numRecords++;
     }
@@ -233,7 +248,7 @@ QSqlDatabase& TrackCollection::getDatabase()
 void TrackCollection::removeTrack(QString location)
 {
     QSqlQuery query;
-    
+
     //Get the id of the track location, so we can make the Library table reference it.
     int trackLocationId = -1;
     query.exec("SELECT * FROM track_locations WHERE location=\"" + location + "\"");
@@ -241,7 +256,7 @@ void TrackCollection::removeTrack(QString location)
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
     Q_ASSERT(trackLocationId >= 0);
-    
+
     //query.prepare("DELETE FROM library WHERE location==" + QString("%1").arg(trackLocationId));
     //Mark the track as deleted!
     query.prepare("UPDATE library "
@@ -251,25 +266,60 @@ void TrackCollection::removeTrack(QString location)
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
+    }
+}
+
+void TrackCollection::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
+
+    // TODO(XXX) transaction, but people who are already in a transaction call
+    // this.
+    const QList<Cue*>& cueList = pTrack->getCuePoints();
+    const QList<Cue*>& oldCueList = m_cueDao.getCuesForTrack(trackId);
+
+    QListIterator<Cue*> oldCues(oldCueList);
+    QSet<int> oldIds;
+
+    // Build set of old cue ids
+    while(oldCues.hasNext()) {
+        Cue* cue = oldCues.next();
+        oldIds.insert(cue->getId());
+    }
+
+    // For each id still in the TIO, save or delete it.
+    QListIterator<Cue*> cueIt(cueList);
+    while (cueIt.hasNext()) {
+        Cue* cue = cueIt.next();
+        if (cue->getId() == -1) {
+            // New cue
+            m_cueDao.saveCue(cue);
+        } else if (oldIds.contains(cue->getId())) {
+            // Update cue
+            m_cueDao.saveCue(cue);
+        } else {
+            // Delete cue
+            m_cueDao.deleteCue(cue);
+        }
     }
 }
 
 TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
 {
- 	TrackInfoObject* track = NULL;
- 	if (!query.isValid()) {
- 		//query.exec();
- 	}
+    TrackInfoObject* track = NULL;
+    if (!query.isValid()) {
+        //query.exec();
+    }
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
-    
+
     int locationId = -1;
     while (query.next()) {
-     	track = new TrackInfoObject();
+        track = new TrackInfoObject();
+        int trackId = query.value(query.record().indexOf("id")).toInt();
+
         QString artist = query.value(query.record().indexOf("artist")).toString();
         QString title = query.value(query.record().indexOf("title")).toString();
         QString album = query.value(query.record().indexOf("album")).toString();
@@ -285,7 +335,8 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
         int samplerate = query.value(query.record().indexOf("samplerate")).toInt();
         int cuepoint = query.value(query.record().indexOf("cuepoint")).toInt();
         QString bpm = query.value(query.record().indexOf("bpm")).toString();
-        QByteArray* wavesummaryhex = new QByteArray(query.value(query.record().indexOf("wavesummaryhex")).toByteArray());
+        QByteArray* wavesummaryhex = new QByteArray(
+            query.value(query.record().indexOf("wavesummaryhex")).toByteArray());
         //int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
         int channels = query.value(query.record().indexOf("channels")).toInt();
 
@@ -307,17 +358,17 @@ TrackInfoObject *TrackCollection::getTrackFromDB(QSqlQuery &query)
         track->setWaveSummary(wavesummaryhex, NULL, false);
         //track->setTimesPlayed //Doesn't exist wtfbbq
         track->setChannels(channels);
+
+        track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
     }
-    
+
     Q_ASSERT(locationId >= 0);
     query.exec("SELECT * FROM track_locations WHERE id=" + QString("%1").arg(locationId));
     while (query.next()) {
         track->setLocation(query.value(query.record().indexOf("location")).toString());
     }
-        
+
     return track;
-
-
 }
 
 /** This function is for debugging only!!!! */
@@ -380,7 +431,7 @@ void TrackCollection::importDirectory(QString directory)
                 continue;
                 //Note that by checking if the track _exists_ in the DB, we also prevent Mixxx from
                 //re-adding tracks that have been "removed" from the library. (That's tracks
-                //where the mixxx_deleted column is 1. When you right-click and select 
+                //where the mixxx_deleted column is 1. When you right-click and select
                 //"Remove..." in the library, it sets that flag on the track in the DB rather
                 //than actually deleting the row.)
             }
@@ -395,8 +446,8 @@ void TrackCollection::importDirectory(QString directory)
                 delete pTrack;
             }
         } else {
-            //qDebug() << "Skipping" << file.fileName() << 
-            //    "because it did not match thesupported audio files filter:" << 
+            //qDebug() << "Skipping" << file.fileName() <<
+            //    "because it did not match thesupported audio files filter:" <<
             //    MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX;
         }
 
@@ -408,7 +459,7 @@ void TrackCollection::importDirectory(QString directory)
 
 
 TrackInfoObject * TrackCollection::getTrack(QString location)
-{	    
+{
     QSqlQuery query;
     //Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
@@ -426,7 +477,7 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
     }
 
     Q_ASSERT(trackLocationId >= 0);
-    
+
     query.exec("SELECT * FROM Library WHERE location=" + QString("%1").arg(trackLocationId));
  	TrackInfoObject* track = getTrackFromDB(query);
 
@@ -458,7 +509,7 @@ int TrackCollection::getTrackId(QString location)
         libraryTrackId = query.value(query.record().indexOf("id")).toInt();
     }
     Q_ASSERT(libraryTrackId >= 0);
-    
+
     QSqlDatabase::database().commit();
 
     return libraryTrackId;
@@ -467,11 +518,11 @@ int TrackCollection::getTrackId(QString location)
 /** Saves a track's info back to the database */
 void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
 {
- 	qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
+    qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
- 	QSqlQuery query;
- 	
- 	//Get the id of the track location, so we can get the Library table's track entry.
+    QSqlQuery query;
+
+    //Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
     query.prepare("SELECT * FROM track_locations WHERE location=:location");
     query.bindValue(":location", pTrack->getLocation());
@@ -480,16 +531,16 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
     Q_ASSERT(trackLocationId >= 0);
-    
- 	//Update everything but "location", since that's what we identify the track by.
+
+    //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
- 				  "title=:title, album=:album, year=:year, genre=:genre, "
- 				  "tracknumber=:tracknumber, "
- 				  "comment=:comment, url=:url, duration=:duration, "
- 				  "length_in_bytes=:length_in_bytes, "
- 				  "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
- 				  "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
+                  "title=:title, album=:album, year=:year, genre=:genre, "
+                  "tracknumber=:tracknumber, "
+                  "comment=:comment, url=:url, duration=:duration, "
+                  "length_in_bytes=:length_in_bytes, "
+                  "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
+                  "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
                   "channels=:channels "
                   "WHERE location==" + QString("%1").arg(trackLocationId));
     //query.bindValue(":id", 1001);
@@ -514,9 +565,20 @@ void TrackCollection::updateTrackInDatabase(TrackInfoObject* pTrack)
 
     query.exec();
 
+    query.prepare("SELECT id from library where location = :location_id");
+    query.bindValue(":location_id", trackLocationId);
+    if (query.exec()) {
+        if (query.next()) {
+            int trackId = query.value(0).toInt();
+            saveTrackCues(trackId, pTrack);
+        }
+    } else {
+        qDebug() << "Couldn't save cues for track:" << query.lastError();
+    }
+
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
 }
 
@@ -778,7 +840,7 @@ void TrackCollection::removeTrackFromPlaylist(int playlistId, int position)
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
     query.exec();
-    
+
     QString queryString;
     queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                   "WHERE position>=%1 AND "
