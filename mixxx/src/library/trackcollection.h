@@ -68,6 +68,7 @@ private:
 
     /** Flag to raise when library scan should be cancelled */
     int bCancelLibraryScan;
+    QMutex m_libraryScanMutex;
 };
 
 #endif
