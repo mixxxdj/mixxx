@@ -1,8 +1,8 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include "trackcollection.h"
-#include "playlisttablemodel.h"
+#include "library/trackcollection.h"
+#include "library/playlisttablemodel.h"
 
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
@@ -10,6 +10,8 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
         : TrackModel(),
           QSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
+          m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
+          m_trackDao(m_pTrackCollection->getTrackDAO()),
           m_iPlaylistId(-1),
           m_currentSearch("") {
 }
@@ -36,7 +38,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     query.prepare("CREATE TEMPORARY VIEW " + driver->formatValue(playlistNameField) + " AS "
                   "SELECT " +
-                  PLAYLISTTRACKSTABLE_POSITION + "," +
+                  "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION + "," +
                   //"playlist_id, " + //DEBUG
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
@@ -47,7 +49,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
-                  "library." + LIBRARYTABLE_LOCATION + "," +
+                  //"library." + LIBRARYTABLE_LOCATION + "," +
                   "library." + LIBRARYTABLE_COMMENT + " "
                   "FROM library "
                   "INNER JOIN PlaylistTracks "
@@ -107,10 +109,9 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     //Note: The model index is ignored when adding to the library track collection.
     //      The position in the library is determined by whatever it's being sorted by,
     //      and there's no arbitrary "unsorted" view.
-    //m_pTrackCollection->addTrack(location);
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_pTrackCollection->insertTrackIntoPlaylist(location, m_iPlaylistId, position);
+    m_playlistDao.insertTrackIntoPlaylist(location, m_iPlaylistId, position);
     select(); //Repopulate the data model.
 }
 
@@ -118,16 +119,17 @@ TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 
-    const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
-    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    return m_pTrackCollection->getTrack(location);
+    //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
+    //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    return m_trackDao.getTrack(trackId);
 }
 
 QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
-    const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
-    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    QString location = m_trackDao.getTrackLocation(trackId);
     return location;
 }
 
@@ -135,7 +137,7 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_pTrackCollection->removeTrackFromPlaylist(m_iPlaylistId, position);
+    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
 }
 
@@ -259,6 +261,8 @@ const QString PlaylistTableModel::currentSearch() {
 bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID))
         return true;
+    else
+        return false;
 }
 
 QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {

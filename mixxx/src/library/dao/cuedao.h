@@ -12,6 +12,7 @@
 #define CUE_TABLE "cues"
 
 class Cue;
+class TrackInfoObject;
 
 class CueDAO : public DAO {
   public:
@@ -22,15 +23,18 @@ class CueDAO : public DAO {
     int cueCount();
     int numCuesForTrack(int trackId);
     Cue* getCue(int cueId);
-    QList<Cue*> getCuesForTrack(int trackId);
+    QList<Cue*> getCuesForTrack(int trackId) const;
     bool deleteCuesForTrack(int trackId);
     bool saveCue(Cue* cue);
     bool deleteCue(Cue* cue);
+    // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
+    // method the first parameter here won't be necessary.
+    void saveTrackCues(int trackId, TrackInfoObject*);
   private:
-    Cue* cueFromRow(QSqlQuery& query);
+    Cue* cueFromRow(QSqlQuery& query) const;
 
     QSqlDatabase& m_database;
-    QMap<int, Cue*> m_cues;
+    mutable QMap<int, Cue*> m_cues;
 };
 
 #endif /* CUEDAO_H */

@@ -3,7 +3,8 @@
 
 #include <QtSql>
 #include <QtCore>
-#include "trackmodel.h"
+#include "library/trackmodel.h"
+#include "library/dao/trackdao.h"
 
 class TrackCollection;
 
@@ -28,7 +29,8 @@ public:
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 private:
-    TrackCollection* m_pTrackCollection;
+    //TrackCollection* m_pTrackCollection;
+    TrackDAO& m_trackDao;
     QString m_currentSearch;
 };
 

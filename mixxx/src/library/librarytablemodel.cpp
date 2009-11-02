@@ -11,7 +11,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(),
           QSqlRelationalTableModel(parent, pTrackCollection->getDatabase()),
-          m_pTrackCollection(pTrackCollection) {
+          m_trackDao(pTrackCollection->getTrackDAO()) {
+          //_pTrackCollection(pTrackCollection) {
 
     setTable("library");
 
@@ -54,7 +55,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
 LibraryTableModel::~LibraryTableModel()
 {
-	delete m_pTrackCollection;
+
 }
 
 void LibraryTableModel::addTrack(const QModelIndex& index, QString location)
@@ -62,15 +63,14 @@ void LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 	//Note: The model index is ignored when adding to the library track collection.
 	//      The position in the library is determined by whatever it's being sorted by,
 	//      and there's no arbitrary "unsorted" view.
-	m_pTrackCollection->addTrack(location);
+	m_trackDao.addTrack(location);
 	select(); //Repopulate the data model.
 }
 
 TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	return m_pTrackCollection->getTrack(location);
+	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+	return m_trackDao.getTrack(trackId);
 }
 
 QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
@@ -82,9 +82,8 @@ QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 
 void LibraryTableModel::removeTrack(const QModelIndex& index)
 {
-	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	m_pTrackCollection->removeTrack(location);
+	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+	m_trackDao.removeTrack(trackId);
 	select(); //Repopulate the data model.
 }
 

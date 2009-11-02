@@ -9,6 +9,8 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
 
 class PlaylistTableModel;
 class ProxyTrackModel;
@@ -44,7 +46,8 @@ public slots:
  private:
     PlaylistTableModel* m_pPlaylistTableModel;
     ProxyTrackModel* m_pPlaylistModelProxy;
-    TrackCollection* m_pTrackCollection;
+    PlaylistDAO &m_playlistDao;
+    TrackDAO &m_trackDao;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
     QSqlTableModel m_playlistTableModel;

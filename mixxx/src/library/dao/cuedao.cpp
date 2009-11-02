@@ -7,6 +7,7 @@
 
 #include "library/dao/cuedao.h"
 #include "library/dao/cue.h"
+#include "trackinfoobject.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -62,7 +63,7 @@ int CueDAO::numCuesForTrack(int trackId) {
     return 0;
 }
 
-Cue* CueDAO::cueFromRow(QSqlQuery& query) {
+Cue* CueDAO::cueFromRow(QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
     int trackId = record.value(record.indexOf("track_id")).toInt();
@@ -94,7 +95,7 @@ Cue* CueDAO::getCue(int cueId) {
     return NULL;
 }
 
-QList<Cue*> CueDAO::getCuesForTrack(int trackId) {
+QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
     QList<Cue*> cues;
     QSqlQuery query("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
     query.bindValue(":id", trackId);
@@ -202,4 +203,37 @@ bool CueDAO::deleteCue(Cue* cue) {
         return true;
     }
     return false;
+}
+
+void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
+
+    // TODO(XXX) transaction, but people who are already in a transaction call
+    // this.
+    const QList<Cue*>& cueList = pTrack->getCuePoints();
+    const QList<Cue*>& oldCueList = getCuesForTrack(trackId);
+
+    QListIterator<Cue*> oldCues(oldCueList);
+    QSet<int> oldIds;
+
+    // Build set of old cue ids
+    while(oldCues.hasNext()) {
+        Cue* cue = oldCues.next();
+        oldIds.insert(cue->getId());
+    }
+
+    // For each id still in the TIO, save or delete it.
+    QListIterator<Cue*> cueIt(cueList);
+    while (cueIt.hasNext()) {
+        Cue* cue = cueIt.next();
+        if (cue->getId() == -1) {
+            // New cue
+            saveCue(cue);
+        } else if (oldIds.contains(cue->getId())) {
+            // Update cue
+            saveCue(cue);
+        } else {
+            // Delete cue
+            deleteCue(cue);
+        }
+    }
 }

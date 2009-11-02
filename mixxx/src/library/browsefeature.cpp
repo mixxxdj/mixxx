@@ -11,6 +11,7 @@
 #include "library/browsefilter.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "library/dao/trackdao.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wlibrary.h"
@@ -123,7 +124,8 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
         QModelIndex absIndexProxy = m_proxyModel.mapFromSource(absIndex);
         emit(setRootIndex(absIndexProxy));
     } else {
-        TrackInfoObject* track = m_pTrackCollection->getTrack(absPath);
+        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+        TrackInfoObject* track = trackDao.getTrack(trackDao.getTrackId(absPath));
 
         // The track doesn't exist in the database.
         if (track == NULL) {
@@ -141,7 +143,8 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
     QString absPath = info.absoluteFilePath();
 
     if (!m_fileSystemModel.isDir(sourceIndex)) {
-        TrackInfoObject* track = m_pTrackCollection->getTrack(absPath);
+        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+        TrackInfoObject* track = trackDao.getTrack(trackDao.getTrackId(absPath));
 
         // The track doesn't exist in the database.
         if (track == NULL) {
