@@ -405,6 +405,8 @@ sources = Split("""
                 library/cratetablemodel.cpp
                 library/dao/cuedao.cpp
                 library/dao/cue.cpp
+                library/dao/trackdao.cpp
+                library/dao/playlistdao.cpp
 
                 xmlparse.cpp
                 parser.cpp

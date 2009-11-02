@@ -54,7 +54,7 @@ bool CrateFeature::dropAccept(QUrl url) {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     QString crateName = index.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
-    int trackId = m_pTrackCollection->getTrackId(url.toLocalFile());
+    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(url.toLocalFile());
 
     if (trackId >= 0)
         return m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, crateId);

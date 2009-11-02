@@ -88,7 +88,7 @@ void CrateTableModel::setCrate(int crateId) {
 }
 
 void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
-    int iTrackId = m_pTrackCollection->getTrackId(location);
+    int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
     bool success = false;
     if (iTrackId >= 0) {
         success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId,
@@ -105,14 +105,16 @@ void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 }
 
 TrackInfoObject* CrateTableModel::getTrack(const QModelIndex& index) const {
-    QString location = getTrackLocation(index);
-    return m_pTrackCollection->getTrack(location);
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    return m_pTrackCollection->getTrackDAO().getTrack(trackId);
 }
 
 QString CrateTableModel::getTrackLocation(const QModelIndex& index) const {
-    const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    return location;
+    //const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
+    //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    QString location = m_pTrackCollection->getTrackDAO().getTrackLocation(trackId);
+    return location;    
 }
 
 void CrateTableModel::removeTrack(const QModelIndex& index) {

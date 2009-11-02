@@ -13,8 +13,12 @@
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistTableModel(this, pTrackCollection->getDatabase()) {
+         // m_pTrackCollection(pTrackCollection),
+          m_playlistTableModel(this, pTrackCollection->getDatabase()),
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_trackDao(pTrackCollection->getTrackDAO()) {
+       
+    
     m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection);
     m_pPlaylistModelProxy = new ProxyTrackModel(m_pPlaylistTableModel, false);
     m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -71,7 +75,7 @@ void PlaylistFeature::activateChild(const QModelIndex& index) {
 
     //Switch the playlist table model's playlist.
     QString playlistName = index.data().toString();
-    int playlistId = m_pTrackCollection->getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     m_pPlaylistTableModel->setPlaylist(playlistId);
     emit(showTrackModel(m_pPlaylistModelProxy));
 }
@@ -102,13 +106,13 @@ void PlaylistFeature::slotCreatePlaylist() {
     if (name == "")
         return;
     else {
-        m_pTrackCollection->createPlaylist(name);
+        m_playlistDao.createPlaylist(name);
         m_playlistTableModel.select();
     }
     emit(featureUpdated());
 
     //Switch the view to the new playlist.
-    int playlistId = m_pTrackCollection->getPlaylistIdFromName(name);
+    int playlistId = m_playlistDao.getPlaylistIdFromName(name);
     m_pPlaylistTableModel->setPlaylist(playlistId);
     emit(showTrackModel(m_pPlaylistModelProxy));
 }
@@ -117,9 +121,9 @@ void PlaylistFeature::slotDeletePlaylist()
 {
     qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_pTrackCollection->getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+        int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
         Q_ASSERT(playlistId >= 0);
-        m_pTrackCollection->deletePlaylist(playlistId);
+        m_playlistDao.deletePlaylist(playlistId);
         m_playlistTableModel.select();
     }
 
@@ -133,8 +137,21 @@ bool PlaylistFeature::dropAccept(QUrl url) {
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
-    int playlistId = m_pTrackCollection->getPlaylistIdFromName(playlistName);
-    m_pTrackCollection->appendTrackToPlaylist(url.toLocalFile(), playlistId);
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
+    
+    //If a track is dropped onto a playlist's name, but the track isn't in the library,
+    //then add the track to the library before adding it to the playlist.
+    QString location = url.toLocalFile();
+    if (!m_trackDao.trackExistsInDatabase(location))
+    {
+        m_trackDao.addTrack(location);
+    }
+    //Get id of track
+    int trackId = m_trackDao.getTrackId(location);
+
+    m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
+    
     return true;
 }
 

@@ -205,10 +205,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 	//Connect the player to the track collection so that when a track is unloaded, it's data
 	//(eg. waveform summary) is saved back to the database.
 	connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pLibrary->getTrackCollection(),
+            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
             SLOT(updateTrackInDatabase(TrackInfoObject*)));
 	connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pLibrary->getTrackCollection(),
+            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
             SLOT(updateTrackInDatabase(TrackInfoObject*)));
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
@@ -1233,7 +1233,8 @@ void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
 void MixxxApp::slotLoadPlayer1(QString location)
 {
 	// Try to get TrackInfoObject* from library, identified by location.
-	TrackInfoObject* pTrack = m_pLibrary->getTrackCollection()->getTrack(location);
+	TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
+	TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
 	// If not, create a new TrackInfoObject*
 	if (pTrack == NULL)
 	{
@@ -1246,7 +1247,8 @@ void MixxxApp::slotLoadPlayer1(QString location)
 void MixxxApp::slotLoadPlayer2(QString location)
 {
 	// Try to get TrackInfoObject* from library, identified by location.
-	TrackInfoObject* pTrack = m_pLibrary->getTrackCollection()->getTrack(location);
+	TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
+	TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
 	// If not, create a new TrackInfoObject*
 	if (pTrack == NULL)
 	{
