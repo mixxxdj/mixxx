@@ -116,7 +116,6 @@ void EngineBufferCue::saveCuePoint(double cue)
 }
 
 // Set the cue point at the current play position:
-//THIS FUNCTION IS DEPRECATED AND DOESN'T GET USED ANYMORE -- Albert (found out the hard way) Oct 20/08
 void EngineBufferCue::slotControlCueSet(double v)
 {
     if (v)
