@@ -71,7 +71,7 @@ QSqlDatabase& TrackCollection::getDatabase()
 void TrackCollection::importDirectory(QString directory)
 {
  	//qDebug() << "TrackCollection::scanPath(" << path << ")";
- 	bCancelLibraryScan = false; //Reset the flag
+    bCancelLibraryScan = false; //Reset the flag
 
     emit(startedLoading());
  	QFileInfoList files;
@@ -91,7 +91,10 @@ void TrackCollection::importDirectory(QString directory)
     {
 	    QFileInfo file = it.next(); //TODO: THIS IS SLOW!
         //If a flag was raised telling us to cancel the library scan then stop.
-        if (bCancelLibraryScan == 1)
+        m_libraryScanMutex.lock();
+        bool cancel = bCancelLibraryScan;
+        m_libraryScanMutex.unlock();
+        if (cancel == true)
         {
             return;
         }
@@ -132,8 +135,9 @@ void TrackCollection::importDirectory(QString directory)
 
 void TrackCollection::slotCancelLibraryScan()
 {
- 	//Note that this does not need to be protected by a mutex since integer operations are atomic.
+    m_libraryScanMutex.lock();
  	bCancelLibraryScan = 1;
+    m_libraryScanMutex.unlock();
   }
 
 CrateDAO& TrackCollection::getCrateDAO() {
