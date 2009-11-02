@@ -132,6 +132,9 @@ bool CueDAO::deleteCuesForTrack(int trackId) {
 bool CueDAO::saveCue(Cue* cue) {
     Q_ASSERT(cue);
     if (cue->getId() == -1) {
+        //Start the transaction
+        QSqlDatabase::database().transaction();
+
         // New cue
         QSqlQuery query("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label) VALUES (:track_id, :type, :position, :length, :hotcue, :label)");
         query.bindValue(":track_id", cue->getTrackId());
@@ -142,11 +145,22 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":label", cue->getLabel());
 
         if (query.exec()) {
-            cue->setDirty(false);
-            return true;
+            query.prepare("SELECT MAX(id) FROM " CUE_TABLE);
+            if (query.exec()) {
+                Q_ASSERT(query.next());
+                int id = query.value(0).toInt();
+                cue->setId(id);
+                cue->setDirty(false);
+                QSqlDatabase::database().commit();
+                return true;
+            } else {
+                qDebug() << query.executedQuery() << query.lastError();
+            }
         } else {
             qDebug() << query.executedQuery() << query.lastError();
         }
+        QSqlDatabase::database().rollback();
+
     } else {
         // Update cue
         QSqlQuery query("UPDATE " CUE_TABLE " SET "

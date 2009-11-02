@@ -6,10 +6,14 @@
 
 #include "library/dao/cue.h"
 
-Cue::Cue()
+Cue::~Cue() {
+    qDebug() << "~Cue()" << m_iId;
+}
+
+Cue::Cue(int trackId)
         : m_bDirty(false),
           m_iId(-1),
-          m_iTrackId(-1),
+          m_iTrackId(trackId),
           m_type(INVALID),
           m_iPosition(-1),
           m_iLength(0),
@@ -17,9 +21,6 @@ Cue::Cue()
           m_label("") {
 }
 
-Cue::~Cue() {
-    qDebug() << "~Cue()" << m_iId;
-}
 
 Cue::Cue(int id, int trackId, Cue::CueType type, int position, int length,
          int hotCue, QString label)
@@ -38,9 +39,21 @@ int Cue::getId() {
     return m_iId;
 }
 
+void Cue::setId(int cueId) {
+    QMutexLocker lock(&m_mutex);
+    m_iId = cueId;
+    m_bDirty = true;
+}
+
 int Cue::getTrackId() {
     QMutexLocker lock(&m_mutex);
     return m_iTrackId;
+}
+
+void Cue::setTrackId(int trackId) {
+    QMutexLocker lock(&m_mutex);
+    m_iTrackId = trackId;
+    m_bDirty = true;
 }
 
 Cue::CueType Cue::getType() {

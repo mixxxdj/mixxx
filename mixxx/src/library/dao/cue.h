@@ -8,6 +8,8 @@
 
 #include "library/dao/cuedao.h"
 
+class TrackInfoObject;
+
 class Cue {
   public:
     enum CueType {
@@ -19,7 +21,6 @@ class Cue {
         JUMP,
     };
 
-    Cue();
     virtual ~Cue();
 
     bool isDirty();
@@ -42,9 +43,12 @@ class Cue {
     void setLabel(const QString& label);
 
   private:
+    Cue(int trackId);
     Cue(int id, int trackId, CueType type, int position, int length,
         int hotCue, QString label);
     void setDirty(bool dirty);
+    void setId(int id);
+    void setTrackId(int trackId);
 
     bool m_bDirty;
     bool m_bDelete;
@@ -57,6 +61,7 @@ class Cue {
     QString m_label;
     QMutex m_mutex;
 
+    friend class TrackInfoObject;
     friend class CueDAO;
 };
 
