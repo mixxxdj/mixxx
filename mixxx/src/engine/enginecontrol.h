@@ -36,8 +36,8 @@ const double kNoTrigger = -1;
  * developer.
  */
 class EngineControl : public QObject {
-    public:
-
+    Q_OBJECT
+  public:
     EngineControl(const char * _group,
                   const ConfigObject<ConfigValue> * _config);
     virtual ~EngineControl();

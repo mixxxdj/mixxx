@@ -26,6 +26,7 @@
 #include "monitor.h"
 #include "rotary.h"
 
+class EngineControl;
 class BpmControl;
 class RateControl;
 class LoopingControl;
@@ -78,7 +79,13 @@ public:
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
     void loadTrack(TrackInfoObject* pTrack);
+
+    // Add an engine control to the EngineBuffer
+    void addControl(EngineControl* pControl);
 
     /** Return the current rate (not thread-safe) */
     double getRate();
@@ -139,6 +146,8 @@ private:
 
     /** Pointer to the BPM control object */
     BpmControl* m_pBpmControl;
+
+    QList<EngineControl*> m_engineControls;
 
     /** The read ahead manager for EngineBufferScale's that need to read
         ahead */

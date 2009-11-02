@@ -691,3 +691,8 @@ void EngineBuffer::hintReader(const double dRate,
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
     m_pReader->newTrack(pTrack);
 }
+
+void EngineBuffer::addControl(EngineControl* pControl) {
+    // Connect to signals from EngineControl here...
+    m_engineControls.push_back(pControl);
+}
