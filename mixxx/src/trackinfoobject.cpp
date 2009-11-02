@@ -951,11 +951,12 @@ float TrackInfoObject::getCuePoint()
     return m_fCuePoint;
 }
 
-void TrackInfoObject::addCue(Cue* cue) {
+Cue* TrackInfoObject::addCue() {
     QMutexLocker lock(&m_qMutex);
-    if (!m_cuePoints.contains(cue)) {
-        m_cuePoints.push_back(cue);
-    }
+    // TODO(XXX) when TIO's know their own id, replace -1 here.
+    Cue* cue = new Cue(-1);
+    m_cuePoints.push_back(cue);
+    return cue;
 }
 
 void TrackInfoObject::removeCue(Cue* cue) {

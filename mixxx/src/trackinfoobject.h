@@ -203,7 +203,7 @@ public:
     float getCuePoint();
 
     // Calls for managing the track's cue points
-    void addCue(Cue* cue);
+    Cue* addCue();
     void removeCue(Cue* cue);
     const QList<Cue*>& getCuePoints();
     void setCuePoints(QList<Cue*> cuePoints);
