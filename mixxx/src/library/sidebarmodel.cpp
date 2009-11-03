@@ -192,7 +192,7 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
     qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->dragMoveAccept(url);
+            return m_sFeatures[index.row()]->dragMoveAccept(url);
         } else {
             QAbstractItemModel* childModel = (QAbstractItemModel*)index.internalPointer();
             QModelIndex childIndex = childModel->index(index.row(), index.column());
