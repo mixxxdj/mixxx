@@ -99,16 +99,6 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char *getGroup();
-
-    /** Lock abs and buffer playpos vars, so that they can be accessed through
-      * getBufferPlaypos() and getAbsPlaypos() from another thread */
-    void lockPlayposVars();
-    /** Unlocks abs and buffer playpos vars, so that they can be accessed
-      * internally in this object */
-    void unlockPlayposVars();
-    /** Returns the abs playpos. lockPlayposVars() must be called in advance */
-    double getAbsPlaypos();
-
 public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
