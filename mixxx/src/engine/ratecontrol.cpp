@@ -17,7 +17,7 @@ double RateControl::m_dPerm = 0.01;
 double RateControl::m_dPermSmall = 0.001;
 
 RateControl::RateControl(const char* _group,
-                         const ConfigObject<ConfigValue>* _config) :
+                         ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
     m_bTempPress(false),
     m_dOldRate(0.0f) {

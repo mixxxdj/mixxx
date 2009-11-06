@@ -15,7 +15,7 @@
 #define NUM_HOT_CUES 32
 
 CueControl::CueControl(const char * _group,
-                       const ConfigObject<ConfigValue> * _config) :
+                       ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),
         m_bPreviewing(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
@@ -26,6 +26,7 @@ CueControl::CueControl(const char * _group,
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
+    m_pCuePoint->set(-1);
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
     connect(m_pCueSet, SIGNAL(valueChanged(double)),
@@ -71,11 +72,13 @@ void CueControl::createControls() {
     for (int i = 0; i < m_iNumHotCues; ++i) {
         ControlObject* hotcuePosition = new ControlObject(
             keyForControl(i, "position"));
+        hotcuePosition->set(-1);
         m_controlMap[hotcuePosition] = i;
         m_hotcuePosition.append(hotcuePosition);
 
         ControlObject* hotcueEnabled = new ControlObject(
             keyForControl(i, "enabled"));
+        hotcueEnabled->set(0);
         m_controlMap[hotcueEnabled] = i;
         m_hotcueEnabled.append(hotcueEnabled);
 
@@ -166,9 +169,9 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
     while (it.hasNext()) {
         Cue* pCue = it.next();
         if (pCue->getType() == Cue::LOAD) {
-            loadCue = cue;
+            loadCue = pCue;
         } else if (pCue->getType() == Cue::CUE) {
-            otherCue = cue;
+            otherCue = pCue;
         } else {
             continue;
         }
@@ -183,7 +186,7 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
     }
 
     if (loadCue != NULL) {
-        m_pCuePoint->slotSet(loadCue->getPosition());
+        m_pCuePoint->set(loadCue->getPosition());
     }
 
     int cueRecall = getConfig()->getValueString(
