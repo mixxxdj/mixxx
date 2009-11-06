@@ -287,7 +287,6 @@ sources = Split("""
                 dlgprefcrossfader.cpp
                 dlgmidilearning.cpp
 
-                engine/enginebuffercue.cpp
                 engine/enginebuffer.cpp
                 engine/enginebufferscale.cpp
 		engine/enginebufferscaledummy.cpp

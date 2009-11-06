@@ -32,7 +32,6 @@
 
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
-#include "enginebuffercue.h"
 #include "loopingcontrol.h"
 #include "ratecontrol.h"
 #include "bpmcontrol.h"
@@ -67,7 +66,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackEndMode(NULL),
     startButton(NULL),
     endButton(NULL),
-    m_pEngineBufferCue(NULL),
     m_pScale(NULL),
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
@@ -134,11 +132,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
 
-    // Create the Cue Controller TODO(rryan) : this has to happen before Reader
-    // is constructed. Fix that.
-    m_pEngineBufferCue = new EngineBufferCue(_group, _config, this);
-    addControl(m_pEngineBufferCue);
-
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
 
@@ -178,7 +171,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pLoopingControl;
     delete m_pRateControl;
     delete m_pBpmControl;
-    delete m_pEngineBufferCue;
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -337,7 +329,6 @@ void EngineBuffer::slotControlSeekAbs(double abs)
 
 void EngineBuffer::slotControlPlay(double)
 {
-    m_pEngineBufferCue->slotControlCueSet();
 }
 
 void EngineBuffer::slotControlStart(double)
@@ -694,7 +685,13 @@ void EngineBuffer::hintReader(const double dRate,
     m_hintList.append(current_position);
 
     m_pLoopingControl->hintReader(m_hintList);
-    m_pEngineBufferCue->hintReader(m_hintList);
+
+    QListIterator<EngineControl*> it(m_engineControls);
+    while (it.hasNext()) {
+        EngineControl* pControl = it.next();
+        pControl->hintReader(m_hintList);
+    }
+
     m_pReader->hint(m_hintList);
 }
 
@@ -706,7 +703,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineControls.push_back(pControl);
     connect(pControl, SIGNAL(seek(double)),
-            this, slotControlSeek(double));
+            this, SLOT(slotControlSeek(double)));
     connect(pControl, SIGNAL(seekAbs(double)),
-            this, slotControlSeekAbs(double));
+            this, SLOT(slotControlSeekAbs(double)));
 }

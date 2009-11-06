@@ -11,6 +11,7 @@
 #include "configobject.h"
 
 class ControlObject;
+class ControlPushButton;
 class Cue;
 class TrackInfoObject;
 
@@ -37,11 +38,21 @@ class CueControl : public EngineControl {
     void hotcueActivatePreview(double v);
     void hotcueClear(double v);
 
+    void cueSet(double v);
+    void cueGoto(double v);
+    void cueGotoAndStop(double v);
+    void cueSimple(double v);
+    void cuePreview(double v);
+    void cueCDJ(double v);
+    void cueDefault(double v);
+
   private:
+    // These methods are not thread safe, only call them when the lock is held.
     ConfigKey keyForControl(int hotcue, QString name);
     void createControls();
     void attachCue(Cue* pCue, int hotKey);
     void detachCue(int hotKey);
+    void saveCuePoint(double cuePoint);
     int senderHotcue(QObject* pSender);
 
     bool m_bPreviewing;
@@ -59,6 +70,16 @@ class CueControl : public EngineControl {
     QList<ControlObject*> m_hotcueActivatePreview;
     QList<ControlObject*> m_hotcueClear;
     QList<Cue*> m_hotcue;
+
+    ControlObject* m_pCuePoint;
+    ControlObject* m_pCueMode;
+    ControlPushButton* m_pCueSet;
+    ControlPushButton* m_pCueSimple;
+    ControlPushButton* m_pCueCDJ;
+    ControlPushButton* m_pCueDefault;
+    ControlPushButton* m_pCueGoto;
+    ControlPushButton* m_pCueGotoAndStop;
+    ControlPushButton* m_pCuePreview;
 
     TrackInfoObject* m_pLoadedTrack;
 
