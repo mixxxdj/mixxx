@@ -36,7 +36,8 @@ Cue::Cue(int id, int trackId, Cue::CueType type, int position, int length,
 
 int Cue::getId() {
     QMutexLocker lock(&m_mutex);
-    return m_iId;
+    int id = m_iId;
+    return id;
 }
 
 void Cue::setId(int cueId) {
@@ -49,7 +50,8 @@ void Cue::setId(int cueId) {
 
 int Cue::getTrackId() {
     QMutexLocker lock(&m_mutex);
-    return m_iTrackId;
+    int trackId = m_iTrackId;
+    return trackId;
 }
 
 void Cue::setTrackId(int trackId) {
@@ -62,7 +64,8 @@ void Cue::setTrackId(int trackId) {
 
 Cue::CueType Cue::getType() {
     QMutexLocker lock(&m_mutex);
-    return m_type;
+    Cue::CueType type = m_type;
+    return type;
 }
 
 void Cue::setType(Cue::CueType type) {
@@ -75,7 +78,8 @@ void Cue::setType(Cue::CueType type) {
 
 int Cue::getPosition() {
     QMutexLocker lock(&m_mutex);
-    return m_iPosition;
+    int position = m_iPosition;
+    return position;
 }
 
 void Cue::setPosition(int position) {
@@ -89,7 +93,8 @@ void Cue::setPosition(int position) {
 
 int Cue::getLength() {
     QMutexLocker lock(&m_mutex);
-    return m_iLength;
+    int length = m_iLength;
+    return length;
 }
 
 void Cue::setLength(int length) {
@@ -103,7 +108,8 @@ void Cue::setLength(int length) {
 
 int Cue::getHotCue() {
     QMutexLocker lock(&m_mutex);
-    return m_iHotCue;
+    int hotCue = m_iHotCue;
+    return hotCue;
 }
 
 void Cue::setHotCue(int hotCue) {
@@ -117,7 +123,8 @@ void Cue::setHotCue(int hotCue) {
 
 const QString& Cue::getLabel() {
     QMutexLocker lock(&m_mutex);
-    return m_label;
+    QString label = m_label;
+    return label;
 }
 
 void Cue::setLabel(const QString& label) {
@@ -130,7 +137,8 @@ void Cue::setLabel(const QString& label) {
 
 bool Cue::isDirty() {
     QMutexLocker lock(&m_mutex);
-    return m_bDirty;
+    bool dirty = m_bDirty;
+    return dirty;
 }
 
 void Cue::setDirty(bool dirty) {

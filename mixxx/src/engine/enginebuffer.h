@@ -98,7 +98,7 @@ public:
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
-    const char *getGroup();
+    const char* getGroup();
 public slots:
     void slotControlPlay(double);
     void slotControlStart(double);

@@ -110,38 +110,6 @@ void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
     // Update TrackInfoObject of the helper class //FIXME
     //PlayerInfo::Instance().setTrackInfo(1, m_pLoadedTrack);
 
-    const QList<Cue*>& cuePoints = m_pLoadedTrack->getCuePoints();
-    QListIterator<Cue*> iter(cuePoints);
-
-    Cue* loadCue = NULL;
-    Cue* otherCue = NULL;
-    while (iter.hasNext()) {
-        Cue* cue = iter.next();
-        if (cue->getType() == Cue::LOAD) {
-            loadCue = cue;
-            break;
-        } else if (cue->getType() == Cue::CUE) {
-            otherCue = cue;
-        }
-    }
-
-    // Prefer to load a LOAD cue, otherwise load any cue.
-    if (loadCue == NULL && otherCue) {
-        loadCue = otherCue;
-    }
-
-    if (loadCue != NULL) {
-        m_pCuePoint->slotSet(loadCue->getPosition());
-    }
-
-    int cueRecall = m_pConfig->getValueString(
-        ConfigKey("[Controls]","CueRecall")).toInt();
-    //If cue recall is ON in the prefs, then we're supposed to seek to the cue
-    //point on song load. Note that cueRecall == 0 corresponds to "ON", not OFF.
-    if (loadCue && cueRecall == 0) {
-        m_pEngineBuffer->slotControlSeekAbs(loadCue->getPosition());
-    }
-
     // Reset the loop points. TODO(XXX) once loops are stored in the DB, replace
     // this with the default load loop.
     m_pLoopInPoint->slotSet(-1);
