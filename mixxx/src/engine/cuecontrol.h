@@ -19,7 +19,7 @@ class CueControl : public EngineControl {
     Q_OBJECT
   public:
     CueControl(const char * _group,
-               const ConfigObject<ConfigValue> * _config);
+               ConfigObject<ConfigValue> * _config);
     virtual ~CueControl();
 
     virtual void hintReader(QList<Hint>& hintList);

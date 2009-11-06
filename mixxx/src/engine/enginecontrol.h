@@ -39,7 +39,7 @@ class EngineControl : public QObject {
     Q_OBJECT
   public:
     EngineControl(const char * _group,
-                  const ConfigObject<ConfigValue> * _config);
+                  ConfigObject<ConfigValue> * _config);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -76,12 +76,12 @@ class EngineControl : public QObject {
 
   protected:
     const char* getGroup();
-    const ConfigObject<ConfigValue>* getConfig();
+    ConfigObject<ConfigValue>* getConfig();
     EngineBuffer* getOtherEngineBuffer();
 
   private:
     const char* m_pGroup;
-    const ConfigObject<ConfigValue>* m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;
     EngineBuffer* m_pOtherEngineBuffer;
 };

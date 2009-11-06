@@ -21,7 +21,7 @@ class ControlPushButton;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(const char* _group, const ConfigObject<ConfigValue>* _config);
+    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     ~RateControl();
 
     // Must be called during each callback of the audio thread so that
