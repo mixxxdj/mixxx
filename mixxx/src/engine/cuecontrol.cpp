@@ -10,6 +10,7 @@
 #include "trackinfoobject.h"
 #include "library/dao/cue.h"
 #include "cachingreader.h"
+#include "mathstuff.h"
 
 #define NUM_HOT_CUES 32
 
@@ -22,10 +23,41 @@ CueControl::CueControl(const char * _group,
         m_pLoadedTrack(NULL),
         m_mutex(QMutex::Recursive) {
     createControls();
+
+    m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
+    m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
+
+    m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
+    connect(m_pCueSet, SIGNAL(valueChanged(double)),
+            this, SLOT(cueSet(double)));
+
+    m_pCueGoto = new ControlPushButton(ConfigKey(_group, "cue_goto"));
+    connect(m_pCueGoto, SIGNAL(valueChanged(double)),
+            this, SLOT(cueGoto(double)));
+
+    m_pCueGotoAndStop =
+            new ControlPushButton(ConfigKey(_group, "cue_gotoandstop"));
+    connect(m_pCueGotoAndStop, SIGNAL(valueChanged(double)),
+            this, SLOT(cueGotoAndStop(double)));
+
+    m_pCueSimple = new ControlPushButton(ConfigKey(_group, "cue_simple"));
+    connect(m_pCueSimple, SIGNAL(valueChanged(double)),
+            this, SLOT(cueSimple(double)));
+
+    m_pCuePreview = new ControlPushButton(ConfigKey(_group, "cue_preview"));
+    connect(m_pCuePreview, SIGNAL(valueChanged(double)),
+            this, SLOT(cuePreview(double)));
+
+    m_pCueCDJ = new ControlPushButton(ConfigKey(_group, "cue_cdj"));
+    connect(m_pCueCDJ, SIGNAL(valueChanged(double)),
+            this, SLOT(cueCDJ(double)));
+
+    m_pCueDefault = new ControlPushButton(ConfigKey(_group, "cue_default"));
+    connect(m_pCueDefault, SIGNAL(valueChanged(double)),
+            this, SLOT(cueDefault(double)));
 }
 
 CueControl::~CueControl() {
-
 }
 
 ConfigKey CueControl::keyForControl(int hotcue, QString name) {
@@ -293,18 +325,139 @@ void CueControl::hotcueClear(double v) {
 }
 
 void CueControl::hintReader(QList<Hint>& hintList) {
-    Hint hint;
+    QMutexLocker lock(&m_mutex);
+
+    Hint cue_hint;
+    cue_hint.sample = m_pCuePoint->get();
+    cue_hint.length = 0;
+    cue_hint.priority = 10;
+    hintList.append(cue_hint);
+
     for (int i = 0; i < m_iNumHotCues; ++i) {
         if (m_hotcue[i] != NULL) {
             double position = m_hotcuePosition[i]->get();
             if (position != -1) {
-                hint.sample = position;
-                if (hint.sample % 2 != 0)
-                    hint.sample--;
-                hint.length = 0;
-                hint.priority = 10;
-                hintList.push_back(hint);
+                cue_hint.sample = position;
+                if (cue_hint.sample % 2 != 0)
+                    cue_hint.sample--;
+                cue_hint.length = 0;
+                cue_hint.priority = 10;
+                hintList.push_back(cue_hint);
             }
         }
     }
 }
+
+void CueControl::saveCuePoint(double cuePoint) {
+    if (m_pLoadedTrack) {
+        m_pLoadedTrack->setCuePoint(cuePoint);
+    }
+}
+
+void CueControl::cueSet(double v) {
+    if (v != 1.0)
+        return;
+
+    QMutexLocker lock(&m_mutex);
+    double cue = math_max(0.,round(getCurrentSample()));
+    if (!even((int)cue))
+        cue--;
+    m_pCuePoint->set(cue);
+    saveCuePoint(cue);
+}
+
+void CueControl::cueGoto(double v)
+{
+    if (v != 1.0f)
+        return;
+
+    QMutexLocker lock(&m_mutex);
+    // Set cue point if play is not pressed
+    if (m_pPlayButton->get()==0.) {
+        // Set the cue point and play
+        cueSet(v);
+        m_pPlayButton->set(1.0);
+    } else {
+        // Seek to cue point
+        emit(seekAbs(m_pCuePoint->get()));
+    }
+}
+
+void CueControl::cueGotoAndStop(double v)
+{
+    if (v != 1.0f)
+        return;
+
+    QMutexLocker lock(&m_mutex);
+    emit(seekAbs(m_pCuePoint->get()));
+    m_pPlayButton->set(0.0);
+}
+
+void CueControl::cuePreview(double v)
+{
+    QMutexLocker lock(&m_mutex);
+    if (v == 1.0f) {
+        m_pPlayButton->set(1.0);
+        emit(seekAbs(m_pCuePoint->get()));
+        m_bPreviewing = true;
+    } else if (v == 0.0f && m_bPreviewing) {
+        m_pPlayButton->set(0.0);
+        emit(seekAbs(m_pCuePoint->get()));
+        m_bPreviewing = false;
+    }
+}
+
+void CueControl::cueSimple(double v) {
+    if (v != 1.0f)
+        return;
+
+    QMutexLocker lock(&m_mutex);
+    // Simple cueing is if the player is not playing, set the cue point --
+    // otherwise seek to the cue point.
+    if (m_pPlayButton->get() == 0.0f) {
+        cueSet(v);
+    } else {
+        emit(seekAbs(m_pCuePoint->get()));
+    }
+}
+
+void CueControl::cueCDJ(double v) {
+    /* This is how CDJ cue buttons work:
+     * If pressed while playing, stop playback at go to cue.
+     * If pressed while stopped and at cue, play while pressed.
+     * If pressed while stopped and not at cue, set new cue point.
+     * TODO: If play is pressed while holding cue, the deck is now playing.
+     */
+
+    QMutexLocker lock(&m_mutex);
+    bool playing = (m_pPlayButton->get() == 1.0);
+
+    if (v == 1.0f) {
+        if (playing) {
+            m_pPlayButton->set(0.0);
+            emit(seekAbs(m_pCuePoint->get()));
+        } else {
+            if (getCurrentSample() == m_pCuePoint->get()) {
+                m_pPlayButton->set(1.0);
+                m_bPreviewing = true;
+            } else {
+                cueSet(v);
+            }
+        }
+    } else if (m_bPreviewing) {
+        m_pPlayButton->set(0.0);
+        emit(seekAbs(m_pCuePoint->get()));
+        m_bPreviewing = false;
+    }
+}
+
+void CueControl::cueDefault(double v) {
+    QMutexLocker lock(&m_mutex);
+    // Decide which cue implementation to call based on the user preference
+    if (m_pCueMode->get() == 0.0f) {
+        cueCDJ(v);
+    } else {
+        cueSimple(v);
+    }
+}
+
