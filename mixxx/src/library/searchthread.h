@@ -27,6 +27,7 @@ class SearchThread : public QThread {
   private:
     QMutex m_mutex;
     QWaitCondition m_waitCondition;
+    QWaitCondition m_stopWaitCondition;
     QQueue<QPair<TrackModel*, QString> > m_searchQueue;
     bool m_bQuit;
 };

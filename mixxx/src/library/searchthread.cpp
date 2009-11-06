@@ -3,6 +3,7 @@
 
 #include <QMutexLocker>
 #include <QSet>
+#include <QtDebug>
 
 #include "library/searchthread.h"
 
@@ -16,6 +17,7 @@ SearchThread::SearchThread(QObject* parent)
 
 SearchThread::~SearchThread() {
     stop();
+    wait();
 }
 
 void SearchThread::enqueueSearch(TrackModel* pModel, QString search) {
@@ -36,11 +38,12 @@ void SearchThread::stop() {
 void SearchThread::run() {
     while (!m_bQuit) {
         m_mutex.lock();
-        if (m_bQuit)
-            break;
         if (m_searchQueue.isEmpty()) {
             m_waitCondition.wait(&m_mutex);
+            qDebug() << "SearchThread woken";
         }
+        if (m_bQuit)
+            break;
 
         QQueue<QPair<TrackModel*, QString> > searches;
         QSet<TrackModel*> processed;
@@ -62,4 +65,6 @@ void SearchThread::run() {
             pair.first->search(pair.second);
         }
     }
+    m_mutex.unlock();
+
 }
