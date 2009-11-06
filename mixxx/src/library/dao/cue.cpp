@@ -43,6 +43,8 @@ void Cue::setId(int cueId) {
     QMutexLocker lock(&m_mutex);
     m_iId = cueId;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 int Cue::getTrackId() {
@@ -54,6 +56,8 @@ void Cue::setTrackId(int trackId) {
     QMutexLocker lock(&m_mutex);
     m_iTrackId = trackId;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 Cue::CueType Cue::getType() {
@@ -65,6 +69,8 @@ void Cue::setType(Cue::CueType type) {
     QMutexLocker lock(&m_mutex);
     m_type = type;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 int Cue::getPosition() {
@@ -77,6 +83,8 @@ void Cue::setPosition(int position) {
     Q_ASSERT(position % 2 == 0);
     m_iPosition = position;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 int Cue::getLength() {
@@ -89,6 +97,8 @@ void Cue::setLength(int length) {
     Q_ASSERT(length % 2 == 0);
     m_iLength = length;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 int Cue::getHotCue() {
@@ -101,6 +111,8 @@ void Cue::setHotCue(int hotCue) {
     // TODO(XXX) enforce uniqueness?
     m_iHotCue = hotCue;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 const QString& Cue::getLabel() {
@@ -112,6 +124,8 @@ void Cue::setLabel(const QString& label) {
     QMutexLocker lock(&m_mutex);
     m_label = label;
     m_bDirty = true;
+    lock.unlock();
+    emit(updated());
 }
 
 bool Cue::isDirty() {

@@ -314,6 +314,7 @@ sources = Split("""
                 engine/ratecontrol.cpp
                 engine/loopingcontrol.cpp
                 engine/bpmcontrol.cpp
+                engine/cuecontrol.cpp
                 engine/readaheadmanager.cpp
                 cachingreader.cpp
 
@@ -407,6 +408,7 @@ sources = Split("""
                 library/dao/cue.cpp
                 library/dao/trackdao.cpp
                 library/dao/playlistdao.cpp
+
 
                 xmlparse.cpp
                 parser.cpp

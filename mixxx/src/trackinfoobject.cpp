@@ -951,17 +951,28 @@ float TrackInfoObject::getCuePoint()
     return m_fCuePoint;
 }
 
+void TrackInfoObject::slotCueUpdated() {
+    emit(cuesUpdated());
+}
+
 Cue* TrackInfoObject::addCue() {
     QMutexLocker lock(&m_qMutex);
     // TODO(XXX) when TIO's know their own id, replace -1 here.
     Cue* cue = new Cue(-1);
+    connect(cue, SIGNAL(updated()),
+            this, SLOT(slotCueUpdated()));
     m_cuePoints.push_back(cue);
+    lock.unlock();
+    emit(cuesUpdated());
     return cue;
 }
 
 void TrackInfoObject::removeCue(Cue* cue) {
     QMutexLocker lock(&m_qMutex);
+    disconnect(cue, 0, this, 0);
     m_cuePoints.remove(cue);
+    lock.unlock();
+    emit(cuesUpdated());
 }
 
 const QList<Cue*>& TrackInfoObject::getCuePoints() {
@@ -970,5 +981,18 @@ const QList<Cue*>& TrackInfoObject::getCuePoints() {
 
 void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
     QMutexLocker lock(&m_qMutex);
+    QListIterator<Cue*> it(m_cuePoints);
+    while (it.hasNext()) {
+        Cue* cue = it.next();
+        disconnect(cue, 0, this, 0);
+    }
     m_cuePoints = cuePoints;
+    it = QListIterator<Cue*>(m_cuePoints);
+    while (it.hasNext()) {
+        Cue* cue = it.next();
+        connect(cue, SIGNAL(updated()),
+            this, SLOT(slotCueUpdated()));
+    }
+    lock.unlock();
+    emit(cuesUpdated());
 }

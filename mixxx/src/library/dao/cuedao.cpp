@@ -146,7 +146,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":label", cue->getLabel());
 
         if (query.exec()) {
-            query.prepare("SELECT MAX(id) FROM " CUE_TABLE);
+            query.prepare("SELECT last_insert_rowid()");
             if (query.exec()) {
                 Q_ASSERT(query.next());
                 int id = query.value(0).toInt();

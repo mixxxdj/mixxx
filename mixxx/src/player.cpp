@@ -9,6 +9,7 @@
 #include "engine/enginebuffer.h"
 #include "playerinfo.h"
 #include "soundsourceproxy.h"
+#include "engine/cuecontrol.h"
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineBuffer* buffer,
@@ -17,6 +18,13 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
       m_pEngineBuffer(buffer),
       m_strChannel(channel),
       m_pLoadedTrack(NULL) {
+
+    CueControl* pCueControl = new CueControl(channel, pConfig);
+    connect(this, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+            pCueControl, SLOT(loadTrack(TrackInfoObject*)));
+    connect(this, SIGNAL(unloadingTrack(TrackInfoObject*)),
+            pCueControl, SLOT(unloadTrack(TrackInfoObject*)));
+    m_pEngineBuffer->addControl(pCueControl);
 
     //Tell the reader to notify us when it's done loading a track so we can
     //finish doing stuff.
@@ -60,6 +68,10 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 {
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {
+        // TODO(XXX) This could be a help or a hurt. This should disconnect
+        // every signal connected to the track. Other parts of Mixxx might be
+        // relying on this -- but if it's being unloaded maybe that's a good
+        // thing.
         m_pLoadedTrack->disconnect();
         emit(unloadingTrack(m_pLoadedTrack)); //Causes the track's data to be saved back to the library database.
     }
