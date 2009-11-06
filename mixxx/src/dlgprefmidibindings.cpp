@@ -110,9 +110,6 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
     connect(btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllOutputBindings()));
     connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
     connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
-
-    //Connect the activate button. One day this will be replaced with an "Enabled" checkbox.
-    connect(btnActivateDevice, SIGNAL(clicked()), this, SLOT(slotEnableDevice()));
     
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadMidiMapping(const QString&)));
     
@@ -189,29 +186,35 @@ void DlgPrefMidiBindings::slotUpdate() {
     //Check if the device that this dialog is for is already enabled...
     if (m_pMidiDevice->isOpen())
     {
-        btnActivateDevice->setEnabled(false); //Disable activate button
+        chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
         toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
         groupBoxPresets->setEnabled(true); //Enable presets group box.
     }
     else {
-        btnActivateDevice->setEnabled(true); //Enable activate button
+        chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
         toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
         groupBoxPresets->setEnabled(false); //Disable presets group box.
     }
+    
+    //Connect the "Enabled" checkbox after the checkbox state is set
+    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
 }
 
 /* slotApply()
  * Called when the OK button is pressed.
  */
 void DlgPrefMidiBindings::slotApply() {
-    /* User has pressed OK, so write the controls to the DOM, and reload the MIDI
+    /* User has pressed OK, so enable or disable the device, write the controls to the DOM, and reload the MIDI
      * bindings. */
-//     m_pMidiDevice->getMidiMapping()->savePreset();   // This is done all at once in DlgPreferences::slotApply()
-    m_pMidiDevice->getMidiMapping()->applyPreset();
     m_pMidiDevice->disableMidiLearn();
+    if (chkEnabledDevice->isChecked()) {
+        enableDevice();
+        m_pMidiDevice->getMidiMapping()->applyPreset();
     
-    if (comboBoxOutputDevice->currentText() != MIXXX_TEXT_NO_OUTPUT_DEVICE)
-        m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
+        if (comboBoxOutputDevice->currentText() != MIXXX_TEXT_NO_OUTPUT_DEVICE)
+            m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
+    }
+    else disableDevice();
 }
 
 void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
@@ -248,10 +251,7 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
     }
     
     QString filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
-    if (!filename.isNull()) {
-        m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);
-//         m_pMidiDevice->getMidiMapping()->applyPreset();  // It's applied on prefs box close
-    }
+    if (!filename.isNull()) m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);    // It's applied on prefs close
     m_pInputMappingTableView->update();
     
     //Select the "..." item again in the combobox.
@@ -268,30 +268,32 @@ void DlgPrefMidiBindings::slotExportXML() {
     if (!fileName.isNull()) m_pMidiDevice->getMidiMapping()->savePreset(fileName);
 }
 
-void DlgPrefMidiBindings::slotEnableDevice()
+void DlgPrefMidiBindings::slotDeviceState(int state) {
+  if (state == Qt::Checked) {
+      toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
+      groupBoxPresets->setEnabled(true); //Enable presets group box.
+      // Set tree item text to bold
+  }
+  else {
+      toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
+      groupBoxPresets->setEnabled(false); //Disable presets group box.
+      // Set tree item text to not bold
+  }
+}
+
+void DlgPrefMidiBindings::enableDevice()
 {
-    //Just tell the MidiDevice to close and re-open
     m_pMidiDevice->close();
     m_pMidiDevice->open();
-    
     m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 1);
-    
-    btnActivateDevice->setEnabled(false);
-    toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
-    groupBoxPresets->setEnabled(true); //Enable presets group box.
-    
+ 
     //TODO: Should probably check if open() actually succeeded.
 }
 
-void DlgPrefMidiBindings::slotDisableDevice()
+void DlgPrefMidiBindings::disableDevice()
 {
-    //Just tell the MidiDevice to close
     m_pMidiDevice->close();
-    
     m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 0);
-    
-    toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
-    groupBoxPresets->setEnabled(false); //Disable presets group box.
     
     //TODO: Should probably check if close() actually succeeded.
 }

@@ -47,8 +47,7 @@ public slots:
     void slotShowMidiLearnDialog();
     void slotLoadMidiMapping(const QString &name);
     void slotExportXML();
-    void slotEnableDevice();
-    void slotDisableDevice();
+    void slotDeviceState(int state);
 
     //Input bindings
     void slotClearAllInputBindings();
@@ -65,6 +64,9 @@ private:
     void savePreset(QString path);
     void enumeratePresets();
     void enumerateOutputDevices();
+
+    void enableDevice();
+    void disableDevice();
     
     int currentGroupRow;
     MidiChannelDelegate* m_pMidiChannelDelegate;

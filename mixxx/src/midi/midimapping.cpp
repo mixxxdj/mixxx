@@ -66,6 +66,8 @@ MidiMapping::~MidiMapping() {
 
 #ifdef __MIDISCRIPT__
 void MidiMapping::startupScriptEngine() {
+    
+    if(m_pScriptEngine) return;
 
     //XXX Deadly hack attack:
     if (m_pOutputMidiDevice == NULL) {
@@ -88,6 +90,22 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
     
+}
+
+void MidiMapping::loadScriptCode() {
+        ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+
+        qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
+
+        QListIterator<QString> it(m_pScriptFileNames);
+        while (it.hasNext()) {
+            QString curScriptFileName = it.next();
+            m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
+
+            if(m_pScriptEngine->hasErrors(curScriptFileName)) {
+                qDebug() << "Errors occured while loading " << curScriptFileName;
+            }
+        }
 }
 
 void MidiMapping::initializeScripts() {
@@ -541,8 +559,8 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
       
         qDebug() << device << " settings found";
 #ifdef __MIDISCRIPT__
+        // Build a list of MIDI script files to load
 
-        // Get a list of MIDI script files to load
         QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
 
         // Default currently required file
@@ -557,21 +575,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
             scriptFile = scriptFile.nextSiblingElement("file");
         }
 
-        // Load Script files
-        ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-
-        qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
-
-        QListIterator<QString> it(m_pScriptFileNames);
-        while (it.hasNext()) {
-            QString curScriptFileName = it.next();
-            m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
-
-            if(m_pScriptEngine->hasErrors(curScriptFileName)) {
-                qDebug() << "Errors occured while loading " << curScriptFileName;
-            }
-
-        }
+        loadScriptCode();   // Actually load code from the list built above
 
         QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
 
@@ -671,6 +675,11 @@ void MidiMapping::applyPreset() {
     MidiLedHandler::destroyHandlers();
     
 #ifdef __MIDISCRIPT__
+    // Since this can be called after re-enabling a device without reloading the XML preset,
+    // the script engine must have its code loaded here as well
+    QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
+    if (scriptFunctions.isEmpty()) loadScriptCode();
+
     initializeScripts();
 #endif
 

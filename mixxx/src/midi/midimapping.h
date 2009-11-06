@@ -142,6 +142,8 @@ private:
 #ifdef __MIDISCRIPT__
     /** Adds a script file name and function prefix to the list to be loaded */
     void addScriptFile(QString filename, QString functionprefix);
+    /** Actually loads script code from the files in the list */
+    void loadScriptCode();
 
     QList<QString> m_pScriptFileNames;
     QList<QString> m_pScriptFunctionPrefixes;

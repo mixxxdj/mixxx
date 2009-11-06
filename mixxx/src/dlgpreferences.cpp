@@ -395,7 +395,7 @@ void DlgPreferences::setupMidiWidgets()
         midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
         midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_pMIDITreeItem->addChild(midiBindingsButton);
-        m_midiBindingsButtons.append(midiBindingsButton);        
+        m_midiBindingsButtons.append(midiBindingsButton);   
       }
 }
 
