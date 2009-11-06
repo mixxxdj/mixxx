@@ -356,10 +356,13 @@ void CueControl::hintReader(QList<Hint>& hintList) {
     QMutexLocker lock(&m_mutex);
 
     Hint cue_hint;
-    cue_hint.sample = m_pCuePoint->get();
-    cue_hint.length = 0;
-    cue_hint.priority = 10;
-    hintList.append(cue_hint);
+    double cuePoint = m_pCuePoint->get();
+    if (cuePoint >= 0) {
+        cue_hint.sample = m_pCuePoint->get();
+        cue_hint.length = 0;
+        cue_hint.priority = 10;
+        hintList.append(cue_hint);
+    }
 
     for (int i = 0; i < m_iNumHotCues; ++i) {
         if (m_hotcue[i] != NULL) {
