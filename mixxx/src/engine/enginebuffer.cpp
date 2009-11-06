@@ -144,6 +144,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
+    addControl(m_pBpmControl);
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
@@ -193,21 +194,6 @@ EngineBuffer::~EngineBuffer()
 
 }
 
-void EngineBuffer::lockPlayposVars()
-{
-    m_qPlayposMutex.lock();
-}
-
-void EngineBuffer::unlockPlayposVars()
-{
-    m_qPlayposMutex.unlock();
-}
-
-double EngineBuffer::getAbsPlaypos()
-{
-    return m_dAbsPlaypos;
-}
-
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
     pause.lock(); //Just to be safe - Albert
@@ -254,13 +240,6 @@ void EngineBuffer::setNewPlaypos(double newpos)
     //qDebug() << "engine new pos " << newpos;
 
     filepos_play = newpos;
-
-    // Update bufferposSlider
-    if (m_qPlayposMutex.tryLock())
-    {
-        m_dAbsPlaypos = filepos_play;
-        m_qPlayposMutex.unlock();
-    }
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -347,7 +326,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // Steps:
     // - Lookup new reader information
     // - Calculate current rate
-    // - Prepare an intermediate source sample buffer with loops taken into account.
     // - Scale the audio with m_pScale, copy the resulting samples into the
     //   output buffer
     // - Give EngineControl's a chance to do work / request seeks, etc
@@ -474,6 +452,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 filepos_play--;
 
             // Adjust filepos_play in case we took any loops during this buffer
+            m_pLoopingControl->setCurrentSample(filepos_play);
             filepos_play = m_pLoopingControl->process(rate,
                                                       filepos_play,
                                                       file_length_old,
@@ -500,6 +479,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
+        m_pRateControl->setCurrentSample(filepos_play);
         m_pRateControl->process(rate, filepos_play,
                                 file_length_old, iBufferSize);
 
@@ -509,7 +489,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             pControl->setCurrentSample(filepos_play);
             pControl->process(rate, filepos_play, file_length_old, iBufferSize);
         }
-
 
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
@@ -651,13 +630,6 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Update visual control object, this needs to be done more often than the
     // rateEngine and playpos slider
     visualPlaypos->set(fFractionalPlaypos);
-
-    // Update buffer and abs position. These variables are not in the ControlObject
-    // framework because they need very frequent updates.
-    if (m_qPlayposMutex.tryLock()) {
-        m_dAbsPlaypos = filepos_play;
-        m_qPlayposMutex.unlock();
-    }
 }
 
 void EngineBuffer::hintReader(const double dRate,
