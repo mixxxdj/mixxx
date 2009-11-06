@@ -40,7 +40,6 @@ class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-class EngineBufferCue;
 class TrackInfoObject;
 
 struct Hint;
@@ -197,9 +196,6 @@ private:
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
-
-    /** Pointer to cue object */
-    EngineBufferCue *m_pEngineBufferCue;
 
     /** Object used to perform waveform scaling (sample rate conversion) */
     EngineBufferScale *m_pScale;
