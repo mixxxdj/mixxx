@@ -40,61 +40,56 @@ void CueControl::createControls() {
         ControlObject* hotcuePosition = new ControlObject(
             keyForControl(i, "position"));
         m_controlMap[hotcuePosition] = i;
-        m_hotcuePosition[i] = hotcuePosition;
+        m_hotcuePosition.append(hotcuePosition);
 
         ControlObject* hotcueEnabled = new ControlObject(
             keyForControl(i, "enabled"));
         m_controlMap[hotcueEnabled] = i;
-        m_hotcueEnabled[i] = hotcueEnabled;
+        m_hotcueEnabled.append(hotcueEnabled);
 
         ControlObject* hotcueSet = new ControlPushButton(
             keyForControl(i, "set"));
         m_controlMap[hotcueSet] = i;
         connect(hotcueSet, SIGNAL(valueChanged(double)),
                 this, SLOT(hotcueSet(double)));
-        m_hotcueSet[i] = hotcueSet;
-
+        m_hotcueSet.append(hotcueSet);
 
         ControlObject* hotcueGoto = new ControlPushButton(
             keyForControl(i, "goto"));
         m_controlMap[hotcueGoto] = i;
         connect(hotcueGoto, SIGNAL(valueChanged(double)),
                 this, SLOT(hotcueGoto(double)));
-        m_hotcueGoto[i] = hotcueGoto;
-
+        m_hotcueGoto.append(hotcueGoto);
 
         ControlObject* hotcueGotoAndStop = new ControlPushButton(
             keyForControl(i, "gotoandstop"));
         m_controlMap[hotcueGotoAndStop] = i;
         connect(hotcueGotoAndStop, SIGNAL(valueChanged(double)),
                 this, SLOT(hotcueGotoAndStop(double)));
-        m_hotcueGotoAndStop[i] = hotcueGotoAndStop;
-
+        m_hotcueGotoAndStop.append(hotcueGotoAndStop);
 
         ControlObject* hotcueActivate = new ControlPushButton(
             keyForControl(i, "activate"));
         m_controlMap[hotcueActivate] = i;
         connect(hotcueActivate, SIGNAL(valueChanged(double)),
                 this, SLOT(hotcueActivate(double)));
-        m_hotcueActivate[i] = hotcueActivate;
-
+        m_hotcueActivate.append(hotcueActivate);
 
         ControlObject* hotcueActivatePreview = new ControlPushButton(
             keyForControl(i, "activate_preview"));
         m_controlMap[hotcueActivatePreview] = i;
         connect(hotcueActivatePreview, SIGNAL(valueChanged(double)),
                 this, SLOT(hotcueActivatePreview(double)));
-        m_hotcueActivatePreview[i] = hotcueActivatePreview;
-
+        m_hotcueActivatePreview.append(hotcueActivatePreview);
 
         ControlObject* hotcueClear = new ControlPushButton(
             keyForControl(i, "clear"));
         m_controlMap[hotcueClear] = i;
         connect(hotcueClear, SIGNAL(valueChanged(double)),
                 this, SLOT(hotcueClear(double)));
-        m_hotcueClear[i] = hotcueClear;
+        m_hotcueClear.append(hotcueClear);
 
-        m_hotcue[i] = NULL;
+        m_hotcue.append(NULL);
     }
 }
 
