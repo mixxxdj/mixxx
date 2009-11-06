@@ -69,6 +69,8 @@ int MidiDevicePortMidi::open()
         return -1;
     }
     
+    startup();
+    
     m_bStopRequested = false;
     
     if (m_strDeviceName == MIXXX_PORTMIDI_NO_DEVICE_STRING)

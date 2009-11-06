@@ -62,9 +62,18 @@ MidiDevice::~MidiDevice()
 
 }
 
+void MidiDevice::startup()
+{
+#ifdef __MIDISCRIPT__
+    m_pMidiMapping->startupScriptEngine();
+#endif
+}
+
 void MidiDevice::shutdown()
 {
+#ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
+#endif
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
