@@ -218,12 +218,15 @@ public:
 		m_chordData = cd;
 	}
 
-signals:
+  public slots:
+    void slotCueUpdated();
+
+  signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
+    void cuesUpdated();
 
-
-private:
+  private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
     void parseFilename();

@@ -70,12 +70,16 @@ class EngineControl : public QObject {
     void setCurrentSample(const double dCurrentSample);
     double getCurrentSample();
 
-protected:
+  signals:
+    void seek(double fractionalPosition);
+    void seekAbs(double sample);
+
+  protected:
     const char* getGroup();
     const ConfigObject<ConfigValue>* getConfig();
     EngineBuffer* getOtherEngineBuffer();
 
-private:
+  private:
     const char* m_pGroup;
     const ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;

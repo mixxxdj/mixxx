@@ -4,13 +4,15 @@
 #ifndef CUE_H
 #define CUE_H
 
+#include <QObject>
 #include <QMutex>
 
 #include "library/dao/cuedao.h"
 
 class TrackInfoObject;
 
-class Cue {
+class Cue : public QObject {
+  Q_OBJECT
   public:
     enum CueType {
         INVALID = 0,
@@ -41,6 +43,9 @@ class Cue {
 
     const QString& getLabel();
     void setLabel(const QString& label);
+
+  signals:
+    void updated();
 
   private:
     Cue(int trackId);
