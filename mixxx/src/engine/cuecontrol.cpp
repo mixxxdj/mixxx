@@ -158,15 +158,40 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
         unloadTrack(m_pLoadedTrack);
 
     m_pLoadedTrack = pTrack;
+
+    Cue* loadCue = NULL;
+    Cue* otherCue = NULL;
     const QList<Cue*>& cuePoints = pTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
     while (it.hasNext()) {
         Cue* pCue = it.next();
-        if (pCue->getType() != Cue::CUE && pCue->getType() != Cue::LOAD)
+        if (pCue->getType() == Cue::LOAD) {
+            loadCue = cue;
+        } else if (pCue->getType() == Cue::CUE) {
+            otherCue = cue;
+        } else {
             continue;
+        }
         int hotcue = pCue->getHotCue();
         if (hotcue != -1)
             attachCue(pCue, hotcue);
+    }
+
+    // Prefer to load a LOAD cue, otherwise load any cue.
+    if (loadCue == NULL && otherCue) {
+        loadCue = otherCue;
+    }
+
+    if (loadCue != NULL) {
+        m_pCuePoint->slotSet(loadCue->getPosition());
+    }
+
+    int cueRecall = getConfig()->getValueString(
+        ConfigKey("[Controls]","CueRecall")).toInt();
+    //If cue recall is ON in the prefs, then we're supposed to seek to the cue
+    //point on song load. Note that cueRecall == 0 corresponds to "ON", not OFF.
+    if (loadCue && cueRecall == 0) {
+        emit(seekAbs(loadCue->getPosition()));
     }
 }
 
