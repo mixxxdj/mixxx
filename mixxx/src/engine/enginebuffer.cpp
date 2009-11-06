@@ -137,12 +137,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the Cue Controller TODO(rryan) : this has to happen before Reader
     // is constructed. Fix that.
     m_pEngineBufferCue = new EngineBufferCue(_group, _config, this);
+    addControl(m_pEngineBufferCue);
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
+    addControl(m_pRateControl);
+
     fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
@@ -509,6 +512,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_pRateControl->process(rate, filepos_play,
                                 file_length_old, iBufferSize);
 
+        QListIterator<EngineControl*> it(m_engineControls);
+        while (it.hasNext()) {
+            EngineControl* pControl = it.next();
+            pControl->setCurrentSample(filepos_play);
+            pControl->process(rate, filepos_play, file_length_old, iBufferSize);
+        }
+
 
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
@@ -695,4 +705,8 @@ void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineControls.push_back(pControl);
+    connect(pControl, SIGNAL(seek(double)),
+            this, slotControlSeek(double));
+    connect(pControl, SIGNAL(seekAbs(double)),
+            this, slotControlSeekAbs(double));
 }
