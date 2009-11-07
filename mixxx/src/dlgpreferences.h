@@ -24,7 +24,6 @@
 #include <QtGui>
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
-#include "midi/mididevice.h"
 
 class QListWidget;
 class QListWidgetItem;
