@@ -270,14 +270,14 @@ void DlgPrefMidiBindings::slotExportXML() {
 
 void DlgPrefMidiBindings::slotDeviceState(int state) {
   if (state == Qt::Checked) {
-      toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
-      groupBoxPresets->setEnabled(true); //Enable presets group box.
-      // Set tree item text to bold
+      toolBox->setEnabled(true);    //Enable MIDI in/out toolbox.
+      groupBoxPresets->setEnabled(true);    //Enable presets group box.
+      emit deviceStateChanged(this,true);  // Set tree item text to bold
   }
   else {
-      toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
-      groupBoxPresets->setEnabled(false); //Disable presets group box.
-      // Set tree item text to not bold
+      toolBox->setEnabled(false);   //Disable MIDI in/out toolbox.
+      groupBoxPresets->setEnabled(false);   //Disable presets group box.
+      emit deviceStateChanged(this,false);  // Set tree item text to not bold
   }
 }
 

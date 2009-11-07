@@ -58,6 +58,9 @@ public slots:
     void slotAddOutputBinding();
     void slotClearAllOutputBindings();
     void slotRemoveOutputBinding();
+    
+signals:
+    void deviceStateChanged(DlgPrefMidiBindings*, bool);
 
 private:
     void setRowBackground(int row, QColor color);

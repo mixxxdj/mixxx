@@ -24,6 +24,7 @@
 #include <QtGui>
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
+#include "midi/mididevice.h"
 
 class QListWidget;
 class QListWidgetItem;
@@ -67,6 +68,7 @@ public slots:
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
+    void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
 signals:
     void closeDlg();
     void showDlg();
