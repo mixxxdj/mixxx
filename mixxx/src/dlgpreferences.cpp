@@ -387,6 +387,7 @@ void DlgPreferences::setupMidiWidgets()
         pagesWidget->addWidget(midiDlg);
         connect(this, SIGNAL(showDlg()), midiDlg, SLOT(slotUpdate()));
         connect(buttonBox, SIGNAL(accepted()), midiDlg, SLOT(slotApply()));
+        connect(midiDlg, SIGNAL(deviceStateChanged(DlgPrefMidiBindings*,bool)), this, SLOT(slotHighlightDevice(DlgPrefMidiBindings*,bool)));
         
         QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << midiBindingsButton;
@@ -395,7 +396,13 @@ void DlgPreferences::setupMidiWidgets()
         midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
         midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_pMIDITreeItem->addChild(midiBindingsButton);
-        m_midiBindingsButtons.append(midiBindingsButton);   
+        m_midiBindingsButtons.append(midiBindingsButton);
+        
+        // Set the font correctly
+        QFont temp = midiBindingsButton->font(0);
+        if (currentDevice->isOpen()) temp.setBold(true);
+        else temp.setBold(false);
+        midiBindingsButton->setFont(0,temp);
       }
 }
 
@@ -405,3 +412,11 @@ void DlgPreferences::slotApply()
 //    m_pMixxx->grabKeyboard();
 }
 
+void DlgPreferences::slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled)
+{
+    QTreeWidgetItem * midiBindingsButton = m_midiBindingsButtons.at(wmidiBindingsForDevice.indexOf(dialog));
+    QFont temp = midiBindingsButton->font(0);
+    if (enabled) temp.setBold(true);
+    else temp.setBold(false);
+    midiBindingsButton->setFont(0,temp);
+}
