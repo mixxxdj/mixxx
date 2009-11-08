@@ -19,16 +19,23 @@
 #define ENGINEBUFFERSCALELINEAR_H
 
 #include "enginebufferscale.h"
+#include "readaheadmanager.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
+
+/** Number of samples to read ahead */
+const int kiLinearScaleReadAheadLength = 10240;
+
+
 class EngineBufferScaleLinear : public EngineBufferScale  {
 public:
-    EngineBufferScaleLinear(ReaderExtractWave *wave);
+    EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
     ~EngineBufferScaleLinear();
-    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase, unsigned long iBaseLength);
+    CSAMPLE *scale(double playpos, unsigned long buf_size, 
+                   CSAMPLE* pBase, unsigned long iBaseLength);
     void setBaseRate(double dBaseRate);
     double setTempo(double dTempo);
     void clear();
@@ -41,6 +48,12 @@ private:
                                     between the old one and the new one to avoid any discontinuities
                                     in the audio when you change the playback rate */
     float m_fOldBaseRate;       /** Same as old tempo, but for the base playback rate */
+    
+    /** Buffer for handling calls to ReadAheadManager */
+    CSAMPLE *buffer_int;
+    CSAMPLE m_fPreviousL, m_fPreviousR;
+    // The read-ahead manager that we use to fetch samples
+    ReadAheadManager* m_pReadAheadManager;
 };
 
 #endif

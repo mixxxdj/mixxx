@@ -1,0 +1,35 @@
+--- libplatform/io/File_win32.cpp.orig  Sat Mar  7 22:51:22 2009
++++ libplatform/io/File_win32.cpp       Sat Mar  7 22:51:30 2009
+@@ -1,5 +1,8 @@
+ #include "libplatform/impl.h"
+ #include <io.h>
++#ifdef __MINGW32__
++#include <stdio.h>
++#endif
+ 
+ namespace mp4v2 { namespace platform { namespace io {
+ 
+@@ -8,7 +11,11 @@
+ bool
+ StdioFile::getPosition( Size& pos_ )
+ {
++#ifdef __MINGW32__
++    pos_ = ftello64( _handle );
++#else
+     pos_ = _ftelli64( _handle );
++#endif
+     return pos_ == -1;
+ }
+ 
+@@ -29,7 +36,11 @@
+ bool
+ StdioFile::setPosition( Size pos_ )
+ {
++#ifdef __MINGW32__
++    return fseeko64( _handle, pos_, SEEK_SET ) != 0;
++#else
+     return _fseeki64( _handle, pos_, SEEK_SET ) != 0;
++#endif
+ }
+ 
+ ///////////////////////////////////////////////////////////////////////////////

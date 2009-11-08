@@ -13,7 +13,7 @@
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
-#include "bpm/bpmdetector.h"
+// #include "bpm/bpmdetector.h"
 #include <qfileinfo.h>
 #include <QtDebug>
 #include "defs.h"

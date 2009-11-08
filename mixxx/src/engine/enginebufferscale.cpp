@@ -16,13 +16,9 @@
 ***************************************************************************/
 
 #include "enginebufferscale.h"
-#include "readerextractwave.h"
 
-EngineBufferScale::EngineBufferScale(ReaderExtractWave * _wave)
+EngineBufferScale::EngineBufferScale()
 {
-    wave = _wave;
-    wavebuffer = (CSAMPLE *)wave->getBasePtr();
-
     m_dTempo = 1.;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
     new_playpos = 0;

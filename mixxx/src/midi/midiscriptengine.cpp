@@ -530,7 +530,13 @@ void MidiScriptEngine::slotValueChanged(double value) {
         QScriptValue function_value = m_pEngine->evaluate(function);
         QScriptValueList args;
         args << QScriptValue(m_pEngine, value);
-        function_value.call(QScriptValue(), args);
+//         function_value.call(QScriptValue(), args);
+        args << QScriptValue(m_pEngine, key.group); // Added by Math`
+        args << QScriptValue(m_pEngine, key.item);  // Added by Math`
+        QScriptValue result = function_value.call(QScriptValue(), args);
+        if (result.isError()) {
+            qDebug()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+        }
         
     } else {
         qDebug() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";

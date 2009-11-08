@@ -17,15 +17,16 @@
 #ifndef SOUNDSOURCEM4A_H
 #define SOUNDSOURCEM4A_H
 
-#include <qstring.h>
-#include "soundsource.h"
-#include "mp4.h"
+#include <mp4.h>
+#include <neaacdec.h>
 
-#include "neaacdec.h"
+#include <QString>
+
+#include "soundsource.h"
+
 #include "m4a/ip.h"
 
 class TrackInfoObject;
-
 
 class SoundSourceM4A : public SoundSource {
  public:
@@ -38,10 +39,8 @@ class SoundSourceM4A : public SoundSource {
  private:
   int channels;
   int trackId;
-  unsigned long sampleSize;
   unsigned long filelength;
   MP4FileHandle mp4file;
-
   input_plugin_data ipd;
 };
 
