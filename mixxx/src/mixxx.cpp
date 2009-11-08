@@ -1092,7 +1092,7 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>").arg(VERSION);
+"</p>";
 
 
     about->textBrowser->setHtml(credits);
