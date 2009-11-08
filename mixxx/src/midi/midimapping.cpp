@@ -721,8 +721,9 @@ void MidiMapping::clearPreset() {
  * Updates the DOM with what is currently in the table
  */
  QDomDocument MidiMapping::buildDomElement() {
-    // We should hold the mapping lock.
-    Q_ASSERT(!m_mappingLock.tryLock());
+     // We should hold the mapping lock. The lock is recursive so if we already
+     // hold it it will relock.
+     m_mappingLock.lock();
 
     clearPreset(); // Create blank document
 
@@ -804,6 +805,8 @@ void MidiMapping::clearPreset() {
         //Add the control node we just created to the XML document in the proper spot
         outputs.appendChild(outputNode);
     }
+
+    m_mappingLock.unlock();
 
     return doc;
 }
