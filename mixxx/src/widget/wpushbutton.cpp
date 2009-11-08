@@ -195,7 +195,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
     {
         m_fValue = (int)(m_fValue+1.)%m_iNoStates;
     }
-
+    
     if (e->button()==Qt::LeftButton)
         emit(valueChangedLeftDown((double)m_fValue));
     else if (e->button()==Qt::RightButton)
@@ -216,7 +216,6 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e)
         else
             m_fValue = 0.;
     }
-
 
     if (e->button()==Qt::LeftButton)
         emit(valueChangedLeftUp((double)m_fValue));
