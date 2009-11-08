@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import SCons
@@ -216,7 +217,6 @@ vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fogs 
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 1)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
@@ -468,18 +468,6 @@ elif platform == 'osx':
 #if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
 conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
 
-#PortMidi backend support
-flags_portmidi = getFlags(env, 'portmidi', 0)
-if int(flags_portmidi):
-	if not conf.CheckLib(['portmidi', 'libportmidi']):
-		print "Did not find portmidi or it\'s development headers, exiting!"
-		Exit(1)
-	#if not conf.CheckLib(['porttime', 'libporttime']):
-	#	print "Did not find porttime or it\'s development headers, exiting!"
-	#	Exit(1)
-	sources += Split("""midiobjectportmidi.cpp """);
-	env.Append(CPPDEFINES = '__PORTMIDI__')
-
 #TODO: Add all of the other configure checks as custom_tests properly.
 
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
@@ -557,7 +545,7 @@ if not conf.CheckLib(['porttime', 'libporttime']):
 	Exit(1)
 
 #Check for PortMIDI
-if not conf.CheckLib('portmidi'):
+if not conf.CheckLib(['portmidi', 'libportmidi']):
 	print "Did not find PortMidi or it\'s development headers, exiting!"
 	Exit(1)
 
