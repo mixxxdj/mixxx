@@ -45,7 +45,9 @@ Q_OBJECT
     void removeTrack(int id);
     TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
     TrackInfoObject *getTrack(int id) const;
-    
+    void markTrackLocationAsVerified(QString location);
+    void invalidateTrackLocations(QString directory);
+    void markUnverifiedTracksAsDeleted();
   public slots:
     void updateTrackInDatabase(TrackInfoObject* pTrack);
   private:
@@ -61,8 +63,8 @@ Q_OBJECT
          -- Albert Nov 1/2009
      */          
     
-    QSqlDatabase m_database;
-    CueDAO m_cueDao;
+    QSqlDatabase &m_database;
+    CueDAO &m_cueDao;
     
 };
 

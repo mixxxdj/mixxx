@@ -42,8 +42,9 @@ class TrackCollection : public QObject
     bool checkForTables();
     
     /** Import the files in a given diretory, without recursing into subdirectories */
-    void importDirectory(QString directory);
+    bool importDirectory(QString directory, TrackDAO &trackDao);
 
+    void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
 
     CrateDAO& getCrateDAO();

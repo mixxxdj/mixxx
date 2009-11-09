@@ -21,6 +21,9 @@
 
 #include <QThread>
 #include <QtCore>
+#include "library/dao/libraryhashdao.h"
+#include "library/dao/trackdao.h"
+#include "library/dao/cuedao.h"
 #include "trackcollection.h"
 #include "libraryscannerdlg.h"
 
@@ -31,17 +34,22 @@ class LibraryScanner : public QThread
     public:
         LibraryScanner();
         LibraryScanner(TrackCollection* collection);
-        ~LibraryScanner();
+        virtual ~LibraryScanner();
         void run();
         void scan(QString libraryPath);
         void scan();
-        void recursiveScan(QString dirPath);
+        bool recursiveScan(QString dirPath);
     signals:
         void scanFinished();
     private:
         TrackCollection* m_pCollection;      //The library trackcollection
         QString m_qLibraryPath;               //The path to the library on disk
         LibraryScannerDlg* m_pProgress;       //The library scanning window
+        LibraryHashDAO m_libraryHashDao;
+        TrackDAO m_trackDao;
+        CueDAO m_cueDao;
+        QSqlDatabase m_database;            /**Hang on to a different DB connection  
+                                               since we run in a different thread */ 
 };
 
 #endif

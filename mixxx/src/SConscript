@@ -382,6 +382,7 @@ sources = Split("""
                 library/trackcollection.cpp
                 library/librarytablemodel.cpp
                 library/browsetablemodel.cpp
+                library/missingtablemodel.cpp
                 library/proxytrackmodel.cpp
                 library/abstractxmltrackmodel.cpp
                 library/rhythmboxtrackmodel.cpp
@@ -407,6 +408,7 @@ sources = Split("""
                 library/dao/cue.cpp
                 library/dao/trackdao.cpp
                 library/dao/playlistdao.cpp
+                library/dao/libraryhashdao.cpp
 
 
                 xmlparse.cpp
