@@ -6,15 +6,25 @@
 #include "library/mixxxlibraryfeature.h"
 
 #include "library/librarytablemodel.h"
+#include "library/missingtablemodel.h"
 #include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
+
+#define CHILD_MISSING tr("Missing Songs")
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
     : LibraryFeature(parent),
       m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
-      m_pLibraryTableModelProxy(new ProxyTrackModel(m_pLibraryTableModel, false)) {
+      m_pLibraryTableModelProxy(new ProxyTrackModel(m_pLibraryTableModel, false)),
+      m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)),
+      m_pMissingTableModelProxy(new ProxyTrackModel(m_pMissingTableModel, false)) {
     m_pLibraryTableModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_pMissingTableModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+    QStringList children;
+    children << CHILD_MISSING; //Insert michael jackson joke here
+    m_childModel.setStringList(children);
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
@@ -40,7 +50,9 @@ void MixxxLibraryFeature::activate() {
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
-
+    QString itemName = index.data().toString();
+    if (itemName == CHILD_MISSING) //lulz!
+        emit(showTrackModel(m_pMissingTableModelProxy));
 }
 
 void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {

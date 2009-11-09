@@ -50,6 +50,8 @@ Library::~Library() {
         features_it.remove();
         delete feature;
     }
+
+    delete m_pTrackCollection;
 }
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,

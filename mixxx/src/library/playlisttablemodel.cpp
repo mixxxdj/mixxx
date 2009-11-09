@@ -27,6 +27,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
 
+    QSqlDatabase::database().transaction();
     QSqlQuery query;
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
@@ -61,6 +62,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
+    QSqlDatabase::database().commit();
 
     //qDebug() << query.executedQuery();
 

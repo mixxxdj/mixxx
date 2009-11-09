@@ -19,7 +19,7 @@ TrackDAO::~TrackDAO()
 void TrackDAO::initialize()
 {
     //Start the transaction
-    QSqlDatabase::database().transaction();
+    m_database.transaction();
     
     //TODO: Check if the table exists...
     //      If it doesn't exist, create it.
@@ -27,7 +27,9 @@ void TrackDAO::initialize()
     query.exec("CREATE TABLE track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "location varchar(512) UNIQUE, "
                "filename varchar(512), "
-               "fs_deleted INTEGER)");
+               "directory varchar(512), "
+               "fs_deleted INTEGER, "
+               "needs_verification INTEGER)");
 
 
  	//Little bobby tables
@@ -35,7 +37,7 @@ void TrackDAO::initialize()
                "artist varchar(48), title varchar(48), "
                "album varchar(48), year varchar(16), "
                "genre varchar(32), tracknumber varchar(3), "
-               "location varchar(512) REFERENCES TrackLocations(location), "
+               "location varchar(512) REFERENCES track_locations(location), "
                "comment varchar(20), url varchar(256), "
                "duration integer, length_in_bytes integer, "
                "bitrate integer, samplerate integer, "
@@ -44,7 +46,7 @@ void TrackDAO::initialize()
                "channels integer, "
                "mixxx_deleted integer)");
     
-    QSqlDatabase::database().commit();
+    m_database.commit();
 }
 
 /** Retrieve the track id for the track that's located at "location" on disk.
@@ -54,7 +56,7 @@ void TrackDAO::initialize()
 int TrackDAO::getTrackId(QString location)
 {
     //Start the transaction
-    QSqlDatabase::database().transaction();
+    m_database.transaction();
 
     QSqlQuery query;
     //Get the id of the track location, so we can get the Library table's track entry.
@@ -74,7 +76,7 @@ int TrackDAO::getTrackId(QString location)
     }
     //Q_ASSERT(libraryTrackId >= 0);
 
-    QSqlDatabase::database().commit();
+    m_database.commit();
 
     return libraryTrackId;
 }
@@ -129,18 +131,20 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
 
     //Start the transaction
-    QSqlDatabase::database().transaction();
+    m_database.transaction();
 
  	QSqlQuery query;
  	int trackLocationId = -1;
 
     //Insert the track location into the corresponding table. This will fail silently
     //if the location is already in the table because it has a UNIQUE constraint.
-    query.prepare("INSERT INTO track_locations (location, filename, fs_deleted) "
-                  "VALUES (:location, :filename, :fs_deleted)");
+    query.prepare("INSERT INTO track_locations (location, directory, filename, fs_deleted, needs_verification) "
+                  "VALUES (:location, :directory, :filename, :fs_deleted, :needs_verification)");
     query.bindValue(":location", pTrack->getLocation());
+    query.bindValue(":directory", QFileInfo(pTrack->getLocation()).path());
     query.bindValue(":filename", pTrack->getFilename());
     query.bindValue(":fs_deleted", 0);
+    query.bindValue(":needs_verification", 0);
     query.exec();
 
  	//Print out any SQL error, if there was one.
@@ -224,7 +228,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.exec();
 
     //Commit the transaction
-    QSqlDatabase::database().commit();
+    m_database.commit();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
@@ -402,3 +406,54 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
 }
 
 
+void TrackDAO::invalidateTrackLocations(QString directory)
+{
+    //qDebug() << "invalidateTrackLocations(" << directory << ")";
+    m_database.transaction();
+    
+    QSqlQuery query;
+    query.prepare("UPDATE track_locations "
+                  "SET needs_verification=1 "
+                  "WHERE directory=:directory");
+    query.bindValue(":directory", directory);
+    if (!query.exec()) {
+        qDebug() << "Couldn't mark tracks in directory" << directory <<  "as needing verification." << query.lastError();
+    }
+
+    m_database.commit();
+}
+
+void TrackDAO::markTrackLocationAsVerified(QString location)
+{
+    //qDebug() << "markTrackLocationAsVerified()" << location;
+    m_database.transaction();
+    
+    QSqlQuery query;
+    query.prepare("UPDATE track_locations "
+                  "SET needs_verification=0 "
+                  "WHERE location=:location"); 
+    query.bindValue(":location", location);
+    if (!query.exec()) {
+        qDebug() << "Couldn't mark track" << location << " as verified." << query.lastError();
+    }
+
+    m_database.commit();
+
+}
+
+void TrackDAO::markUnverifiedTracksAsDeleted()
+{
+    //qDebug() << "markUnverifiedTracksAsDeleted()";
+    m_database.transaction();
+    
+    QSqlQuery query;
+    query.prepare("UPDATE track_locations "
+                  "SET fs_deleted=1 "
+                  "WHERE needs_verification=1");
+    if (!query.exec()) {
+        qDebug() << "Couldn't mark unverified tracks as deleted." << query.lastError();
+    }
+
+    m_database.commit();
+
+}

@@ -35,7 +35,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
 WTrackTableView::~WTrackTableView()
 {
-    m_searchThread.stop();
     delete m_pPlayQueueAct;
     delete m_pPlayer1Act;
     delete m_pPlayer2Act;

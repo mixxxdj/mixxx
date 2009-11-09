@@ -67,22 +67,30 @@ QSqlDatabase& TrackCollection::getDatabase()
   }
 
 
-/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories. */
-void TrackCollection::importDirectory(QString directory)
+/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories. 
+    @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
+    @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
+*/
+bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
 {
- 	//qDebug() << "TrackCollection::scanPath(" << path << ")";
+ 	qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
     bCancelLibraryScan = false; //Reset the flag
 
     emit(startedLoading());
  	QFileInfoList files;
 
- 	//Check to make sure the path exists.
+    //Mark all the tracks in the library that we think are in this directory as needing 
+    //verification of their existance...
+    //(ie. we want to check they're still on your hard drive where we think they are)
+    trackDao.invalidateTrackLocations(directory); 
+ 	
+    //Check to make sure the path exists.
  	QDir dir(directory);
  	if (dir.exists()) {
  		files = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
  	} else {
  		qDebug() << "Error: Import path does not exist." << directory;
- 		return;
+ 		return true;
  	}
 
  	//The directory exists, so get a list of the contents of the directory and go through it.
@@ -96,12 +104,14 @@ void TrackCollection::importDirectory(QString directory)
         m_libraryScanMutex.unlock();
         if (cancel == true)
         {
-            return;
+            return false;
         }
 
         if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
+            trackDao.markTrackLocationAsVerified(file.absoluteFilePath());
+            
             //If the file already exists in the database, continue and go on to the next file.
-            if (m_trackDao.trackExistsInDatabase(file.absoluteFilePath()))
+            if (trackDao.trackExistsInDatabase(file.absoluteFilePath()))
             {
                 continue;
                 //Note that by checking if the track _exists_ in the DB, we also prevent Mixxx from
@@ -117,7 +127,7 @@ void TrackCollection::importDirectory(QString directory)
             TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
             if (pTrack) {
                 //Add the song to the database.
-                m_trackDao.addTrack(pTrack);
+                trackDao.addTrack(pTrack);
                 delete pTrack;
             }
         } else {
@@ -128,7 +138,7 @@ void TrackCollection::importDirectory(QString directory)
 
     }
     emit(finishedLoading());
-
+    return true;
 }
 
 
@@ -138,7 +148,14 @@ void TrackCollection::slotCancelLibraryScan()
     m_libraryScanMutex.lock();
  	bCancelLibraryScan = 1;
     m_libraryScanMutex.unlock();
-  }
+}
+
+void TrackCollection::resetLibaryCancellation()
+{
+    m_libraryScanMutex.lock();
+ 	bCancelLibraryScan = 0;
+    m_libraryScanMutex.unlock();
+}
 
 CrateDAO& TrackCollection::getCrateDAO() {
     return m_crateDao;
