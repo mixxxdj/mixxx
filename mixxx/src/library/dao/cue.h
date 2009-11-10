@@ -41,8 +41,8 @@ class Cue : public QObject {
     int getHotCue();
     void setHotCue(int hotCue);
 
-    const QString& getLabel();
-    void setLabel(const QString& label);
+    const QString getLabel();
+    void setLabel(const QString label);
 
   signals:
     void updated();
