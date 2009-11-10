@@ -46,7 +46,7 @@ QAbstractItemModel* MixxxLibraryFeature::getChildModel() {
 
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
-    emit(showTrackModel(m_pLibraryTableModelProxy));
+    emit(showTrackModel(m_pLibraryTableModel));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
