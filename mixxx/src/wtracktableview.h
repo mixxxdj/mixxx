@@ -34,6 +34,7 @@ private slots:
     void slotLoadPlayer1();
     void slotLoadPlayer2();
     void slotRemove();
+    void slotShowTrackInfo();
 signals:
     void loadTrack(TrackInfoObject* pTrack);
     void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
