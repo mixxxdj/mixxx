@@ -84,7 +84,11 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QComboBox" name="comboBoxOutputDevice"/>
+       <widget class="QComboBox" name="comboBoxOutputDevice">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="2" column="1">
        <widget class="QLabel" name="label_2">
@@ -211,8 +215,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>580</width>
-        <height>252</height>
+        <width>317</width>
+        <height>174</height>
        </rect>
       </property>
       <attribute name="label">

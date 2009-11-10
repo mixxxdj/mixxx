@@ -42,7 +42,6 @@ Q_OBJECT
         bool isOpen() { return m_bIsOpen; };
         bool isOutputDevice() { return m_bIsOutputDevice; };
         bool isInputDevice() { return m_bIsInputDevice; };
-        void setOutputDevice(MidiDevice* outputDevice); 
         QString getName() { return m_strDeviceName; };
         void setMidiMapping(MidiMapping* mapping);
         MidiMapping* getMidiMapping() { return m_pMidiMapping; };

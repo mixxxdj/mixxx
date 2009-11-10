@@ -147,6 +147,12 @@ void DlgPrefMidiBindings::enumerateOutputDevices()
         //qDebug() << "curDeviceName: " << curDeviceName;
         comboBoxOutputDevice->addItem(curDeviceName);
       }    
+    
+    //Assume autopairing was done and let's just show the output device combobox with the name
+    //of the input device selected for now...
+    QString currentOutputMidiDeviceName = m_pMidiDevice->getName();
+    comboBoxOutputDevice->setCurrentIndex(comboBoxOutputDevice->findText(currentOutputMidiDeviceName));
+
 }
 
 void DlgPrefMidiBindings::enumeratePresets()
@@ -211,8 +217,12 @@ void DlgPrefMidiBindings::slotApply() {
         enableDevice();
         m_pMidiDevice->getMidiMapping()->applyPreset();
     
+        //FIXME: We need some logic like this to make changing the output device work. 
+        //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
+        /*
         if (comboBoxOutputDevice->currentText() != MIXXX_TEXT_NO_OUTPUT_DEVICE)
             m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
+        */
     }
     else disableDevice();
 }
