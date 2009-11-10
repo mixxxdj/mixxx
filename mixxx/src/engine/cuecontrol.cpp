@@ -154,6 +154,7 @@ void CueControl::detachCue(int hotCue) {
 }
 
 void CueControl::loadTrack(TrackInfoObject* pTrack) {
+    qDebug() << "CueControl::loadTrack";
     Q_ASSERT(pTrack);
 
     QMutexLocker lock(&m_mutex);
@@ -243,6 +244,8 @@ int CueControl::senderHotcue(QObject* pSender) {
 }
 
 void CueControl::hotcueSet(double v) {
+    qDebug() << "CueControl::hotcueSet" << v;
+
     if (v != 1.0)
         return;
 
@@ -255,6 +258,8 @@ void CueControl::hotcueSet(double v) {
     Cue* pCue = m_pLoadedTrack->addCue();
     pCue->setPosition(getCurrentSample());
     pCue->setHotCue(hotcue);
+    pCue->setLabel("");
+    pCue->setType(Cue::CUE);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
 }
@@ -297,10 +302,13 @@ void CueControl::hotcueGotoAndStop(double v) {
 }
 
 void CueControl::hotcueActivate(double v) {
+    qDebug() << "CueControl::hotcueActivate" << v;
+
     if (v != 1.0)
         return;
 
     QMutexLocker lock(&m_mutex);
+
     if (!m_pLoadedTrack)
         return;
 
@@ -313,6 +321,8 @@ void CueControl::hotcueActivate(double v) {
         } else {
             hotcueGoto(v);
         }
+    } else {
+        hotcueSet(v);
     }
 }
 
