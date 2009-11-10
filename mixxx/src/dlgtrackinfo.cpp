@@ -11,6 +11,8 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
 
     setupUi(this);
 
+    cueTable->hideColumn(0);
+
     connect(btnNext, SIGNAL(clicked()),
             this, SLOT(slotNext()));
     connect(btnPrev, SIGNAL(clicked()),
@@ -18,7 +20,7 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
     connect(btnApply, SIGNAL(clicked()),
             this, SLOT(apply()));
     connect(btnCancel, SIGNAL(clicked()),
-            this, SLOT(reject()));
+            this, SLOT(cancel()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
@@ -35,6 +37,12 @@ DlgTrackInfo::~DlgTrackInfo() {
 void DlgTrackInfo::apply() {
     unloadTrack(m_pLoadedTrack);
     accept();
+    delete this;
+}
+
+void DlgTrackInfo::cancel() {
+    reject();
+    delete this;
 }
 
 void DlgTrackInfo::trackUpdated() {
@@ -72,6 +80,8 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
     txtFilepath->setCursorPosition(0);
     txtType->setText(m_pLoadedTrack->getType());
 
+    int sampleRate = m_pLoadedTrack->getSampleRate();
+
     QList<Cue*> listPoints;
     const QList<Cue*>& cuePoints = m_pLoadedTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
@@ -89,9 +99,22 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
         Cue* pCue = it.next();
         QString id = QString("%1").arg(pCue->getId());
         QString hotcue = QString("%1").arg(pCue->getHotCue());
+
+        int position = pCue->getPosition();
+        double seconds;
+        if (position == -1)
+            seconds = -1;
+        else {
+            seconds = position / sampleRate;
+        }
+        QString duration = QString("%1").arg(seconds);
+        QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
+        // Make the duration read only
+        durationItem.setFlags(Qt::NoItemFlags);
         cueTable->setItem(row, 0, new QTableWidgetItem(id));
-        cueTable->setItem(row, 1, new QTableWidgetItem(hotcue));
-        cueTable->setItem(row, 2, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setItem(row, 1, durationItem);
+        cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
+        cueTable->setItem(row, 3, new QTableWidgetItem(pCue->getLabel()));
     }
     cueTable->setSortingEnabled(true);
 }
