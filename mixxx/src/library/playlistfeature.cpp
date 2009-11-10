@@ -17,8 +17,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
           m_playlistTableModel(this, pTrackCollection->getDatabase()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
-       
-    
+
+
     m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection);
     m_pPlaylistModelProxy = new ProxyTrackModel(m_pPlaylistTableModel, false);
     m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -77,7 +77,7 @@ void PlaylistFeature::activateChild(const QModelIndex& index) {
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     m_pPlaylistTableModel->setPlaylist(playlistId);
-    emit(showTrackModel(m_pPlaylistModelProxy));
+    emit(showTrackModel(m_pPlaylistTableModel));
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -139,7 +139,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
-    
+
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
     QString location = url.toLocalFile();
@@ -151,7 +151,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     int trackId = m_trackDao.getTrackId(location);
 
     m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
-    
+
     return true;
 }
 
