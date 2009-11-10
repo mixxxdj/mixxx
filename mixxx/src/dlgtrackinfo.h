@@ -30,6 +30,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotNext();
     void slotPrev();
     void apply();
+    void cancel();
     void trackUpdated();
 
     void cueActivate();

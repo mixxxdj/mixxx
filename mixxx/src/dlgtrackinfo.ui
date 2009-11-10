@@ -46,7 +46,7 @@
       <enum>QFrame::Plain</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pgTrack">
       <property name="geometry">
@@ -146,8 +146,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>375</width>
-        <height>321</height>
+        <width>360</width>
+        <height>351</height>
        </rect>
       </property>
       <attribute name="label">
@@ -159,6 +159,11 @@
          <column>
           <property name="text">
            <string>Cue Id</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Position</string>
           </property>
          </column>
          <column>
