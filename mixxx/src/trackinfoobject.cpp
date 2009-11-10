@@ -956,6 +956,7 @@ void TrackInfoObject::slotCueUpdated() {
 }
 
 Cue* TrackInfoObject::addCue() {
+    qDebug() << "TrackInfoObject::addCue()";
     QMutexLocker lock(&m_qMutex);
     // TODO(XXX) when TIO's know their own id, replace -1 here.
     Cue* cue = new Cue(-1);
@@ -980,6 +981,7 @@ const QList<Cue*>& TrackInfoObject::getCuePoints() {
 }
 
 void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
+    qDebug() << "setCuePoints" << cuePoints.length();
     QMutexLocker lock(&m_qMutex);
     QListIterator<Cue*> it(m_cuePoints);
     while (it.hasNext()) {
