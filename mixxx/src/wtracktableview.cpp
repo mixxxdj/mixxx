@@ -9,6 +9,7 @@
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "wtracktableview.h"
+#include "dlgtrackinfo.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig)
@@ -105,8 +106,8 @@ void WTrackTableView::createActions()
     m_pRemoveAct = new QAction(tr("Remove"),this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
- 	m_pPropertiesAct = new QAction(tr("Properties..."), this);
- 	//connect(m_pPropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
+    m_pPropertiesAct = new QAction(tr("Properties..."), this);
+    connect(m_pPropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowTrackInfo()));
 
     m_pPlayQueueAct = new QAction(tr("Add to Play Queue"),this);
     //connect(m_pPlayQueueAct, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
@@ -180,6 +181,21 @@ void WTrackTableView::slotRemove()
     }
 }
 
+void WTrackTableView::slotShowTrackInfo() {
+    if (m_selectedIndices.size() == 0)
+        return;
+
+    TrackModel* trackModel = getTrackModel();
+
+    if (!trackModel)
+        return;
+
+    TrackInfoObject* pTrack = trackModel->getTrack(m_selectedIndices[0]);
+    DlgTrackInfo* info = new DlgTrackInfo(this);
+    info->loadTrack(pTrack);
+    info->show();
+}
+
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
     //Get the indices of the selected rows.
@@ -208,6 +224,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     menu.addAction(m_pPlayer2Act);
     menu.addSeparator();
     menu.addAction(m_pRemoveAct);
+    menu.addAction(m_pPropertiesAct);
     menu.exec(event->globalPos());
 }
 
