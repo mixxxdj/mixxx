@@ -86,17 +86,6 @@ void MidiDevice::setMidiMapping(MidiMapping* mapping)
     }
 }
 
-void MidiDevice::setOutputDevice(MidiDevice* outputDevice)
-{
-    Q_ASSERT(this->isInputDevice()); //The object we're in should support input.
-    Q_ASSERT(outputDevice->isOutputDevice());
-    
-    m_pCorrespondingOutputDevice = outputDevice;
-    // This IF avoids endless recursion if the input and output are the same MidiDevice
-    if (outputDevice != this) m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
-}
-
-
 void MidiDevice::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;

@@ -270,41 +270,15 @@ QStringList MidiDeviceManager::getConfigList(QString path)
     return configs;
 }
 
-/*
-void MidiDeviceManager::enableMidiLearn(DlgPrefMidiBindings *listener)
-{
-    MidiLearningProcessor* proc = new MidiLearningProcessor();
-    //Save the old MIDI processor so we can restore it when MIDI learn is disabled again.
-    m_pTempControlProc = m_pPrimaryMidiDevice->getMidiProcessor(); 
-    m_pPrimaryMidiDevice->setMidiProcessor(proc); //MidiDevice will delete proc when it's done, so no memory leak. 
-    
-    connect(proc, SIGNAL(midiEvent(ConfigValueMidi *, QString)), listener, SLOT(singleLearn(ConfigValueMidi *, QString)));
-    connect(proc, SIGNAL(midiEvent(ConfigValueMidi *, QString)), listener, SLOT(groupLearn(ConfigValueMidi *, QString)));
-    
-}
-
-void MidiDeviceManager::disableMidiLearn()
-{
-    //If there's no primary MIDI device, just return for safety.
-    if (!m_pPrimaryMidiDevice)
-        return;
-    
-    //Get the midi processor from the primary midi device, and see if it's a MidiLearningProcessor...
-    MidiLearningProcessor* learn = dynamic_cast<MidiLearningProcessor*>(m_pPrimaryMidiDevice->getMidiProcessor());
-    //If the midi processor wasn't a MidiLearningProcessor, then we don't want to do anything. Eg. this happens
-    //if disableMidiLearn() gets called when MIDI learn is already disabled.
-    if (!learn)
-        return;
-        
-    delete learn;
-    //Restore the old MIDI processor (re-enables the MIDI mapping).
-    m_pPrimaryMidiDevice->setMidiProcessor(m_pTempControlProc);
-    m_pTempControlProc = NULL;
-}
-*/
 
 void MidiDeviceManager::associateInputAndOutputDevices(MidiDevice* inputDevice, QString outputDeviceName)
 {
+    //TODO: This function needs to be updated to work with our "aggregate" input/ouput MidiDevice class
+    //      or just simply removed all together. I just sent out a mixxx-devel email with more history
+    //      on this, check the archive if you need more info. -- Albert Nov 9/09 (1.8 CRUNCH TIME!)
+    //      
+
+/*
     //Find the output MidiDevice object that corresponds to outputDeviceName.
     QListIterator<MidiDevice*> dev_it(m_devices);
     MidiDevice* outputDevice = NULL;
@@ -321,4 +295,5 @@ void MidiDeviceManager::associateInputAndOutputDevices(MidiDevice* inputDevice, 
     
     //Tell the input device that it's corresponding output device is... outputDevice.
     inputDevice->setOutputDevice(outputDevice);    
+    */
 }
