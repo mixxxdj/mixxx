@@ -24,16 +24,20 @@ void TrackDAO::initialize()
     //TODO: Check if the table exists...
     //      If it doesn't exist, create it.
  	QSqlQuery query;
-    query.exec("CREATE TABLE track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "location varchar(512) UNIQUE, "
-               "filename varchar(512), "
-               "directory varchar(512), "
-               "fs_deleted INTEGER, "
-               "needs_verification INTEGER)");
+    if (!query.exec("CREATE TABLE IF NOT EXISTS track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    "location varchar(512) UNIQUE, "
+                    "filename varchar(512), "
+                    "directory varchar(512), "
+                    "fs_deleted INTEGER, "
+                    "needs_verification INTEGER)"))
+    {
+        qDebug() << "Invalid track_locations schema, d'oh!" << __FILE__ << __LINE__;
+        exit(-1);
+    }
 
 
  	//Little bobby tables
-    query.exec("CREATE TABLE library (id INTEGER primary key AUTOINCREMENT, "
+    if (!query.exec("CREATE TABLE IF NOT EXISTS library (id INTEGER primary key AUTOINCREMENT, "
                "artist varchar(48), title varchar(48), "
                "album varchar(48), year varchar(16), "
                "genre varchar(32), tracknumber varchar(3), "
@@ -44,7 +48,12 @@ void TrackDAO::initialize()
                "cuepoint integer, bpm float, "
                "wavesummaryhex blob, "
                "channels integer, "
-               "mixxx_deleted integer)");
+               "datetime_added DEFAULT CURRENT_TIMESTAMP, "
+               "mixxx_deleted integer)"))
+    {
+        qDebug() << "Invalid library schema, d'oh!" << __FILE__ << __LINE__;
+        exit(-1);
+    }
     
     m_database.commit();
 }
@@ -197,10 +206,15 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":bpm", pTrack->getBpm());
     query.bindValue(":wavesummaryhex", *(pTrack->getWaveSummary()));
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
+    //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":mixxx_deleted", 0);
 
-    query.exec();
+    if (!query.exec())
+    {
+        qDebug() << "Failed to INSERT new track into library" << __FILE__ << __LINE__ << query.lastError();
+        return;
+    }
 
     query.prepare("SELECT id from library WHERE location = :location_id");
     query.bindValue(":location_id", trackLocationId);
@@ -307,7 +321,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setSampleRate(samplerate);
         track->setCuePoint((float)cuepoint);
         track->setBpm(bpm.toFloat());
-        track->setWaveSummary(wavesummaryhex, NULL, false);
+        track->setWaveSummary(wavesummaryhex, false);
         //track->setTimesPlayed //Doesn't exist wtfbbq
         track->setChannels(channels);
 
