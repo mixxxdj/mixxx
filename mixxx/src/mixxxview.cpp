@@ -701,7 +701,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     if (m_pOverviewCh1 == 0) {
-                        m_pOverviewCh1 = new WOverview(this);
+                        m_pOverviewCh1 = new WOverview("[Channel1]", this);
                         //m_qWidgetList.append(m_pOverviewCh1);
 
                     }
@@ -711,7 +711,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
                     if (m_pOverviewCh2 == 0) {
-                        m_pOverviewCh2 = new WOverview(this);
+                        m_pOverviewCh2 = new WOverview("[Channel2]", this);
                         //m_qWidgetList.append(m_pOverviewCh2);
                     }
                     m_pOverviewCh2->setup(node);

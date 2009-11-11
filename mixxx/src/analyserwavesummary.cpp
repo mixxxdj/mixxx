@@ -28,7 +28,7 @@ void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int t
     m_pData = new QByteArray(kiSummaryBufferSize, 0);
 
     // The stride length is the number of samples that correspond
-    // to one "line" (3 entries) in the data buffer. 
+    // to one "line" (3 entries) in the data buffer.
     m_iStrideLength = (int)ceilf((float)totalSamples/((float)kiSummaryBufferSize/3.));
     if(m_iStrideLength%2 != 0)
         m_iStrideLength--;
@@ -45,15 +45,15 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
         return;
 
     //qDebug() << "AnalyserWavesummary::process() processing " << iLen << " samples";
-    
+
     for(int i=0; i<iLen; i++) {
         if(m_iBufferPos >= m_iStrideLength) {
-            
+
             (*m_pData)[m_iCurPos] = (char)(m_fMin*127);
             (*m_pData)[m_iCurPos+1] = (char)(m_fMax*127);
             (*m_pData)[m_iCurPos+2] = 0;
             m_iCurPos += 3;
-            
+
             m_iBufferPos = 0;
             m_fMax = -1.0f;
             m_fMin = 1.0f;
@@ -72,7 +72,7 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
 void AnalyserWavesummary::finalise(TrackInfoObject *tio) {
     if(m_pData == NULL)
         return;
-    tio->setWaveSummary(m_pData, 0, true);
+    tio->setWaveSummary(m_pData, true);
     m_pData = NULL;
     qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
 }

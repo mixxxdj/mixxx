@@ -187,12 +187,11 @@ public:
     double getVisualResampleRate();
 
     /** Set pointer to waveform summary -- updates UI by default */
-    void setWaveSummary(QByteArray* pWave, Q3ValueList<long> *pSegmentation, bool updateUI = true);
+    void setWaveSummary(QByteArray* pWave, bool updateUI = true);
 
     /** Returns a pointer to waveform summary */
     QByteArray* getWaveSummary();
-    /** Returns a pointer to segmentation summary */
-    Q3ValueList<long> *getSegmentationSummary();
+
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
     /** Set pointer to ControlObject holding duration value in engine */
@@ -298,8 +297,6 @@ public:
     QVector<float> *m_pVisualWave;
     /** Wave summary info */
     QByteArray* m_pWave;
-    /** Pointer to summary segmentation */
-    Q3ValueList<long> *m_pSegmentation;
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     //WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
     //                *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;

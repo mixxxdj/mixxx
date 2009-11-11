@@ -4,6 +4,7 @@
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
+#include "library/dao/cue.h"
 #include "trackinfoobject.h"
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
@@ -95,8 +96,11 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
     cueTable->setRowCount(listPoints.size());
     cueTable->setSortingEnabled(false);
     int row = 0;
+
     while (it.hasNext()) {
         Cue* pCue = it.next();
+        m_cueList.push_back(pCue);
+
         QString id = QString("%1").arg(pCue->getId());
         QString hotcue = QString("%1").arg(pCue->getHotCue());
 
@@ -110,7 +114,7 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
         QString duration = QString("%1").arg(seconds);
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only
-        durationItem.setFlags(Qt::NoItemFlags);
+        durationItem->setFlags(Qt::NoItemFlags);
         cueTable->setItem(row, 0, new QTableWidgetItem(id));
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
@@ -127,8 +131,20 @@ void DlgTrackInfo::unloadTrack(TrackInfoObject* pTrack) {
     m_pLoadedTrack->setArtist(txtArtist->text());
     m_pLoadedTrack->setComment(txtComment->text());
 
+    for (int row = 0; row < cueTable->rowCount(); ++row) {
+        Cue* pCue = m_cueList[row];
+        QTableWidgetItem* idItem = cueTable->item(row, 0);
+        QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
+        QTableWidgetItem* labelItem = cueTable->item(row, 3);
+        int id = idItem->data(Qt::DisplayRole).toInt();
+        int hotcue = hotcueItem->data(Qt::DisplayRole).toInt();
+        QString label = labelItem->data(Qt::DisplayRole).toString();
+        pCue->setHotCue(hotcue);
+        pCue->setLabel(label);
+    }
+
     m_pLoadedTrack = NULL;
-    // TODO(XXX) update cues
+    clear();
 }
 
 void DlgTrackInfo::clear() {
@@ -143,5 +159,6 @@ void DlgTrackInfo::clear() {
     txtFilepath->setText("");
     txtType->setText("");
 
+    m_cueList.clear();
     cueTable->clearContents();
 }
