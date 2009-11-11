@@ -9,29 +9,54 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "woverview.h"
-#include "wskincolor.h"
-#include "trackinfoobject.h"
-#include <qpainter.h>
 #include <QtDebug>
-#include <qpixmap.h>
-//Added by qt3to4:
 #include <Q3MemArray>
 #include <QMouseEvent>
 #include <Q3ValueList>
 #include <QPaintEvent>
-#include "mathstuff.h"
+#include <qpainter.h>
+#include <QtDebug>
+#include <qpixmap.h>
 #include <qapplication.h>
 
-WOverview::WOverview(QWidget * parent) : WWidget(parent)
-{
+#include "controlobject.h"
+#include "woverview.h"
+#include "wskincolor.h"
+#include "trackinfoobject.h"
+#include "mathstuff.h"
+
+WOverview::WOverview(const char *pGroup, QWidget * parent)
+        : WWidget(parent),
+          m_pGroup(pGroup) {
     m_pWaveformSummary = 0;
-    m_pSegmentation = 0;
     m_liSampleDuration = 0;
     m_iPos = 0;
-    m_iVirtualPos = -1;
     m_bDrag = false;
     m_pScreenBuffer = 0;
+
+    QString pattern = "hotcue_%1_position";
+
+    int i = 0;
+    ConfigKey hotcueKey;
+    hotcueKey.group = m_pGroup;
+    hotcueKey.item = pattern.arg(i);
+    ControlObject* pControl = ControlObject::getControl(hotcueKey);
+
+
+    qDebug() << "Connecting hotcue controls.";
+    while (pControl) {
+        m_hotcueControls.push_back(pControl);
+        m_hotcues.push_back(pControl->get());
+        m_hotcueMap[pControl] = i;
+
+        qDebug() << "Connecting hotcue" << hotcueKey.group << hotcueKey.item;
+
+        connect(pControl, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(cueChanged(double)));
+
+        hotcueKey.item = pattern.arg(++i);
+        pControl = ControlObject::getControl(hotcueKey);
+    }
 
     waveformChanged = false;
 }
@@ -71,11 +96,11 @@ void WOverview::setup(QDomNode node)
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
-    
+
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
     palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
     this->setPalette(palette);
-    
+
 
     // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
     if(m_pScreenBuffer != NULL) {
@@ -84,16 +109,16 @@ void WOverview::setup(QDomNode node)
         // the current thread is the GUI thread. That way we know
         // that paintEvent is not going on right now, and m_pScreenBuffer
         // is therefore safe to delete.
-        
+
         delete m_pScreenBuffer;
-        
+
         // Flag the pixmap for regeneration.
         waveformChanged = true;
     }
-    
+
     m_pScreenBuffer = new QPixmap(this->size());
     m_pScreenBuffer->fill(this->palette().color(QPalette::Background));
-    
+
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
@@ -110,28 +135,32 @@ void WOverview::setValue(double fValue)
     }
 }
 
-void WOverview::setVirtualPos(double fValue)
-{
-    if (!m_bDrag)
-    {
-        // Calculate virtual position
-        m_iVirtualPos = (int)((fValue/127.)*((double)width()-2.));
-        update();
-    }
-}
-
 void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
 {
-	//Update this widget with new waveform summary data from the new track.
-    this->setData(pTrack->getWaveSummary(), pTrack->getSegmentationSummary(), 
-    			  pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels());
+    //Update this widget with new waveform summary data from the new track.
+    setData(pTrack->getWaveSummary(),
+            pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels());
     update();
 }
 
-void WOverview::setData(QByteArray* pWaveformSummary, Q3ValueList<long> * pSegmentation, long liSampleDuration)
+void WOverview::cueChanged(double v) {
+    qDebug() << "WOverview::cueChanged()";
+    QObject* pSender = sender();
+    if (!pSender)
+        return;
+
+    if (!m_hotcueMap.contains(pSender))
+        return;
+
+    int hotcue = m_hotcueMap[pSender];
+    m_hotcues[hotcue] = v;
+    qDebug() << "hotcue" << hotcue << "position" << v;
+    update();
+}
+
+void WOverview::setData(QByteArray* pWaveformSummary, long liSampleDuration)
 {
     m_pWaveformSummary = pWaveformSummary;
-    m_pSegmentation = pSegmentation;
     m_liSampleDuration = liSampleDuration;
 
     waveformChanged = true;
@@ -144,7 +173,7 @@ void WOverview::redrawPixmap() {
 
     // Erase background
     m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
-    
+
     QPainter paint(m_pScreenBuffer);
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
@@ -219,19 +248,6 @@ void WOverview::redrawPixmap() {
         paint.drawLine(i, height()/2-(int)(fMin*yscale), i, height()/2-(int)(fMax*yscale));
     }
 
-    // Draw segmentation points
-/*
-    paint.setPen(QColor("#FF9900"));
-    if (m_pSegmentation)
-    {
-        for (unsigned int i=0; i<m_pSegmentation->size(); ++i)
-        {
-            int point = (int)((double)width()*((double)(*m_pSegmentation->at(i))/(double)m_liSampleDuration));
-            qDebug() << "i " << i << ", seg " << (*m_pSegmentation->at(i)) << "i, dur " << m_liSampleDuration << "i, point " << point << ", width " << width();
-            paint.drawLine(point, 0, point, height());
-        }
-    }
- */
     paint.end();
     update();
 }
@@ -277,7 +293,7 @@ void WOverview::paintEvent(QPaintEvent *)
 
     if(!m_pScreenBuffer)
         return;
-    
+
     if (waveformChanged) {
       redrawPixmap();
       waveformChanged = false;
@@ -295,23 +311,28 @@ void WOverview::paintEvent(QPaintEvent *)
         paint.drawLine(m_iPos+1, 0, m_iPos+1, height());
         //paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
 
-        // Draw virtual pos pointer
-        if (m_iVirtualPos>=0)
-        {
-            int dist = math_min(10,abs(m_iVirtualPos-m_iPos));
-            //qDebug() << "dist " << dist;
-            paint.drawLine(m_iPos, height()/2,   m_iVirtualPos, height()/2);
-            paint.drawLine(m_iPos, height()/2+1, m_iVirtualPos, height()/2+1);
+        // Draw hotcues
 
-            if (m_iVirtualPos>m_iPos)
-            {
-                paint.drawLine(m_iVirtualPos, height()/2,   m_iVirtualPos-dist, height()/2-dist);
-                paint.drawLine(m_iVirtualPos, height()/2+1, m_iVirtualPos-dist, height()/2+dist+1);
-            }
-            else
-            {
-                paint.drawLine(m_iVirtualPos, height()/2,   m_iVirtualPos+dist, height()/2-dist);
-                paint.drawLine(m_iVirtualPos, height()/2+1, m_iVirtualPos+dist, height()/2+dist+1);
+        if (m_liSampleDuration > 0) {
+            QFont font;
+            font.setBold(false);
+            font.setPixelSize(height());
+            paint.setFont(font);
+            for (int i = 0; i < m_hotcues.size(); ++i) {
+                int position = m_hotcues[i];
+                if (position == -1)
+                    continue;
+                float fPos = float(position) * (width()-2) / m_liSampleDuration;
+                qDebug() << "Drawing cue" << i << "at" << fPos;
+                // paint.drawLine(fPos, 0,
+                //                fPos, height());
+                // paint.drawLine(fPos+1, 0,
+                //                fPos+1, height());
+                int textWidth = 5;
+                QRectF rect(fPos-5, 0,
+                            fPos+5, height());
+
+                paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i));
             }
         }
     }

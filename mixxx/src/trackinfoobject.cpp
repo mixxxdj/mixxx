@@ -61,7 +61,6 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     m_iId = -1;
     m_pVisualWave = 0;
     m_pWave = 0;
-    m_pSegmentation = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
@@ -130,7 +129,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
-    m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     //m_pTableTrack = 0;
 
     //m_pTableItemScore = 0;
@@ -215,8 +213,6 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     //if (m_pWave) {
         //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
     //}
-    if (m_pSegmentation)
-        XmlParse::addElement(doc, header, "SegmentationSummary", m_pSegmentation);
 
     m_qMutex.unlock();
 }
@@ -900,26 +896,16 @@ QByteArray *TrackInfoObject::getWaveSummary()
     return pWaveSummary;
 }
 
-Q3ValueList<long> * TrackInfoObject::getSegmentationSummary()
-{
-    m_qMutex.lock();
-    Q3ValueList<long> *pSegmentationSummary = m_pSegmentation;
-    m_qMutex.unlock();
-
-    return pSegmentationSummary;
-}
-
 void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
     m_qMutex.lock();
     m_pVisualWave = pWave;
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::setWaveSummary(QByteArray* pWave, Q3ValueList<long> * pSegmentation, bool updateUI)
+void TrackInfoObject::setWaveSummary(QByteArray* pWave, bool updateUI)
 {
     m_qMutex.lock();
     m_pWave = pWave;
-    m_pSegmentation = pSegmentation;
     m_qMutex.unlock();
 
     //if (updateUI) setOverviewWidget(m_pOverviewWidget);

@@ -4,10 +4,12 @@
 
 #include <QDialog>
 #include <QMutex>
+#include <QList>
 
 #include "ui_dlgtrackinfo.h"
 
 class TrackInfoObject;
+class Cue;
 
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
@@ -39,6 +41,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private:
     void clear();
 
+    QList<Cue*> m_cueList;
     TrackInfoObject* m_pLoadedTrack;
     QMutex m_mutex;
 };
