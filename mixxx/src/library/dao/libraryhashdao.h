@@ -9,6 +9,8 @@ class LibraryHashDAO : public DAO {
   public:
     LibraryHashDAO(QSqlDatabase& database);
     virtual ~LibraryHashDAO();
+    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    
     void initialize();
     int getDirectoryHash(QString dirPath);
     void saveDirectoryHash(QString dirPath, int hash);

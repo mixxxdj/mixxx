@@ -35,6 +35,7 @@ Q_OBJECT
     //TrackDAO() {};
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao);
     virtual ~TrackDAO();
+    void setDatabase(QSqlDatabase& database) { m_database = database; };
     
     void initialize();
     int getTrackId(QString location);
@@ -48,6 +49,7 @@ Q_OBJECT
     void markTrackLocationAsVerified(QString location);
     void invalidateTrackLocations(QString directory);
     void markUnverifiedTracksAsDeleted();
+    void markTrackLocationsAsDeleted(QString directory);
   public slots:
     void updateTrackInDatabase(TrackInfoObject* pTrack);
   private:
