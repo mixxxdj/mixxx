@@ -46,8 +46,8 @@ class LibraryScanner : public QThread
         QString m_qLibraryPath;               //The path to the library on disk
         LibraryScannerDlg* m_pProgress;       //The library scanning window
         LibraryHashDAO m_libraryHashDao;
-        TrackDAO m_trackDao;
         CueDAO m_cueDao;
+        TrackDAO m_trackDao;
         QSqlDatabase m_database;            /**Hang on to a different DB connection  
                                                since we run in a different thread */ 
 };
