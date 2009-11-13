@@ -20,7 +20,7 @@ CueDAO::~CueDAO() {
 void CueDAO::initialize() {
     qDebug() << "CueDAO::initialize()";
 
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("CREATE TABLE IF NOT EXISTS " CUE_TABLE " ("
                   "id integer PRIMARY KEY AUTOINCREMENT,"
                   "track_id integer NOT NULL REFERENCES library(id),"
@@ -37,7 +37,7 @@ void CueDAO::initialize() {
 }
 
 int CueDAO::cueCount() {
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CUE_TABLE);
     if (query.exec()) {
         if (query.next()) {
@@ -50,7 +50,7 @@ int CueDAO::cueCount() {
 }
 
 int CueDAO::numCuesForTrack(int trackId) {
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CUE_TABLE " WHERE track_id = :id");
     query.bindValue(":id", trackId);
     if (query.exec()) {
@@ -83,7 +83,8 @@ Cue* CueDAO::getCue(int cueId) {
         return m_cues[cueId];
     }
 
-    QSqlQuery query("SELECT * FROM " CUE_TABLE " WHERE id = :id");
+    QSqlQuery query(m_database);
+    query.prepare("SELECT * FROM " CUE_TABLE " WHERE id = :id");
     query.bindValue(":id", cueId);
     if (query.exec()) {
         if (query.next()) {
@@ -97,7 +98,8 @@ Cue* CueDAO::getCue(int cueId) {
 
 QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
     QList<Cue*> cues;
-    QSqlQuery query("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
+    QSqlQuery query(m_database);
+    query.prepare("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
     query.bindValue(":id", trackId);
     if (query.exec()) {
         while (query.next()) {
@@ -120,7 +122,8 @@ QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
 }
 
 bool CueDAO::deleteCuesForTrack(int trackId) {
-    QSqlQuery query("DELETE FROM " CUE_TABLE " WHERE track_id = :track_id");
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id = :track_id");
     query.bindValue(":track_id", trackId);
     if (query.exec()) {
         return true;
@@ -137,7 +140,8 @@ bool CueDAO::saveCue(Cue* cue) {
         QSqlDatabase::database().transaction();
 
         // New cue
-        QSqlQuery query("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label) VALUES (:track_id, :type, :position, :length, :hotcue, :label)");
+        QSqlQuery query(m_database);
+        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label) VALUES (:track_id, :type, :position, :length, :hotcue, :label)");
         query.bindValue(":track_id", cue->getTrackId());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
@@ -164,7 +168,8 @@ bool CueDAO::saveCue(Cue* cue) {
 
     } else {
         // Update cue
-        QSqlQuery query("UPDATE " CUE_TABLE " SET "
+        QSqlQuery query(m_database);
+        query.prepare("UPDATE " CUE_TABLE " SET "
                         "track_id = :track_id,"
                         "type = :type,"
                         "position = :position,"
@@ -192,7 +197,8 @@ bool CueDAO::saveCue(Cue* cue) {
 
 bool CueDAO::deleteCue(Cue* cue) {
     if (cue->getId() != -1) {
-        QSqlQuery query("DELETE FROM " CUE_TABLE " WHERE id = :id");
+        QSqlQuery query(m_database);
+        query.prepare("DELETE FROM " CUE_TABLE " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         if (query.exec()) {
             return true;

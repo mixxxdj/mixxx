@@ -21,9 +21,7 @@ void TrackDAO::initialize()
     //Start the transaction
     m_database.transaction();
     
-    //TODO: Check if the table exists...
-    //      If it doesn't exist, create it.
- 	QSqlQuery query;
+ 	QSqlQuery query(m_database);
     if (!query.exec("CREATE TABLE IF NOT EXISTS track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, "
                     "location varchar(512) UNIQUE, "
                     "filename varchar(512), "
@@ -34,7 +32,6 @@ void TrackDAO::initialize()
         qDebug() << "Invalid track_locations schema, d'oh!" << __FILE__ << __LINE__;
         exit(-1);
     }
-
 
  	//Little bobby tables
     if (!query.exec("CREATE TABLE IF NOT EXISTS library (id INTEGER primary key AUTOINCREMENT, "
@@ -67,7 +64,7 @@ int TrackDAO::getTrackId(QString location)
     //Start the transaction
     m_database.transaction();
 
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     //Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
     query.prepare("SELECT * FROM track_locations WHERE location=:location");
@@ -94,7 +91,7 @@ int TrackDAO::getTrackId(QString location)
     not worth retrieving a whole TrackInfoObject.*/
 QString TrackDAO::getTrackLocation(int trackId)
 {
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     int trackLocationId = -1;
     query.exec("SELECT * FROM Library WHERE id=" + QString("%1").arg(trackId));
     while (query.next()) {
@@ -142,7 +139,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     //Start the transaction
     m_database.transaction();
 
- 	QSqlQuery query;
+ 	QSqlQuery query(m_database);
  	int trackLocationId = -1;
 
     //Insert the track location into the corresponding table. This will fail silently
@@ -254,7 +251,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
 void TrackDAO::removeTrack(int id)
 {
     Q_ASSERT(id >= 0);
-    QSqlQuery query;
+    QSqlQuery query(m_database);
 
     //query.prepare("DELETE FROM library WHERE location==" + QString("%1").arg(trackLocationId));
     //Mark the track as deleted!
@@ -342,7 +339,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
 
 TrackInfoObject *TrackDAO::getTrack(int id) const
 {
-    QSqlQuery query;
+    QSqlQuery query(m_database);
 
     query.exec("SELECT * FROM Library WHERE id=" + QString("%1").arg(id));
  	TrackInfoObject* track = getTrackFromDB(query);
@@ -355,7 +352,7 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
 {
     qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
-    QSqlQuery query;
+    QSqlQuery query(m_database);
 
     //Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
@@ -425,7 +422,7 @@ void TrackDAO::invalidateTrackLocations(QString directory)
     //qDebug() << "invalidateTrackLocations(" << directory << ")";
     m_database.transaction();
     
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET needs_verification=1 "
                   "WHERE directory=:directory");
@@ -442,7 +439,7 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
     //qDebug() << "markTrackLocationAsVerified()" << location;
     m_database.transaction();
     
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET needs_verification=0 "
                   "WHERE location=:location"); 
@@ -460,7 +457,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted()
     //qDebug() << "markUnverifiedTracksAsDeleted()";
     m_database.transaction();
     
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET fs_deleted=1 "
                   "WHERE needs_verification=1");
@@ -469,5 +466,16 @@ void TrackDAO::markUnverifiedTracksAsDeleted()
     }
 
     m_database.commit();
+}
 
+void TrackDAO::markTrackLocationsAsDeleted(QString directory)
+{
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE track_locations "
+                  "SET fs_deleted=1 "
+                  "WHERE directory=:directory");
+    query.bindValue(":directory", directory);             
+    if (!query.exec()) {
+        qDebug() << "Couldn't mark tracks in" << directory << "as deleted." << query.lastError();
+    }
 }
