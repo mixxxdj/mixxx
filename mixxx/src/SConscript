@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import SCons
@@ -211,8 +212,9 @@ vars.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 vars.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
 vars.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
-vars.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
-vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fogs asmlib, found at http://www.agner.org/optimize/', 0)
+vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
+vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
+vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
@@ -224,7 +226,6 @@ if platform == 'linux':
 	vars.Add('rawmidi', 'Set to 1 to use ALSA\'s RawMIDI API (instead of the Sequencer API.)', 0)
 if not 'win' in platform:
 	vars.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
-	vars.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
 	vars.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
 else:
 	vars.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
@@ -1099,7 +1100,38 @@ else:
 	flags_midiscript = 0
 	print "MIDI Scripting... disabled"
 
-#Optimization
+# Profiling and Optimization
+if not 'win' in platform:
+	flags_gprof = getFlags(env, 'gprof', 0)
+	if int(flags_gprof):
+		env.Append(CCFLAGS = '-pg')
+		env.Append(LINKFLAGS = '-pg')
+		print "gprof profiling support... enabled"
+		build_flags += 'gprof '
+	else:
+		print "gprof profiling support... disabled"
+
+flags_tuned = getFlags(env, 'tuned', 0)
+if int(flags_tuned):
+	if not 'win' in platform:
+		ccv = env['CCVERSION'].split('.')
+		if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
+			env.Append(CCFLAGS = '-march=native')
+			env.Append(LINKFLAGS = '-march=native')
+			print "Optimizing for this CPU... yes"
+			build_flags += 'tuned '
+		else:
+			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
+	else:
+		if platform == 'win64':	# In addition
+			print "Optimizing for this CPU class (" + machine + ")... yes"
+			env.Append(CXXFLAGS = '/favor:' + machine)
+		else:
+			print "Optimizing for this CPU... no (not supported on 32-bit MSVC)"
+else:
+	print "Optimizing for this CPU... no"
+
+#Specific optimization
 flags_optimize = getFlags(env, 'optimize', 1)
 if int(flags_optimize):
 	if 'win' in platform:
@@ -1112,40 +1144,38 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
-				if 'makerelease' in COMMAND_LINE_TARGETS:
-					env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
-				else:
-					env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
+				env.Append(CXXFLAGS = '/Ox /MP')
 	else:
-		print "Optimizations... enabled"
-		build_flags += 'optimize=' + str(flags_optimize) + ' '
-		env.Replace(CFLAGS = '') # replace CFLAGS and CXXFLAGS with our own optimizations.
-		if flags_optimize=='1':
-			env.Replace(CXXFLAGS = '-O3')
-		elif flags_optimize=='2':
-			print "  P4 MMX/SSE optimizations enabled."
-			env.Replace(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		elif flags_optimize=='3':
-			print "  Intel Core Solo/Duo optimizations enabled."
-			env.Replace(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		elif flags_optimize=='4':
-			print "  Intel Core 2 optimizations enabled."
-			env.Replace(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
-		elif flags_optimize=='5':
-			print "  Athlon 3dnow/SSE optimizations enabled (Athlon-4/XP/MP)."
-			env.Replace(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		elif flags_optimize=='6':
-			print "  Athlon 3dnow/SSE/SSE2 optimizations enabled (K8/Opteron/AMD64)."
-			env.Replace(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		elif flags_optimize=='7':
-			print "  Athlon 3dnow/SSE/SSE2/SSE3 optimizations enabled (K8/Opteron/AMD64 w/ SSE3)."
-			env.Replace(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		elif flags_optimize=='8':
-			print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
-			env.Replace(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		env.Append(CXXFLAGS = ' ') # add a space to the end of CXXFLAGS
+		if not int(flags_tuned):
+			print "Specific optimizations... enabled"
+			build_flags += 'optimize=' + str(flags_optimize) + ' '
+			env.Replace(CFLAGS = '') # replace CFLAGS and CXXFLAGS with our own optimizations.
+			if flags_optimize=='1':
+				env.Replace(CXXFLAGS = '-O3')
+			elif flags_optimize=='2':
+				print "  P4 MMX/SSE optimizations enabled."
+				env.Replace(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			elif flags_optimize=='3':
+				print "  Intel Core Solo/Duo optimizations enabled."
+				env.Replace(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			elif flags_optimize=='4':
+				print "  Intel Core 2 optimizations enabled."
+				env.Replace(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+			elif flags_optimize=='5':
+				print "  Athlon Athlon-4/XP/MP optimizations enabled."
+				env.Replace(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			elif flags_optimize=='6':
+				print "  Athlon K8/Opteron/AMD64 optimizations enabled."
+				env.Replace(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			elif flags_optimize=='7':
+				print "  Athlon K8/Opteron/AMD64 + SSE3 optimizations enabled."
+				env.Replace(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			elif flags_optimize=='8':
+				print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
+				env.Replace(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Append(CXXFLAGS = ' ') # add a space to the end of CXXFLAGS
 else:
-	print "Optimizations... disabled"
+	print "Specific optimizations... disabled"
 
 #Linking with ASMLIB
 flags_asmlib = getFlags(env, 'asmlib', 0)
@@ -1158,7 +1188,7 @@ if int(flags_asmlib):
 	elif platform == 'osx':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
 		env.Append(LIBS = '":alibmac32o.a"')
-	elif platform == 'win32':
+	elif 'win' in platform:
 		env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
 		env.Append(LIBS = 'alibcof32o')
 else:
@@ -1175,29 +1205,6 @@ if int(flags_optimize) > 1:
 # Enable SoundTouch Windows 3dNow optimizations if we're on AMD
 if 'win' in platform and int(flags_optimize) in (5,6,7):
     sources += Split("""#lib/soundtouch-1.4.1/3dnow_win.cpp""")
-
-# Profiling and Optimization
-if not 'win' in platform:
-	flags_gprof = getFlags(env, 'gprof', 0)
-	if int(flags_gprof):
-		env.Append(CCFLAGS = '-pg')
-		env.Append(LINKFLAGS = '-pg')
-		print "gprof profiling support... enabled"
-		build_flags += 'gprof '
-	else:
-		print "gprof profiling support... disabled"
-	flags_tuned = getFlags(env, 'tuned', 0)
-	if int(flags_tuned):
-		ccv = env['CCVERSION'].split('.')
-		if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-			env.Append(CCFLAGS = '-march=native')
-			env.Append(LINKFLAGS = '-march=native')
-			print "Optimizing for this CPU... yes"
-			build_flags += 'tuned '
-		else:
-			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
-	else:
-		print "Optimizing for this CPU... no"
 
 #Debugging output
 flags_qdebug = getFlags(env, 'qdebug', 0)
