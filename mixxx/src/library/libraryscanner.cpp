@@ -22,30 +22,61 @@
 #include "libraryscannerdlg.h"
 
 LibraryScanner::LibraryScanner(TrackCollection* collection) :
-    m_database(QSqlDatabase::cloneDatabase(collection->getDatabase(), "library_scanner")),
+    m_pCollection(collection),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
     m_trackDao(m_database, m_cueDao)
+    //Don't initialize m_database here, we need to do it in run() so the DB conn is in
+    //the right thread.
 {
-    m_pCollection = collection;
-
     qDebug() << "Constructed LibraryScanner!!!";
     
 }
 
 LibraryScanner::~LibraryScanner()
 {
-    //Do housekeeping on the LibraryHashes table. Delete any directories that have been marked as deleted...
-    m_database.transaction();
-    QSqlQuery query;
+    //IMPORTANT NOTE: This code runs in the GUI thread, so it should _NOT_ use
+    //                the m_trackDao that lives inside this class. It should use
+    //                the DAOs that live in m_pTrackCollection.
+    
+    if (isRunning())
+        wait(); //Wait for thread to finish
+    
+    //Do housekeeping on the LibraryHashes table. 
+    m_pCollection->getDatabase().transaction();
+    
+    //Mark the corresponding file locations in the track_locations table as deleted
+    //if we find one or more deleted directories.
+    QStringList deletedDirs;
+    QSqlQuery query(m_pCollection->getDatabase());
+    query.prepare("SELECT * FROM LibraryHashes "
+               "WHERE directory_deleted=1");
+    if (query.exec()) {
+        while (query.next()) {
+            QString directory = query.value(query.record().indexOf("directory")).toString();
+            deletedDirs << directory; 
+        }
+    } else {
+        qDebug() << "Couldn't SELECT deleted directories" << query.lastError();
+    }
+    
+    //Delete any directories that have been marked as deleted...
+    query.finish();
     query.exec("DELETE FROM LibraryHashes "
                "WHERE directory_deleted=1");
-    m_database.commit();
+
         //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-
+    
+    m_pCollection->getDatabase().commit();
+    
+    QString dir;
+    foreach(dir, deletedDirs) {
+        m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
+    }
+    
     //Close our database connection
     m_database.close();
 
@@ -58,8 +89,24 @@ void LibraryScanner::run()
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
+    QThread::sleep(7);
+
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName("mixxxdb");
+    m_database.setUserName("mixxx");
+    m_database.setPassword("mixxx");
+
 	//Open the database connection in this thread.
-    m_database.open();
+    if (!m_database.open()) {
+        qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
+        return;
+    }
+    
+    m_libraryHashDao.setDatabase(m_database);
+    m_cueDao.setDatabase(m_database);
+    m_trackDao.setDatabase(m_database); 
+    
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
     m_trackDao.initialize();
@@ -67,7 +114,7 @@ void LibraryScanner::run()
     //First, we're going to temporarily mark all the directories that we've 
 	//previously hashed as "deleted". As we search through the directory tree 
 	//when we rescan, we'll mark any directory that does still exist as such.
-    m_libraryHashDao.markAllDirectoriesAsDeleted();
+    //m_libraryHashDao.markAllDirectoriesAsDeleted();
     m_pCollection->resetLibaryCancellation();
 
     //Start scanning the library.
