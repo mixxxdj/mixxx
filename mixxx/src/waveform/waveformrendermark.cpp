@@ -182,8 +182,8 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
             pPainter->setBrush(QBrush(m_markColor));
             QPolygonF topTriangle;
             QPolygonF bottomTriangle;
-            int triWidth = subpixelsPerPixel * 8;
-            int triHeight = 15;
+            double triWidth = subpixelsPerPixel * 8.0;
+            double triHeight = 10.0;
             topTriangle << QPointF(x - 1 - triWidth/2.0f, halfh)
                         << QPointF(x + 1 + triWidth/2.0f, halfh)
                         << QPointF(x, halfh - triHeight);
@@ -203,16 +203,16 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
                 switch (m_markAlign) {
                     case WaveformRenderMark::BOTTOM:
                         // Bottom
-                        pPainter->drawPixmap(x - pw/2, halfh - ph, m_markPixmap);
+                        pPainter->drawPixmap(x - pw/2.0, halfh - ph, m_markPixmap);
                         break;
                     case WaveformRenderMark::CENTER:
                         // Center
-                        pPainter->drawPixmap(x - pw/2, 0 - ph/2, m_markPixmap);
+                        pPainter->drawPixmap(x - pw/2.0, 0 - ph/2.0, m_markPixmap);
                         break;
                     case WaveformRenderMark::TOP:
                     default:
                         // Top
-                        pPainter->drawPixmap(x - pw/2, -halfh + 2, m_markPixmap);
+                        pPainter->drawPixmap(x - pw/2.0, -halfh + 2.0, m_markPixmap);
                         break;
                 }
             }
@@ -240,19 +240,19 @@ void WaveformRenderMark::setupMarkPixmap() {
 
     // Add left and right margins of one characters worth (based on average
     // pixels / character).
-    int wordWidth = metrics.boundingRect(m_markText).width();
-    int wordHeight = metrics.height();
+    double wordWidth = metrics.boundingRect(m_markText).width();
+    double wordHeight = metrics.height();
 
     // A sensible margin for the horizontal is a quarter of the average
     // character width.
     //int marginX = wordWidth/m_markText.size()/4;
     //int marginX = metrics.maxWidth() / 4;
-    int marginX = metrics.averageCharWidth() / 4;
+    double marginX = metrics.averageCharWidth() / 4.0;
 
-    int marginY = 0; // .1 * wordHeight
+    double marginY = 0; // .1 * wordHeight
 
-    int markWidth = wordWidth + 2*marginX;
-    int markHeight = wordHeight + 2*marginY;
+    double markWidth = wordWidth + 2*marginX;
+    double markHeight = wordHeight + 2*marginY;
 
     QRectF internalRect(marginX, marginY, wordWidth-1, wordHeight-1);
     QRectF externalRect(0, 0, markWidth-1, markHeight-1);
@@ -264,6 +264,8 @@ void WaveformRenderMark::setupMarkPixmap() {
 
     QPainter painter(&m_markPixmap);
     painter.setRenderHint(QPainter::TextAntialiasing);
+    //painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::HighQualityAntialiasing);
     painter.setBackgroundMode(Qt::TransparentMode);
     painter.setFont(font);
     QColor color = m_textColor;
