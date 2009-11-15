@@ -17,6 +17,7 @@
 #include "waveformrenderbackground.h"
 #include "waveformrenderbeat.h"
 #include "waveformrendermark.h"
+#include "waveformrendermarkrange.h"
 #include "waveformrendersignal.h"
 #include "waveformrendersignalpixmap.h"
 #include "trackinfoobject.h"
@@ -285,12 +286,17 @@ void WaveformRenderer::setup(QDomNode node) {
     // Process any <Mark> nodes
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
+        RenderObject* pRenderObject = NULL;
         if (child.nodeName() == "Mark") {
-            WaveformRenderMark* pMark = new WaveformRenderMark(m_pGroup, this);
+            pRenderObject = new WaveformRenderMark(m_pGroup, this);
+        } else if(child.nodeName() == "MarkRange") {
+            pRenderObject = new WaveformRenderMarkRange(m_pGroup, this);
+        }
+        if (pRenderObject != NULL) {
             if (m_pTrack != NULL)
-                pMark->newTrack(m_pTrack);
-            pMark->setup(child);
-            m_renderObjects.push_back(pMark);
+                pRenderObject->newTrack(m_pTrack);
+            pRenderObject->setup(child);
+            m_renderObjects.push_back(pRenderObject);
         }
         child = child.nextSibling();
     }
