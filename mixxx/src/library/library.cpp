@@ -15,6 +15,7 @@
 #include "library/rhythmboxfeature.h"
 #include "library/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
+#include "library/playqueuefeature.h"
 #include "library/playlistfeature.h"
 
 #include "wtracktableview.h"
@@ -32,6 +33,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
+    addFeature(new PlayQueueFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new CrateFeature(this, m_pTrackCollection));
     addFeature(new RhythmboxFeature(this));

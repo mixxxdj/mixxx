@@ -108,6 +108,7 @@ public slots:
 
 signals:
     void trackLoaded(TrackInfoObject *pTrack);
+    void loadNextTrack();
 
 private slots:
     void slotTrackLoaded(TrackInfoObject *pTrack,

@@ -391,6 +391,7 @@ sources = Split("""
                 library/itunestrackmodel.cpp
                 library/playlisttablemodel.cpp
                 library/libraryfeature.cpp
+                library/playqueuefeature.cpp
                 library/mixxxlibraryfeature.cpp
                 library/playlistfeature.cpp
                 library/rhythmboxfeature.cpp
