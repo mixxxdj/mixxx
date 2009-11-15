@@ -12,7 +12,7 @@
 SearchThread::SearchThread(QObject* parent)
         : QThread(parent),
           m_bQuit(false) {
-    //start();
+    //start(); //Disabled until we're done sorting out all the threading issues. -- Albert Nov 13/09
 }
 
 SearchThread::~SearchThread() {

@@ -5,7 +5,7 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 
-const QString DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
+const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -117,6 +117,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
+        (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
         return true;
     }

@@ -25,7 +25,7 @@ void PlaylistDAO::initialize()
                "name varchar(48), position INTEGER, "
                "date_created datetime, "
                "date_modified datetime)");
-
+    query.finish();
 
     query.exec("CREATE TABLE PlaylistTracks (id INTEGER primary key, "
                "playlist_id INTEGER REFERENCES Playlists(id),"
@@ -50,6 +50,7 @@ void PlaylistDAO::createPlaylist(QString name)
     query.prepare("SELECT (position) FROM Playlists "
                   "ORDER BY position DESC");
     query.exec();
+    query.finish();
 
     //Get the id of the last playlist.
     int position = 0;
@@ -66,6 +67,7 @@ void PlaylistDAO::createPlaylist(QString name)
     query.bindValue(":name", name);
     query.bindValue(":position", position);
     query.exec();
+    query.finish();
 
     //Start the transaction
     QSqlDatabase::database().commit();
@@ -118,6 +120,7 @@ QString PlaylistDAO::getPlaylistName(unsigned int position)
     QString name;
     query.next();
     name = query.value(query.record().indexOf("name")).toString();
+    query.finish();
 
     return name;
 }
@@ -153,6 +156,7 @@ void PlaylistDAO::deletePlaylist(int playlistId)
      	qDebug() << "deletePlaylist" << query.lastError();
      	return;
     }
+    query.finish();
 
     //Delete the tracks in this playlist from the PlaylistTracks table.
     query.prepare("DELETE FROM PlaylistTracks "
@@ -162,6 +166,7 @@ void PlaylistDAO::deletePlaylist(int playlistId)
      	qDebug() << "deletePlaylist" << query.lastError();
      	return;
     }
+    query.finish();
 
     QSqlDatabase::database().commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
@@ -183,6 +188,7 @@ void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
               "ORDER BY position DESC");
     query.bindValue(":id", playlistId);
     query.exec();
+    query.finish();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
@@ -209,6 +215,7 @@ void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
     query.bindValue(":track_id", trackId);
     query.bindValue(":position", position);
     query.exec();
+    query.finish();
 
     //Start the transaction
     QSqlDatabase::database().commit();
@@ -256,6 +263,7 @@ int PlaylistDAO::getPlaylistId(int position)
     int playlistId;
     query.next();
     playlistId = query.value(query.record().indexOf("id")).toInt();
+    query.finish();
 
     return playlistId;
 }
@@ -270,12 +278,14 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
     query.exec();
+    query.finish();
 
     QString queryString;
     queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                   "WHERE position>=%1 AND "
                   "playlist_id=%2").arg(position).arg(playlistId);
     query.exec(queryString);
+    query.finish();
     QSqlDatabase::database().commit();
 }
 

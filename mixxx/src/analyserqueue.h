@@ -19,9 +19,10 @@ class AnalyserQueue : public QThread {
 	AnalyserQueue();
 	virtual ~AnalyserQueue();
 	void stop();
-    
+    int numQueuedTracks();
+
 	static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
-	static AnalyserQueue* createBPMAnalyserQueue(ConfigObject<ConfigValue> *_config);
+	static AnalyserQueue* createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createAnalyserQueue(QList<Analyser*> analysers);
 
 public slots:

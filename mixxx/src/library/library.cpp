@@ -7,6 +7,7 @@
 #include "library/library.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
+#include "dlgprepare.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
@@ -17,6 +18,7 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/playqueuefeature.h"
 #include "library/playlistfeature.h"
+#include "library/preparefeature.h"
 
 #include "wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -25,6 +27,7 @@
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
+const QString Library::m_sPrepareViewName = QString("Prepare");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig) {
@@ -39,6 +42,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     addFeature(new RhythmboxFeature(this));
     addFeature(new ITunesFeature(this));
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new PrepareFeature(this, m_pTrackCollection));
 }
 
 Library::~Library() {
@@ -46,7 +50,7 @@ Library::~Library() {
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //delete m_pTrackCollection;
-    QMutableListIterator<LibraryFeature*> features_it(m_features);;
+    QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
         features_it.remove();
@@ -71,6 +75,9 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
     emit(switchToView(m_sTrackViewName));
+    
+    DlgPrepare* pPrepareView = new DlgPrepare(pLibraryWidget, m_pConfig, m_pTrackCollection);
+    pLibraryWidget->registerView(m_sPrepareViewName, pPrepareView);
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
