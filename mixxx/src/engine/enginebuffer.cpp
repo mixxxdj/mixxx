@@ -523,6 +523,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 break;
             case TRACK_END_MODE_NEXT:
                 m_pTrackEnd->set(1.);
+                emit(loadNextTrack());
                 break;
 
             case TRACK_END_MODE_LOOP:
