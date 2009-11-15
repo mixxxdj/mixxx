@@ -73,6 +73,11 @@ void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     painter.begin(this);
 
     painter.setRenderHint(QPainter::Antialiasing);
+    //painter.setRenderHint(QPainter::TextAntialiasing);
+
+    // HighQualityAntialiasing makes some CPUs go crazy
+    //painter.setRenderHint(QPainter::HighQualityAntialiasing);
+
     m_pWaveformRenderer->draw(&painter, event);
 
     painter.end();
@@ -91,45 +96,6 @@ void WGLWaveformViewer::timerEvent(QTimerEvent *qte) {
     }
     //m_paintMutex.unlock();
 }
-
-
-void WGLWaveformViewer::initializeGL() {
-    QGLWidget::initializeGL();
-    //qDebug() << "QGL initializeGL";
-
-    /*
-    // setup backface culling so CCW polygons are facing out
-    glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    // enables zbuffer
-    glEnable(GL_DEPTH_TEST);
-
-    // enable alpha blending
-    glEnable(GL_BLEND);
-    */
-
-
-}
-
-void WGLWaveformViewer::resizeGL(int w, int h) {
-    QGLWidget::resizeGL(w,h);
-    //qDebug() << "QGL resizeGL " << w << " : " << h;
-
-    //m_pWaveformRenderer->resize(w,h);
-}
-
-void WGLWaveformViewer::paintGL() {
-    QGLWidget::paintGL();
-
-    //qDebug() << "QGL paintGL";
-
-    //m_pWaveformRenderer->glDraw();
-    //m_painting = false;
-}
-
-
 
 /** SLOTS **/
 

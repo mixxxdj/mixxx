@@ -30,7 +30,7 @@ public:
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
-    
+
 public slots:
     void setValue(double);
 signals:
@@ -39,11 +39,7 @@ signals:
     void trackDropped(QString filename);
 
 protected:
-    
-    void initializeGL();
-    void resizeGL(int, int);
-    void paintGL();
-    
+
     void timerEvent(QTimerEvent *);
     void paintEvent(QPaintEvent* event);
 
@@ -56,7 +52,7 @@ private:
 
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
-    
+
     bool m_painting;
     QMutex m_paintMutex;
 
