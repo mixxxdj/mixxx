@@ -34,6 +34,7 @@ void CueDAO::initialize() {
     if (!query.exec()) {
         qDebug() << "Creating cue table failed:" << query.lastError();
     }
+    query.finish();
 }
 
 int CueDAO::cueCount() {
@@ -46,6 +47,7 @@ int CueDAO::cueCount() {
     } else {
         qDebug() << query.lastError();
     }
+    query.finish();
     return 0;
 }
 

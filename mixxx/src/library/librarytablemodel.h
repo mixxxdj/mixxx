@@ -28,9 +28,11 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+    static const QString DEFAULT_LIBRARYFILTER;
 private:
     //TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDao;
+protected:
     QString m_currentSearch;
 };
 

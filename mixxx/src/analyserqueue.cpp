@@ -21,6 +21,14 @@ AnalyserQueue::AnalyserQueue() : m_aq(),
 
 }
 
+int AnalyserQueue::numQueuedTracks()
+{
+    m_qm.lock();
+    int numQueuedTracks = m_tioq.length();
+    m_qm.unlock();
+    return numQueuedTracks;
+}
+
 void AnalyserQueue::addAnalyser(Analyser* an) {
 	m_aq.push_back(an);
 }
@@ -83,7 +91,7 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 
         // emit progress updates to whoever cares
         processedSamples += read;
-        int progress = processedSamples*100/totalSamples;
+        int progress = ((float)processedSamples)/totalSamples * 100; //fp div here prevents insano signed overflow
         emit(trackProgress(tio, progress));
 	
 	} while(read == ANALYSISBLOCKSIZE);
@@ -161,9 +169,11 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 	return ret;
 }
 
-AnalyserQueue* AnalyserQueue::createBPMAnalyserQueue(ConfigObject<ConfigValue> *_config) {
+AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
 	AnalyserQueue* ret = new AnalyserQueue();
+    ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
+	ret->start(QThread::IdlePriority);
 	return ret;
 }
 

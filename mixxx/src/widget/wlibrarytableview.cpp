@@ -39,7 +39,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 
     loadHeaderState();
     loadVScrollBarPosState();
-
 }
 
 WLibraryTableView::~WLibraryTableView() {

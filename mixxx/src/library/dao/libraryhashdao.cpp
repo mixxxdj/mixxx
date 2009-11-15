@@ -21,7 +21,7 @@ void LibraryHashDAO::initialize()
 {
     m_database.transaction();
     QSqlQuery query(m_database);
-    query.exec("CREATE TABLE LibraryHashes (directory_path VARCHAR(256) primary key, "
+    query.exec("CREATE TABLE IF NOT EXISTS LibraryHashes (directory_path VARCHAR(256) primary key, "
                "hash INTEGER, directory_deleted INTEGER)");
 
     //Print out any SQL error, if there was one.

@@ -287,6 +287,7 @@ sources = Split("""
                 dlgprefcrossfader.cpp
                 dlgmidilearning.cpp
                 dlgtrackinfo.cpp
+                dlgprepare.cpp
 
                 engine/enginebuffer.cpp
                 engine/enginebufferscale.cpp
@@ -378,10 +379,14 @@ sources = Split("""
                 widget/wlibrarysidebar.cpp
                 widget/wlibrary.cpp
                 widget/wlibrarytableview.cpp
+                widget/wpreparelibrarytableview.cpp
+                widget/wpreparecratestableview.cpp
                 widget/wbrowsetableview.cpp
                 widget/wlibrarytextedit.cpp
+                library/preparecratedelegate.cpp
                 library/trackcollection.cpp
                 library/librarytablemodel.cpp
+                library/preparelibrarytablemodel.cpp
                 library/browsetablemodel.cpp
                 library/missingtablemodel.cpp
                 library/proxytrackmodel.cpp
@@ -391,6 +396,7 @@ sources = Split("""
                 library/itunestrackmodel.cpp
                 library/playlisttablemodel.cpp
                 library/libraryfeature.cpp
+                library/preparefeature.cpp
                 library/playqueuefeature.cpp
                 library/mixxxlibraryfeature.cpp
                 library/playlistfeature.cpp
@@ -798,6 +804,7 @@ env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgaboutdlg.ui')
 env.Uic4('dlgmidilearning.ui')
 env.Uic4('dlgtrackinfo.ui')
+env.Uic4('dlgprepare.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('#res/mixxx.qrc')

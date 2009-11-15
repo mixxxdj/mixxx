@@ -63,6 +63,7 @@ private:
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
+    const static QString m_sPrepareViewName;
 };
 
 #endif /* LIBRARY_H */

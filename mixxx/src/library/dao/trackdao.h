@@ -28,6 +28,7 @@ const QString LIBRARYTABLE_SAMPLERATE = "samplerate";
 const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
 const QString LIBRARYTABLE_CHANNELS = "channels";
 const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
+const QString LIBRARYTABLE_DATETIMEADDED= "datetime_added";
 
 class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT
