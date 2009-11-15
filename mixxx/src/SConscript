@@ -404,6 +404,7 @@ sources = Split("""
 		waveform/waveformrendersignal.cpp
 		waveform/waveformrendersignalpixmap.cpp
 		waveform/waveformrendermark.cpp
+                waveform/waveformrendermarkrange.cpp
                 waveform/waveformrenderbeat.cpp
 
 
