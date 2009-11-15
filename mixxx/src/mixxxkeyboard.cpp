@@ -103,7 +103,7 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
         {
             if (release) {
                 //qDebug() << "Sending MIDI NOTE_OFF";
-                ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 0);
+                ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 1);
             }
             else
             {
