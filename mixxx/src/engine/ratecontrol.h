@@ -11,6 +11,8 @@
 
 const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
+const int RATE_SENSITIVITY_MIN = 100;
+const int RATE_SENSITIVITY_MAX = 2500;
 
 class Rotary;
 class ControlTTRotary;
@@ -98,27 +100,37 @@ private:
 
     ControlObject *m_pSampleRate;
 
+    // Enumerations which hold the state of the pitchbend buttons.
+    // These enumerations can be used like a bitmask.
     enum RATERAMP_DIRECTION {
-        RATERAMP_NONE = 0,
-        RATERAMP_DOWN = 1,
-        RATERAMP_UP = 2,
-        RATERAMP_BOTH = 3
+        RATERAMP_NONE = 0,	// No buttons are held down
+        RATERAMP_DOWN = 1,	// Down button is being held
+        RATERAMP_UP = 2,	// Up button is being held
+        RATERAMP_BOTH = 3	// Both buttons are being held down
     };
     
+    // Rate ramping mode:
+    //	RATERAMP_STEP: pitch takes a temporary step up/down a certain amount.
+    //  RATERAMP_LINEAR: pitch moves up/down in a progresively linear fashion.
     enum RATERAMP_MODE {
-        RATERAMP_OLD = 0,
+        RATERAMP_STEP = 0,
         RATERAMP_LINEAR = 1
     };
     
+    // This defines how the rate returns to normal. Currently unused.
+    // Rate ramp back mode:
+    //	RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
+    //	RATERAMP_RAMPBACK_SPEED: moves back in a linearly progresive manner.
+    //	RATERAMP_RAMPBACK_PERIOD: returns to normal within a period of time.
     enum RATERAMP_RAMPBACK_MODE {
         RATERAMP_RAMPBACK_NONE,
         RATERAMP_RAMPBACK_SPEED,
         RATERAMP_RAMPBACK_PERIOD
     };
     
-    /** The current rate ramping direction */
+    // The current rate ramping direction. Only holds the last button pressed.
     int m_ePbCurrent;
-    /**  The rate ramping buttons which are pressed */
+    //  The rate ramping buttons which are currently being pressed.
     int m_ePbPressed;
     
     /** This is true if we've already started to ramp the rate */

@@ -17,7 +17,7 @@ double RateControl::m_dPerm = 0.01;
 double RateControl::m_dPermSmall = 0.001;
 
 int RateControl::m_iRateRampSensitivity = 250;
-enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_OLD;
+enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
@@ -153,20 +153,23 @@ RateControl::~RateControl() {
     delete m_pJogFilter;
 }
 
-void RateControl::setRateRamp(bool realMode)
+void RateControl::setRateRamp(bool linearMode)
 {
-    if ( realMode )
+    if ( linearMode )
         m_eRateRampMode = RateControl::RATERAMP_LINEAR;
     else
-        m_eRateRampMode = RateControl::RATERAMP_OLD;
+        m_eRateRampMode = RateControl::RATERAMP_STEP;
 }
 
 void RateControl::setRateRampSensitivity(int sense)
 {
-    if ( sense < 100 )
-        m_iRateRampSensitivity = 100;
-    else if ( sense > 2500 )
-        m_iRateRampSensitivity = 2500;
+    // Reverse the actual sensitivity value passed.
+    // That way the gui works in an intuitive manner.
+    sense = RATE_SENSITIVITY_MAX - sense + RATE_SENSITIVITY_MIN;
+    if ( sense < RATE_SENSITIVITY_MIN )
+        m_iRateRampSensitivity = RATE_SENSITIVITY_MIN;
+    else if ( sense > RATE_SENSITIVITY_MAX )
+        m_iRateRampSensitivity = RATE_SENSITIVITY_MAX;
     else
         m_iRateRampSensitivity = sense;
 }
@@ -404,7 +407,7 @@ double RateControl::process(const double rate,
         m_dOldRate = m_pRateSlider->get();
         
         
-        if ( m_eRateRampMode == RATERAMP_OLD ) 
+        if ( m_eRateRampMode == RATERAMP_STEP ) 
         {
             // old temporary pitch shift behaviour
             double change = m_pRateDir->get() * m_dTemp / 
@@ -440,7 +443,7 @@ double RateControl::process(const double rate,
         else if ( m_ePbCurrent == RateControl::RATERAMP_DOWN )
             subRateTemp(m_dTempRateChange);
     }
-    else if ((!m_ePbCurrent) && (m_eRateRampMode == RATERAMP_OLD))
+    else if ((!m_ePbCurrent) && (m_eRateRampMode == RATERAMP_STEP))
     {
         resetRateTemp();
     }
@@ -450,7 +453,7 @@ double RateControl::process(const double rate,
         m_bTempStarted = false;
         
         
-        if ( m_eRateRampMode == RATERAMP_OLD )
+        if ( m_eRateRampMode == RATERAMP_STEP )
             m_pRateSlider->set(m_dOldRate);
         else {
             
