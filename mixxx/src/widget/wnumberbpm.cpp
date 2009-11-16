@@ -15,11 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
+#include <QtDebug>
+
 #include "wnumberbpm.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-
-bool WNumberBpm::m_bScaleBpm = true;
 
 WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
 {
@@ -51,15 +52,6 @@ WNumberBpm::~WNumberBpm()
 
 void WNumberBpm::setValue(double)
 {
-    if (m_bScaleBpm) {
-        WNumber::setValue(m_pBpmControl->get()*(1.+m_pRateControl->get()*m_pRateDirControl->get()*m_pRateRangeControl->get()));
-    } else {
-        WNumber::setValue(m_pBpmControl->get());
-    }
-}
-
-void WNumberBpm::setScaleBpm(bool bScaleBpm)
-{
-    m_bScaleBpm = bScaleBpm;
+    WNumber::setValue(m_pBpmControl->get());
 }
 

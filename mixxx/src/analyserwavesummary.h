@@ -1,6 +1,8 @@
 #ifndef ANALYSER_WAVESUMMARY_H
 #define ANALYSER_WAVESUMMARY_H
 
+#include <QByteArray>
+
 #include "analyser.h"
 
 class AnalyserWavesummary : public Analyser {
@@ -12,7 +14,7 @@ public:
 	void finalise(TrackInfoObject* tio);
 
 private:
-	Q3MemArray<char> *m_pData;
+	QByteArray *m_pData;
     int m_iCurPos;
     int m_iBufferPos;
     int m_iStrideLength;

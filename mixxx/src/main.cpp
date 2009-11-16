@@ -284,12 +284,12 @@ int main(int argc, char * argv[])
     qDebug() << "...done.";
     
 #ifdef __APPLE__
-     //XXX this should be wrapped in IF BUNDLED somehow
      qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
      dir.cdUp();
      dir.cd("PlugIns");
-     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     QApplication::addLibraryPath(dir.absolutePath());
+     //qDebug() << dir.absolutePath() << QApplication::applicationDirPath();
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);

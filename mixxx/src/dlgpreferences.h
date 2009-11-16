@@ -33,7 +33,6 @@ class MixxxApp;
 class MixxxView;
 class PlayerProxy;
 class SoundManager;
-class Track;
 class DlgPrefSound;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
@@ -57,7 +56,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view, SoundManager *soundman,
-    		Track *track, MidiObject * midi, ConfigObject<ConfigValue> *config);
+    		MidiObject * midi, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();
 public slots:
@@ -101,7 +100,6 @@ private:
 
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
-    Track* m_pTrack;
     MidiObject* m_pMidiObject;
 };
 
