@@ -18,6 +18,7 @@ class WLibraryTextEdit : public QTextEdit, public virtual LibraryView {
     void onSearchStarting();
     void onSearchCleared();
     void onSearch(const QString& text);
+    void onShow();
 
 };
 

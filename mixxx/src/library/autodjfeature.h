@@ -1,9 +1,9 @@
-// playqueuefeature.h
+// AutoDJfeature.h
 // FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef PLAYQUEUEFEATURE_H
-#define PLAYQUEUEFEATURE_H
+#ifndef AUTODJFEATURE_H
+#define AUTODJFEATURE_H
 
 #include <QStringListModel>
 
@@ -14,12 +14,12 @@ class PlaylistTableModel;
 class ProxyTrackModel;
 class TrackCollection;
 
-class PlayQueueFeature : public LibraryFeature {
+class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
     public:
-    PlayQueueFeature(QObject* parent,
+    AutoDJFeature(QObject* parent,
                         TrackCollection* pTrackCollection);
-    virtual ~PlayQueueFeature();
+    virtual ~AutoDJFeature();
 
     QVariant title();
     QIcon getIcon();
@@ -40,10 +40,10 @@ public slots:
 private:
     TrackCollection *m_pTrackCollection;
     PlaylistDAO& m_playlistDao;
-    PlaylistTableModel* m_pPlayQueueTableModel;
-    ProxyTrackModel* m_pPlayQueueTableModelProxy;
+    //PlaylistTableModel* m_pAutoDJTableModel;
+    //ProxyTrackModel* m_pAutoDJTableModelProxy;
     QStringListModel m_childModel;
 };
 
 
-#endif /* PLAYQUEUEFEATURE_H */
+#endif /* AUTODJFEATURE_H */

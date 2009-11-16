@@ -79,6 +79,11 @@ DlgPrepare::~DlgPrepare()
     delete m_pAnalyserQueue;
 }
 
+void DlgPrepare::onShow()
+{
+    //Refresh crates
+    m_pCratesTableModel->select();
+}
 
 void DlgPrepare::setup(QDomNode node)
 {

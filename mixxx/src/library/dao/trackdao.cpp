@@ -32,7 +32,7 @@ void TrackDAO::initialize()
         qDebug() << "Invalid track_locations schema, d'oh!" << __FILE__ << __LINE__;
         exit(-1);
     }
-    query.finish();
+    //query.finish();
 
  	//Little bobby tables
     if (!query.exec("CREATE TABLE IF NOT EXISTS library (id INTEGER primary key AUTOINCREMENT, "
@@ -52,7 +52,7 @@ void TrackDAO::initialize()
         qDebug() << "Invalid library schema, d'oh!" << __FILE__ << __LINE__;
         exit(-1);
     }
-    query.finish();
+    //query.finish();
     
     m_database.commit();
 }
@@ -75,7 +75,7 @@ int TrackDAO::getTrackId(QString location)
     while (query.next()) {
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
-    query.finish();
+    //query.finish();
     //Q_ASSERT(trackLocationId >= 0);
         
     int libraryTrackId = -1;
@@ -84,7 +84,7 @@ int TrackDAO::getTrackId(QString location)
         libraryTrackId = query.value(query.record().indexOf("id")).toInt();
     }
     //Q_ASSERT(libraryTrackId >= 0);
-    query.finish();
+    //query.finish();
 
     m_database.commit();
 
@@ -101,7 +101,7 @@ QString TrackDAO::getTrackLocation(int trackId)
     while (query.next()) {
         trackLocationId = query.value(query.record().indexOf("location")).toInt();
     }
-    query.finish();
+    //query.finish();
     
     QString trackLocation = "";
     query.prepare("SELECT * FROM track_locations WHERE id=:id");
@@ -110,7 +110,7 @@ QString TrackDAO::getTrackLocation(int trackId)
     while (query.next()) {
         trackLocation = query.value(query.record().indexOf("location")).toString();
     }
-    query.finish();
+    //query.finish();
     
     return trackLocation;
 }
@@ -163,7 +163,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-    query.finish();
+    //query.finish();
 
     //Get the id of the track location, so we can make the Library table reference it.
     query.prepare("SELECT id FROM track_locations WHERE location=:location");
@@ -177,7 +177,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
-    query.finish();
+    //query.finish();
 
     //Failure of this assert indicates that we were unable to insert the track location
     //into the table AND we could not retrieve the id of that track location from
@@ -220,7 +220,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
         qDebug() << "Failed to INSERT new track into library" << __FILE__ << __LINE__ << query.lastError();
         return;
     }
-    query.finish();
+    //query.finish();
 
     query.prepare("SELECT id from library WHERE location = :location_id");
     query.bindValue(":location_id", trackLocationId);
@@ -234,7 +234,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
         qDebug() << "Could not get track ID to save the track cue points:"
                  << query.lastError();
     }
-    query.finish();
+    //query.finish();
 
  	//If addTrack() is called on a track that already exists in the library but has been "removed"
  	//(ie. mixxx_deleted is 1), then the above INSERT will fail silently. What we really want to
@@ -247,7 +247,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
                   "SET mixxx_deleted=0 "
                   "WHERE location==" + QString("%1").arg(trackLocationId));
     query.exec();
-    query.finish();
+    //query.finish();
 
     //Commit the transaction
     m_database.commit();
@@ -270,7 +270,7 @@ void TrackDAO::removeTrack(int id)
                   "SET mixxx_deleted=1 "
                   "WHERE id==" + QString("%1").arg(id));
     query.exec();
-    query.finish();
+    //query.finish();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
@@ -336,7 +336,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
     }
-    query.finish();
+    //query.finish();
     
     //Get the track location from the track_locations table.
     if (track != NULL) {
@@ -346,7 +346,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
             track->setLocation(query.value(query.record().indexOf("location")).toString());
         }
     }
-    query.finish();
+    //query.finish();
 
     return track;
 }
@@ -378,7 +378,7 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
     }
     if (trackLocationId < 0) //Track was not found in library, so don't try to update...
         return;
-    query.finish();
+    //query.finish();
     //Q_ASSERT(trackLocationId >= 0);
 
     //Update everything but "location", since that's what we identify the track by.
@@ -413,7 +413,7 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
     //query.bindValue(":location", pTrack->getLocation());
 
     query.exec();
-    query.finish();
+    //query.finish();
 
     query.prepare("SELECT id from library where location = :location_id");
     query.bindValue(":location_id", trackLocationId);

@@ -8,6 +8,7 @@
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "dlgprepare.h"
+#include "dlgautodj.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
@@ -16,7 +17,7 @@
 #include "library/rhythmboxfeature.h"
 #include "library/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/playqueuefeature.h"
+#include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
 
@@ -28,6 +29,7 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 const QString Library::m_sPrepareViewName = QString("Prepare");
+const QString Library::m_sAutoDJViewName = QString("Auto DJ");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig) {
@@ -36,7 +38,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
-    addFeature(new PlayQueueFeature(this, m_pTrackCollection));
+    addFeature(new AutoDJFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new CrateFeature(this, m_pTrackCollection));
     addFeature(new RhythmboxFeature(this));
@@ -79,6 +81,11 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     DlgPrepare* pPrepareView = new DlgPrepare(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pLibraryWidget->registerView(m_sPrepareViewName, pPrepareView);
 
+    DlgAutoDJ* pAutoDJView = new DlgAutoDJ(pLibraryWidget, m_pConfig, m_pTrackCollection);
+    pLibraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
+    connect(pAutoDJView, SIGNAL(loadTrack(TrackInfoObject*)),
+            this, SIGNAL(loadTrack(TrackInfoObject*)));
+    
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(pSidebarWidget, SIGNAL(clicked(const QModelIndex&)),

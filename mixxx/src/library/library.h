@@ -64,6 +64,7 @@ private:
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sPrepareViewName;
+    const static QString m_sAutoDJViewName;
 };
 
 #endif /* LIBRARY_H */

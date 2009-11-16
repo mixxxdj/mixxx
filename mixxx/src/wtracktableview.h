@@ -27,6 +27,7 @@ class WTrackTableView : public WLibraryTableView
     void onSearchStarting();
     void onSearchCleared();
     void onSearch(const QString& text);
+    void onShow();
 public slots:
     void loadTrackModel(QAbstractItemModel* model);
 private slots:

@@ -155,7 +155,7 @@ void LibraryScanner::scan(QString libraryPath)
 
 void LibraryScanner::scan()
 {
-    start(); //Starts the thread by calling run()
+    //start(); //Starts the thread by calling run()
 }
 
 /** Recursively scan a music library. Doesn't import tracks for any directories that 

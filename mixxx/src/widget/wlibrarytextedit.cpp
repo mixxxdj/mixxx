@@ -45,3 +45,7 @@ void WLibraryTextEdit::onSearchStarting() {
 void WLibraryTextEdit::onSearchCleared() {
 
 }
+
+void WLibraryTextEdit::onShow() {
+
+}

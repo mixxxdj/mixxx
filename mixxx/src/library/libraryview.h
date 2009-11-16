@@ -15,6 +15,7 @@ public:
     virtual void onSearchStarting() = 0;
     virtual void onSearchCleared() = 0;
     virtual void onSearch(const QString& text) = 0;
+    virtual void onShow() = 0;
 };
 
 #endif /* LIBRARYVIEW_H */
