@@ -9,7 +9,7 @@
 #include "engine/bpmcontrol.h"
 
 BpmControl::BpmControl(const char* _group,
-                       const ConfigObject<ConfigValue>* _config) :
+                       ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config) {
 
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
@@ -55,10 +55,10 @@ void BpmControl::slotSetEngineBpm(double bpm) {
 void BpmControl::slotControlBeatSync(double)
 {
     EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
-    
+
     if(!pOtherEngineBuffer)
         return;
-    
+
     double fOtherBpm = pOtherEngineBuffer->getBpm();
     double fThisBpm  = m_pEngineBpm->get();
     double fRateScale;

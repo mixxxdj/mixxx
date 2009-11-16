@@ -29,6 +29,7 @@ ControlObjectThread::ControlObjectThread(ControlObject * pControlObject)
 , m_pControlObject  (pControlObject)
 {
     // Update associated ControlObject
+    if (m_pControlObject == NULL) return;
     Q_ASSERT(m_pControlObject);
     m_pControlObject->addProxy(this);
 

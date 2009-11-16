@@ -523,6 +523,18 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             getField(tag,"TPE1",&s); // TPE1 : Artist
             Track->setArtist(s);
             s="";
+            getField(tag,"TALB",&s);
+            Track->setAlbum(s);
+            s="";
+            getField(tag,"TDRC",&s);
+            Track->setYear(s);
+            s="";
+            getField(tag,"TCON",&s);
+            Track->setGenre(s);
+            s="";
+            getField(tag,"TRCK",&s);
+            Track->setTrackNumber(s);
+            s="";
             getField(tag,"TBPM",&s); // TBPM: the bpm
             float bpm = 0;
             if (s.length()>1) bpm = str2bpm(s);

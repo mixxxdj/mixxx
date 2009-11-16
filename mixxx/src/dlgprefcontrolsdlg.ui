@@ -131,64 +131,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_3_3" >
-       <property name="enabled" >
-        <bool>true</bool>
-       </property>
-       <property name="font" >
-        <font/>
-       </property>
-       <property name="text" >
-        <string>Scale BPM display</string>
-       </property>
-       <property name="wordWrap" >
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1" colspan="2" >
-      <widget class="QComboBox" name="ComboBoxScaleBpm" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font" >
-        <font/>
-       </property>
-       <property name="toolTip" >
-        <string>Scale BPM display according to playback rate</string>
-       </property>
-       <item>
-        <property name="text" >
-         <string>Yes</string>
-        </property>
-       </item>
-       <item>
-        <property name="text" >
-         <string>No</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="5" column="0" >
-      <widget class="QLabel" name="TextLabel6_2_2_3_2" >
-       <property name="enabled" >
-        <bool>true</bool>
-       </property>
-       <property name="font" >
-        <font/>
-       </property>
-       <property name="text" >
-        <string>Tool tips</string>
-       </property>
-       <property name="wordWrap" >
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="1" colspan="2" >
       <widget class="QComboBox" name="ComboBoxTooltips" >
        <property name="sizePolicy" >
@@ -289,6 +231,22 @@
      </item>
      <item row="9" column="1" colspan="2" >
       <widget class="QComboBox" name="ComboBoxCueRecall" />
+     </item>
+     <item row="5" column="0" >
+      <widget class="QLabel" name="TextLabel6_2_2_3_2" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="font" >
+        <font/>
+       </property>
+       <property name="text" >
+        <string>Tool tips</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
