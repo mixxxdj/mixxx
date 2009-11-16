@@ -247,6 +247,11 @@ void WTrackTableView::onSearchCleared() {
     }
 }
 
+void WTrackTableView::onShow()
+{
+
+}
+
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {

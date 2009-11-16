@@ -288,6 +288,7 @@ sources = Split("""
                 dlgmidilearning.cpp
                 dlgtrackinfo.cpp
                 dlgprepare.cpp
+                dlgautodj.cpp
 
                 engine/enginebuffer.cpp
                 engine/enginebufferscale.cpp
@@ -397,7 +398,7 @@ sources = Split("""
                 library/playlisttablemodel.cpp
                 library/libraryfeature.cpp
                 library/preparefeature.cpp
-                library/playqueuefeature.cpp
+                library/autodjfeature.cpp
                 library/mixxxlibraryfeature.cpp
                 library/playlistfeature.cpp
                 library/rhythmboxfeature.cpp
@@ -805,6 +806,7 @@ env.Uic4('dlgaboutdlg.ui')
 env.Uic4('dlgmidilearning.ui')
 env.Uic4('dlgtrackinfo.ui')
 env.Uic4('dlgprepare.ui')
+env.Uic4('dlgautodj.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('#res/mixxx.qrc')

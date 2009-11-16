@@ -26,6 +26,8 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 
+#define AUTODJ_TABLE "Auto DJ"
+
 class TrackInfoObject;
 class BpmDetector;
 

@@ -22,6 +22,7 @@ public:
     virtual void onSearchStarting();
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
+    virtual void onShow();
     public slots:
     void tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void selectAll(); 

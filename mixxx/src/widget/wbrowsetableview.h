@@ -19,6 +19,7 @@ class WBrowseTableView : public virtual WLibraryTableView {
     void onSearchStarting();
     void onSearchCleared();
     void onSearch(const QString& text);
+    void onShow();
   signals:
     void loadToPlayer(const QModelIndex&, int);
     void search(const QString&);
