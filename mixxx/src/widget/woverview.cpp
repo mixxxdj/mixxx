@@ -9,6 +9,8 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+
+#include <QBrush>
 #include <QtDebug>
 #include <Q3MemArray>
 #include <QMouseEvent>
@@ -20,6 +22,7 @@
 #include <qapplication.h>
 
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "trackinfoobject.h"
@@ -34,6 +37,28 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_bDrag = false;
     m_pScreenBuffer = 0;
 
+    m_pLoopStart = ControlObject::getControl(
+        ConfigKey(m_pGroup, "loop_start_position"));
+    connect(m_pLoopStart, SIGNAL(valueChanged(double)),
+            this, SLOT(loopStartChanged(double)));
+    connect(m_pLoopStart, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(loopStartChanged(double)));
+    loopStartChanged(m_pLoopStart->get());
+    m_pLoopEnd = ControlObject::getControl(
+        ConfigKey(m_pGroup, "loop_end_position"));
+    connect(m_pLoopEnd, SIGNAL(valueChanged(double)),
+            this, SLOT(loopEndChanged(double)));
+    connect(m_pLoopEnd, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(loopEndChanged(double)));
+    loopEndChanged(m_pLoopEnd->get());
+    m_pLoopEnabled = ControlObject::getControl(
+        ConfigKey(m_pGroup, "loop_enabled"));
+    connect(m_pLoopEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(loopEnabledChanged(double)));
+    connect(m_pLoopEnabled, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(loopEnabledChanged(double)));
+    loopEnabledChanged(m_pLoopEnabled->get());
+
     QString pattern = "hotcue_%1_position";
 
     int i = 0;
@@ -41,7 +66,6 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     hotcueKey.group = m_pGroup;
     hotcueKey.item = pattern.arg(i);
     ControlObject* pControl = ControlObject::getControl(hotcueKey);
-
 
     qDebug() << "Connecting hotcue controls.";
     while (pControl) {
@@ -52,6 +76,8 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
         qDebug() << "Connecting hotcue" << hotcueKey.group << hotcueKey.item;
 
         connect(pControl, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(cueChanged(double)));
+        connect(pControl, SIGNAL(valueChanged(double)),
                 this, SLOT(cueChanged(double)));
 
         hotcueKey.item = pattern.arg(++i);
@@ -156,6 +182,18 @@ void WOverview::cueChanged(double v) {
     m_hotcues[hotcue] = v;
     qDebug() << "hotcue" << hotcue << "position" << v;
     update();
+}
+
+void WOverview::loopStartChanged(double v) {
+    m_dLoopStart = v;
+}
+
+void WOverview::loopEndChanged(double v) {
+    m_dLoopEnd = v;
+}
+
+void WOverview::loopEnabledChanged(double v) {
+    m_bLoopEnabled = !(v == 0.0f);
 }
 
 void WOverview::setData(QByteArray* pWaveformSummary, long liSampleDuration)
@@ -314,16 +352,47 @@ void WOverview::paintEvent(QPaintEvent *)
         // Draw hotcues
 
         if (m_liSampleDuration > 0) {
+            float fPos;
+
+            // Draw loop markers
+            QColor loopColor = m_qColorMarker;
+            if (!m_bLoopEnabled) {
+                loopColor = m_qColorSignal;
+            }
+            paint.setPen(loopColor);
+            if (m_dLoopStart != -1.0) {
+                fPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
+                paint.drawLine(fPos, 0, fPos, height());
+            }
+            if (m_dLoopEnd != -1.0) {
+                fPos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
+                paint.drawLine(fPos, 0, fPos, height());
+            }
+
+            if (m_dLoopStart != -1.0 && m_dLoopEnd != -1.0) {
+                //loopColor.setAlphaF(0.5);
+                paint.setOpacity(0.5);
+                //paint.setPen(loopColor);
+                paint.setBrush(QBrush(loopColor));
+                float sPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
+                float ePos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
+                QRectF rect(QPointF(sPos, 0), QPointF(ePos, height()-1));
+                paint.drawRect(rect);
+                paint.setOpacity(1.0);
+            }
+
             QFont font;
             font.setBold(false);
             font.setPixelSize(height());
+            paint.setPen(m_qColorMarker);
             paint.setFont(font);
+
             for (int i = 0; i < m_hotcues.size(); ++i) {
                 int position = m_hotcues[i];
                 if (position == -1)
                     continue;
-                float fPos = float(position) * (width()-2) / m_liSampleDuration;
-                qDebug() << "Drawing cue" << i << "at" << fPos;
+                fPos = float(position) * (width()-2) / m_liSampleDuration;
+                //qDebug() << "Drawing cue" << i << "at" << fPos;
                 // paint.drawLine(fPos, 0,
                 //                fPos, height());
                 // paint.drawLine(fPos+1, 0,
