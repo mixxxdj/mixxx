@@ -228,6 +228,27 @@ void DlgPrefMidiBindings::slotApply() {
 }
 
 void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
+
+    //If the user has checked the "Enabled" checkbox but they haven't
+    //hit OK to apply it yet, prompt them to apply the settings before we open
+    //the MIDI learning dialog. If we don't apply the settings first and open the device,
+    //MIDI learn won't react to MIDI messages.
+    if (chkEnabledDevice->isChecked() && !m_pMidiDevice->isOpen())
+    {
+        QMessageBox::StandardButton result = QMessageBox::question(this, 
+                    tr("Apply MIDI device settings?"),
+                    tr("Your settings must be applied before starting the MIDI learning wizard.\n"
+                        "Apply settings and continue?"));
+        if (result == QMessageBox::Cancel)
+        {
+            return;
+        }
+        else
+        {
+            slotApply();
+        }
+    }
+
     //Note that DlgMidiLearning is set to delete itself on
     //close using the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgMidiLearning = new DlgMidiLearning(this, m_pMidiDevice->getMidiMapping());
