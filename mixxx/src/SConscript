@@ -540,8 +540,8 @@ if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHe
 CheckFFMPEG(conf, sources)
 
 #Check for PortTime
-if not conf.CheckLib(['porttime', 'libporttime']):
-	print "Did not find PortTime or it\'s development headers, exiting!"
+if not conf.CheckHeader(['porttime.h']):
+	print "Did not find PortTime development header, exiting!"
 	Exit(1)
 
 #Check for PortMIDI
