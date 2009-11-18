@@ -140,6 +140,7 @@ void WaveformRenderMark::setup(QDomNode node) {
 
     // Read the mark's text
     m_markText = WWidget::selectNodeQString(node, "Text");
+    m_markPixmapPath = WWidget::selectNodeQString(node,"Pixmap");
 
     setupMarkPixmap();
 }
@@ -225,6 +226,21 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
 }
 
 void WaveformRenderMark::setupMarkPixmap() {
+    // Load the pixmap from file -- takes precedence over text.
+    if (m_markPixmapPath != "") {
+        // TODO(XXX) We could use WPixmapStore here, which would recolor the
+        // pixmap according to the theme. Then we would have to worry about
+        // deleting it -- for now we'll just load the pixmap directly.
+        m_markPixmap = QPixmap(WWidget::getPath(m_markPixmapPath));
+
+        // If loading the pixmap didn't fail, then we're done. Otherwise fall
+        // through and render a label.
+        if (!m_markPixmap.isNull()) {
+            return;
+        }
+    }
+
+    // If no text is provided, leave m_markPixmap as a null pixmap
     if (m_markText == "") {
         return;
     }
