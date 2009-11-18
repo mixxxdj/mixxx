@@ -86,6 +86,7 @@ HEADERS += src/analyser.h \
     src/configobject.h \
     src/controlbeat.h \
     src/controlevent.h \
+	src/engine/bpmcontrol.h \
     src/engine/engineabstractrecord.h \
     src/engine/enginebuffer.h \
     src/engine/enginebuffercue.h \
@@ -113,6 +114,10 @@ HEADERS += src/analyser.h \
     src/engine/enginevolume.h \
     src/engine/enginevumeter.h \
     src/engine/enginexfader.h \
+	src/engine/loopingcontrol.h \
+	src/engine/enginecontrol.h \
+	src/engine/ratecontrol.h \
+	src/engine/readaheadmanager.h \
     src/waveform/glwaveformrenderer.h \
     src/waveform/renderobject.h \
     src/waveform/waveformrenderbackground.h \
@@ -209,10 +214,7 @@ HEADERS += src/analyser.h \
     src/playerinfo.h \
     src/probabilityvector.h \
     src/proxymodel.h \
-    src/reader.h \
-    src/readerevent.h \
-    src/readerextract.h \
-    src/readerextractwave.h \
+	src/cachingreader.h \
     src/rotary.h \
     src/rtthread.h \
     src/segmentation.h \
@@ -249,6 +251,7 @@ SOURCES += src/analyserbpm.cpp \
     src/configobject.cpp \
     src/controlbeat.cpp \
     src/controlevent.cpp \
+	src/engine/bpmcontrol.cpp \
     src/engine/enginebuffer.cpp \
     src/engine/enginebuffercue.cpp \
     src/engine/enginebufferscale.cpp \
@@ -275,6 +278,10 @@ SOURCES += src/analyserbpm.cpp \
     src/engine/enginevolume.cpp \
     src/engine/enginevumeter.cpp \
     src/engine/enginexfader.cpp \
+	src/engine/loopingcontrol.cpp \
+	src/engine/ratecontrol.cpp \
+	src/engine/enginecontrol.cpp \
+	src/engine/readaheadmanager.cpp \
     src/waveform/glwaveformrenderer.cpp \
     src/waveform/renderobject.cpp \
     src/waveform/waveformrenderbackground.cpp \
@@ -363,10 +370,7 @@ SOURCES += src/analyserbpm.cpp \
     src/playerinfo.cpp \
     src/probabilityvector.cpp \
     src/proxymodel.cpp \
-    src/reader.cpp \
-    src/readerevent.cpp \
-    src/readerextract.cpp \
-    src/readerextractwave.cpp \
+    src/cachingreader.cpp \
     src/rotary.cpp \
     src/rtthread.cpp \
     src/segmentation.cpp \
