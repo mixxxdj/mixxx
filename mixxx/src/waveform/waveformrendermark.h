@@ -53,6 +53,7 @@ private:
     QColor m_markColor;
     QColor m_textColor;
     QString m_markText;
+    QString m_markPixmapPath;
     MarkAlign m_markAlign;
     QPixmap m_markPixmap;
     double m_dSamplesPerDownsample;
