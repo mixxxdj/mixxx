@@ -168,13 +168,14 @@ void WaveformRenderMarkRange::setup(QDomNode node) {
     QString markDisabledColor = WWidget::selectNodeQString(node, "DisabledColor");
     if (markDisabledColor == "") {
         // As a fallback, grab the mark color from the parent's MarkerColor
-        markDisabledColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
+        markDisabledColor = WWidget::selectNodeQString(
+            node.parentNode(), "SignalColor");
         qDebug() << "Didn't get mark Color, using parent's MarkerColor:"
                  << markDisabledColor;
         m_markDisabledColor.setNamedColor(markDisabledColor);
-        m_markDisabledColor = QColor(255 - m_markDisabledColor.red(),
-                             255 - m_markDisabledColor.green(),
-                             255 - m_markDisabledColor.blue());
+        // m_markDisabledColor = QColor(255 - m_markDisabledColor.red(),
+        //                      255 - m_markDisabledColor.green(),
+        //                      255 - m_markDisabledColor.blue());
     } else {
         m_markDisabledColor.setNamedColor(markDisabledColor);
     }
