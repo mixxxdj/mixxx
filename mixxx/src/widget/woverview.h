@@ -52,17 +52,28 @@ class WOverview : public WWidget
     void slotLoadNewWaveform(TrackInfoObject* pTrack);
   private slots:
     void cueChanged(double v);
+    void loopStartChanged(double v);
+    void loopEndChanged(double v);
+    void loopEnabledChanged(double v);
   private:
 
     const char* m_pGroup;
     bool waveformChanged;
 
+    // Loop controls and values
+    ControlObject* m_pLoopStart;
+    ControlObject* m_pLoopEnd;
+    ControlObject* m_pLoopEnabled;
+    double m_dLoopStart, m_dLoopEnd;
+    bool m_bLoopEnabled;
+
+    // Hotcue controls and values
     QList<ControlObject*> m_hotcueControls;
     QMap<QObject*, int> m_hotcueMap;
     QList<int> m_hotcues;
 
     /** Pointer to array containing waveform summary */
-    QByteArray *m_pWaveformSummary;
+    QByteArray* m_pWaveformSummary;
     /** Duration of current track in samples */
     int m_liSampleDuration;
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */

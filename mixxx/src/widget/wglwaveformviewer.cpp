@@ -18,9 +18,9 @@ WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWavef
 
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
-    
+
     m_pGroup = group;
-    
+
     setAcceptDrops(true);
 
     installEventFilter(this);
@@ -30,7 +30,7 @@ WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWavef
     int desired_fps = 40;
     int update_interval = 1000 / desired_fps;
     m_iTimerID = startTimer(update_interval);
-    
+
     m_painting = false;
 }
 
@@ -52,7 +52,7 @@ void WGLWaveformViewer::setup(QDomNode node) {
     int sep = pos.indexOf(",");
     int x = pos.left(sep).toInt();
     int y = pos.mid(sep+1).toInt();
-    
+
     move(x,y);
 
     // Acquire size
@@ -63,18 +63,23 @@ void WGLWaveformViewer::setup(QDomNode node) {
 
     setFixedSize(x,y);
 
-    m_pWaveformRenderer->resize(x,y);
-
     m_pWaveformRenderer->setup(node);
+
+    m_pWaveformRenderer->resize(x,y);
 }
 
 void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     QPainter painter;
     painter.begin(this);
-    
+
     painter.setRenderHint(QPainter::Antialiasing);
+    //painter.setRenderHint(QPainter::TextAntialiasing);
+
+    // HighQualityAntialiasing makes some CPUs go crazy
+    //painter.setRenderHint(QPainter::HighQualityAntialiasing);
+
     m_pWaveformRenderer->draw(&painter, event);
-    
+
     painter.end();
     m_painting = false;
     // QPainter goes out of scope and is destructed
@@ -84,52 +89,13 @@ void WGLWaveformViewer::timerEvent(QTimerEvent *qte) {
     //m_paintMutex.lock();
     if(!m_painting) {
         m_painting = true;
-               
+
         // The docs say update is better than repaint.
         update();
         //updateGL();
     }
     //m_paintMutex.unlock();
 }
-
-
-void WGLWaveformViewer::initializeGL() {
-    QGLWidget::initializeGL();
-    //qDebug() << "QGL initializeGL";
-
-    /*
-    // setup backface culling so CCW polygons are facing out
-    glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    
-    // enables zbuffer
-    glEnable(GL_DEPTH_TEST);
-
-    // enable alpha blending
-    glEnable(GL_BLEND);
-    */
-    
-
-}
-
-void WGLWaveformViewer::resizeGL(int w, int h) {
-    QGLWidget::resizeGL(w,h);
-    //qDebug() << "QGL resizeGL " << w << " : " << h;
-
-    //m_pWaveformRenderer->resize(w,h);    
-}
-
-void WGLWaveformViewer::paintGL() {
-    QGLWidget::paintGL();
-    
-    //qDebug() << "QGL paintGL";
-
-    //m_pWaveformRenderer->glDraw();
-    //m_painting = false;
-}
-
-
 
 /** SLOTS **/
 
