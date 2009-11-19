@@ -23,10 +23,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 11:00:14 -0500 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2009-05-17 07:35:13 -0400 (Sun, 17 May 2009) $
 // File revision : $Revision: 4 $
 //
-// $Id: sse_optimized.cpp 63 2009-02-21 16:00:14Z oparviai $
+// $Id: sse_optimized.cpp 71 2009-05-17 11:35:13Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -68,6 +68,7 @@ using namespace soundtouch;
 
 #include "TDStretch.h"
 #include <xmmintrin.h>
+#include <math.h>
 
 // Calculates cross correlation of two buffers
 double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) const
@@ -75,7 +76,7 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     int i;
     const float *pVec1;
     const __m128 *pVec2;
-    __m128 vSum;
+    __m128 vSum, vNorm;
 
     // Note. It means a major slow-down if the routine needs to tolerate 
     // unaligned __m128 memory accesses. It's way faster if we can skip 
@@ -107,30 +108,43 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     // Note: pV2 _must_ be aligned to 16-bit boundary, pV1 need not.
     pVec1 = (const float*)pV1;
     pVec2 = (const __m128*)pV2;
-    vSum = _mm_setzero_ps();
+    vSum = vNorm = _mm_setzero_ps();
 
     // Unroll the loop by factor of 4 * 4 operations
     for (i = 0; i < overlapLength / 8; i ++) 
     {
+        __m128 vTemp;
         // vSum += pV1[0..3] * pV2[0..3]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1),pVec2[0]));
+        vTemp = _MM_LOAD(pVec1);
+        vSum  = _mm_add_ps(vSum,  _mm_mul_ps(vTemp ,pVec2[0]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         // vSum += pV1[4..7] * pV2[4..7]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1 + 4), pVec2[1]));
+        vTemp = _MM_LOAD(pVec1 + 4);
+        vSum  = _mm_add_ps(vSum, _mm_mul_ps(vTemp, pVec2[1]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         // vSum += pV1[8..11] * pV2[8..11]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1 + 8), pVec2[2]));
+        vTemp = _MM_LOAD(pVec1 + 8);
+        vSum  = _mm_add_ps(vSum, _mm_mul_ps(vTemp, pVec2[2]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         // vSum += pV1[12..15] * pV2[12..15]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1 + 12), pVec2[3]));
+        vTemp = _MM_LOAD(pVec1 + 12);
+        vSum  = _mm_add_ps(vSum, _mm_mul_ps(vTemp, pVec2[3]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         pVec1 += 16;
         pVec2 += 4;
     }
 
     // return value = vSum[0] + vSum[1] + vSum[2] + vSum[3]
+    float *pvNorm = (float*)&vNorm;
+    double norm = sqrt(vNorm.m128_f32[0] + vNorm.m128_f32[1] + vNorm.m128_f32[2] + vNorm.m128_f32[3]);
+    if (norm < 1e-9) norm = 1.0;    // to avoid div by zero
+
     float *pvSum = (float*)&vSum;
-    return (double)(pvSum[0] + pvSum[1] + pvSum[2] + pvSum[3]);
+    return (double)(vSum.m128_f32[0] + vSum.m128_f32[1] + vSum.m128_f32[2] + vSum.m128_f32[3]) / norm;
 
     /* This is approximately corresponding routine in C-language:
     double corr;
