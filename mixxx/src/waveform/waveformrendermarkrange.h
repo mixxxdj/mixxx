@@ -1,10 +1,11 @@
+// waveformrendermarkrange.h
+// Created 11/14/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef WAVEFORMRENDERMARK_H
-#define WAVEFORMRENDERMARK_H
+#ifndef WAVEFORMRENDERMARKRANGE_H
+#define WAVEFORMRENDERMARKRANGE_H
 
 #include <QObject>
 #include <QColor>
-#include <QPixmap>
 #include <QVector>
 
 class QDomNode;
@@ -19,11 +20,11 @@ class ControlObjectThreadMain;
 class WaveformRenderer;
 class TrackInfoObject;
 
-class WaveformRenderMark : public RenderObject {
+class WaveformRenderMarkRange : public RenderObject {
     Q_OBJECT
 public:
-    explicit WaveformRenderMark(const char* pGroup,
-                                WaveformRenderer *parent);
+    explicit WaveformRenderMarkRange(const char* pGroup,
+                                     WaveformRenderer *parent);
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event,
@@ -31,33 +32,27 @@ public:
     void newTrack(TrackInfoObject *pTrack);
 
 public slots:
-    void slotUpdateMarkPoint(double mark);
+    void slotUpdateMarkStartPoint(double mark);
+    void slotUpdateMarkEndPoint(double mark);
+    void slotUpdateMarkEnabled(double mark);
     void slotUpdateTrackSamples(double samples);
 private:
-    void setupMarkPixmap();
-
-    enum MarkAlign {
-        TOP = 0,
-        BOTTOM,
-        CENTER
-    };
-
     const char* m_pGroup;
     WaveformRenderer *m_pParent;
-    ControlObjectThreadMain *m_pMarkPoint;
+
+    ControlObjectThreadMain *m_pMarkStartPoint;
+    ControlObjectThreadMain *m_pMarkEndPoint;
+    ControlObjectThreadMain *m_pMarkEnabled;
     ControlObjectThreadMain *m_pTrackSamples;
     TrackInfoObject *m_pTrack;
 
-    int m_iMarkPoint;
+    bool m_bMarkEnabled;
+    int m_iMarkStartPoint, m_iMarkEndPoint;
     int m_iWidth, m_iHeight;
     QColor m_markColor;
-    QColor m_textColor;
-    QString m_markText;
-    QString m_markPixmapPath;
-    MarkAlign m_markAlign;
-    QPixmap m_markPixmap;
-    double m_dSamplesPerDownsample;
+    QColor m_markDisabledColor;
 
+    double m_dSamplesPerDownsample;
     int m_iNumSamples;
     int m_iSampleRate;
 };

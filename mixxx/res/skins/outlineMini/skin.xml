@@ -15,7 +15,7 @@
 				 <VFact>0.7</VFact>
 				 <HFact>0.3</HFact>
 			 </HSVTweak>
-			 
+
 			 <HSVTweak>
 				 <SMax>50</SMax>
 				 <HFact>0</HFact>
@@ -23,7 +23,7 @@
 				 <SConst>120</SConst>
 				 <VConst>-10</VConst>
 			 </HSVTweak>
-			 
+
 		 </Filters>
 	 </Scheme>
   <Scheme>
@@ -154,7 +154,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate 
+  <Tooltip>Change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -176,7 +176,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate 
+  <Tooltip>Change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -198,7 +198,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate 
+  <Tooltip>Change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -220,7 +220,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate 
+  <Tooltip>Temporary change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -252,7 +252,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate 
+  <Tooltip>Temporary change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -284,7 +284,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate 
+  <Tooltip>Temporary change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -316,7 +316,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate 
+  <Tooltip>Temporary change playback rate
 (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -514,7 +514,7 @@ Right click: Set cue point
 
  <PushButton>
   <Tooltip>Go to and play (while playing),
-Set cue point (while stopped), 
+Set cue point (while stopped),
 Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -537,7 +537,7 @@ Go to and stop (right-click)</Tooltip>
 
  <PushButton>
   <Tooltip>Go to and play (while playing),
-Set cue point (while stopped), 
+Set cue point (while stopped),
 Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -601,7 +601,7 @@ Go to and stop (right-click)</Tooltip>
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast forward, 
+  <Tooltip>Left click: Fast forward,
 Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -628,7 +628,7 @@ Right click: End of track</Tooltip>
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast backward, 
+  <Tooltip>Left click: Fast backward,
 Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -655,7 +655,7 @@ Right click: Start of track</Tooltip>
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast forward, 
+  <Tooltip>Left click: Fast forward,
 Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -682,7 +682,7 @@ Right click: End of track</Tooltip>
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast backward, 
+  <Tooltip>Left click: Fast backward,
 Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
@@ -974,10 +974,24 @@ Right click: Start of track</Tooltip>
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#0000f0</BeatColor>
   <MarkerColor>#0000ff</MarkerColor>
-  <FisheyeColor>#ffffff</FisheyeColor>
-  <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
-
 
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
@@ -988,8 +1002,23 @@ Right click: Start of track</Tooltip>
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#f00000</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
-  <FisheyeColor>#ffffff</FisheyeColor>
-  <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
 <!-- Track title display -->
