@@ -141,7 +141,8 @@ def getFlags(env, argflag, default=0):
 
 
 Import('platform')
-Import('machine')	#CPU Architecture for optimizing x64 builds
+Import('machine')	#CPU architecture for optimization
+Import('architecture')	#CPU type & binary format for optimization
 
 #Figure out what the QT path is
 
@@ -1184,13 +1185,23 @@ if int(flags_asmlib):
 	env.Append(LIBPATH='#/../asmlib')
 	if platform == 'linux':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		env.Append(LIBS = '":alibelf32o.a"')
+		if architecture[0] == '64bit':
+			env.Append(LIBS = '":alibelf64o.a"')
+		else:
+			env.Append(LIBS = '":alibelf32o.a"')
 	elif platform == 'osx':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		env.Append(LIBS = '":alibmac32o.a"')
+		if architecture[0] == '64bit':
+			env.Append(LIBS = '":alibmac64o.a"')
+		else:
+			env.Append(LIBS = '":alibmac32o.a"')
 	elif 'win' in platform:
 		env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
-		env.Append(LIBS = 'alibcof32o')
+		if platform == 'win64':
+			env.Append(LIBS = 'alibcof64o')
+		else:
+			env.Append(LIBS = 'alibcof32o')
+	env.Append(CXXFLAGS = ' ') # add a space to the end of CXXFLAGS
 else:
 	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... disabled"
 
