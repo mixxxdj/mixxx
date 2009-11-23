@@ -10,6 +10,13 @@
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 
+#ifdef _MSC_VER
+#include <float.h>  // for _isnan() on VC++
+#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+#else
+#include <math.h>  // for isnan() everywhere else
+#endif
+
 // Static default values for rate buttons
 double RateControl::m_dTemp = 0.01;
 double RateControl::m_dTempSmall = 0.001;
