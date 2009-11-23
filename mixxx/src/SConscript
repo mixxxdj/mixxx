@@ -1183,6 +1183,7 @@ flags_asmlib = getFlags(env, 'asmlib', 0)
 if int(flags_asmlib):
 	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... enabled"
 	env.Append(LIBPATH='#/../asmlib')
+	build_flags += 'asmlib '
 	if platform == 'linux':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
 		if architecture[0] == '64bit':
