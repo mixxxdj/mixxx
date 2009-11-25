@@ -214,9 +214,15 @@ void DlgPrefMidiBindings::slotApply() {
      * bindings. */
     m_pMidiDevice->disableMidiLearn();
     if (chkEnabledDevice->isChecked()) {
+        //Enable the device.
         enableDevice();
+
+        //Disable processing of MIDI messages received from the device in order to
+        //prevent a race condition while we modify the MIDI mapping.
+        m_pMidiDevice->setReceiveInhibit(true);
         m_pMidiDevice->getMidiMapping()->applyPreset();
-    
+        m_pMidiDevice->setReceiveInhibit(false);
+
         //FIXME: We need some logic like this to make changing the output device work. 
         //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
         /*

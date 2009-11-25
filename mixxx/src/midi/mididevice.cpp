@@ -41,6 +41,7 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
     m_pCorrespondingOutputDevice = NULL;
     m_bIsOpen = false;
     m_bMidiLearn = false;
+    m_bReceiveInhibit = false;
 
     if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
@@ -160,6 +161,15 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     MidiMessage inputCommand(status, control, channel);
 
+    //If the receive inhibit flag is true, then we don't process any midi messages
+    //that are received from the device. This is done in order to prevent a race
+    //condition where the MidiMapping is accessed via isMidiMessageMapped() below
+    //but it is already locked because it is being modified by the GUI thread.
+    //(This happens when you hit apply in the preferences and then quickly push
+    // a button on your controller.)
+    if (m_bReceiveInhibit)
+        return;
+
     if (m_bMidiLearn) {
         emit(midiEvent(inputCommand));
         return; // Don't process midi messages further when MIDI learning
@@ -228,4 +238,11 @@ bool MidiDevice::midiDebugging()
     //Assumes a lock is already held. :/
     bool debug = m_midiDebug;
     return debug;
+}
+
+void MidiDevice::setReceiveInhibit(bool inhibit)
+{
+    //See comments for m_bReceiveInhibit.
+    QMutexLocker locker(&m_mutex);
+    m_bReceiveInhibit = inhibit;
 }
