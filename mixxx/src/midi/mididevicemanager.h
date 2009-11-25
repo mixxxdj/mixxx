@@ -27,9 +27,9 @@ class DlgPrefMidiBindings;
 class MidiDeviceManager : public QObject
 {
     Q_OBJECT
-	public:
-		MidiDeviceManager(ConfigObject<ConfigValue> * pConfig);
-		~MidiDeviceManager();
+    public:
+        MidiDeviceManager(ConfigObject<ConfigValue> * pConfig);
+        ~MidiDeviceManager();
         QList<MidiDevice*> getDeviceList(bool bOutputDevices=true, bool bInputDevice=true);
         QStringList getConfigList(QString path);
         void saveMappings(bool onlyActive=false);
@@ -43,11 +43,10 @@ class MidiDeviceManager : public QObject
         void disableMidiLearn(); */ //Moving MIDI learning into MIDI device, a la 1.7.0
     signals:
         void devicesChanged();
-	private:
-		QList<MidiDevice*> m_devices;
-	    ConfigObject<ConfigValue> *m_pDeviceSettings;
-	    ConfigObject<ConfigValue> *m_pConfig;
-	    MidiDevice* m_pPrimaryMidiDevice;
+    private:
+        QList<MidiDevice*> m_devices;
+        ConfigObject<ConfigValue> *m_pDeviceSettings;
+        ConfigObject<ConfigValue> *m_pConfig;
     };
     
 #endif
