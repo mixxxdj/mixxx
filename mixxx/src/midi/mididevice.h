@@ -64,6 +64,7 @@ Q_OBJECT
         bool getMidiLearnStatus();
         void receive(MidiStatusByte status, char channel, char control, char value);
         bool midiDebugging();
+        void setReceiveInhibit(bool inhibit);
     public slots:
         void disableMidiLearn();
         void enableMidiLearn();
@@ -92,6 +93,10 @@ Q_OBJECT
         bool m_midiDebug;
         /** Mutex to protect against concurrent access to member variables */
         QMutex m_mutex;
+        /** A flag to inhibit the reception of messages from this device. This is used to prevent
+            a race condition when a MIDI message is received and looked up in the MidiMapping while
+            the MidiMapping is being modified (and is already locked).  */
+        bool m_bReceiveInhibit;
 };
 
 #endif
