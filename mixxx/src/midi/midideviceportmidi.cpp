@@ -36,7 +36,7 @@ MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping,
                                        const PmDeviceInfo* outputDeviceInfo, 
                                        int inputDeviceIndex,
                                        int outputDeviceIndex)
-                                        : MidiDevice(mapping), QThread() 
+                                        : MidiDevice(mapping) 
 {
     m_pInputStream = NULL;
     m_pOutputStream = NULL;
@@ -55,6 +55,8 @@ MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping,
     if (outputDeviceInfo) {
         m_bIsOutputDevice = m_pOutputDeviceInfo->output;
     }
+    
+    m_pMidiMapping->setName(m_strDeviceName);
 }
 
 MidiDevicePortMidi::~MidiDevicePortMidi()
@@ -64,6 +66,8 @@ MidiDevicePortMidi::~MidiDevicePortMidi()
 
 int MidiDevicePortMidi::open()
 {
+    QMutexLocker Locker(&m_mutex); //Make this function thread safe.
+    
     if (m_bIsOpen) {
         qDebug() << "PortMIDI device" << m_strDeviceName << "already open";
         return -1;
@@ -76,7 +80,9 @@ int MidiDevicePortMidi::open()
     if (m_strDeviceName == MIXXX_PORTMIDI_NO_DEVICE_STRING)
         return -1;
 
+    m_sPMLock.lock();
     PmError err = Pm_Initialize();
+    m_sPMLock.unlock();
     if( err != pmNoError )
     {
         qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
@@ -89,12 +95,14 @@ int MidiDevicePortMidi::open()
         {
             if (midiDebugging()) qDebug() << "MidiDevicePortMidi: Opening" << m_pInputDeviceInfo->name << "index" << m_iInputDeviceIndex << "for input";
 
+            m_sPMLock.lock();
             err = Pm_OpenInput( &m_pInputStream,
                     m_iInputDeviceIndex,
                     NULL, //No drive hacks
                     MIXXX_PORTMIDI_BUFFER_LEN,
                     NULL, 
                     NULL);
+            m_sPMLock.unlock();
     
             if( err != pmNoError )
             {
@@ -108,7 +116,8 @@ int MidiDevicePortMidi::open()
         if (m_bIsOutputDevice)
         {
             if (midiDebugging()) qDebug() << "MidiDevicePortMidi: Opening" << m_pOutputDeviceInfo->name << "index" << m_iOutputDeviceIndex << "for output";
-
+            
+            m_sPMLock.lock();
             err = Pm_OpenOutput( &m_pOutputStream,
                     m_iOutputDeviceIndex,
                     NULL, // No driver hacks
@@ -116,6 +125,7 @@ int MidiDevicePortMidi::open()
                     NULL, // Use PortTime for timing
                     NULL, // No time info
                     0);   // No latency compensation.
+            m_sPMLock.unlock();
 
             if( err != pmNoError )
             {
@@ -133,7 +143,7 @@ int MidiDevicePortMidi::open()
 }
 
 int MidiDevicePortMidi::close()
-{
+{    
     if (!m_bIsOpen) {
         qDebug() << "PortMIDI device" << m_strDeviceName << "already closed";
         return -1;
@@ -141,8 +151,10 @@ int MidiDevicePortMidi::close()
     
     shutdown();
 
+    //shutdown() locks so we must lock after it.
+    QMutexLocker Locker(&m_mutex);
+
     m_bStopRequested = true;
-    m_mutex.lock();
     
     if (m_pInputStream)
     {
@@ -171,9 +183,7 @@ int MidiDevicePortMidi::close()
     }
     
     m_bIsOpen = false;
-    
-    m_mutex.unlock();
-        
+            
     return 0;
 }
 
@@ -186,9 +196,10 @@ void MidiDevicePortMidi::run()
 
     do
     {
-        m_mutex.lock();
         if (m_pInputStream)
         {
+            //TODO: Inhibit receiving of MIDI messages to prevent race condition?
+        
             m_sPMLock.lock();
             numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
             m_sPMLock.unlock();
@@ -197,13 +208,11 @@ void MidiDevicePortMidi::run()
             {
                 //if (Pm_MessageStatus(m_midiBuffer[i].message) == 0x90) //Note on, channel 1
                 {
-                    m_sPMLock.lock();
                     unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
                     unsigned char opcode = status & 0xF0;
                     unsigned char channel = status & 0x0F;
                     unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                     unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                    m_sPMLock.unlock();
                                     
                     MidiDevice::receive((MidiStatusByte)status, channel, note, velocity);
 
@@ -213,6 +222,7 @@ void MidiDevicePortMidi::run()
         
         usleep(5000); //Sleep this thread for 5 milliseconds between checking for new MIDI events.
         
+        m_mutex.lock();
         stopRunning = m_bStopRequested; //Cache locally for thread-safety.
         m_mutex.unlock(); //Have to unlock inside the loop to give the other thread a chance to lock.
         
@@ -223,6 +233,8 @@ void MidiDevicePortMidi::run()
 
 void MidiDevicePortMidi::sendShortMsg(unsigned int word) 
 {
+    QMutexLocker Locker(&m_mutex);
+    
     if (m_pOutputStream)
     {
         m_sPMLock.lock();
@@ -230,11 +242,14 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
         if( err != pmNoError ) qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
         m_sPMLock.unlock();
     }
+    
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
 void MidiDevicePortMidi::sendSysexMsg(unsigned char data[], unsigned int length) 
 {
+    QMutexLocker Locker(&m_mutex); 
+    
     if (m_pOutputStream)
     {
         m_sPMLock.lock();

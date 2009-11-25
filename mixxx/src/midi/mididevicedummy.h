@@ -32,6 +32,7 @@ public:
     ~MidiDeviceDummy() {};
     int open() { return 0; };
     int close() { return 0; };
+    void run() { return; };
     void sendShortMsg(unsigned int word) {};
     void sendSysexMsg(unsigned char data[], unsigned int length) {};
 protected:

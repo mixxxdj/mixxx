@@ -69,7 +69,8 @@ MidiMapping::~MidiMapping() {
 
 #ifdef __MIDISCRIPT__
 void MidiMapping::startupScriptEngine() {
-
+    QMutexLocker Locker(&m_mappingLock);
+    
     if(m_pScriptEngine) return;
 
     //XXX Deadly hack attack:
@@ -96,22 +97,25 @@ void MidiMapping::startupScriptEngine() {
 }
 
 void MidiMapping::loadScriptCode() {
-        ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    QMutexLocker Locker(&m_mappingLock);
+    
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
 
-        qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
+    qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
 
-        QListIterator<QString> it(m_pScriptFileNames);
-        while (it.hasNext()) {
-            QString curScriptFileName = it.next();
-            m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
+    QListIterator<QString> it(m_pScriptFileNames);
+    while (it.hasNext()) {
+        QString curScriptFileName = it.next();
+        m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
 
-            if(m_pScriptEngine->hasErrors(curScriptFileName)) {
-                qDebug() << "Errors occured while loading " << curScriptFileName;
-            }
+        if(m_pScriptEngine->hasErrors(curScriptFileName)) {
+            qDebug() << "Errors occured while loading " << curScriptFileName;
         }
+    }
 }
 
 void MidiMapping::initializeScripts() {
+    QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
         // Call each script's init function if it exists
         QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
@@ -128,6 +132,7 @@ void MidiMapping::initializeScripts() {
 }
 
 void MidiMapping::shutdownScriptEngine() {
+    QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
         // Call each script's shutdown function if it exists
         QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
@@ -478,6 +483,7 @@ void MidiMapping::clearOutputMidiMapping(int index, int count) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
+    QMutexLocker Locker(&m_mappingLock);
     // This assumes that the lock is held.
     m_pScriptFileNames.append(filename);
     m_pScriptFunctionPrefixes.append(functionprefix);
@@ -489,6 +495,7 @@ void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
  * @param name The controller name this mapping is hooked to
  */
 void MidiMapping::setName(QString name) {
+    QMutexLocker Locker(&m_mappingLock);
     m_deviceName = name;
 }
 
@@ -1099,6 +1106,7 @@ void MidiMapping::cancelMidiLearn()
 #ifdef __MIDISCRIPT__
 void MidiMapping::restartScriptEngine()
 {
+    //Note: Locking occurs inside the functions below.
     shutdownScriptEngine();
     startupScriptEngine();
 }

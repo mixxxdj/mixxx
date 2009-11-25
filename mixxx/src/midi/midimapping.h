@@ -60,9 +60,6 @@ class MidiMapping : public QObject
     void applyPreset();
     
     
-
-    
-    
     MidiInputMappingTableModel* getMidiInputMappingTableModel();
     MidiOutputMappingTableModel* getMidiOutputMappingTableModel();
     //MixxxControl* getInputMixxxControl(MidiMessage command);

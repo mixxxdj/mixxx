@@ -30,7 +30,7 @@
   */
 
 /** A PortMidi-based implementation of MidiDevice */
-class MidiDevicePortMidi : public MidiDevice, public QThread {
+class MidiDevicePortMidi : public MidiDevice {
 public:
     MidiDevicePortMidi(MidiMapping* mapping, 
                        const PmDeviceInfo* inputDeviceInfo, 
@@ -52,7 +52,7 @@ protected:
     PortMidiStream *m_pOutputStream;
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
     static QList<QString> m_deviceList;
-    QMutex m_mutex;
+    QMutex m_mutex;         /** Protects access to this object. Makes it thread safe. */
     static QMutex m_sPMLock;    // PortMidi is not thread-safe, so we need to only allow one thread at a time
     bool m_bStopRequested;
 };
