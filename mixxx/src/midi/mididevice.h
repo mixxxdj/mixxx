@@ -6,6 +6,17 @@
     copyright            : (C) 2008 Albert Santoni
     email                : alberts@mixxx.org
 
+    This class represents a physical or virtual MIDI device. A MIDI device
+    processes MIDI messages that are received from it in the receive()
+    function and MIDI messages can be sent back to it using the send*()
+    functions. This is a base class that cannot be instantiated on its own,
+    it must be inherited by a class that implements it on top of some API.
+    (See MidiDevicePortMidi, as of Nov 2009.)
+    
+    This class is thread safe and must remain thread safe because parts of
+    it may be accessed by the MIDI script engine thread as well as the
+    MIDI thread concurrently.
+
 ***************************************************************************/
 
 /***************************************************************************
@@ -29,7 +40,7 @@ class MidiMapping;
 class MidiScriptEngine;
 #endif
 
-class MidiDevice : public QObject
+class MidiDevice : public QThread
 {
 Q_OBJECT
     public:
@@ -37,6 +48,7 @@ Q_OBJECT
         virtual ~MidiDevice();
         virtual int open() = 0;
         virtual int close() = 0;
+        virtual void run() = 0;
         void startup();
         void shutdown();
         bool isOpen() { return m_bIsOpen; };
@@ -52,7 +64,6 @@ Q_OBJECT
         bool getMidiLearnStatus();
         void receive(MidiStatusByte status, char channel, char control, char value);
         bool midiDebugging();
-
     public slots:
         void disableMidiLearn();
         void enableMidiLearn();
@@ -76,7 +87,11 @@ Q_OBJECT
             protocol that treats input and output ports on a single device as complete separate entities. This
             helps us group those back together for sanity/usability. */
         MidiDevice* m_pCorrespondingOutputDevice;
-        int m_midiDebug;
+        /** Specifies whether or not we should dump MIDI messages to the console at runtime. This is useful
+            for end-user debugging and to help people map their controllers. */
+        bool m_midiDebug;
+        /** Mutex to protect against concurrent access to member variables */
+        QMutex m_mutex;
 };
 
 #endif

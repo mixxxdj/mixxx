@@ -32,8 +32,9 @@ static QString toHex(QString numberStr) {
     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
 }
 
-MidiDevice::MidiDevice(MidiMapping* mapping) : QObject()
+MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
 {
+
     m_bIsOutputDevice = false;
     m_bIsInputDevice = false;
     m_pMidiMapping = mapping;
@@ -43,60 +44,71 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QObject()
 
     if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
-        m_pMidiMapping->setName(m_strDeviceName);
     }
         
     // Get --midiDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
-    m_midiDebug = commandLineArgs.indexOf("--midiDebug");
+    m_midiDebug = commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
     
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
-    
 }
 
 MidiDevice::~MidiDevice()
 {
+    m_mutex.lock();
     qDebug() << "MidiDevice: Deleting MidiMapping...";
     delete m_pMidiMapping;
-
+    m_mutex.unlock();
 }
 
 void MidiDevice::startup()
 {
+    m_mutex.lock();
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->startupScriptEngine();
 #endif
+    m_mutex.unlock();
 }
 
 void MidiDevice::shutdown()
 {
+    m_mutex.lock();
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
+    m_mutex.unlock();
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
 {
+    m_mutex.lock();
     m_pMidiMapping = mapping;
     
     if (m_pCorrespondingOutputDevice)
     {
         m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
     }
+    m_mutex.unlock();
 }
 
 void MidiDevice::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
+    m_mutex.lock();
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
+    m_mutex.unlock();
 }
 
 void MidiDevice::sendShortMsg(unsigned int word) {
+    m_mutex.lock();
     qDebug() << "MIDI short message sending not yet implemented for this API or platform";
+    m_mutex.unlock();
 }
 
 void MidiDevice::sendSysexMsg(QList<int> data, unsigned int length) {
+    m_mutex.lock();
+    
     unsigned char * sysexMsg;
     sysexMsg = new unsigned char [length];
 
@@ -107,29 +119,39 @@ void MidiDevice::sendSysexMsg(QList<int> data, unsigned int length) {
 
     sendSysexMsg(sysexMsg,length);
     delete[] sysexMsg;
+    m_mutex.unlock();
 }
 
 void MidiDevice::sendSysexMsg(unsigned char data[], unsigned int length) {
+    m_mutex.lock();
     qDebug() << "MIDI system exclusive message sending not yet implemented for this API or platform";
+    m_mutex.unlock();
 }
 
 bool MidiDevice::getMidiLearnStatus() {
-    return m_bMidiLearn;
+    m_mutex.lock();
+    bool learn = m_bMidiLearn;
+    m_mutex.unlock();
+    return learn;
 }
 
 void MidiDevice::enableMidiLearn() {
+    m_mutex.lock();
     m_bMidiLearn = true;
     connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
-
+    m_mutex.unlock();
 }
 
 void MidiDevice::disableMidiLearn() {
+    m_mutex.lock();
     m_bMidiLearn = false;
     disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+    m_mutex.unlock();
 }
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
+    QMutexLocker Locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
     if (midiDebugging()) qDebug() << QString("MIDI ch %1: status: %2, ctrl: %3, val: %4")
         .arg(QString::number(channel+1, 16).toUpper())
         .arg(QString::number(status & 255, 16).toUpper())
@@ -161,12 +183,14 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
-    //FIXME: SEAN - The script engine will live inside the MidiMapping! Update this code accordingly.
     
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
-        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" << (int)channel << (int)control <<  (int)value << (int)status;
+        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" 
+        //          << (int)channel << (int)control <<  (int)value << (int)status;
 
-        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, control, value, status, mixxxControl.getControlObjectGroup())) {
+        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, 
+                                                            control, value, status, 
+                                                            mixxxControl.getControlObjectGroup())) {
             qDebug() << "MidiDevice: Invalid script function" << configKey.item;
         }
         return;
@@ -177,25 +201,31 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     if (p) //Only pass values on to valid ControlObjects.
     {
-      double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
+        double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
 
-      // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi mapping is <button> we override the Midi 'status' appropriately.
-      switch (mixxxControl.getMidiOption()) {
-              case MIDI_OPT_BUTTON:
-              case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are treated the same, except that their values are computed differently.
-              default: break;
-      }
+        // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi 
+        // mapping is <button> we override the Midi 'status' appropriately.
+        switch (mixxxControl.getMidiOption()) {
+            case MIDI_OPT_BUTTON:
+            case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are 
+                                                                       // treated the same, except 
+                                                                       // that their values are 
+                                                                       // computed differently.
+            default: break;
+        }
 
-      ControlObject::sync();
-    
+        ControlObject::sync();
+
         //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
-      p->queueFromMidi((MidiCategory)status, newValue);
+        p->queueFromMidi((MidiCategory)status, newValue);
     }
 
     return;
 }
 
-bool MidiDevice::midiDebugging() {
-    if (m_midiDebug != -1) return true;
-    else return false;
+bool MidiDevice::midiDebugging()
+{
+    //Assumes a lock is already held. :/
+    bool debug = m_midiDebug;
+    return debug;
 }
