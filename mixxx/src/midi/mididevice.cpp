@@ -57,48 +57,50 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
 
 MidiDevice::~MidiDevice()
 {
-    m_mutex.lock();
+    QMutexLocker locker(&m_mutex);
+
     qDebug() << "MidiDevice: Deleting MidiMapping...";
+    m_mappingMutex.lock();
     delete m_pMidiMapping;
-    m_mutex.unlock();
+    m_mappingMutex.unlock();
 }
 
 void MidiDevice::startup()
 {
-    m_mutex.lock();
+    m_mappingMutex.lock();
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->startupScriptEngine();
 #endif
-    m_mutex.unlock();
+    m_mappingMutex.unlock();
 }
 
 void MidiDevice::shutdown()
 {
-    m_mutex.lock();
+    m_mappingMutex.lock();
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
-    m_mutex.unlock();
+    m_mappingMutex.unlock();
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
 {
     m_mutex.lock();
+    m_mappingMutex.lock();
     m_pMidiMapping = mapping;
     
     if (m_pCorrespondingOutputDevice)
     {
         m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
     }
+    m_mappingMutex.unlock();
     m_mutex.unlock();
 }
 
 void MidiDevice::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
-    m_mutex.lock();
     unsigned int word = (((unsigned int)byte2) << 16) |
                         (((unsigned int)byte1) << 8) | status;
     sendShortMsg(word);
-    m_mutex.unlock();
 }
 
 void MidiDevice::sendShortMsg(unsigned int word) {
@@ -124,9 +126,7 @@ void MidiDevice::sendSysexMsg(QList<int> data, unsigned int length) {
 }
 
 void MidiDevice::sendSysexMsg(unsigned char data[], unsigned int length) {
-    m_mutex.lock();
     qDebug() << "MIDI system exclusive message sending not yet implemented for this API or platform";
-    m_mutex.unlock();
 }
 
 bool MidiDevice::getMidiLearnStatus() {
@@ -139,20 +139,26 @@ bool MidiDevice::getMidiLearnStatus() {
 void MidiDevice::enableMidiLearn() {
     m_mutex.lock();
     m_bMidiLearn = true;
-    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
     m_mutex.unlock();
+
+    m_mappingMutex.lock();
+    connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+    m_mappingMutex.unlock();
 }
 
 void MidiDevice::disableMidiLearn() {
     m_mutex.lock();
     m_bMidiLearn = false;
-    disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
     m_mutex.unlock();
+
+    m_mappingMutex.lock();
+    disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
+    m_mappingMutex.unlock();
 }
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
-    QMutexLocker Locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
+    QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
     if (midiDebugging()) qDebug() << QString("MIDI ch %1: status: %2, ctrl: %3, val: %4")
         .arg(QString::number(channel+1, 16).toUpper())
         .arg(QString::number(status & 255, 16).toUpper())
@@ -174,6 +180,8 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         emit(midiEvent(inputCommand));
         return; // Don't process midi messages further when MIDI learning
     }
+
+    QMutexLocker mappingLocker(&m_mappingMutex);
 
     // Only check for a mapping if the status byte is one we know how to handle
     if (status == MIDI_STATUS_NOTE_ON 
@@ -197,6 +205,10 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
         // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" 
         //          << (int)channel << (int)control <<  (int)value << (int)status;
+
+        //Unlock the mutex here to prevent a deadlock if a script needs to send a MIDI message
+        //to the device. (sendShortMessage() would try to lock m_mutex...)
+        locker.unlock();
 
         if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, 
                                                             control, value, status, 

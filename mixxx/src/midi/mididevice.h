@@ -93,6 +93,8 @@ Q_OBJECT
         bool m_midiDebug;
         /** Mutex to protect against concurrent access to member variables */
         QMutex m_mutex;
+        /** Mutex to protect against concurrent access to m_pMidiMapping. */
+        QMutex m_mappingMutex;
         /** A flag to inhibit the reception of messages from this device. This is used to prevent
             a race condition when a MIDI message is received and looked up in the MidiMapping while
             the MidiMapping is being modified (and is already locked).  */
