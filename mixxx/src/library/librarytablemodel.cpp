@@ -51,6 +51,10 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     search("");
 
     select(); //Populate the data model.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. -- Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 LibraryTableModel::~LibraryTableModel()
