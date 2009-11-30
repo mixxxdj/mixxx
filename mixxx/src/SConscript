@@ -555,7 +555,6 @@ if platform == 'linux':
 sources += Split("""midi/mididevice.cpp """);
 sources += Split("""midi/mididevicemanager.cpp """);
 sources += Split("""midi/midideviceportmidi.cpp """);
-env.Append(CPPDEFINES = '__PORTMIDI__')
 
 #Platform-specific checks for Linux...
 if platform == 'linux':
