@@ -37,9 +37,9 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
     QXmlQuery query;
     QString res;
 
-    QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
+    QFile db(MIXXX_RHYTHMBOX_DB_LOCATION);
     if ( ! db.exists()) {
-        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
+        db.setFileName(MIXXX_RHYTHMBOX_DB_LOCATION_ALT);
         if ( ! db.exists())
             return;
     }

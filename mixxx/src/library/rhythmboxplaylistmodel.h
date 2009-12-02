@@ -27,6 +27,8 @@
 
 class TrackInfoObject;
 
+#define MIXXX_RHYTHMBOX_DB_LOCATION QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml"
+#define MIXXX_RHYTHMBOX_DB_LOCATION_ALT QDir::homePath() + "/.local/share/rhythmbox/playlists.xml"
 
 /**
    @author Phillip Whelan

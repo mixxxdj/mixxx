@@ -17,6 +17,7 @@ class RhythmboxFeature : public LibraryFeature {
  public:
     RhythmboxFeature(QObject* parent = NULL);
     virtual ~RhythmboxFeature();
+    static bool isSupported();
 
     QVariant title();
     QIcon getIcon();

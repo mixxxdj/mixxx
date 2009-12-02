@@ -22,12 +22,7 @@ ITunesTrackModel::ITunesTrackModel()
      * the file is would be nice.
      */
     QString itunesXmlPath;
-#ifdef __APPLE__
-    itunesXmlPath = QDir::homePath() + "/Music/iTunes/iTunes\ Music\ Library.xml";
-#else
-    itunesXmlPath = QDir::homePath() + "/.itunes.xml";
-#endif
-
+    itunesXmlPath = MIXXX_ITUNES_DB_LOCATION;
 
     QFile db(itunesXmlPath);
     if ( ! db.exists())

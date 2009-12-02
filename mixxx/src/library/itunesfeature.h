@@ -17,6 +17,7 @@ class ITunesFeature : public LibraryFeature {
  public:
     ITunesFeature(QObject* parent = NULL);
     virtual ~ITunesFeature();
+    static bool isSupported();
 
     QVariant title();
     QIcon getIcon();

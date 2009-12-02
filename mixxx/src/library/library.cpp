@@ -41,8 +41,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     addFeature(new AutoDJFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new CrateFeature(this, m_pTrackCollection));
-    addFeature(new RhythmboxFeature(this));
-    addFeature(new ITunesFeature(this));
+    if (RhythmboxFeature::isSupported())
+        addFeature(new RhythmboxFeature(this));
+    if (ITunesFeature::isSupported())
+        addFeature(new ITunesFeature(this));
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
     addFeature(new PrepareFeature(this, m_pTrackCollection));
 }

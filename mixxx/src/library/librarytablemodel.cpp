@@ -46,6 +46,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   Qt::Horizontal, tr("BPM"));
     setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
                   Qt::Horizontal, tr("Track #"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
     
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
     search("");
