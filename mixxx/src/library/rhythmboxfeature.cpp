@@ -8,25 +8,21 @@
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent)
     : LibraryFeature(parent) {
-    m_pRhythmboxTrackModel = new RhythmboxTrackModel();
-    m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
-    m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
-    m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
-    m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_pRhythmboxTrackModel = NULL;
+    m_pTrackModelProxy = NULL;
+    m_pRhythmboxPlaylistModel = NULL;
+    m_pPlaylistModelProxy = NULL;
 
-    QStringList list;
-    for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
-        list << m_pRhythmboxPlaylistModel->playlistTitle(i);
-    }
-    m_childModel.setStringList(list);
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
 
+}
+
+bool RhythmboxFeature::isSupported() {
+    return (QFile::exists(MIXXX_RHYTHMBOX_DB_LOCATION) ||
+            QFile::exists(MIXXX_RHYTHMBOX_DB_LOCATION_ALT));
 }
 
 QVariant RhythmboxFeature::title() {
@@ -43,6 +39,24 @@ QAbstractItemModel* RhythmboxFeature::getChildModel() {
 
 void RhythmboxFeature::activate() {
     qDebug("RhythmboxFeature::activate()");
+
+    if (!m_pRhythmboxTrackModel) {
+        m_pRhythmboxTrackModel = new RhythmboxTrackModel();
+        m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
+        m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+        m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
+        m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
+        m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+        QStringList list;
+        for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
+            list << m_pRhythmboxPlaylistModel->playlistTitle(i);
+        }
+        m_childModel.setStringList(list);
+    }
     emit(showTrackModel(m_pTrackModelProxy));
 }
 

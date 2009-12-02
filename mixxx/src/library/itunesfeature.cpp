@@ -8,21 +8,23 @@
 
 ITunesFeature::ITunesFeature(QObject* parent)
     : LibraryFeature(parent) {
-    m_pITunesTrackModel = new ITunesTrackModel();
-    m_pTrackModelProxy = new ProxyTrackModel(m_pITunesTrackModel);
-    m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-    //m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
 
-    // TODO(XXX) Populate m_childModel with playlist names.
+    //Don't actually initialize these until the iTunes item in the sidebar is clicked.
+    m_pITunesTrackModel = NULL;
+    m_pTrackModelProxy = NULL;
 }
 
 ITunesFeature::~ITunesFeature() {
 
 }
 
+bool ITunesFeature::isSupported() {
+    return (QFile::exists(MIXXX_ITUNES_DB_LOCATION));
+}
+
+
 QVariant ITunesFeature::title() {
-    return tr("ITunes");
+    return tr("iTunes");
 }
 
 QIcon ITunesFeature::getIcon() {
@@ -31,6 +33,16 @@ QIcon ITunesFeature::getIcon() {
 
 void ITunesFeature::activate() {
     qDebug("ITunesFeature::activate()");
+
+    if (!m_pITunesTrackModel) {
+        m_pITunesTrackModel = new ITunesTrackModel();
+        m_pTrackModelProxy = new ProxyTrackModel(m_pITunesTrackModel);
+        m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+        //m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
+        // TODO(XXX) Populate m_childModel with playlist names.
+    }
+
     emit(showTrackModel(m_pTrackModelProxy));
 }
 
