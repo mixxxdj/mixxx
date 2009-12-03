@@ -24,6 +24,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
                   "library." + LIBRARYTABLE_TITLE + "," +
+                  "track_locations.location" + "," +
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
@@ -34,7 +35,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_COMMENT + " "
                   "FROM library "
                   "INNER JOIN track_locations "
-                  "ON library.location=track_locations.location "
+                  "ON library.location=track_locations.id "
                   "WHERE track_locations.fs_deleted=1 ");
     //query.bindValue(":playlist_name", playlistTableName);
     //query.bindValue(":playlist_id", m_iPlaylistId);
