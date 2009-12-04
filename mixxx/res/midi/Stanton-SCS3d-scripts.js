@@ -1,8 +1,8 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.21             */
+/*      Stanton SCS.3d MIDI controller script v1.3-alpha        */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.x                                 */
+/*      For Mixxx version 1.8.x                                 */
 /****************************************************************/
 
 function StantonSCS3d() {}
@@ -17,7 +17,9 @@ StantonSCS3d.VUMeters = true;           // Pre-fader VU meter LEDs
 StantonSCS3d.markHotCues = "blue";      // Choose red or blue LEDs for marking the stored positions in TRIG & LOOP modes
 StantonSCS3d.jogOnLoad = true;          // Automatically change to Vinyl1 (jog) mode after loading a track if true
 StantonSCS3d.globalMode = false;        // Stay in the current mode on deck changes if true
+StantonSCS3d.singleDeck = false;        // When using more than one controller, set to true to avoid easy deck changes
 StantonSCS3d.deckChangeWait = 1000;     // Time in milliseconds to hold the DECK button down to avoid changing decks
+                                        //      or to change decks when singleDeck is true
 
 // These values are heavily latency-dependent. They're preset for 10ms and will need tuning for other latencies. (For 2ms, try 0.885, 0.15, and 1.5.)
 StantonSCS3d.scratching = {     "slippage":0.8,             // Slipperiness of the virtual slipmat when scratching with the circle (higher=slower response, 0<n<1)
@@ -37,7 +39,7 @@ StantonSCS3d.mode_store = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // S
 StantonSCS3d.deck = 1;  // Currently active virtual deck
 StantonSCS3d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS3d.state = { "pitchAbs":0, "jog":0, "changedDeck":false }; // Temporary state variables
-StantonSCS3d.modeSurface = { "fx":"S3+S5", "eq":"S3+S5", "loop":"Buttons", "loop2":"Buttons", "loop3":"Buttons", "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons", "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
+StantonSCS3d.modeSurface = { "deck":"S3+S5", "fx":"S3+S5", "eq":"S3+S5", "loop":"Buttons", "loop2":"Buttons", "loop3":"Buttons", "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons", "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
 StantonSCS3d.surface = { "C1":0x00, "S5":0x01, "S3":0x02, "S3+S5":0x03, "Buttons":0x04 };
 StantonSCS3d.sysex = [0xF0, 0x00, 0x01, 0x60];  // Preamble for all SysEx messages for this device
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
@@ -118,7 +120,7 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
     
     // Force change to first deck, initializing the control surface & LEDs and connecting signals in the process
     StantonSCS3d.deck = 2;  // Set active deck to right (#2) so the below will switch to #1.
-    StantonSCS3d.DeckChange(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "", 0x80+StantonSCS3d.channel);
+    StantonSCS3d.DeckButton(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "", 0x80+StantonSCS3d.channel);
     
     // Connect the playposition functions permanently since they disrupt playback if connected on the fly
     if (StantonSCS3d.spinningPlatter) {
@@ -577,7 +579,7 @@ StantonSCS3d.B14 = function (channel, control, value, status) {
 // ----------   Mode buttons  ----------
 
 StantonSCS3d.modeButton = function (channel, control, status, modeName) {
-    if (StantonSCS3d.modifier["Deck"]==1) return;   // Skip if in DECK mode (while DECK button held down)
+    if (!StantonSCS3d.singleDeck && StantonSCS3d.modifier["Deck"]==1) return;   // Skip if in DECK mode (while DECK button held down)
     var byte1 = 0x90 + channel;
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if ((status & 0xF0) == 0x90) {    // If button down
@@ -767,7 +769,7 @@ StantonSCS3d.lightDelay = function () {
     while(curDate-date < 60);
 }
 
-StantonSCS3d.DeckChange = function (channel, control, value, status) {
+StantonSCS3d.DeckButton = function (channel, control, value, status) {
     var byte1 = 0x90 + channel;
     if ((status & 0xF0) == 0x90) {  // If button down
         StantonSCS3d.modeButtonsColor(channel,0x02);  // Make all mode buttons blue
@@ -801,13 +803,20 @@ StantonSCS3d.DeckChange = function (channel, control, value, status) {
     midi.sendShortMsg(0xB0+channel,0x0E,0x00);  // Darken S5
     StantonSCS3d.modifier["Deck"]=0;   // Clear button modifier flag
     var newMode;
-    // If the button's been held down for longer than the specified time, stay on the current deck
-    if (new Date() - StantonSCS3d.modifier["deckTime"]>StantonSCS3d.deckChangeWait) {
+    
+    // In default multiple-deck mode, 
+    //      If the button's been held down for longer than the specified time, stay on the current deck.
+    //      If the button was just tapped, change control to another virtual deck.
+    // In single-deck mode, (when there are more than one deck controller)
+    //      If the button's been held down for longer than the specified time, change control to another virtual deck.
+    //      If the button was just tapped, stay on the current deck in DECK mode.
+    var heldLong = new Date() - StantonSCS3d.modifier["deckTime"]>StantonSCS3d.deckChangeWait;
+    if ((!StantonSCS3d.singleDeck && heldLong)|| (StantonSCS3d.singleDeck && !heldLong)) {
         midi.sendShortMsg(byte1,StantonSCS3d.buttons["deck"],0x01+StantonSCS3d.deck); // Return to appropriate color
         StantonSCS3d.pitchSliderLED(engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange")); // Restore Pitch LED color
         StantonSCS3d.pitchLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate"));   // Restore Pitch LEDs
     }
-    else {
+    if ((StantonSCS3d.singleDeck && heldLong) || (!StantonSCS3d.singleDeck && !heldLong)) {
         StantonSCS3d.connectDeckSignals(channel,true);    // Disconnect static signals
         StantonSCS3d.softButtonsColor(channel,0x00);  // Darken the soft buttons
         if (StantonSCS3d.globalMode) newMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
