@@ -163,7 +163,9 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         qDebug() << "Auto DJ disabled";
         m_bAutoDJEnabled = false;
         m_pCOPlayPos1->disconnect(this);
-        m_pCOPlayPos2->disconnect(this);
+        m_pCOPlayPos2->disconnect(this); 
+        m_pCOTrackEndMode1->slotSet(0.0f); //Turn off NEXT mode
+        m_pCOTrackEndMode2->slotSet(0.0f); //Turn off NEXT mode
     }
 }
 
