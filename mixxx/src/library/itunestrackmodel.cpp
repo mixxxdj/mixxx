@@ -123,6 +123,8 @@ QString ITunesTrackModel::findValueByKey(QDomNode dictNode, QString key) const
 
 QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
+    QVariant value;
+
     switch (index.column()) {
         case ITunesTrackModel::COLUMN_ARTIST:
             return findValueByKey(songNode, "Artist");
@@ -137,7 +139,20 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
         case ITunesTrackModel::COLUMN_LOCATION:
             return findValueByKey(songNode,"Location");
         case ITunesTrackModel::COLUMN_DURATION:
-            return findValueByKey(songNode,"Total Time");
+            value = findValueByKey(songNode,"Total Time");
+            if (qVariantCanConvert<int>(value)) {
+                // TODO(XXX) Pull this out into a MixxxUtil or something.
+                //XXX: Code based on LibraryTableModel::data(...) but slightly different
+                //Let's reformat this song length into a human readable MM:SS format.
+                int totalMilliseconds = qVariantValue<int>(value);
+                int seconds = (totalMilliseconds % 60000) / 1000;
+                int mins = totalMilliseconds / 60000;
+                //int hours = mins / 60; //Not going to worry about this for now. :)
+
+                //Construct a nicely formatted duration string now.
+                value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            }
+            return value;
 
         default:
             return QVariant();
@@ -169,3 +184,4 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 
     return pTrack;
 }
+
