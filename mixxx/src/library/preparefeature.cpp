@@ -25,7 +25,7 @@ PrepareFeature::~PrepareFeature() {
 }
 
 QVariant PrepareFeature::title() {
-    return tr("Prepare");
+    return tr("Analyze");
 }
 
 QIcon PrepareFeature::getIcon() {

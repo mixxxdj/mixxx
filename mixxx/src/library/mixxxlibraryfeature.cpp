@@ -44,6 +44,12 @@ QAbstractItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
+void MixxxLibraryFeature::refreshLibraryModels()
+{
+    m_pLibraryTableModel->select();
+    m_pMissingTableModel->select();
+}
+
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
     emit(showTrackModel(m_pLibraryTableModel));

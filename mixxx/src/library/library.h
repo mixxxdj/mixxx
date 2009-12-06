@@ -22,6 +22,7 @@ class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
+class MixxxLibraryFeature;
 
 class Library : public QObject {
     Q_OBJECT
@@ -50,6 +51,7 @@ public slots:
     void slotLoadTrack(TrackInfoObject* pTrack);
     void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
     void slotRestoreSearch(const QString& text);
+    void slotRefreshLibraryModels();
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
@@ -65,6 +67,7 @@ private:
     const static QString m_sTrackViewName;
     const static QString m_sPrepareViewName;
     const static QString m_sAutoDJViewName;
+    MixxxLibraryFeature* m_pMixxxLibraryFeature;
 };
 
 #endif /* LIBRARY_H */
