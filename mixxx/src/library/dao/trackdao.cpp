@@ -26,6 +26,7 @@ void TrackDAO::initialize()
                     "location varchar(512) UNIQUE, "
                     "filename varchar(512), "
                     "directory varchar(512), "
+                    "filesize INTEGER, "
                     "fs_deleted INTEGER, "
                     "needs_verification INTEGER)"))
     {
@@ -41,7 +42,7 @@ void TrackDAO::initialize()
                "genre varchar(32), tracknumber varchar(3), "
                "location varchar(512) REFERENCES track_locations(location), "
                "comment varchar(20), url varchar(256), "
-               "duration integer, length_in_bytes integer, "
+               "duration integer, "
                "bitrate integer, samplerate integer, "
                "cuepoint integer, bpm float, "
                "wavesummaryhex blob, "
@@ -115,15 +116,14 @@ QString TrackDAO::getTrackLocation(int trackId)
     return trackLocation;
 }
 
-/** Check if a track exists in the database already.
+/** Check if a track exists in the library table already.
     @param file_location The full path to the track on disk, including the filename.
-    @return true if the track is found in the database, false otherwise.
+    @return true if the track is found in the library table, false otherwise.
 */
 bool TrackDAO::trackExistsInDatabase(QString location)
 {
     return (getTrackId(location) != -1);
 }
-
 
 void TrackDAO::addTrack(QString location)
 {
@@ -150,11 +150,12 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
 
     //Insert the track location into the corresponding table. This will fail silently
     //if the location is already in the table because it has a UNIQUE constraint.
-    query.prepare("INSERT INTO track_locations (location, directory, filename, fs_deleted, needs_verification) "
-                  "VALUES (:location, :directory, :filename, :fs_deleted, :needs_verification)");
+    query.prepare("INSERT INTO track_locations (location, directory, filename, filesize, fs_deleted, needs_verification) "
+                  "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification)");
     query.bindValue(":location", pTrack->getLocation());
     query.bindValue(":directory", QFileInfo(pTrack->getLocation()).path());
     query.bindValue(":filename", pTrack->getFilename());
+    query.bindValue(":filesize", pTrack->getLength());
     query.bindValue(":fs_deleted", 0);
     query.bindValue(":needs_verification", 0);
     query.exec();
@@ -185,12 +186,12 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     Q_ASSERT(trackLocationId >= 0);
 
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
-                  "location, comment, url, duration, length_in_bytes, "
+                  "location, comment, url, duration, "
                   "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
                   "channels, mixxx_deleted) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
-                  ":location, :comment, :url, :duration, :length_in_bytes, "
+                  ":location, :comment, :url, :duration, "
                   ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":channels, :mixxx_deleted)");
     //query.bindValue(":id", 1001);
@@ -204,7 +205,6 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
-    query.bindValue(":length_in_bytes", pTrack->getLength());
     query.bindValue(":bitrate", pTrack->getBitrate());
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
@@ -307,7 +307,6 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         QString comment = query.value(query.record().indexOf("comment")).toString();
         QString url = query.value(query.record().indexOf("url")).toString();
         int duration = query.value(query.record().indexOf("duration")).toInt();
-        int length = query.value(query.record().indexOf("length_in_bytes")).toInt();
         int bitrate = query.value(query.record().indexOf("bitrate")).toInt();
         int samplerate = query.value(query.record().indexOf("samplerate")).toInt();
         int cuepoint = query.value(query.record().indexOf("cuepoint")).toInt();
@@ -327,7 +326,6 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setComment(comment);
         track->setURL(url);
         track->setDuration(duration);
-        track->setLength(length);
         track->setBitrate(bitrate);
         track->setSampleRate(samplerate);
         track->setCuePoint((float)cuepoint);
@@ -346,6 +344,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         query.exec("SELECT * FROM track_locations WHERE id=" + QString("%1").arg(locationId));
         while (query.next()) {
             track->setLocation(query.value(query.record().indexOf("location")).toString());
+            track->setLength(query.value(query.record().indexOf("filesize")).toInt());
         }
     }
     //query.finish();
@@ -389,7 +388,6 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
                   "title=:title, album=:album, year=:year, genre=:genre, "
                   "tracknumber=:tracknumber, "
                   "comment=:comment, url=:url, duration=:duration, "
-                  "length_in_bytes=:length_in_bytes, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
                   "channels=:channels "
@@ -404,7 +402,6 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
-    query.bindValue(":length_in_bytes", pTrack->getLength());
     query.bindValue(":bitrate", pTrack->getBitrate());
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
@@ -496,4 +493,78 @@ void TrackDAO::markTrackLocationsAsDeleted(QString directory)
     if (!query.exec()) {
         qDebug() << "Couldn't mark tracks in" << directory << "as deleted." << query.lastError();
     }
+}
+
+/** Look for moved files. Look for files that have been marked as "deleted on disk"
+    and see if another "file" with the same name and filesize exists in the track_locations
+    table. That means the file has moved instead of being deleted outright, and so
+    we can salvage your existing metadata that you have in your DB (like cue points, etc.). */
+void TrackDAO::detectMovedFiles()
+{
+    //qDebug() << "markUnverifiedTracksAsDeleted()";
+    m_database.transaction();
+
+
+    QSqlQuery query(m_database);
+    QSqlQuery query2(m_database); 
+    int oldTrackLocationId = -1;
+    int newTrackLocationId = -1;
+    QString filename;
+    int fileSize;
+
+    query.prepare("SELECT * FROM track_locations WHERE fs_deleted=1");
+    query.exec();
+
+    //For each track that's been "deleted" on disk...
+    while (query.next()) {
+        newTrackLocationId = -1; //Reset this var
+        oldTrackLocationId = query.value(query.record().indexOf("id")).toInt();
+        filename = query.value(query.record().indexOf("filename")).toString();
+        fileSize = query.value(query.record().indexOf("filesize")).toInt();
+       
+        query2.prepare("SELECT * FROM track_locations WHERE "
+                       "fs_deleted=0 AND "
+                       "filename=:filename AND "
+                       "filesize=:filesize");
+        query2.bindValue(":filename", filename);
+        query2.bindValue(":filesize", fileSize);
+        Q_ASSERT(query2.exec());
+
+        Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
+        while (query2.next())
+        {
+            newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
+        }
+        
+        //If we found a moved track... 
+        if (newTrackLocationId >= 0)
+        {
+            qDebug() << "Found moved track!" << filename;
+
+            //Remove old row from track_locations table
+            query2.prepare("DELETE FROM track_locations WHERE "
+                           "id=:id");
+            query2.bindValue(":id", oldTrackLocationId);
+            Q_ASSERT(query2.exec());
+
+            //The library scanner will have added a new row to the Library
+            //table which corresponds to the track in the new location. We need
+            //to remove that so we don't end up with two rows in the library table
+            //for the same track.
+            query2.prepare("DELETE FROM library WHERE "
+                           "location=:location");
+            query2.bindValue(":location", newTrackLocationId);
+            Q_ASSERT(query2.exec());
+    
+            //Update the location foreign key for the existing row in the library table
+            //to point to the correct row in the track_locations table.
+            query2.prepare("UPDATE library "
+                           "SET location=:newloc WHERE location=:oldloc");
+            query2.bindValue(":newloc", newTrackLocationId);
+            query2.bindValue(":oldloc", oldTrackLocationId);
+            Q_ASSERT(query2.exec());
+        }
+    }
+
+    m_database.commit();
 }
