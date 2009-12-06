@@ -5,6 +5,7 @@
 #include "transposeproxymodel.h"
 #include "widget/wpreparecratestableview.h"
 #include "widget/wpreparelibrarytableview.h"
+#include "widget/crateview.h"
 #include "analyserqueue.h"
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
@@ -32,13 +33,17 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
     m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this, pTrackCollection);
     m_pPrepareLibraryTableView->loadTrackModel(m_pPrepareLibraryTableModel);
 
-    
+/*    
+    m_pCrateView = new CrateView(this, pTrackCollection);
+
     m_pPrepareCratesTableView = new WPrepareCratesTableView(this, pTrackCollection);
     box = dynamic_cast<QBoxLayout*>(horizontalLayoutCrates);
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pCratesViewPlaceholder);
     m_pCratesViewPlaceholder->hide();
-    box->insertWidget(1, m_pPrepareCratesTableView);
+    //box->insertWidget(1, m_pPrepareCratesTableView);
+    box->insertWidget(1, m_pCrateView);
+    m_pCrateView->show();
 
     m_pCratesTableModel = new QSqlTableModel(this);
     m_pCratesTableModel->setTable("crates");
@@ -52,6 +57,7 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
     TransposeProxyModel* transposeProxy = new TransposeProxyModel(this);
     transposeProxy->setSourceModel(m_pCratesTableModel);
     m_pPrepareCratesTableView->setModel(m_pCratesTableModel);
+*/
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()), 
             this,  SLOT(showRecentSongs()));
@@ -82,7 +88,7 @@ DlgPrepare::~DlgPrepare()
 void DlgPrepare::onShow()
 {
     //Refresh crates
-    m_pCratesTableModel->select();
+    //m_pCratesTableModel->select();
 }
 
 void DlgPrepare::setup(QDomNode node)
@@ -125,7 +131,8 @@ void DlgPrepare::setup(QDomNode node)
     pushButtonSelectAll->setPalette(pal);
     pushButtonAnalyze->setPalette(pal);
     m_pPrepareLibraryTableView->setPalette(pal);
-    m_pPrepareCratesTableView->setPalette(pal);
+    //m_pPrepareCratesTableView->setPalette(pal);
+    //m_pCrateView->setPalette(pal);
 }
 void DlgPrepare::onSearchStarting()
 {
