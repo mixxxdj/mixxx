@@ -365,6 +365,8 @@ TrackInfoObject *TrackDAO::getTrack(int id) const
 /** Saves a track's info back to the database */
 void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
 {
+    Q_ASSERT(pTrack);
+
     qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
     QSqlQuery query(m_database);
@@ -406,7 +408,9 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
-    query.bindValue(":wavesummaryhex", *(pTrack->getWaveSummary()));
+    QByteArray* pWaveSummary = pTrack->getWaveSummary();
+    if (pWaveSummary) //Avoid null pointer deref
+        query.bindValue(":wavesummaryhex", *pWaveSummary);
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
     query.bindValue(":channels", pTrack->getChannels());
     //query.bindValue(":location", pTrack->getLocation());
