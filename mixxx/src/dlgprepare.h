@@ -12,6 +12,7 @@ class WPrepareCratesTableView;
 class WPrepareLibraryTableView;
 class AnalyserQueue;
 class QSqlTableModel;
+class CrateView;
 
 class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual LibraryView {
     Q_OBJECT
@@ -42,6 +43,7 @@ private:
     WPrepareLibraryTableView* m_pPrepareLibraryTableView;
     PrepareLibraryTableModel* m_pPrepareLibraryTableModel;
     WPrepareCratesTableView* m_pPrepareCratesTableView;
+    CrateView* m_pCrateView;
     QSqlTableModel* m_pCratesTableModel;
     QModelIndexList m_indexesBeingAnalyzed;
 };
