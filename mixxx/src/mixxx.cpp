@@ -214,9 +214,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
     				   m_pLibrary);
 
-    //Scan the library directory. FIXME: Should be only when stuff's changed... or in background
+    //Scan the library directory. 
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
+
+    //Refresh the library models when the library (re)scan is finished.
+    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
+            m_pLibrary, SLOT(slotRefreshLibraryModels()));
+
+    //Scan the library for new files and directories.
     m_pLibraryScanner->scan(config->getValueString(ConfigKey("[Playlist]","Directory")));
+
 
     // Call inits to invoke all other construction parts
 

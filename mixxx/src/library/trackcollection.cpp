@@ -124,12 +124,8 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             emit(progressLoading(file.fileName()));
             //qDebug() << "Loading" << file.fileName();
 
-            TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
-            if (pTrack) {
-                //Add the song to the database.
-                trackDao.addTrack(pTrack);
-                delete pTrack;
-            }
+            trackDao.addTrack(file.absoluteFilePath());
+
         } else {
             //qDebug() << "Skipping" << file.fileName() <<
             //    "because it did not match thesupported audio files filter:" <<

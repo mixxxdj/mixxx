@@ -37,7 +37,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     m_pSidebarModel = new SidebarModel(parent);
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    addFeature(new MixxxLibraryFeature(this, m_pTrackCollection));
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
+    addFeature(m_pMixxxLibraryFeature);
     addFeature(new AutoDJFeature(this, m_pTrackCollection));
     addFeature(new PlaylistFeature(this, m_pTrackCollection));
     addFeature(new CrateFeature(this, m_pTrackCollection));
@@ -150,4 +151,9 @@ void Library::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
 
 void Library::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
+}
+
+void Library::slotRefreshLibraryModels()
+{
+   m_pMixxxLibraryFeature->refreshLibraryModels();
 }
