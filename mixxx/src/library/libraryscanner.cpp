@@ -125,8 +125,12 @@ void LibraryScanner::run()
     // mark those tracks as deleted in that case) :)
     if (bScanFinishedCleanly)
     {
-        //TODO: Insert moved file detection here.
         m_trackDao.markUnverifiedTracksAsDeleted();
+
+        //Check to see if the "deleted" tracks showed up in another location, and if so,
+        //do some magic to update all our tables.
+        m_trackDao.detectMovedFiles();
+
         qDebug() << "Scan finished cleanly";
     }
     else

@@ -51,6 +51,7 @@ Q_OBJECT
     void invalidateTrackLocations(QString directory);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
+    void detectMovedFiles();
   public slots:
     void updateTrackInDatabase(TrackInfoObject* pTrack);
   private:
