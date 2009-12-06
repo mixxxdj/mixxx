@@ -209,7 +209,9 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
-    query.bindValue(":wavesummaryhex", *(pTrack->getWaveSummary()));
+    QByteArray* pWaveSummary = pTrack->getWaveSummary();
+    if (pWaveSummary) //Avoid null pointer deref
+        query.bindValue(":wavesummaryhex", *pWaveSummary);
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
@@ -457,7 +459,7 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
     
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET needs_verification=0 "
+                  "SET needs_verification=0, fs_deleted=0 "
                   "WHERE location=:location"); 
     query.bindValue(":location", location);
     if (!query.exec()) {
