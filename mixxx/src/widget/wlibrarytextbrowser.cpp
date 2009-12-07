@@ -1,21 +1,21 @@
-// wlibrarytextedit.cpp
+// wlibrarytextbrowser.cpp
 // Created 10/23/2009 by RJ Ryan (rryan@mit.edu)
 
-#include "widget/wlibrarytextedit.h"
+#include "widget/wlibrarytextbrowser.h"
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 
-WLibraryTextEdit::WLibraryTextEdit(QWidget* parent)
-        : QTextEdit(parent) {
+WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
+        : QTextBrowser(parent) {
 
 }
 
-WLibraryTextEdit::~WLibraryTextEdit() {
+WLibraryTextBrowser::~WLibraryTextBrowser() {
 
 }
 
-void WLibraryTextEdit::setup(QDomNode node) {
+void WLibraryTextBrowser::setup(QDomNode node) {
     QPalette pal = palette();
     if (!WWidget::selectNode(node, "BgColor").isNull()) {
         QString bgColor = WWidget::selectNodeQString(node, "BgColor");
@@ -34,18 +34,18 @@ void WLibraryTextEdit::setup(QDomNode node) {
     setPalette(pal);
 }
 
-void WLibraryTextEdit::onSearch(const QString& text) {
+void WLibraryTextBrowser::onSearch(const QString& text) {
 
 }
 
-void WLibraryTextEdit::onSearchStarting() {
+void WLibraryTextBrowser::onSearchStarting() {
 
 }
 
-void WLibraryTextEdit::onSearchCleared() {
+void WLibraryTextBrowser::onSearchCleared() {
 
 }
 
-void WLibraryTextEdit::onShow() {
+void WLibraryTextBrowser::onShow() {
 
 }

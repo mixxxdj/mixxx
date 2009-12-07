@@ -29,7 +29,7 @@ class CrateFeature : public LibraryFeature {
 
     QAbstractItemModel* getChildModel();
   signals:
-    void showText(const QString& text);
+    void showPage(const QUrl& page);
 
   public slots:
     void activate();

@@ -20,9 +20,12 @@
     <file>images/preferences/broadcast.png</file>
     <file>images/library/rhythmbox.png</file>
     <file>images/library/crate_empty.png</file>
+    <file>images/library/crates_art.png</file>
     <file>images/mixxx_logo.png</file>
     <file>images/mixxx-icon.png</file>
     <file>images/iconsmall.png</file>
     <file>images/icon.svg</file>
+    <file>html/crates.html</file>
+    <file>html/playlists.html</file>
 </qresource>
 </RCC>

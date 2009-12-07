@@ -6,7 +6,7 @@
 
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextedit.h"
+#include "widget/wlibrarytextbrowser.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/proxytrackmodel.h"
@@ -58,15 +58,14 @@ QIcon PlaylistFeature::getIcon() {
 
 void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                  WLibrary* libraryWidget) {
-    WLibraryTextEdit* edit = new WLibraryTextEdit(libraryWidget);
-    // connect(this, SIGNAL(showText(const QString&)),
-    //         edit, SLOT(setText(const QString&)));
-    edit->setText("Playlist help page goes here.");
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
+    connect(this, SIGNAL(showPage(const QUrl&)),
+            edit, SLOT(setSource(const QUrl&)));
     libraryWidget->registerView("PLAYLISTHOME", edit);
 }
 
 void PlaylistFeature::activate() {
-    qDebug("PlaylistFeature::activate()");
+    emit(showPage(QUrl("qrc:/html/playlists.html")));
     emit(switchToView("PLAYLISTHOME"));
 }
 

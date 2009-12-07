@@ -34,6 +34,9 @@ public:
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
                     WLibrary* libraryWidget);
+  signals:
+    void showPage(const QUrl& page);
+
 public slots:
     void activate();
     void activateChild(const QModelIndex& index);
