@@ -545,13 +545,15 @@ if not conf.CheckHeader(['porttime.h']):
 	print "Did not find PortTime development header, exiting!"
 	Exit(1)
 
-#Check for PortMIDI
-#if not conf.CheckLib(['portmidi', 'libportmidi']):
-#	print "Did not find PortMidi or it\'s development headers, exiting!"
-#	Exit(1)
-env.Append(LIBS = 'portmidi') #Hax... the above check fails in Linux even if you have the lib for some reason..
-if platform == 'linux':
-	env.Append(LIBS = 'porttime') #HAX 2: Revenge of Hax. Only Linux needs PortTime...
+#Check for PortMIDI & PortTime
+if not conf.CheckLib(['portmidi', 'libportmidi']):
+	print "Did not find PortMidi or it\'s development headers, exiting!"
+	Exit(1)
+
+if not platform == 'osx':   # OSX doesn't need PortTime for some reason
+	if not conf.CheckLib(['porttime', 'libporttime']):
+		print "Did not find PortTime or it\'s development headers, exiting!"
+		Exit(1)
 
 sources += Split("""midi/mididevice.cpp """);
 sources += Split("""midi/mididevicemanager.cpp """);
