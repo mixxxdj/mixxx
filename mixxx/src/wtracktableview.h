@@ -11,6 +11,7 @@
 #include "widget/wlibrarytableview.h"
 
 class TrackInfoObject;
+class WTrackTableViewController;
 
 const QString WTRACKTABLEVIEW_HEADERSTATE_KEY = "HeaderState"; /** ConfigValue key for QTable headerview state */
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -28,12 +29,14 @@ class WTrackTableView : public WLibraryTableView
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
+    void selectNext();
+    void selectPrevious();
 public slots:
     void loadTrackModel(QAbstractItemModel* model);
-private slots:
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotLoadPlayer1();
     void slotLoadPlayer2();
+private slots:
     void slotRemove();
     void slotShowTrackInfo();
 signals:
@@ -55,6 +58,10 @@ private:
     QModelIndexList m_selectedIndices;
 
     SearchThread m_searchThread;
+    
+    /** A control layer for this class that hooks up a bunch of ControlObjects and gives us
+        MIDI control for the library */
+    WTrackTableViewController* m_pController;
 
     //Used for right-click operations
     /**Send to Play Queue Action**/
