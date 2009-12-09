@@ -6,6 +6,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "library/librarytablemodel.h"
+#include "library/wtracktableviewcontroller.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "wtracktableview.h"
@@ -23,6 +24,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    m_pController = new WTrackTableViewController(this, this);
 
     //Create all the context menu actions (stuff that shows up when you
     //right-click)
@@ -424,4 +427,34 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
     TrackModel* trackModel = getTrackModel();
     return trackModel &&
             (trackModel->getCapabilities() & capabilities) == capabilities;
+}
+
+
+/* Move the cursor to the next track. */
+void WTrackTableView::selectNext()
+{
+    QModelIndex c = currentIndex();
+
+    // Create a row selection if none exists
+    if (c.row() == -1) {
+	selectRow(0);
+	c = currentIndex();
+    }
+    // Advance to next position
+    setCurrentIndex(c.child(c.row()+1, c.column()));
+    // Roll back to previous position if on last row
+    if (currentIndex().row() == -1) setCurrentIndex(c);
+    selectRow(currentIndex().row());
+}
+
+/* Move the cursor to the previous track. */
+void WTrackTableView::selectPrevious()
+{
+    QModelIndex c = currentIndex();
+
+    // Move to the previous row
+    setCurrentIndex(c.child(c.row()-1, c.column()));
+    // Roll back to previous position if on first row
+    if (currentIndex().row() == -1) setCurrentIndex(c);
+    selectRow(currentIndex().row());
 }
