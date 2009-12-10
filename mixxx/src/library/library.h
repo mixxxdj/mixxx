@@ -23,6 +23,7 @@ class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
 class MixxxLibraryFeature;
+class LibraryMIDIControl;
 
 class Library : public QObject {
     Q_OBJECT
@@ -68,6 +69,7 @@ private:
     const static QString m_sPrepareViewName;
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    LibraryMIDIControl* m_pLibraryMIDIControl;
 };
 
 #endif /* LIBRARY_H */

@@ -4,12 +4,14 @@
 #include <QItemSelectionModel>
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "wtracktableview.h"
-#include "wtracktableviewcontroller.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "librarymidicontrol.h"
 
 
-WTrackTableViewController::WTrackTableViewController(QObject* parent, WTrackTableView* pView) : QObject(parent) {
-    m_pView = pView;
+LibraryMIDIControl::LibraryMIDIControl(WLibrary* wlibrary, WLibrarySidebar* pSidebar) : QObject() {
+    m_pLibraryWidget = wlibrary;
+    m_pSidebarWidget = pSidebar;
 
     // Make controls for library navigation and track loading
     m_pLoadSelectedTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","LoadSelectedTrack")));
@@ -28,7 +30,7 @@ WTrackTableViewController::WTrackTableViewController(QObject* parent, WTrackTabl
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)), this, SLOT(slotSelectTrackKnob(double)));
 }
         
-WTrackTableViewController::~WTrackTableViewController()
+LibraryMIDIControl::~LibraryMIDIControl()
 {
    delete m_pLoadSelectedTrackCh1;
    delete m_pLoadSelectedTrackCh2;
@@ -38,43 +40,59 @@ WTrackTableViewController::~WTrackTableViewController()
    delete m_pSelectTrackKnob;
 }
 
-void WTrackTableViewController::slotLoadSelectedTrackCh1(double v)
+void LibraryMIDIControl::slotLoadSelectedTrackCh1(double v)
 {
-    if (v)
-        m_pView->slotLoadPlayer1();
+    //if (v)
+    //    m_pView->slotLoadPlayer1();
 }
-void WTrackTableViewController::slotLoadSelectedTrackCh2(double v)
+void LibraryMIDIControl::slotLoadSelectedTrackCh2(double v)
 {
-    if (v)
-        m_pView->slotLoadPlayer2();
+    //if (v)
+    //    m_pView->slotLoadPlayer2();
 }
 
-void WTrackTableViewController::slotLoadSelectedIntoFirstStopped(double v)
+void LibraryMIDIControl::slotLoadSelectedIntoFirstStopped(double v)
 {
     if (v)
     {
+
+/*
         //Only load if there is a single track selected.
         QItemSelectionModel* selectionModel = m_pView->selectionModel();
         QModelIndexList selectedRows = selectionModel->selectedRows();
         if (selectedRows.count() == 1)
             m_pView->slotMouseDoubleClicked(selectedRows.first());
-
+*/
     }
 }
 
-void WTrackTableViewController::slotSelectNextTrack(double v)
+void LibraryMIDIControl::slotSelectNextTrack(double v)
 {
-    // Only move on key presses
-    if (v) m_pView->selectNext();
+    if (v) 
+        QApplication::postEvent(m_pLibraryWidget,  
+                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Down,
+                                              Qt::NoModifier));
+    else
+        QApplication::postEvent(m_pLibraryWidget,
+                                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Down,
+                                              Qt::NoModifier));
+        
 }
-void WTrackTableViewController::slotSelectPrevTrack(double v)
+void LibraryMIDIControl::slotSelectPrevTrack(double v)
 {
-    // Only move on key presses
-    if (v) m_pView->selectPrevious();
+    if (v) 
+        QApplication::postEvent(m_pLibraryWidget,  
+                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Up,
+                                              Qt::NoModifier));
+    else
+        QApplication::postEvent(m_pLibraryWidget,
+                                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Up,
+                                              Qt::NoModifier));
 }
 
-void WTrackTableViewController::slotSelectTrackKnob(double v)
+void LibraryMIDIControl::slotSelectTrackKnob(double v)
 {
+    /*
     int i = (int)v;
     //TODO: Make sure the logic in that while loop makes sense... it looks
     //      suspicious at first glance. - Albert Dec 8, 2009
@@ -95,4 +113,5 @@ void WTrackTableViewController::slotSelectTrackKnob(double v)
         }
     }
     //m_pView->m_pTrackTableView->setUpdatesEnabled(true);
+    */
 }

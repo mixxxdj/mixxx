@@ -1,16 +1,17 @@
-#ifndef WTTVCONTROLLER_H
-#define WTTVCONTROLLER_H
+#ifndef LIBRARYMIDICONTROL_H 
+#define LIBRARYMIDICONTROL_H 
 
 #include <QObject>
 class ControlObjectThreadMain;
-class WTrackTableView;
+class WLibrary;
+class WLibrarySidebar;
 
-class WTrackTableViewController : public QObject
+class LibraryMIDIControl : public QObject
 {
     Q_OBJECT
     public:
-        WTrackTableViewController(QObject* parent, WTrackTableView* pView);
-        ~WTrackTableViewController();
+        LibraryMIDIControl(WLibrary* wlibrary, WLibrarySidebar* pSidebar);
+        ~LibraryMIDIControl();
     public slots:
         void slotLoadSelectedTrackCh1(double v); 
         void slotLoadSelectedTrackCh2(double v); 
@@ -25,8 +26,9 @@ class WTrackTableViewController : public QObject
         ControlObjectThreadMain* m_pSelectPrevTrack;
         ControlObjectThreadMain* m_pLoadSelectedIntoFirstStopped;
         ControlObjectThreadMain* m_pSelectTrackKnob;
-        WTrackTableView* m_pView;
+        WLibrary* m_pLibraryWidget;
+        WLibrarySidebar* m_pSidebarWidget;
         
 };
 
-#endif //WTTVCONTROLLER_H
+#endif //LIBRARYMIDICONTROL_H

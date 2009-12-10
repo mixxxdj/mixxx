@@ -378,7 +378,6 @@ sources = Split("""
                 peaklist.cpp
                 rotary.cpp
                 wtracktableview.cpp
-                library/wtracktableviewcontroller.cpp
                 widget/wlibrarysidebar.cpp
                 widget/wlibrary.cpp
                 widget/wlibrarytableview.cpp
@@ -420,7 +419,7 @@ sources = Split("""
                 library/dao/trackdao.cpp
                 library/dao/playlistdao.cpp
                 library/dao/libraryhashdao.cpp
-
+                library/librarymidicontrol.cpp
 
                 xmlparse.cpp
                 parser.cpp

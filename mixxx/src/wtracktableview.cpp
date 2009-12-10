@@ -6,7 +6,6 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "library/librarytablemodel.h"
-#include "library/wtracktableviewcontroller.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "wtracktableview.h"
@@ -24,8 +23,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    m_pController = new WTrackTableViewController(this, this);
 
     //Create all the context menu actions (stuff that shows up when you
     //right-click)
