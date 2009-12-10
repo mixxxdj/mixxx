@@ -25,6 +25,8 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
+#include "librarymidicontrol.h"
+
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
@@ -35,6 +37,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig) {
     m_pTrackCollection = new TrackCollection();
     m_pSidebarModel = new SidebarModel(parent);
+    m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
@@ -51,6 +54,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
 }
 
 Library::~Library() {
+    delete m_pLibraryMIDIControl;
     delete m_pSidebarModel;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
@@ -81,7 +85,9 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
     emit(switchToView(m_sTrackViewName));
-    
+   
+    m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
+
     DlgPrepare* pPrepareView = new DlgPrepare(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pLibraryWidget->registerView(m_sPrepareViewName, pPrepareView);
 
