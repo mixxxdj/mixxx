@@ -46,6 +46,7 @@
 #include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
+#include "defs_version.h"
 #include "upgrade.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
@@ -82,9 +83,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
-            buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+            buildRevision = "(bzr r" + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else
-            buildRevision = "(bzr " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+            buildRevision = "(bzr r" + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
     }
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
@@ -1056,7 +1057,7 @@ void MixxxApp::slotHelpAbout()
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
     QString credits =
-    "<p align=\"center\"><b>Mixxx "+ QString(VERSION) +" Development Team</b></p>"
+    QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -1143,7 +1144,7 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>";
+"</p>").arg(VERSION);
 
 
     about->textBrowser->setHtml(credits);

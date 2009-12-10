@@ -11,24 +11,9 @@
         </scriptfiles>
 
             <controls>
-                <control>
-                    <status>0x90</status>
-                    <midino>0x37</midino>
-                    <group>[Master]</group>
-                    <key>StantonSCS1d.pfl</key>
-                    <options>
-                        <Script-Binding/>
-                    </options>
-                </control>
-                <control>
-                    <status>0x80</status>
-                    <midino>0x37</midino>
-                    <group>[Master]</group>
-                    <key>StantonSCS1d.pfl</key>
-                    <options>
-                        <Script-Binding/>
-                    </options>
-                </control>
+                
+                <!--    Encoder section    -->
+                
                 <control>
                     <status>0x90</status>
                     <midino>0x04</midino>
@@ -227,6 +212,27 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                
+                <!--    Transport Buttons    -->
+                
+                <control>
+                    <status>0x90</status>
+                    <midino>0x37</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.pfl</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>0x37</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.pfl</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
                 <control>
                     <status>0x90</status>
                     <midino>0x29</midino>
@@ -335,6 +341,9 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                
+                <!--    Platter    -->
+                
                 <control>
                     <status>0x90</status>
                     <midino>0x7f</midino>
@@ -362,6 +371,9 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                
+                <!--    Mode button section    -->
+                
                 <control>
                     <status>0x90</status>
                     <midino>0x1E</midino>
@@ -470,6 +482,9 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                
+                <!--    Pitch slider section    -->
+                
                 <control>
                     <status>0x90</status>
                     <midino>0x06</midino>
@@ -515,6 +530,9 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                
+                <!--    Trigger pad section    -->
+                
                 <control>
                     <status>0x90</status>
                     <midino>0x20</midino>
@@ -632,11 +650,287 @@
                         <Script-Binding/>
                     </options>
                 </control>
-                                <control>
+                <control>
                     <status>0x80</status>
                     <midino>0x36</midino>
                     <group>[Master]</group>
                     <key>StantonSCS1d.padBankButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                
+                <!--    Trigger/Loop Buttons - Banks   -->
+                
+                <control>
+                    <status>0x90</status>
+                    <midino>0x16</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerBankSelect</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>0x16</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerBankSelect</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>0x17</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerBankSelect</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>0x17</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerBankSelect</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>0x5</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerBankSelect</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>0x5</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerBankSelect</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                
+                <!--    Trigger/Loop Buttons    -->
+                
+                <control>
+                    <status>0x90</status>
+                    <midino>8</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>8</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>9</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>9</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>10</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>10</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>11</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>11</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>12</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>12</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>13</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>13</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>14</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>14</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>15</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>15</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>18</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>18</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>19</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>19</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>20</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>20</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x90</status>
+                    <midino>21</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>21</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
                     </options>

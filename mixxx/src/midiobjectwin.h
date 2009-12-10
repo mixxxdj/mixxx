@@ -43,6 +43,9 @@ public:
 protected:
     void run();
     void stop();
+
+private:
+    int midiDebug;
 };
 
 void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
