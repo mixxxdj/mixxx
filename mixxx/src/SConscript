@@ -181,6 +181,7 @@ else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
 
 env['MIXXX_VERSION'] = getMixxxVersion() #should this be in the env?
+env['CPPDEFINES'] = [''] #Initialize this as a list, fixes a bug where first CPPDEFINE would get mangled
 
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
@@ -432,10 +433,10 @@ sources = Split("""
 #   Linux moved to the flag parsing area since it depends on the rawmidi flag
 if 'win' in platform:
 	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
-	env.Append(CXXFLAGS = '-D__WINMIDI__')
+	env.Append(CPPDEFINES = '__WINMIDI__')
 elif platform == 'osx':
 	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
-	env.Append(CXXFLAGS = '-D__COREMIDI__')
+	env.Append(CPPDEFINES = '__COREMIDI__')
 elif platform == 'bsd':
 	print 'Warning: Mixxx has no support for BSD midi (yet).' #uuuuhhhh not a very good solution
 
@@ -1190,11 +1191,11 @@ if platform == 'linux':
 	if int(flags_rawmidi):
 		build_flags += 'rawmidi '
 		sources += Split("""midiobjectalsa.cpp """)  #ALSA RawMIDI support for Linux
-		env.Append(CXXFLAGS = '-D__ALSAMIDI__')
+		env.Append(CPPDEFINES = '__ALSAMIDI__')
 		print "ALSA API... RawMIDI"
 	else:
 		sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
-		env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
+		env.Append(CPPDEFINES = '__ALSASEQMIDI__')
 		print "ALSA API... Sequencer"
 
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
