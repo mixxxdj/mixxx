@@ -16,7 +16,7 @@
 ***************************************************************************/
 
 #include <QtCore>
-#include "defs.h"
+#include "defs_version.h"
 
 #include "configobject.h"
 #include "upgrade.h"
