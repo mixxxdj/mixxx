@@ -13,7 +13,6 @@
 #define TRACKCOLLECTION_H
 
 #include <qdom.h>
-#include <q3ptrlist.h>
 #include "trackinfoobject.h"
 
 class TrackInfoObject;
