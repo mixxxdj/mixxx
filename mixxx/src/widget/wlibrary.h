@@ -28,6 +28,8 @@ public:
     // to this widget before calling setup().
     void setup(QDomNode node);
 
+    QWidget* getWidgetForMIDIControl();
+
 public slots:
     // Show the view registered with the given name. Does nothing if the current
     // view is the specified view, or if the name does not specify any

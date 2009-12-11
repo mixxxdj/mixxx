@@ -28,8 +28,8 @@ class WTrackTableView : public WLibraryTableView
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
-    void selectNext();
-    void selectPrevious();
+    QWidget* getWidgetForMIDIControl();
+    virtual void keyPressEvent(QKeyEvent* event);
 public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);

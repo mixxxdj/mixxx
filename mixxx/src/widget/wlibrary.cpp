@@ -72,3 +72,14 @@ void WLibrary::searchStarting() {
     lock.unlock();
     view->onSearchStarting();
 }
+
+QWidget* WLibrary::getWidgetForMIDIControl()
+{
+    LibraryView* view = dynamic_cast<LibraryView*>(currentWidget());
+    if (view)
+    {
+        return view->getWidgetForMIDIControl();
+    }
+    else
+        return NULL;
+}

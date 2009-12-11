@@ -67,3 +67,30 @@ void WBrowseTableView::onSearch(const QString& text) {
 void WBrowseTableView::onShow()
 {
 }
+
+QWidget* WBrowseTableView::getWidgetForMIDIControl()
+{
+    return this;
+}
+
+void WBrowseTableView::keyPressEvent(QKeyEvent* event)
+{
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (event->key() == Qt::Key_Return)
+    {
+        if (selectedIndices.size() > 0) {
+            QModelIndex index = selectedIndices.at(0);
+            emit(activated(index));
+        }
+    }
+    if (event->key() == Qt::Key_BracketLeft)
+    {
+        slotLoadPlayer1();
+    }
+    if (event->key() == Qt::Key_BracketRight)
+    {
+        slotLoadPlayer2();
+    }
+    else
+        QTableView::keyPressEvent(event);
+}

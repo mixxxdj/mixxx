@@ -17,6 +17,8 @@ class LibraryMIDIControl : public QObject
         void slotLoadSelectedTrackCh2(double v); 
         void slotSelectNextTrack(double v); 
         void slotSelectPrevTrack(double v); 
+        void slotSelectNextPlaylist(double v); 
+        void slotSelectPrevPlaylist(double v); 
         void slotLoadSelectedIntoFirstStopped(double v); 
         void slotSelectTrackKnob(double v); 
     private:
@@ -24,6 +26,8 @@ class LibraryMIDIControl : public QObject
         ControlObjectThreadMain* m_pLoadSelectedTrackCh2;
         ControlObjectThreadMain* m_pSelectNextTrack;
         ControlObjectThreadMain* m_pSelectPrevTrack;
+        ControlObjectThreadMain* m_pSelectNextPlaylist;
+        ControlObjectThreadMain* m_pSelectPrevPlaylist;
         ControlObjectThreadMain* m_pLoadSelectedIntoFirstStopped;
         ControlObjectThreadMain* m_pSelectTrackKnob;
         WLibrary* m_pLibraryWidget;

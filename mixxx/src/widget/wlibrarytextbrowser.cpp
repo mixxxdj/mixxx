@@ -49,3 +49,8 @@ void WLibraryTextBrowser::onSearchCleared() {
 void WLibraryTextBrowser::onShow() {
 
 }
+
+QWidget* WLibraryTextBrowser::getWidgetForMIDIControl()
+{   
+    return NULL; //No MIDI control for text panes. :)
+}

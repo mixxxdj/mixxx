@@ -20,6 +20,8 @@ class WBrowseTableView : public virtual WLibraryTableView {
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
+    QWidget* getWidgetForMIDIControl();
+    virtual void keyPressEvent(QKeyEvent* event);
   signals:
     void loadToPlayer(const QModelIndex&, int);
     void search(const QString&);
