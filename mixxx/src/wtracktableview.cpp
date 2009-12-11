@@ -252,6 +252,11 @@ void WTrackTableView::onShow()
 
 }
 
+QWidget* WTrackTableView::getWidgetForMIDIControl()
+{
+    return this;
+}
+
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
@@ -426,32 +431,24 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
             (trackModel->getCapabilities() & capabilities) == capabilities;
 }
 
-
-/* Move the cursor to the next track. */
-void WTrackTableView::selectNext()
+void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
-    QModelIndex c = currentIndex();
-
-    // Create a row selection if none exists
-    if (c.row() == -1) {
-	selectRow(0);
-	c = currentIndex();
+    m_selectedIndices = this->selectionModel()->selectedRows();
+    if (event->key() == Qt::Key_Return)
+    {
+        if (m_selectedIndices.size() > 0) {
+            QModelIndex index = m_selectedIndices.at(0);
+            slotMouseDoubleClicked(index);
+        }
     }
-    // Advance to next position
-    setCurrentIndex(c.child(c.row()+1, c.column()));
-    // Roll back to previous position if on last row
-    if (currentIndex().row() == -1) setCurrentIndex(c);
-    selectRow(currentIndex().row());
-}
-
-/* Move the cursor to the previous track. */
-void WTrackTableView::selectPrevious()
-{
-    QModelIndex c = currentIndex();
-
-    // Move to the previous row
-    setCurrentIndex(c.child(c.row()-1, c.column()));
-    // Roll back to previous position if on first row
-    if (currentIndex().row() == -1) setCurrentIndex(c);
-    selectRow(currentIndex().row());
+    if (event->key() == Qt::Key_BracketLeft)
+    {
+        slotLoadPlayer1();
+    }
+    if (event->key() == Qt::Key_BracketRight)
+    {
+        slotLoadPlayer2();
+    }
+    else
+        QTableView::keyPressEvent(event);
 }

@@ -91,6 +91,11 @@ void DlgPrepare::onShow()
     //m_pCratesTableModel->select();
 }
 
+QWidget* DlgPrepare::getWidgetForMIDIControl()
+{
+    return m_pPrepareLibraryTableView;
+}
+
 void DlgPrepare::setup(QDomNode node)
 {
 

@@ -19,7 +19,7 @@ class WLibraryTextBrowser : public QTextBrowser, public virtual LibraryView {
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
-
+    QWidget* getWidgetForMIDIControl();
 };
 
 

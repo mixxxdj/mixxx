@@ -24,6 +24,7 @@ public:
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual QWidget* getWidgetForMIDIControl();
 public slots:
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);

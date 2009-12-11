@@ -24,6 +24,7 @@ public:
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual QWidget* getWidgetForMIDIControl();
     public slots:
     void tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void selectAll(); 

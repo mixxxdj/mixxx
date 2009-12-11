@@ -131,3 +131,32 @@ void WLibrarySidebar::dropEvent(QDropEvent * event)
         event->ignore();
     }
 }
+
+void WLibrarySidebar::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Return)
+    {
+        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+        if (selectedIndices.size() > 0) {
+            QModelIndex index = selectedIndices.at(0);
+            emit(activated(index));
+            //Expand or collapse the item as necessary.
+            setExpanded(index, !isExpanded(index));
+        }
+    }
+    else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)
+    {
+        //Let the tree view move up and down for us...
+        QTreeView::keyPressEvent(event);
+        //But force the index to be activated/clicked after the selection
+        //changes. (Saves you from having to push "enter" after changing the selection.)
+        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+        //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
+        if (selectedIndices.size() > 0) {
+            QModelIndex index = selectedIndices.at(0);
+            emit(activated(index));
+        }
+    }
+    else
+        QTreeView::keyPressEvent(event);
+}

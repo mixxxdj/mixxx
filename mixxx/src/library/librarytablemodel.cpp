@@ -207,3 +207,4 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
     return TRACKMODELCAPS_RECEIVEDROPS;
 }
+

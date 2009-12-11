@@ -67,6 +67,11 @@ void DlgAutoDJ::onShow()
     m_pAutoDJTableModel->select();
 }
 
+QWidget* DlgAutoDJ::getWidgetForMIDIControl()
+{
+    return m_pTrackTableView;
+}
+
 void DlgAutoDJ::setup(QDomNode node)
 {
 

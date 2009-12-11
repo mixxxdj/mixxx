@@ -16,6 +16,7 @@ public:
     virtual void onSearchCleared() = 0;
     virtual void onSearch(const QString& text) = 0;
     virtual void onShow() = 0;
+    virtual QWidget* getWidgetForMIDIControl()  = 0;
 };
 
 #endif /* LIBRARYVIEW_H */
