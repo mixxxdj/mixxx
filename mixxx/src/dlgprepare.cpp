@@ -5,7 +5,6 @@
 #include "transposeproxymodel.h"
 #include "widget/wpreparecratestableview.h"
 #include "widget/wpreparelibrarytableview.h"
-#include "widget/crateview.h"
 #include "analyserqueue.h"
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
