@@ -24,12 +24,9 @@
 #include <QMutexLocker>
 #include <QtDebug>
 #include "trackinfoobject.h"
-// #include "bpm/bpmdetector.h"
 #include "bpm/bpmscheme.h"
 #include "bpm/bpmreceiver.h"
 #include "soundsourceproxy.h"
-//#include "wtracktable.h"
-//#include "wtracktableitem.h"
 
 #include "xmlparse.h"
 #include <qdom.h>
@@ -72,17 +69,6 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
 
-    //m_pTableItemScore = 0;
-    //m_pTableItemTitle = 0;
-    //m_pTableItemArtist = 0;
-    //m_pTableItemComment = 0;
-    //m_pTableItemType = 0;
-    //m_pTableItemDuration = 0;
-    //m_pTableItemBpm = 0;
-    //m_pTableItemBitrate = 0;
-
-    //m_pTableTrack = 0;
-
     //qDebug() << "new TrackInfoObject....";
 
     // Check that the file exists:
@@ -101,8 +87,9 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 	: m_chordData() {
+  
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    //m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath");
+    m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
     m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
     m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
@@ -123,22 +110,13 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
-
+    
+    m_pWave = 0; 
+    
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
 
     //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
-
-    //m_pTableTrack = 0;
-
-    //m_pTableItemScore = 0;
-    //m_pTableItemTitle = 0;
-    //m_pTableItemArtist = 0;
-    //m_pTableItemComment = 0;
-    //m_pTableItemType = 0;
-    //m_pTableItemDuration = 0;
-    //m_pTableItemBpm = 0;
-    //m_pTableItemBitrate = 0;
 
     m_bIsValid = true;
 

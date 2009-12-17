@@ -39,6 +39,7 @@
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
+#include "library/legacylibraryimporter.h"
 
 #include "soundmanager.h"
 #include "defs_urls.h"
@@ -214,6 +215,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
     				   m_pLibrary);
+
+    //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
+    LegacyLibraryImporter libImport(m_pLibrary->getTrackCollection()->getTrackDAO());
 
     //Scan the library directory. 
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
