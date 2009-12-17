@@ -441,11 +441,11 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
             slotMouseDoubleClicked(index);
         }
     }
-    if (event->key() == Qt::Key_BracketLeft)
+    else if (event->key() == Qt::Key_BracketLeft)
     {
         slotLoadPlayer1();
     }
-    if (event->key() == Qt::Key_BracketRight)
+    else if (event->key() == Qt::Key_BracketRight)
     {
         slotLoadPlayer2();
     }
