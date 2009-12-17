@@ -412,6 +412,7 @@ sources = Split("""
                 library/sidebarmodel.cpp
                 library/libraryscanner.cpp
                 library/libraryscannerdlg.cpp
+                library/legacylibraryimporter.cpp
                 library/library.cpp
                 library/searchthread.cpp
                 library/dao/cratedao.cpp
