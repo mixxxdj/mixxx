@@ -24,17 +24,21 @@ namespace {
             //Subpixels per second, from waveformrenderer.cpp:247
             tio->setVisualResampleRate(200);
             
-            canary1 = new CSAMPLE[CANARY_SIZE];
-            for (int i = 0; i < CANARY_SIZE; i++)
-                canary1 = CANARY_FLOAT;
-            
             bigbuf = new CSAMPLE[BIGBUF_SIZE];
             for (int i = 0; i < BIGBUF_SIZE; i++)
-                bigbuf = MAGIC_FLOAT;
+                bigbuf[i] = MAGIC_FLOAT;
 
-            canary2 = new CSAMPLE[CANARY_SIZE];
+            //Memory layout for canaryBigBuf looks like
+            //  [ canary | big buf | canary ]
+            //
+
+            canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2*CANARY_SIZE];
             for (int i = 0; i < CANARY_SIZE; i++)
-                canary2 = CANARY_FLOAT;
+                canaryBigBuf[i] = CANARY_FLOAT;
+            for (int i = CANARY_SIZE; i < CANARY_SIZE+BIGBUF_SIZE; i++)
+                canaryBigBuf[i] = MAGIC_FLOAT;
+            for (int i = CANARY_SIZE+BIGBUF_SIZE; i < 2*CANARY_SIZE+BIGBUF_SIZE; i++)
+                canaryBigBuf[i] = CANARY_FLOAT;
         }
 
         virtual void TearDown() {
@@ -42,15 +46,13 @@ namespace {
             qDebug() << "delete aw";
             delete aw;
             delete [] bigbuf;
-            delete [] canary1;
-            delete [] canary2;
+            delete [] canaryBigBuf;
         }
 
         AnalyserWaveform* aw;
         TrackInfoObject* tio;
-        CSAMPLE* canary1;
         CSAMPLE* bigbuf;
-        CSAMPLE* canary2;
+        CSAMPLE* canaryBigBuf;
     };
     
     //Test to make sure we don't modify the source buffer.
@@ -68,10 +70,10 @@ namespace {
         aw->process(bigbuf, BIGBUF_SIZE);
         aw->finalise(tio);
         for (int i = 0; i < CANARY_SIZE; i++) {
-            EXPECT_FLOAT_EQ(canary1[i], CANARY_FLOAT);
+            EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
         }
-        for (int i = 0; i < CANARY_SIZE; i++) {
-            EXPECT_FLOAT_EQ(canary2[i], CANARY_FLOAT);
+        for (int i = CANARY_SIZE+BIGBUF_SIZE; i < 2*CANARY_SIZE+BIGBUF_SIZE; i++) {
+            EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
         }
     }
 
