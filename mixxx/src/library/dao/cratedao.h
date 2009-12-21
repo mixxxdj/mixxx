@@ -15,9 +15,12 @@ class CrateDAO : public virtual DAO {
   public:
     CrateDAO(QSqlDatabase& database);
     virtual ~CrateDAO();
+    void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     // Initialize this DAO, create the tables it relies on, etc.
     void initialize();
+
+
 
     unsigned int crateCount();
     bool createCrate(const QString& name);
