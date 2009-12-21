@@ -13,7 +13,7 @@
 ITunesTrackModel::ITunesTrackModel()
 {
     QXmlQuery query;
-    QString res;
+    QString res, playlistRes;
     QDomDocument itunesdb;
 
 
@@ -48,8 +48,16 @@ ITunesTrackModel::ITunesTrackModel()
         return;
 
     query.evaluateTo(&res);
-    db.close();
 
+    // Both ITunes and Rhythmbox parsing should occur in something completely
+    // separate from the TrackModels, but since we're in a rush, we're just
+    // going to do playlist parsing here so we don't have to re-open the file
+    // again.
+    query.setQuery("/plist[@version='1.0']/dict[key='Playlists']/array/dict");
+    if (query.isValid()) {
+        query.evaluateTo(&playlistRes);
+    }
+    db.close();
 
     /*
      * Parse the result as an XML file. These shennanigans actually
@@ -58,17 +66,54 @@ ITunesTrackModel::ITunesTrackModel()
     itunesdb.setContent("<plist version='1.0'>" + res + "</plist>");
     m_trackNodes = itunesdb.elementsByTagName("dict");
 
-
     for (int i = 0; i < m_trackNodes.count(); i++) {
         QDomNode n = m_trackNodes.at(i);
+        QString trackId = findValueByKey(n, "Track ID");
         QString location = findValueByKey(n, "Location");
-
         m_mTracksByLocation[location] = n;
+        m_mTracksById[trackId] = n;
+    }
+
+    // Now process the playlist data.
+    QDomDocument playlistdb;
+    playlistdb.setContent("<plist version='1.0'>" + playlistRes + "</plist>");
+    QDomNodeList playlistNodes = playlistdb.documentElement().childNodes();
+    for (int i = 0; i < playlistNodes.count(); i++) {
+        QDomNode n = playlistNodes.at(i);
+
+        // Get the playlist name
+        QString name = findValueByKey(n, "Name");
+        qDebug() << "Found playlist" << name;
+
+        // Skip invisible playlists
+        QDomElement visible = findNodeByKey(n, "Visible");
+        if (!visible.isNull() && visible.tagName() == "false") {
+            continue;
+        }
+
+        // Now traverse to the items list
+        QDomElement items = findNodeByKey(n, "Playlist Items");
+        if (items.isNull()) {
+            qDebug() << name << "has no items";
+            continue;
+        }
+
+        // Now extract the song ids that are members of this playlist
+        QDomNodeList playlistEntries = items.childNodes();
+        QList<QString> playlistSongIds;
+        for (int j = 0; j < playlistEntries.count(); j++) {
+            QDomNode entry = playlistEntries.at(j);
+            QString trackId = findValueByKey(entry, "Track ID");
+            playlistSongIds.append(trackId);
+        }
+
+        // TODO(XXX) : Do we need to handle duplicate playlist names? If there
+        // are duplicates, only one will show up if we do this.
+        m_mPlaylists[name] = playlistSongIds;
     }
 
     qDebug() << itunesdb.doctype().name();
     qDebug() << "ITunesTrackModel: m_entryNodes size is" << m_trackNodes.size();
-
 
     addColumnName(ITunesTrackModel::COLUMN_ARTIST, "Artist");
     addColumnName(ITunesTrackModel::COLUMN_TITLE, "Title");
@@ -84,14 +129,13 @@ ITunesTrackModel::ITunesTrackModel()
     addSearchColumn(ITunesTrackModel::COLUMN_GENRE);
     addSearchColumn(ITunesTrackModel::COLUMN_LOCATION);
 
+    // TODO(XXX) Remove this for 1.8.0
     for (int i = 0; i < m_trackNodes.count(); i++) {
-        QDomNode n;
-
-
-        n = m_trackNodes.at(i);
+        QDomNode n = m_trackNodes.at(i);
         qDebug() << "Track=[" << i << "]"
-                    << "Artist:" << findValueByKey(n, "Artist")
-                    << "Title:" << findValueByKey(n, "Name");
+                 << "Key:" << findValueByKey(n, "Track ID")
+                 << "Artist:" << findValueByKey(n, "Artist")
+                 << "Title:" << findValueByKey(n, "Name");
     }
 }
 
@@ -114,8 +158,6 @@ QString ITunesTrackModel::findValueByKey(QDomNode dictNode, QString key) const
     while(!curElem.isNull()) {
         if ( curElem.text() == key ) {
             QDomElement value;
-
-
             value = curElem.nextSiblingElement();
             return value.text();
         }
@@ -126,8 +168,24 @@ QString ITunesTrackModel::findValueByKey(QDomNode dictNode, QString key) const
     return QString();
 }
 
+QDomElement ITunesTrackModel::findNodeByKey(QDomNode dictNode, QString key) const
+{
+    QDomElement curElem;
+
+    curElem = dictNode.firstChildElement("key");
+    while(!curElem.isNull()) {
+        if ( curElem.text() == key ) {
+            return curElem.nextSiblingElement();
+        }
+        curElem = curElem.nextSiblingElement("key");
+    }
+
+    return QDomElement();
+}
+
 QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
+    int totalSeconds, seconds, mins;
     switch (index.column()) {
         case ITunesTrackModel::COLUMN_ARTIST:
             return findValueByKey(songNode, "Artist");
@@ -142,8 +200,17 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
         case ITunesTrackModel::COLUMN_LOCATION:
             return findValueByKey(songNode,"Location");
         case ITunesTrackModel::COLUMN_DURATION:
-            return findValueByKey(songNode,"Total Time");
+            // TODO(XXX) Pull this out into a MixxxUtil or something.
+            //Let's reformat this song length into a human readable MM:SS format.
 
+            // ITunes stores time in total milliseconds
+            totalSeconds = findValueByKey(songNode,"Total Time").toInt() / 1000;
+            seconds = totalSeconds % 60;
+            mins = totalSeconds / 60;
+            //int hours = mins / 60; //Not going to worry about this for now. :)
+
+            //Construct a nicely formatted duration string now.
+            return QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
         default:
             return QVariant();
     }
@@ -157,13 +224,13 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
     TrackInfoObject *pTrack = new TrackInfoObject();
 
-
     pTrack->setArtist(findValueByKey(songNode, "Artist"));
     pTrack->setTitle(findValueByKey(songNode, "Name"));
     pTrack->setAlbum(findValueByKey(songNode,"Album"));
     pTrack->setYear(findValueByKey(songNode,"Year"));
     pTrack->setGenre(findValueByKey(songNode,"Genre"));
-    pTrack->setDuration(findValueByKey(songNode,"Total Time").toUInt());
+    // ITunes stores time in total milliseconds
+    pTrack->setDuration(findValueByKey(songNode,"Total Time").toInt() / 1000);
 
     QString strloc = findValueByKey(songNode,"Location");
     QByteArray strlocbytes = strloc.toUtf8();
@@ -173,4 +240,11 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
 
     return pTrack;
+}
+
+TrackInfoObject* ITunesTrackModel::getTrackById(QString id) {
+    if (!m_mTracksById.contains(id)) {
+        return NULL;
+    }
+    return parseTrackNode(m_mTracksById[id]);
 }
