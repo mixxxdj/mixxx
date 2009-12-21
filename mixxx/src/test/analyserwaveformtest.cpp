@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
 #include <QDebug>
 
+#include "trackinfoobject.h"
 #include "analyserwaveform.h"
 
 #define BIGBUF_SIZE (1024 * 1024)  //Megabyte
 #define CANARY_SIZE (1024*4) 
 #define MAGIC_FLOAT 1234.567890f
-#define CANARY_FLOAT 2468.86420f
+#define CANARY_FLOAT 0.0f
 
 namespace {
 
@@ -20,7 +21,7 @@ namespace {
         virtual void SetUp() {
             qDebug() << "SetUp";
             aw = new AnalyserWaveform();
-            tio = new TrackInfoObject();
+            tio = new TrackInfoObject("foo", "foo");
             //Subpixels per second, from waveformrenderer.cpp:247
             tio->setVisualResampleRate(200);
             
@@ -65,9 +66,10 @@ namespace {
         }
     }
 
+    //Basic test to make sure we don't step out of bounds.
     TEST_F(AnalyserWaveformTest, canary) {
         aw->initialise(tio, 44100, BIGBUF_SIZE);
-        aw->process(bigbuf, BIGBUF_SIZE);
+        aw->process(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
         aw->finalise(tio);
         for (int i = 0; i < CANARY_SIZE; i++) {
             EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
@@ -77,4 +79,29 @@ namespace {
         }
     }
 
+    //Test to make sure that if an incorrect totalSamples is passed to
+    //initialise(..) and process(..) is told to process more samples than that,
+    //that we don't step out of bounds.
+    TEST_F(AnalyserWaveformTest, wrongTotalSamples) {
+        aw->initialise(tio, 44100, BIGBUF_SIZE);
+        //Process in a loop
+        int wrongTotalSamples = BIGBUF_SIZE+1; //Too big by 1 sample...
+        //Note that the correct totalSamples would just be BIGBUF_SIZE. :)
+        int blockSize = 2*32768;
+        for (int i = CANARY_SIZE; i < CANARY_SIZE+wrongTotalSamples; i += blockSize) {
+            aw->process(&canaryBigBuf[i], blockSize);
+        }
+        aw->finalise(tio);
+        //Ensure the source buffer is intact
+        for (int i = CANARY_SIZE; i < BIGBUF_SIZE; i++) {
+            EXPECT_FLOAT_EQ(canaryBigBuf[i], MAGIC_FLOAT);
+        }
+        //Make sure our canaries are still OK
+        for (int i = 0; i < CANARY_SIZE; i++) {
+            EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
+        }
+        for (int i = CANARY_SIZE+BIGBUF_SIZE; i < 2*CANARY_SIZE+BIGBUF_SIZE; i++) {
+            EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
+        }
+    }
 }
