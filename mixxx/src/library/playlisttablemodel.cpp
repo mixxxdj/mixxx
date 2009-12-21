@@ -27,7 +27,6 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
 
-    QSqlDatabase::database().transaction();
     QSqlQuery query;
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
@@ -62,7 +61,6 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
-    QSqlDatabase::database().commit();
 
     //qDebug() << query.executedQuery();
 
@@ -170,7 +168,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
         newPosition = rowCount();
 
     //Start the transaction
-    QSqlDatabase::database().transaction();
+    m_pTrackCollection->getDatabase().transaction();
 
     //Find out the highest position existing in the playlist so we know what
     //position this track should have.
@@ -234,7 +232,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
         query.exec(queryString);
     }
 
-    QSqlDatabase::database().commit();
+    m_pTrackCollection->getDatabase().commit();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {

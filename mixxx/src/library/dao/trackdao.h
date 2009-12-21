@@ -36,7 +36,7 @@ Q_OBJECT
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao);
     virtual ~TrackDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
-    
+
     void initialize();
     int getTrackId(QString location);
     QString getTrackLocation(int id);
@@ -44,7 +44,6 @@ Q_OBJECT
     void addTrack(QString location);
     void addTrack(TrackInfoObject * pTrack);
     void removeTrack(int id);
-    TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
     TrackInfoObject *getTrack(int id) const;
     void markTrackLocationAsVerified(QString location);
     void invalidateTrackLocations(QString directory);
@@ -54,8 +53,9 @@ Q_OBJECT
   public slots:
     void updateTrackInDatabase(TrackInfoObject* pTrack);
   private:
+    TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
     //Prevents evil copy constructors! (auto-generated ones by the compiler that don't compile)
-    TrackDAO(TrackDAO&); 
+    TrackDAO(TrackDAO&);
     bool operator=(TrackDAO&);
     /***NOTE: If you get a compile error complaining about these, it means you're copying
               a track DAO, which is probably not what you meant to do. Did you declare:
@@ -64,11 +64,11 @@ Q_OBJECT
                  TrackDAO &m_trackDAO;
               Go back and check your code...
          -- Albert Nov 1/2009
-     */          
-    
+     */
+
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
-    
+
 };
 
 #endif //TRACKDAO_H

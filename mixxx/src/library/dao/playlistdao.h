@@ -13,6 +13,7 @@ class PlaylistDAO : public virtual DAO {
     PlaylistDAO(QSqlDatabase& database);
     virtual ~PlaylistDAO();
     void initialize();
+    void setDatabase(QSqlDatabase& database) { m_database = database; };
     /** Create a playlist */
     void createPlaylist(QString name);
     /** Delete a playlist */
@@ -30,7 +31,7 @@ class PlaylistDAO : public virtual DAO {
     /** Remove a track from a playlist */
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
-    void insertTrackIntoPlaylist(QString location, int playlistId, int position);    
+    void insertTrackIntoPlaylist(QString location, int playlistId, int position);
   private:
     QSqlDatabase& m_database;
 };
