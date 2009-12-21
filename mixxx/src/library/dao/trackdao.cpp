@@ -70,7 +70,7 @@ void TrackDAO::initialize()
 */
 int TrackDAO::getTrackId(QString location)
 {
-    qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
 
     //Start the transaction
     if (!m_database.transaction()) {
@@ -153,7 +153,7 @@ void TrackDAO::addTrack(QString location)
 void TrackDAO::addTrack(TrackInfoObject * pTrack)
 {
 
-    qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
  	//qDebug() << "TrackCollection::addTrack(), inserting into DB";
     Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
 

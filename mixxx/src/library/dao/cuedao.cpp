@@ -103,7 +103,7 @@ Cue* CueDAO::getCue(int cueId) {
 }
 
 QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
-    qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QList<Cue*> cues;
     QSqlQuery query(m_database);
     query.prepare("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
@@ -221,14 +221,14 @@ bool CueDAO::deleteCue(Cue* cue) {
 }
 
 void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
-    qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
     const QList<Cue*>& cueList = pTrack->getCuePoints();
     const QList<Cue*>& oldCueList = getCuesForTrack(trackId);
 
-    qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
-             << "new size:" << cueList.size();
+    //qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
+    //<< "new size:" << cueList.size();
 
     QListIterator<Cue*> oldCues(oldCueList);
     QSet<int> oldIds;
