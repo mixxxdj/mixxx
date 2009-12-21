@@ -22,15 +22,15 @@
 #include <QtXml>
 #include "trackmodel.h"
 #include "abstractxmltrackmodel.h"
-
+#include "itunesplaylistmodel.h"
 
 class TrackInfoObject;
 class QSqlDatabase;
 
 #if defined(__APPLE__)
-#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "/Music/iTunes/iTunes\ Music\ Library.xml" 
+#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "/Music/iTunes/iTunes\ Music\ Library.xml"
 #elif defined(__WIN__)
-#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "My Documents/My Music/iTunes/iTunes\ Music\ Library.xml" 
+#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "My Documents/My Music/iTunes/iTunes\ Music\ Library.xml"
 #elif defined(__LINUX__)
 #define MIXXX_ITUNES_DB_LOCATION  QDir::homePath() + "/.itunes.xml"
 #else
@@ -56,27 +56,34 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     };
 
     Q_OBJECT
-public:
+  public:
     ITunesTrackModel();
     virtual ~ITunesTrackModel();
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual bool isColumnInternal(int column);
 
-protected:
+  public slots:
+
+  signals:
+    void startedLoading();
+    void progressLoading(QString path);
+    void finishedLoading();
+
+  protected:
     virtual TrackInfoObject *parseTrackNode(QDomNode node) const;
     /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
     virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
 
-private:
+  private:
     QString findValueByKey(QDomNode dictNode, QString key) const;
+    QDomElement findNodeByKey(QDomNode dictNode, QString key) const;
+    TrackInfoObject* getTrackById(QString id);
 
-public slots:
+    QMap<QString, QDomNode> m_mTracksById;
+    QMap<QString, QList<QString> > m_mPlaylists;
 
-signals:
- 	void startedLoading();
- 	void progressLoading(QString path);
- 	void finishedLoading();
+    friend class ITunesPlaylistModel;
 };
 
 #endif
