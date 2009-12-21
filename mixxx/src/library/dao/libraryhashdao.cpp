@@ -38,7 +38,7 @@ void LibraryHashDAO::initialize()
 
 int LibraryHashDAO::getDirectoryHash(QString dirPath)
 {
-    qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     int hash = -1;
 
     QSqlQuery query(m_database);
@@ -102,7 +102,7 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
 
 void LibraryHashDAO::markAsExisting(QString dirPath)
 {
-    qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
                   "SET directory_deleted=:directory_deleted "

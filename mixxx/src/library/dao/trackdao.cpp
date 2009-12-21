@@ -472,7 +472,7 @@ void TrackDAO::invalidateTrackLocations(QString directory)
 
 void TrackDAO::markTrackLocationAsVerified(QString location)
 {
-    qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTrackLocationAsVerified()" << location;
 
     QSqlQuery query(m_database);
@@ -503,7 +503,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted()
 
 void TrackDAO::markTrackLocationsAsDeleted(QString directory)
 {
-    qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET fs_deleted=1 "
