@@ -3,18 +3,22 @@
 #include "library/itunesfeature.h"
 
 #include "library/itunestrackmodel.h"
-//#include "library/rhythmboxplaylistmodel.h"
+#include "library/itunesplaylistmodel.h"
 #include "library/proxytrackmodel.h"
 
 ITunesFeature::ITunesFeature(QObject* parent)
     : LibraryFeature(parent) {
     m_pITunesTrackModel = new ITunesTrackModel();
+    m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
     m_pTrackModelProxy = new ProxyTrackModel(m_pITunesTrackModel);
     m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-    //m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
 
-    // TODO(XXX) Populate m_childModel with playlist names.
+    QStringList list;
+    for (int i = 0; i < m_pITunesPlaylistModel->numPlaylists(); ++i) {
+        list << m_pITunesPlaylistModel->playlistTitle(i);
+    }
+    m_childModel.setStringList(list);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -35,13 +39,11 @@ void ITunesFeature::activate() {
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
-    /*
-    qDebug("ITunesFeature::activateChild(%d)", n);
-    QString playlist = index.data();
+    qDebug() << "ITunesFeature::activateChild()" << index;
+    QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
     emit(showTrackModel(m_pITunesPlaylistModel));
-    */
 }
 
 QAbstractItemModel* ITunesFeature::getChildModel() {

@@ -10,6 +10,7 @@
 
 //class ITunesPlaylistModel;
 class ITunesTrackModel;
+class ITunesPlaylistModel;
 class ProxyTrackModel;
 
 class ITunesFeature : public LibraryFeature {
@@ -36,6 +37,7 @@ public slots:
 
 private:
     ITunesTrackModel* m_pITunesTrackModel;
+    ITunesPlaylistModel* m_pITunesPlaylistModel;
     ProxyTrackModel* m_pTrackModelProxy;
     //ITunesPlaylistModel* m_pITunesPlaylistModel;
     QStringListModel m_childModel;
