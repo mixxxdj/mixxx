@@ -135,22 +135,18 @@ int SoundDevicePortAudio::open()
     //Frame size...
     unsigned int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
 
-    //OSS is a bitch - It only likes power-of-two buffer sizes, so give it one.
-    //Update: A patch has been pushed upstream to PortAudio for this that will elimate
-    //the need for this block. However, we should keep it around until a newer version
-    //of PortAudio gets packaged in most distributions. - Albert Sept 7/07
-    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_OSS_STRING)
-    {
-        unsigned int i;
-        iFramesPerBuffer &= INT_MAX;
-        for (i = 1; iFramesPerBuffer > i; i <<= 1) ;
-        iFramesPerBuffer = i;
-        qDebug() << "iFramesPerBuffer" << iFramesPerBuffer;
-    }
+    //Round to the nearest power-of-two buffer size. This is improves compatibility with
+    //soundcards (and buggy drivers and APIs like ALSA/PulseAudio that can crash), and also
+    //seems to give us lower latencies. Win-win. :)
+    unsigned int i;
+    iFramesPerBuffer &= INT_MAX;
+    for (i = 1; iFramesPerBuffer > i; i <<= 1) ;
+    iFramesPerBuffer = i;
+    qDebug() << "iFramesPerBuffer" << iFramesPerBuffer;
     
     //PortAudio's JACK backend also only properly supports paFramesPerBufferUnspecified in non-blocking mode
     //because the latency comes from the JACK daemon. (PA should give an error or something though, but it doesn't.)
-    else if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_JACK_STRING)
+    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_JACK_STRING)
     {
         iFramesPerBuffer = paFramesPerBufferUnspecified;
     }
