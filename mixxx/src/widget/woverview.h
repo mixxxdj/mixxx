@@ -72,8 +72,8 @@ class WOverview : public WWidget
     QMap<QObject*, int> m_hotcueMap;
     QList<int> m_hotcues;
 
-    /** Pointer to array containing waveform summary */
-    QByteArray* m_pWaveformSummary;
+    /** Array containing waveform summary */
+    QByteArray m_waveformSummary;
     /** Duration of current track in samples */
     int m_liSampleDuration;
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */

@@ -31,7 +31,7 @@
 WOverview::WOverview(const char *pGroup, QWidget * parent)
         : WWidget(parent),
           m_pGroup(pGroup) {
-    m_pWaveformSummary = 0;
+    m_waveformSummary = QByteArray();
     m_liSampleDuration = 0;
     m_iPos = 0;
     m_bDrag = false;
@@ -198,7 +198,10 @@ void WOverview::loopEnabledChanged(double v) {
 
 void WOverview::setData(QByteArray* pWaveformSummary, long liSampleDuration)
 {
-    m_pWaveformSummary = pWaveformSummary;
+    //COPY THE EFFING WAVESUMMARY BYTES so we don't end up with
+    //a bad pointer in case the TrackInfoObject that pWavefromSummary originates
+    //from is deallocated. -- Albert Dec 22, 2009
+    m_waveformSummary = *pWaveformSummary;
     m_liSampleDuration = liSampleDuration;
 
     waveformChanged = true;
@@ -206,7 +209,7 @@ void WOverview::setData(QByteArray* pWaveformSummary, long liSampleDuration)
 
 void WOverview::redrawPixmap() {
 
-    if (!m_pWaveformSummary || !m_pWaveformSummary->size())
+    if (!m_waveformSummary.size())
         return;
 
     // Erase background
@@ -215,13 +218,13 @@ void WOverview::redrawPixmap() {
     QPainter paint(m_pScreenBuffer);
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
-    float xscale = (float)m_pWaveformSummary->size()/width();
+    float xscale = (float)m_waveformSummary.size()/width();
 
     float hfcMax = 0.;
-    for (unsigned int i=2; i<m_pWaveformSummary->size(); i=i+3)
+    for (unsigned int i=2; i<m_waveformSummary.size(); i=i+3)
     {
-        if (m_pWaveformSummary->at(i)+128>hfcMax)
-            hfcMax = m_pWaveformSummary->at(i)+128;
+        if (m_waveformSummary.at(i)+128>hfcMax)
+            hfcMax = m_waveformSummary.at(i)+128;
     }
 
     // Draw waveform using hfc to determine color
@@ -234,27 +237,27 @@ void WOverview::redrawPixmap() {
         float fMin = 0.;
         float fMax = 0.;
 
-        if ((unsigned int)width()>m_pWaveformSummary->size()/3)
+        if ((unsigned int)width()>m_waveformSummary.size()/3)
         {
-            float pos = (float)(m_pWaveformSummary->size()-3)/3.*(float)i/(float)width();
+            float pos = (float)(m_waveformSummary.size()-3)/3.*(float)i/(float)width();
             int idx = (int)floor(pos);
             float fraction = pos-(float)idx;
 
             char v1, v2;
 
-            float hfc = (m_pWaveformSummary->at(idx*3+2)+128.)/hfcMax;
+            float hfc = (m_waveformSummary.at(idx*3+2)+128.)/hfcMax;
 
             int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
             int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
             int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
             paint.setPen(QColor(r,g,b));
 
-            v1 = m_pWaveformSummary->at(idx*3);
-            v2 = m_pWaveformSummary->at((idx+1)*3);
+            v1 = m_waveformSummary.at(idx*3);
+            v2 = m_waveformSummary.at((idx+1)*3);
             fMin = v1 + (v2-v1)*fraction;
 
-            v1 = m_pWaveformSummary->at(idx*3+1);
-            v2 = m_pWaveformSummary->at((idx+1)*3+1);
+            v1 = m_waveformSummary.at(idx*3+1);
+            v2 = m_waveformSummary.at((idx+1)*3+1);
             fMax = v1 + (v2-v1)*fraction;
         }
         else
@@ -263,19 +266,19 @@ void WOverview::redrawPixmap() {
             while (idxStart%3!=0 && idxStart>0)
                 idxStart--;
 
-            int idxEnd = (int)math_min((i+1)*xscale,m_pWaveformSummary->size());
+            int idxEnd = (int)math_min((i+1)*xscale,m_waveformSummary.size());
             while (idxEnd%3!=0 && idxEnd>0)
                 idxEnd--;
 
             for (int j=idxStart; j<idxEnd; j+=3)
             {
-                fMin += m_pWaveformSummary->at(j);
-                fMax += m_pWaveformSummary->at(j+1);
+                fMin += m_waveformSummary.at(j);
+                fMax += m_waveformSummary.at(j+1);
             }
             fMin /= ((idxEnd-idxStart)/2.);
             fMax /= ((idxEnd-idxStart)/2.);
 
-            float hfc = (m_pWaveformSummary->at(idxStart+2)+128.)/hfcMax;
+            float hfc = (m_waveformSummary.at(idxStart+2)+128.)/hfcMax;
             //qDebug() << "hfc " << hfc;
             int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
             int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
@@ -341,7 +344,6 @@ void WOverview::paintEvent(QPaintEvent *)
     // Draw waveform, then playpos
     paint.drawPixmap(0, 0, *m_pScreenBuffer);
 
-    if (m_pWaveformSummary)
     {
         // Draw play position
         paint.setPen(m_qColorMarker);
