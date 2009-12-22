@@ -25,7 +25,7 @@ public:
     virtual QVariant data(const QModelIndex& item, int role) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    QItemDelegate* delegateForColumn(int i);
+    QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 private:
     TrackCollection* m_pTrackCollection;
