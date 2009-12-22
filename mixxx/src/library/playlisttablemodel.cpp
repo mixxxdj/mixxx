@@ -111,7 +111,20 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     //      and there's no arbitrary "unsorted" view.
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_playlistDao.insertTrackIntoPlaylist(location, m_iPlaylistId, position);
+
+    // If a track is dropped but it isn't in the library, then add it because
+    // the user probably dropped a file from outside Mixxx into this playlist.
+    if (!m_trackDao.trackExistsInDatabase(location))
+    {
+        m_trackDao.addTrack(location);
+    }
+    int trackId = m_trackDao.getTrackId(location);
+
+    // Do nothing if the location still isn't in the database.
+    if (trackId == -1)
+        return;
+
+    m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
     select(); //Repopulate the data model.
 }
 
