@@ -30,7 +30,7 @@ class QSqlDatabase;
 #if defined(__APPLE__)
 #define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "/Music/iTunes/iTunes\ Music\ Library.xml"
 #elif defined(__WIN__)
-#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "My Documents/My Music/iTunes/iTunes\ Music\ Library.xml"
+#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "/My Documents/My Music/iTunes/iTunes\ Music\ Library.xml"
 #elif defined(__LINUX__)
 #define MIXXX_ITUNES_DB_LOCATION  QDir::homePath() + "/.itunes.xml"
 #else
