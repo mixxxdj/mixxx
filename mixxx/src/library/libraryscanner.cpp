@@ -92,7 +92,7 @@ void LibraryScanner::run()
 
     m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
     m_database.setHostName("localhost");
-    m_database.setDatabaseName("mixxxdb");
+    m_database.setDatabaseName(MIXXX_DB_PATH);
     m_database.setUserName("mixxx");
     m_database.setPassword("mixxx");
 

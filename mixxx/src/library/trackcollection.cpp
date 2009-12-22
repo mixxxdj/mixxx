@@ -19,11 +19,10 @@ TrackCollection::TrackCollection()
 
     //Create the SQLite database connection.
     m_db = QSqlDatabase::addDatabase("QSQLITE");
-    QString databaseFilename = QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxdb.sqlite");
     qDebug() << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
-    m_db.setDatabaseName(databaseFilename);
+    m_db.setDatabaseName(MIXXX_DB_PATH);
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
