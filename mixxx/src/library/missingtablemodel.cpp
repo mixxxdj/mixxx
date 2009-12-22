@@ -180,7 +180,7 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const
     return defaultFlags;
 }
 
-QItemDelegate* MissingTableModel::delegateForColumn(int i) {
+QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
     return NULL;
 }
 
