@@ -225,7 +225,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     menu.addSeparator();
     menu.addAction(m_pRemoveAct);
     menu.addAction(m_pPropertiesAct);
-    menu.exec(event->globalPos());
+    menu.popup(event->globalPos());
 }
 
 void WTrackTableView::onSearch(const QString& text) {
