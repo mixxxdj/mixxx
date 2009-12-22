@@ -208,3 +208,16 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
     return TRACKMODELCAPS_RECEIVEDROPS;
 }
 
+/*
+void LibraryTableModel::notifyBeginInsertRow(int row)
+{
+
+    QModelIndex foo = index(0, 0);
+    beginInsertRows(foo, row, row);
+}
+
+void LibraryTableModel::notifyEndInsertRow(int row)
+{
+    endInsertRows();
+}
+*/

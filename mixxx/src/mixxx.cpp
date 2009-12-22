@@ -609,8 +609,7 @@ void MixxxApp::initActions()
 
     playlistsNew->setStatusTip(tr("Create a new playlist"));
     playlistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
-    //connect(playlistsNew, SIGNAL(activated()), m_pTrack, SLOT(slotNewPlaylist()));
-    //FIXME: Disabled due to library rework
+    connect(playlistsNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreatePlaylist()));
 
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));

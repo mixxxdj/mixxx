@@ -57,7 +57,6 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     m_iScore = 0;
     m_iId = -1;
     m_pVisualWave = 0;
-    m_pWave = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
@@ -110,8 +109,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
-    
-    m_pWave = 0; 
     
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
@@ -865,10 +862,10 @@ double TrackInfoObject::getVisualResampleRate() {
     return rate;
 }
 
-QByteArray *TrackInfoObject::getWaveSummary()
+const QByteArray *TrackInfoObject::getWaveSummary()
 {
     m_qMutex.lock();
-    QByteArray *pWaveSummary = m_pWave;
+    QByteArray *pWaveSummary = &m_waveSummary;
     m_qMutex.unlock();
 
     return pWaveSummary;
@@ -880,10 +877,10 @@ void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::setWaveSummary(QByteArray* pWave, bool updateUI)
+void TrackInfoObject::setWaveSummary(const QByteArray* pWave, bool updateUI)
 {
     m_qMutex.lock();
-    m_pWave = pWave;
+    m_waveSummary = *pWave; //_Copy_ the bytes
     m_qMutex.unlock();
 
     //if (updateUI) setOverviewWidget(m_pOverviewWidget);

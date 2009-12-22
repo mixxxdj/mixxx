@@ -39,7 +39,7 @@ class WOverview : public WWidget
     WOverview(const char* pGroup, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
-    void setData(QByteArray *pWaveformSummary, long liSampleDuration);
+    void setData(const QByteArray *pWaveformSummary, long liSampleDuration);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
