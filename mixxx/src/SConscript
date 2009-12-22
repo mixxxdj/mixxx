@@ -759,6 +759,8 @@ if platform in ('linux', 'bsd'):
 if 'win' in platform:
 	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
 	env.Append(LIBS = 'QtXml4');
+	env.Append(LIBS = 'QtXmlPatterns4');
+	env.Append(LIBS = 'QtSql4');
 	env.Append(LIBS = 'QtGui4');
 	env.Append(LIBS = 'QtCore4');
 	env.Append(LIBS = 'QtOpenGL4');
@@ -779,6 +781,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
 			    '$QTDIR/include/QtXml',
+			    '$QTDIR/include/QtSql',
 			    '$QTDIR/include/QtOpenGL',
 			    '$QTDIR/include/Qt'])
 
@@ -1441,12 +1444,12 @@ if platform == 'win64':
 else:
 	dll_files = Glob('#/../mixxx-winlib/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtSVG4.dll""")
+dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll""")
 
 if int(flags_script):
-	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
 if int(flags_midiscript):
-	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
 
 if platform in ('linux', 'bsd'):
 	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
