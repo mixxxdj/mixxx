@@ -20,11 +20,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_searchThread(this) {
-
+    
+    m_pMenu = new QMenu(this);
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    //Create all the context menu actions (stuff that shows up when you
+    //Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
     createActions();
 
@@ -97,6 +98,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
 void WTrackTableView::createActions()
 {
+    Q_ASSERT(m_pMenu);
+
     m_pPlayer1Act = new QAction(tr("Load in Player 1"),this);
     connect(m_pPlayer1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
 
@@ -117,6 +120,12 @@ void WTrackTableView::createActions()
 
  	//Create all the "send to->playlist" actions.
  	//updatePlaylistActions();
+    
+    m_pMenu->addAction(m_pPlayer1Act);
+    m_pMenu->addAction(m_pPlayer2Act);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pRemoveAct);
+    m_pMenu->addAction(m_pPropertiesAct);
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
@@ -219,13 +228,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pPlayer2Act->setEnabled(false);
 
     //Create the right-click menu
-    QMenu menu(this);
-    menu.addAction(m_pPlayer1Act);
-    menu.addAction(m_pPlayer2Act);
-    menu.addSeparator();
-    menu.addAction(m_pRemoveAct);
-    menu.addAction(m_pPropertiesAct);
-    menu.popup(event->globalPos());
+    m_pMenu->popup(event->globalPos());
 }
 
 void WTrackTableView::onSearch(const QString& text) {
