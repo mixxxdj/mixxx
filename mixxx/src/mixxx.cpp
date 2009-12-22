@@ -549,10 +549,6 @@ void MixxxApp::initActions()
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
 
-    batchBpmDetect = new QAction(tr("Batch BPM Detect (up to 100 songs per run)"), this);
-    //connect(batchBpmDetect, SIGNAL(activated()), m_pTrack, SLOT(slotBatchBPMDetection()));
-    //FIXME: Disabled above due to library rework
-
 #ifdef __IPOD__
     iPodToggle = new QAction(tr("iPod &Active"), this);
     iPodToggle->setShortcut(tr("Ctrl+A"));
@@ -697,8 +693,7 @@ void MixxxApp::initMenuBar()
     libraryMenu->addAction(libraryRescan);
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
-    libraryMenu->addAction(playlistsImport);
-    //libraryMenu->addAction(batchBpmDetect);
+    //libraryMenu->addAction(playlistsImport);
 
 #ifdef __IPOD__
     libraryMenu->addSeparator();
