@@ -18,6 +18,7 @@
 #include <QtCore>
 #include <QtDebug>
 #include "defs_audiofiles.h"
+#include "library/legacylibraryimporter.h"
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
 
@@ -109,6 +110,11 @@ void LibraryScanner::run()
     m_cueDao.initialize();
     m_trackDao.initialize();
 	
+    //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
+    LegacyLibraryImporter libImport(m_trackDao);
+    connect(&libImport, SIGNAL(progress(QString)), m_pProgress, SLOT(slotUpdate(QString)), Qt::BlockingQueuedConnection);
+    libImport.import();
+
     //First, we're going to temporarily mark all the directories that we've 
 	//previously hashed as "deleted". As we search through the directory tree 
 	//when we rescan, we'll mark any directory that does still exist as such.
