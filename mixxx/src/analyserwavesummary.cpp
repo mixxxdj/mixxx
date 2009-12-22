@@ -19,7 +19,7 @@ AnalyserWavesummary::AnalyserWavesummary() {
 
 void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
     // Check if the preview has already been generated
-    QByteArray* p = tio->getWaveSummary();
+    const QByteArray* p = tio->getWaveSummary();
     if(p != NULL && p->size() > 0) {
         return;
     }
@@ -73,6 +73,9 @@ void AnalyserWavesummary::finalise(TrackInfoObject *tio) {
     if(m_pData == NULL)
         return;
     tio->setWaveSummary(m_pData, true);
+    //setWaveSummary copies the waveform from the pointer we pass it, so it's safe
+    //to delete the pointer.
+    delete m_pData;
     m_pData = NULL;
     qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
 }

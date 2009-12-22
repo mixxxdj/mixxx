@@ -23,6 +23,7 @@ class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
 class MixxxLibraryFeature;
+class PlaylistFeature;
 class LibraryMIDIControl;
 
 class Library : public QObject {
@@ -53,6 +54,7 @@ public slots:
     void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
+    void slotCreatePlaylist();
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
@@ -69,6 +71,7 @@ private:
     const static QString m_sPrepareViewName;
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    PlaylistFeature* m_pPlaylistFeature;
     LibraryMIDIControl* m_pLibraryMIDIControl;
 };
 

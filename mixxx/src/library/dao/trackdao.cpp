@@ -227,7 +227,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
-    QByteArray* pWaveSummary = pTrack->getWaveSummary();
+    const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
@@ -351,10 +351,12 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setCuePoint((float)cuepoint);
         track->setBpm(bpm.toFloat());
         track->setWaveSummary(wavesummaryhex, false);
+        delete wavesummaryhex;
         //track->setTimesPlayed //Doesn't exist wtfbbq
         track->setChannels(channels);
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+
     }
     //query.finish();
 
@@ -430,7 +432,7 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
-    QByteArray* pWaveSummary = pTrack->getWaveSummary();
+    const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
     //query.bindValue(":timesplayed", pTrack->getCuePoint());

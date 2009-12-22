@@ -196,7 +196,7 @@ void WOverview::loopEnabledChanged(double v) {
     m_bLoopEnabled = !(v == 0.0f);
 }
 
-void WOverview::setData(QByteArray* pWaveformSummary, long liSampleDuration)
+void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuration)
 {
     //COPY THE EFFING WAVESUMMARY BYTES so we don't end up with
     //a bad pointer in case the TrackInfoObject that pWavefromSummary originates

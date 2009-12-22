@@ -43,7 +43,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
     addFeature(new AutoDJFeature(this, m_pTrackCollection));
-    addFeature(new PlaylistFeature(this, m_pTrackCollection));
+    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
+    addFeature(m_pPlaylistFeature);
     addFeature(new CrateFeature(this, m_pTrackCollection));
     if (RhythmboxFeature::isSupported())
         addFeature(new RhythmboxFeature(this));
@@ -163,4 +164,9 @@ void Library::slotRestoreSearch(const QString& text) {
 void Library::slotRefreshLibraryModels()
 {
    m_pMixxxLibraryFeature->refreshLibraryModels();
+}
+
+void Library::slotCreatePlaylist()
+{
+    m_pPlaylistFeature->slotCreatePlaylist();
 }
