@@ -59,6 +59,8 @@ private:
     SearchThread m_searchThread;
 
     //Used for right-click operations
+    /** Right-click menu */
+    QMenu *m_pMenu;
     /**Send to Play Queue Action**/
     QAction *m_pPlayQueueAct;
     /**Send to Player 1 Action**/
