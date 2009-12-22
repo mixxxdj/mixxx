@@ -81,7 +81,7 @@ int TrackDAO::getTrackId(QString location)
     QSqlQuery query(m_database);
     //Get the id of the track location, so we can get the Library table's track entry.
     int trackLocationId = -1;
-    query.prepare("SELECT * FROM track_locations WHERE location=:location");
+    query.prepare("SELECT id FROM track_locations WHERE location=:location");
     query.bindValue(":location", location);
     query.exec();
     while (query.next()) {
@@ -91,8 +91,10 @@ int TrackDAO::getTrackId(QString location)
     //Q_ASSERT(trackLocationId >= 0);
 
     int libraryTrackId = -1;
-    query.exec("SELECT * FROM Library WHERE location=" + QString("%1").arg(trackLocationId));
-    while (query.next()) {
+    query.exec("SELECT id FROM Library WHERE location=" +
+               QString("%1").arg(trackLocationId));
+
+    if (query.next()) {
         libraryTrackId = query.value(query.record().indexOf("id")).toInt();
     }
     //Q_ASSERT(libraryTrackId >= 0);
@@ -109,17 +111,18 @@ int TrackDAO::getTrackId(QString location)
     not worth retrieving a whole TrackInfoObject.*/
 QString TrackDAO::getTrackLocation(int trackId)
 {
-    qDebug() << "TrackDAO::getTrackLocation" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "TrackDAO::getTrackLocation"
+             << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     int trackLocationId = -1;
-    query.exec("SELECT * FROM Library WHERE id=" + QString("%1").arg(trackId));
-    while (query.next()) {
+    query.exec("SELECT location FROM Library WHERE id=" + QString("%1").arg(trackId));
+    if (query.next()) {
         trackLocationId = query.value(query.record().indexOf("location")).toInt();
     }
     //query.finish();
 
     QString trackLocation = "";
-    query.prepare("SELECT * FROM track_locations WHERE id=:id");
+    query.prepare("SELECT location FROM track_locations WHERE id=:id");
     query.bindValue(":id", trackLocationId);
     query.exec();
     while (query.next()) {
@@ -145,7 +148,7 @@ void TrackDAO::addTrack(QString location)
     TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
     if (pTrack) {
         //Add the song to the database.
-        this->addTrack(pTrack);
+        addTrack(pTrack);
         delete pTrack;
     }
 }
@@ -189,7 +192,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
         trackLocationId = query.value(query.record().indexOf("id")).toInt();
     }
 
- 	//Print out any SQL error, if there was one.
+    //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
