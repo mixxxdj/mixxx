@@ -67,6 +67,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile)
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
+    m_pOverviewWidget = NULL;
 
     m_dVisualResampleRate = 0;
 
