@@ -47,6 +47,7 @@ private:
     CrateView* m_pCrateView;
     QSqlTableModel* m_pCratesTableModel;
     QModelIndexList m_indexesBeingAnalyzed;
+    int m_iOldBpmEnabled; /** Used to temporarily enable BPM detection in the prefs before we analyse */
 };
 
 #endif //DLGTRIAGE_H
