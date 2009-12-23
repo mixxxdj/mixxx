@@ -12,6 +12,7 @@ ITunesFeature::ITunesFeature(QObject* parent)
     m_pITunesTrackModel = NULL;
     m_pITunesPlaylistModel = NULL;
     m_pTrackModelProxy = NULL;
+    m_pPlaylistModelProxy = NULL;
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -37,9 +38,16 @@ void ITunesFeature::activate() {
     if (!m_pITunesTrackModel) {
         m_pITunesTrackModel = new ITunesTrackModel();
         m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
+
+        // Use a ProxyTrackModel for search/sorting of iTunes tracks
         m_pTrackModelProxy = new ProxyTrackModel(m_pITunesTrackModel);
         m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
         m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+        // Use a ProxyTrackModel for search/sorting of iTunes playlists
+        m_pPlaylistModelProxy = new ProxyTrackModel(m_pITunesPlaylistModel);
+        m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
         QStringList list;
         for (int i = 0; i < m_pITunesPlaylistModel->numPlaylists(); ++i) {
@@ -56,7 +64,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pITunesPlaylistModel));
+    emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
 QAbstractItemModel* ITunesFeature::getChildModel() {

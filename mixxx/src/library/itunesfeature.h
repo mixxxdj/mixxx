@@ -40,7 +40,7 @@ private:
     ITunesTrackModel* m_pITunesTrackModel;
     ITunesPlaylistModel* m_pITunesPlaylistModel;
     ProxyTrackModel* m_pTrackModelProxy;
-    //ITunesPlaylistModel* m_pITunesPlaylistModel;
+    ProxyTrackModel* m_pPlaylistModelProxy;
     QStringListModel m_childModel;
 };
 
