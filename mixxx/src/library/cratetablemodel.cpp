@@ -4,7 +4,7 @@
 #include <QtDebug>
 
 #include "library/cratetablemodel.h"
-
+#include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/dao/cratedao.h"
 
@@ -13,7 +13,8 @@ CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollec
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),
           m_currentSearch("") {
-
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 CrateTableModel::~CrateTableModel() {
@@ -39,15 +40,14 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_TRACKNUMBER + "," +
                                   LIBRARYTABLE_BPM + "," +
                                   LIBRARYTABLE_LOCATION + "," +
-                                  LIBRARYTABLE_COMMENT + " " +
+                                  LIBRARYTABLE_COMMENT + "," +
+                                  LIBRARYTABLE_MIXXXDELETED + " " +
                                   "FROM library "
                                   "INNER JOIN " CRATE_TRACKS_TABLE
                                   " ON library.id = " CRATE_TRACKS_TABLE ".track_id "
                                   "WHERE " CRATE_TRACKS_TABLE ".crate_id = %2");
     queryString = queryString.arg(tableName).arg(crateId);
     query.prepare(queryString);
-
-
 
     if (!query.exec()) {
         // TODO(XXX) feedback
@@ -57,9 +57,11 @@ void CrateTableModel::setCrate(int crateId) {
     qDebug() << query.executedQuery();
 
     setTable(tableName);
-    select();
 
-    qDebug() << fieldIndex(LIBRARYTABLE_TRACKNUMBER);
+    // Enable the basic filters
+    slotSearch("");
+
+    select();
 
     setHeaderData(fieldIndex(LIBRARYTABLE_ID),
                   Qt::Horizontal, tr("ID"));
@@ -114,7 +116,7 @@ QString CrateTableModel::getTrackLocation(const QModelIndex& index) const {
     //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
     int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
     QString location = m_pTrackCollection->getTrackDAO().getTrackLocation(trackId);
-    return location;    
+    return location;
 }
 
 void CrateTableModel::removeTrack(const QModelIndex& index) {
@@ -133,13 +135,20 @@ void CrateTableModel::moveTrack(const QModelIndex& sourceIndex,
 }
 
 void CrateTableModel::search(const QString& searchText) {
+    qDebug() << "CrateTableModel::search()" << searchText
+             << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void CrateTableModel::slotSearch(const QString& searchText) {
     m_currentSearch = searchText;
 
     if (searchText == "")
-        setFilter("");
+        setFilter("(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")");
     else
-        setFilter(LIBRARYTABLE_ARTIST + " LIKE \'%" + searchText + "%\' OR " +
-                  LIBRARYTABLE_TITLE + " LIKE \'%" + searchText + "%\'");
+        setFilter("(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+                  "(artist LIKE \'%" + searchText + "%\' OR "
+                  "title  LIKE \'%" + searchText + "%\'))");
 }
 
 const QString CrateTableModel::currentSearch() {

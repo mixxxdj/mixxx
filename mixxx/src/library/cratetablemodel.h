@@ -36,6 +36,11 @@ class CrateTableModel : public QSqlTableModel, public virtual TrackModel {
     TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual QItemDelegate* delegateForColumn(const int i);
 
+  private slots:
+    void slotSearch(const QString& searchText);
+  signals:
+    void doSearch(const QString& searchText);
+
   private:
     TrackCollection* m_pTrackCollection;
     int m_iCrateId;

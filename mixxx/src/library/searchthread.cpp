@@ -1,6 +1,7 @@
 // searchthread.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QThread>
 #include <QMutexLocker>
 #include <QSet>
 #include <QtDebug>
@@ -12,7 +13,7 @@
 SearchThread::SearchThread(QObject* parent)
         : QThread(parent),
           m_bQuit(false) {
-    //start(); //Disabled until we're done sorting out all the threading issues. -- Albert Nov 13/09
+    start();
 }
 
 SearchThread::~SearchThread() {

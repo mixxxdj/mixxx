@@ -14,6 +14,8 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
           m_trackDao(m_pTrackCollection->getTrackDAO()),
           m_iPlaylistId(-1),
           m_currentSearch("") {
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 PlaylistTableModel::~PlaylistTableModel() {
@@ -50,7 +52,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   //"library." + LIBRARYTABLE_LOCATION + "," +
-                  "library." + LIBRARYTABLE_COMMENT + " "
+                  "library." + LIBRARYTABLE_COMMENT + "," +
+                  "library." + LIBRARYTABLE_MIXXXDELETED + " " +
                   "FROM library "
                   "INNER JOIN PlaylistTracks "
                   "ON library.id=PlaylistTracks.track_id "
@@ -72,9 +75,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     setTable(playlistTableName);
 
-
-
-	//Set the column heading labels, rename them for translations and have proper capitalization
+    //Set the column heading labels, rename them for translations and have
+    //proper capitalization
     setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
                   Qt::Horizontal, tr("#"));
     setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
@@ -100,7 +102,14 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
 
+    slotSearch("");
+
     select(); //Populate the data model.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 
@@ -126,6 +135,11 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
     select(); //Repopulate the data model.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
@@ -152,6 +166,11 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -253,18 +272,42 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     }
 
     select();
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
-void PlaylistTableModel::search(const QString& searchText)
+void PlaylistTableModel::search(const QString& searchText) {
+    qDebug() << "PlaylistTableModel::search()" << searchText
+             << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void PlaylistTableModel::slotSearch(const QString& searchText)
 {
     //FIXME: Need to keep filtering by playlist_id too
     //SQL is "playlist_id = " + QString(m_iPlaylistId)
     m_currentSearch = searchText;
+
+    QString filter;
     if (searchText == "")
-        this->setFilter("");
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+
     else
-        this->setFilter("artist LIKE \'%" + searchText + "%\' OR "
-                        "title  LIKE \'%" + searchText + "%\'");
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+                "(artist LIKE \'%" + searchText + "%\' OR "
+                "title  LIKE \'%" + searchText + "%\'))";
+    setFilter(filter);
+
+    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
+    // locking the database.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 const QString PlaylistTableModel::currentSearch() {
@@ -309,8 +352,8 @@ Qt::ItemFlags PlaylistTableModel::flags(const QModelIndex &index) const
     if (!index.isValid())
       return Qt::ItemIsEnabled;
 
-	//Enable dragging songs from this data model to elsewhere (like the waveform widget to
-	//load a track into a Player).
+    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
+    //load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     return defaultFlags;
