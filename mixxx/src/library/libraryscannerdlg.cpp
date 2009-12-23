@@ -25,19 +25,19 @@ LibraryScannerDlg::LibraryScannerDlg()
 {
     m_bCancelled = false;
 
-	m_progress = new QWidget();
+    m_progress = new QWidget();
     m_layout = new QVBoxLayout();
-	m_label = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."));
+    m_label = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."));
     m_layout->addWidget(m_label);
-	m_cancel = new QPushButton(tr("Cancel"), m_progress);
-	m_layout->addWidget(m_cancel);
-	m_current = new QLabel();
+    m_cancel = new QPushButton(tr("Cancel"), m_progress);
+    m_layout->addWidget(m_cancel);
+    m_current = new QLabel();
     m_current->setMaximumWidth(600);
     m_current->setWordWrap(true);
-	m_layout->addWidget(m_current);
-	m_progress->setLayout(m_layout);
+    m_layout->addWidget(m_current);
+    m_progress->setLayout(m_layout);
 
-	connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancel()));
+    connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancel()));
 
     m_timer.start();
 }
@@ -53,14 +53,14 @@ LibraryScannerDlg::~LibraryScannerDlg()
 
 void LibraryScannerDlg::slotUpdate(QString path) {
 
-	if (!m_bCancelled && m_timer.elapsed() > 2000) {
-		m_progress->setVisible(true);
+    if (!m_bCancelled && m_timer.elapsed() > 2000) {
+        m_progress->setVisible(true);
     }
 
-	if (m_progress->isVisible()) {
-		m_current->setText("Scanning: " + path);
-		//m_current->repaint();
-	}
+    if (m_progress->isVisible()) {
+        m_current->setText("Scanning: " + path);
+        //m_current->repaint();
+    }
 }
 
 void LibraryScannerDlg::slotCancel()
