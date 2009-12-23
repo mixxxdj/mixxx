@@ -114,8 +114,9 @@ int SoundDevicePortAudio::open()
 
     //Calculate the latency in samples
     int iMaxChannels = math_max(m_outputParams.channelCount, m_inputParams.channelCount); //Max channels opened for input or output
+    
+    /*
     int iLatencySamples = (int)((float)(m_dSampleRate*iMaxChannels)/1000.f*(float)iLatencyMSec);
-
 
     //Round to the nearest multiple of 4.
     if (iLatencySamples % 4 != 0) {
@@ -134,6 +135,12 @@ int SoundDevicePortAudio::open()
 
     //Frame size...
     unsigned int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
+    */
+
+    //Drastically simplified frames per buffer calculation. PortAudio-v19 uses the
+    //suggested latency field in input/output params to figure out the number of
+    //buffers for us.
+    unsigned int iFramesPerBuffer = ((float)iLatencyMSec/1000.0f)*m_dSampleRate;
 
     //Round to the nearest power-of-two buffer size. This is improves compatibility with
     //soundcards (and buggy drivers and APIs like ALSA/PulseAudio that can crash), and also
