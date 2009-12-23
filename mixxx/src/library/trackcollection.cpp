@@ -14,7 +14,7 @@ TrackCollection::TrackCollection()
           m_cueDao(m_db),
           m_playlistDao(m_db),
           m_trackDao(m_db, m_cueDao) {
-          
+
     bCancelLibraryScan = 0;
 
     //Create the SQLite database connection.
@@ -50,7 +50,7 @@ bool TrackCollection::checkForTables()
                                        "Click Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
-    
+
     m_trackDao.initialize();
     m_playlistDao.initialize();
     m_crateDao.initialize();
@@ -66,37 +66,37 @@ QSqlDatabase& TrackCollection::getDatabase()
   }
 
 
-/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories. 
+/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
 {
- 	qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
+    qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
     bCancelLibraryScan = false; //Reset the flag
 
     emit(startedLoading());
- 	QFileInfoList files;
+    QFileInfoList files;
 
-    //Mark all the tracks in the library that we think are in this directory as needing 
+    //Mark all the tracks in the library that we think are in this directory as needing
     //verification of their existance...
     //(ie. we want to check they're still on your hard drive where we think they are)
-    trackDao.invalidateTrackLocations(directory); 
- 	
-    //Check to make sure the path exists.
- 	QDir dir(directory);
- 	if (dir.exists()) {
- 		files = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
- 	} else {
- 		qDebug() << "Error: Import path does not exist." << directory;
- 		return true;
- 	}
+    trackDao.invalidateTrackLocations(directory);
 
- 	//The directory exists, so get a list of the contents of the directory and go through it.
- 	QListIterator<QFileInfo> it(files);
- 	while (it.hasNext())
+    //Check to make sure the path exists.
+    QDir dir(directory);
+    if (dir.exists()) {
+        files = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+    } else {
+        qDebug() << "Error: Import path does not exist." << directory;
+        return true;
+    }
+
+    //The directory exists, so get a list of the contents of the directory and go through it.
+    QListIterator<QFileInfo> it(files);
+    while (it.hasNext())
     {
-	    QFileInfo file = it.next(); //TODO: THIS IS SLOW!
+        QFileInfo file = it.next(); //TODO: THIS IS SLOW!
         //If a flag was raised telling us to cancel the library scan then stop.
         m_libraryScanMutex.lock();
         bool cancel = bCancelLibraryScan;
@@ -108,7 +108,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
 
         if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
             trackDao.markTrackLocationAsVerified(file.absoluteFilePath());
-            
+
             //If the file already exists in the database, continue and go on to the next file.
             if (trackDao.trackExistsInDatabase(file.absoluteFilePath()))
             {
@@ -141,14 +141,14 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
 void TrackCollection::slotCancelLibraryScan()
 {
     m_libraryScanMutex.lock();
- 	bCancelLibraryScan = 1;
+    bCancelLibraryScan = 1;
     m_libraryScanMutex.unlock();
 }
 
 void TrackCollection::resetLibaryCancellation()
 {
     m_libraryScanMutex.lock();
- 	bCancelLibraryScan = 0;
+    bCancelLibraryScan = 0;
     m_libraryScanMutex.unlock();
 }
 
