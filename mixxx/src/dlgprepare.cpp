@@ -168,6 +168,12 @@ void DlgPrepare::selectAll()
 
 void DlgPrepare::analyze()
 {
+    //Save the old BPM detection prefs setting (on or off)
+    m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
+    //Force BPM detection to be on.
+    m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
+    //Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
+    
     if (m_pAnalyserQueue != NULL)
     {
         stopAnalysis();
@@ -223,6 +229,9 @@ void DlgPrepare::stopAnalysis()
     delete m_pAnalyserQueue;
     m_pAnalyserQueue = NULL;
     pushButtonAnalyze->setText("Analyze");
+
+    //Restore old BPM detection setting for preferences...
+    m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
 
     //Tell the model to notify the view that the track data has potentially changed.
     m_pPrepareLibraryTableModel->updateTracks(m_indexesBeingAnalyzed);
