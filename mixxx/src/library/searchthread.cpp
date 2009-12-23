@@ -37,11 +37,13 @@ void SearchThread::stop() {
 }
 
 void SearchThread::run() {
+    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("SearchThread %1").arg(++id));
+
     while (!m_bQuit) {
         m_mutex.lock();
         if (m_searchQueue.isEmpty()) {
             m_waitCondition.wait(&m_mutex);
-            qDebug() << "SearchThread woken";
         }
         if (m_bQuit)
             break;

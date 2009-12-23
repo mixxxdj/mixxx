@@ -17,7 +17,10 @@ CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
         : m_pTrackCollection(pTrackCollection),
           m_crateListTableModel(this, pTrackCollection->getDatabase()),
-          m_crateTableModel(this, pTrackCollection) {
+          m_crateTableModel(this, pTrackCollection),
+          m_crateTableModelProxy(&m_crateTableModel, false) {
+
+    m_crateTableModelProxy.setSortCaseSensitivity(Qt::CaseInsensitive);
 
     m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -56,6 +59,9 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
     int trackId = m_pTrackCollection->getTrackDAO().getTrackId(url.toLocalFile());
 
+    qDebug() << "CrateFeature::dropAcceptChild adding track"
+             << trackId << "to crate" << crateId;
+
     if (trackId >= 0)
         return m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, crateId);
     return false;
@@ -93,7 +99,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     QString crateName = index.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
     m_crateTableModel.setCrate(crateId);
-    emit(showTrackModel(&m_crateTableModel));
+    emit(showTrackModel(&m_crateTableModelProxy));
 }
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
