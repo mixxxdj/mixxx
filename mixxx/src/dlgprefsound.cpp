@@ -227,22 +227,32 @@ void DlgPrefSound::slotLatency()
     TextLabelLatency->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatency->value())));
 }
 
+/** Converts a slider tick position into a latency in milliseconds */
 int DlgPrefSound::getSliderLatencyMsec(int val)
 {
-    if (val>16)
-        val = (val-12)*(val-12);
+    qDebug() << "getSliderLatencyMsec in: " << val;
+    int sampleRate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+    val = ((float)pow(2, val) / sampleRate) * 1000;
+    qDebug() << "getSliderLatencyMsec out: " << val;
     return val;
 }
 
+/** Converts a latency in milliseconds into a slider tick position */
 int DlgPrefSound::getSliderLatencyVal(int val)
 {
-    if (val<=16)
-        return val;
+    //The input param "val" is in MSec, and we want to convert to a slider tick position.
+    int sampleRate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+    int iFramesPerBuffer = ((float)val/1000.0f) * sampleRate;
 
-    int i=5;
-    while (i*i<val)
-        i++;
-    return 12+i;
+    //Round to the nearest power-of-two.
+    unsigned int i;
+    iFramesPerBuffer &= INT_MAX;
+    for (i = 1; iFramesPerBuffer > i; i <<= 1) ;
+    iFramesPerBuffer = i;
+
+    int exponent = log2(iFramesPerBuffer);
+
+    return exponent;
 }
 
 void DlgPrefSound::slotApply()
