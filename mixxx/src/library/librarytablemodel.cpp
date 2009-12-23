@@ -12,14 +12,14 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
         : TrackModel(),
           QSqlRelationalTableModel(parent, pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
-          //_pTrackCollection(pTrackCollection) {
 
     setTable("library");
 
-    //Set up a relation which maps our location column (which is a foreign key into the track_locations)
-    //table. We tell Qt that our LIBRARYTABLE_LOCATION column maps into the row of the 
-    //track_locations table that has the id equal to our location col. It then grabs the "location" col
-    //from that row and shows it... 
+    //Set up a relation which maps our location column (which is a foreign key
+    //into the track_locations) table. We tell Qt that our LIBRARYTABLE_LOCATION
+    //column maps into the row of the track_locations table that has the id
+    //equal to our location col. It then grabs the "location" col from that row
+    //and shows it...
     setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
     //Set the column heading labels, rename them for translations and have
@@ -48,15 +48,19 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   Qt::Horizontal, tr("Track #"));
     setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
                   Qt::Horizontal, tr("Date Added"));
-    
+
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
-    search("");
+    slotSearch("");
 
     select(); //Populate the data model.
 
-    //XXX: Fetch the entire result set to allow the database to unlock. -- Albert Nov 29/09
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
     while (canFetchMore())
         fetchMore();
+
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 LibraryTableModel::~LibraryTableModel()
@@ -71,6 +75,11 @@ void LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 	//      and there's no arbitrary "unsorted" view.
 	m_trackDao.addTrack(location);
 	select(); //Repopulate the data model.
+
+  //XXX: Fetch the entire result set to allow the database to unlock. --
+  //Albert Nov 29/09
+  while (canFetchMore())
+      fetchMore();
 }
 
 TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
@@ -91,6 +100,11 @@ void LibraryTableModel::removeTrack(const QModelIndex& index)
 	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 	m_trackDao.removeTrack(trackId);
 	select(); //Repopulate the data model.
+
+  //XXX: Fetch the entire result set to allow the database to unlock. --
+  //Albert Nov 29/09
+  while (canFetchMore())
+      fetchMore();
 }
 
 void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -100,13 +114,29 @@ void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
 }
 
 void LibraryTableModel::search(const QString& searchText) {
+    qDebug() << "LibraryTableModel::search()" << searchText
+             << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void LibraryTableModel::slotSearch(const QString& searchText) {
+    qDebug() << "slotSearch()" << searchText << QThread::currentThread();
+
     m_currentSearch = searchText;
     if (searchText == "")
-        setFilter(DEFAULT_LIBRARYFILTER);
+        setFilter("(" + DEFAULT_LIBRARYFILTER + ")");
     else
-        setFilter(DEFAULT_LIBRARYFILTER + " " + 
-                  "artist LIKE \'%" + searchText + "%\' OR "
-                  "title  LIKE \'%" + searchText + "%\'");
+        setFilter("(" + DEFAULT_LIBRARYFILTER + " AND " +
+                  "(artist LIKE \'%" + searchText + "%\' OR "
+                  "title  LIKE \'%" + searchText + "%\'))");
+
+    // setFilter() has an implicit select(). We need to do the fetchMore() trick
+    // to avoid locking the database.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 const QString LibraryTableModel::currentSearch() {

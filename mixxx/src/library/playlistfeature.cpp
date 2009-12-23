@@ -31,6 +31,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotDeletePlaylist()));
 
+    // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("id"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("position"));
@@ -76,7 +77,7 @@ void PlaylistFeature::activateChild(const QModelIndex& index) {
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     m_pPlaylistTableModel->setPlaylist(playlistId);
-    emit(showTrackModel(m_pPlaylistTableModel));
+    emit(showTrackModel(m_pPlaylistModelProxy));
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {

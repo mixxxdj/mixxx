@@ -5,6 +5,7 @@
 #include <QItemDelegate>
 #include <QtCore>
 #include "trackmodel.h"
+#include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 
@@ -12,7 +13,8 @@ class TrackCollection;
 
 class PlaylistTableModel : public QSqlTableModel, public virtual TrackModel
 {
-public:
+    Q_OBJECT
+  public:
     PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
@@ -29,7 +31,14 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
-private:
+
+  private slots:
+    void slotSearch(const QString& searchText);
+
+  signals:
+    void doSearch(const QString& searchText);
+
+  private:
     TrackCollection* m_pTrackCollection;
     PlaylistDAO& m_playlistDao;
     TrackDAO& m_trackDao;

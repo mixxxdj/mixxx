@@ -52,7 +52,7 @@ void MixxxLibraryFeature::refreshLibraryModels()
 
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
-    emit(showTrackModel(m_pLibraryTableModel));
+    emit(showTrackModel(m_pLibraryTableModelProxy));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
