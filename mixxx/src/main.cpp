@@ -75,6 +75,9 @@ void qInitImages_mixxx();
 
 void MessageOutput( QtMsgType type, const char * msg )
 {
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
+
     switch ( type ) {
     case QtDebugMsg:
 #ifdef __WINDOWS__
@@ -104,6 +107,9 @@ QFile Logfile; // global logfile variable
 
 void MessageToLogfile( QtMsgType type, const char * msg )
 {
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
+    
     Q3TextStream Log( &Logfile );
     switch ( type ) {
     case QtDebugMsg:
@@ -136,7 +142,8 @@ void MessageToLogfile( QtMsgType type, const char * msg )
  */
 void MessageHandler( QtMsgType type, const char * input )
 {
-    QMutex m; //for locking around the warning box
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
     QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
     QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
     const char* s = ba.constData();
@@ -166,12 +173,10 @@ void MessageHandler( QtMsgType type, const char * input )
         Log << "Debug: " << s << "\n";
         break;
     case QtWarningMsg:
-        m.lock();
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
 //         QMessageBox::warning(0, "Mixxx", input);
         dialogHelper->requestErrorDialog(0,input);
-        m.unlock();
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
