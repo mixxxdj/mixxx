@@ -1064,7 +1064,7 @@ void MixxxApp::slotHelpAbout()
 "James Evans<br>"
 "Martin Sakmar<br>"
 "Andreas Pflug<br>"
-
+"Bas van Schaik<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
