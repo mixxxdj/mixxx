@@ -60,9 +60,11 @@ void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
     while (it.hasNext())
     {
         cur_track = it.next();
-        QDomElement elementNew = domXML.createElement("Track");
-        cur_track->writeToXML(domXML, elementNew);
-        trackroot.appendChild(elementNew);
+	if (cur_track){
+	        QDomElement elementNew = domXML.createElement("Track");
+        	cur_track->writeToXML(domXML, elementNew);
+	        trackroot.appendChild(elementNew);
+	}
     }
     root.appendChild(trackroot);
 }
@@ -78,7 +80,14 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 
 
     }
-    m_qTrackList.append(pTrack);
+
+    // BEGIN WORKAROUND FOR BUG #404927 -- Bas van Schaik           
+    // Ensure capacity of QList:                                    
+    while (pTrack->getId() > m_qTrackList.size() - 1) m_qTrackList.append(NULL);
+                                                                                
+    // Insert TrackInfoObject at the right index of the QList:                  
+    m_qTrackList[pTrack->getId()] = pTrack;                                     
+    // END WORKAROUND -- Bas van Schaik
 }
 
 /** Removes a track from the library track collection. */
@@ -157,7 +166,7 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
     while (it.hasNext())
     {
         cur_track = it.next();
-        if (cur_track->getLocation()==location)
+        if (cur_track && cur_track->getLocation()==location)
             return cur_track;
     }
     //if (cur_track && cur_track->getLocation()==location)
