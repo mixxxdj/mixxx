@@ -112,7 +112,9 @@ void LibraryScanner::run()
 
     //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
     LegacyLibraryImporter libImport(m_trackDao);
-    connect(&libImport, SIGNAL(progress(QString)), m_pProgress, SLOT(slotUpdate(QString)), Qt::BlockingQueuedConnection);
+    connect(&libImport, SIGNAL(progress(QString)),
+            m_pProgress, SLOT(slotUpdate(QString)),
+            Qt::BlockingQueuedConnection);
     libImport.import();
 
     //First, we're going to temporarily mark all the directories that we've

@@ -143,12 +143,27 @@ void CrateTableModel::search(const QString& searchText) {
 void CrateTableModel::slotSearch(const QString& searchText) {
     m_currentSearch = searchText;
 
+    QString filter;
     if (searchText == "")
-        setFilter("(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")");
-    else
-        setFilter("(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                  "(artist LIKE \'%" + searchText + "%\' OR "
-                  "title  LIKE \'%" + searchText + "%\'))");
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+    else {
+        QSqlField search("search", QVariant::String);
+        search.setValue("%" + searchText + "%");
+        QString escapedText = database().driver()->formatValue(search);
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+                "(artist LIKE " + escapedText + " OR "
+                "title  LIKE " + escapedText + "))";
+    }
+
+    setFilter(filter);
+
+    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
+    // locking the database.
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 const QString CrateTableModel::currentSearch() {

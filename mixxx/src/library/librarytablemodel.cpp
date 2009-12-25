@@ -121,14 +121,20 @@ void LibraryTableModel::search(const QString& searchText) {
 
 void LibraryTableModel::slotSearch(const QString& searchText) {
     qDebug() << "slotSearch()" << searchText << QThread::currentThread();
-
     m_currentSearch = searchText;
+
+    QString filter;
     if (searchText == "")
-        setFilter("(" + DEFAULT_LIBRARYFILTER + ")");
-    else
-        setFilter("(" + DEFAULT_LIBRARYFILTER + " AND " +
-                  "(artist LIKE \'%" + searchText + "%\' OR "
-                  "title  LIKE \'%" + searchText + "%\'))");
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+    else {
+        QSqlField search("search", QVariant::String);
+        search.setValue("%" + searchText + "%");
+        QString escapedText = database().driver()->formatValue(search);
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+                "(artist LIKE " + escapedText + " OR "
+                "title  LIKE " + escapedText + "))";
+    }
+    setFilter(filter);
 
     // setFilter() has an implicit select(). We need to do the fetchMore() trick
     // to avoid locking the database.

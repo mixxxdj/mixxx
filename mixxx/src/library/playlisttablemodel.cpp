@@ -294,11 +294,14 @@ void PlaylistTableModel::slotSearch(const QString& searchText)
     QString filter;
     if (searchText == "")
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-
-    else
+    else {
+        QSqlField search("search", QVariant::String);
+        search.setValue("%" + searchText + "%");
+        QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE \'%" + searchText + "%\' OR "
-                "title  LIKE \'%" + searchText + "%\'))";
+                "(artist LIKE " + escapedText + " OR "
+                "title  LIKE " + escapedText + "))";
+    }
     setFilter(filter);
 
     // setFilter() calls select() implicitly, so we have to fetchMore to prevent
