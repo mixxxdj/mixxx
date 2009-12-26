@@ -115,7 +115,7 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
 {
     if (pTrack){
-        qDebug() << "TrackPlaylist::addTrack: appending track with TrackID " << pTrack->getId() << " to playlist...";
+        //qDebug() << "TrackPlaylist::addTrack: appending track with TrackID " << pTrack->getId() << " to playlist...";
         // Currently a track can only appear once in a playlist
         if (this->indexOf(pTrack)!=-1)
         {
@@ -129,9 +129,9 @@ void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
         //if (m_pTable)
         //pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
         
-	qDebug() << "TrackPlaylist::addTrack: done appending track with TrackID " << pTrack->getId() << " to playlist.";
+        //qDebug() << "TrackPlaylist::addTrack: done appending track with TrackID " << pTrack->getId() << " to playlist.";
     } else {
-	qDebug() << "TrackPlaylist::addTrack: warning! Got a NULL pTrack, ignoring.";
+	//qDebug() << "TrackPlaylist::addTrack: warning! Got a NULL pTrack, ignoring.";
     }
 
 }
