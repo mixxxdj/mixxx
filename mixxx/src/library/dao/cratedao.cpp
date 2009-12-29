@@ -19,29 +19,6 @@ CrateDAO::~CrateDAO() {
 
 void CrateDAO::initialize() {
     qDebug() << "CrateDAO::initialize()";
-    QSqlQuery query;
-    query.prepare("CREATE TABLE IF NOT EXISTS " CRATE_TABLE " ("
-                  "id integer PRIMARY KEY AUTOINCREMENT,"
-                  "name varchar(48) UNIQUE NOT NULL,"
-                  "count integer DEFAULT 0,"
-                  "show integer DEFAULT 1"
-                  ")");
-
-    if (!query.exec()) {
-        qDebug() << "Error while creating CrateDAO tables:" << query.lastError()
-                 << query.lastQuery();
-    }
-
-    query.prepare("CREATE TABLE IF NOT EXISTS " CRATE_TRACKS_TABLE " ("
-                  "crate_id integer NOT NULL REFERENCES " CRATE_TABLE "(id),"
-                  "track_id integer NOT NULL REFERENCES library(id),"
-                  "UNIQUE (crate_id, track_id)"
-                  ")");
-    if (!query.exec()) {
-        qDebug() << "Error while creating CrateDAO tables:" << query.lastError();
-    }
-
-    qDebug() << "CrateDAO::initialize() done";
 }
 
 unsigned int CrateDAO::crateCount() {

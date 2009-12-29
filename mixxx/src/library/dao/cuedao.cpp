@@ -19,23 +19,6 @@ CueDAO::~CueDAO() {
 
 void CueDAO::initialize() {
     qDebug() << "CueDAO::initialize" << QThread::currentThread() << m_database.connectionName();
-    qDebug() << "CueDAO::initialize()";
-
-    QSqlQuery query(m_database);
-    query.prepare("CREATE TABLE IF NOT EXISTS " CUE_TABLE " ("
-                  "id integer PRIMARY KEY AUTOINCREMENT,"
-                  "track_id integer NOT NULL REFERENCES library(id),"
-                  "type integer DEFAULT 0 NOT NULL,"
-                  "position integer DEFAULT -1 NOT NULL,"
-                  "length integer DEFAULT 0 NOT NULL,"
-                  "hotcue integer DEFAULT -1 NOT NULL,"
-                  "label text DEFAULT '' NOT NULL"
-                  ")");
-
-    if (!query.exec()) {
-        qDebug() << "Creating cue table failed:" << query.lastError();
-    }
-    //query.finish();
 }
 
 int CueDAO::cueCount() {

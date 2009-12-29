@@ -19,49 +19,6 @@ TrackDAO::~TrackDAO()
 void TrackDAO::initialize()
 {
     qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
-    //Start the transaction
-    if (!m_database.transaction()) {
-        qDebug() << "TrackDAO::initialize() transaction initialize failed.";
-        return;
-    }
-
-    QSqlQuery query(m_database);
-    if (!query.exec("CREATE TABLE IF NOT EXISTS track_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    "location varchar(512) UNIQUE, "
-                    "filename varchar(512), "
-                    "directory varchar(512), "
-                    "filesize INTEGER, "
-                    "fs_deleted INTEGER, "
-                    "needs_verification INTEGER)"))
-    {
-        qDebug() << "Invalid track_locations schema, d'oh!" << __FILE__ << __LINE__;
-        exit(-1);
-    }
-    //query.finish();
-
- 	//Little bobby tables
-    if (!query.exec("CREATE TABLE IF NOT EXISTS library (id INTEGER primary key AUTOINCREMENT, "
-               "artist varchar(48), title varchar(48), "
-               "album varchar(48), year varchar(16), "
-               "genre varchar(32), tracknumber varchar(3), "
-               "location varchar(512) REFERENCES track_locations(location), "
-               "comment varchar(20), url varchar(256), "
-               "duration integer, "
-               "bitrate integer, samplerate integer, "
-               "cuepoint integer, bpm float, "
-               "wavesummaryhex blob, "
-               "channels integer, "
-               "datetime_added DEFAULT CURRENT_TIMESTAMP, "
-               "mixxx_deleted integer)"))
-    {
-        qDebug() << "Invalid library schema, d'oh!" << __FILE__ << __LINE__;
-        exit(-1);
-    }
-    //query.finish();
-
-    if (!m_database.commit()) {
-        qDebug() << "TrackDAO::initialize() commit failed.";
-    }
 }
 
 /** Retrieve the track id for the track that's located at "location" on disk.
