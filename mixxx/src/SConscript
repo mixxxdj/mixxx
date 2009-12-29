@@ -423,7 +423,9 @@ sources = Split("""
                 library/dao/trackdao.cpp
                 library/dao/playlistdao.cpp
                 library/dao/libraryhashdao.cpp
+                library/dao/settingsdao.cpp
                 library/librarymidicontrol.cpp
+                library/schemamanager.cpp
 
                 xmlparse.cpp
                 parser.cpp
