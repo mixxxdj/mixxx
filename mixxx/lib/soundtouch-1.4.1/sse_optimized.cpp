@@ -1,20 +1,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// SSE optimized routines for Pentium-III, Athlon-XP and later CPUs. All SSE 
-/// optimized functions have been gathered into this single source 
-/// code file, regardless to their class or original source code file, in order 
+/// SSE optimized routines for Pentium-III, Athlon-XP and later CPUs. All SSE
+/// optimized functions have been gathered into this single source
+/// code file, regardless to their class or original source code file, in order
 /// to ease porting the library to other compiler and processor platforms.
 ///
 /// The SSE-optimizations are programmed using SSE compiler intrinsics that
 /// are supported both by Microsoft Visual C++ and GCC compilers, so this file
 /// should compile with both toolsets.
 ///
-/// NOTICE: If using Visual Studio 6.0, you'll need to install the "Visual C++ 
-/// 6.0 processor pack" update to support SSE instruction set. The update is 
+/// NOTICE: If using Visual Studio 6.0, you'll need to install the "Visual C++
+/// 6.0 processor pack" update to support SSE instruction set. The update is
 /// available for download at Microsoft Developers Network, see here:
 /// http://msdn.microsoft.com/en-us/vstudio/aa718349.aspx
 ///
-/// If the above URL is expired or removed, go to "http://msdn.microsoft.com" and 
+/// If the above URL is expired or removed, go to "http://msdn.microsoft.com" and
 /// perform a search with keywords "processor pack".
 ///
 /// Author        : Copyright (c) Olli Parviainen
@@ -23,10 +23,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 11:00:14 -0500 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2009-05-17 07:35:13 -0400 (Sun, 17 May 2009) $
 // File revision : $Revision: 4 $
 //
-// $Id: sse_optimized.cpp 63 2009-02-21 16:00:14Z oparviai $
+// $Id: sse_optimized.cpp 71 2009-05-17 11:35:13Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -58,7 +58,7 @@ using namespace soundtouch;
 
 #ifdef ALLOW_SSE
 
-// SSE routines available only with float sample type    
+// SSE routines available only with float sample type
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -68,6 +68,7 @@ using namespace soundtouch;
 
 #include "TDStretch.h"
 #include <xmmintrin.h>
+#include <math.h>
 
 // Calculates cross correlation of two buffers
 double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) const
@@ -75,10 +76,10 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     int i;
     const float *pVec1;
     const __m128 *pVec2;
-    __m128 vSum;
+    __m128 vSum, vNorm;
 
-    // Note. It means a major slow-down if the routine needs to tolerate 
-    // unaligned __m128 memory accesses. It's way faster if we can skip 
+    // Note. It means a major slow-down if the routine needs to tolerate
+    // unaligned __m128 memory accesses. It's way faster if we can skip
     // unaligned slots and use _mm_load_ps instruction instead of _mm_loadu_ps.
     // This can mean up to ~ 10-fold difference (incl. part of which is
     // due to skipping every second round for stereo sound though).
@@ -87,7 +88,7 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     // for choosing if this little cheating is allowed.
 
 #ifdef ALLOW_NONEXACT_SIMD_OPTIMIZATION
-    // Little cheating allowed, return valid correlation only for 
+    // Little cheating allowed, return valid correlation only for
     // aligned locations, meaning every second round for stereo sound.
 
     #define _MM_LOAD    _mm_load_ps
@@ -98,7 +99,7 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     // No cheating allowed, use unaligned load & take the resulting
     // performance hit.
     #define _MM_LOAD    _mm_loadu_ps
-#endif 
+#endif
 
     // ensure overlapLength is divisible by 8
     assert((overlapLength % 8) == 0);
@@ -107,30 +108,45 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     // Note: pV2 _must_ be aligned to 16-bit boundary, pV1 need not.
     pVec1 = (const float*)pV1;
     pVec2 = (const __m128*)pV2;
-    vSum = _mm_setzero_ps();
+    vSum = vNorm = _mm_setzero_ps();
 
     // Unroll the loop by factor of 4 * 4 operations
-    for (i = 0; i < overlapLength / 8; i ++) 
+    for (i = 0; i < overlapLength / 8; i ++)
     {
+        __m128 vTemp;
         // vSum += pV1[0..3] * pV2[0..3]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1),pVec2[0]));
+        vTemp = _MM_LOAD(pVec1);
+        vSum  = _mm_add_ps(vSum,  _mm_mul_ps(vTemp ,pVec2[0]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         // vSum += pV1[4..7] * pV2[4..7]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1 + 4), pVec2[1]));
+        vTemp = _MM_LOAD(pVec1 + 4);
+        vSum  = _mm_add_ps(vSum, _mm_mul_ps(vTemp, pVec2[1]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         // vSum += pV1[8..11] * pV2[8..11]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1 + 8), pVec2[2]));
+        vTemp = _MM_LOAD(pVec1 + 8);
+        vSum  = _mm_add_ps(vSum, _mm_mul_ps(vTemp, pVec2[2]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         // vSum += pV1[12..15] * pV2[12..15]
-        vSum = _mm_add_ps(vSum, _mm_mul_ps(_MM_LOAD(pVec1 + 12), pVec2[3]));
+        vTemp = _MM_LOAD(pVec1 + 12);
+        vSum  = _mm_add_ps(vSum, _mm_mul_ps(vTemp, pVec2[3]));
+        vNorm = _mm_add_ps(vNorm, _mm_mul_ps(vTemp ,vTemp));
 
         pVec1 += 16;
         pVec2 += 4;
     }
 
     // return value = vSum[0] + vSum[1] + vSum[2] + vSum[3]
+    float *pvNorm = (float*)&vNorm;
+    //double norm = sqrt(vNorm.m128_f32[0] + vNorm.m128_f32[1] + vNorm.m128_f32[2] + vNorm.m128_f32[3]);
+    double norm = sqrt(pvNorm[0] + pvNorm[1] + pvNorm[2] + pvNorm[3]);
+    if (norm < 1e-9) norm = 1.0;    // to avoid div by zero
+
     float *pvSum = (float*)&vSum;
-    return (double)(pvSum[0] + pvSum[1] + pvSum[2] + pvSum[3]);
+    return (double)(pvSum[0] + pvSum[1] + pvSum[2] + pvSum[3]) / norm;
+    //return (double)(vSum.m128_f32[0] + vSum.m128_f32[1] + vSum.m128_f32[2] + vSum.m128_f32[3]) / norm;
 
     /* This is approximately corresponding routine in C-language:
     double corr;
@@ -138,7 +154,7 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
 
     // Calculates the cross-correlation value between 'pV1' and 'pV2' vectors
     corr = 0.0;
-    for (i = 0; i < overlapLength / 8; i ++) 
+    for (i = 0; i < overlapLength / 8; i ++)
     {
         corr += pV1[0] * pV2[0] +
                 pV1[1] * pV2[1] +
@@ -169,9 +185,9 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     uint overlapLengthLocal = overlapLength;
     float corr;
 
-    _asm 
+    _asm
     {
-        // Very important note: data in 'pV2' _must_ be aligned to 
+        // Very important note: data in 'pV2' _must_ be aligned to
         // 16-byte boundary!
 
         // give prefetch hints to CPU of what data are to be needed soonish
@@ -217,7 +233,7 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
         dec     ecx
         jnz     loop1
 
-        // add the four floats of xmm0 together and return the result. 
+        // add the four floats of xmm0 together and return the result.
 
         movhlps xmm1, xmm0          // move 3 & 4 of xmm0 to 1 & 2 of xmm1
         addps   xmm1, xmm0
@@ -272,7 +288,7 @@ void FIRFilterSSE::setCoefficients(const float *coeffs, uint newLength, uint uRe
 
     fDivider = (float)resultDivider;
 
-    // rearrange the filter coefficients for mmx routines 
+    // rearrange the filter coefficients for mmx routines
     for (i = 0; i < newLength; i ++)
     {
         filterCoeffsAlign[2 * i + 0] =
@@ -307,13 +323,13 @@ uint FIRFilterSSE::evaluateFilterStereo(float *dest, const float *source, uint n
         uint i;
 
         pSrc = (const float*)source;              // source audio data
-        pFil = (const __m128*)filterCoeffsAlign;  // filter coefficients. NOTE: Assumes coefficients 
+        pFil = (const __m128*)filterCoeffsAlign;  // filter coefficients. NOTE: Assumes coefficients
                                                   // are aligned to 16-byte boundary
         sum1 = sum2 = _mm_setzero_ps();
 
-        for (i = 0; i < length / 8; i ++) 
+        for (i = 0; i < length / 8; i ++)
         {
-            // Unroll loop for efficiency & calculate filter for 2*2 stereo samples 
+            // Unroll loop for efficiency & calculate filter for 2*2 stereo samples
             // at each pass
 
             // sum1 is accu for 2*2 filtered stereo sound data at the primary sound data offset
@@ -348,14 +364,14 @@ uint FIRFilterSSE::evaluateFilterStereo(float *dest, const float *source, uint n
     }
 
     // Ideas for further improvement:
-    // 1. If it could be guaranteed that 'source' were always aligned to 16-byte 
+    // 1. If it could be guaranteed that 'source' were always aligned to 16-byte
     //    boundary, a faster aligned '_mm_load_ps' instruction could be used.
-    // 2. If it could be guaranteed that 'dest' were always aligned to 16-byte 
+    // 2. If it could be guaranteed that 'dest' were always aligned to 16-byte
     //    boundary, a faster '_mm_store_ps' instruction could be used.
 
     return (uint)count;
 
-    /* original routine in C-language. please notice the C-version has differently 
+    /* original routine in C-language. please notice the C-version has differently
        organized coefficients though.
     double suml1, suml2;
     double sumr1, sumr2;
@@ -370,26 +386,26 @@ uint FIRFilterSSE::evaluateFilterStereo(float *dest, const float *source, uint n
         suml2 = sumr2 = 0.0;
         ptr = src;
         pFil = filterCoeffs;
-        for (i = 0; i < lengthLocal; i ++) 
+        for (i = 0; i < lengthLocal; i ++)
         {
             // unroll loop for efficiency.
 
-            suml1 += ptr[0] * pFil[0] + 
+            suml1 += ptr[0] * pFil[0] +
                      ptr[2] * pFil[2] +
                      ptr[4] * pFil[4] +
                      ptr[6] * pFil[6];
 
-            sumr1 += ptr[1] * pFil[1] + 
+            sumr1 += ptr[1] * pFil[1] +
                      ptr[3] * pFil[3] +
                      ptr[5] * pFil[5] +
                      ptr[7] * pFil[7];
 
-            suml2 += ptr[8] * pFil[0] + 
+            suml2 += ptr[8] * pFil[0] +
                      ptr[10] * pFil[2] +
                      ptr[12] * pFil[4] +
                      ptr[14] * pFil[6];
 
-            sumr2 += ptr[9] * pFil[1] + 
+            sumr2 += ptr[9] * pFil[1] +
                      ptr[11] * pFil[3] +
                      ptr[13] * pFil[5] +
                      ptr[15] * pFil[7];
@@ -411,7 +427,7 @@ uint FIRFilterSSE::evaluateFilterStereo(float *dest, const float *source, uint n
     /* Similar routine in assembly, again obsoleted due to maintainability
     _asm
     {
-        // Very important note: data in 'src' _must_ be aligned to 
+        // Very important note: data in 'src' _must_ be aligned to
         // 16-byte boundary!
         mov     edx, count
         mov     ebx, dword ptr src

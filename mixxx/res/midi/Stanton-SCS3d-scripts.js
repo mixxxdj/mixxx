@@ -2,7 +2,7 @@
 /*      Stanton SCS.3d MIDI controller script v1.21             */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.0                                 */
+/*      For Mixxx version 1.7.x                                 */
 /****************************************************************/
 
 function StantonSCS3d() {}
@@ -889,6 +889,7 @@ StantonSCS3d.DeckChange = function (channel, control, value, status) {
 // ----------   Sliders  ----------
 
 StantonSCS3d.S4relative = function (channel, control, value) {
+    if (StantonSCS3d.modifier["Deck"]==1) return;   // Skip if "Deck" is held down
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (currentMode=="vinyl2" && StantonSCS3d.vinyl2ScratchMethod=="scratch") {
         var group = "[Channel"+StantonSCS3d.deck+"]";
