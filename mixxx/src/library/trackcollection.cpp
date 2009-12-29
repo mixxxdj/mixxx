@@ -8,17 +8,17 @@
 #include "trackinfoobject.h"
 #include "defs.h"
 #include "defs_audiofiles.h"
+#include "library/schemamanager.h"
 
-TrackCollection::TrackCollection()
-        : m_crateDao(m_db),
-          m_cueDao(m_db),
+TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig),
+          m_db(QSqlDatabase::addDatabase("QSQLITE")),
           m_playlistDao(m_db),
-          m_trackDao(m_db, m_cueDao) {
+          m_cueDao(m_db),
+          m_trackDao(m_db, m_cueDao),
+          m_crateDao(m_db) {
 
     bCancelLibraryScan = 0;
-
-    //Create the SQLite database connection.
-    m_db = QSqlDatabase::addDatabase("QSQLITE");
     qDebug() << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
@@ -28,6 +28,8 @@ TrackCollection::TrackCollection()
     bool ok = m_db.open();
     qDebug() << __FILE__ << "DB status:" << ok;
     qDebug() << m_db.lastError();
+
+
 
     //Check for tables and create them if missing
     checkForTables();
@@ -48,6 +50,18 @@ bool TrackCollection::checkForTables()
                                        "the Qt SQL driver documentation for information how "
                                        "to build it.\n\n"
                                        "Click Cancel to exit."), QMessageBox::Cancel);
+        return false;
+    }
+
+    int requiredSchemaVersion = 1;
+    if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
+                                               requiredSchemaVersion)) {
+        QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema."),
+                              qApp->tr(QString(
+                                  "Unable upgrade your database schema to version %1.\n"
+                                  "This could be benign or it might mean something\n"
+                                  "is wrong.\n").arg(requiredSchemaVersion)),
+                             QMessageBox::Ok);
         return false;
     }
 
