@@ -18,22 +18,6 @@ PlaylistDAO::~PlaylistDAO()
 void PlaylistDAO::initialize()
 {
     qDebug() << "PlaylistDAO::initialize" << QThread::currentThread() << m_database.connectionName();
-    //Start the transaction
-    m_database.transaction();
-
-    QSqlQuery query(m_database);
-    query.exec("CREATE TABLE Playlists (id INTEGER primary key, "
-               "name varchar(48), position INTEGER, "
-               "date_created datetime, "
-               "date_modified datetime)");
-    //query.finish();
-
-    query.exec("CREATE TABLE PlaylistTracks (id INTEGER primary key, "
-               "playlist_id INTEGER REFERENCES Playlists(id),"
-               "track_id INTEGER REFERENCES library(id), "
-               "position INTEGER)");
-
-    m_database.commit();
 }
 
 /** Create a playlist with the given name.
