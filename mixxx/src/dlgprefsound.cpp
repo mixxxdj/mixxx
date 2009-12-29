@@ -30,10 +30,21 @@
 #include "sounddevice.h"
 #include "soundmanager.h"
 #include <qwidget.h>
+#include <math.h>
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
 #include "defs_mixxxcmetrics.h"
+#endif
+
+// Calculates log2 of number.  
+// 
+#ifndef log2
+double log2( double n )  
+{  
+    // log(n)/log(2) is log2.  
+    return log( n ) / log( 2 );  
+}
 #endif
 
 DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
@@ -232,7 +243,7 @@ int DlgPrefSound::getSliderLatencyMsec(int val)
 {
     qDebug() << "getSliderLatencyMsec in: " << val;
     int sampleRate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
-    val = ((float)pow(2, val) / sampleRate) * 1000;
+    val = ((float)pow(2, (float)val) / sampleRate) * 1000;
     qDebug() << "getSliderLatencyMsec out: " << val;
     return val;
 }
