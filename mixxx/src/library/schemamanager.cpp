@@ -87,20 +87,42 @@ bool SchemaManager::upgradeToSchemaVersion(ConfigObject<ConfigValue>* config,
 
         QString description = eDescription.text();
         QString sql = eSql.text();
+
+
         qDebug() << "Applying version" << thisTarget << ":"
                  << description.trimmed();
 
         db.transaction();
+
+        // TODO(XXX) We can't have semicolons in schema.xml for anything other
+        // than statement separators.
+        QStringList sqlStatements = sql.split(";");
+
+        QStringListIterator it(sqlStatements);
+
         QSqlQuery query(db);
-        if (query.exec(sql)) {
+        bool result = true;
+        while (result && it.hasNext()) {
+            QString statement = it.next().trimmed();
+            if (statement.isEmpty()) {
+                continue;
+            }
+            result = result && query.exec(statement);
+            if (!result) {
+                qDebug() << "Failed query:"
+                         << statement
+                         << query.lastError();
+            }
+        }
+
+        if (result) {
             currentVersion = thisTarget;
             settings.setValue("mixxx.schema.version", thisTarget);
             db.commit();
         } else {
             success = false;
             qDebug() << "Failed to move from version" << currentVersion
-                     << "to version" << thisTarget
-                     << query.lastError();
+                     << "to version" << thisTarget;
             db.rollback();
             break;
         }
