@@ -35,7 +35,7 @@ const QString Library::m_sAutoDJViewName = QString("Auto DJ");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig) {
-    m_pTrackCollection = new TrackCollection();
+    m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
     m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
     // TODO(rryan) -- turn this construction / adding of features into a static
@@ -86,7 +86,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
     emit(switchToView(m_sTrackViewName));
-   
+
     m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
 
     DlgPrepare* pPrepareView = new DlgPrepare(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -96,7 +96,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     pLibraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
     connect(pAutoDJView, SIGNAL(loadTrack(TrackInfoObject*)),
             this, SIGNAL(loadTrack(TrackInfoObject*)));
-    
+
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(pSidebarWidget, SIGNAL(clicked(const QModelIndex&)),

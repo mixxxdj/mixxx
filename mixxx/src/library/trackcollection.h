@@ -21,6 +21,7 @@
 #include <QtSql>
 #include <QSqlDatabase>
 
+#include "configobject.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -41,10 +42,10 @@ class TrackCollection : public QObject
 {
     Q_OBJECT
   public:
-    TrackCollection();
+    TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
     bool checkForTables();
-    
+
     /** Import the files in a given diretory, without recursing into subdirectories */
     bool importDirectory(QString directory, TrackDAO &trackDao);
 
@@ -65,6 +66,7 @@ signals:
  	void finishedLoading();
 
 private:
+    ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;
     PlaylistDAO m_playlistDao;
     CueDAO m_cueDao;
