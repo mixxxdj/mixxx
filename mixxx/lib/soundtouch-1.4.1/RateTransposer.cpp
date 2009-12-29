@@ -10,10 +10,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 11:00:14 -0500 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2009-10-31 10:37:24 -0400 (Sat, 31 Oct 2009) $
 // File revision : $Revision: 4 $
 //
-// $Id: RateTransposer.cpp 63 2009-02-21 16:00:14Z oparviai $
+// $Id: RateTransposer.cpp 74 2009-10-31 14:37:24Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -248,9 +248,9 @@ void RateTransposer::downsample(const SAMPLETYPE *src, uint nSamples)
 
     // If the parameter 'uRate' value is larger than 'SCALE', first apply the
     // anti-alias filter to remove high frequencies (prevent them from folding
-    // over the lover frequencies), then transpose. */
+    // over the lover frequencies), then transpose.
 
-    // Add the new samples to the end of the storeBuffer */
+    // Add the new samples to the end of the storeBuffer
     storeBuffer.putSamples(src, nSamples);
 
     // Anti-alias filter the samples to prevent folding and output the filtered 
@@ -261,6 +261,8 @@ void RateTransposer::downsample(const SAMPLETYPE *src, uint nSamples)
 
     count = pAAFilter->evaluate(tempBuffer.ptrEnd(sizeTemp), 
         storeBuffer.ptrBegin(), sizeTemp, (uint)numChannels);
+
+	if (count == 0) return;
 
     // Remove the filtered samples from 'storeBuffer'
     storeBuffer.receiveSamples(count);
@@ -398,7 +400,9 @@ uint RateTransposerInteger::transposeMono(SAMPLETYPE *dest, const SAMPLETYPE *sr
     unsigned int i, used;
     LONG_SAMPLETYPE temp, vol1;
 
-    used = 0;    
+    if (nSamples == 0) return 0;  // no samples, no work
+
+	used = 0;    
     i = 0;
 
     // Process the last sample saved from the previous call first...

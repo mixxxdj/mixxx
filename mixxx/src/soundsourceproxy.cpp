@@ -93,16 +93,25 @@ SoundSourceProxy::~SoundSourceProxy()
 
 long SoundSourceProxy::seek(long l)
 {
+    if (!m_pSoundSource) {
+	return 0;
+    }
     return m_pSoundSource->seek(l);
 }
 
 unsigned SoundSourceProxy::read(unsigned long size, const SAMPLE * p)
 {
+    if (!m_pSoundSource) {
+	return 0;
+    }
     return m_pSoundSource->read(size, p);
 }
 
 long unsigned SoundSourceProxy::length()
 {
+    if (!m_pSoundSource) {
+	return 0;
+    }
     return m_pSoundSource->length();
 }
 
@@ -134,15 +143,24 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 
 unsigned int SoundSourceProxy::getSrate()
 {
+    if (!m_pSoundSource) {
+	return 0;
+    }
     return m_pSoundSource->getSrate();
 }
 
 Q3ValueList<long> * SoundSourceProxy::getCuePoints()
 {
+    if (!m_pSoundSource) {
+	return NULL;
+    }
     return m_pSoundSource->getCuePoints();
 }
 
 QString SoundSourceProxy::getFilename()
 {
+    if (!m_pSoundSource) {
+	return "";
+    }
     return m_pSoundSource->getFilename();
 }

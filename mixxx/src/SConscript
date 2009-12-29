@@ -44,7 +44,7 @@ def getBZRRevision():
 	return os.popen("bzr revno").readline().strip()
 
 def getMixxxVersion():
-	defs = File('#src/defs.h') #have to handle out-of-tree building, that's why the '#' :(
+	defs = File('#src/defs_version.h') #have to handle out-of-tree building, that's why the '#' :(
 	#p = os.popen('grep -m 1 "#define VERSION" %s' % defs) #this is not cross-platform
 	#version = p.readline()
 	#p.close()
@@ -141,7 +141,8 @@ def getFlags(env, argflag, default=0):
 
 
 Import('platform')
-Import('machine')	#CPU Architecture for optimizing x64 builds
+Import('machine')	#CPU architecture for optimization
+Import('architecture')	#CPU type & binary format for optimization
 
 #Figure out what the QT path is
 
@@ -182,6 +183,7 @@ else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
 
 env['MIXXX_VERSION'] = getMixxxVersion() #should this be in the env?
+env['CPPDEFINES'] = [''] #Initialize this as a list, fixes a bug where first CPPDEFINE would get mangled
 
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
@@ -243,7 +245,7 @@ for getenv in ['CXXFLAGS', 'CCFLAGS', 'LINKFLAGS', 'LIBPATH', 'CPPPATH']:
 #env.Append(CPPDEFINES=[('BUILD_REV', '"%s"' % getBZRRevision())]) #doing this forces a rebuild of everything whenever a commit happens -- not much fun
 ## instead, embed BZR version into build
 ## Put version info into a file, so it doesn't force a rebuild of everything :)
-f = open("build.h","w+")
+f = open("build.h","w")
 try:
 	f.write('#define BUILD_REV "' + getBZRRevision() + '"\n')
 finally:
@@ -438,10 +440,10 @@ sources = Split("""
 #   Linux moved to the flag parsing area since it depends on the rawmidi flag
 if 'win' in platform:
 	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
-	env.Append(CXXFLAGS = '-D__WINMIDI__')
+	env.Append(CPPDEFINES = '__WINMIDI__')
 elif platform == 'osx':
 	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
-	env.Append(CXXFLAGS = '-D__COREMIDI__')
+	env.Append(CPPDEFINES = '__COREMIDI__')
 elif platform == 'bsd':
 	print 'Warning: Mixxx has no support for BSD midi (yet).' #uuuuhhhh not a very good solution
 
@@ -1144,7 +1146,13 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
-				env.Append(CXXFLAGS = '/Ox /MP')
+				if 'makerelease' in COMMAND_LINE_TARGETS:
+					# env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+					# AMD64 architecture is used by all consumer 64-bit CPUs, even Intel ones.
+					# IA64 is the Itanium processors, which we don't expect anyone to be using for DJing. :)
+					env.Append(CXXFLAGS = '/Ox /favor:AMD64 /MP')
+				else:
+					env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
 	else:
 		if not int(flags_tuned):
 			print "Specific optimizations... enabled"
@@ -1182,15 +1190,26 @@ flags_asmlib = getFlags(env, 'asmlib', 0)
 if int(flags_asmlib):
 	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... enabled"
 	env.Append(LIBPATH='#/../asmlib')
+	build_flags += 'asmlib '
 	if platform == 'linux':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		env.Append(LIBS = '":alibelf32o.a"')
+		if architecture[0] == '64bit':
+			env.Append(LIBS = '":alibelf64o.a"')
+		else:
+			env.Append(LIBS = '":alibelf32o.a"')
 	elif platform == 'osx':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		env.Append(LIBS = '":alibmac32o.a"')
+		if architecture[0] == '64bit':
+			env.Append(LIBS = '":alibmac64o.a"')
+		else:
+			env.Append(LIBS = '":alibmac32o.a"')
 	elif 'win' in platform:
 		env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
-		env.Append(LIBS = 'alibcof32o')
+		if platform == 'win64':
+			env.Append(LIBS = 'alibcof64o')
+		else:
+			env.Append(LIBS = 'alibcof32o')
+	env.Append(CXXFLAGS = ' ') # add a space to the end of CXXFLAGS
 else:
 	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... disabled"
 
@@ -1225,11 +1244,11 @@ if platform == 'linux':
 	if int(flags_rawmidi):
 		build_flags += 'rawmidi '
 		sources += Split("""midiobjectalsa.cpp """)  #ALSA RawMIDI support for Linux
-		env.Append(CXXFLAGS = '-D__ALSAMIDI__')
+		env.Append(CPPDEFINES = '__ALSAMIDI__')
 		print "ALSA API... RawMIDI"
 	else:
 		sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
-		env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
+		env.Append(CPPDEFINES = '__ALSASEQMIDI__')
 		print "ALSA API... Sequencer"
 
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
@@ -1274,7 +1293,7 @@ else:
 #env.Append(CPPDEFINES=[('BUILD_FLAGS', "'%s'" % build_flags)])
 
 ### Put flags info into a file
-f = open("build.h","w+")
+f = open("build.h","a")
 try:
 	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
 finally:

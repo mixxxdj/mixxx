@@ -417,12 +417,12 @@ double RateControl::process(const double rate,
         if ( m_eRateRampMode == RATERAMP_STEP ) 
         {
             // old temporary pitch shift behaviour
-            double range = m_pRateRange-get();
+            double range = m_pRateRange->get();
             
             // Avoid Division by Zero
             if (range == 0) {
                 qDebug() << "Avoiding a Division by Zero in RATERAMP_STEP code";
-                return;
+                return m_dOldRate;
             }
             
             double change = m_pRateDir->get() * m_dTemp / 
@@ -513,7 +513,7 @@ void RateControl::setRateTemp(double v)
         m_dRateTemp = -1.0;
     else if ( m_dRateTemp > 1.0 )
         m_dRateTemp = 1.0; 
-    else if ( isNaN(m_dRateTemp))
+    else if ( isnan(m_dRateTemp))
         m_dRateTemp = 0;
 }
 
