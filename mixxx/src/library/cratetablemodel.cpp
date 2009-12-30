@@ -171,7 +171,8 @@ const QString CrateTableModel::currentSearch() {
 }
 
 bool CrateTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID)) {
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) {
         return true;
     }
     return false;

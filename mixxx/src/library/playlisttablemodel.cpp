@@ -318,10 +318,10 @@ const QString PlaylistTableModel::currentSearch() {
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID))
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED))
         return true;
-    else
-        return false;
+    return false;
 }
 
 QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
