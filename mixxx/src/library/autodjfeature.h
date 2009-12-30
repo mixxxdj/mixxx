@@ -9,6 +9,7 @@
 
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
+#include "configobject.h"
 
 class PlaylistTableModel;
 class ProxyTrackModel;
@@ -18,7 +19,8 @@ class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
     public:
     AutoDJFeature(QObject* parent,
-                        TrackCollection* pTrackCollection);
+                  ConfigObject<ConfigValue>* pConfig,
+                  TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
 
     QVariant title();
@@ -29,6 +31,9 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
+    void bindWidget(WLibrarySidebar* sidebarWidget,
+                    WLibrary* libraryWidget);
+
     QAbstractItemModel* getChildModel();
 
 public slots:
@@ -38,10 +43,10 @@ public slots:
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
 private:
-    TrackCollection *m_pTrackCollection;
+    ConfigObject<ConfigValue>* m_pConfig;
+    TrackCollection* m_pTrackCollection;
     PlaylistDAO& m_playlistDao;
-    //PlaylistTableModel* m_pAutoDJTableModel;
-    //ProxyTrackModel* m_pAutoDJTableModelProxy;
+    const static QString m_sAutoDJViewName;
     QStringListModel m_childModel;
 };
 

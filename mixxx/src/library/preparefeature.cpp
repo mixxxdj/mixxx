@@ -8,15 +8,18 @@
 #include "library/librarytablemodel.h"
 #include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
+#include "dlgprepare.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
+const QString PrepareFeature::m_sPrepareViewName = QString("Prepare");
 
 PrepareFeature::PrepareFeature(QObject* parent,
-                                         TrackCollection* pTrackCollection)
-    : LibraryFeature(parent) {
-//      m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
-//      m_pLibraryTableModelProxy(new ProxyTrackModel(m_pLibraryTableModel, false)),
-//      m_pLibraryTableModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-
+                               ConfigObject<ConfigValue>* pConfig,
+                               TrackCollection* pTrackCollection)
+        : LibraryFeature(parent),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection) {
 }
 
 PrepareFeature::~PrepareFeature() {
@@ -30,6 +33,14 @@ QVariant PrepareFeature::title() {
 
 QIcon PrepareFeature::getIcon() {
     return QIcon();
+}
+
+void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
+                                WLibrary* libraryWidget) {
+    DlgPrepare* pPrepareView = new DlgPrepare(libraryWidget,
+                                              m_pConfig,
+                                              m_pTrackCollection);
+    libraryWidget->registerView(m_sPrepareViewName, pPrepareView);
 }
 
 QAbstractItemModel* PrepareFeature::getChildModel() {

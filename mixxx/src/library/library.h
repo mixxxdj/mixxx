@@ -68,7 +68,6 @@ private:
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
-    const static QString m_sPrepareViewName;
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;

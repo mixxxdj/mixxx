@@ -37,12 +37,12 @@ class LibraryFeature : public QObject {
     }
     virtual QAbstractItemModel* getChildModel() = 0;
 
-public slots:
+  public slots:
     virtual void activate() = 0;
     virtual void activateChild(const QModelIndex& index) = 0;
     virtual void onRightClick(const QPoint& globalPos) = 0;
     virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index) = 0;
-signals:
+  signals:
     void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
