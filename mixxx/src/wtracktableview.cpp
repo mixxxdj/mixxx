@@ -20,7 +20,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_searchThread(this) {
-    
+
     m_pMenu = new QMenu(this);
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -52,8 +52,16 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     Q_ASSERT(model);
     Q_ASSERT(track_model);
+    setVisible(false);
 
+    // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
+    // different columns than the old model, we have to create a new horizontal
+    // header. Also, for some reason the WTrackTableView has to be hidden or
+    // else problems occur.
+    QHeaderView* header = new QHeaderView(Qt::Horizontal);
+    setHorizontalHeader(header);
     setModel(model);
+
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -68,8 +76,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
         // Show or hide the column based on whether it should be shown or not.
         if (track_model->isColumnInternal(i)) {
-            qDebug() << "Hiding column" << i;
-            horizontalHeader()->showSection(i);
+            //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
     }
@@ -94,6 +101,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //the flags(...) function that we're already using in LibraryTableModel. I
     //haven't been able to get it to stop us from using a model as a drag target
     //though, so my hax above may not be completely unjustified.
+
+    setVisible(true);
 }
 
 void WTrackTableView::createActions()
@@ -120,7 +129,7 @@ void WTrackTableView::createActions()
 
  	//Create all the "send to->playlist" actions.
  	//updatePlaylistActions();
-    
+
     m_pMenu->addAction(m_pPlayer1Act);
     m_pMenu->addAction(m_pPlayer2Act);
     m_pMenu->addSeparator();
@@ -138,7 +147,6 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 }
 
 void WTrackTableView::slotLoadPlayer1() {
-
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
