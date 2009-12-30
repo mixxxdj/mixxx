@@ -1,5 +1,5 @@
-#ifndef MISSINGTABLEMODEL_H 
-#define MISSINGTABLEMODEL_H 
+#ifndef MISSINGTABLEMODEL_H
+#define MISSINGTABLEMODEL_H
 
 #include <QtSql>
 #include <QItemDelegate>
@@ -11,7 +11,8 @@ class TrackCollection;
 
 class MissingTableModel : public QSqlTableModel, public virtual TrackModel
 {
-public:
+    Q_OBJECT
+  public:
     MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~MissingTableModel();
     virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
@@ -27,7 +28,13 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
-private:
+
+  private slots:
+    void slotSearch(const QString& searchText);
+  signals:
+    void doSearch(const QString& searchText);
+
+  private:
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDao;
     QString m_currentSearch;
