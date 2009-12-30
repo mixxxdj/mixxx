@@ -3,6 +3,7 @@
 #include <QtSql>
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
+#include "library/librarytablemodel.h"
 
 
 MissingTableModel::MissingTableModel(QObject* parent,
@@ -23,15 +24,15 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
                   "library." + LIBRARYTABLE_TITLE + "," +
-                  "track_locations.location" + "," +
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
-                  "library." + LIBRARYTABLE_LOCATION + "," +
-                  "library." + LIBRARYTABLE_COMMENT + " "
+                  "track_locations.location" + "," +
+                  "library." + LIBRARYTABLE_COMMENT + "," +
+                  "library." + LIBRARYTABLE_MIXXXDELETED + " "
                   "FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
@@ -54,8 +55,9 @@ MissingTableModel::MissingTableModel(QObject* parent,
 
     qDebug() << "Created MissingTracksModel!";
 
-	//Set the column heading labels, rename them for translations and have proper capitalization
-    setHeaderData(fieldIndex("location"),
+    //Set the column heading labels, rename them for translations and have
+    //proper capitalization
+    setHeaderData(fieldIndex("track_locations.location"),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
                   Qt::Horizontal, tr("Artist"));
@@ -82,6 +84,14 @@ MissingTableModel::MissingTableModel(QObject* parent,
 
     select(); //Populate the data model.
 
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
+
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
+
 }
 
 MissingTableModel::~MissingTableModel() {
@@ -106,7 +116,6 @@ TrackInfoObject* MissingTableModel::getTrack(const QModelIndex& index) const
 
 QString MissingTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    //FIXME: use position instead of location for playlist tracks?
     int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
     QString location = m_trackDao.getTrackLocation(trackId);
     return location;
@@ -122,14 +131,31 @@ void MissingTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
 
 void MissingTableModel::search(const QString& searchText)
 {
-    //FIXME: Need to keep filtering by playlist_id too
-    //SQL is "playlist_id = " + QString(m_iPlaylistId)
+    qDebug() << "MissingTableModel::search()" << searchText
+             << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void MissingTableModel::slotSearch(const QString& searchText) {
     m_currentSearch = searchText;
+
+    QString filter;
     if (searchText == "")
-        this->setFilter("");
-    else
-        this->setFilter("artist LIKE \'%" + searchText + "%\' OR "
-                        "title  LIKE \'%" + searchText + "%\'");
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+    else {
+        QSqlField search("search", QVariant::String);
+        search.setValue("%" + searchText + "%");
+        QString escapedText = database().driver()->formatValue(search);
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+                "(artist LIKE " + escapedText + " OR "
+                "title  LIKE " + escapedText + "))";
+    }
+    setFilter(filter);
+
+    //XXX: Fetch the entire result set to allow the database to unlock. --
+    //Albert Nov 29/09
+    while (canFetchMore())
+        fetchMore();
 }
 
 const QString MissingTableModel::currentSearch() {
@@ -137,7 +163,8 @@ const QString MissingTableModel::currentSearch() {
 }
 
 bool MissingTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID))
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED))
         return true;
     else
         return false;
@@ -175,7 +202,7 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const
       return Qt::ItemIsEnabled;
 
     //defaultFlags |= Qt::ItemIsDragEnabled;
-    defaultFlags = 0;
+    //defaultFlags = 0;
 
     return defaultFlags;
 }
