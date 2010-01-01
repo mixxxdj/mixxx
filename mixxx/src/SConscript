@@ -205,8 +205,6 @@ cachefile = str(env['CACHEDIR']) + 'custom.py'
 vars = Variables(cachefile)
 vars.Add('prefix', 'Set to your install prefix', '/usr/local')
 vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
-vars.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
-vars.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
 vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
@@ -619,18 +617,6 @@ if platform == 'linux':
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
 		print "Did not find libasound (aka. libasound2), exiting!"
 		Exit(1)
-        #Check for libdjconsole, if it was passed as a flag
-	flags_djconsole = getFlags(env, 'djconsole', 0)
-	flags_djconsole_legacy = getFlags(env, 'djconsole_legacy', 0)
-	if int(flags_djconsole):
-		if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
-			print "Did not find libdjconsole or it\'s development headers, exiting!"
-			Exit(1)
-		env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
-		env.Append(CPPDEFINES = '__LIBDJCONSOLE__')
-	elif int(flags_djconsole_legacy):
-		# legacy support can not be enabled if libDJConsole support is enabled via djconsole=1
-		env.Append(CPPDEFINES = '__DJCONSOLE_LEGACY__')
 
 	#Another check for PortAudio-v19 # why? -kousu
 	env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
@@ -838,16 +824,6 @@ build_flags = ""
 
 print "\nFeatures Summary:\n================"
 
-
-#Hercules support through libdjconsole on Linux
-#(handled somewhere else above this in the file...
-# just printing the summary here)
-flags_djconsole = getFlags(env, 'djconsole', 0)
-if int(flags_djconsole) == 0:
-	print "libdjconsole support... disabled"
-else:
-	print "libdjconsole support... enabled"
-	build_flags += 'djconsole '
 
 #High quality EQs
 flags_hifieq = getFlags(env, 'hifieq', 1)
