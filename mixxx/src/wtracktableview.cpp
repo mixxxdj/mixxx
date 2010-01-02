@@ -5,6 +5,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
+#include "widget/wtracktableviewheader.h"
 #include "library/librarytablemodel.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
@@ -58,10 +59,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // different columns than the old model, we have to create a new horizontal
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur.
-    QHeaderView* header = new QHeaderView(Qt::Horizontal);
+    //QHeaderView* header = new QHeaderView(Qt::Horizontal);
+    QHeaderView* header = new WTrackTableViewHeader(Qt::Horizontal, this);
     setHorizontalHeader(header);
     setModel(model);
-
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
