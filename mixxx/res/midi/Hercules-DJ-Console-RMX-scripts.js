@@ -38,7 +38,7 @@ HerculesRMX.wheelDecay = function (value) {
 //    if (engine.getValue("[Channel1]","play") + engine.getValue("[Channel2]","play") == 0) { return; }
     engine.getValue("[Channel1]","play")
 
-    currentDate = new Date().getTime();
+    var currentDate = new Date().getTime();
     // print(currentDate);
     if (currentDate > HerculesRMX.decayLast + HerculesRMX.decayInterval) {
        HerculesRMX.decayLast = currentDate;
@@ -49,8 +49,8 @@ HerculesRMX.wheelDecay = function (value) {
          // print("do scratching " + jogValue);
          // engine.setValue(group,"scratch", jogValue); // /64);
 
-  	 jog1DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
-         jog1 = engine.getValue("[Channel1]","scratch"); 
+  	 var jog1DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
+         var jog1 = engine.getValue("[Channel1]","scratch"); 
 	 if (jog1 != 0) {
          if (Math.abs(jog1) > jog1DecayRate) {  
                engine.setValue("[Channel1]","scratch", (jog1 / jog1DecayRate).toFixed(2));
@@ -58,8 +58,8 @@ HerculesRMX.wheelDecay = function (value) {
                engine.setValue("[Channel1]","scratch", 0);
             }
          }
-	 jog2DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
-         jog2 = engine.getValue("[Channel2]","scratch"); 
+	 var jog2DecayRate = HerculesRMX.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
+         var jog2 = engine.getValue("[Channel2]","scratch"); 
 	  if (jog2 != 0) {
 	     if (Math.abs(jog2) > jog2DecayRate) {  
                 engine.setValue("[Channel2]","scratch", (jog2 / jog2DecayRate).toFixed(2));
@@ -77,7 +77,7 @@ HerculesRMX.shutdown = function(id) {
 HerculesRMX.getGroup = function (control){ 
 // get the "group" that used to be provided in group, this is not reusable across devices
 // and also breaks remapping of these functions to other buttons.  
-   controlToGroup = { 
+   var controlToGroup = { 
                 0x2F:"[Channel1]", 
                 0x30:"[Channel2]", 
 		0x0C:"[Channel1]", // Cue
@@ -103,7 +103,7 @@ HerculesRMX.toggle_scratch_mode = function (channel, control, value, status) {
 }
 
 HerculesRMX.stop_and_reset_track = function (channel, control, value, status) {
-   group = HerculesRMX.getGroup(control);
+   var group = HerculesRMX.getGroup(control);
    if (engine.getValue(group, "duration") == 0) { if (value) print("No song on " + group); return; };
    if (value > 0) {
         engine.setValue(group,"cue_default",0);
@@ -126,15 +126,15 @@ HerculesRMX.up_down_arrows = function (channel, control, value, status) {
      }
    }
 }
-                        
+                 
 HerculesRMX.jog_wheel = function (channel, control, value, status) {
 //  7F > 40: CCW Slow > Fast - 127 > 64 
 //  01 > 3F: CW Slow > Fast - 0 > 63
-   group = HerculesRMX.getGroup(control);
+   var group = HerculesRMX.getGroup(control);
 //   print ("Wheel");
 //   script.debug(group, control, value, status);
 
-   jogValue = value >=0x40 ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
+   var jogValue = value >=0x40 ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
    if (HerculesRMX.playlistJogScrollMode) { // zip through library quickly
         engine.setValue("[Playlist]","SelectTrackKnob", jogValue);
    } else if (HerculesRMX.scratchMode) { // do some scratching
@@ -142,7 +142,7 @@ HerculesRMX.jog_wheel = function (channel, control, value, status) {
        // engine.setValue(group,"scratch", engine.getValue(group,"scratch") + (jogValue/64));
        engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue/64)).toFixed(2));
    } else { // do pitch adjustment
-       newValue = jogValue; //(engine.getValue(group,"wheel") + (jogValue/5)).toFixed(2);
+       var newValue = jogValue; //(engine.getValue(group,"wheel") + (jogValue/5)).toFixed(2);
 //       if (newValue > 127) { newValue = 127; }
        if (HerculesRMX.debug) print("do pitching adjust " + jogValue + " new Value: " + newValue);
        engine.setValue(group,"jog", newValue);
@@ -150,7 +150,7 @@ HerculesRMX.jog_wheel = function (channel, control, value, status) {
 }
 
 HerculesRMX.cue = function (channel, control, value, status) {
-   group = HerculesRMX.getGroup(control);
+   var group = HerculesRMX.getGroup(control);
    if (engine.getValue(group, "duration") == 0) { if (value) print("No song on " + group); return; };
 
    if (value) { // Down
@@ -173,14 +173,14 @@ HerculesRMX.cue = function (channel, control, value, status) {
 
 HerculesRMX.play = function (channel, control, value, status) {
    // Only send events when play is pushed, not when it comes back up.
-   group = HerculesRMX.getGroup(control);
+   var group = HerculesRMX.getGroup(control);
    if (engine.getValue(group, "duration") == 0) { if (value) print("No song on " + group); return; };
 
    if (value) {
       if (HerculesRMX.cueButton[group] && engine.getValue(group,"play")) {
         HerculesRMX.cuePlay[group] = true;
         midi.sendShortMsg(0xB0, HerculesRMX.leds[group + " cue"], HerculesRMX.ledOff);     
-        playposition = engine.getValue(group,"playposition");
+        var playposition = engine.getValue(group,"playposition");
         engine.setValue(group,"play",0);
         if (HerculesRMX.debug) print("1. Play: " + engine.getValue(group,"play") + " PlayPosition: " + engine.getValue(group,"playposition") + " cue_default: "+ engine.getValue(group,"cue_default"));
         engine.setValue(group,"cue_default",0);

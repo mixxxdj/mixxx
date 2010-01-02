@@ -86,7 +86,7 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 	: m_chordData() {
-  
+
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
@@ -109,7 +109,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();
-    
+
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
 
