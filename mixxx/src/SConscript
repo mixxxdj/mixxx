@@ -1412,6 +1412,9 @@ else:
 #Mixxx binary
 binary_files = mixxx_bin;
 
+# Mixxx essential resource files
+resource_files = Glob('#res/schema.xml')
+
 #Skins
 skin_files = Glob('#res/skins/*')
 
@@ -1474,6 +1477,7 @@ if platform in ('linux', 'bsd'):
 			unix_bin_path   = flags_prefix + "/bin"
 
 		binary = env.Install(unix_bin_path, binary_files)
+                resource = env.Install(unix_share_path + "/mixxx", resource_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
@@ -1485,6 +1489,7 @@ if platform in ('linux', 'bsd'):
 
 		#Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
+                env.Alias('install', resource)
 		env.Alias('install', skins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
@@ -1537,6 +1542,7 @@ if platform == 'osx':
 
 if 'win' in platform:
 	skins = env.Install("#dist/skins", skin_files)
+        resource = env.Install("#dist/", resource_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
 	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
 	ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
@@ -1548,6 +1554,7 @@ if 'win' in platform:
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
+        env.Alias('mixxx', resource)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
 	env.Alias('mixxx', ladspapresets)
