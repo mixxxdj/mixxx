@@ -995,37 +995,36 @@ else:
 
 
 def build_gtest():
-    gtest_dir = env.Dir("#lib/gtest-1.3.0")
-    gtest_dir.addRepository(env.Dir('#lib/gtest-1.3.0'))
-    #env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-    env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
-    Export('env')
-    env.SConscript(env.File('scons/SConscript', gtest_dir))
+	gtest_dir = env.Dir("#lib/gtest-1.3.0")
+	gtest_dir.addRepository(env.Dir('#lib/gtest-1.3.0'))
+	#env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
+	env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+	Export('env')
+	env.SConscript(env.File('scons/SConscript', gtest_dir))
 
-    env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
-    env.Append(LIBS = 'gtest')
-    env.Append(CPPPATH="#lib/gtest-1.3.0/include")
-
+	env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
+	env.Append(LIBS = 'gtest')
+	env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+	
 def build_tests():
-    test_sources = (Glob('test/*.cpp', strings=True) +
-                    [x for x in sources if x != "main.cpp"])
-    env.Program(target='mixxx-test', source=test_sources)
-    Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
+	test_sources = (Glob('test/*.cpp', strings=True) + [x for x in sources if x != "main.cpp"])
+	env.Program(target='mixxx-test', source=test_sources)
+	Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
 
 def run_tests():
-    ret = Execute("./mixxx-test")
-    if ret != 0:
-        print "WARNING: Not all tests pass. See mixxx-test output."
-    Exit(ret)
+	ret = Execute("./mixxx-test")
+	if ret != 0:
+		print "WARNING: Not all tests pass. See mixxx-test output."
+		Exit(ret)
 
 flags_test = getFlags(env, 'test', 0) or 'test' in BUILD_TARGETS
 
 if int(flags_test):
-    print "Test suite... enabled"
-    build_gtest()
-    build_flags += 'test '
+	print "Test suite... enabled"
+	build_gtest()
+	build_flags += 'test '
 else:
-    print "Test suite... disabled"
+	print "Test suite... disabled"
 
 # Script Studio
 flags_script = getFlags(env, 'script', 0)
@@ -1293,12 +1292,12 @@ else:
 
 #Tell SCons to build tests
 if int(flags_test):
-    print "Building tests."
-    build_tests()
+	print "Building tests."
+	build_tests()
 
 if 'test' in BUILD_TARGETS:
-    print "Running tests."
-    run_tests()
+	print "Running tests."
+	run_tests()
 
 #Set up the MSVC target to build a Visual Studio project/solution file
 if 'msvc' in COMMAND_LINE_TARGETS:
@@ -1456,7 +1455,7 @@ if platform == 'osx':
 		 STRIP=True,
 		 #STRIP=(type == 'RELEASE')
 		 )
-	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)

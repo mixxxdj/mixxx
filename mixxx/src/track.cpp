@@ -164,7 +164,8 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         qDebug() << "Trying to add" << m_pTrackCollection->getSize() << "songs to the library playlist";
         for (int i = 0; i < m_pTrackCollection->getSize(); i++)
         {
-            m_qLibraryPlaylist.addTrack(m_pTrackCollection->getTrack(i));
+            TrackInfoObject* track = m_pTrackCollection->getTrack(i);
+            if (track != NULL) m_qLibraryPlaylist.addTrack(track);
         }
 
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);

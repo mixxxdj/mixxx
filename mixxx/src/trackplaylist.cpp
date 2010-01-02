@@ -76,9 +76,11 @@ void TrackPlaylist::loadFromXMLNode(QDomNode node)
         if (idnode.isElement() && idnode.nodeName()=="Id")
         {
             int id = idnode.toElement().text().toInt();
+
             TrackInfoObject * pTrack = m_pTrackCollection->getTrack(id);
-            if (pTrack && pTrack->checkFileExists())
+            if (pTrack && pTrack->checkFileExists()){
                 addTrack(pTrack);
+	        }
         }
 
         idnode = idnode.nextSibling();
@@ -103,6 +105,7 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
     for(int i = 0; i < this->size(); i++)
     {
         XmlParse::addElement(doc, root, "Id", QString("%1").arg(this->at(i)->getId()));
+    	qDebug() << "Adding trackid " << this->at(i)->getId() << " to XML playlist";
     }
     header.appendChild(root);
 
@@ -111,18 +114,25 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 
 void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
 {
-    // Currently a track can only appear once in a playlist
-    if (this->indexOf(pTrack)!=-1)
-    {
-    	qDebug() << "FIXME: Duplicate tracks not allowed in playlists.";
-        return;
+    if (pTrack){
+        //qDebug() << "TrackPlaylist::addTrack: appending track with TrackID " << pTrack->getId() << " to playlist...";
+        // Currently a track can only appear once in a playlist
+        if (this->indexOf(pTrack)!=-1)
+        {
+           qDebug() << "FIXME: Duplicate tracks not allowed in playlists.";
+           return;
+        }
+
+        this->append(pTrack);
+
+        // If this playlist is active, update WTableTrack
+        //if (m_pTable)
+        //pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
+        
+        //qDebug() << "TrackPlaylist::addTrack: done appending track with TrackID " << pTrack->getId() << " to playlist.";
+    } else {
+	//qDebug() << "TrackPlaylist::addTrack: warning! Got a NULL pTrack, ignoring.";
     }
-
-    this->append(pTrack);
-
-    // If this playlist is active, update WTableTrack
-    //if (m_pTable)
-    //pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
 
 }
 
