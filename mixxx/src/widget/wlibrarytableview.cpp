@@ -27,11 +27,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setWordWrap(false);
     setShowGrid(false);
     setCornerButtonEnabled(false);
-    setSortingEnabled (true);
-
-    horizontalHeader()->setSortIndicatorShown(true);
-    //Allow the columns to be reordered.
-    horizontalHeader()->setMovable(true);
+    setSortingEnabled(true);
 
     verticalHeader()->hide();
     verticalHeader()->setDefaultSectionSize(20);
