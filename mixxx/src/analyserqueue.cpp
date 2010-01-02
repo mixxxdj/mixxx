@@ -67,14 +67,24 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
     CSAMPLE *samples = new CSAMPLE[ANALYSISBLOCKSIZE];
 
     int read = 0;
+    bool dieflag = false;
 
     do {
         read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
 
         // Safety net in case something later barfs on 0 sample input
         if (read == 0) {
-            break;
+	  break;
         }
+
+	// If we get more samples than length, ask the analysers to process
+	// up to the number we promised, then stop reading - AD
+	if (read + processedSamples > totalSamples) {
+	  qDebug() << "While processing track of length " << totalSamples << " actually got "
+		   << read + processedSamples << " samples, truncating analysis at expected length";
+	  read = totalSamples - processedSamples;
+	  dieflag = true;
+	}
 
         for (int i = 0; i < read; i++) {
             samples[i] = ((float)data16[i])/32767.0f;
@@ -94,7 +104,7 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
         int progress = ((float)processedSamples)/totalSamples * 100; //fp div here prevents insano signed overflow
         emit(trackProgress(tio, progress));
     
-    } while(read == ANALYSISBLOCKSIZE);
+    } while(read == ANALYSISBLOCKSIZE && !dieflag);
     delete[] data16;
     delete[] samples;
 }
