@@ -7,7 +7,8 @@
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
-        : TrackModel(),
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.playlist"),
           QSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),

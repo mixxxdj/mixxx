@@ -23,11 +23,15 @@ class WTrackTableViewHeader : public QHeaderView {
     void contextMenuEvent(QContextMenuEvent* event);
     virtual void setModel(QAbstractItemModel* model);
 
+    void saveHeaderState();
+    void restoreHeaderState();
+
   private slots:
     void showOrHideColumn(int);
 
   private:
     void clearActions();
+    TrackModel* getTrackModel();
 
     QMenu m_menu;
     QMap<int, QAction*> m_columnActions;

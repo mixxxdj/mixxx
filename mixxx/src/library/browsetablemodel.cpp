@@ -1,16 +1,20 @@
 
 #include <QtCore>
+#include <QtSql>
 #include "browsetablemodel.h"
 
 
-BrowseTableModel::BrowseTableModel() : QDirModel()
+BrowseTableModel::BrowseTableModel()
+        : QDirModel(),
+          TrackModel(QSqlDatabase::database("QSQLITE"),
+                     "mixxx.db.model.browse")
 {
-	
+
 }
 
 BrowseTableModel::~BrowseTableModel()
 {
-	
+
 }
 
 TrackInfoObject* BrowseTableModel::getTrack(const QModelIndex& index) const

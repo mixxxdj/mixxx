@@ -3,6 +3,9 @@
 
 #include <QList>
 #include <QItemDelegate>
+#include <QtSql>
+
+#include "library/dao/settingsdao.h"
 
 class TrackInfoObject;
 
@@ -11,6 +14,13 @@ class TrackInfoObject;
 class TrackModel {
 
 public:
+
+    TrackModel(QSqlDatabase db,
+               QString settingsNamespace)
+            : m_db(db),
+              m_settingsNamespace(settingsNamespace) {
+
+    }
 
     enum Capabilities
     {
@@ -38,7 +48,21 @@ public:
     virtual ~TrackModel() {}
     virtual TrackModel::CapabilitiesFlags getCapabilities() const { return TRACKMODELCAPS_NONE; }
 
+    virtual QString getModelSetting(QString name) {
+        SettingsDAO settings(m_db);
+        QString key = m_settingsNamespace + "." + name;
+        return settings.getValue(key);
+    }
+
+    virtual bool setModelSetting(QString name, QVariant value) {
+        SettingsDAO settings(m_db);
+        QString key = m_settingsNamespace + "." + name;
+        return settings.setValue(key, value);
+    }
+
   private:
+    QSqlDatabase m_db;
+    QString m_settingsNamespace;
     QList<int> m_emptyColumns;
 };
 

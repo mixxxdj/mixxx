@@ -39,6 +39,9 @@ class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel 
 
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const;
 
+    virtual QString getModelSetting(QString name);
+    virtual bool setModelSetting(QString name, QVariant value);
+
   private:
     TrackModel* m_pTrackModel;
     QString m_currentSearch;

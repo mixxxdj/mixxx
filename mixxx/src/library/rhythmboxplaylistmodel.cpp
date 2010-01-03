@@ -29,9 +29,10 @@
 #include "defs_audiofiles.h"
 
 RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) :
-    m_pRhythmbox(Rhythhmbox),
-    m_sCurrentPlaylist("")
-{
+        TrackModel(QSqlDatabase::database("QSQLITE"),
+                   "mixxx.db.model.rhythmbox_playlist"),
+        m_pRhythmbox(Rhythhmbox),
+        m_sCurrentPlaylist("") {
     int idx = 0;
     QDomDocument rhythmplaylistdb;
     QXmlQuery query;

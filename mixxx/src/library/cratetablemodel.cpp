@@ -10,6 +10,7 @@
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
         : QSqlTableModel(pParent, pTrackCollection->getDatabase()),
+          TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),
           m_currentSearch("") {

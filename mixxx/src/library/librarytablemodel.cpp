@@ -9,7 +9,8 @@ const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
-        : TrackModel(),
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.library"),
           QSqlRelationalTableModel(parent, pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
 

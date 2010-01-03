@@ -16,8 +16,9 @@
 #include "defs_audiofiles.h"
 
 ITunesPlaylistModel::ITunesPlaylistModel(ITunesTrackModel *pTrackModel) :
-    m_pTrackModel(pTrackModel),
-    m_sCurrentPlaylist("")
+        TrackModel(QSqlDatabase::database("QSQLITE"), "mixxx.db.model.itunes_playlist"),
+        m_pTrackModel(pTrackModel),
+        m_sCurrentPlaylist("")
 {
 
 }
