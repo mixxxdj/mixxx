@@ -647,7 +647,7 @@ if platform == 'osx':
 		print 'Did not find CoreMIDI framework, exiting! (Please install it)'
 		Exit(1)
 	else:
-		env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
+		env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework QuickTime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
 
 
 
@@ -1426,7 +1426,7 @@ if platform == 'osx':
 		 STRIP=True,
 		 #STRIP=(type == 'RELEASE')
 		 )
-	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
