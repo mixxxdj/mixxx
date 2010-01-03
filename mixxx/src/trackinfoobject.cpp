@@ -41,7 +41,7 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) 
+TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile)
 	: m_sFilename(sFile), m_sFilepath(sPath),
 	m_chordData() {
     m_sArtist = "";
@@ -71,7 +71,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile)
 
     m_dVisualResampleRate = 0;
 
-    m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
+    m_fBpmFactors = new float[NumBpmFactors];
     generateBpmFactors();
 
     //m_pTableItemScore = 0;
@@ -123,12 +123,12 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 
-    m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
+    m_fBpmFactors = new float[NumBpmFactors];
     generateBpmFactors();
 
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
-    
+
     m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
@@ -159,7 +159,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 TrackInfoObject::~TrackInfoObject()
 {
     //removeFromTrackTable();
-    delete m_fBpmFactors;
+    delete [] m_fBpmFactors;
 }
 
 bool TrackInfoObject::isValid() const

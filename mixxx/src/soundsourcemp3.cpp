@@ -388,7 +388,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     int i;
 
     // If samples are left from previous read, then copy them to start of destination
-    // Make sure to take into account the case where there are more samples left over 
+    // Make sure to take into account the case where there are more samples left over
     // from the previous read than the client requested.
     if (rest > 0)
     {
@@ -590,7 +590,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             if(readbytes == -1) {
                 // fatal error, no bytes were read
                 qDebug() << "MAD: fatal error reading mp3 file";
-                delete inputbuf; // don't leak memory!
+                delete [] inputbuf; // don't leak memory!
                 return ERR;
             } else if(readbytes == 0) {
                 // EOF, just break out of the loop
@@ -638,12 +638,12 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
     //qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
     //qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
-    
+
     if (constantbitrate && frames>0) {
         // This means that duration is an approximation.
         // We take the duration of one frame and multiply it by
         // the number of frames we think can fit in the file size.
-        
+
         // duration per frame * file_length bytes / (bytes per frame) = duration
         //mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
         mad_timer_multiply(&dur, Track->getLength()/bytesperframe);
