@@ -14,7 +14,6 @@ METADATA
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS settings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
         value TEXT,
         locked INTEGER DEFAULT 0,
