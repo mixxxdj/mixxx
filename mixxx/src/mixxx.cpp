@@ -71,23 +71,23 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-    
+
     QString buildRevision, buildFlags;
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
     #endif
-    
+
     #ifdef BUILD_FLAGS
       buildFlags = BUILD_FLAGS;
     #endif
-    
+
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
             buildRevision = "(bzr r" + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
         else
             buildRevision = "(bzr r" + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
     }
-    
+
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
     setWindowIcon(QIcon(":/images/icon.svg"));
@@ -97,7 +97,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pTrack = 0;
     prefDlg = 0;
     midi = 0;
-    
+
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
     config = versionUpgrade();  // This static function is located in upgrade.cpp
     QString qConfigPath = config->getConfigPath();
@@ -119,7 +119,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
                     break;
   	 }
       }
-    }	
+    }
     config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(metricsAgree));
 
     // If the user agrees...
@@ -317,7 +317,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
     channel2->setEngineBuffer(buffer2);
-    
+
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif
@@ -458,7 +458,7 @@ int MixxxApp::noSoundDlg(void)
     while(1)
     {
         msgBox.exec();
-        
+
         if (msgBox.clickedButton() == retryButton) {
             soundmanager->queryDevices();
             return 0;
@@ -468,7 +468,7 @@ int MixxxApp::noSoundDlg(void)
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
             soundmanager->queryDevices();
-            
+
             // This way of opening the dialog allows us to use it synchronously
             prefDlg->setWindowModality(Qt::ApplicationModal);
             prefDlg->exec();
@@ -476,9 +476,9 @@ int MixxxApp::noSoundDlg(void)
                 soundmanager->queryDevices();
                 return 0;
             }
-            
+
             msgBox.show();
-            
+
         } else if (msgBox.clickedButton() == exitButton) {
             return 1;
         }
@@ -1065,6 +1065,7 @@ void MixxxApp::slotHelpAbout()
 "Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"Oliver St&ouml;neberg<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
