@@ -1,24 +1,42 @@
 ; Mixxx.nsi
 ;
 ; Mixxx NSI install script. 
-; has uninstall support and (optionally) installs start menu shortcuts.
+; This has uninstall support, optional mutli-user install support, and optionally installs start menu shortcuts.
 ;
 ; By Tue Haste Andersen <haste@diku.dk>, June 2004.
 ; Heavily modified since by Albert Santoni, Garth Dahlstrom and Sean Pappalardo.
 ; 
 ; Lots of bits lifted from http://www.improve.dk/downloads/InstallScript.txt
 ;
-;Include Modern UI
-!include "MUI.nsh"
+; Use best compression
+SetCompressor /SOLID lzma
 
 ; Definitions
 !define PRODUCT_NAME "Mixxx"
 ;!define PRODUCT_VERSION ""  ; Specified by the SConscript
 !define PRODUCT_PUBLISHER "The Mixxx Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
+
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Mixxx.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+
+!define MULTIUSER_INSTALLMODE_INSTDIR "${PRODUCT_NAME}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "InstallDir"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "InstallDir"
+
+!define PRODUCT_UNINST_ROOT_KEY SHELL_CONTEXT
+
+!define MULTIUSER_EXECUTIONLEVEL Highest
+!define MULTIUSER_MUI
+!define MULTIUSER_INSTALLMODE_COMMANDLINE   ; Allows command-line installs to specify the mode
+                                            ;   with /AllUsers or /CurrentUser
+!include MultiUser.nsh
+
+;Include Modern UI
+!include "MUI2.nsh"
+
 
 ; The name of the installer
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
@@ -29,19 +47,14 @@ BrandingText " "
 ; The file to write and default installation directory
 !ifdef x64
     OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
-    InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
+    ;InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 !else
     OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
-    InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 !endif
-
-; Use best compression
-SetCompressor /SOLID lzma
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-;InstallDirRegKey HKLM "Software\NSIS_Mixxx" "Install_Dir"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+;InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 ;Interface Settings
 !define MUI_ABORTWARNING
@@ -54,6 +67,7 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 ; Pages
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
+!insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -74,6 +88,9 @@ Function .onInit    ; Prevent multiple installer instances
     StrCmp $R0 0 +3
         MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
         Abort
+        
+    !insertmacro MULTIUSER_INIT
+
 FunctionEnd
 
 ;--------------------------------
@@ -129,8 +146,8 @@ Section "Mixxx (required)" SecMixxx
   File /r /x ".svn" /x ".bzr" dist\skins\*.*
 
   ; Write the installation path into the registry
-  ;WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
+  ;WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
   
   ; Write the uninstall keys for Windows
   WriteUninstaller "$INSTDIR\uninst.exe"
@@ -190,9 +207,10 @@ Function un.onUninstSuccess
 FunctionEnd
 
 Function un.onInit
-!insertmacro MUI_UNGETLANGUAGE
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
-  Abort
+    !insertmacro MUI_UNGETLANGUAGE
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+    Abort
+    !insertmacro MULTIUSER_UNINIT
 FunctionEnd
 
 Section "Uninstall"
@@ -201,6 +219,7 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
+  Delete $INSTDIR\*.manifest
   Delete $INSTDIR\uninst.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
@@ -248,8 +267,7 @@ Section "Uninstall"
 
   ; Remove registry keys
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
-  ;DeleteRegKey HKLM SOFTWARE\NSIS_Mixxx
-  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}"
   SetAutoClose true
   
 SectionEnd
