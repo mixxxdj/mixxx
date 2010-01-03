@@ -22,7 +22,7 @@ MidiObjectALSA::MidiObjectALSA() : MidiObject()
 {
     m_inHandle = NULL;
     m_input = 0;
-    
+
     getDevicesList();
 }
 
@@ -31,9 +31,9 @@ MidiObjectALSA::~MidiObjectALSA()
 //     qDebug() << "In ~MidiObjectALSA()";
     m_run = false;
     wait();
-    
+
     shutdown(); // From parent MidiObject
-    
+
     devClose();
 }
 
@@ -42,9 +42,9 @@ void MidiObjectALSA::devOpen(QString device)
 {
     // Open RawMIDI device for input
     m_deviceName = device;
-    
+
     qDebug() << "Opening ALSA device" << m_availableDevices.value(device) << device;
-    
+
     int status;
     int mode = SND_RAWMIDI_NONBLOCK;    //SND_RAWMIDI_NONBLOCK, SND_RAWMIDI_APPEND, SND_RAWMIDI_SYNC
     if ((status = snd_rawmidi_open(&m_inHandle, &m_outHandle, m_availableDevices.value(device), mode)) < 0) {
@@ -82,7 +82,7 @@ void MidiObjectALSA::devClose()
     // Stop the midi thread:
     m_run = false;
     wait();
-    
+
     int err;
 
     // Close device
@@ -101,7 +101,7 @@ void MidiObjectALSA::devClose()
         if (err != 0) { qDebug() << "Closing MIDI output device failed: " << snd_strerror(err) << "."; }
         else m_outHandle = NULL; // snd_rawmidi_close() does not clear invalid pointer
     }
-    
+
 //     return err;
 }
 
@@ -119,7 +119,7 @@ void MidiObjectALSA::run()
     char midiValue;
     char buffer[1];        // Storage for input buffer received
     int i = 0;
-    
+
 //     qDebug() << "Thread Started";
     while(m_run) {
         status = 0;
@@ -164,7 +164,7 @@ void MidiObjectALSA::run()
             status = m_buffer[0];
             midicontrol = m_buffer[1];
             midivalue = m_buffer[2];
-            
+
             MidiStatusByte midiStatus;
             switch ((status & 0xF0)) {
                 case 0x80:  // Note off
@@ -180,7 +180,7 @@ void MidiObjectALSA::run()
                     midiStatus = MIDI_STATUS_PITCH_BEND;
                     break;
             }
-    
+
             receive(midiStatus, status & 0x0F, midicontrol, midivalue);
         }
         */
@@ -191,14 +191,14 @@ void MidiObjectALSA::run()
 void MidiObjectALSA::sendShortMsg(unsigned int word)
 {
     int status;
-    unsigned char data[2];
+    unsigned char data[3];
 //     int byte1, byte2, byte3;
 
     // Safely retrieve the message sequence from the input
     data[0] = word & 0xff;
     data[1] = (word>>8) & 0xff;
     data[2] = (word>>16) & 0xff;
-    
+
     if ((status = snd_rawmidi_write(m_outHandle, data, 3)) < 0)
         qWarning() << "Problem writing to MIDI output:" << snd_strerror(status);
 
@@ -223,7 +223,7 @@ int MidiObjectALSA::getDevicesList()
 {
     int status;
     int card = -1;  // use -1 to prime the pump of iterating through card list
-    
+
     if ((status = snd_card_next(&card)) < 0) {
         qWarning() << "Cannot determine number of sound cards:" << snd_strerror(status);
         return 0;
@@ -232,7 +232,7 @@ int MidiObjectALSA::getDevicesList()
         qWarning() << "No sound cards found";
         return 0;
     }
-    
+
     int foundDevices = 0;
     while (card >= 0) {
         foundDevices = find_midi_devices_on_card(card);
@@ -257,7 +257,7 @@ int MidiObjectALSA::find_midi_devices_on_card(int card)    // Might need to put 
     int device = -1;
     int status;
     int foundDevices = 0;
-    
+
     sprintf(name, "hw:%d", card);
 //     qDebug() << name;
     if ((status = snd_ctl_open(&ctl, name, 0)) < 0) {
@@ -289,10 +289,10 @@ int MidiObjectALSA::find_subdevice_info(snd_ctl_t *ctl, int card, int device) {
     int sub, in, out;
     int status;
     int foundDevices = 0;
-    
+
     snd_rawmidi_info_alloca(&info);
     snd_rawmidi_info_set_device(info, device);
-    
+
     snd_rawmidi_info_set_stream(info, SND_RAWMIDI_STREAM_INPUT);
     snd_ctl_rawmidi_info(ctl, info);
     subs_in = snd_rawmidi_info_get_subdevices_count(info);
@@ -300,7 +300,7 @@ int MidiObjectALSA::find_subdevice_info(snd_ctl_t *ctl, int card, int device) {
     snd_ctl_rawmidi_info(ctl, info);
     subs_out = snd_rawmidi_info_get_subdevices_count(info);
     subs = subs_in > subs_out ? subs_in : subs_out;
-    
+
     sub = 0;
     in = out = 0;
     if ((status = is_output(ctl, card, device, sub)) < 0) {
@@ -309,7 +309,7 @@ int MidiObjectALSA::find_subdevice_info(snd_ctl_t *ctl, int card, int device) {
         return foundDevices;
     } else if (status)
         out = 1;
-    
+
     if (status == 0) {
         if ((status = is_input(ctl, card, device, sub)) < 0) {
             qWarning() << QString("Cannot get RawMIDI information %d:%d: %s")
@@ -320,10 +320,10 @@ int MidiObjectALSA::find_subdevice_info(snd_ctl_t *ctl, int card, int device) {
         in = 1;
         foundDevices++;
         }
-        
+
     if (status == 0)
         return foundDevices;
-    
+
     name = snd_rawmidi_info_get_name(info);
     sub_name = snd_rawmidi_info_get_subdevice_name(info);
     if (sub_name[0] == '\0') {
@@ -336,7 +336,7 @@ int MidiObjectALSA::find_subdevice_info(snd_ctl_t *ctl, int card, int device) {
             devices.append(sub_name);
             if (++sub >= subs)
                 break;
-    
+
             in = is_input(ctl, card, device, sub);
             out = is_output(ctl, card, device, sub);
             snd_rawmidi_info_set_subdevice(info, sub);
@@ -374,7 +374,7 @@ int MidiObjectALSA::is_input(snd_ctl_t *ctl, int card, int device, int sub) {
    snd_rawmidi_info_set_device(info, device);
    snd_rawmidi_info_set_subdevice(info, sub);
    snd_rawmidi_info_set_stream(info, SND_RAWMIDI_STREAM_INPUT);
-   
+
    if ((status = snd_ctl_rawmidi_info(ctl, info)) < 0 && status != -ENXIO) {
       return status;
    } else if (status == 0) {
@@ -399,7 +399,7 @@ int MidiObjectALSA::is_output(snd_ctl_t *ctl, int card, int device, int sub) {
    snd_rawmidi_info_set_device(info, device);
    snd_rawmidi_info_set_subdevice(info, sub);
    snd_rawmidi_info_set_stream(info, SND_RAWMIDI_STREAM_OUTPUT);
-   
+
    if ((status = snd_ctl_rawmidi_info(ctl, info)) < 0 && status != -ENXIO) {
       return status;
    } else if (status == 0) {
