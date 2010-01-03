@@ -293,8 +293,9 @@ int main(int argc, char * argv[])
      QDir dir(QApplication::applicationDirPath());
      dir.cdUp();
      dir.cd("PlugIns");
-     QApplication::addLibraryPath(dir.absolutePath());
-     //qDebug() << dir.absolutePath() << QApplication::applicationDirPath();
+     //For some reason we need to do setLibraryPaths() and not addLibraryPath().
+     //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
+     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);
