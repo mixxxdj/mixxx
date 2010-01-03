@@ -9,7 +9,6 @@
 WBrowseTableView::WBrowseTableView(QWidget* parent,
                                    ConfigObject<ConfigValue>* pConfig)
         : WLibraryTableView(parent, pConfig,
-                            ConfigKey("[Library]", "BrowseHeaderState"),
                             ConfigKey("[Library]", "BrowseVScrollBarPos")),
           m_player1Act(tr("Load in Player 1"), this),
           m_player2Act(tr("Load in Player 2"), this),

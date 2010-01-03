@@ -8,7 +8,10 @@
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
                                  bool bHandleSearches)
-        : m_bHandleSearches(bHandleSearches) {
+        // ProxyTrackModel proxies settings requests to the composed TrackModel,
+        // don't initialize its TrackModel with valid parameters.
+        : TrackModel(QSqlDatabase(), ""),
+          m_bHandleSearches(bHandleSearches) {
     m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);
     Q_ASSERT(m_pTrackModel && pTrackModel);
     setSourceModel(pTrackModel);
@@ -98,4 +101,16 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
     }
 
     return rowMatches;
+}
+
+QString ProxyTrackModel::getModelSetting(QString name) {
+    if (!m_pTrackModel)
+        return QString();
+    return m_pTrackModel->getModelSetting(name);
+}
+
+bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
+    if (!m_pTrackModel)
+        return false;
+    return m_pTrackModel->setModelSetting(name, value);
 }

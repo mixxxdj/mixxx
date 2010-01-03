@@ -41,7 +41,7 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
 {
     Q_OBJECT
     public:
-    AbstractXmlTrackModel();
+    AbstractXmlTrackModel(QString settingsNamespace);
     virtual ~AbstractXmlTrackModel();
 
     //QAbstractTableModel stuff

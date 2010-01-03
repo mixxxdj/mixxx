@@ -16,8 +16,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
-                                      WTRACKTABLEVIEW_HEADERSTATE_KEY),
-                            ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_searchThread(this) {
@@ -38,6 +36,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
 WTrackTableView::~WTrackTableView()
 {
+    WTrackTableViewHeader* pHeader =
+            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->saveHeaderState();
+    }
+
     delete m_pPlayQueueAct;
     delete m_pPlayer1Act;
     delete m_pPlayer2Act;
@@ -55,14 +59,33 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     Q_ASSERT(track_model);
     setVisible(false);
 
+    // Save the previous track model's header state
+    WTrackTableViewHeader* oldHeader =
+            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (oldHeader) {
+        oldHeader->saveHeaderState();
+    }
+
     // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
     // different columns than the old model, we have to create a new horizontal
     // header. Also, for some reason the WTrackTableView has to be hidden or
-    // else problems occur.
-    //QHeaderView* header = new QHeaderView(Qt::Horizontal);
+    // else problems occur. Since we parent the WtrackTableViewHeader's to the
+    // WTrackTableView, they are automatically deleted.
     QHeaderView* header = new WTrackTableViewHeader(Qt::Horizontal, this);
-    setHorizontalHeader(header);
+
+    // WTF(rryan) The following saves on unnecessary work on the part of
+    // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
+    // current horizontal header. If this happens on the old
+    // WTrackTableViewHeader, then it will save its old state, AND do the work
+    // of initializing its menus on the new model. We create a new
+    // WTrackTableViewHeader, so this is wasteful. Setting a temporary
+    // QHeaderView here saves on setModel() calls. Since we parent the
+    // QHeaderView to the WTrackTableView, it is automatically deleted.
+    QHeaderView* tempHeader = new QHeaderView(Qt::Horizontal, this);
+    setHorizontalHeader(tempHeader);
+
     setModel(model);
+    setHorizontalHeader(header);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {

@@ -1,10 +1,16 @@
 #include <QObject>
+
 #include "preparelibrarytablemodel.h"
+#include "library/trackcollection.h"
 
 const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";
 
-PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent, TrackCollection* pTrackCollection) : LibraryTableModel(parent, pTrackCollection)
-{
+PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
+                                                   TrackCollection* pTrackCollection)
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.prepare"),
+          LibraryTableModel(parent, pTrackCollection) {
+
     m_bShowRecentSongs = true;
     search("");
     select();
@@ -18,12 +24,12 @@ PrepareLibraryTableModel::~PrepareLibraryTableModel()
 
 bool PrepareLibraryTableModel::isColumnInternal(int column) {
     bool result = false;
-    
+
     if ((column == fieldIndex(LIBRARYTABLE_DATETIMEADDED))) {
         result = false;
-    } 
+    }
     else
-        result = LibraryTableModel::isColumnInternal(column); 
+        result = LibraryTableModel::isColumnInternal(column);
 
     return result;
 }
@@ -40,22 +46,22 @@ void PrepareLibraryTableModel::search(const QString& searchText) {
     if (searchText == "")
         setFilter(baseFilter);
     else
-        setFilter(baseFilter + " " +   
+        setFilter(baseFilter + " " +
                   "artist LIKE \'%" + searchText + "%\' OR "
                   "title  LIKE \'%" + searchText + "%\'");
 }
 
 void PrepareLibraryTableModel::showRecentSongs()
 {
-   m_bShowRecentSongs = true; 
-   search("");
+   m_bShowRecentSongs = true;
+   search(m_currentSearch);
    select();
 }
 
 void PrepareLibraryTableModel::showAllSongs()
 {
     m_bShowRecentSongs = false;
-    search("");
+    search(m_currentSearch);
     select();
 }
 

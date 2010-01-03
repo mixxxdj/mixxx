@@ -11,7 +11,8 @@
 #include "defs_audiofiles.h"
 
 RhythmboxTrackModel::RhythmboxTrackModel()
-{
+        : AbstractXmlTrackModel("mixxx.db.model.rhythmbox") {
+
     QXmlQuery query;
     QString res;
     QDomDocument rhythmdb;

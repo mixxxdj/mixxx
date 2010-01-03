@@ -11,7 +11,7 @@
 #include "defs_audiofiles.h"
 
 ITunesTrackModel::ITunesTrackModel()
-{
+        : AbstractXmlTrackModel("mixxx.db.model.itunes") {
     QXmlQuery query;
     QString res, playlistRes;
     QDomDocument itunesdb;

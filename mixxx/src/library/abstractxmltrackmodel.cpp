@@ -37,13 +37,9 @@
 #include "defs_audiofiles.h"
 
 
-AbstractXmlTrackModel::AbstractXmlTrackModel()
-{
-    /* We need to throw some horrible error or exception telling
-     * developers to ACTUALLY implement this, since this is only a
-     * base abstract class.
-     */
-    qDebug() << "Unimplemented AbstractXmlTrackModel constructor";
+AbstractXmlTrackModel::AbstractXmlTrackModel(QString settingsNamespace)
+        : TrackModel(QSqlDatabase::database("QSQLITE"),
+                     settingsNamespace) {
 }
 
 AbstractXmlTrackModel::~AbstractXmlTrackModel()

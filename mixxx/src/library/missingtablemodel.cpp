@@ -7,8 +7,9 @@
 
 
 MissingTableModel::MissingTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection)
-        : TrackModel(),
+                                     TrackCollection* pTrackCollection)
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.missing"),
           QSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_trackDao(m_pTrackCollection->getTrackDAO()),

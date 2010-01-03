@@ -23,7 +23,6 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
 }
 
 WTrackTableViewHeader::~WTrackTableViewHeader() {
-
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -31,6 +30,20 @@ void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
 }
 
 void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
+    TrackModel* oldTrackModel = getTrackModel();
+
+    if (dynamic_cast<QAbstractItemModel*>(oldTrackModel) == model) {
+        // If the models are the same, do nothing but the redundant call.
+        QHeaderView::setModel(model);
+        return;
+    }
+
+    // Won't happen in practice since the WTrackTableView new's a new
+    // WTrackTableViewHeader each time a new TrackModel is loaded.
+    if (oldTrackModel) {
+        saveHeaderState();
+    }
+
     // First clear all the context menu actions for the old model.
     clearActions();
 
@@ -43,6 +56,9 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     if (!trackModel) {
         return;
     }
+
+    // Restore saved header state to get sizes, column positioning, etc. back.
+    restoreHeaderState();
 
     int columns = model->columnCount();
     for (int i = 0; i < columns; ++i) {
@@ -60,6 +76,35 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         connect(action, SIGNAL(triggered()),
                 &m_signalMapper, SLOT(map()));
         m_menu.addAction(action);
+    }
+}
+
+void WTrackTableViewHeader::saveHeaderState() {
+    TrackModel* track_model = getTrackModel();
+    if (!track_model) {
+        return;
+    }
+    // Convert the QByteArray to a Base64 string and save it.
+    QString headerState = QString(saveState().toBase64());
+    bool result = track_model->setModelSetting("header_state", headerState);
+    qDebug() << "Saving old header state:" << result << headerState;
+}
+
+void WTrackTableViewHeader::restoreHeaderState() {
+    TrackModel* track_model = getTrackModel();
+
+    if (!track_model) {
+        return;
+    }
+
+    QString headerStateString = track_model->getModelSetting("header_state");
+    if (!headerStateString.isNull()) {
+        // Load the previous header state (stored as a Base 64 string). Decode
+        // it and restore it.
+        qDebug() << "Restoring header state" << headerStateString;
+        QByteArray headerState = headerStateString.toAscii();
+        headerState = QByteArray::fromBase64(headerState);
+        restoreState(headerState);
     }
 }
 
@@ -83,4 +128,9 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
     } else {
         hideSection(column);
     }
+}
+
+TrackModel* WTrackTableViewHeader::getTrackModel() {
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
+    return trackModel;
 }

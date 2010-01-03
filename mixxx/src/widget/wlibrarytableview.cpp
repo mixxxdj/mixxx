@@ -11,11 +11,9 @@
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigObject<ConfigValue>* pConfig,
-                                     ConfigKey headerStateKey,
                                      ConfigKey vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
-          m_headerStateKey(headerStateKey),
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
     //Setup properties for table
@@ -33,13 +31,11 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     verticalHeader()->setDefaultSectionSize(20);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
-    loadHeaderState();
     loadVScrollBarPosState();
 }
 
 WLibraryTableView::~WLibraryTableView() {
     qDebug() << "~WLibraryTableView";
-    saveHeaderState();
     saveVScrollBarPosState();
 }
 
@@ -69,22 +65,6 @@ void WLibraryTableView::setup(QDomNode node) {
     }
 
     setPalette(pal);
-}
-
-void WLibraryTableView::loadHeaderState() {
-    //Attempt to load and restore the state of the table's header (eg. column
-    //positions/sizes).
-    QString base64HeaderState = m_pConfig->getValueString(m_headerStateKey);
-    QByteArray headerState = base64HeaderState.toAscii();
-    headerState = QByteArray::fromBase64(headerState);
-    horizontalHeader()->restoreState(headerState);
-}
-
-void WLibraryTableView::saveHeaderState() {
-    QByteArray headerState = this->horizontalHeader()->saveState();
-    QByteArray headerStateBase64 = headerState.toBase64();
-    QString headerStateString = QString(headerStateBase64);
-    m_pConfig->set(m_headerStateKey, ConfigValue(headerStateString));
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {
