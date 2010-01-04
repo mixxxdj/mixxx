@@ -21,7 +21,7 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig, 
+    m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig,
                                                             ConfigKey(), ConfigKey());
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -32,7 +32,7 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
     m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this, pTrackCollection);
     m_pPrepareLibraryTableView->loadTrackModel(m_pPrepareLibraryTableModel);
 
-/*    
+/*
     m_pCrateView = new CrateView(this, pTrackCollection);
 
     m_pPrepareCratesTableView = new WPrepareCratesTableView(this, pTrackCollection);
@@ -58,24 +58,24 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
     m_pPrepareCratesTableView->setModel(m_pCratesTableModel);
 */
 
-    connect(radioButtonRecentlyAdded, SIGNAL(clicked()), 
+    connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
             this,  SLOT(showRecentSongs()));
-    connect(radioButtonAllSongs, SIGNAL(clicked()), 
+    connect(radioButtonAllSongs, SIGNAL(clicked()),
             this,  SLOT(showAllSongs()));
-    
+
     radioButtonRecentlyAdded->click();
 
     labelProgress->setText("");
     pushButtonAnalyze->setEnabled(false);
-    connect(pushButtonAnalyze, SIGNAL(clicked()), 
+    connect(pushButtonAnalyze, SIGNAL(clicked()),
             this, SLOT(analyze()));
 
-    connect(pushButtonSelectAll, SIGNAL(clicked()), 
+    connect(pushButtonSelectAll, SIGNAL(clicked()),
             this, SLOT(selectAll()));
 
-    connect(m_pPrepareLibraryTableView->selectionModel(), 
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)), 
-            this, 
+    connect(m_pPrepareLibraryTableView->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
+            this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
 }
 
@@ -97,7 +97,6 @@ QWidget* DlgPrepare::getWidgetForMIDIControl()
 
 void DlgPrepare::setup(QDomNode node)
 {
-
     QPalette pal = palette();
 
     // Row colors
@@ -116,7 +115,7 @@ void DlgPrepare::setup(QDomNode node)
         QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
 
         //setAlternatingRowColors ( true );
-        
+
         QColor fgColor;
         fgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
         fgColor = WSkinColor::getCorrectColor(fgColor);
@@ -126,15 +125,29 @@ void DlgPrepare::setup(QDomNode node)
         pal.setColor(QPalette::Text, text);
         pal.setColor(QPalette::WindowText, fgColor);
 
+        // STUPID STUPID STUPID rryan 1/3/2009 Workaround for QRadioButton text
+        // not obeying our palette changes. Something is wrong here, but I can't
+        // figure it out. I spent hours trying to change the parents of
+        // DlgPrepare, the radio buttons, etc. I tried every Palette role known
+        // to Qt but the text color won't change. This workaround sucks but it
+        // works.
+        QString radioForeground = "color: " + fgColor.name();
+        radioButtonAllSongs->setStyleSheet(radioForeground);
+        radioButtonRecentlyAdded->setStyleSheet(radioForeground);
     }
 
     setPalette(pal);
-    
-    radioButtonRecentlyAdded->setPalette(pal);
-    radioButtonAllSongs->setPalette(pal);
-    pushButtonSelectAll->setPalette(pal);
-    pushButtonAnalyze->setPalette(pal);
-    m_pPrepareLibraryTableView->setPalette(pal);
+
+    // None of these setPalette's are necessary since they are all parented to
+    // this QDialog
+
+    //pushButtonSelectAll->setPalette(pal);
+    //pushButtonAnalyze->setPalette(pal);
+    //labelProgress->setPalette(pal);
+    //radioButtonRecentlyAdded->setPalette(pal);
+    //radioButtonAllSongs->setPalette(pal);
+
+    //m_pPrepareLibraryTableView->setPalette(pal);
     //m_pPrepareCratesTableView->setPalette(pal);
     //m_pCrateView->setPalette(pal);
 }
@@ -173,7 +186,7 @@ void DlgPrepare::analyze()
     //Force BPM detection to be on.
     m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
     //Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
-    
+
     if (m_pAnalyserQueue != NULL)
     {
         stopAnalysis();
@@ -182,7 +195,7 @@ void DlgPrepare::analyze()
     else
     {
         m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig);
-        
+
         connect(m_pAnalyserQueue, SIGNAL(trackProgress(TrackInfoObject*, int)),
                 this, SLOT(trackAnalysisProgress(TrackInfoObject*, int)));
         connect(m_pAnalyserQueue, SIGNAL(trackFinished(TrackInfoObject*)),
@@ -190,7 +203,7 @@ void DlgPrepare::analyze()
 
         QModelIndex selectedIndex;
         m_indexesBeingAnalyzed = m_pPrepareLibraryTableView->selectionModel()->selectedRows();
-        foreach(selectedIndex, m_indexesBeingAnalyzed) 
+        foreach(selectedIndex, m_indexesBeingAnalyzed)
         {
             TrackInfoObject* tio = m_pPrepareLibraryTableModel->getTrack(selectedIndex);
             qDebug() << "Queueing track" << tio->getLocation();
