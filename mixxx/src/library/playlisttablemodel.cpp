@@ -51,14 +51,16 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
-                  "library." + LIBRARYTABLE_BPM + "," +
-                  //"library." + LIBRARYTABLE_LOCATION + "," +
+                  "library." + LIBRARYTABLE_BPM + ","
+                  "track_locations.location,"
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " " +
                   "FROM library "
                   "INNER JOIN PlaylistTracks "
-                  "ON library.id=PlaylistTracks.track_id "
-                  "WHERE PlaylistTracks.playlist_id=" + QString("%1").arg(playlistId) + " "
+                  "ON library.id = PlaylistTracks.track_id "
+                  "INNER JOIN track_locations "
+                  "ON library.location = track_locations.id "
+                  "WHERE PlaylistTracks.playlist_id = " + QString("%1").arg(playlistId) + " "
                   "ORDER BY PlaylistTracks.position ");
     //query.bindValue(":playlist_name", playlistTableName);
     //query.bindValue(":playlist_id", m_iPlaylistId);
@@ -90,7 +92,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
+    setHeaderData(fieldIndex("location"),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
                   Qt::Horizontal, tr("Comment"));
