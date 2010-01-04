@@ -30,8 +30,8 @@ void CrateTableModel::setCrate(int crateId) {
     QSqlQuery query;
 
     QString queryString = QString("CREATE TEMPORARY VIEW %1 AS "
-                                  "SELECT " +
-                                  LIBRARYTABLE_ID + "," +
+                                  "SELECT "
+                                  "library." + LIBRARYTABLE_ID + "," +
                                   LIBRARYTABLE_ARTIST + "," +
                                   LIBRARYTABLE_TITLE + "," +
                                   LIBRARYTABLE_ALBUM + "," +
@@ -39,15 +39,18 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_DURATION + "," +
                                   LIBRARYTABLE_GENRE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
-                                  LIBRARYTABLE_BPM + "," +
-                                  LIBRARYTABLE_LOCATION + "," +
+                                  LIBRARYTABLE_BPM + ","
+                                  "track_locations.location," +
                                   LIBRARYTABLE_COMMENT + "," +
                                   LIBRARYTABLE_MIXXXDELETED + " " +
                                   "FROM library "
                                   "INNER JOIN " CRATE_TRACKS_TABLE
                                   " ON library.id = " CRATE_TRACKS_TABLE ".track_id "
+                                  "INNER JOIN track_locations "
+                                  " ON library.location = track_locations.id "
                                   "WHERE " CRATE_TRACKS_TABLE ".crate_id = %2");
     queryString = queryString.arg(tableName).arg(crateId);
+    qDebug() << queryString;
     query.prepare(queryString);
 
     if (!query.exec()) {
@@ -76,7 +79,7 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
+    setHeaderData(fieldIndex("location"),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
                   Qt::Horizontal, tr("Comment"));
