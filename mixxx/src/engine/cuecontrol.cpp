@@ -188,6 +188,8 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
 
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
+    } else {
+        m_pCuePoint->set(-1);
     }
 
     int cueRecall = getConfig()->getValueString(
@@ -205,6 +207,29 @@ void CueControl::unloadTrack(TrackInfoObject* pTrack) {
     for (int i = 0; i < m_iNumHotCues; ++i) {
         detachCue(i);
     }
+
+    // Store the cue point in a load cue.
+    double cuePoint = m_pCuePoint->get();
+
+    if (cuePoint != -1) {
+        Cue* loadCue = NULL;
+        const QList<Cue*>& cuePoints = pTrack->getCuePoints();
+        QListIterator<Cue*> it(cuePoints);
+        while (it.hasNext()) {
+            Cue* pCue = it.next();
+            if (pCue->getType() == Cue::LOAD) {
+                loadCue = pCue;
+                break;
+            }
+        }
+        if (!loadCue) {
+            loadCue = pTrack->addCue();
+            loadCue->setType(Cue::LOAD);
+            loadCue->setLength(0);
+        }
+        loadCue->setPosition(cuePoint);
+    }
+
     m_pLoadedTrack = NULL;
 }
 
