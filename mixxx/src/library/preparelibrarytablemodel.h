@@ -7,17 +7,23 @@
 class PrepareLibraryTableModel : public LibraryTableModel
 {
     Q_OBJECT
-    public:
+  public:
     PrepareLibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    ~PrepareLibraryTableModel();
+    virtual ~PrepareLibraryTableModel();
+
     virtual void search(const QString& searchText);
     virtual bool isColumnInternal(int column);
     void updateTracks(QModelIndexList& indices);
-    public slots:
-        void showRecentSongs();
-        void showAllSongs();
-    private:
-        bool m_bShowRecentSongs;
+
+  public slots:
+    void showRecentSongs();
+    void showAllSongs();
+  private slots:
+    void slotSearch(const QString& searchText);
+  signals:
+    void doSearch(const QString& searchText);
+  private:
+    bool m_bShowRecentSongs;
 };
 
 #endif
