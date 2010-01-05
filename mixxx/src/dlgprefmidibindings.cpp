@@ -16,45 +16,44 @@
  ***************************************************************************/
 #include <QtGui>
 #include <QDebug>
-#include "midiinputmappingtablemodel.h"
-#include "midioutputmappingtablemodel.h"
-#include "midichanneldelegate.h"
-#include "midistatusdelegate.h"
-#include "midinodelegate.h"
-#include "midioptiondelegate.h"
+#include "midi/midiinputmappingtablemodel.h"
+#include "midi/midioutputmappingtablemodel.h"
+#include "midi/midichanneldelegate.h"
+#include "midi/midistatusdelegate.h"
+#include "midi/midinodelegate.h"
+#include "midi/midioptiondelegate.h"
 #include "controlgroupdelegate.h"
 #include "controlvaluedelegate.h"
 #include "dlgprefmidibindings.h"
+#include "midi/mididevice.h"
+#include "midi/mididevicemanager.h"
 #include "widget/wwidget.h"
 #include "configobject.h"
-#include "midimapping.h"
+#include "midi/midimapping.h"
 
 #ifdef __MIDISCRIPT__
-#include "script/midiscriptengine.h"
+#include "midi/midiscriptengine.h"
 #endif
 
-const QStringList options = (QStringList() << "Normal" << "Script-Binding" << "Invert" << "Rot64" << "Rot64Inv"
-        << "Rot64Fast" << "Diff" << "Button" << "Switch" << "HercJog"
-        << "Spread64" << "SelectKnob");
 
-QStringList controKeyOptionChoices;
+#define MIXXX_TEXT_NO_OUTPUT_DEVICE tr("None")
 
-const QStringList outputTypeChoices = (QStringList() << "light");
-
-DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QString deviceName,
-										 ConfigObject<ConfigValue> *pConfig) :
-							QWidget(parent), Ui::DlgPrefMidiBindingsDlg(), m_rMidi(midi) {
+DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice, 
+                                         MidiDeviceManager* midiDeviceManager,
+                                         ConfigObject<ConfigValue> *pConfig) :
+                            QWidget(parent), Ui::DlgPrefMidiBindingsDlg() {
     setupUi(this);
     m_pConfig = pConfig;
-    m_deviceName = deviceName;
+    m_pMidiDevice = midiDevice;
+    m_pMidiDeviceManager = midiDeviceManager;
 
     m_pDlgMidiLearning = NULL;
 
-    labelDeviceName->setText(m_deviceName);
+    labelDeviceName->setText(m_pMidiDevice->getName());
 
     //Tell the input mapping table widget which data model it should be viewing
     //(note that m_pInputMappingTableView is defined in the .ui file!)
-    m_pInputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiInputMappingTableModel());
+    m_pInputMappingTableView->setModel((QAbstractItemModel*)m_pMidiDevice->getMidiMapping()->getMidiInputMappingTableModel());
 
     m_pInputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_pInputMappingTableView->setSelectionMode(QAbstractItemView::ContiguousSelection); //The model won't like ExtendedSelection, probably.
@@ -84,7 +83,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     
     //Tell the output mapping table widget which data model it should be viewing 
     //(note that m_pOutputMappingTableView is defined in the .ui file!)
-    m_pOutputMappingTableView->setModel((QAbstractItemModel*)m_rMidi.getMidiMapping()->getMidiOutputMappingTableModel());
+    m_pOutputMappingTableView->setModel((QAbstractItemModel*)m_pMidiDevice->getMidiMapping()->getMidiOutputMappingTableModel());
     m_pOutputMappingTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_pOutputMappingTableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
     m_pOutputMappingTableView->verticalHeader()->hide();
@@ -111,14 +110,15 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiObject &midi, QStr
     connect(btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllOutputBindings()));
     connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
     connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
-
-    //Connect the activate button. One day this will be replaced with an "Enabled" checkbox.
-    connect(btnActivateDevice, SIGNAL(clicked()), this, SLOT(slotEnableDevice()));
     
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadMidiMapping(const QString&)));
     
     //Load the list of presets into the presets combobox.
     enumeratePresets();
+
+    //Initialize the output device combobox
+    enumerateOutputDevices();
+    
 }
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
@@ -128,6 +128,31 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
     delete m_pMidiStatusDelegate;
 
     delete m_deleteMIDIInputRowAction;
+}
+
+void DlgPrefMidiBindings::enumerateOutputDevices()
+{
+    comboBoxOutputDevice->clear();
+    
+    comboBoxOutputDevice->addItem(MIXXX_TEXT_NO_OUTPUT_DEVICE);
+
+    //For each MIDI output device, insert an item into the output device combobox.
+    QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(true, false);
+    QListIterator<MidiDevice*> it(deviceList);
+    
+    while (it.hasNext())
+      {
+        MidiDevice* currentDevice = it.next();
+        QString curDeviceName = currentDevice->getName();
+        //qDebug() << "curDeviceName: " << curDeviceName;
+        comboBoxOutputDevice->addItem(curDeviceName);
+      }    
+    
+    //Assume autopairing was done and let's just show the output device combobox with the name
+    //of the input device selected for now...
+    QString currentOutputMidiDeviceName = m_pMidiDevice->getName();
+    comboBoxOutputDevice->setCurrentIndex(comboBoxOutputDevice->findText(currentOutputMidiDeviceName));
+
 }
 
 void DlgPrefMidiBindings::enumeratePresets()
@@ -157,12 +182,6 @@ void DlgPrefMidiBindings::enumeratePresets()
     comboBoxPreset->addItems(presetsList);
 }
 
-/* loadPreset(QString)
- * Asks MidiMapping to load a set of MIDI bindings from an XML file
- */
-void DlgPrefMidiBindings::loadPreset(QString path) {
-    m_rMidi.getMidiMapping()->loadPreset(path);
-}
 
 
 /* slotUpdate()
@@ -171,34 +190,74 @@ void DlgPrefMidiBindings::loadPreset(QString path) {
 void DlgPrefMidiBindings::slotUpdate() {
 
     //Check if the device that this dialog is for is already enabled...
-    if (m_rMidi.getOpenDevice() == m_deviceName)
+    if (m_pMidiDevice->isOpen())
     {
-        btnActivateDevice->setEnabled(false); //Disable activate button
+        chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
         toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
         groupBoxPresets->setEnabled(true); //Enable presets group box.
     }
     else {
-        btnActivateDevice->setEnabled(true); //Enable activate button
+        chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
         toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
         groupBoxPresets->setEnabled(false); //Disable presets group box.
     }
+    
+    //Connect the "Enabled" checkbox after the checkbox state is set
+    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
 }
 
 /* slotApply()
  * Called when the OK button is pressed.
  */
 void DlgPrefMidiBindings::slotApply() {
-    /* User has pressed OK, so write the controls to the DOM, reload the MIDI
-     * bindings, and save the default XML file. */
-    m_rMidi.getMidiMapping()->savePreset();   // use default bindings path
-    m_rMidi.getMidiMapping()->applyPreset();
-    m_rMidi.disableMidiLearn();
+    /* User has pressed OK, so enable or disable the device, write the controls to the DOM, and reload the MIDI
+     * bindings. */
+    m_pMidiDevice->disableMidiLearn();
+    if (chkEnabledDevice->isChecked()) {
+        //Enable the device.
+        enableDevice();
+
+        //Disable processing of MIDI messages received from the device in order to
+        //prevent a race condition while we modify the MIDI mapping.
+        m_pMidiDevice->setReceiveInhibit(true);
+        m_pMidiDevice->getMidiMapping()->applyPreset();
+        m_pMidiDevice->setReceiveInhibit(false);
+
+        //FIXME: We need some logic like this to make changing the output device work. 
+        //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
+        /*
+        if (comboBoxOutputDevice->currentText() != MIXXX_TEXT_NO_OUTPUT_DEVICE)
+            m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
+        */
+    }
+    else disableDevice();
 }
 
 void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
+
+    //If the user has checked the "Enabled" checkbox but they haven't
+    //hit OK to apply it yet, prompt them to apply the settings before we open
+    //the MIDI learning dialog. If we don't apply the settings first and open the device,
+    //MIDI learn won't react to MIDI messages.
+    if (chkEnabledDevice->isChecked() && !m_pMidiDevice->isOpen())
+    {
+        QMessageBox::StandardButton result = QMessageBox::question(this, 
+                    tr("Apply MIDI device settings?"),
+                    tr("Your settings must be applied before starting the MIDI learning wizard.\n"
+                        "Apply settings and continue?"));
+        if (result == QMessageBox::Cancel)
+        {
+            return;
+        }
+        else
+        {
+            slotApply();
+        }
+    }
+
     //Note that DlgMidiLearning is set to delete itself on
     //close using the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
-    m_pDlgMidiLearning = new DlgMidiLearning(this, m_rMidi.getMidiMapping());
+    m_pDlgMidiLearning = new DlgMidiLearning(this, m_pMidiDevice->getMidiMapping());
     m_pDlgMidiLearning->show();
 }
 
@@ -211,7 +270,7 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
         return;
     
     //Ask for confirmation if the MIDI tables aren't empty...
-    MidiMapping* mapping = m_rMidi.getMidiMapping();
+    MidiMapping* mapping = m_pMidiDevice->getMidiMapping();
     if (mapping->numInputMidiMessages() > 0 ||
         mapping->numOutputMixxxControls() > 0)
     {
@@ -220,19 +279,16 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
                 tr("Are you sure you'd like to load the " + name + " mapping?\n"
                    "This will overwrite your existing MIDI mapping."),  
                    QMessageBox::Yes | QMessageBox::No);
-                              
+
          if (result == QMessageBox::No) {
             //Select the "..." item again in the combobox.
             comboBoxPreset->setCurrentIndex(0);
-            return;                     
+            return;
          }
     }
     
     QString filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
-    if (!filename.isNull()) {
-        loadPreset(filename);
-        m_rMidi.getMidiMapping()->applyPreset();
-    }
+    if (!filename.isNull()) m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);    // It's applied on prefs close
     m_pInputMappingTableView->update();
     
     //Select the "..." item again in the combobox.
@@ -246,20 +302,37 @@ void DlgPrefMidiBindings::slotExportXML() {
     QString fileName = QFileDialog::getSaveFileName(this,
             "Export Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
             "Preset Files (*.midi.xml)");
-    if (!fileName.isNull()) m_rMidi.getMidiMapping()->savePreset(fileName);
+    if (!fileName.isNull()) m_pMidiDevice->getMidiMapping()->savePreset(fileName);
 }
 
-void DlgPrefMidiBindings::slotEnableDevice()
+void DlgPrefMidiBindings::slotDeviceState(int state) {
+  if (state == Qt::Checked) {
+      toolBox->setEnabled(true);    //Enable MIDI in/out toolbox.
+      groupBoxPresets->setEnabled(true);    //Enable presets group box.
+      emit deviceStateChanged(this,true);  // Set tree item text to bold
+  }
+  else {
+      toolBox->setEnabled(false);   //Disable MIDI in/out toolbox.
+      groupBoxPresets->setEnabled(false);   //Disable presets group box.
+      emit deviceStateChanged(this,false);  // Set tree item text to not bold
+  }
+}
+
+void DlgPrefMidiBindings::enableDevice()
 {
-	//Just tell MidiObject to close the old device and open this device
-	m_rMidi.devClose();
-	m_rMidi.devOpen(m_deviceName);
-	m_pConfig->set(ConfigKey("[Midi]","Device"), m_deviceName);
-	btnActivateDevice->setEnabled(false);
-	toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
-	groupBoxPresets->setEnabled(true); //Enable presets group box.
-	
-	//TODO: Should probably check if devOpen() actually succeeded.
+    m_pMidiDevice->close();
+    m_pMidiDevice->open();
+    m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 1);
+ 
+    //TODO: Should probably check if open() actually succeeded.
+}
+
+void DlgPrefMidiBindings::disableDevice()
+{
+    m_pMidiDevice->close();
+    m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 0);
+    
+    //TODO: Should probably check if close() actually succeeded.
 }
 
 void DlgPrefMidiBindings::slotAddInputBinding() 
@@ -296,40 +369,40 @@ void DlgPrefMidiBindings::slotAddInputBinding()
     MixxxControl mixxxControl(controlGroup, controlValue);
     MidiMessage message;
 
-    while (m_rMidi.getMidiMapping()->isMidiMessageMapped(message))
+    while (m_pMidiDevice->getMidiMapping()->isMidiMessageMapped(message))
     {
         message.setMidiNo(message.getMidiNo() + 1);
         if (message.getMidiNo() >= 127) //If the table is full, then overwrite something... 
             break;
     }
-    m_rMidi.getMidiMapping()->setInputMidiMapping(message, mixxxControl);
+    m_pMidiDevice->getMidiMapping()->setInputMidiMapping(message, mixxxControl);
 }
 
 void DlgPrefMidiBindings::slotRemoveInputBinding()
 {
-	QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
-	if (selectedIndices.size() > 0)
-	{
-		MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
-		if (tableModel) {
-		
-			QModelIndex curIndex;
-			//The model indices are sorted so that we remove the rows from the table
+    QModelIndexList selectedIndices = m_pInputMappingTableView->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0)
+    {
+        MidiInputMappingTableModel* tableModel = dynamic_cast<MidiInputMappingTableModel*>(m_pInputMappingTableView->model());
+        if (tableModel) {
+        
+            QModelIndex curIndex;
+            //The model indices are sorted so that we remove the rows from the table
             //in ascending order. This is necessary because if row A is above row B in
             //the table, and you remove row A, the model index for row B will change.
             //Sorting the indices first means we don't have to worry about this.
             qSort(selectedIndices);
 
             //Going through the model indices in descending order (see above comment for explanation).
-			QListIterator<QModelIndex> it(selectedIndices);
-			it.toBack();
-			while (it.hasPrevious())
-			{
-				curIndex = it.previous();
-				tableModel->removeRow(curIndex.row());
-			}
-		}
-	}
+            QListIterator<QModelIndex> it(selectedIndices);
+            it.toBack();
+            while (it.hasPrevious())
+            {
+                curIndex = it.previous();
+                tableModel->removeRow(curIndex.row());
+            }
+        }
+    }
 }
 
 void DlgPrefMidiBindings::slotClearAllInputBindings() {
@@ -349,35 +422,35 @@ void DlgPrefMidiBindings::slotClearAllInputBindings() {
 void DlgPrefMidiBindings::slotAddOutputBinding() {
     qDebug() << "STUB: DlgPrefMidiBindings::slotAddOutputBinding()";
 
-    m_rMidi.getMidiMapping()->setOutputMidiMapping(MixxxControl(), MidiMessage());
+    m_pMidiDevice->getMidiMapping()->setOutputMidiMapping(MixxxControl(), MidiMessage());
 }
 
 void DlgPrefMidiBindings::slotRemoveOutputBinding()
 {
-	QModelIndexList selectedIndices = m_pOutputMappingTableView->selectionModel()->selectedRows();
-	if (selectedIndices.size() > 0)
-	{
-		MidiOutputMappingTableModel* tableModel =
-		                    dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
-		if (tableModel) {
-			QModelIndex curIndex;
-			//The model indices are sorted so that we remove the rows from the table
+    QModelIndexList selectedIndices = m_pOutputMappingTableView->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0)
+    {
+        MidiOutputMappingTableModel* tableModel =
+                            dynamic_cast<MidiOutputMappingTableModel*>(m_pOutputMappingTableView->model());
+        if (tableModel) {
+            QModelIndex curIndex;
+            //The model indices are sorted so that we remove the rows from the table
             //in ascending order. This is necessary because if row A is above row B in
             //the table, and you remove row A, the model index for row B will change.
             //Sorting the indices first means we don't have to worry about this.
             //qSort(selectedIndices);
 
             //Going through the model indices in descending order (see above comment for explanation).
-			QListIterator<QModelIndex> it(selectedIndices);
-			it.toBack();
-			while (it.hasPrevious())
-			{
-				curIndex = it.previous();
-				qDebug() << "Dlg: removing row" << curIndex.row();
-				tableModel->removeRow(curIndex.row());
-			}
-		}
-	}
+            QListIterator<QModelIndex> it(selectedIndices);
+            it.toBack();
+            while (it.hasPrevious())
+            {
+                curIndex = it.previous();
+                qDebug() << "Dlg: removing row" << curIndex.row();
+                tableModel->removeRow(curIndex.row());
+            }
+        }
+    }
 }
 
 void DlgPrefMidiBindings::slotClearAllOutputBindings() {

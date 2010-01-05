@@ -218,7 +218,6 @@ vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fog\'
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-vars.Add('portmidi', 'Set to 1 to enable PortMidi unified MIDI backend', 0)
 vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 1)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
@@ -327,20 +326,19 @@ sources = Split("""
 		analyserbpm.cpp
 		analyserwaveform.cpp
 
+                midi/midimapping.cpp
+                midi/midiinputmappingtablemodel.cpp
+                midi/midioutputmappingtablemodel.cpp
+                midi/midichanneldelegate.cpp
+                midi/midistatusdelegate.cpp
+                midi/midinodelegate.cpp
+                midi/midioptiondelegate.cpp
+                midi/midimessage.cpp
+                midi/midiledhandler.cpp
+
                 main.cpp
-                midiobject.cpp
-                midimapping.cpp
-                midiobjectnull.cpp
-                mididevicehandler.cpp
-                midiinputmappingtablemodel.cpp
-                midioutputmappingtablemodel.cpp
-                midichanneldelegate.cpp
-                midistatusdelegate.cpp
-                midinodelegate.cpp
-                midioptiondelegate.cpp
                 controlgroupdelegate.cpp
                 controlvaluedelegate.cpp
-                midimessage.cpp
                 mixxxcontrol.cpp
                 mixxx.cpp
                 mixxxview.cpp
@@ -412,7 +410,6 @@ sources = Split("""
                 imgcolor.cpp
 
                 trackinfoobject.cpp
-                midiledhandler.cpp
                 sounddevice.cpp
                 soundmanager.cpp
                 sounddeviceportaudio.cpp
@@ -434,17 +431,6 @@ sources = Split("""
 #elif 'win' in platform:
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
 
-#Compile platform specific MIDI support
-#   Linux moved to the flag parsing area since it depends on the rawmidi flag
-if 'win' in platform:
-	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
-	env.Append(CPPDEFINES = '__WINMIDI__')
-elif platform == 'osx':
-	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
-	env.Append(CPPDEFINES = '__COREMIDI__')
-elif platform == 'bsd':
-	print 'Warning: Mixxx has no support for BSD midi (yet).' #uuuuhhhh not a very good solution
-
 #Set up the library path on Windows:
 if platform == 'win64':
 	env.Append(CPPPATH='#/../mixxx-win64lib') #If you add more directories, separate them with a semicolon (;)
@@ -457,6 +443,7 @@ if platform == 'win32':
 if 'win' in platform:
 	env.Append(CPPPATH='../../lib/ladspa') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
+	env.Append(LIBS='advapi32') # needed for PortMIDI
 #'/subsystem:windows',
 
 if platform == 'bsd':
@@ -480,21 +467,6 @@ elif platform == 'osx':
 #Check for dependencies if we're not doing a clean...
 #if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
 conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
-
-
-#PortMidi backend support
-flags_portmidi = getFlags(env, 'portmidi', 0)
-if int(flags_portmidi):
-	if not conf.CheckLib(['portmidi', 'libportmidi']):
-		print "Did not find portmidi or it\'s development headers, exiting!"
-		Exit(1)
-	#if not conf.CheckLib(['porttime', 'libporttime']):
-	#	print "Did not find porttime or it\'s development headers, exiting!"
-	#	Exit(1)
-	sources += Split("""midiobjectportmidi.cpp """);
-	env.Append(CPPDEFINES = '__PORTMIDI__')
-
-
 
 #TODO: Add all of the other configure checks as custom_tests properly.
 
@@ -567,6 +539,24 @@ if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHe
 #Check if FFMPEG was enabled
 CheckFFMPEG(conf, sources)
 
+#Check for PortTime
+if not conf.CheckHeader(['porttime.h']):
+	print "Did not find PortTime development header, exiting!"
+	Exit(1)
+
+#Check for PortMIDI & PortTime
+if not conf.CheckLib(['portmidi', 'libportmidi']):
+ 	print "Did not find PortMidi or it\'s development headers, exiting!"
+ 	Exit(1)
+
+if not platform == 'osx':   # OSX doesn't need PortTime for some reason
+	if not conf.CheckLib(['porttime', 'libporttime']):
+		print "Did not find PortTime or it\'s development headers, exiting!"
+		Exit(1)
+
+sources += Split("""midi/mididevice.cpp """);
+sources += Split("""midi/mididevicemanager.cpp """);
+sources += Split("""midi/midideviceportmidi.cpp """);
 
 #Platform-specific checks for Linux...
 if platform == 'linux':
@@ -611,7 +601,6 @@ if platform == 'linux':
 		],
 		debug=False,
 		)
-
 
 	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
@@ -1005,7 +994,7 @@ def build_gtest():
 	env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
 	env.Append(LIBS = 'gtest')
 	env.Append(CPPPATH="#lib/gtest-1.3.0/include")
-	
+
 def build_tests():
 	test_sources = (Glob('test/*.cpp', strings=True) + [x for x in sources if x != "main.cpp"])
 	env.Program(target='mixxx-test', source=test_sources)
@@ -1070,7 +1059,7 @@ if int(flags_midiscript):
 	print "MIDI Scripting... enabled"
 
 	build_flags += 'midiscript '
-	sources += Split("""script/midiscriptengine.cpp""")
+	sources += Split("""midi/midiscriptengine.cpp""")
 	env.Append(CPPPATH = '$QTDIR/include/QtScript')
 	env.Append(CPPDEFINES = '__MIDISCRIPT__')
 else:
@@ -1212,19 +1201,6 @@ if int(flags_qdebug):
 else:
 	env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 	print "Debugging message output... disabled"
-
-#ALSA API selection
-if platform == 'linux':
-	flags_rawmidi = getFlags(env, 'rawmidi', 0)
-	if int(flags_rawmidi):
-		build_flags += 'rawmidi '
-		sources += Split("""midiobjectalsa.cpp """)  #ALSA RawMIDI support for Linux
-		env.Append(CPPDEFINES = '__ALSAMIDI__')
-		print "ALSA API... RawMIDI"
-	else:
-		sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
-		env.Append(CPPDEFINES = '__ALSASEQMIDI__')
-		print "ALSA API... Sequencer"
 
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
 flags_msvshacks = getFlags(env, 'msvshacks', 0)

@@ -40,9 +40,9 @@
 #include "soundmanager.h"
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
-#include "mididevicehandler.h"
 #include "recording/defs_recording.h"
 
+#include "midi/mididevicemanager.h"
 #include "defs_version.h"
 #include "upgrade.h"
 
@@ -94,7 +94,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     soundmanager = 0;
     m_pTrack = 0;
     prefDlg = 0;
-    midi = 0;
+    m_pMidiDeviceManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
     config = versionUpgrade();  // This static function is located in upgrade.cpp
@@ -109,13 +109,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
       int dlg = -1;
       while (dlg != 0 && dlg != 1) {
          dlg = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?", "Yes", "No", "Privacy Policy", 0, -1);
-  	 switch (dlg) {
+       switch (dlg) {
            case 0: metricsAgree = "yes";
-  	   case 1: break;
+         case 1: break;
            default: //show privacy policy
-	            QMessageBox::information(this, "Mixxx: Privacy Policy", "Mixxx's development is driven by community feedback.  In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.\n\nThe hardware information will include:\n\t- CPU model and features\n\t- Total/Available Amount of RAM\n\t- Available disk space\n\t- OS version\n\nYour usage information will include:\n\t- Settings/Preferences\n\t- Internal errors\n\t- Internal debugging messages\n\t- Performance statistics (average latency, CPU usage)\n\nThis information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.\n");
+                QMessageBox::information(this, "Mixxx: Privacy Policy", "Mixxx's development is driven by community feedback.  In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.\n\nThe hardware information will include:\n\t- CPU model and features\n\t- Total/Available Amount of RAM\n\t- Available disk space\n\t- OS version\n\nYour usage information will include:\n\t- Settings/Preferences\n\t- Internal errors\n\t- Internal debugging messages\n\t- Performance statistics (average latency, CPU usage)\n\nThis information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.\n");
                     break;
-  	 }
+       }
       }
     }
     config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(metricsAgree));
@@ -266,15 +266,15 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
-    // Initialise MIDI and open the MIDI device
-    MidiDeviceHandler * midiHandler = new MidiDeviceHandler();
-    midi = midiHandler->getMidiPtr();
-    QString midiDevice = config->getValueString(ConfigKey("[Midi]","Device"));
-    if (midiDevice != "")
-    	midi->devOpen(midiDevice);
+    // Initialise midi
+    m_pMidiDeviceManager = new MidiDeviceManager(config);
+    //TODO: Try to open MIDI devices?
+    m_pMidiDeviceManager->queryDevices();
+    m_pMidiDeviceManager->setupDevices();
+
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, midi, config);
+    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, m_pMidiDeviceManager, config);
     prefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -329,7 +329,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     if (args.bStartInFullscreen)
         slotOptionsFullScreen(true);
 #ifdef __C_METRICS__
-	cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE, "Mixxx constructor complete.");
+    cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE, "Mixxx constructor complete.");
 #endif
 }
 
@@ -358,7 +358,7 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
-	m_pTrack->appShuttingDown();
+    m_pTrack->appShuttingDown();
 
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
@@ -367,6 +367,9 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
+
+    qDebug() << "delete MidiDeviceManager";
+    delete m_pMidiDeviceManager;
 
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
@@ -384,10 +387,6 @@ MixxxApp::~MixxxApp()
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
-//     qDebug() << "delete midi";
-    qDebug() << "delete midi, " << qTime.elapsed();
-    delete midi;
-//    qDebug() << "delete midiconfig";
 
     qDebug() << "delete view, " << qTime.elapsed();
     delete view;
@@ -402,9 +401,9 @@ MixxxApp::~MixxxApp()
     delete frame;
 
 #ifdef __C_METRICS__ // cmetrics will cause this whole method to segfault on Linux/i386 if it is called after config is deleted. Obviously, it depends on config somehow.
-	qDebug() << "cmetrics to report:" << "Mixxx deconstructor complete.";
-	cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE, "Mixxx deconstructor complete.");
-	cm_close(10);
+    qDebug() << "cmetrics to report:" << "Mixxx deconstructor complete.";
+    cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE, "Mixxx deconstructor complete.");
+    cm_close(10);
 #endif
 
     qDebug() << "delete config, " << qTime.elapsed();
@@ -419,7 +418,7 @@ MixxxApp::~MixxxApp()
 int MixxxApp::noSoundDlg(void)
 {
     QMessageBox msgBox;
-	msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle("Sound Device Busy");
     msgBox.setText( "<html>Mixxx cannot access the sound device <b>"+
                     config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
