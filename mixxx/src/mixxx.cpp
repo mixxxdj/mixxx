@@ -1034,6 +1034,12 @@ void MixxxApp::slotHelpAbout()
 "Miko Kiiski<br>"
 "Navaho Gunleg<br>"
 "Gavin Pryke<br>"
+"Brian Jackson<br>"
+"Owen Williams<br>"
+"James Evans<br>"
+"Martin Sakmar<br>"
+"Andreas Pflug<br>"
+"Bas van Schaik<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
