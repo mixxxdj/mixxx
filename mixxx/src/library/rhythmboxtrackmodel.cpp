@@ -59,8 +59,6 @@ RhythmboxTrackModel::RhythmboxTrackModel()
 
         m_mTracksByLocation[location] = n;
     }
-
-    qDebug() << rhythmdb.doctype().name();
     qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_trackNodes.size();
 
 
@@ -119,6 +117,7 @@ bool RhythmboxTrackModel::isColumnInternal(int column) {
 
 QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
+    int date;
     switch (index.column()) {
         case RhythmboxTrackModel::COLUMN_ARTIST:
             return songNode.firstChildElement("artist").text();
@@ -127,7 +126,12 @@ QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModel
         case RhythmboxTrackModel::COLUMN_ALBUM:
             return songNode.firstChildElement("album").text();
         case RhythmboxTrackModel::COLUMN_DATE:
-            return songNode.firstChildElement("date").text();
+            date = songNode.firstChildElement("date").text().toInt();
+            // Rhythmbox uses the Rata Die Julian Day system while Qt uses true
+            // Julian Days. It's just a difference in epoch start dates.
+            if (date == 0)
+                return "";
+            return QDate::fromJulianDay(ceil(float(date) + 1721424.5)).year();
         case RhythmboxTrackModel::COLUMN_GENRE:
             return songNode.firstChildElement("genre").text();
         case RhythmboxTrackModel::COLUMN_LOCATION:
@@ -148,7 +152,15 @@ TrackInfoObject *RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     pTrack->setArtist(songNode.firstChildElement("artist").text());
     pTrack->setTitle(songNode.firstChildElement("title").text());
     pTrack->setAlbum(songNode.firstChildElement("album").text());
-    pTrack->setYear(songNode.firstChildElement("date").text());
+    int date = songNode.firstChildElement("date").text().toInt();
+    // Rhythmbox uses the Rata Die Julian Day system while Qt uses true
+    // Julian Days. It's just a difference in epoch start dates.
+    if (date == 0) {
+        pTrack->setYear("");
+    } else {
+        date = QDate::fromJulianDay(ceil(float(date) + 1721424.5)).year();
+        pTrack->setYear(QString("%1").arg(date));
+    }
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
     pTrack->setLocation(QUrl(songNode.firstChildElement("location").text()).toLocalFile());
