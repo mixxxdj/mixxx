@@ -52,6 +52,8 @@ public slots:
     void slotSetPositionDisplay(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
+    void slotSetRateRamp(int);
+    void slotSetRateRampSensitivity(int);
     void slotApply();
 private:
     /** Pointer to ConfigObject */

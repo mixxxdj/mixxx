@@ -17,6 +17,7 @@
 #ifndef ENGINESIDECHAIN_H
 #define ENGINESIDECHAIN_H
 
+#include <QtCore>
 #include "defs.h"
 #include "configobject.h"
 #include "controlobject.h"

@@ -72,6 +72,7 @@ class Player;
 class LibraryScanner;
 class AnalyserQueue;
 class Library;
+class MidiDeviceManager;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -166,7 +167,7 @@ class MixxxApp : public QMainWindow
     Player *m_pPlayer1;
     Player *m_pPlayer2;
     AnalyserQueue* m_pAnalyserQueue;
-    MidiObject *midi;
+    MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
     /** Pointer to active keyboard configuration */

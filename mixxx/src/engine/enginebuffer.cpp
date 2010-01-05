@@ -267,7 +267,7 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
-    
+
     slotControlSeek(0.);
 
     m_pTrackSamples->set(iTrackNumSamples);
