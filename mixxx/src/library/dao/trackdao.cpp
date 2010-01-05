@@ -320,7 +320,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
     //Get the track location from the track_locations table.
     if (track != NULL) {
         Q_ASSERT(locationId >= 0);
-        query.exec("SELECT * FROM track_locations WHERE id=" + QString("%1").arg(locationId));
+        query.exec("SELECT location, filesize FROM track_locations WHERE id=" + QString("%1").arg(locationId));
         while (query.next()) {
             track->setLocation(query.value(query.record().indexOf("location")).toString());
             track->setLength(query.value(query.record().indexOf("filesize")).toInt());
@@ -336,8 +336,9 @@ TrackInfoObject *TrackDAO::getTrack(int id) const
     qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
 
+    // This SELECT * is ok.
     query.exec("SELECT * FROM Library WHERE id=" + QString("%1").arg(id));
- 	TrackInfoObject* track = getTrackFromDB(query);
+    TrackInfoObject* track = getTrackFromDB(query);
 
     return track;
 }
@@ -374,7 +375,7 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
                   "channels=:channels "
-                  "WHERE location==" + QString("%1").arg(trackLocationId));
+                  "WHERE location=" + QString("%1").arg(trackLocationId));
     //query.bindValue(":id", 1001);
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -493,7 +494,7 @@ void TrackDAO::detectMovedFiles()
     QString filename;
     int fileSize;
 
-    query.prepare("SELECT * FROM track_locations WHERE fs_deleted=1");
+    query.prepare("SELECT id, filename, filesize FROM track_locations WHERE fs_deleted=1");
     query.exec();
 
     //For each track that's been "deleted" on disk...
@@ -503,7 +504,7 @@ void TrackDAO::detectMovedFiles()
         filename = query.value(query.record().indexOf("filename")).toString();
         fileSize = query.value(query.record().indexOf("filesize")).toInt();
 
-        query2.prepare("SELECT * FROM track_locations WHERE "
+        query2.prepare("SELECT id FROM track_locations WHERE "
                        "fs_deleted=0 AND "
                        "filename=:filename AND "
                        "filesize=:filesize");
