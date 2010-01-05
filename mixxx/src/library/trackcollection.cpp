@@ -32,13 +32,13 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 
     //Check for tables and create them if missing
-    checkForTables();
+    if (!checkForTables()) exit(-1);
 }
 
 TrackCollection::~TrackCollection()
 {
     m_db.close();
-    qDebug() << "TrackCollection destructed";
+    qDebug() << "TrackCollection destroyed";
 }
 
 bool TrackCollection::checkForTables()
@@ -47,20 +47,21 @@ bool TrackCollection::checkForTables()
         QMessageBox::critical(0, qApp->tr("Cannot open database"),
                               qApp->tr("Unable to establish a database connection.\n"
                                        "Mixxx requires QT with SQLite support. Please read "
-                                       "the Qt SQL driver documentation for information how "
+                                       "the Qt SQL driver documentation for information on how "
                                        "to build it.\n\n"
-                                       "Click Cancel to exit."), QMessageBox::Cancel);
+                                       "Click OK to exit."), QMessageBox::Ok);
         return false;
     }
 
     int requiredSchemaVersion = 1;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
-        QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema."),
+        QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
                               qApp->tr(QString(
-                                  "Unable upgrade your database schema to version %1.\n"
-                                  "This could be benign or it might mean something\n"
-                                  "is wrong.\n").arg(requiredSchemaVersion)),
+                                  "Unable to upgrade your database schema to version %1.\n"
+                                  "Your mixxx.db file may be corrupt.\n"
+                                  "Try renaming it and restarting Mixxx.\n\n"
+                                  "Click OK to exit.").arg(requiredSchemaVersion)),
                              QMessageBox::Ok);
         return false;
     }

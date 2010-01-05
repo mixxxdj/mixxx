@@ -221,8 +221,6 @@ vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 1)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
-if platform == 'linux':
-	vars.Add('rawmidi', 'Set to 1 to use ALSA\'s RawMIDI API (instead of the Sequencer API.)', 0)
 if not 'win' in platform:
 	vars.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	vars.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
@@ -644,11 +642,6 @@ if platform == 'linux':
 		],
 		debug=False,
 		)
-
-	#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
-	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
-		print "Did not find libasound (aka. libasound2), exiting!"
-		Exit(1)
 
 	#Another check for PortAudio-v19 # why? -kousu
 	env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
