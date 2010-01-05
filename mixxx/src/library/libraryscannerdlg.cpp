@@ -70,12 +70,20 @@ void LibraryScannerDlg::slotCancel()
 
     emit(scanCancelled());
 
-    m_progress->setVisible(false);
+    // Need to use close() or else if you close the Mixxx window and then hit
+    // Cancel, Mixxx will not shutdown.
+
+    //m_progress->setVisible(false);
+    m_progress->close();
 }
 
 void LibraryScannerDlg::slotScanFinished()
 {
     m_bCancelled = true; //Raise this flag to prevent any
                          //latent slotUpdates() from showing the dialog again.
-    m_progress->setVisible(false);
+
+    // Need to use close() or else if you close the Mixxx window and then hit
+    // Cancel, Mixxx will not shutdown.
+    //m_progress->setVisible(false);
+    m_progress->close();
 }

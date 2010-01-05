@@ -52,11 +52,11 @@ LibraryScanner::~LibraryScanner()
     //if we find one or more deleted directories.
     QStringList deletedDirs;
     QSqlQuery query(m_pCollection->getDatabase());
-    query.prepare("SELECT directory FROM LibraryHashes "
+    query.prepare("SELECT directory_path FROM LibraryHashes "
                   "WHERE directory_deleted=1");
     if (query.exec()) {
         while (query.next()) {
-            QString directory = query.value(query.record().indexOf("directory")).toString();
+            QString directory = query.value(query.record().indexOf("directory_path")).toString();
             deletedDirs << directory;
         }
     } else {
@@ -112,6 +112,8 @@ void LibraryScanner::run()
     m_cueDao.initialize();
     m_trackDao.initialize();
 
+    m_pCollection->resetLibaryCancellation();
+
     QTime t2;
     t2.start();
     //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
@@ -132,7 +134,6 @@ void LibraryScanner::run()
     //previously hashed as "deleted". As we search through the directory tree
     //when we rescan, we'll mark any directory that does still exist as such.
     //m_libraryHashDao.markAllDirectoriesAsDeleted();
-    m_pCollection->resetLibaryCancellation();
 
     qDebug() << "Recursively scanning library.";
     //Start scanning the library.
