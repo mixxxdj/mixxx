@@ -759,12 +759,15 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //(library, effects, etc.)
                     m_pTabWidget = new QStackedWidget(this);
 
-		    // Create the pages that go in the tab widget
+                    // Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget(this);
-                    //m_pTabWidgetEffectsPage = new QWidget();
-
+#ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
+#else
+                    m_pTabWidgetEffectsPage = new QWidget();
+#endif
+
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
                     //m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
@@ -780,8 +783,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
 		    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
 		    m_pLibrarySidebar->installEventFilter(m_pKeyboard);
-
-		    setupTrackSourceViewWidget(node);
 
 		    m_pLibrary->bindWidget(m_pLibrarySidebar,
 					   m_pLibraryWidget);
@@ -820,9 +821,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
 
-		// Applies the node settings to every view registered in the
-		// Library widget.
+		// Applies the node settings to every view registered in the Library widget.
 		m_pLibraryWidget->setup(node);
+    setupTrackSourceViewWidget(node);
 
 		m_pTabWidget->show();
             }
