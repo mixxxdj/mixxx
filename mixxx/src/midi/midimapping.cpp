@@ -70,7 +70,7 @@ MidiMapping::~MidiMapping() {
 #ifdef __MIDISCRIPT__
 void MidiMapping::startupScriptEngine() {
     QMutexLocker Locker(&m_mappingLock);
-    
+
     if(m_pScriptEngine) return;
 
     //XXX Deadly hack attack:
@@ -98,7 +98,7 @@ void MidiMapping::startupScriptEngine() {
 
 void MidiMapping::loadScriptCode() {
     QMutexLocker Locker(&m_mappingLock);
-    
+
     ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
 
     qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
@@ -484,7 +484,6 @@ void MidiMapping::clearOutputMidiMapping(int index, int count) {
    -------- ------------------------------------------------------ */
 void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
     QMutexLocker Locker(&m_mappingLock);
-    // This assumes that the lock is held.
     m_pScriptFileNames.append(filename);
     m_pScriptFunctionPrefixes.append(functionprefix);
 }

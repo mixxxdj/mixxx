@@ -17,8 +17,6 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-// Version number moved to defs_version.h to avoid lots of rebuilding
-
 #define MIXXX_PROMO_DIR "promo"
 
 #include <math.h>

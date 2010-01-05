@@ -253,6 +253,23 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Update combo box
     ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
 
+    //
+    // Ramping Temporary Rate Change configuration
+    //
+    
+    // Set Ramp Rate On or Off
+    connect(CheckBoxRateRamp, SIGNAL(stateChanged(int)), this, SLOT(slotSetRateRamp(int)));
+    CheckBoxRateRamp->setChecked((bool)
+            m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
+    );
+    
+    // Update Ramp Rate Sensitivity
+    connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateRampSensitivity(int)));
+    SliderRateRampSensitivity->setValue(
+        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
+    );
+    
+    
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdateSchemes();
@@ -461,6 +478,32 @@ void DlgPrefControls::slotSetRatePermRight(double v)
     RateControl::setPermSmall(v);
 }
 
+void DlgPrefControls::slotSetRateRampSensitivity(int sense)
+{
+    m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"), 
+                        ConfigValue(SliderRateRampSensitivity->value()));
+    RateControl::setRateRampSensitivity(sense);
+}
+
+void DlgPrefControls::slotSetRateRamp(int mode)
+{
+    m_pConfig->set(ConfigKey("[Controls]", "RateRamp"), 
+                        ConfigValue(CheckBoxRateRamp->isChecked()));
+    RateControl::setRateRamp(mode);
+    
+    
+    if ( mode )
+    {
+        SliderRateRampSensitivity->setEnabled(TRUE);
+        SpinBoxRateRampSensitivity->setEnabled(TRUE);
+    }
+    else
+    {
+        SliderRateRampSensitivity->setEnabled(FALSE);
+        SpinBoxRateRampSensitivity->setEnabled(FALSE);
+    }
+}
+
 void DlgPrefControls::slotApply()
 {
     // Write rate range to config file
@@ -475,5 +518,6 @@ void DlgPrefControls::slotApply()
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
+    
 }
 
