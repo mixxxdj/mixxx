@@ -39,7 +39,8 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_DURATION + "," +
                                   LIBRARYTABLE_GENRE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
-                                  LIBRARYTABLE_BPM + ","
+                                  LIBRARYTABLE_BPM + "," +
+                                  LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
                                   LIBRARYTABLE_COMMENT + "," +
                                   LIBRARYTABLE_MIXXXDELETED + " " +
@@ -91,6 +92,8 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Bitrate"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
 }
 
 void CrateTableModel::addTrack(const QModelIndex& index, QString location) {

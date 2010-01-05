@@ -51,6 +51,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
                   "track_locations.location,"
                   "library." + LIBRARYTABLE_COMMENT + "," +
@@ -102,6 +103,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   Qt::Horizontal, tr("Track #"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
                   Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
 
