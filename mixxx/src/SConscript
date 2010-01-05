@@ -183,6 +183,7 @@ else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
 
 env['MIXXX_VERSION'] = getMixxxVersion() #should this be in the env?
+env['CPPDEFINES'] = [''] #Initialize this as a list, fixes a bug where first CPPDEFINE would get mangled
 
 ## Global cache directory
 ## Put all project files in it so a rm -rf cache will clean up the config
@@ -204,8 +205,6 @@ cachefile = str(env['CACHEDIR']) + 'custom.py'
 vars = Variables(cachefile)
 vars.Add('prefix', 'Set to your install prefix', '/usr/local')
 vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
-vars.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
-vars.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
 vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
@@ -546,9 +545,13 @@ if not conf.CheckHeader(['porttime.h']):
 	Exit(1)
 
 #Check for PortMIDI & PortTime
-if not conf.CheckLib(['portmidi', 'libportmidi']):
-	print "Did not find PortMidi or it\'s development headers, exiting!"
-	Exit(1)
+
+# if not conf.CheckLib(['portmidi', 'libportmidi']):
+# #if not conf.CheckHeader(['portmidi.h']) or not conf.CheckLib(['portmidi']):
+
+# 	print "Did not find PortMidi or it\'s development headers, exiting!"
+# 	Exit(1)
+env.Append(LIBS="portmidi")
 
 if not platform == 'osx':   # OSX doesn't need PortTime for some reason
 	if not conf.CheckLib(['porttime', 'libporttime']):
@@ -607,18 +610,6 @@ if platform == 'linux':
 	if not conf.CheckLib('asound') and not conf.CheckForPKG('alsa', '1.0.10'):
 		print "Did not find libasound (aka. libasound2), exiting!"
 		Exit(1)
-        #Check for libdjconsole, if it was passed as a flag
-	flags_djconsole = getFlags(env, 'djconsole', 0)
-	flags_djconsole_legacy = getFlags(env, 'djconsole_legacy', 0)
-	if int(flags_djconsole):
-		if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
-			print "Did not find libdjconsole or it\'s development headers, exiting!"
-			Exit(1)
-		env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
-		env.Append(CPPDEFINES = '__LIBDJCONSOLE__')
-	elif int(flags_djconsole_legacy):
-		# legacy support can not be enabled if libDJConsole support is enabled via djconsole=1
-		env.Append(CPPDEFINES = '__DJCONSOLE_LEGACY__')
 
 	#Another check for PortAudio-v19 # why? -kousu
 	env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
@@ -827,16 +818,6 @@ build_flags = ""
 print "\nFeatures Summary:\n================"
 
 
-#Hercules support through libdjconsole on Linux
-#(handled somewhere else above this in the file...
-# just printing the summary here)
-flags_djconsole = getFlags(env, 'djconsole', 0)
-if int(flags_djconsole) == 0:
-	print "libdjconsole support... disabled"
-else:
-	print "libdjconsole support... enabled"
-	build_flags += 'djconsole '
-
 #High quality EQs
 flags_hifieq = getFlags(env, 'hifieq', 1)
 if int(flags_hifieq) == 0:
@@ -1007,37 +988,36 @@ else:
 
 
 def build_gtest():
-    gtest_dir = env.Dir("#lib/gtest-1.3.0")
-    gtest_dir.addRepository(env.Dir('#lib/gtest-1.3.0'))
-    #env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-    env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
-    Export('env')
-    env.SConscript(env.File('scons/SConscript', gtest_dir))
+	gtest_dir = env.Dir("#lib/gtest-1.3.0")
+	gtest_dir.addRepository(env.Dir('#lib/gtest-1.3.0'))
+	#env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
+	env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+	Export('env')
+	env.SConscript(env.File('scons/SConscript', gtest_dir))
 
-    env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
-    env.Append(LIBS = 'gtest')
-    env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+	env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
+	env.Append(LIBS = 'gtest')
+	env.Append(CPPPATH="#lib/gtest-1.3.0/include")
 
 def build_tests():
-    test_sources = (Glob('test/*.cpp', strings=True) +
-                    [x for x in sources if x != "main.cpp"])
-    env.Program(target='mixxx-test', source=test_sources)
-    Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
+	test_sources = (Glob('test/*.cpp', strings=True) + [x for x in sources if x != "main.cpp"])
+	env.Program(target='mixxx-test', source=test_sources)
+	Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
 
 def run_tests():
-    ret = Execute("./mixxx-test")
-    if ret != 0:
-        print "WARNING: Not all tests pass. See mixxx-test output."
-    Exit(ret)
+	ret = Execute("./mixxx-test")
+	if ret != 0:
+		print "WARNING: Not all tests pass. See mixxx-test output."
+		Exit(ret)
 
 flags_test = getFlags(env, 'test', 0) or 'test' in BUILD_TARGETS
 
 if int(flags_test):
-    print "Test suite... enabled"
-    build_gtest()
-    build_flags += 'test '
+	print "Test suite... enabled"
+	build_gtest()
+	build_flags += 'test '
 else:
-    print "Test suite... disabled"
+	print "Test suite... disabled"
 
 # Script Studio
 flags_script = getFlags(env, 'script', 0)
@@ -1134,7 +1114,13 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '/O2 /GL')
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 			if platform == 'win64':	# In addition
-				env.Append(CXXFLAGS = '/Ox /MP')
+				if 'makerelease' in COMMAND_LINE_TARGETS:
+					# env.Append(CXXFLAGS = '/Ox /favor:blend /MP')
+					# AMD64 architecture is used by all consumer 64-bit CPUs, even Intel ones.
+					# IA64 is the Itanium processors, which we don't expect anyone to be using for DJing. :)
+					env.Append(CXXFLAGS = '/Ox /favor:AMD64 /MP')
+				else:
+					env.Append(CXXFLAGS = '/Ox /favor:' + machine + ' /MP')
 	else:
 		if not int(flags_tuned):
 			print "Specific optimizations... enabled"
@@ -1220,7 +1206,6 @@ else:
 	env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 	print "Debugging message output... disabled"
 
-
 #Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
 flags_msvshacks = getFlags(env, 'msvshacks', 0)
 if int(flags_msvshacks):
@@ -1287,12 +1272,12 @@ else:
 
 #Tell SCons to build tests
 if int(flags_test):
-    print "Building tests."
-    build_tests()
+	print "Building tests."
+	build_tests()
 
 if 'test' in BUILD_TARGETS:
-    print "Running tests."
-    run_tests()
+	print "Running tests."
+	run_tests()
 
 #Set up the MSVC target to build a Visual Studio project/solution file
 if 'msvc' in COMMAND_LINE_TARGETS:
@@ -1450,7 +1435,7 @@ if platform == 'osx':
 		 STRIP=True,
 		 #STRIP=(type == 'RELEASE')
 		 )
-	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)

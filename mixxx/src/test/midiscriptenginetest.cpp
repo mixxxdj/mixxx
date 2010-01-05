@@ -9,6 +9,8 @@
 #include "midi/midiscriptengine.h"
 #include "midiobjectnull.h"
 
+#define UNIX_SHARE_PATH "/usr/share/mixxx"
+
 namespace {
     class MidiScriptEngineTest : public testing::Test {
     protected:
@@ -16,7 +18,9 @@ namespace {
         }
 
         virtual void SetUp() {
-            app = new QApplication(0, NULL);
+            static int argc = 1;
+            static char** argv = NULL;
+            app = new QApplication(argc, argv);
             midiObject = new MidiObjectNull();
             scriptEngine = new MidiScriptEngine(midiObject);
             scriptEngine->moveToThread(scriptEngine);
