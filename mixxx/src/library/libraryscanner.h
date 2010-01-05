@@ -1,3 +1,4 @@
+
 /***************************************************************************
                           libraryscanner.h  -  scans library in a thread
                              -------------------
@@ -48,8 +49,9 @@ class LibraryScanner : public QThread
         LibraryHashDAO m_libraryHashDao;
         CueDAO m_cueDao;
         TrackDAO m_trackDao;
-        QSqlDatabase m_database;            /**Hang on to a different DB connection  
-                                               since we run in a different thread */ 
+        QSqlDatabase m_database;            /**Hang on to a different DB connection
+                                               since we run in a different thread */
+        QStringList nameFilters;
 };
 
 #endif
