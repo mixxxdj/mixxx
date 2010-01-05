@@ -53,7 +53,7 @@
 #include "engine/enginemaster.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
-#include "trackplaylist.h"
+//#include "trackplaylist.h"
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
@@ -63,12 +63,15 @@
 #endif
 
 class WVisual;
-class Track;
 class TrackInfoObject;
 class PlayerProxy;
 class BpmDetector;
 class QSplashScreen;
 class ScriptEngine;
+class Player;
+class LibraryScanner;
+class AnalyserQueue;
+class Library;
 class MidiDeviceManager;
 
 /**
@@ -127,7 +130,19 @@ class MixxxApp : public QMainWindow
 	QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-
+    // Load a track into the next available (non-playing) Player
+    void slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* track);
+    // Load a track into the specified player. Does nothing if an invalid player
+    // is specified. player is indexed from 1.
+    void slotLoadTrackToPlayer(TrackInfoObject* track, int player);
+    /** Load a track into Player 1 */
+    void slotLoadPlayer1(QString location);
+    /** Load a track into Player 2 */
+	void slotLoadPlayer2(QString location);
+	/** Scan or rescan the music library directory */
+	void slotScanLibrary();
+	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+	void slotEnableRescanLibraryAction();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -149,13 +164,18 @@ class MixxxApp : public QMainWindow
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     SoundManager *soundmanager;
+    Player *m_pPlayer1;
+    Player *m_pPlayer2;
+    AnalyserQueue* m_pAnalyserQueue;
     MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
     /** Pointer to active keyboard configuration */
     ConfigObject<ConfigValueKbd> *kbdconfig;
-    /** Pointer to track object */
-    Track *m_pTrack;
+    /** Library scanner object */
+    LibraryScanner* m_pLibraryScanner;
+    // The library management object
+    Library* m_pLibrary;
 
     /** file_menu contains all items of the menubar entry "File" */
     QMenu *fileMenu;

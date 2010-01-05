@@ -32,7 +32,6 @@
 
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
-#include "enginebuffercue.h"
 #include "loopingcontrol.h"
 #include "ratecontrol.h"
 #include "bpmcontrol.h"
@@ -67,7 +66,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackEndMode(NULL),
     startButton(NULL),
     endButton(NULL),
-    m_pEngineBufferCue(NULL),
     m_pScale(NULL),
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
@@ -134,20 +132,19 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
 
-    // Create the Cue Controller TODO(rryan) : this has to happen before Reader
-    // is constructed. Fix that.
-    m_pEngineBufferCue = new EngineBufferCue(_group, _config, this);
-
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
+    addControl(m_pRateControl);
+
     fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
+    addControl(m_pBpmControl);
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
@@ -175,7 +172,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pLoopingControl;
     delete m_pRateControl;
     delete m_pBpmControl;
-    delete m_pEngineBufferCue;
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -196,21 +192,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleLinear;
     delete m_pScaleST;
 
-}
-
-void EngineBuffer::lockPlayposVars()
-{
-    m_qPlayposMutex.lock();
-}
-
-void EngineBuffer::unlockPlayposVars()
-{
-    m_qPlayposMutex.unlock();
-}
-
-double EngineBuffer::getAbsPlaypos()
-{
-    return m_dAbsPlaypos;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -260,13 +241,6 @@ void EngineBuffer::setNewPlaypos(double newpos)
 
     filepos_play = newpos;
 
-    // Update bufferposSlider
-    if (m_qPlayposMutex.tryLock())
-    {
-        m_dAbsPlaypos = filepos_play;
-        m_qPlayposMutex.unlock();
-    }
-
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
 
@@ -293,6 +267,8 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
+
+    slotControlSeek(0.);
 
     m_pTrackSamples->set(iTrackNumSamples);
     emit(trackLoaded(pTrack));
@@ -334,7 +310,6 @@ void EngineBuffer::slotControlSeekAbs(double abs)
 
 void EngineBuffer::slotControlPlay(double)
 {
-    m_pEngineBufferCue->slotControlCueSet();
 }
 
 void EngineBuffer::slotControlStart(double)
@@ -353,7 +328,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // Steps:
     // - Lookup new reader information
     // - Calculate current rate
-    // - Prepare an intermediate source sample buffer with loops taken into account.
     // - Scale the audio with m_pScale, copy the resulting samples into the
     //   output buffer
     // - Give EngineControl's a chance to do work / request seeks, etc
@@ -480,6 +454,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 filepos_play--;
 
             // Adjust filepos_play in case we took any loops during this buffer
+            m_pLoopingControl->setCurrentSample(filepos_play);
             filepos_play = m_pLoopingControl->process(rate,
                                                       filepos_play,
                                                       file_length_old,
@@ -506,10 +481,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Let RateControl do its logic. This is a temporary hack until this
         // step is just processing a list of EngineControls
+        m_pRateControl->setCurrentSample(filepos_play);
         m_pRateControl->process(rate, filepos_play,
-                                file_length_old,
-                                iBufferSize);
-        
+                                file_length_old, iBufferSize);
+
+        QListIterator<EngineControl*> it(m_engineControls);
+        while (it.hasNext()) {
+            EngineControl* pControl = it.next();
+            pControl->setCurrentSample(filepos_play);
+            pControl->process(rate, filepos_play, file_length_old, iBufferSize);
+        }
+
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
         hintReader(rate, iBufferSize);
@@ -543,6 +525,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 break;
             case TRACK_END_MODE_NEXT:
                 m_pTrackEnd->set(1.);
+                emit(loadNextTrack());
                 break;
 
             case TRACK_END_MODE_LOOP:
@@ -650,13 +633,6 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Update visual control object, this needs to be done more often than the
     // rateEngine and playpos slider
     visualPlaypos->set(fFractionalPlaypos);
-
-    // Update buffer and abs position. These variables are not in the ControlObject
-    // framework because they need very frequent updates.
-    if (m_qPlayposMutex.tryLock()) {
-        m_dAbsPlaypos = filepos_play;
-        m_qPlayposMutex.unlock();
-    }
 }
 
 void EngineBuffer::hintReader(const double dRate,
@@ -684,10 +660,25 @@ void EngineBuffer::hintReader(const double dRate,
     m_hintList.append(current_position);
 
     m_pLoopingControl->hintReader(m_hintList);
-    m_pEngineBufferCue->hintReader(m_hintList);
+
+    QListIterator<EngineControl*> it(m_engineControls);
+    while (it.hasNext()) {
+        EngineControl* pControl = it.next();
+        pControl->hintReader(m_hintList);
+    }
+
     m_pReader->hint(m_hintList);
 }
 
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
     m_pReader->newTrack(pTrack);
+}
+
+void EngineBuffer::addControl(EngineControl* pControl) {
+    // Connect to signals from EngineControl here...
+    m_engineControls.push_back(pControl);
+    connect(pControl, SIGNAL(seek(double)),
+            this, SLOT(slotControlSeek(double)));
+    connect(pControl, SIGNAL(seekAbs(double)),
+            this, SLOT(slotControlSeekAbs(double)));
 }

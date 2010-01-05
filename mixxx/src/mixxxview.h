@@ -21,11 +21,9 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-
-
-//Added by qt3to4:
 #include <Q3ValueList>
 #include <QList>
+
 #include "configobject.h"
 #include "imgsource.h"
 
@@ -33,57 +31,65 @@ class ControlObject;
 class WSlider;
 class WSliderComposed;
 class WPushButton;
-class WTrackTable;
 class WDisplay;
 class WKnob;
 class WVisual;
 class WOverview;
 class WNumberPos;
+class WNumberBpm;
 class QDomNode;
 class QDomElement;
 class MixxxKeyboard;
-/*new classes for new visual layout*/
 class QComboBox;
 class QLineEdit;
 class QPushButton;
 class QGridLayout;
 class QTabWidget;
+class QSplitter;
 class QStackedWidget;
 class WTrackTableView;
+class WLibrarySidebar;
 class LADSPAView;
 class WaveformRenderer;
+class Player;
+class TrackInfoObject;
+class QStandardItemModel;
+class Library;
+class WLibrary;
+class RhythmboxTrackModel;
+class RhythmboxPlaylistModel;
 
 /**
  * This class provides an incomplete base for your application view.
  */
 
-
 class MixxxView : public QWidget
 {
     Q_OBJECT
 public:
-    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
+    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig,
+              QString qSkinPath, ConfigObject<ConfigValue> *pConfig,
+              Player* player1, Player* player2,
+              Library* pLibrary);
     ~MixxxView();
 
     /** Check if direct rendering is not available, and display warning */
     void checkDirectRendering();
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
-	//old tracktable
-    //WTrackTable *m_pTrackTable;
-	//NEW trackView
-	WTrackTableView *m_pTrackTableView;
+    /** Return a pointer to the track table view widget. */
+    WTrackTableView* getTrackTableView();
+
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
     WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
     /** Pointer to absolute file position widgets */
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
+    /** Pointer to BPM display widgets */
+    WNumberBpm *m_pNumberBpmCh1, *m_pNumberBpmCh2;
     /** Pointer to rate slider widgets */
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
-    /** Pointer to ComboBox*/
-    QComboBox *m_pComboBox;
-    //WComboBox *m_pComboBox;
     /** Pointer to SearchBox */
     QLabel *m_pSearchLabel;
     QLineEdit *m_pLineEditSearch;
@@ -95,15 +101,17 @@ public:
     void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
     static QList<QString> getSchemeList(QString qSkinPath);
+public slots:
+	void slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack);
+	void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
+	void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
+	void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
     void createAllWidgets(QDomElement docElem, QWidget* parent, ConfigObject<ConfigValue> *pConfig);
     void setupTabWidget(QDomNode node);
-
-    /*temp to change view*/
-    WTrackTable *m_pTmpPlaylist;
-    WTrackTable *m_pTmpPlaylist2;
+    void setupTrackSourceViewWidget(QDomNode node);
 
     ImgSource* parseFilters(QDomNode filt);
     static QDomElement openSkin(QString qSkinPath);
@@ -127,6 +135,18 @@ private:
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
+
+	// The splitter widget that contains the library panes
+	QSplitter *m_pSplitter;
+    // The library widget
+    WLibrary* m_pLibraryWidget;
+    // The library manager
+    Library* m_pLibrary;
+    // The library sidebar
+    WLibrarySidebar* m_pLibrarySidebar;
+
+	Player* m_pPlayer1;
+	Player* m_pPlayer2;
 
 #ifdef __LADSPA__
     LADSPAView* m_pLADSPAView;

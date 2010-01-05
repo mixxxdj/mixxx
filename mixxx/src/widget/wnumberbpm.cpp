@@ -15,11 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
+#include <QtDebug>
+
 #include "wnumberbpm.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-
-bool WNumberBpm::m_bScaleBpm = true;
 
 WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
 {
@@ -28,7 +29,7 @@ WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
     m_pBpmControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm")));
-    
+
     connect(m_pRateControl, SIGNAL(valueChanged(double)),
             this, SLOT(setValue(double)));
     connect(m_pRateDirControl, SIGNAL(valueChanged(double)),
@@ -51,15 +52,12 @@ WNumberBpm::~WNumberBpm()
 
 void WNumberBpm::setValue(double)
 {
-    if (m_bScaleBpm) {
-        WNumber::setValue(m_pBpmControl->get()*(1.+m_pRateControl->get()*m_pRateDirControl->get()*m_pRateRangeControl->get()));
-    } else {
-        WNumber::setValue(m_pBpmControl->get());
-    }
-}
-
-void WNumberBpm::setScaleBpm(bool bScaleBpm)
-{
-    m_bScaleBpm = bScaleBpm;
+    // Scale the BPM reading by the current rate.
+    double bpm = m_pBpmControl->get();
+    double rate = (1. +
+                   m_pRateControl->get()*
+                   m_pRateDirControl->get()*
+                   m_pRateRangeControl->get());
+    WNumber::setValue(bpm*rate);
 }
 

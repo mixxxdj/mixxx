@@ -46,6 +46,15 @@ ConfigKey::ConfigKey(QString g, QString i)
     item = i;
 }
 
+// static
+ConfigKey ConfigKey::parseCommaSeparated(QString key) {
+    ConfigKey configKey;
+    int comma = key.indexOf(",");
+    configKey.group = key.left(comma);
+    configKey.item = key.mid(comma+1);
+    return configKey;
+}
+
 ConfigValue::ConfigValue()
 {
 }
@@ -325,7 +334,7 @@ QString ConfigObject<ValueType>::getConfigPath()
     qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
     qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
 #endif
-    }	
+    }
 	if (qConfigPath.length() == 0) qCritical() << "qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??";
     // If the directory does not end with a "/", add one
     if (!qConfigPath.endsWith("/"))

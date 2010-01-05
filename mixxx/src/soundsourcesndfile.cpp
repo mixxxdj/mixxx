@@ -150,7 +150,10 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
     if(string && strlen(string))
         Track->setTitle(string);
 //    qDebug() << location << "SF_STR_TITLE" << string;
-
+    string = sf_get_string(fh, SF_STR_DATE);
+    if (string && strlen(string))
+        Track->setYear(string);
+    
     sf_close( fh );
     return OK;
 }

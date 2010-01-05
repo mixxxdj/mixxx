@@ -37,6 +37,10 @@ LoopingControl::LoopingControl(const char * _group,
             this, SLOT(slotReloopExit(double)));
     m_pReloopExitButton->set(0);
 
+
+    m_pCOLoopEnabled = new ControlObject(ConfigKey(_group, "loop_enabled"));
+    m_pCOLoopEnabled->set(0.0f);
+
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(_group, "loop_start_position"));
     m_pCOLoopStartPosition->set(kNoTrigger);
@@ -156,8 +160,10 @@ void LoopingControl::slotLoopOut(double val) {
         m_iLoopEndSample = m_iCurrentSample;
         m_pCOLoopEndPosition->set(m_iLoopEndSample);
         if (m_iLoopStartSample != -1 &&
-            m_iLoopEndSample != -1)
+            m_iLoopEndSample != -1) {
             m_bLoopingEnabled = true;
+            m_pCOLoopEnabled->set(1.0f);
+        }
         //qDebug() << "set loop_out to " << m_iLoopStartSample;
     }
 }
@@ -167,11 +173,14 @@ void LoopingControl::slotReloopExit(double val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
             m_bLoopingEnabled = false;
+            m_pCOLoopEnabled->set(0.0f);
             //qDebug() << "reloop_exit looping off";
         } else {
             // If we're not looping, jump to the loop-in point and start looping
-            if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1)
+            if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1) {
                 m_bLoopingEnabled = true;
+                m_pCOLoopEnabled->set(1.0f);
+            }
             //qDebug() << "reloop_exit looping on";
         }
     }
@@ -181,6 +190,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
     int newpos = pos;
     if (newpos == -1.0f) {
         m_bLoopingEnabled = false;
+        m_pCOLoopEnabled->set(0.0f);
     }
     if (newpos >= 0 && !even(newpos)) {
         newpos--;
@@ -192,6 +202,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
     if (newpos == -1.0f) {
         m_bLoopingEnabled = false;
+        m_pCOLoopEnabled->set(0.0f);
     }
     if (newpos >= 0 && !even(newpos)) {
         newpos--;

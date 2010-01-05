@@ -5,7 +5,7 @@
 #include "engine/enginebuffer.h"
 
 EngineControl::EngineControl(const char * _group,
-                             const ConfigObject<ConfigValue> * _config) :
+                             ConfigObject<ConfigValue> * _config) :
     m_pGroup(_group),
     m_pConfig(_config),
     m_dCurrentSample(0),
@@ -57,7 +57,7 @@ const char* EngineControl::getGroup() {
     return m_pGroup;
 }
 
-const ConfigObject<ConfigValue>* EngineControl::getConfig() {
+ConfigObject<ConfigValue>* EngineControl::getConfig() {
     return m_pConfig;
 }
 

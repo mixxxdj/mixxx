@@ -260,7 +260,6 @@ finally:
 sources = Split("""
 
                 input.cpp
-                trackplaylistlist.cpp
                 mixxxkeyboard.cpp
                 configobject.cpp
                 controlobjectthread.cpp
@@ -281,15 +280,16 @@ sources = Split("""
                 dlgprefplaylist.cpp
                 dlgprefnomidi.cpp
                 dlgprefcontrols.cpp
-                dlgbpmtap.cpp
                 dlgprefbpm.cpp
                 dlgbpmscheme.cpp
                 dlgabout.cpp
                 dlgprefeq.cpp
                 dlgprefcrossfader.cpp
                 dlgmidilearning.cpp
+                dlgtrackinfo.cpp
+                dlgprepare.cpp
+                dlgautodj.cpp
 
-                engine/enginebuffercue.cpp
                 engine/enginebuffer.cpp
                 engine/enginebufferscale.cpp
 		engine/enginebufferscaledummy.cpp
@@ -312,12 +312,11 @@ sources = Split("""
                 engine/enginesidechain.cpp
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
-
                 engine/enginecontrol.cpp
                 engine/ratecontrol.cpp
                 engine/loopingcontrol.cpp
                 engine/bpmcontrol.cpp
-
+                engine/cuecontrol.cpp
                 engine/readaheadmanager.cpp
                 cachingreader.cpp
 
@@ -376,15 +375,56 @@ sources = Split("""
 
                 peaklist.cpp
                 rotary.cpp
-                track.cpp
-                trackcollection.cpp
-                trackplaylist.cpp
                 wtracktableview.cpp
-                wtracktablemodel.cpp
-                wpromotracksmodel.cpp
-                proxymodel.cpp
+                widget/wtracktableviewheader.cpp
+                widget/wlibrarysidebar.cpp
+                widget/wlibrary.cpp
+                widget/wlibrarytableview.cpp
+                widget/wpreparelibrarytableview.cpp
+                widget/wpreparecratestableview.cpp
+                widget/wbrowsetableview.cpp
+                widget/wlibrarytextbrowser.cpp
+                library/preparecratedelegate.cpp
+                library/trackcollection.cpp
+                library/librarytablemodel.cpp
+                library/preparelibrarytablemodel.cpp
+                library/browsetablemodel.cpp
+                library/missingtablemodel.cpp
+                library/proxytrackmodel.cpp
+                library/abstractxmltrackmodel.cpp
+                library/rhythmboxtrackmodel.cpp
+                library/rhythmboxplaylistmodel.cpp
+                library/itunestrackmodel.cpp
+                library/itunesplaylistmodel.cpp
+                library/playlisttablemodel.cpp
+                library/libraryfeature.cpp
+                library/preparefeature.cpp
+                library/autodjfeature.cpp
+                library/mixxxlibraryfeature.cpp
+                library/playlistfeature.cpp
+                library/rhythmboxfeature.cpp
+                library/itunesfeature.cpp
+                library/browsefeature.cpp
+                library/cratefeature.cpp
+                library/browsefilter.cpp
+                library/sidebarmodel.cpp
+                library/libraryscanner.cpp
+                library/libraryscannerdlg.cpp
+                library/legacylibraryimporter.cpp
+                library/library.cpp
+                library/searchthread.cpp
+                library/dao/cratedao.cpp
+                library/cratetablemodel.cpp
+                library/dao/cuedao.cpp
+                library/dao/cue.cpp
+                library/dao/trackdao.cpp
+                library/dao/playlistdao.cpp
+                library/dao/libraryhashdao.cpp
+                library/dao/settingsdao.cpp
+                library/librarymidicontrol.cpp
+                library/schemamanager.cpp
+
                 xmlparse.cpp
-                trackimporter.cpp
                 parser.cpp
                 parserpls.cpp
                 parserm3u.cpp
@@ -397,11 +437,13 @@ sources = Split("""
                 widget/wwaveformviewer.cpp
                 widget/wglwaveformviewer.cpp
                 waveformviewerfactory.cpp
+                waveform/renderobject.cpp
                 waveform/waveformrenderer.cpp
 		waveform/waveformrenderbackground.cpp
 		waveform/waveformrendersignal.cpp
 		waveform/waveformrendersignalpixmap.cpp
 		waveform/waveformrendermark.cpp
+                waveform/waveformrendermarkrange.cpp
                 waveform/waveformrenderbeat.cpp
 
 
@@ -410,16 +452,13 @@ sources = Split("""
                 imgcolor.cpp
 
                 trackinfoobject.cpp
+                player.cpp
                 sounddevice.cpp
                 soundmanager.cpp
                 sounddeviceportaudio.cpp
                 dlgprefrecord.cpp
                 recording/enginerecord.cpp
                 recording/writeaudiofile.cpp
-                wtracktablefilter.cpp
-                wplaylistlistmodel.cpp
-                libraryscanner.cpp
-                libraryscannerdlg.cpp
                 playerinfo.cpp
 
                 segmentation.cpp
@@ -579,6 +618,7 @@ if platform == 'linux':
 		"""
 		env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
+		env.ParseConfig('pkg-config QtSql --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
@@ -594,7 +634,9 @@ if platform == 'linux':
 		'Qt3Support',
 		'QtXml',
 		'QtSvg',
+		'QtSql',
 		'QtScript',
+		'QtXmlPatterns'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
@@ -618,13 +660,13 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
-				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtSql.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 
 	#Non-standard libpaths for fink and darwin ports
@@ -695,6 +737,8 @@ if platform in ('linux', 'bsd'):
 if 'win' in platform:
 	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
 	env.Append(LIBS = 'QtXml4');
+	env.Append(LIBS = 'QtXmlPatterns4');
+	env.Append(LIBS = 'QtSql4');
 	env.Append(LIBS = 'QtGui4');
 	env.Append(LIBS = 'QtCore4');
 	env.Append(LIBS = 'QtOpenGL4');
@@ -715,6 +759,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
 			    '$QTDIR/include/QtXml',
+			    '$QTDIR/include/QtSql',
 			    '$QTDIR/include/QtOpenGL',
 			    '$QTDIR/include/Qt'])
 
@@ -747,6 +792,9 @@ env.Uic4('dlgprefvinyldlg.ui')
 env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgaboutdlg.ui')
 env.Uic4('dlgmidilearning.ui')
+env.Uic4('dlgtrackinfo.ui')
+env.Uic4('dlgprepare.ui')
+env.Uic4('dlgautodj.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('#res/mixxx.qrc')
@@ -1315,6 +1363,9 @@ else:
 #Mixxx binary
 binary_files = mixxx_bin;
 
+# Mixxx essential resource files
+resource_files = Glob('#res/schema.xml')
+
 #Skins
 skin_files = Glob('#res/skins/*')
 
@@ -1350,12 +1401,12 @@ if platform == 'win64':
 else:
 	dll_files = Glob('#/../mixxx-winlib/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtSVG4.dll""")
+dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll""")
 
 if int(flags_script):
-	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
 if int(flags_midiscript):
-	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
 
 if platform in ('linux', 'bsd'):
 	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
@@ -1377,6 +1428,7 @@ if platform in ('linux', 'bsd'):
 			unix_bin_path   = flags_prefix + "/bin"
 
 		binary = env.Install(unix_bin_path, binary_files)
+                resource = env.Install(unix_share_path + "/mixxx", resource_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
@@ -1388,6 +1440,7 @@ if platform in ('linux', 'bsd'):
 
 		#Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
+                env.Alias('install', resource)
 		env.Alias('install', skins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
@@ -1417,8 +1470,10 @@ if platform == 'osx':
 	DMG_ICON="#res/osx/VolumeIcon.icns"
 
 	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
-	qt_plugins = [("iconengines", e) for e in ["libqsvgicon.dylib"]] + \
-			 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] #Left out libqmng and libqtiff to save space.
+	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
+                      [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
+                      [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
+	#Left out libqmng and libqtiff to save space.
 
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
@@ -1438,6 +1493,7 @@ if platform == 'osx':
 
 if 'win' in platform:
 	skins = env.Install("#dist/skins", skin_files)
+        resource = env.Install("#dist/", resource_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
 	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
 	ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
@@ -1449,6 +1505,7 @@ if 'win' in platform:
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
+        env.Alias('mixxx', resource)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
 	env.Alias('mixxx', ladspapresets)
@@ -1556,7 +1613,7 @@ def BuildUbuntuPackage(target, source, env):
 
 	if ("yes" == "yes"):
 		print "Now building DEB package..."
-		print
+                print
 		mixxx_dir = 'mixxx-' + env['MIXXX_VERSION']
 		mixxx_tarball = 'mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz' #The underscore is super important here to make the deb package work
 

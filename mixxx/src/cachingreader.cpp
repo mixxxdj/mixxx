@@ -299,6 +299,7 @@ void CachingReader::newTrack(TrackInfoObject* pTrack) {
 int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Check for bogus sample numbers
     Q_ASSERT(sample >= 0);
+    Q_ASSERT(sample % 2 == 0);
     Q_ASSERT(num_samples >= 0);
 
     // If asked to read 0 samples, don't do anything. (this is a perfectly

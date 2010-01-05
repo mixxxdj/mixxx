@@ -7,7 +7,7 @@
 #include "analyserbpm.h"
 
 #define BIGBUF_SIZE (1024 * 1024)  //Megabyte
-#define CANARY_SIZE (1024*4) 
+#define CANARY_SIZE (1024*4)
 #define MAGIC_FLOAT 1234.567890f
 #define CANARY_FLOAT 0.0f
 
@@ -15,19 +15,19 @@ namespace {
 
     class AnalyserBPMTest: public testing::Test {
     protected:
-        
+
         AnalyserBPMTest() {
             qDebug() << "AnalyserBPMTest()";
         }
-        
+
         virtual void SetUp() {
             qDebug() << "SetUp";
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
             abpm = new AnalyserBPM(config);
-            tio = new TrackInfoObject("foo", "foo");
+            tio = new TrackInfoObject("foo");
             //Subpixels per second, from waveformrenderer.cpp:247
             tio->setVisualResampleRate(200);
-            
+
             bigbuf = new CSAMPLE[BIGBUF_SIZE];
             for (int i = 0; i < BIGBUF_SIZE; i++)
                 bigbuf[i] = MAGIC_FLOAT;
@@ -58,7 +58,7 @@ namespace {
         CSAMPLE* bigbuf;
         CSAMPLE* canaryBigBuf;
     };
-    
+
     //Test to make sure we don't modify the source buffer.
     TEST_F(AnalyserBPMTest, simpleAnalyze) {
         abpm->initialise(tio, 44100, BIGBUF_SIZE);

@@ -35,7 +35,6 @@
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
 #include "mixxx.h"
-#include "track.h"
 #include "midi/mididevicemanager.h"
 #include "midi/mididevice.h"
 #include <QTabWidget>
@@ -46,7 +45,7 @@
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
-                               SoundManager * soundman, Track *track,
+                               SoundManager * soundman,
                                MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
@@ -59,7 +58,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
     setWindowTitle(tr("Preferences"));
     config = _config;
-    m_pTrack = track;
 
     createIcons();
     //contentsTreeWidget->setCurrentRow(0);
@@ -147,10 +145,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #endif
 
     //Update the library when you change the options
-    if (m_pTrack && wplaylist)
+    /*if (m_pTrack && wplaylist)
     {
         connect(wplaylist, SIGNAL(apply()), m_pTrack, SLOT(slotScanLibrary()));
-    }
+    }*/
+    //FIXME: Disabled due to library reworking
 }
 
 DlgPreferences::~DlgPreferences()
@@ -159,7 +158,7 @@ DlgPreferences::~DlgPreferences()
 }
 
 void DlgPreferences::createIcons()
-{    
+{
     m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pSoundButton->setIcon(0, QIcon(":/images/preferences/soundhardware.png"));
     m_pSoundButton->setText(0, tr("Sound Hardware"));
@@ -280,7 +279,7 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
            //Manually fire this slot since it doesn't work right...
            wmidiBindingsForDevice.value(index)->slotUpdate();
        }
-       
+
        //If the root "MIDI Device" item is clicked, select the first MIDI device instead.
        //If there is no first MIDI device, display a page that says so (just so we don't not change the page)
        else if (current == m_pMIDITreeItem)
@@ -289,11 +288,11 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
            {
                //Expand the MIDI subtree
                contentsTreeWidget->setItemExpanded(m_pMIDITreeItem, true);
-               
+
                /*
-               * FIXME: None of the following works right, for some reason. - Albert Feb 9/09 
+               * FIXME: None of the following works right, for some reason. - Albert Feb 9/09
                */
-               
+
                //Select the first MIDI device
                //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
                /*
@@ -302,14 +301,14 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
                    contentsTreeWidget->setItemSelected(item, false);
                }*/
                //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
-               
+
            }
            else
            {
                pagesWidget->setCurrentWidget(wNoMidi);
            }
        }
-   
+
 }
 
 void DlgPreferences::showVinylControlPage()
@@ -354,7 +353,7 @@ void DlgPreferences::destroyMidiWidgets()
 //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
 
   m_midiBindingsButtons.clear();
-  
+
   while (!wmidiBindingsForDevice.isEmpty())
     {
       DlgPrefMidiBindings* midiDlg = wmidiBindingsForDevice.takeLast();
@@ -362,7 +361,7 @@ void DlgPreferences::destroyMidiWidgets()
       delete midiDlg;
     }
 
-  while(m_pMIDITreeItem->childCount() > 0) 
+  while(m_pMIDITreeItem->childCount() > 0)
     {
       QTreeWidgetItem* midiBindingsButton = m_pMIDITreeItem->takeChild(0);
       //qDebug() << " Q|T|r\e\eWidgetItem point is " << midiBindingsButton;
@@ -376,7 +375,7 @@ void DlgPreferences::setupMidiWidgets()
     //For each MIDI device, create a MIDI dialog and put a little link to it in the treepane on the left
     QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(false, true);
     QListIterator<MidiDevice*> it(deviceList);
-    
+
     while (it.hasNext())
       {
         MidiDevice* currentDevice = it.next();
@@ -388,7 +387,7 @@ void DlgPreferences::setupMidiWidgets()
         connect(this, SIGNAL(showDlg()), midiDlg, SLOT(slotUpdate()));
         connect(buttonBox, SIGNAL(accepted()), midiDlg, SLOT(slotApply()));
         connect(midiDlg, SIGNAL(deviceStateChanged(DlgPrefMidiBindings*,bool)), this, SLOT(slotHighlightDevice(DlgPrefMidiBindings*,bool)));
-        
+
         QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << midiBindingsButton;
         midiBindingsButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
@@ -397,7 +396,7 @@ void DlgPreferences::setupMidiWidgets()
         midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_pMIDITreeItem->addChild(midiBindingsButton);
         m_midiBindingsButtons.append(midiBindingsButton);
-        
+
         // Set the font correctly
         QFont temp = midiBindingsButton->font(0);
         if (currentDevice->isOpen()) temp.setBold(true);
