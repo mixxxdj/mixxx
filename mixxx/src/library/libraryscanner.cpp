@@ -50,8 +50,8 @@ LibraryScanner::~LibraryScanner()
     //if we find one or more deleted directories.
     QStringList deletedDirs;
     QSqlQuery query(m_pCollection->getDatabase());
-    query.prepare("SELECT * FROM LibraryHashes "
-               "WHERE directory_deleted=1");
+    query.prepare("SELECT directory FROM LibraryHashes "
+                  "WHERE directory_deleted=1");
     if (query.exec()) {
         while (query.next()) {
             QString directory = query.value(query.record().indexOf("directory")).toString();
@@ -66,7 +66,7 @@ LibraryScanner::~LibraryScanner()
     query.exec("DELETE FROM LibraryHashes "
                "WHERE directory_deleted=1");
 
-        //Print out any SQL error, if there was one.
+    //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << query.lastError();
     }
@@ -117,14 +117,25 @@ void LibraryScanner::run()
             Qt::BlockingQueuedConnection);
     libImport.import();
 
+    // Time the library scanner.
+    QTime t;
+    t.start();
+
     //First, we're going to temporarily mark all the directories that we've
     //previously hashed as "deleted". As we search through the directory tree
     //when we rescan, we'll mark any directory that does still exist as such.
     //m_libraryHashDao.markAllDirectoriesAsDeleted();
     m_pCollection->resetLibaryCancellation();
 
+    qDebug() << "Recursively scanning library.";
     //Start scanning the library.
     bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath);
+
+    if (!bScanFinishedCleanly) {
+        qDebug() << "Recursive scan interrupted.";
+    } else {
+        qDebug() << "Recursive scan finished cleanly.";
+    }
 
     //At the end of a scan, mark all tracks that weren't "verified" as "deleted"
     //(as long as the scan wasn't cancelled half way through. This condition is
@@ -133,16 +144,20 @@ void LibraryScanner::run()
     //unverified. Don't want to mark those tracks as deleted in that case) :)
     if (bScanFinishedCleanly)
     {
+        qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
 
         //Check to see if the "deleted" tracks showed up in another location,
         //and if so, do some magic to update all our tables.
+        qDebug() << "Detecting moved files.";
         m_trackDao.detectMovedFiles();
 
         qDebug() << "Scan finished cleanly";
     }
     else
         qDebug() << "Scan cancelled";
+
+    qDebug("Scan took: %d ms", t.elapsed());
 
     //m_pProgress->slotStopTiming();
 
@@ -154,14 +169,20 @@ void LibraryScanner::scan(QString libraryPath)
     m_qLibraryPath = libraryPath;
     m_pProgress = new LibraryScannerDlg();
 
-    //The important part here is that we need to use Qt::BlockingQueuedConnection, because we're sending these signals
-    //across threads. Normally you'd use regular QueuedConnections for this, but since we don't have an event loop running and
-    //we need the signals to get processed immediately, we have to use BlockingQueuedConnection. (DirectConnection isn't an
-    //option for sending signals across threads.)
-    connect(m_pCollection, SIGNAL(progressLoading(QString)), m_pProgress, SLOT(slotUpdate(QString)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(scanFinished()), m_pProgress, SLOT(slotScanFinished()));
-    connect(m_pProgress, SIGNAL(scanCancelled()), m_pCollection, SLOT(slotCancelLibraryScan()));
-
+    //The important part here is that we need to use
+    //Qt::BlockingQueuedConnection, because we're sending these signals across
+    //threads. Normally you'd use regular QueuedConnections for this, but since
+    //we don't have an event loop running and we need the signals to get
+    //processed immediately, we have to use
+    //BlockingQueuedConnection. (DirectConnection isn't an option for sending
+    //signals across threads.)
+    connect(m_pCollection, SIGNAL(progressLoading(QString)),
+            m_pProgress, SLOT(slotUpdate(QString)),
+            Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(scanFinished()),
+            m_pProgress, SLOT(slotScanFinished()));
+    connect(m_pProgress, SIGNAL(scanCancelled()),
+            m_pCollection, SLOT(slotCancelLibraryScan()));
     scan();
 }
 
@@ -199,8 +220,6 @@ bool LibraryScanner::recursiveScan(QString dirPath)
 
     //Calculate a hash of the directory's file list.
     newHash = qHash(newHashStr);
-
-    TrackInfoObject* track = NULL;
 
     //Try to retrieve a hash from the last time that directory was scanned.
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
