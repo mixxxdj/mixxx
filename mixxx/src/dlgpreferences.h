@@ -45,7 +45,7 @@ class DlgPrefBpm;
 class DlgPrefVinyl;
 class DlgPrefShoutcast;
 class PowerMate;
-class MidiObject;
+class MidiDeviceManager;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -56,7 +56,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view, SoundManager *soundman,
-    		MidiObject * midi, ConfigObject<ConfigValue> *config);
+                   MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();
 public slots:
@@ -66,6 +66,7 @@ public slots:
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
+    void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
 signals:
     void closeDlg();
     void showDlg();
@@ -86,21 +87,21 @@ private:
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefShoutcast *wshoutcast;
 
-	QTreeWidgetItem* m_pSoundButton;    
-	QTreeWidgetItem* m_pPlaylistButton;    
-	QTreeWidgetItem* m_pControlsButton;    
-	QTreeWidgetItem* m_pEqButton;    
-	QTreeWidgetItem* m_pCrossfaderButton;    
-	QTreeWidgetItem* m_pRecordingButton;    
-	QTreeWidgetItem* m_pBPMdetectButton;    
-	QTreeWidgetItem* m_pVinylControlButton;    
-	QTreeWidgetItem* m_pShoutcastButton;    
+	QTreeWidgetItem* m_pSoundButton;
+	QTreeWidgetItem* m_pPlaylistButton;
+	QTreeWidgetItem* m_pControlsButton;
+	QTreeWidgetItem* m_pEqButton;
+	QTreeWidgetItem* m_pCrossfaderButton;
+	QTreeWidgetItem* m_pRecordingButton;
+	QTreeWidgetItem* m_pBPMdetectButton;
+	QTreeWidgetItem* m_pVinylControlButton;
+	QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pMIDITreeItem;
     QList<QTreeWidgetItem*> m_midiBindingsButtons;
 
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
-    MidiObject* m_pMidiObject;
+    MidiDeviceManager* m_pMidiDeviceManager;
 };
 
 #endif

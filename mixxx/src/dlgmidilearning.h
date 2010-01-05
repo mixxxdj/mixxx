@@ -23,7 +23,7 @@
 #include "ui_dlgmidilearning.h"
 #include "configobject.h"
 #include "mixxxcontrol.h"
-#include "midimessage.h"
+#include "midi/midimessage.h"
 
 class MidiMapping;
 

@@ -16,11 +16,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <qapplication.h>
-
-#include "midiscriptengine.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "mididevice.h"
+#include "midiscriptengine.h"
+
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
@@ -30,9 +30,9 @@
 #endif
 
 
-MidiScriptEngine::MidiScriptEngine(MidiObject* midi_object) :
+MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_pEngine(NULL),
-    m_pMidiObject(midi_object)
+    m_pMidiDevice(midiDevice)
 {
 }
 
@@ -88,11 +88,13 @@ void MidiScriptEngine::initializeScriptEngine() {
     //qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
     //qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
 
+    qDebug() << "MIDI Device in script engine is:" << m_pMidiDevice->getName();
+
     // Make this MidiScriptEngine instance available to scripts as
     // 'engine'.
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
-    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiObject));
+    engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiDevice));
 
 }
 
@@ -162,9 +164,10 @@ bool MidiScriptEngine::execute(QString function, QString data) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function, char channel,
                                char control, char value,
-                               MidiStatusByte status) {
+                               MidiStatusByte status,
+                               QString group) {
     m_scriptEngineLock.lock();
-    bool ret = safeExecute(function, channel, control, value, status);
+    bool ret = safeExecute(function, channel, control, value, status, group);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -237,7 +240,8 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, char channel,
                                    char control, char value,
-                                   MidiStatusByte status) {
+                                   MidiStatusByte status,
+                                   QString group) {
     //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
@@ -261,6 +265,7 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
     args << QScriptValue(m_pEngine, control);
     args << QScriptValue(m_pEngine, value);
     args << QScriptValue(m_pEngine, status);
+    args << QScriptValue(m_pEngine, group);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -338,7 +343,7 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
         if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
             QStringList field = line.split(" ");
-            qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
+            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
 //             functionList.append(field[0]);
             m_scriptFunctions.append(field[0]);
         }
@@ -578,6 +583,7 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
         return false;
     
     // Add the code we evaluated to our index
+    qDebug() << "MidiScriptEngine: Loading" << filename;
     generateScriptFunctions(scriptCode);
 
     return true;

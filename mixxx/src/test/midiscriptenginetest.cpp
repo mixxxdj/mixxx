@@ -6,8 +6,7 @@
 #include <QFile>
 
 #include "controlobject.h"
-#include "script/midiscriptengine.h"
-#include "midiobjectnull.h"
+#include "midi/midiscriptengine.h"
 
 #define UNIX_SHARE_PATH "/usr/share/mixxx"
 
@@ -18,11 +17,13 @@ namespace {
         }
 
         virtual void SetUp() {
+            // TODO(XXX) rryan -- this test is broken since there is no
+            // MidiDeviceNull after the PortMIDI conversion.
             static int argc = 1;
             static char** argv = NULL;
             app = new QApplication(argc, argv);
-            midiObject = new MidiObjectNull();
-            scriptEngine = new MidiScriptEngine(midiObject);
+            MidiDevice* pDevice = NULL;
+            scriptEngine = new MidiScriptEngine(pDevice);
             scriptEngine->moveToThread(scriptEngine);
             scriptEngine->start();
             while(!scriptEngine->isReady()) { }
@@ -30,12 +31,10 @@ namespace {
 
         virtual void TearDown() {
             delete scriptEngine;
-            delete midiObject;
             delete app;
         }
 
         QApplication *app;
-        MidiObject* midiObject;
         MidiScriptEngine *scriptEngine;
     };
 
@@ -52,7 +51,7 @@ namespace {
         f.open(QIODevice::ReadWrite | QIODevice::Truncate);
         f.write("setValue = function() { engine.setValue('[Channel1]', 'co', 1.0); }\n");
         f.close();
-        
+
         scriptEngine->evaluate(script);;
         EXPECT_FALSE(scriptEngine->hasErrors(script));
 
@@ -74,7 +73,7 @@ namespace {
         f.open(QIODevice::ReadWrite | QIODevice::Truncate);
         f.write("getSetValue = function() { var val = engine.getValue('[Channel1]', 'co'); engine.setValue('[Channel1]', 'co', val + 1); }\n");
         f.close();
-        
+
         scriptEngine->evaluate(script);;
         EXPECT_FALSE(scriptEngine->hasErrors(script));
 
@@ -88,6 +87,6 @@ namespace {
         co = NULL;
 
         f.remove();
-    }    
+    }
 
 }
