@@ -900,7 +900,9 @@ if int(flags_shoutcast):
 	shoutogg = 0
 
 	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
-	conf.CheckLib('shout')
+	if not conf.CheckLib('shout'):
+		print "libshout was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag."
+		Exit(1)
 
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
 
@@ -1471,6 +1473,7 @@ if platform == 'osx':
 
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
+		File('#res/schema.xml'),
 		Dir('#res/midi/'), Dir('#res/keyboard/'),
 		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/')],
 		 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
