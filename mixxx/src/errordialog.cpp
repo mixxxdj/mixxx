@@ -22,7 +22,7 @@
 
 ErrorDialog::ErrorDialog() {
     m_errorCondition=false;
-    connect(this, SIGNAL(showErrorDialog(int, QString)), this, SLOT(errorDialog(int, QString)));
+    connect(this, SIGNAL(showErrorDialog(int, QString, QString)), this, SLOT(errorDialog(int, QString, QString)));
 }
 
 ErrorDialog::~ErrorDialog()
@@ -30,22 +30,29 @@ ErrorDialog::~ErrorDialog()
 }
 
 void ErrorDialog::requestErrorDialog(int type, QString message) {
-    emit (showErrorDialog(type, message));
-    disconnect(this, SIGNAL(showErrorDialog(int, QString)), this, SLOT(errorDialog(int, QString))); // Avoid multiple dialogs until this one is acknowledged
+    switch (type) {
+        case 1: requestErrorDialog(type,"Mixxx - Critical error",message); break;
+        case 0:
+        default:
+            requestErrorDialog(type,"Mixxx - Warning",message);
+            break;
+    }
 }
 
-void ErrorDialog::errorDialog(int type, QString message) {
+void ErrorDialog::requestErrorDialog(int type, QString title, QString message) {
+    emit (showErrorDialog(type, title, message));
+    disconnect(this, SIGNAL(showErrorDialog(int, QString, QString)), this, SLOT(errorDialog(int, QString, QString))); // Avoid multiple dialogs until this one is acknowledged
+}
+
+void ErrorDialog::errorDialog(int type, QString title, QString message) {
     QMessageBox msgBox;
     msgBox.setText(message);
+    msgBox.setWindowTitle(title);
     switch (type) {
-        case 1:
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.setWindowTitle("Mixxx - Critical error");
-            break;
+        case 1: msgBox.setIcon(QMessageBox::Critical); break;
         case 0:
         default:
             msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setWindowTitle("Mixxx - Warning");
             break;
     }
     msgBox.exec();  // Block so the user can read it before exiting
@@ -61,7 +68,7 @@ void ErrorDialog::errorDialog(int type, QString message) {
         }
     }
 
-    connect(this, SIGNAL(showErrorDialog(int, QString)), this, SLOT(errorDialog(int, QString)));    // reconnect the signal
+    connect(this, SIGNAL(showErrorDialog(int, QString, QString)), this, SLOT(errorDialog(int, QString, QString)));    // reconnect the signal
 }
 
 bool ErrorDialog::checkError() {
