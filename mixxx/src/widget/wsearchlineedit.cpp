@@ -20,19 +20,31 @@ WSearchLineEdit::WSearchLineEdit(QString& skinpath, QWidget* parent) : QLineEdit
 	//Set up a timer to search after a few hundred milliseconds timeout.
 	//This stops us from thrashing the database if you type really fast.
 	m_searchTimer.setSingleShot(true);
-	connect(&m_searchTimer, SIGNAL(timeout()), this, SLOT(triggerSearch()));
-	connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(slotSetupTimer(const QString&)));
+	connect(&m_searchTimer, SIGNAL(timeout()),
+          this, SLOT(triggerSearch()));
+
+  connect(this, SIGNAL(textChanged(const QString&)),
+          this, SLOT(slotSetupTimer(const QString&)));
+
 	//When you hit enter, it will trigger the search.
 	connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
 
 	connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-	connect(m_clearButton, SIGNAL(clicked()), this, SLOT(triggerSearch())); //Forces immediate update of tracktable
-	connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateCloseButton(const QString&)));
+  //Forces immediate update of tracktable
+	connect(m_clearButton, SIGNAL(clicked()), this, SLOT(triggerSearch()));
+
+	connect(this, SIGNAL(textChanged(const QString&)),
+          this, SLOT(updateCloseButton(const QString&)));
+
 	int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").arg(m_clearButton->sizeHint().width() + frameWidth + 1));
-    QSize msz = minimumSizeHint();
-    setMinimumSize(qMax(msz.width(), m_clearButton->sizeHint().height() + frameWidth * 2 + 2),
-                   qMax(msz.height(), m_clearButton->sizeHint().height() + frameWidth * 2 + 2));
+  setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").
+                arg(m_clearButton->sizeHint().width() + frameWidth + 1));
+
+  QSize msz = minimumSizeHint();
+  setMinimumSize(qMax(msz.width(),
+                      m_clearButton->sizeHint().height() + frameWidth * 2 + 2),
+                 qMax(msz.height(),
+                      m_clearButton->sizeHint().height() + frameWidth * 2 + 2));
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e)
@@ -45,25 +57,26 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e)
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     if (m_place) {
-		//Must block signals here so that we don't emit a search() signal via textChanged().
-		blockSignals(true);
-		setText("");
-		blockSignals(false);
-		QPalette palette = this->palette();
-		palette.setColor(this->foregroundRole(), Qt::black);
-		setPalette(palette);
-		m_place = false;
-		emit(searchStarting());
-	}
+        //Must block signals here so that we don't emit a search() signal via
+        //textChanged().
+        blockSignals(true);
+        setText("");
+        blockSignals(false);
+        QPalette palette = this->palette();
+        palette.setColor(this->foregroundRole(), Qt::black);
+        setPalette(palette);
+        m_place = false;
+        emit(searchStarting());
+    }
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
-	if (text().isEmpty()) {
-		m_place = true;
-		showPlaceholder();
-	} else {
-		m_place = false;
-	}
+    if (text().isEmpty()) {
+        m_place = true;
+        showPlaceholder();
+    } else {
+        m_place = false;
+    }
 }
 
 void WSearchLineEdit::restoreSearch(const QString& text) {
@@ -85,26 +98,27 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
 
 void WSearchLineEdit::slotSetupTimer(const QString& text)
 {
-	m_searchTimer.stop();
-	m_searchTimer.start(300); //300 milliseconds timeout
-	connect(&m_searchTimer, SIGNAL(timeout()), this, SLOT(triggerSearch()));
+    m_searchTimer.stop();
+    //300 milliseconds timeout
+    m_searchTimer.start(300);
 }
 
 void WSearchLineEdit::triggerSearch()
 {
-	m_searchTimer.stop();
-	emit(search(this->text()));
+    m_searchTimer.stop();
+    emit(search(text()));
 }
 
 void WSearchLineEdit::showPlaceholder() {
-	//Must block signals here so that we don't emit a search() signal via textChanged().
-	blockSignals(true);
-	setText("Search...");
-	blockSignals(false);
+    //Must block signals here so that we don't emit a search() signal via
+    //textChanged().
+    blockSignals(true);
+    setText(tr("Search..."));
+    blockSignals(false);
     QPalette palette = this->palette();
-	palette.setColor(this->foregroundRole(), Qt::lightGray);
-	setPalette(palette);
-	emit(searchCleared());
+    palette.setColor(this->foregroundRole(), Qt::lightGray);
+    setPalette(palette);
+    emit(searchCleared());
 }
 
 void WSearchLineEdit::updateCloseButton(const QString& text)
