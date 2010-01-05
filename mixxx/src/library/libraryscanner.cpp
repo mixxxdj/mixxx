@@ -26,10 +26,12 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_pCollection(collection),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
-    m_trackDao(m_database, m_cueDao)
+    m_trackDao(m_database, m_cueDao),
     //Don't initialize m_database here, we need to do it in run() so the DB conn is in
     //the right thread.
+    nameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" "))
 {
+
     qDebug() << "Constructed LibraryScanner!!!";
 
 }
@@ -197,8 +199,6 @@ void LibraryScanner::scan()
 */
 bool LibraryScanner::recursiveScan(QString dirPath)
 {
-    QStringList nameFilters;
-    nameFilters = QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" ");
     QDirIterator fileIt(dirPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     bool bScanFinishedCleanly = true;

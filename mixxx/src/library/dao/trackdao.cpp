@@ -118,7 +118,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
 
     //Start the transaction
-    Q_ASSERT(m_database.transaction());
+    m_database.transaction();
 
     QSqlQuery query(m_database);
     int trackLocationId = -1;
@@ -420,7 +420,7 @@ void TrackDAO::updateTrackInDatabase(TrackInfoObject* pTrack)
 
 void TrackDAO::invalidateTrackLocations(QString directory)
 {
-    qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "invalidateTrackLocations(" << directory << ")";
 
     QSqlQuery query(m_database);
