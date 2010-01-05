@@ -583,7 +583,7 @@ if not conf.CheckHeader(['porttime.h']):
 	print "Did not find PortTime development header, exiting!"
 	Exit(1)
 
-Check for PortMIDI & PortTime
+# Check for PortMIDI & PortTime
 if not conf.CheckLib(['portmidi', 'libportmidi']):
  	print "Did not find PortMidi or it\'s development headers, exiting!"
  	Exit(1)
