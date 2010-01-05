@@ -50,7 +50,7 @@ int LibraryHashDAO::getDirectoryHash(QString dirPath)
 
 void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
 {
-    qDebug() << "LibraryHashDAO::saveDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "LibraryHashDAO::saveDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO LibraryHashes (directory_path, hash, directory_deleted) "
                     "VALUES (:directory_path, :hash, :directory_deleted)");
@@ -67,7 +67,7 @@ void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
 
 void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_deleted)
 {
-    qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
             "SET hash=:hash, directory_deleted=:directory_deleted "
@@ -101,8 +101,8 @@ void LibraryHashDAO::markAsExisting(QString dirPath)
 
 void LibraryHashDAO::markAllDirectoriesAsDeleted()
 {
-    qDebug() << "LibraryHashDAO::markAllDirectoriesAsDeleted"
-             << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "LibraryHashDAO::markAllDirectoriesAsDeleted"
+    //<< QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
                   "SET directory_deleted=:directory_deleted");
