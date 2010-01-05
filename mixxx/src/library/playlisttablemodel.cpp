@@ -157,9 +157,7 @@ TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
 
 QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    //FIXME: use position instead of location for playlist tracks?
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-    QString location = m_trackDao.getTrackLocation(trackId);
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
 }
 
