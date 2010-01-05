@@ -115,7 +115,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
         m_libraryScanMutex.lock();
         bool cancel = bCancelLibraryScan;
         m_libraryScanMutex.unlock();
-        if (cancel == true)
+        if (cancel)
         {
             return false;
         }
