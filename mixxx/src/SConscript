@@ -936,7 +936,7 @@ else:
 	print "Shoutcast support... disabled"
 
 #LADSPA
-flags_ladspa = 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
+flags_ladspa = getFlags(env, 'ladspa', 0) # 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['#lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CPPDEFINES = '__LADSPA__')
