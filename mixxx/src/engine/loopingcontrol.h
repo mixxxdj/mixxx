@@ -55,6 +55,7 @@ class LoopingControl : public EngineControl {
   private:
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
+    ControlObject* m_pCOLoopEnabled;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pReloopExitButton;

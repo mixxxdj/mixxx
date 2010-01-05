@@ -1,0 +1,93 @@
+#include <QtDebug>
+#include <QStringList>
+
+#include "library/proxytrackmodel.h"
+#include "library/rhythmboxtrackmodel.h"
+#include "library/rhythmboxplaylistmodel.h"
+#include "library/rhythmboxfeature.h"
+
+RhythmboxFeature::RhythmboxFeature(QObject* parent)
+    : LibraryFeature(parent) {
+
+    m_pRhythmboxTrackModel = NULL;
+    m_pTrackModelProxy = NULL;
+    m_pRhythmboxPlaylistModel = NULL;
+    m_pPlaylistModelProxy = NULL;
+
+}
+
+RhythmboxFeature::~RhythmboxFeature() {
+
+}
+
+bool RhythmboxFeature::isSupported() {
+    return (QFile::exists(MIXXX_RHYTHMBOX_DB_LOCATION) ||
+            QFile::exists(MIXXX_RHYTHMBOX_DB_LOCATION_ALT));
+}
+
+QVariant RhythmboxFeature::title() {
+    return tr("Rhythmbox");
+}
+
+QIcon RhythmboxFeature::getIcon() {
+    return QIcon(":/images/library/rhythmbox.png");
+}
+
+QAbstractItemModel* RhythmboxFeature::getChildModel() {
+    return &m_childModel;
+}
+
+void RhythmboxFeature::activate() {
+    qDebug("RhythmboxFeature::activate()");
+
+    if (!m_pRhythmboxTrackModel) {
+        m_pRhythmboxTrackModel = new RhythmboxTrackModel();
+        m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
+        m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+        m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
+        m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
+        m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+        QStringList list;
+        for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
+            list << m_pRhythmboxPlaylistModel->playlistTitle(i);
+        }
+        m_childModel.setStringList(list);
+    }
+    emit(showTrackModel(m_pTrackModelProxy));
+}
+
+void RhythmboxFeature::activateChild(const QModelIndex& index) {
+    qDebug() << "RhythmboxFeature::activateChild()" << index;
+    QString playlist = index.data().toString();
+    qDebug() << "Activating " << playlist;
+    m_pRhythmboxPlaylistModel->setPlaylist(playlist);
+    emit(showTrackModel(m_pPlaylistModelProxy));
+}
+
+void RhythmboxFeature::onRightClick(const QPoint& globalPos) {
+}
+
+void RhythmboxFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+}
+
+bool RhythmboxFeature::dropAccept(QUrl url) {
+    return false;
+}
+
+bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+bool RhythmboxFeature::dragMoveAccept(QUrl url) {
+    return false;
+}
+
+bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    return false;
+}
+
+

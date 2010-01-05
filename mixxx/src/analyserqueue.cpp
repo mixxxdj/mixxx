@@ -21,6 +21,14 @@ AnalyserQueue::AnalyserQueue() : m_aq(),
 
 }
 
+int AnalyserQueue::numQueuedTracks()
+{
+    m_qm.lock();
+    int numQueuedTracks = m_tioq.length();
+    m_qm.unlock();
+    return numQueuedTracks;
+}
+
 void AnalyserQueue::addAnalyser(Analyser* an) {
     m_aq.push_back(an);
 }
@@ -30,6 +38,11 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
     if (m_tioq.isEmpty()) {
         m_qwait.wait(&m_qm);
+        
+        if (m_exit) {
+            m_qm.unlock();
+            return NULL;
+        }
     }
 
     TrackInfoObject* tio = m_tioq.dequeue();
@@ -88,7 +101,7 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
 
         // emit progress updates to whoever cares
         processedSamples += read;
-        int progress = processedSamples*100/totalSamples;
+        int progress = ((float)processedSamples)/totalSamples * 100; //fp div here prevents insano signed overflow
         emit(trackProgress(tio, progress));
     
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
@@ -104,10 +117,11 @@ void AnalyserQueue::run() {
 
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
-    while (!m_exit) {
+	while (!m_exit) {
+		TrackInfoObject* next = dequeueNextBlocking();
+        if (m_exit) //When exit is set, it makes the above unblock first.
+            return;
 
-        TrackInfoObject* next = dequeueNextBlocking();
-        
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
         int iNumSamples = pSoundSource->length();
@@ -166,14 +180,24 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     return ret;
 }
 
-AnalyserQueue* AnalyserQueue::createBPMAnalyserQueue(ConfigObject<ConfigValue> *_config) {
-    AnalyserQueue* ret = new AnalyserQueue();
+AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
+	AnalyserQueue* ret = new AnalyserQueue();
+    ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
-    return ret;
+	ret->start(QThread::IdlePriority);
+	return ret;
 }
 
 AnalyserQueue::~AnalyserQueue() {
     QListIterator<Analyser*> it(m_aq);
+    
+    stop();
+
+	m_qm.lock();
+	m_qwait.wakeAll();
+	m_qm.unlock();
+	
+	wait(); //Wait until thread has actually stopped before proceeding.
     
     while (it.hasNext()) {
         Analyser* an = it.next();

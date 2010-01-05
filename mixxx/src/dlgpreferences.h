@@ -33,7 +33,6 @@ class MixxxApp;
 class MixxxView;
 class PlayerProxy;
 class SoundManager;
-class Track;
 class DlgPrefSound;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
@@ -57,7 +56,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view, SoundManager *soundman,
-    		Track *track, MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
+                   MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();
 public slots:
@@ -88,21 +87,20 @@ private:
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefShoutcast *wshoutcast;
 
-	QTreeWidgetItem* m_pSoundButton;    
-	QTreeWidgetItem* m_pPlaylistButton;    
-	QTreeWidgetItem* m_pControlsButton;    
-	QTreeWidgetItem* m_pEqButton;    
-	QTreeWidgetItem* m_pCrossfaderButton;    
-	QTreeWidgetItem* m_pRecordingButton;    
-	QTreeWidgetItem* m_pBPMdetectButton;    
-	QTreeWidgetItem* m_pVinylControlButton;    
-	QTreeWidgetItem* m_pShoutcastButton;    
+	QTreeWidgetItem* m_pSoundButton;
+	QTreeWidgetItem* m_pPlaylistButton;
+	QTreeWidgetItem* m_pControlsButton;
+	QTreeWidgetItem* m_pEqButton;
+	QTreeWidgetItem* m_pCrossfaderButton;
+	QTreeWidgetItem* m_pRecordingButton;
+	QTreeWidgetItem* m_pBPMdetectButton;
+	QTreeWidgetItem* m_pVinylControlButton;
+	QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pMIDITreeItem;
     QList<QTreeWidgetItem*> m_midiBindingsButtons;
 
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
-    Track* m_pTrack;
     MidiDeviceManager* m_pMidiDeviceManager;
 };
 
