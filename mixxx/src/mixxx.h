@@ -69,6 +69,7 @@ class PlayerProxy;
 class BpmDetector;
 class QSplashScreen;
 class ScriptEngine;
+class MidiDeviceManager;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -148,7 +149,7 @@ class MixxxApp : public QMainWindow
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     SoundManager *soundmanager;
-    MidiObject *midi;
+    MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
     /** Pointer to active keyboard configuration */

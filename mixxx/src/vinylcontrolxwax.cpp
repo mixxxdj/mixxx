@@ -18,6 +18,7 @@
 ***************************************************************************/
 
 #include <QtDebug>
+#include <math.h>
 #include <limits.h>
 #include "vinylcontrolxwax.h"
 #include "controlobjectthreadmain.h"

@@ -46,7 +46,7 @@ class DlgPrefBpm;
 class DlgPrefVinyl;
 class DlgPrefShoutcast;
 class PowerMate;
-class MidiObject;
+class MidiDeviceManager;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -57,7 +57,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view, SoundManager *soundman,
-    		Track *track, MidiObject * midi, ConfigObject<ConfigValue> *config);
+    		Track *track, MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();
 public slots:
@@ -67,6 +67,7 @@ public slots:
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showVinylControlPage();
+    void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
 signals:
     void closeDlg();
     void showDlg();
@@ -102,7 +103,7 @@ private:
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
     Track* m_pTrack;
-    MidiObject* m_pMidiObject;
+    MidiDeviceManager* m_pMidiDeviceManager;
 };
 
 #endif

@@ -77,7 +77,7 @@
 #include "defs_mixxxcmetrics.h"
 #endif
 
-Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, 
+Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config,
              EngineBuffer * pBuffer1, EngineBuffer * pBuffer2,
              AnalyserQueue* analyserQueue)
 {

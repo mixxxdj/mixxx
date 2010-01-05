@@ -6,7 +6,7 @@
 #include <QFile>
 
 #include "controlobject.h"
-#include "script/midiscriptengine.h"
+#include "midi/midiscriptengine.h"
 #include "midiobjectnull.h"
 
 #define UNIX_SHARE_PATH "/usr/share/mixxx"

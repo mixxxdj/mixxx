@@ -6,9 +6,9 @@
 
 Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
-MidiLedHandler::MidiLedHandler(QString group, QString key, MidiObject & midi, double min,
-                               double max, unsigned char status, unsigned char midino, QString device, unsigned char on, unsigned char off)
-    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_midino(midino), m_device(device), m_on(on), m_off(off) {
+MidiLedHandler::MidiLedHandler(QString group, QString key, MidiDevice & midi, double min,
+                               double max, unsigned char status, unsigned char midino, unsigned char on, unsigned char off)
+    : m_min(min), m_max(max), m_midi(midi), m_status(status), m_midino(midino), m_on(on), m_off(off) {
 
     //OMGWTFBBQ: Massive hack to temporarily fix LP #254564 for the 1.6.0 release.
     //           Something's funky with our <lights> blocks handling? -- Albert 08/05/2008
@@ -49,7 +49,7 @@ void MidiLedHandler::controlChanged(double value) {
     m_reentracyBlock.unlock();
 }
 
-void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString device) {
+void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
     if (!node.isNull() && node.isElement()) {
         QDomNode light = node;
         while (!light.isNull()) {
@@ -78,8 +78,8 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiObject & midi, QString de
                 if (!light.firstChildElement("maximum").isNull()) {
                     max = WWidget::selectNodeFloat(light, "maximum");
                 }
-                qDebug() << "Creating LED handler hook for:" << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on" << device << "on/off:" << on << off;
-                allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino, device, on, off));
+                qDebug() << "Creating LED handler hook for:" << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on/off:" << on << off;
+                allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino, on, off));
             }
             light = light.nextSibling();
         }

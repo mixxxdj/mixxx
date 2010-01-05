@@ -20,7 +20,8 @@
 #include <QEvent>
 #include <QtScript>
 #include "configobject.h"
-#include "midiobject.h"
+#include "midimessage.h"
+class MidiDevice;
 
 //Forward declaration(s)
 class ControlObjectThread;
@@ -30,7 +31,7 @@ class MidiScriptEngine : public QThread {
     Q_OBJECT
 
 public:
-    MidiScriptEngine(MidiObject* midi_object);
+    MidiScriptEngine(MidiDevice* midiDevice);
     ~MidiScriptEngine();
 
     bool isReady();
@@ -45,7 +46,7 @@ public:
     bool execute(QString function, QString data); 
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
-                 char control, char value, MidiStatusByte status); 
+                 char control, char value, MidiStatusByte status, QString group); 
 
     // Lookup registered script functions
     QStringList getScriptFunctions();
@@ -73,7 +74,7 @@ private:
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);
     bool safeExecute(QString function, char channel, 
-                     char control, char value, MidiStatusByte status);
+                     char control, char value, MidiStatusByte status, QString group);
     void initializeScriptEngine();
 
     void generateScriptFunctions(QString code);
@@ -81,8 +82,8 @@ private:
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
     
-
-    MidiObject *m_pMidiObject;
+    
+    MidiDevice* m_pMidiDevice;
     QHash<ConfigKey, QString> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;

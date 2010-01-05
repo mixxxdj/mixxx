@@ -16,6 +16,18 @@ typedef enum {
     MIDI_STATUS_PITCH_BEND = 0xE0,
 } MidiStatusByte;
   
+ // This enum is used in the decoding of the status message into voice categories
+// This is just cruft leftover from ages ago, unfortunately. Hasn't been properly removed/refactored yet.
+typedef enum {
+    NOTE_OFF         = 0x80,
+    NOTE_ON          = 0x90,
+    AFTERTOUCH       = 0xA0,
+    CTRL_CHANGE      = 0xB0,
+    PROG_CHANGE      = 0xC0,
+    CHANNEL_PRESSURE = 0xD0,
+    PITCH_WHEEL      = 0xE0,
+} MidiCategory; 
+  
   /** The key used in the MIDI mapping hash table */
   class MidiMessage
   {
