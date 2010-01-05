@@ -23,7 +23,7 @@ void PlaylistDAO::initialize()
 /** Create a playlist with the given name.
     @param name The name of the playlist to be created.
 */
-void PlaylistDAO::createPlaylist(QString name)
+void PlaylistDAO::createPlaylist(QString name, bool hidden)
 {
     qDebug() << "PlaylistDAO::createPlaylist"
              << QThread::currentThread()
@@ -52,11 +52,12 @@ void PlaylistDAO::createPlaylist(QString name)
 
     qDebug() << "Inserting playlist" << name << "at position" << position;
 
-    query.prepare("INSERT INTO Playlists (name, position) "
-                  "VALUES (:name, :position)");
+    query.prepare("INSERT INTO Playlists (name, position, hidden) "
+                  "VALUES (:name, :position, :hidden)");
  				 // ":date_created, :date_modified)");
     query.bindValue(":name", name);
     query.bindValue(":position", position);
+    query.bindValue(":hidden", hidden ? 1 : 0);
 
     if (!query.exec()) {
         qDebug() << query.lastError();

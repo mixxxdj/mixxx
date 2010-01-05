@@ -33,6 +33,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
 
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
+    m_playlistTableModel.setFilter("hidden=0");
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("id"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("position"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_created"));

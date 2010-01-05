@@ -29,7 +29,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_pAutoDJTableModel =  new PlaylistTableModel(this, pTrackCollection);
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
-        m_playlistDao.createPlaylist(AUTODJ_TABLE);
+        m_playlistDao.createPlaylist(AUTODJ_TABLE, true);
         playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     }
     m_pAutoDJTableModel->setPlaylist(playlistId);
