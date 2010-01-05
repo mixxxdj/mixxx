@@ -88,7 +88,6 @@ QSqlDatabase& TrackCollection::getDatabase()
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
 {
     qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
-    bCancelLibraryScan = false; //Reset the flag
 
     emit(startedLoading());
     QFileInfoList files;
