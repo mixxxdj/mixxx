@@ -583,15 +583,16 @@ if not conf.CheckHeader(['porttime.h']):
 	print "Did not find PortTime development header, exiting!"
 	Exit(1)
 
+if not platform == 'osx':   # OSX doesn't need PortTime for some reason
+	if not conf.CheckLib(['porttime', 'libporttime']):
+		print "Did not find PortTime or it\'s development headers, exiting!"
+		Exit(1)
+
 #Check for PortMIDI & PortTime
 if not conf.CheckLib(['portmidi', 'libportmidi']):
  	print "Did not find PortMidi or it\'s development headers, exiting!"
  	Exit(1)
 
-if not platform == 'osx':   # OSX doesn't need PortTime for some reason
-	if not conf.CheckLib(['porttime', 'libporttime']):
-		print "Did not find PortTime or it\'s development headers, exiting!"
-		Exit(1)
 
 sources += Split("""midi/mididevice.cpp """);
 sources += Split("""midi/mididevicemanager.cpp """);
