@@ -112,12 +112,17 @@ void LibraryScanner::run()
     m_cueDao.initialize();
     m_trackDao.initialize();
 
+    QTime t2;
+    t2.start();
     //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
     LegacyLibraryImporter libImport(m_trackDao);
     connect(&libImport, SIGNAL(progress(QString)),
             m_pProgress, SLOT(slotUpdate(QString)),
             Qt::BlockingQueuedConnection);
+    m_database.transaction();
     libImport.import();
+    m_database.commit();
+    qDebug("Legacy importer took %d ms", t2.elapsed());
 
     // Time the library scanner.
     QTime t;
@@ -131,7 +136,9 @@ void LibraryScanner::run()
 
     qDebug() << "Recursively scanning library.";
     //Start scanning the library.
+    m_database.transaction();
     bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath);
+
 
     if (!bScanFinishedCleanly) {
         qDebug() << "Recursive scan interrupted.";
@@ -154,10 +161,13 @@ void LibraryScanner::run()
         qDebug() << "Detecting moved files.";
         m_trackDao.detectMovedFiles();
 
+        m_database.commit();
         qDebug() << "Scan finished cleanly";
     }
-    else
+    else {
+        m_database.rollback();
         qDebug() << "Scan cancelled";
+    }
 
     qDebug("Scan took: %d ms", t.elapsed());
 
