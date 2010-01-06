@@ -20,7 +20,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
     //query.exec();
     QString tableName("missing_songs");
 
-    query.prepare("CREATE TEMPORARY VIEW " + tableName + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                   "SELECT " +
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +

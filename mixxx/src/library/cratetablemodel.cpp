@@ -29,7 +29,7 @@ void CrateTableModel::setCrate(int crateId) {
     QString tableName = QString("crate_%1").arg(m_iCrateId);
     QSqlQuery query;
 
-    QString queryString = QString("CREATE TEMPORARY VIEW %1 AS "
+    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT "
                                   "library." + LIBRARYTABLE_ID + "," +
                                   LIBRARYTABLE_ARTIST + "," +
@@ -59,7 +59,6 @@ void CrateTableModel::setCrate(int crateId) {
         qDebug() << "Error creating temporary view for crate "
                  << crateId << ":" << query.executedQuery() << query.lastError();
     }
-    qDebug() << query.executedQuery();
 
     setTable(tableName);
 

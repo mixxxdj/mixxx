@@ -39,7 +39,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistTableName);
 
-    query.prepare("CREATE TEMPORARY VIEW " + driver->formatValue(playlistNameField) + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + driver->formatValue(playlistNameField) + " AS "
                   "SELECT " +
                   "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION + "," +
                   //"playlist_id, " + //DEBUG
@@ -66,10 +66,9 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     //query.bindValue(":playlist_name", playlistTableName);
     //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
-        qDebug() << query.executedQuery() << query.lastError();
+        // It's normal for this to fail.
+        //qDebug() << query.executedQuery() << query.lastError();
     }
-
-    //qDebug() << query.executedQuery();
 
     //Print out any SQL error, if there was one.
     /*

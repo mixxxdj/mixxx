@@ -72,7 +72,7 @@ void PlaylistFeature::activate() {
 }
 
 void PlaylistFeature::activateChild(const QModelIndex& index) {
-    qDebug() << "PlaylistFeature::activateChild()" << index;
+    //qDebug() << "PlaylistFeature::activateChild()" << index;
 
     //Switch the playlist table model's playlist.
     QString playlistName = index.data().toString();
@@ -120,7 +120,7 @@ void PlaylistFeature::slotCreatePlaylist() {
 
 void PlaylistFeature::slotDeletePlaylist()
 {
-    qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+    //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
         Q_ASSERT(playlistId >= 0);
