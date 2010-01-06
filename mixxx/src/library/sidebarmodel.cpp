@@ -169,7 +169,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
 
 bool SidebarModel::dropAccept(const QModelIndex& index, QUrl url)
 {
-    qDebug() << "SidebarModel::dropAccept() index=" << index << url;
+    //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             return m_sFeatures[index.row()]->dropAccept(url);
@@ -189,7 +189,7 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QUrl url)
 
 bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
 {
-    qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+    //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             return m_sFeatures[index.row()]->dragMoveAccept(url);
@@ -224,29 +224,29 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
-    qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
+    //qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
     QModelIndex newParent = translateSourceIndex(parent);
     beginInsertRows(newParent, start, end);
 }
 
 void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) {
-    qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
+    //qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
     QModelIndex newParent = translateSourceIndex(parent);
     beginRemoveRows(newParent, start, end);
 }
 
 void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int end) {
-    qDebug() << "slotRowsInserted" << parent << start << end;
+    //qDebug() << "slotRowsInserted" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 
 void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end) {
-    qDebug() << "slotRowsRemoved" << parent << start << end;
+    //qDebug() << "slotRowsRemoved" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
 }

@@ -45,10 +45,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
         qDebug() << query.executedQuery() << query.lastError();
     }
 
-    qDebug() << query.executedQuery();
-
     //Print out any SQL error, if there was one.
-
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
@@ -135,8 +132,8 @@ void MissingTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
 
 void MissingTableModel::search(const QString& searchText)
 {
-    qDebug() << "MissingTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "MissingTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 

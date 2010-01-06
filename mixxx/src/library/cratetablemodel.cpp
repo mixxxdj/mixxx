@@ -142,8 +142,8 @@ void CrateTableModel::moveTrack(const QModelIndex& sourceIndex,
 }
 
 void CrateTableModel::search(const QString& searchText) {
-    qDebug() << "CrateTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "CrateTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 

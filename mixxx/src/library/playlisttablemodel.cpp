@@ -284,8 +284,8 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
 }
 
 void PlaylistTableModel::search(const QString& searchText) {
-    qDebug() << "PlaylistTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "PlaylistTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 

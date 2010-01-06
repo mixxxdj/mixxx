@@ -17,7 +17,6 @@ PlaylistDAO::~PlaylistDAO()
 
 void PlaylistDAO::initialize()
 {
-    qDebug() << "PlaylistDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 /** Create a playlist with the given name.
@@ -25,9 +24,9 @@ void PlaylistDAO::initialize()
 */
 void PlaylistDAO::createPlaylist(QString name, bool hidden)
 {
-    qDebug() << "PlaylistDAO::createPlaylist"
-             << QThread::currentThread()
-             << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::createPlaylist"
+    //          << QThread::currentThread()
+    //          << m_database.connectionName();
     //Start the transaction
     m_database.transaction();
 
@@ -72,7 +71,7 @@ void PlaylistDAO::createPlaylist(QString name, bool hidden)
 /** Find out the name of the playlist at the given position */
 QString PlaylistDAO::getPlaylistName(unsigned int position)
 {
-    qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT name FROM Playlists "
@@ -94,7 +93,7 @@ QString PlaylistDAO::getPlaylistName(unsigned int position)
 }
 
 int PlaylistDAO::getPlaylistIdFromName(QString name) {
-    qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM Playlists WHERE name = :name");
@@ -113,7 +112,7 @@ int PlaylistDAO::getPlaylistIdFromName(QString name) {
 /** Delete a playlist */
 void PlaylistDAO::deletePlaylist(int playlistId)
 {
-    qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
     m_database.transaction();
 
     //Get the playlist id for this
@@ -148,10 +147,8 @@ void PlaylistDAO::deletePlaylist(int playlistId)
 /** Append a track to a playlist */
 void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
 {
-    qDebug() << "PlaylistDAO::appendTrackToPlaylist"
-             << QThread::currentThread() << m_database.connectionName();
-    qDebug() << "appendTrackToPlaylist, track:" << trackId
-             << "playlist:" << playlistId;
+    // qDebug() << "PlaylistDAO::appendTrackToPlaylist"
+    //          << QThread::currentThread() << m_database.connectionName();
 
     //Start the transaction
     m_database.transaction();
@@ -194,12 +191,12 @@ void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
 /** Find out how many playlists exist. */
 unsigned int PlaylistDAO::playlistCount()
 {
-    qDebug() << "PlaylistDAO::playlistCount" << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::playlistCount" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT count(*) as count FROM Playlists");
 
     if (!query.exec()) {
-        qDebug() << query.lastError();
+        qDebug() << "playlistCount" << query.lastError();
     }
 
     int numRecords = 0;
@@ -211,8 +208,8 @@ unsigned int PlaylistDAO::playlistCount()
 
 int PlaylistDAO::getPlaylistId(int position)
 {
-    qDebug() << "PlaylistDAO::getPlaylistId"
-             << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::getPlaylistId"
+    //          << QThread::currentThread() << m_database.connectionName();
 
     //Find out the highest position existing in the playlist so we know what
     //position this track should have.
@@ -222,7 +219,7 @@ int PlaylistDAO::getPlaylistId(int position)
     query.bindValue(":position", position);
 
     if (!query.exec()) {
-        qDebug() << query.lastError();
+        qDebug() << "getPlaylistId" << query.lastError();
         return -1;
     }
 
@@ -238,8 +235,8 @@ int PlaylistDAO::getPlaylistId(int position)
 
 void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
 {
-    qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
-             << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
+    //          << QThread::currentThread() << m_database.connectionName();
     m_database.transaction();
     QSqlQuery query(m_database);
     //Delete the track from the playlist.
@@ -249,7 +246,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     query.bindValue(":position", position);
 
     if (!query.exec()) {
-        qDebug() << query.lastError();
+        qDebug() << "removeTrackFromPlaylist" << query.lastError();
         m_database.rollback();
         return;
     }
@@ -266,10 +263,6 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
 
 void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int position)
 {
-    qDebug() << "insertTrackIntoPlaylist, track:" << trackId
-             << "playlist:" << playlistId
-             << "position:" << position;
-
     if (playlistId < 0 || trackId < 0 || position < 0)
         return;
 
@@ -283,7 +276,7 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
 
     QSqlQuery query(m_database);
     if (!query.exec(queryString)) {
-        qDebug() << query.lastError();
+        qDebug() << "insertTrackIntoPlaylist" << query.lastError();
     }
 
     //Insert the song into the PlaylistTracks table

@@ -154,7 +154,6 @@ void CueControl::detachCue(int hotCue) {
 }
 
 void CueControl::loadTrack(TrackInfoObject* pTrack) {
-    qDebug() << "CueControl::loadTrack";
     Q_ASSERT(pTrack);
 
     QMutexLocker lock(&m_mutex);
