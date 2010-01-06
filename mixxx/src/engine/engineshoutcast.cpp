@@ -37,12 +37,20 @@
  * Initialize EngineShoutcast
  */
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
-{
-    m_pMetaData = NULL;
+        : m_pMetaData(NULL),
+          m_pShout(NULL),
+          m_pShoutMetaData(NULL),
+          m_pConfig(_config),
+          recReady(NULL),
+          encoder(NULL),
+          m_pUpdateShoutcastFromPrefs(NULL),
+          m_pCrossfader(NULL),
+          m_pVolume1(NULL),
+          m_pVolume2(NULL) {
     m_pShout = 0;
     m_iShoutStatus = 0;
-    m_pConfig = _config;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
+    m_bQuit = false;
 
     m_pCrossfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
     m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
@@ -76,8 +84,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     qDebug("********START SERVERCONNECT*******");
     if ( !serverConnect())
         return;
-
-
     qDebug("********SERVERCONNECTED********");
 
 
@@ -126,8 +132,10 @@ EngineShoutcast::~EngineShoutcast()
 
     if (m_pShoutMetaData)
         shout_metadata_free(m_pShoutMetaData);
-    if (m_pShout)
+    if (m_pShout) {
         shout_close(m_pShout);
+        shout_free(m_pShout);
+    }
     shout_shutdown();
 }
 
@@ -243,9 +251,6 @@ void EngineShoutcast::updateFromPreferences()
  */
 bool EngineShoutcast::serverConnect()
 {
-    qDebug("in serverConnect();");
-
-
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
@@ -255,8 +260,8 @@ bool EngineShoutcast::serverConnect()
     // on the first change
     m_pMetaDataLife = 31337;
 
-
-    while (1) {
+    const int iMaxTries = 3;
+    while (!m_bQuit && m_iShoutFailures < iMaxTries) {
         if (m_pShout)
             shout_close(m_pShout);
 
@@ -264,13 +269,25 @@ bool EngineShoutcast::serverConnect()
         if (m_iShoutStatus == SHOUTERR_SUCCESS)
             m_iShoutStatus = SHOUTERR_CONNECTED;
 
-        if ((m_iShoutStatus == SHOUTERR_BUSY) || (m_iShoutStatus == SHOUTERR_CONNECTED) || (m_iShoutStatus == SHOUTERR_SUCCESS))
+        if ((m_iShoutStatus == SHOUTERR_BUSY) ||
+            (m_iShoutStatus == SHOUTERR_CONNECTED) ||
+            (m_iShoutStatus == SHOUTERR_SUCCESS))
             break;
 
         m_iShoutFailures++;
-        sleep(30);
+        qDebug() << "Shoutcast failed connect. Failures:" << m_iShoutFailures;
+        sleep(2);
     }
-
+    if (m_iShoutFailures == iMaxTries) {
+        qDebug() << "Shoutcast aborted connect after" << iMaxTries << "tries.";
+        if (m_pShout)
+            shout_close(m_pShout);
+    }
+    if (m_bQuit) {
+        if (m_pShout)
+            shout_close(m_pShout);
+        return false;
+    }
 
     m_iShoutFailures = 0;
 
@@ -295,6 +312,8 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
 {
     int ret;
 
+    if (!m_pShout)
+        return;
 
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
@@ -312,7 +331,6 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                 //qDebug() << "yea I kinda sent header";
             }
         }
-
 
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
@@ -342,7 +360,8 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
         return;
 
-    if (iBufferSize > 0) encoder->encodeBuffer(pOut, iBufferSize);
+    if (iBufferSize > 0 && encoder)
+        encoder->encodeBuffer(pOut, iBufferSize);
 
     if (metaDataHasChanged())
         updateMetaData();
@@ -464,7 +483,7 @@ bool EngineShoutcast::metaDataHasChanged()
  */
 void EngineShoutcast::updateMetaData()
 {
-    if (!m_pShoutMetaData)
+    if (!m_pShout || !m_pShoutMetaData)
         return;
 
     QByteArray baSong = "";
