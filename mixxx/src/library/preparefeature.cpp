@@ -48,8 +48,8 @@ QAbstractItemModel* PrepareFeature::getChildModel() {
 }
 
 void PrepareFeature::activate() {
-    qDebug() << "PrepareFeature::activate()";
-    emit(switchToView("Prepare"));
+    //qDebug() << "PrepareFeature::activate()";
+    emit(switchToView(m_sPrepareViewName));
 }
 
 void PrepareFeature::activateChild(const QModelIndex& index) {

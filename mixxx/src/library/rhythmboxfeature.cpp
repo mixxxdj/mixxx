@@ -1,3 +1,4 @@
+#include <QMessageBox>
 #include <QtDebug>
 #include <QStringList>
 
@@ -38,9 +39,19 @@ QAbstractItemModel* RhythmboxFeature::getChildModel() {
 }
 
 void RhythmboxFeature::activate() {
-    qDebug("RhythmboxFeature::activate()");
+    //qDebug("RhythmboxFeature::activate()");
 
     if (!m_pRhythmboxTrackModel) {
+        if (QMessageBox::question(
+            NULL,
+            tr("Load Rhythmbox Library?"),
+            tr("Would you like to load your Rhythmbox library?"),
+            QMessageBox::Ok,
+            QMessageBox::Cancel)
+            == QMessageBox::Cancel) {
+            return;
+        }
+
         m_pRhythmboxTrackModel = new RhythmboxTrackModel();
         m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
         m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -61,7 +72,7 @@ void RhythmboxFeature::activate() {
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
-    qDebug() << "RhythmboxFeature::activateChild()" << index;
+    //qDebug() << "RhythmboxFeature::activateChild()" << index;
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
