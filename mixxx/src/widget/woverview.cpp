@@ -67,13 +67,13 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     hotcueKey.item = pattern.arg(i);
     ControlObject* pControl = ControlObject::getControl(hotcueKey);
 
-    qDebug() << "Connecting hotcue controls.";
+    //qDebug() << "Connecting hotcue controls.";
     while (pControl) {
         m_hotcueControls.push_back(pControl);
         m_hotcues.push_back(pControl->get());
         m_hotcueMap[pControl] = i;
 
-        qDebug() << "Connecting hotcue" << hotcueKey.group << hotcueKey.item;
+        //qDebug() << "Connecting hotcue" << hotcueKey.group << hotcueKey.item;
 
         connect(pControl, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(cueChanged(double)));

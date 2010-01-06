@@ -124,7 +124,7 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    qDebug() << "Library::slotShowTrackModel" << model;
+    //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     Q_ASSERT(trackModel);
     emit(showTrackModel(model));
@@ -133,7 +133,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    qDebug() << "Library::slotSwitchToView" << view;
+    //qDebug() << "Library::slotSwitchToView" << view;
     emit(switchToView(view));
 }
 

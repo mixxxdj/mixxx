@@ -43,8 +43,8 @@ bool PrepareLibraryTableModel::isColumnInternal(int column) {
 }
 
 void PrepareLibraryTableModel::search(const QString& searchText) {
-    qDebug() << "PrepareLibraryTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "PrepareLibraryTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 

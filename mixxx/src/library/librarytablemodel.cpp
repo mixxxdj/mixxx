@@ -115,13 +115,13 @@ void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
 }
 
 void LibraryTableModel::search(const QString& searchText) {
-    qDebug() << "LibraryTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "LibraryTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
 void LibraryTableModel::slotSearch(const QString& searchText) {
-    qDebug() << "slotSearch()" << searchText << QThread::currentThread();
+    // qDebug() << "slotSearch()" << searchText << QThread::currentThread();
     m_currentSearch = searchText;
 
     QString filter;
@@ -147,7 +147,7 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
 }
 
 const QString LibraryTableModel::currentSearch() {
-    qDebug() << "LibraryTableModel::currentSearch(): " << m_currentSearch;
+    //qDebug() << "LibraryTableModel::currentSearch(): " << m_currentSearch;
     return m_currentSearch;
 }
 
