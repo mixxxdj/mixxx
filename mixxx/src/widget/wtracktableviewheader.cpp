@@ -40,9 +40,9 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     // Won't happen in practice since the WTrackTableView new's a new
     // WTrackTableViewHeader each time a new TrackModel is loaded.
-    if (oldTrackModel) {
-        saveHeaderState();
-    }
+    // if (oldTrackModel) {
+    //     saveHeaderState();
+    // }
 
     // First clear all the context menu actions for the old model.
     clearActions();
