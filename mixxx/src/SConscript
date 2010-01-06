@@ -462,12 +462,6 @@ sources = Split("""
                 segmentation.cpp
                 """)
 
-#Compile platform specific hardware support
-#if platform == 'linux':
-#	sources += Split("""powermatelinux.cpp herculeslinux.cpp mouselinux.cpp """)
-#elif 'win' in platform:
-#	sources += Split("""powermatewin.cpp mousewin.cpp """)
-
 #Set up the library path on Windows:
 if platform == 'win64':
 	env.Append(CPPPATH='#/../mixxx-win64lib') #If you add more directories, separate them with a semicolon (;)
