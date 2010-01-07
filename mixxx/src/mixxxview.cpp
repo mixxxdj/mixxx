@@ -116,6 +116,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
     m_pLibrarySidebar = 0;
+    m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
 
 
     setupColorScheme(docElem, pConfig);
@@ -719,6 +720,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 }
             }
 
+            /*
             // persistent: m_pLineEditSearch
             else if (node.nodeName()=="Search")
             {
@@ -729,14 +731,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
                 }
 
-                /*
-                // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.indexOf(",")).toInt();
-                int y = pos.mid(pos.indexOf(",")+1).toInt();
-                m_pLineEditSearch->move(x+35,y);
-                */
-
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 int x = size.left(size.indexOf(",")).toInt();
@@ -744,16 +738,17 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_pLineEditSearch->setFixedSize(x,y);
                 m_pLineEditSearch->show();
             }
+            */
 
 	    // persistent: m_pTabWidget
             else if (node.nodeName()=="TableView")
             {
                 if (m_pTabWidget == 0) {
-		    // If the tab widget is NULL than we cannot have possibly
-		    // set anything else up, so instead of having awkward
-		    // separation of creation of each thing, lets just merge
-		    // them together here, assuming nothing has been created
-		    // yet.
+                    // If the tab widget is NULL than we cannot have possibly
+                    // set anything else up, so instead of having awkward
+                    // separation of creation of each thing, lets just merge
+                    // them together here, assuming nothing has been created
+                    // yet.
 
                     //Create the tab widget to store the various panes in
                     //(library, effects, etc.)
@@ -775,57 +770,88 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
 
-		    // Build the Library widgets
-		    m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
+                    //Set up the search box widget
+                    if (m_pLineEditSearch == 0) {
+                        QString path = pConfig->getConfigPath();
+                        m_pLineEditSearch = new WSearchLineEdit(path, node, this);
+                        //m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
+                        //m_pLineEditSearch->show();
 
-		    m_pLibraryWidget = new WLibrary(m_pSplitter);
-		    m_pLibraryWidget->installEventFilter(m_pKeyboard);
+                        // Size
+                        /*
+                        QString size = WWidget::selectNodeQString(node, "Size");
+                        int x = size.left(size.indexOf(",")).toInt();
+                        int y = size.mid(size.indexOf(",")+1).toInt();
+                        m_pLineEditSearch->setFixedSize(x,y);
+                        */
+                    }
 
-		    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
-		    m_pLibrarySidebar->installEventFilter(m_pKeyboard);
+                    // Build the Library widgets
+                    m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
-		    m_pLibrary->bindWidget(m_pLibrarySidebar,
-					   m_pLibraryWidget);
+                    m_pLibraryWidget = new WLibrary(m_pSplitter);
+                    m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
-		    //Add the library sidebar to the splitter.
-		    m_pSplitter->addWidget(m_pLibrarySidebar);
-		    //Add the library widget to the splitter.
-		    m_pSplitter->addWidget(m_pLibraryWidget);
+                    
+                    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
+                    m_pLibrarySidebar->installEventFilter(m_pKeyboard);
 
-		    // TODO(rryan) can we make this more elegant?
-		    QList<int> splitterSizes;
-		    splitterSizes.push_back(50);
-		    splitterSizes.push_back(500);
-		    m_pSplitter->setSizes(splitterSizes);
+                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
+                    QVBoxLayout* vl = new QVBoxLayout();
+                    vl->setContentsMargins(0,0,0,0); //Fill entire space
+                    m_pLibrarySidebarPage->setLayout(vl);
+                    vl->addWidget(m_pLineEditSearch);
+                    vl->addWidget(m_pLibrarySidebar);
 
-		    // Add the splitter to the library page's layout, so it's
-		    // positioned/sized automatically
-		    m_pLibraryPageLayout->addWidget(m_pSplitter,
-                                                    1, 0, //From row 1, col 0,
-                                                    1,    //Span 1 row
-                                                    3,    //Span 3 cols
-                                                    0);   //Default alignment
+                    setupTrackSourceViewWidget(node);
 
-		    // TODO(XXX) Re-enable this to get the tab widget back, post
-		    // 1.7.0 release.
+                    m_pLibrary->bindWidget(m_pLibrarySidebar,
+                                        m_pLibraryWidget);
 
-		    // Add the library page to the tab widget.
-		    //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
-		    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
+                    //Add the library sidebar to the splitter.
+                    m_pSplitter->addWidget(m_pLibrarySidebarPage);
+                    //Add the library widget to the splitter.
+                    m_pSplitter->addWidget(m_pLibraryWidget);
 
-		    // Add the effects page to the tab widget.
-		    //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
-		    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
+                    // TODO(rryan) can we make this more elegant?
+                    QList<int> splitterSizes;
+                    splitterSizes.push_back(50);
+                    splitterSizes.push_back(500);
+                    m_pSplitter->setSizes(splitterSizes);
+
+                    // Add the splitter to the library page's layout, so it's
+                    // positioned/sized automatically
+                    m_pLibraryPageLayout->addWidget(m_pSplitter,
+                                                            1, 0, //From row 1, col 0,
+                                                            1,    //Span 1 row
+                                                            3,    //Span 3 cols
+                                                            0);   //Default alignment
+
+                    // TODO(XXX) Re-enable this to get the tab widget back, post
+                    // 1.7.0 release.
+
+                    // Add the library page to the tab widget.
+                    //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
+                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
+
+                    // Add the effects page to the tab widget.
+                    //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
                 }
 
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
 
-		// Applies the node settings to every view registered in the Library widget.
-		m_pLibraryWidget->setup(node);
-    setupTrackSourceViewWidget(node);
+                setupTrackSourceViewWidget(node);
+                
+                // Applies the node settings to every view registered in the
+                // Library widget.
+                m_pLibraryWidget->setup(node);
 
-		m_pTabWidget->show();
+                m_pLineEditSearch->setup(node);
+
+                m_pLineEditSearch->show();
+                m_pTabWidget->show();
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {
