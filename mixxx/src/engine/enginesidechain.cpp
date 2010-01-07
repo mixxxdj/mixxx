@@ -71,7 +71,9 @@ EngineSideChain::~EngineSideChain()
     m_waitForFullBuffer.wakeAll();
     m_waitLock.unlock();
 
+#ifdef __SHOUTCAST__
     shoutcast->shutdown();
+#endif
 
     wait(); //Wait until the thread has finished.
 
