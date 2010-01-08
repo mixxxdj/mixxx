@@ -64,7 +64,8 @@ void SoundSourceProxy::initialize(QString qFilename) {
     else if (qFilename.toLower().endsWith(".ogg"))
 	m_pSoundSource = new SoundSourceOggVorbis(qFilename);
 #ifdef __M4A__
-    else if (qFilename.toLower().endsWith(".m4a"))
+    else if (qFilename.toLower().endsWith(".m4a") ||
+	     qFilename.toLower().endsWith(".mp4"))
 	m_pSoundSource = new SoundSourceM4A(qFilename);
 #endif
 #ifdef __SNDFILE__
