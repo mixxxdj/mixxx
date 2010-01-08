@@ -34,8 +34,9 @@
 #include <Q3ValueList>
 
 
-SoundSourceProxy::SoundSourceProxy(QString qFilename) : SoundSource(qFilename)
-{
+SoundSourceProxy::SoundSourceProxy(QString qFilename)
+	: SoundSource(qFilename),
+	  m_pSoundSource(NULL) {
 #ifdef __FFMPEGFILE__
     m_pSoundSource = new SoundSourceFFmpeg(qFilename);
     return;
@@ -57,8 +58,9 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename) : SoundSource(qFilename)
 #endif
 }
 
-SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack) : SoundSource(pTrack->getLocation())
-{
+SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
+	: SoundSource(pTrack->getLocation()),
+	  m_pSoundSource(NULL) {
     QString qFilename = pTrack->getLocation();
 
 #ifdef __FFMPEGFILE__
