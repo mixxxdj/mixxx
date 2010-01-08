@@ -127,6 +127,11 @@ void AnalyserQueue::run() {
         int iNumSamples = pSoundSource->length();
         int iSampleRate = pSoundSource->getSrate();
 
+        if (iNumSamples == 0 || iSampleRate == 0) {
+            qDebug() << "Skipping invalid file:" << next->getLocation();
+            continue;
+        }
+
         QListIterator<Analyser*> it(m_aq);
 
         while (it.hasNext()) {
