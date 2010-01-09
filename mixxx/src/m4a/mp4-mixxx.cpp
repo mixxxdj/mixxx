@@ -112,7 +112,6 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	unsigned char *buf;
 	unsigned int buf_size;
 
-
 	/* http://sourceforge.net/forum/message.php?msg_id=3578887 */
 	if (ip_data->remote)
 		return -IP_ERROR_FUNCTION_NOT_SUPPORTED;
@@ -181,10 +180,15 @@ static int mp4_open(struct input_plugin_data *ip_data)
 #ifdef __MINGW32__
         if (faacDecInit2(priv->decoder, buf, buf_size,
                          (long unsigned int*) &priv->sample_rate, &priv->channels) < 0) {
+#elifdef __M4AHACK__
+        if (faacDecInit2(priv->decoder, buf, buf_size,
+                         (uint32_t*)&priv->sample_rate, &priv->channels) < 0) {
+
 #else
         if (faacDecInit2(priv->decoder, buf, buf_size,
-                         &priv->sample_rate, &priv->channels) < 0) {
+                         (unsigned int*)&priv->sample_rate, &priv->channels) < 0) {
 #endif
+
     free(buf);
 		goto out;
 	}
