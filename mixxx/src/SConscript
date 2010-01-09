@@ -1007,7 +1007,21 @@ flags_m4a = getFlags(env, 'm4a', 0)
 if int(flags_m4a):
 	print "Apple M4A audio file support...",
 	if have_m4a:
-		print "enabled"
+                print "enabled"
+
+                # We have to check for libfaad version 2.6 or 2.7. In libfaad
+                # version 2.7, the type for the samplerate is unsigned long*,
+                # while in 2.6 the type is uint32_t*. We can use the optional
+                # call parameter to CheckLibWithHeader to build a test file to
+                # check which one this faad.h supports.
+                ulong = conf.CheckLibWithHeader(
+                        'libfaad', 'faad.h', 'c++',
+                        call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);')
+                # If the compile did not work, then enable the M4AHACK define.
+                if not ulong:
+                        env.Append(CPPDEFINES = '__M4AHACK__')
+                        print "libfaad 2.6 compatibility mode... enabled"
+
 	#	env.ParseConfig('pkg-config libmp4v2-dev --silence-errors --cflags --libs') # no pkg-config data for libmp4v2-dev
 	#	FIXME: should do conf.CheckCHeader('mp4.h') or something...
 		env.Append(CPPDEFINES = '__M4A__')
