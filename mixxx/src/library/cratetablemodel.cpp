@@ -51,7 +51,6 @@ void CrateTableModel::setCrate(int crateId) {
                                   " ON library.location = track_locations.id "
                                   "WHERE " CRATE_TRACKS_TABLE ".crate_id = %2");
     queryString = queryString.arg(tableName).arg(crateId);
-    qDebug() << queryString;
     query.prepare(queryString);
 
     if (!query.exec()) {
