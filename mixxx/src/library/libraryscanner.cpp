@@ -27,6 +27,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
     m_trackDao(m_database, m_cueDao),
+    m_playlistDao(m_database),
     //Don't initialize m_database here, we need to do it in run() so the DB conn is in
     //the right thread.
     nameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" "))
@@ -117,7 +118,7 @@ void LibraryScanner::run()
     QTime t2;
     t2.start();
     //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
-    LegacyLibraryImporter libImport(m_trackDao);
+    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
     connect(&libImport, SIGNAL(progress(QString)),
             m_pProgress, SLOT(slotUpdate(QString)),
             Qt::BlockingQueuedConnection);

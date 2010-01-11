@@ -18,9 +18,16 @@
 #include "xmlparse.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
 
+struct LegacyPlaylist
+{
+    QString name;
+    QList<int> indexes;
+};
 
-LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao) : QObject(),
-    m_trackDao(trackDao)
+LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao, 
+                                             PlaylistDAO& playlistDao) : QObject(),
+    m_trackDao(trackDao),
+    m_playlistDao(playlistDao)
 {
 }
 
@@ -43,7 +50,37 @@ void LegacyLibraryImporter::import()
 
     qDebug() << "Starting upgrade from 1.7 library...";
 
+    QHash<int, QString> playlistHashTable; //Maps track indices onto track locations
+    QList<LegacyPlaylist> legacyPlaylists; // <= 1.7 playlists
+
     if (doc.setContent(&file, false, errorMsg, errorLine, errorColumn)) {
+
+        QDomNodeList playlistList = doc.elementsByTagName("Playlist");
+        QDomNode playlist;
+        for (int i = 0; i < playlistList.size(); i++)
+        {
+            LegacyPlaylist legPlaylist;
+            playlist = playlistList.at(i);
+            
+            QString name = playlist.firstChildElement("Name").text();
+            
+            legPlaylist.name = name;
+
+            //Store the IDs in the hash table so we can map them to track locations later,
+            //and also store them in-order in a temporary playlist struct.
+            QDomElement listNode = playlist.firstChildElement("List").toElement();
+            QDomNodeList trackIDs = listNode.elementsByTagName("Id");
+            for (int j = 0; j < trackIDs.size(); j++)
+            {
+                int id = trackIDs.at(j).toElement().text().toInt();
+                if (!playlistHashTable.contains(id))
+                    playlistHashTable.insert(id, "");
+                legPlaylist.indexes.push_back(id); //Save this track id.
+            }
+            //Save this playlist in our list.
+            legacyPlaylists.push_back(legPlaylist);
+        }
+
         QDomNodeList trackList = doc.elementsByTagName("Track");
         QDomNode track;
 
@@ -67,6 +104,51 @@ void LegacyLibraryImporter::import()
                 trackInfo17.setYear(trackInfoNew.getYear());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
                 m_trackDao.addTrack(&trackInfo17);
+
+                //Check if this track is used in a playlist anywhere. If it is, save the
+                //track location. (The "id" of a track in 1.8 is a database index, so it's totally
+                //different. Using the track location is the best way for us to identify the song.)
+                int id = trackInfo17.getId();
+                if (playlistHashTable.contains(id))
+                    playlistHashTable[id] = trackInfo17.getLocation();
+            }
+        }
+
+
+        //Create the imported playlists
+        QListIterator<LegacyPlaylist> it(legacyPlaylists);
+        LegacyPlaylist current;
+        while (it.hasNext())
+        {
+            current = it.next();
+            emit(progress("Upgrading Mixxx 1.7 Playlists: " + current.name));
+            
+            //Create the playlist with the imported name.
+            //qDebug() << "Importing playlist:" << current.name;
+            m_playlistDao.createPlaylist(current.name, false);
+            int playlistId = m_playlistDao.getPlaylistIdFromName(current.name);
+            
+            //For each track ID in the XML...
+            QList<int> trackIDs = current.indexes;
+            for (int i = 0; i < trackIDs.size(); i++)
+            {   
+                QString trackLocation;
+                int id = trackIDs[i];
+                //qDebug() << "track ID:" << id; 
+
+                //Try to resolve the (XML's) track ID to a track location. 
+                if (playlistHashTable.contains(id)) {
+                    trackLocation = playlistHashTable[id];
+                    //qDebug() << "Resolved to:" << trackLocation;
+                }
+
+                //Get the database's track ID (NOT the XML's track ID!)
+                int dbTrackId = m_trackDao.getTrackId(trackLocation);
+
+                if (dbTrackId >= 0) {
+                    //Add it to the database's playlist.
+                    m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);
+                }
             }
         }
 
