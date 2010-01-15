@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundsourcemp4.h  -  mp4/m4a decoder
+                          soundsourcem4a.h  -  mp4/m4a decoder
                              -------------------
     copyright            : (C) 2008 by Garth Dahlstrom
     email                : ironstorm@users.sf.net
