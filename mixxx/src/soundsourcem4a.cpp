@@ -34,7 +34,7 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
 
     // Initialize variables to invalid values in case loading fails.
     mp4file = MP4_INVALID_FILE_HANDLE;
-    filelength = -1;
+    filelength = 0;
     channels = 0;
     memset(&ipd, 0, sizeof(ipd));
 
@@ -82,7 +82,7 @@ SoundSourceM4A::~SoundSourceM4A() {
 
 long SoundSourceM4A::seek(long filepos){
     // Abort if file did not load.
-    if (filelength == -1)
+    if (filelength == 0)
         return 0;
 
     qDebug() << "SSM4A::seek()" << filepos;
@@ -96,7 +96,7 @@ long SoundSourceM4A::seek(long filepos){
 
 unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destination) {
     // Abort if file did not load.
-    if (filelength == -1)
+    if (filelength == 0)
         return 0;
 
     //qDebug() << "SSM4A::read()" << size;
@@ -153,10 +153,8 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 }
 
 inline long unsigned SoundSourceM4A::length(){
-     if (filelength == -1)
-         return 0;
-     return filelength;
-     //return channels * mp4_duration(&ipd) * SRATE;
+    return filelength;
+    //return channels * mp4_duration(&ipd) * SRATE;
 }
 
 int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
