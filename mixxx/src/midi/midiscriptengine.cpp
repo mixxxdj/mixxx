@@ -37,7 +37,13 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
-
+    // Stop & remove all remaining timers
+    QHashIterator<int, QString> i(m_timers);
+    while (i.hasNext()) {
+        i.next();
+        stopTimer(i.key());
+    }
+    
     // Stop processing the event loop and terminate the thread.
     quit();
     
@@ -47,7 +53,7 @@ MidiScriptEngine::~MidiScriptEngine() {
 
     // Wait for the thread to terminate
     wait();
-
+    
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
     if(m_pEngine != NULL) {
@@ -612,3 +618,53 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
 }
 
 
+/* -------- ------------------------------------------------------
+   Purpose: Creates & starts a timer that calls a script function
+                on timeout
+   Input:   Number of milliseconds, script function to call
+   Output:  The timer's ID, 0 if starting it failed
+   -------- ------------------------------------------------------ */
+int MidiScriptEngine::beginTimer(int interval, QString function) {
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+    
+    qDebug() << this->thread();
+    int timerId = startTimer(interval);
+    m_timers[timerId]=function;
+    if (timerId==0) qDebug() << "MIDI Script timer could not be created";
+    return timerId;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Stops & removes a timer that calls a script function
+                on timeout
+   Input:   ID of timer to stop
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::stopTimer(int timerId) {
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+    
+    killTimer(timerId);
+    m_timers.remove(timerId);
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Calls the appropriate script function on timer events
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::timerEvent(QTimerEvent *event) {
+    qDebug() << "Timer ID:" << event->timerId();
+    execute(m_timers[event->timerId()]);
+}

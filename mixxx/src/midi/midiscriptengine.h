@@ -58,6 +58,8 @@ public:
     Q_INVOKABLE bool connectControl(QString group, QString name,
                                     QString function, bool disconnect = false);
     Q_INVOKABLE void trigger(QString group, QString name);
+    Q_INVOKABLE int beginTimer(int interval, QString function);
+    Q_INVOKABLE void stopTimer(int timerId);
 
 public slots:
     void slotValueChanged(double value);
@@ -67,6 +69,7 @@ signals:
 
 protected:
     void run();
+    void timerEvent(QTimerEvent *event);
 
 private:
     // Only call these with the scriptEngineLock
@@ -90,6 +93,7 @@ private:
     QMap<QString,QStringList> m_scriptErrors;
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+	QHash<int, QString> m_timers;
 };
 
 #endif
