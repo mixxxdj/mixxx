@@ -546,7 +546,8 @@ if not conf.CheckLib('ogg'):
 	Exit(1)
 
 #hack: check for these here, before conf.Finish happens
-have_mp4 = conf.CheckLib('mp4v2') or conf.CheckLib('mp4')
+have_mp4v2 = conf.CheckLib('mp4v2')
+have_mp4 = have_mp4v2 or conf.CheckLib('mp4')
 
 # We have to check for libfaad version 2.6 or 2.7. In libfaad
 # version 2.7, the type for the samplerate is unsigned long*,
@@ -1026,6 +1027,9 @@ if int(flags_m4a):
 		if have_faad_26:
 			env.Append(CPPDEFINES = '__M4AHACK__')
 			print "libfaad 2.6 compatibility mode... enabled"
+			
+		if have_mp4v2:
+			env.Append(CPPDEFINES = '__MP4V2__')
 
 	#	env.ParseConfig('pkg-config libmp4v2-dev --silence-errors --cflags --libs') # no pkg-config data for libmp4v2-dev
 	#	FIXME: should do conf.CheckCHeader('mp4.h') or something...
