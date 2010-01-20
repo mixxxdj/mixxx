@@ -1085,6 +1085,7 @@ void MixxxApp::slotHelpAbout()
 "Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"Oliver St&ouml;neberg<br>"
 "C. Stewart<br>"
 
 "</p>"
