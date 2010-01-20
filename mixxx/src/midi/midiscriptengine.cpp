@@ -39,10 +39,12 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
 MidiScriptEngine::~MidiScriptEngine() {
     // Stop & remove all remaining timers
     QHashIterator<int, QString> i(m_timers);
+    m_scriptEngineLock.lock();
     while (i.hasNext()) {
         i.next();
         stopTimer(i.key());
     }
+    m_scriptEngineLock.unlock();
     
     // Stop processing the event loop and terminate the thread.
     quit();
@@ -121,7 +123,7 @@ void MidiScriptEngine::run() {
     m_scriptEngineLock.unlock();
     emit(initialized());
     
-    firstTimerId = startTimer(5000);
+    m_firstTimerId = startTimer(500);
     // Run the Qt event loop indefinitely 
     exec();
 }
@@ -637,6 +639,7 @@ int MidiScriptEngine::beginTimer(int interval, QString function) {
     int timerId = startTimer(interval);
     m_timers[timerId]=function;
     if (timerId==0) qDebug() << "MIDI Script timer could not be created";
+    else if (m_pMidiDevice->midiDebugging()) qDebug() << "Starting Timer:" << timerId;
     return timerId;
 }
 
@@ -655,7 +658,7 @@ void MidiScriptEngine::stopTimer(int timerId) {
         m_scriptEngineLock.unlock();
     }
     
-    qDebug() << "Killing Timer:" << timerId;
+    if (m_pMidiDevice->midiDebugging()) qDebug() << "Killing Timer:" << timerId;
     
     killTimer(timerId);
     m_timers.remove(timerId);
@@ -667,9 +670,8 @@ void MidiScriptEngine::stopTimer(int timerId) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::timerEvent(QTimerEvent *event) {
-    //qDebug() << "Timer ID:" << event->timerId();
     
-    if ( event->timerId() == firstTimerId ) {
+    if ( event->timerId() == m_firstTimerId ) {
         killTimer(event->timerId());
         return;
     }
