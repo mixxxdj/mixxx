@@ -36,7 +36,7 @@
      </control>
      <control>
        <group>[Channel1]</group>
-       <key>BCD3000.scratch1</key>
+       <key>BehringerBCD3000.scratch1</key>
        <status>0x90</status>
        <midino>0x11</midino>
        <options>
@@ -249,7 +249,7 @@
      </control>
      <control>
        <group>[Channel2]</group>
-       <key>BCD3000.scratch2</key>
+       <key>BehringerBCD3000.scratch2</key>
        <status>0x90</status>
        <midino>0x19</midino>
        <options>
@@ -450,7 +450,7 @@
      </control>     
      <control>
        <group>[Channel1]</group>
-       <key>BCD3000.jog_wheel1</key>
+       <key>BehringerBCD3000.jog_wheel1</key>
        <status>0xB0</status>
        <midino>0x13</midino>
        <options>
@@ -459,7 +459,7 @@
      </control>
      <control>
        <group>[Channel2]</group>
-       <key>BCD3000.jog_wheel2</key>
+       <key>BehringerBCD3000.jog_wheel2</key>
        <status>0xB0</status>
        <midino>0x12</midino>
        <options>
