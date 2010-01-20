@@ -263,7 +263,7 @@ double EngineBuffer::getRate()
 void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
-    pause.lock();
+
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
@@ -652,6 +652,7 @@ void EngineBuffer::hintReader(const double dRate,
 }
 
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+    pause.lock();
     m_pReader->newTrack(pTrack);
     m_pReader->wake();
 }
