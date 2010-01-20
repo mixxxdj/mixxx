@@ -43,13 +43,16 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
 void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource) {
 
-    // CHANGING THIS WILL BREAK TONALANALYSER!!!!
-    const int ANALYSISBLOCKSIZE = 2*32768;
+    // TonalAnalyser requires a block size of 65536. Using a different value
+    // breaks the tonal analyser. We need to use a smaller block size becuase on
+    // Linux, the AnalyserQueue can starve the CPU of its resources, resulting
+    // in xruns.. A block size of 8192 seems to do fine.
+    const int ANALYSISBLOCKSIZE = 8192;
 
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
-    
+
     SAMPLE *data16 = new SAMPLE[ANALYSISBLOCKSIZE];
     CSAMPLE *samples = new CSAMPLE[ANALYSISBLOCKSIZE];
 
@@ -90,7 +93,14 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
         processedSamples += read;
         int progress = processedSamples*100/totalSamples;
         emit(trackProgress(tio, progress));
-    
+
+        // Since this is a background analysis queue, we should co-operatively
+        // yield every now and then to try and reduce CPU contention. The
+        // analyser queue is CPU intensive so we want to get out of the way of
+        // the audio callback thread.
+        //QThread::yieldCurrentThread();
+        QThread::usleep(10);
+
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
     delete[] data16;
     delete[] samples;
@@ -107,7 +117,7 @@ void AnalyserQueue::run() {
     while (!m_exit) {
 
         TrackInfoObject* next = dequeueNextBlocking();
-        
+
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
         int iNumSamples = pSoundSource->length();
@@ -141,12 +151,12 @@ void AnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
 
 AnalyserQueue* AnalyserQueue::createAnalyserQueue(QList<Analyser*> analysers) {
     AnalyserQueue* ret = new AnalyserQueue();
-    
+
     QListIterator<Analyser*> it(analysers);
     while(it.hasNext()) {
         ret->addAnalyser(it.next());
     }
-    
+
     ret->start(QThread::IdlePriority);
     return ret;
 }
@@ -157,7 +167,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #ifdef __TONAL__
     ret->addAnalyser(new TonalAnalyser());
 #endif
-    
+
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
@@ -174,7 +184,7 @@ AnalyserQueue* AnalyserQueue::createBPMAnalyserQueue(ConfigObject<ConfigValue> *
 
 AnalyserQueue::~AnalyserQueue() {
     QListIterator<Analyser*> it(m_aq);
-    
+
     while (it.hasNext()) {
         Analyser* an = it.next();
     //qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
