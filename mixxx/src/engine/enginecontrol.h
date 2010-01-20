@@ -36,10 +36,10 @@ const double kNoTrigger = -1;
  * developer.
  */
 class EngineControl : public QObject {
-    public:
-
+    Q_OBJECT
+  public:
     EngineControl(const char * _group,
-                  const ConfigObject<ConfigValue> * _config);
+                  ConfigObject<ConfigValue> * _config);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -70,14 +70,18 @@ class EngineControl : public QObject {
     void setCurrentSample(const double dCurrentSample);
     double getCurrentSample();
 
-protected:
+  signals:
+    void seek(double fractionalPosition);
+    void seekAbs(double sample);
+
+  protected:
     const char* getGroup();
-    const ConfigObject<ConfigValue>* getConfig();
+    ConfigObject<ConfigValue>* getConfig();
     EngineBuffer* getOtherEngineBuffer();
 
-private:
+  private:
     const char* m_pGroup;
-    const ConfigObject<ConfigValue>* m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;
     EngineBuffer* m_pOtherEngineBuffer;
 };

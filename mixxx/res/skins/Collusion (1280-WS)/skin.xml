@@ -1056,8 +1056,23 @@
   <SignalColor>#d1d1d1</SignalColor>
   <BeatColor>#48839b</BeatColor>
   <MarkerColor>#48839b</MarkerColor>
-  <FisheyeColor>#222222</FisheyeColor>
-  <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Visual>
@@ -1069,8 +1084,23 @@
   <SignalColor>#d1d1d1</SignalColor>
   <BeatColor>#9b4848</BeatColor>
   <MarkerColor>#9b4848</MarkerColor>
-  <FisheyeColor>#222222</FisheyeColor>
-  <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <XSliderComposed>

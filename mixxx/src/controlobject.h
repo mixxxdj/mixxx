@@ -24,8 +24,8 @@
 //#include <qaccel.h>
 #include <q3ptrqueue.h>
 #include <QMutex>
+#include "midi/midimessage.h"
 #include "configobject.h"
-#include "midiobject.h"
 #include "controlobjectthread.h"
 
 class QWidget;
@@ -73,8 +73,8 @@ public:
     static ControlObject *getControl(ConfigKey key);
     /** Used to add a pointer to the corresponding ControlObjectThread of this ControlObject */
     void addProxy(ControlObjectThread *pControlObjectThread);
-	// To get rid of a proxy when the corresponding object is being deleted for example
-	void removeProxy(ControlObjectThread *pControlObjectThread);
+    // To get rid of a proxy when the corresponding object is being deleted for example
+    void removeProxy(ControlObjectThread *pControlObjectThread);
     /** Update proxies, execep the one given a pointer to. Returns true if all updates
       * happend, otherwise false. */
     bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);

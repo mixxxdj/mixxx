@@ -17,7 +17,6 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "Trunk"
 #define MIXXX_PROMO_DIR "promo"
 
 #include <math.h>

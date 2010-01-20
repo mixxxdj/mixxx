@@ -1,17 +1,18 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys, os, platform
 
+architecture = platform.architecture()
 machine = platform.machine()
 Export('machine')	#So architecture-specific decisions & optimizations can be made in the SConscript
+Export('architecture')
 
 if os.name == 'nt':
+	print 'Platform: Windows' + machine + ' (' + architecture[0] + ')'
 	if machine == 'x86':
-		print 'Platform: Windows 32-bit'
 		platform = 'win32'
 	else:		#This is only correctly detected if you're running a 64-bit version of Python, otherwise it'll see an x86 system
-		print 'Platform: Windows 64-bit'
-		print 'CPU architecture: ' + machine
 		platform = 'win64'
 	
 	# Allow to override auto-detection (environment variables must already be set appropriately with SETENV.CMD /xp /x86 or /x64)
@@ -23,17 +24,19 @@ if os.name == 'nt':
 		platform = 'win32'
 	
 elif sys.platform == 'linux2':
-     print 'Platform: Linux ' + machine
+     print 'Platform: Linux ' + machine + ' (' + architecture[0] + ')'
      platform = 'linux'
 elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
-     print 'Platform: BSD ' + machine
+     print 'Platform: BSD ' + machine + ' (' + architecture[0] + ')'
      platform = 'bsd'
 elif sys.platform == 'darwin':
-     print 'Platform: OS X ' + machine
+     print 'Platform: OS X ' + machine + ' (' + architecture[0] + ')'
      platform = 'osx'
 else:
-	print 'Platform: Unknown (assuming Linux-like,) machine ' + machine
+	print 'Platform: Unknown (assuming Linux-like,) ' + machine + ' (' + architecture[0] + ')'
 	platform = 'linux'
+
+print 'Binary format: ' + architecture[1]
 
 Export('platform')
 

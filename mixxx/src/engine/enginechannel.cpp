@@ -25,7 +25,6 @@
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
-#include "enginetemporal.h"
 
 EngineChannel::EngineChannel(const char* group,
                              ConfigObject<ConfigValue>* pConfig,

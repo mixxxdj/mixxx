@@ -26,12 +26,12 @@
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilename)
 {
     info = new SF_INFO;
+    filelength = 0;
     QByteArray qbaFilename = qFilename.toUtf8();
     fh = sf_open( qbaFilename.data(), SFM_READ, info );
     if (fh == 0 || !sf_format_check(info))
     {
         qDebug() << "libsndfile: Error opening file" << qFilename;
-        filelength = 0;
         return;
     }
 
@@ -150,7 +150,10 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
     if(string && strlen(string))
         Track->setTitle(string);
 //    qDebug() << location << "SF_STR_TITLE" << string;
-
+    string = sf_get_string(fh, SF_STR_DATE);
+    if (string && strlen(string))
+        Track->setYear(string);
+    
     sf_close( fh );
     return OK;
 }

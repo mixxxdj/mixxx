@@ -20,7 +20,6 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "controlobjectthread.h"
-#include "midiobject.h"
 #include "mathstuff.h"
 
 // TODO: Investigate the use of ControlObjectThread vs. ControlObjectThreadMain

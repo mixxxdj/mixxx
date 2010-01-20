@@ -26,6 +26,7 @@
 #include "monitor.h"
 #include "rotary.h"
 
+class EngineControl;
 class BpmControl;
 class RateControl;
 class LoopingControl;
@@ -39,7 +40,6 @@ class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-class EngineBufferCue;
 class TrackInfoObject;
 
 struct Hint;
@@ -78,7 +78,13 @@ public:
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
     void loadTrack(TrackInfoObject* pTrack);
+
+    // Add an engine control to the EngineBuffer
+    void addControl(EngineControl* pControl);
 
     /** Return the current rate (not thread-safe) */
     double getRate();
@@ -92,17 +98,7 @@ public:
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
-    const char *getGroup();
-
-    /** Lock abs and buffer playpos vars, so that they can be accessed through
-      * getBufferPlaypos() and getAbsPlaypos() from another thread */
-    void lockPlayposVars();
-    /** Unlocks abs and buffer playpos vars, so that they can be accessed
-      * internally in this object */
-    void unlockPlayposVars();
-    /** Returns the abs playpos. lockPlayposVars() must be called in advance */
-    double getAbsPlaypos();
-
+    const char* getGroup();
 public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
@@ -112,6 +108,7 @@ public slots:
 
 signals:
     void trackLoaded(TrackInfoObject *pTrack);
+    void loadNextTrack();
 
 private slots:
     void slotTrackLoaded(TrackInfoObject *pTrack,
@@ -139,6 +136,8 @@ private:
 
     /** Pointer to the BPM control object */
     BpmControl* m_pBpmControl;
+
+    QList<EngineControl*> m_engineControls;
 
     /** The read ahead manager for EngineBufferScale's that need to read
         ahead */
@@ -188,9 +187,6 @@ private:
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
-
-    /** Pointer to cue object */
-    EngineBufferCue *m_pEngineBufferCue;
 
     /** Object used to perform waveform scaling (sample rate conversion) */
     EngineBufferScale *m_pScale;

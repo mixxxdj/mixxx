@@ -518,10 +518,24 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             // http://www.id3.org/id3v2.4.0-frames.txt
             QString s;
             getField(tag,"TIT2",&s); // TIT2 : Title
-            Track->setTitle(s);
+            if (s != "")
+                Track->setTitle(s);
             s="";
             getField(tag,"TPE1",&s); // TPE1 : Artist
-            Track->setArtist(s);
+            if (s != "")
+                Track->setArtist(s);
+            s="";
+            getField(tag,"TALB",&s);
+            Track->setAlbum(s);
+            s="";
+            getField(tag,"TDRC",&s);
+            Track->setYear(s);
+            s="";
+            getField(tag,"TCON",&s);
+            Track->setGenre(s);
+            s="";
+            getField(tag,"TRCK",&s);
+            Track->setTrackNumber(s);
             s="";
             getField(tag,"TBPM",&s); // TBPM: the bpm
             float bpm = 0;
@@ -673,7 +687,17 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
         // Unicode handling
         if (id3_field_getnstrings(&frame->fields[1])>0)
         {
-            id3_utf16_t * framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
+            id3_utf16_t* framestr = NULL;
+
+            //Shitty genre tag handling, thanks libid3tag!
+            if (strcmp(frameid, "TCON") == 0)
+            {
+                id3_ucs4_t const* genre = id3_genre_name(id3_field_getstrings(&frame->fields[1], 0));
+                framestr = id3_ucs4_utf16duplicate(genre);
+            }
+            else
+                framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
+            
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
             if (strlen>0) {
                 str->setUtf16((ushort *)framestr,strlen);

@@ -9,6 +9,8 @@
 #include <QtCore>
 #include <stdlib.h>
 
+#include "mathstuff.h"
+
 /*
  * Copyright 2006 dnk <dnk@bjum.net>
  *
@@ -34,7 +36,7 @@
 // #include "file.h"
 
 #include <mp4.h>
-#include <faad.h>
+#include <neaacdec.h>
 
 #include <errno.h>
 #include <string.h>
@@ -110,7 +112,6 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	unsigned char *buf;
 	unsigned int buf_size;
 
-
 	/* http://sourceforge.net/forum/message.php?msg_id=3578887 */
 	if (ip_data->remote)
 		return -IP_ERROR_FUNCTION_NOT_SUPPORTED;
@@ -176,12 +177,11 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	}
 
 	/* init decoder according to mpeg-4 audio config */
-#ifdef __MINGW32__
         if (faacDecInit2(priv->decoder, buf, buf_size,
-                         (long unsigned int*) &priv->sample_rate, &priv->channels) < 0) {
+#ifdef __M4AHACK__
+                         (uint32_t*)&priv->sample_rate, &priv->channels) < 0) {
 #else
-        if (faacDecInit2(priv->decoder, buf, buf_size,
-                         (uint32_t*) &priv->sample_rate, &priv->channels) < 0) {
+                         (unsigned long*)&priv->sample_rate, &priv->channels) < 0) {
 #endif
     free(buf);
 		goto out;
@@ -255,8 +255,6 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
 		errno = EINVAL;
 		return -1;
 	}
-
-
 
 	if (!aac_data) {
 		qDebug() << "aac_data == NULL";
@@ -382,26 +380,42 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
   // the sample'th sample is. For x in (0,2047), the frame offset is x. For x in
   // (2048,4095) the offset is x-2048 and so on. sample % 2048 is therefore
   // suitable for calculating the offset.
-  int frame_for_sample = 1 + (sample / (2 * 1024));
-  int frame_offset_samples = sample % (2 * 1024);
-  int frame_offset_bytes = frame_offset_samples * 2;
+  unsigned int frame_for_sample = 1 + (sample / (2 * 1024));
+  unsigned int frame_offset_samples = sample % (2 * 1024);
+  unsigned int frame_offset_bytes = frame_offset_samples * 2;
 
   //qDebug() << "Seeking to" << frame_for_sample << ":" << frame_offset;
 
+  // Invalid sample requested -- return the current position.
   if (frame_for_sample < 1 || frame_for_sample > priv->mp4.num_samples)
     return mp4_current_sample(ip_data);
 
+  // We don't have the current frame decoded -- decode it.
   if (priv->sample_buf_frame != frame_for_sample) {
-      // We don't have the current frame decoded -- decode it.
-      priv->mp4.sample = frame_for_sample;
-      //faacDecPostSeekReset(priv->decoder, priv->mp4.sample);
 
-      // This results in the overflow buffer holding the entire frame.
+      // We might have to 'prime the pump' if this isn't the first frame. The
+      // decoder has internal state that it builds as it plays, and just seeking
+      // to the frame we want will result in poor audio quality (clicks and
+      // pops). This is akin to seeking in a video and seeing MPEG
+      // artifacts. Figure out how many frames we need to go backward -- 1 seems
+      // to work.
+      const int how_many_backwards = 1;
+      int start_frame = math_max(frame_for_sample - how_many_backwards, 1);
+      priv->mp4.sample = start_frame;
+
+      // rryan 9/2009 -- the documentation is sketchy on this, but I think that
+      // it tells the decoder that you are seeking so it should flush its state
+      faacDecPostSeekReset(priv->decoder, priv->mp4.sample);
+
+      // Loop until the current frame is past the frame we intended to read
+      // (i.e. we have decoded how_many_backwards + 1 frames). The desidered
+      // decoded frame will be stored in the overflow buffer, since we're asking
+      // to read 0 bytes.
       int result;
       do {
           result = decode_one_frame(ip_data, 0, 0);
           if (result < 0) qDebug() << "SEEK_ERROR";
-      } while (result == -2);
+      } while (result == -2 || priv->mp4.sample <= frame_for_sample);
 
       if (result == -1 || result == 0) {
           return mp4_current_sample(ip_data);
@@ -410,11 +424,12 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
       qDebug() << "Seek within frame";
   }
 
+  // Now the overflow buffer contains the sample we want to seek to. Fix the
+  // overflow buffer so that the next call to read() will read starting with the
+  // requested sample.
   priv->overflow_buf = priv->sample_buf;
   priv->overflow_buf += frame_offset_bytes;
   priv->overflow_buf_len -= frame_offset_bytes;
-
-  //qDebug() << "seeking from sample" << priv->mp4.sample << "to sample" << sample;
 
   return mp4_current_sample(ip_data);
 }

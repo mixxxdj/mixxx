@@ -18,13 +18,16 @@
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
-#include <qobject.h>
+#include <QList>
+#include <QObject>
 #include <q3memarray.h>
 #include <q3valuelist.h>
-#include <qmutex.h>
+#include <QMutex>
 #include <QVector>
 
 #include "defs.h"
+
+#include "library/dao/cue.h"
 
 class QString;
 class QDomElement;
@@ -32,12 +35,12 @@ class QDomDocument;
 class QDomNode;
 //class WTrackTable;
 //class WTrackTableItem;
-class WOverview;
 class ControlObject;
 class BpmDetector;
 class BpmReceiver;
 class BpmScheme;
 class TrackPlaylist;
+class Cue;
 
 //template <class T> class Segmentation;
 #include "segmentation.h"
@@ -51,7 +54,7 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString sPath, const QString sFile);
+    TrackInfoObject(const QString sLocation="");
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     ~TrackInfoObject();
@@ -111,6 +114,8 @@ public:
     float getBeatFirst() const;
     /** Retruns the length of the file in bytes */
     int getLength() const;
+    /** Sets the length of the file in bytes */
+    void setLength(int bytes);
     /** Set sample rate */
     void setSampleRate(int iSampleRate);
     /** Get sample rate */
@@ -123,6 +128,8 @@ public:
     QString getInfo() const;
     /** Set duration in seconds */
     void setDuration(int);
+
+    /** Getter/Setter methods for metadata */
     /** Return title */
     QString getTitle() const;
     /** Set title */
@@ -131,6 +138,23 @@ public:
     QString getArtist() const;
     /** Set artist */
     void setArtist(QString);
+    /** Return album */
+    QString getAlbum() const;
+    /** Set album */
+    void setAlbum(QString);
+    /** Return Year */
+    QString getYear() const;
+    /** Set year */
+    void setYear(QString);
+    /** Return genre */
+    QString getGenre() const;
+    /** Set genre */
+    void setGenre(QString);
+    /** Return Track Number */
+    QString getTrackNumber() const;
+    /** Set Track Number */
+    void setTrackNumber(QString);
+
     /** Return filename */
     QString getFilename() const;
     /** Return true if the file exist */
@@ -139,8 +163,6 @@ public:
     int getTimesPlayed() const;
     /** Increment times played with one */
     void incTimesPlayed();
-    /** Sets the filepath */
-    void setFilepath(QString);
     /** Returns the score */
     int getScore() const;
     /** Returns the score as string */
@@ -165,34 +187,45 @@ public:
     double getVisualResampleRate();
 
     /** Set pointer to waveform summary -- updates UI by default */
-    void setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation, bool updateUI = true);
+    void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
 
     /** Returns a pointer to waveform summary */
-    Q3MemArray<char> *getWaveSummary();
-    /** Returns a pointer to segmentation summary */
-    Q3ValueList<long> *getSegmentationSummary();
-    /** Return the next track as listed in WTrackTable */
-    TrackInfoObject *getNext(TrackPlaylist *pPlaylist);
-    /** Return the previous track as listed in WTrackTable */
-    TrackInfoObject *getPrev(TrackPlaylist *pPlaylist);
-    /** Set corresponding overview widget */
-    void setOverviewWidget(WOverview *p);
+    const QByteArray* getWaveSummary();
+
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
     /** Set pointer to ControlObject holding duration value in engine */
-    void setDurationControlObject(ControlObject *p);
-	QString getFilepath() const;
+    QString getFilepath() const;
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
     /** Get saved the cue point */
     float getCuePoint();
 
+    // Calls for managing the track's cue points
+    Cue* addCue();
+    void removeCue(Cue* cue);
+    const QList<Cue*>& getCuePoints();
+    void setCuePoints(QList<Cue*> cuePoints);
+
+
+
+    /** Set the track's full file path */
+    void setLocation(QString location);
+
 	const Segmentation<QString>* getChordData() { return &m_chordData; }
 	void setChordData(Segmentation<QString> cd) {
-		m_chordData = cd; 
+		m_chordData = cd;
 	}
 
-private:
+  public slots:
+    void slotCueUpdated();
+
+  signals:
+    void wavesummaryUpdated(TrackInfoObject*);
+    void bpmUpdated(double bpm);
+    void cuesUpdated();
+
+  private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
     void parseFilename();
@@ -200,12 +233,24 @@ private:
     bool m_bExists;
     /** File name */
     QString m_sFilename;
-    /** Path for the track file */
-    QString m_sFilepath;
+    /** Full path to the file */
+    QString m_sLocation;
+
+
+    /** Metadata */
+    /** Album */
+    QString m_sAlbum;
     /** Artist */
     QString m_sArtist;
     /** Title */
     QString m_sTitle;
+    /** Genre */
+    QString m_sGenre;
+    /** Year */
+    QString m_sYear;
+    /** Track Number */
+    QString m_sTrackNumber;
+
     /** File type */
     QString m_sType;
     /** User comment */
@@ -220,7 +265,7 @@ private:
     int m_iSampleRate;
     /** Number of channels */
     int m_iChannels;
-    /** Bitrate */
+    /** Bitrate, number of kilobits per second of audio in the track*/
     int m_iBitrate;
     /** Number of times the track has been played */
     int m_iTimesPlayed;
@@ -245,12 +290,13 @@ private:
     /** Cue point in samples or something */
     float m_fCuePoint;
 
+    // The list of cue points for the track
+    QList<Cue*> m_cuePoints;
+
     /** Pointer to visual waveform info */
     QVector<float> *m_pVisualWave;
-    /** Pointer to summary wave info */
-    Q3MemArray<char> *m_pWave;
-    /** Pointer to summary segmentation */
-    Q3ValueList<long> *m_pSegmentation;
+    /** Wave summary info */
+    QByteArray m_waveSummary;
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     //WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
     //                *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
@@ -262,14 +308,8 @@ private:
 
     /** Mutex protecting access to object */
     mutable QMutex m_qMutex;
-    /** Corresponding WOverview widget */
-    WOverview *m_pOverviewWidget;
     /** True if object contains valid information */
     bool m_bIsValid;
-    /** Pointer to ControlObject of BPM value (only set when the track is loaded in a player) */
-    ControlObject *m_pControlObjectBpm;
-    /** Pointer to ControlObject of duration value (only set when the track is loaded in a player) */
-    ControlObject *m_pControlObjectDuration;
     int iTemp;
     double m_dVisualResampleRate;
 

@@ -30,7 +30,7 @@ ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
 WWidget::WWidget(QWidget * parent, Qt::WFlags flags) : QWidget(parent, flags)
 {
-    
+
     m_fValue = 0.;
     m_bOff = false;
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
@@ -83,9 +83,7 @@ void WWidget::setup(QDomNode node)
         // Get ConfigKey
         QString key = selectNodeQString(con, "ConfigKey");
 
-        ConfigKey configKey;
-        configKey.group = key.left(key.indexOf(","));
-        configKey.item = key.mid(key.indexOf(",")+1);
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
         // Check that the control exists
         ControlObject * control = ControlObject::getControl(configKey);

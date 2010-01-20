@@ -28,7 +28,6 @@
 #include "controlobjectthreadmain.h"
 #include "mixxxview.h"
 #include "widget/wnumberpos.h"
-#include "widget/wnumberbpm.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
 
@@ -229,20 +228,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     slotUpdateSchemes();
 
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
-    //
-    // Scale BPM configuration
-    //
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue(1));
-
-    // Update combo box
-    ComboBoxScaleBpm->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).toInt()+1)%2);
-
-    connect(ComboBoxScaleBpm,   SIGNAL(activated(int)), this, SLOT(slotSetScaleBpm(int)));
-    slotSetScaleBpm(0);
-
-
+    
     //
     // Tooltip configuration
     //
@@ -253,6 +239,23 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Update combo box
     ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
 
+    //
+    // Ramping Temporary Rate Change configuration
+    //
+    
+    // Set Ramp Rate On or Off
+    connect(CheckBoxRateRamp, SIGNAL(stateChanged(int)), this, SLOT(slotSetRateRamp(int)));
+    CheckBoxRateRamp->setChecked((bool)
+            m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
+    );
+    
+    // Update Ramp Rate Sensitivity
+    connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateRampSensitivity(int)));
+    SliderRateRampSensitivity->setValue(
+        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
+    );
+    
+    
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdateSchemes();
@@ -363,15 +366,6 @@ void DlgPrefControls::slotSetCueRecall(int)
     m_pConfig->set(ConfigKey("[Controls]","CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
 }
 
-void DlgPrefControls::slotSetScaleBpm(int)
-{
-    m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue((ComboBoxScaleBpm->currentIndex()+1)%2));
-    if (ComboBoxScaleBpm->currentIndex()==0)
-        WNumberBpm::setScaleBpm(true);
-    else
-        WNumberBpm::setScaleBpm(false);
-}
-
 void DlgPrefControls::slotSetTooltips(int)
 {
 // setGloballyEnabled currently not implemented in QT4
@@ -461,6 +455,32 @@ void DlgPrefControls::slotSetRatePermRight(double v)
     RateControl::setPermSmall(v);
 }
 
+void DlgPrefControls::slotSetRateRampSensitivity(int sense)
+{
+    m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"), 
+                        ConfigValue(SliderRateRampSensitivity->value()));
+    RateControl::setRateRampSensitivity(sense);
+}
+
+void DlgPrefControls::slotSetRateRamp(int mode)
+{
+    m_pConfig->set(ConfigKey("[Controls]", "RateRamp"), 
+                        ConfigValue(CheckBoxRateRamp->isChecked()));
+    RateControl::setRateRamp(mode);
+    
+    
+    if ( mode )
+    {
+        SliderRateRampSensitivity->setEnabled(TRUE);
+        SpinBoxRateRampSensitivity->setEnabled(TRUE);
+    }
+    else
+    {
+        SliderRateRampSensitivity->setEnabled(FALSE);
+        SpinBoxRateRampSensitivity->setEnabled(FALSE);
+    }
+}
+
 void DlgPrefControls::slotApply()
 {
     // Write rate range to config file
@@ -475,5 +495,6 @@ void DlgPrefControls::slotApply()
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
+    
 }
 
