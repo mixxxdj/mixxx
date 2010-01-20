@@ -114,7 +114,6 @@ void MidiScriptEngine::initializeScriptEngine() {
 void MidiScriptEngine::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiScriptEngine %1").arg(++id));
-
     //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     m_scriptEngineLock.lock();
@@ -122,6 +121,7 @@ void MidiScriptEngine::run() {
     m_scriptEngineLock.unlock();
     emit(initialized());
     
+    firstTimerId = startTimer(5000);
     // Run the Qt event loop indefinitely 
     exec();
 }
@@ -655,6 +655,8 @@ void MidiScriptEngine::stopTimer(int timerId) {
         m_scriptEngineLock.unlock();
     }
     
+    qDebug() << "Killing Timer:" << timerId;
+    
     killTimer(timerId);
     m_timers.remove(timerId);
 }
@@ -665,6 +667,12 @@ void MidiScriptEngine::stopTimer(int timerId) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::timerEvent(QTimerEvent *event) {
-    qDebug() << "Timer ID:" << event->timerId();
+    //qDebug() << "Timer ID:" << event->timerId();
+    
+    if ( event->timerId() == firstTimerId ) {
+        killTimer(event->timerId());
+        return;
+    }
+    
     execute(m_timers[event->timerId()]);
 }
