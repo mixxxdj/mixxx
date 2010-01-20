@@ -65,7 +65,7 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     QFileInfo fileInfo(sLocation);
     m_sFilename = fileInfo.fileName();
 
-    m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
+    m_fBpmFactors = new float[NumBpmFactors];
     generateBpmFactors();
 
     //qDebug() << "new TrackInfoObject....";
@@ -107,7 +107,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 
-    m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
+    m_fBpmFactors = new float[NumBpmFactors];
     generateBpmFactors();
 
     m_pVisualWave = 0;
@@ -133,7 +133,7 @@ TrackInfoObject::~TrackInfoObject()
 
 
     //removeFromTrackTable();
-    delete m_fBpmFactors;
+    delete [] m_fBpmFactors;
 }
 
 bool TrackInfoObject::isValid() const
