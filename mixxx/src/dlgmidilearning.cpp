@@ -17,8 +17,8 @@
 
 #include "dlgmidilearning.h"
 #include "mixxxcontrol.h"
-#include "midimessage.h"
-#include "midimapping.h"
+#include "midi/midimessage.h"
+#include "midi/midimapping.h"
 
 DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDialog(parent), Ui::DlgMidiLearning()
 {

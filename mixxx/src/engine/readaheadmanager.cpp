@@ -27,9 +27,11 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // A loop will only limit the amount we can read in one shot.
 
-    QPair<int, double> next_loop = getSoonestTrigger(in_reverse,
-                                                     m_iCurrentPosition);
-    // Ignore it for now and just go with the first one.
+    QPair<int, double> next_loop;
+    // = getSoonestTrigger(in_reverse, m_iCurrentPosition);
+
+    // Instead of used getSoonestTrigger, instead we just use the result of the
+    // first engine control.
     next_loop.first = 0;
     next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
                                                         m_iCurrentPosition,
@@ -113,8 +115,31 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     m_iCurrentPosition = iSeekPosition;
 }
 
+void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) {
+    Hint current_position;
+
+    // Make sure that we have enough samples to do n more process() calls
+    // without reading again either forward or reverse.
+    int n = 64; // 5? 10? 20? who knows!
+    int length_to_cache = iSamplesPerBuffer * n;
+    current_position.length = length_to_cache;
+    current_position.sample = m_iCurrentPosition;
+
+    // If we are trying to cache before the start of the track,
+    if (current_position.sample < 0) {
+        current_position.length += current_position.sample;
+        current_position.sample = 0;
+    }
+
+    // top priority, we need to read this data immediately
+    current_position.priority = 1;
+    hintList.append(current_position);
+}
+
 QPair<int, double> ReadAheadManager::getSoonestTrigger(double dRate,
                                                        int iCurrentSample) {
+
+    // This is not currently working.
     bool in_reverse = dRate < 0;
     double next_trigger = kNoTrigger;
     int next_trigger_index = -1;

@@ -4,27 +4,41 @@
 #include <QLineEdit>
 #include <QToolButton>
 #include <QLabel>
+#include <QTimer>
+#include <QDomNode>
+#include <QColor>
 
 class WSearchLineEdit : public QLineEdit {
+    Q_OBJECT
+  public:
+    WSearchLineEdit(QString& skinpath, QDomNode node, QWidget* parent = 0);
+    void setup(QDomNode node);
 
-	Q_OBJECT
-
-public:
-	WSearchLineEdit(QString& skinpath, QWidget* parent = 0);
-
-protected:
+  protected:
     void resizeEvent(QResizeEvent*);
-	virtual void focusInEvent(QFocusEvent*);
-	virtual void focusOutEvent(QFocusEvent*);
+    virtual void focusInEvent(QFocusEvent*);
+    virtual void focusOutEvent(QFocusEvent*);
 
-private slots:
+  signals:
+    void search(const QString& text);
+    void searchCleared();
+    void searchStarting();
+
+  public slots:
+    void restoreSearch(const QString& text);
+
+  private slots:
     void updateCloseButton(const QString& text);
+    void slotSetupTimer(const QString& text);
+    void triggerSearch();
 
-private:
-	void showPlaceholder();
+  private:
+    void showPlaceholder();
 
-	QToolButton* m_clearButton;
-	bool m_place;
+    QTimer m_searchTimer;
+    QToolButton* m_clearButton;
+    bool m_place;
+    QColor m_fgc; //Foreground colour
 };
 
 #endif

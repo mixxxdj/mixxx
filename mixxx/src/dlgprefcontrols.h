@@ -45,7 +45,6 @@ public slots:
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
     void slotSetVisuals(int pos);
-    void slotSetScaleBpm(int pos);
     void slotSetTooltips(int pos);
     void slotSetSkin(int);
 	void slotSetScheme(int);
@@ -53,6 +52,8 @@ public slots:
     void slotSetPositionDisplay(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
+    void slotSetRateRamp(int);
+    void slotSetRateRampSensitivity(int);
     void slotApply();
 private:
     /** Pointer to ConfigObject */

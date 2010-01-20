@@ -21,8 +21,16 @@ AnalyserQueue::AnalyserQueue() : m_aq(),
 
 }
 
+int AnalyserQueue::numQueuedTracks()
+{
+    m_qm.lock();
+    int numQueuedTracks = m_tioq.count();
+    m_qm.unlock();
+    return numQueuedTracks;
+}
+
 void AnalyserQueue::addAnalyser(Analyser* an) {
-	m_aq.push_back(an);
+    m_aq.push_back(an);
 }
 
 TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
@@ -30,6 +38,11 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
     if (m_tioq.isEmpty()) {
         m_qwait.wait(&m_qm);
+
+        if (m_exit) {
+            m_qm.unlock();
+            return NULL;
+        }
     }
 
     TrackInfoObject* tio = m_tioq.dequeue();
@@ -43,45 +56,55 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
 void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource) {
 
-	// CHANGING THIS WILL BREAK TONALANALYSER!!!!
-	const int ANALYSISBLOCKSIZE = 2*32768;
+    // CHANGING THIS WILL BREAK TONALANALYSER!!!!
+    const int ANALYSISBLOCKSIZE = 2*32768;
 
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
-    
+
     SAMPLE *data16 = new SAMPLE[ANALYSISBLOCKSIZE];
     CSAMPLE *samples = new CSAMPLE[ANALYSISBLOCKSIZE];
 
-	int read = 0;
+    int read = 0;
+    bool dieflag = false;
 
     do {
-		read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
+        read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
 
-		// Safety net in case something later barfs on 0 sample input
-		if (read == 0) {
-			break;
-		}
+        // Safety net in case something later barfs on 0 sample input
+        if (read == 0) {
+	  break;
+        }
 
-		for (int i = 0; i < read; i++) {
-			samples[i] = ((float)data16[i])/32767.0f;
-		}
+	// If we get more samples than length, ask the analysers to process
+	// up to the number we promised, then stop reading - AD
+	if (read + processedSamples > totalSamples) {
+	  qDebug() << "While processing track of length " << totalSamples << " actually got "
+		   << read + processedSamples << " samples, truncating analysis at expected length";
+	  read = totalSamples - processedSamples;
+	  dieflag = true;
+	}
 
-		QListIterator<Analyser*> it(m_aq);
+        for (int i = 0; i < read; i++) {
+            samples[i] = ((float)data16[i])/32767.0f;
+        }
 
-		while (it.hasNext()) {
-			Analyser* an =  it.next();
-			//qDebug() << typeid(*an).name() << ".process()";
-			an->process(samples, read);
-			//qDebug() << "Done " << typeid(*an).name() << ".process()";
-		}
+        QListIterator<Analyser*> it(m_aq);
+
+        while (it.hasNext()) {
+            Analyser* an =  it.next();
+            //qDebug() << typeid(*an).name() << ".process()";
+            an->process(samples, read);
+            //qDebug() << "Done " << typeid(*an).name() << ".process()";
+        }
 
         // emit progress updates to whoever cares
         processedSamples += read;
-        int progress = processedSamples*100/totalSamples;
+        int progress = ((float)processedSamples)/totalSamples * 100; //fp div here prevents insano signed overflow
         emit(trackProgress(tio, progress));
-	
-	} while(read == ANALYSISBLOCKSIZE);
+
+    } while(read == ANALYSISBLOCKSIZE && !dieflag);
     delete[] data16;
     delete[] samples;
 }
@@ -95,80 +118,95 @@ void AnalyserQueue::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
 	while (!m_exit) {
-
 		TrackInfoObject* next = dequeueNextBlocking();
-        
+        if (m_exit) //When exit is set, it makes the above unblock first.
+            return;
+
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
         int iNumSamples = pSoundSource->length();
         int iSampleRate = pSoundSource->getSrate();
 
-		QListIterator<Analyser*> it(m_aq);
+        if (iNumSamples == 0 || iSampleRate == 0) {
+            qDebug() << "Skipping invalid file:" << next->getLocation();
+            continue;
+        }
 
-		while (it.hasNext()) {
-			it.next()->initialise(next, iSampleRate, iNumSamples);
-		}
+        QListIterator<Analyser*> it(m_aq);
 
-		doAnalysis(next, pSoundSource);
+        while (it.hasNext()) {
+            it.next()->initialise(next, iSampleRate, iNumSamples);
+        }
 
-		QListIterator<Analyser*> itf(m_aq);
+        doAnalysis(next, pSoundSource);
 
-		while (itf.hasNext()) {
-			itf.next()->finalise(next);
-		}
+        QListIterator<Analyser*> itf(m_aq);
 
+        while (itf.hasNext()) {
+            itf.next()->finalise(next);
+        }
+
+        delete pSoundSource;
         emit(trackFinished(next));
-	}
+    }
 }
 
 void AnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
-	m_qm.lock();
-	m_tioq.enqueue(tio);
-	m_qwait.wakeAll();
-	m_qm.unlock();
+    m_qm.lock();
+    m_tioq.enqueue(tio);
+    m_qwait.wakeAll();
+    m_qm.unlock();
 }
 
 AnalyserQueue* AnalyserQueue::createAnalyserQueue(QList<Analyser*> analysers) {
     AnalyserQueue* ret = new AnalyserQueue();
-    
+
     QListIterator<Analyser*> it(analysers);
     while(it.hasNext()) {
         ret->addAnalyser(it.next());
     }
-    
-	ret->start(QThread::IdlePriority);
-	return ret;
+
+    ret->start(QThread::IdlePriority);
+    return ret;
 }
 
 AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config) {
-	AnalyserQueue* ret = new AnalyserQueue();
+    AnalyserQueue* ret = new AnalyserQueue();
 
 #ifdef __TONAL__
-	ret->addAnalyser(new TonalAnalyser());
+    ret->addAnalyser(new TonalAnalyser());
 #endif
-    
+
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
 
-	ret->start(QThread::IdlePriority);
-	return ret;
+    ret->start(QThread::IdlePriority);
+    return ret;
 }
 
-AnalyserQueue* AnalyserQueue::createBPMAnalyserQueue(ConfigObject<ConfigValue> *_config) {
+AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
 	AnalyserQueue* ret = new AnalyserQueue();
+    ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
+	ret->start(QThread::IdlePriority);
 	return ret;
 }
 
 AnalyserQueue::~AnalyserQueue() {
     QListIterator<Analyser*> it(m_aq);
-    
+
+    stop();
+
+	m_qm.lock();
+	m_qwait.wakeAll();
+	m_qm.unlock();
+
+	wait(); //Wait until thread has actually stopped before proceeding.
+
     while (it.hasNext()) {
         Analyser* an = it.next();
-	//qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
-	delete an;
-
-
+    //qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
+    delete an;
     }
 }

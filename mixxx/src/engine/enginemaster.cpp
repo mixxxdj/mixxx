@@ -274,10 +274,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Update VU meter (it does not return anything). Needs to be here so that
     // master balance is reflected in the VU meter.
-    vumeter->process(m_pMaster, m_pMaster, iBufferSize);
+    if (vumeter != NULL)
+        vumeter->process(m_pMaster, m_pMaster, iBufferSize);
 
-    // Submit master samples to the side chain to do shoutcasting, recording,
-    // etc. (cpu intensive non-realtime tasks)
+    //Submit master samples to the side chain to do shoutcasting, recording,
+    //etc.  (cpu intensive non-realtime tasks)
     sidechain->submitSamples(m_pMaster, iBufferSize);
 
     // Compute headphone mix

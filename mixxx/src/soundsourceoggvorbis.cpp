@@ -255,11 +255,24 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     const char* title_p = vorbis_comment_query(comment, (char*)"title", 0); //the char* cast is to shut up the compiler; libvorbis should take `const char*` here but I don't expect us to get them to change that -kousu 2009/02
     const char* artist_p = vorbis_comment_query(comment, (char*)"artist", 0);
     const char* bpm_p = vorbis_comment_query(comment, (char*)"TBPM", 0);
+    const char* album_p = vorbis_comment_query(comment, (char*)"album", 0);
+    const char* year_p = vorbis_comment_query(comment, (char*)"date", 0);
+    const char* genre_p = vorbis_comment_query(comment, (char*)"genre", 0);
+    const char* track_p = vorbis_comment_query(comment, (char*)"tracknumber", 0);
+    
     
     if(title_p)
       Track->setTitle(title_p);
     if(artist_p)
       Track->setArtist(artist_p);
+    if(album_p)
+      Track->setAlbum(album_p);
+    if(year_p)
+      Track->setYear(year_p);
+    if(genre_p)
+      Track->setGenre(genre_p);
+    if(track_p)
+      Track->setTrackNumber(track_p);
     if (bpm_p) {
         float bpm = str2bpm(bpm_p);
         if(bpm > 0.0f) {

@@ -1,4 +1,3 @@
-/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 /***************************************************************************
                           mixxxview.cpp  -  description
                              -------------------
@@ -20,8 +19,6 @@
 #include <QtGui>
 
 #include "mixxxview.h"
-#include "wtracktablemodel.h"
-#include "wtracktableview.h"
 #include "widget/wwidget.h"
 #include "widget/wabstractcontrol.h"
 #include "widget/wknob.h"
@@ -38,6 +35,9 @@
 #include "widget/wnumberrate.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wlibrary.h"
+
 
 #include "widget/woverview.h"
 #include "mixxxkeyboard.h"
@@ -48,6 +48,9 @@
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
+#include "trackinfoobject.h"
+#include "player.h"
+
 
 #include "imgloader.h"
 #include "imginvert.h"
@@ -58,12 +61,22 @@
 #include "ladspaview.h"
 #endif
 #include "defs_promo.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/librarytablemodel.h"
+#include "library/rhythmboxtrackmodel.h"
+#include "library/rhythmboxplaylistmodel.h"
+#include "library/browsetablemodel.h"
 
-MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
-{
+MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
+		     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
+		     Player* player1, Player* player2,
+		     Library* pLibrary) : QWidget(parent) {
     view = 0;
-    //    m_qWidgetList.setAutoDelete(true);
     m_pconfig = pConfig;
+    m_pPlayer1 = player1;
+    m_pPlayer2 = player2;
+    m_pLibrary = pLibrary;
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -82,26 +95,29 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
 
     // Default values for visuals
-    //m_pTrackTable = 0;
     m_pTextCh1 = 0;
     m_pTextCh2 = 0;
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
     m_pNumberPosCh1 = 0;
     m_pNumberPosCh2 = 0;
+    m_pNumberBpmCh1 = 0;
+    m_pNumberBpmCh2 = 0;
     m_pSliderRateCh1 = 0;
     m_pSliderRateCh2 = 0;
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
-    m_pComboBox = 0;
-    m_pTrackTableView = 0;
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
     m_pTabWidgetEffectsPage = 0;
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
+    m_pSplitter = 0;
+    m_pLibrarySidebar = 0;
+    m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
+
 
     setupColorScheme(docElem, pConfig);
 
@@ -115,6 +131,41 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
 #endif
 #endif
 
+ 	 //Connect the players to the waveform overview widgets so they
+ 	 //update when a new track is loaded.
+ 	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+		m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+		m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+
+	//Connect the players to some other widgets, so they get updated when a
+	//new track is loaded.
+	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)), this,
+			SLOT(slotUpdateTrackTextCh1(TrackInfoObject*)));
+	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)), this,
+			SLOT(slotUpdateTrackTextCh2(TrackInfoObject*)));
+
+	//Setup a connection that allows us to connect the TrackInfoObjects that
+	//get loaded into the players to the waveform overview widgets. We don't
+	//want the TrackInfoObjects talking directly to the GUI code, so this is
+	//a way for us to keep this modular. (The TrackInfoObjects need to
+	//notify the waveform overview widgets to update once the waveform
+	//summary has finished generating. This connection gives us a way to
+	//create that connection at runtime.)
+	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+		this, SLOT(slotSetupTrackConnectionsCh1(TrackInfoObject*)));
+	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+		this, SLOT(slotSetupTrackConnectionsCh2(TrackInfoObject*)));
+
+	// Connect search box signals to the library
+	connect(m_pLineEditSearch, SIGNAL(search(const QString&)),
+          m_pLibraryWidget, SLOT(search(const QString&)));
+	connect(m_pLineEditSearch, SIGNAL(searchCleared()),
+          m_pLibraryWidget, SLOT(searchCleared()));
+	connect(m_pLineEditSearch, SIGNAL(searchStarting()),
+          m_pLibraryWidget, SLOT(searchStarting()));
+  connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
+          m_pLineEditSearch, SLOT(restoreSearch(const QString&)));
 }
 
 MixxxView::~MixxxView()
@@ -368,6 +419,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
+                    m_pNumberBpmCh1 = p; //100% of the source code in this file sucks.
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
@@ -375,6 +427,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
+                    m_pNumberBpmCh2 = p;
                 }
             }
             else if (node.nodeName()=="NumberRate")
@@ -589,13 +642,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		p->show();
             }
 
-
-
-
-
-
-
-
             // persistent: m_pNumberPosCh1, m_pNumberPosCh2
             else if (node.nodeName()=="NumberPos")
             {
@@ -656,8 +702,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     if (m_pOverviewCh1 == 0) {
-                        m_pOverviewCh1 = new WOverview(this);
+                        m_pOverviewCh1 = new WOverview("[Channel1]", this);
                         //m_qWidgetList.append(m_pOverviewCh1);
+
                     }
                     m_pOverviewCh1->setup(node);
 		    m_pOverviewCh1->show();
@@ -665,7 +712,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
                     if (m_pOverviewCh2 == 0) {
-                        m_pOverviewCh2 = new WOverview(this);
+                        m_pOverviewCh2 = new WOverview("[Channel2]", this);
                         //m_qWidgetList.append(m_pOverviewCh2);
                     }
                     m_pOverviewCh2->setup(node);
@@ -673,57 +720,16 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 }
             }
 
-	    // persistent: m_pComboBox
-            else if (node.nodeName()=="ComboBox")
-            {
-                if (m_pComboBox == 0) {
-                    m_pComboBox = new QComboBox(this);
-                    m_pComboBox->addItem( "Library" , TABLE_MODE_LIBRARY );
-                    m_pComboBox->addItem( "Play Queue", TABLE_MODE_PLAYQUEUE );
-                    m_pComboBox->addItem( "Browse", TABLE_MODE_BROWSE );
-                    m_pComboBox->addItem( "Playlists", TABLE_MODE_PLAYLISTS );
-                    QDir promoDir(m_pconfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
-                    if (promoDir.exists())
-                        m_pComboBox->addItem( "Free Tracks", TABLE_MODE_PROMO );
-                    // m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
-                    m_pComboBox->installEventFilter(m_pKeyboard);
-
-                    //Add the combo box to the the library page's layout.
-                    m_pLibraryPageLayout->addWidget(m_pComboBox, 0, 0, Qt::AlignLeft); //Row 0, col 0
-                }
-                /*
-                // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.indexOf(",")).toInt();
-                int y = pos.mid(pos.indexOf(",")+1).toInt();
-                m_pComboBox->move(x,y);
-                */
-
-                // Size
-                QString size = WWidget::selectNodeQString(node, "Size");
-                int x = size.left(size.indexOf(",")).toInt();
-                int y = size.mid(size.indexOf(",")+1).toInt();
-                m_pComboBox->setFixedSize(x,y);
-                m_pComboBox->show();
-            }
-
+            /*
             // persistent: m_pLineEditSearch
             else if (node.nodeName()=="Search")
             {
                 if (m_pLineEditSearch == 0) {
-					MixxxView* parent = this;
+		    MixxxView* parent = this;
                     QString path = pConfig->getConfigPath();
                     m_pLineEditSearch = new WSearchLineEdit(path, this);
                     m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
                 }
-
-                /*
-                // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.indexOf(",")).toInt();
-                int y = pos.mid(pos.indexOf(",")+1).toInt();
-                m_pLineEditSearch->move(x+35,y);
-                */
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
@@ -732,61 +738,120 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_pLineEditSearch->setFixedSize(x,y);
                 m_pLineEditSearch->show();
             }
+            */
 
-	    // persistent: m_pTrackTableView
+	    // persistent: m_pTabWidget
             else if (node.nodeName()=="TableView")
             {
                 if (m_pTabWidget == 0) {
+                    // If the tab widget is NULL than we cannot have possibly
+                    // set anything else up, so instead of having awkward
+                    // separation of creation of each thing, lets just merge
+                    // them together here, assuming nothing has been created
+                    // yet.
 
-                    //Create the tab widget to store the various panes in (library, effects, etc.)
+                    //Create the tab widget to store the various panes in
+                    //(library, effects, etc.)
                     m_pTabWidget = new QStackedWidget(this);
 
-                    //Create the pages that go in the tab widget
-                    m_pTabWidgetLibraryPage = new QWidget();
+                    // Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget(this);
-                    //m_pTabWidgetEffectsPage = new QWidget();
-
+#ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
+#else
+                    m_pTabWidgetEffectsPage = new QWidget();
+#endif
+
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
-      //              m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+                    //m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
-    //                m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
-                }
+                    //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
 
-                if (m_pTrackTableView == 0) {
-                    m_pTrackTableView = new WTrackTableView(this, pConfig);
-                    //Add the track table to the library page's layout, so it's positioned/sized automatically
-                    m_pLibraryPageLayout->addWidget(m_pTrackTableView,
-                                                    1, 0, //From row 1, col 0,
-                                                    1,    //Span 1 row
-                                                    3,    //Span 3 cols
-                                                    0);   //Default alignment
+                    //Set up the search box widget
+                    if (m_pLineEditSearch == 0) {
+                        QString path = pConfig->getConfigPath();
+                        m_pLineEditSearch = new WSearchLineEdit(path, node, this);
+                        //m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
+                        //m_pLineEditSearch->show();
 
-                    //Add the library page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);//, tr("Library"));
+                        // Size
+                        /*
+                        QString size = WWidget::selectNodeQString(node, "Size");
+                        int x = size.left(size.indexOf(",")).toInt();
+                        int y = size.mid(size.indexOf(",")+1).toInt();
+                        m_pLineEditSearch->setFixedSize(x,y);
+                        */
+                    }
 
-                    //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);//, tr("Effects"));
+                    // Build the Library widgets
+                    m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
-                    /*
-                    //XXX: Re-enable this to get the tab widget back, post 1.7.0 release.
-                    //Add the library page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage, tr("Library"));
+                    m_pLibraryWidget = new WLibrary(m_pSplitter);
+                    m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
-                    //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));
-		    */
+                    
+                    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
+                    m_pLibrarySidebar->installEventFilter(m_pKeyboard);
+
+                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
+                    QVBoxLayout* vl = new QVBoxLayout();
+                    vl->setContentsMargins(0,0,0,0); //Fill entire space
+                    m_pLibrarySidebarPage->setLayout(vl);
+                    vl->addWidget(m_pLineEditSearch);
+                    vl->addWidget(m_pLibrarySidebar);
+
+                    setupTrackSourceViewWidget(node);
+
+                    m_pLibrary->bindWidget(m_pLibrarySidebar,
+                                        m_pLibraryWidget);
+
+                    //Add the library sidebar to the splitter.
+                    m_pSplitter->addWidget(m_pLibrarySidebarPage);
+                    //Add the library widget to the splitter.
+                    m_pSplitter->addWidget(m_pLibraryWidget);
+
+                    // TODO(rryan) can we make this more elegant?
+                    QList<int> splitterSizes;
+                    splitterSizes.push_back(50);
+                    splitterSizes.push_back(500);
+                    m_pSplitter->setSizes(splitterSizes);
+
+                    // Add the splitter to the library page's layout, so it's
+                    // positioned/sized automatically
+                    m_pLibraryPageLayout->addWidget(m_pSplitter,
+                                                            1, 0, //From row 1, col 0,
+                                                            1,    //Span 1 row
+                                                            3,    //Span 3 cols
+                                                            0);   //Default alignment
+
+                    // TODO(XXX) Re-enable this to get the tab widget back, post
+                    // 1.7.0 release.
+
+                    // Add the library page to the tab widget.
+                    //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
+                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
+
+                    // Add the effects page to the tab widget.
+                    //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
                 }
 
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
 
-                m_pTrackTableView->setup(node);
-                m_pTrackTableView->installEventFilter(m_pKeyboard);
-                m_pTrackTableView->show();
+                setupTrackSourceViewWidget(node);
+                
+                // Applies the node settings to every view registered in the
+                // Library widget.
+                m_pLibraryWidget->setup(node);
+
+                m_pLineEditSearch->setup(node);
+
+                m_pLineEditSearch->show();
+                m_pTabWidget->show();
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {
@@ -795,14 +860,13 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     currentControl->setDefaultValue(0.);
                 }
                 else if (compareConfigKeys(node, "[Channel1],volume")||
-                           compareConfigKeys(node, "[Channel2],volume"))
+                         compareConfigKeys(node, "[Channel2],volume"))
                 {
                     currentControl->setDefaultValue(127.);
                 }
             }
         }
         node = node.nextSibling();
-
     }
 }
 
@@ -832,9 +896,8 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
     if (m_pOverviewCh2) m_pOverviewCh2->hide();
-    if (m_pComboBox) m_pComboBox->hide();
     if (m_pLineEditSearch) m_pLineEditSearch->hide();
-    if (m_pTrackTableView) m_pTrackTableView->hide();
+    if (m_pTabWidget) m_pTabWidget->hide();
 
     //load the skin
     QDomElement docElem = openSkin(qSkinPath);
@@ -887,4 +950,83 @@ void MixxxView::setupTabWidget(QDomNode node)
         int y = size.mid(size.indexOf(",")+1).toInt();
         m_pTabWidget->setFixedSize(x,y);
     }
- }
+}
+
+
+void MixxxView::setupTrackSourceViewWidget(QDomNode node)
+{
+
+    //Setup colors:
+    //Foreground color
+    QColor fgc(0,255,0);
+    if (!WWidget::selectNode(node, "FgColor").isNull()) {
+
+	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+
+	//m_pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
+
+	// Row colors
+	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
+	    {
+	        QColor r1;
+	        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+		r1 = WSkinColor::getCorrectColor(r1);
+		QColor r2;
+		r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+		r2 = WSkinColor::getCorrectColor(r2);
+
+		// For now make text the inverse of the background so it's readable
+		// In the future this should be configurable from the skin with this
+		// as the fallback option
+		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
+
+	        QPalette Rowpalette = palette();
+	        Rowpalette.setColor(QPalette::Base, r1);
+	        Rowpalette.setColor(QPalette::AlternateBase, r2);
+		Rowpalette.setColor(QPalette::Text, text);
+
+	        m_pLibrarySidebar->setPalette(Rowpalette);
+	    }
+    }
+
+}
+
+void MixxxView::slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack)
+{
+	//Note: This slot gets called when Player emits a newTrackLoaded() signal.
+
+	//Connect the track to the waveform overview widget, so it updates when the wavesummary is finished
+	//generating.
+	connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+		m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+	//Connect the track to the BPM readout in the GUI, so it updates when the BPM is finished being calculated.
+    connect(pTrack, SIGNAL(bpmUpdated(double)),
+	    m_pNumberBpmCh1, SLOT(setValue(double)));
+}
+
+void MixxxView::slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack)
+{
+	//Note: This slot gets called when Player emits a newTrackLoaded() signal.
+
+	//Connect the track to the waveform overview widget, so it updates when the wavesummary is finished
+	//generating.
+	connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+		m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+	//Connect the track to the BPM readout in the GUI, so it updates when the BPM is finished being calculated.
+	connect(pTrack, SIGNAL(bpmUpdated(double)),
+		m_pNumberBpmCh2, SLOT(setValue(double)));
+
+}
+
+void MixxxView::slotUpdateTrackTextCh1(TrackInfoObject* pTrack)
+{
+	if (m_pTextCh1)
+		m_pTextCh1->setText(pTrack->getInfo());
+}
+
+void MixxxView::slotUpdateTrackTextCh2(TrackInfoObject* pTrack)
+{
+	if (m_pTextCh2)
+		m_pTextCh2->setText(pTrack->getInfo());
+}
+

@@ -17,7 +17,7 @@
      <Amount>-50</Amount>
     </Add>
    </Filters>
-  </Scheme> 
+  </Scheme>
   <Scheme>
    <Name>5pm (Classic Mixxx)</Name>
    <Filters>
@@ -109,7 +109,7 @@
    <Pressed>sync-on-Ch1.png</Pressed>
    <Unpressed>sync-off-Ch1.png</Unpressed>
   </State>
-  <Pos>72,180</Pos>
+  <Pos>72,445</Pos>
   <Connection>
    <ConfigKey>[Channel1],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -125,10 +125,137 @@
    <Pressed>sync-on-Ch2.png</Pressed>
    <Unpressed>sync-off-Ch2.png</Unpressed>
   </State>
-  <Pos>959,180</Pos>
+  <Pos>960,445</Pos>
   <Connection>
    <ConfigKey>[Channel2],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-In</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopin-on-Ch1.png</Pressed>
+   <Unpressed>loopin-off.png</Unpressed>
+  </State>
+  <Pos>72,130</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],loop_in</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],loop_in</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-In</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopin-on-Ch2.png</Pressed>
+   <Unpressed>loopin-off.png</Unpressed>
+  </State>
+  <Pos>959,130</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],loop_in</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],loop_in</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-Out</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopout-on-Ch1.png</Pressed>
+   <Unpressed>loopout-off.png</Unpressed>
+  </State>
+  <Pos>72,170</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],loop_out</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],loop_out</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Loop-Out</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>loopout-on-Ch2.png</Pressed>
+   <Unpressed>loopout-off.png</Unpressed>
+  </State>
+  <Pos>959,170</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],loop_out</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],loop_out</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Reloop/Exit</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>reloop-on-Ch1.png</Pressed>
+   <Unpressed>reloop-off.png</Unpressed>
+  </State>
+  <Pos>72,210</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],reloop_exit</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],reloop_exit</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Reloop/Exit</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>reloop-on-Ch2.png</Pressed>
+   <Unpressed>reloop-off.png</Unpressed>
+  </State>
+  <Pos>959,210</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],reloop_exit</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],reloop_exit</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
  </PushButton>
@@ -510,7 +637,7 @@
    <Pressed>play-on-Ch1.png</Pressed>
    <Unpressed>play-on-Ch1.png</Unpressed>
   </State>
-  <Pos>8,64</Pos>
+  <Pos>8,50</Pos>
   <Connection>
    <ConfigKey>[Channel1],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -536,7 +663,7 @@
    <Pressed>play-on-Ch2.png</Pressed>
    <Unpressed>play-on-Ch2.png</Unpressed>
   </State>
-  <Pos>895,63</Pos>
+  <Pos>895,50</Pos>
   <Connection>
    <ConfigKey>[Channel2],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -557,7 +684,7 @@
    <Pressed>cue-on-Ch1.png</Pressed>
    <Unpressed>cue-off-Ch1.png</Unpressed>
   </State>
-  <Pos>72,64</Pos>
+  <Pos>72,50</Pos>
   <Connection>
    <ConfigKey>[Channel1],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -578,7 +705,7 @@
    <Pressed>cue-on-Ch2.png</Pressed>
    <Unpressed>cue-off-Ch2.png</Unpressed>
   </State>
-  <Pos>959,63</Pos>
+  <Pos>959,50</Pos>
   <Connection>
    <ConfigKey>[Channel2],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -599,7 +726,7 @@
    <Pressed>rev-on-Ch1.png</Pressed>
    <Unpressed>rev-off-Ch1.png</Unpressed>
   </State>
-  <Pos>72,104</Pos>
+  <Pos>72,90</Pos>
   <Connection>
    <ConfigKey>[Channel1],reverse</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -620,7 +747,7 @@
    <Pressed>rev-on-Ch2.png</Pressed>
    <Unpressed>rev-off-Ch2.png</Unpressed>
   </State>
-  <Pos>959,103</Pos>
+  <Pos>959,90</Pos>
   <Connection>
    <ConfigKey>[Channel2],reverse</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -641,7 +768,7 @@
    <Pressed>fwd-on-Ch1.png</Pressed>
    <Unpressed>fwd-off-Ch1.png</Unpressed>
   </State>
-  <Pos>40,104</Pos>
+  <Pos>40,90</Pos>
   <Connection>
    <ConfigKey>[Channel1],fwd</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -667,7 +794,7 @@
    <Pressed>back-on-Ch1.png</Pressed>
    <Unpressed>back-off-Ch1.png</Unpressed>
   </State>
-  <Pos>8,104</Pos>
+  <Pos>8,90</Pos>
   <Connection>
    <ConfigKey>[Channel1],back</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -693,7 +820,7 @@
    <Pressed>fwd-on-Ch2.png</Pressed>
    <Unpressed>fwd-off-Ch2.png</Unpressed>
   </State>
-  <Pos>927,103</Pos>
+  <Pos>927,90</Pos>
   <Connection>
    <ConfigKey>[Channel2],fwd</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -719,7 +846,7 @@
    <Pressed>back-on-Ch2.png</Pressed>
    <Unpressed>back-off-Ch2.png</Unpressed>
   </State>
-  <Pos>895,103</Pos>
+  <Pos>895,90</Pos>
   <Connection>
    <ConfigKey>[Channel2],back</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -750,7 +877,7 @@
    <Pressed>flanger-on-Ch1.png</Pressed>
    <Unpressed>flanger-on-Ch1.png</Unpressed>
   </State>
-  <Pos>72,445</Pos>
+  <Pos>72,405</Pos>
   <Connection>
    <ConfigKey>[Channel1],flanger</ConfigKey>
   </Connection>
@@ -769,7 +896,7 @@
    <Pressed>flanger-on-Ch2.png</Pressed>
    <Unpressed>flanger-on-Ch2.png</Unpressed>
   </State>
-  <Pos>960,444</Pos>
+  <Pos>960,405</Pos>
   <Connection>
    <ConfigKey>[Channel2],flanger</ConfigKey>
   </Connection>
@@ -788,7 +915,7 @@
    <Pressed>head-on-Ch1.png</Pressed>
    <Unpressed>head-on-Ch1.png</Unpressed>
   </State>
-  <Pos>9,445</Pos>
+  <Pos>9,405</Pos>
   <Connection>
    <ConfigKey>[Channel1],pfl</ConfigKey>
   </Connection>
@@ -807,7 +934,7 @@
    <Pressed>head-on-Ch2.png</Pressed>
    <Unpressed>head-on-Ch2.png</Unpressed>
   </State>
-  <Pos>896,444</Pos>
+  <Pos>896,405</Pos>
   <Connection>
    <ConfigKey>[Channel2],pfl</ConfigKey>
   </Connection>
@@ -1002,8 +1129,23 @@
   <SignalColor>#00ff00</SignalColor><HfcColor>#FFC115</HfcColor>
   <BeatColor>#0000f0</BeatColor>
   <MarkerColor>#0000ff</MarkerColor>
-  <FisheyeColor>#ffffff</FisheyeColor>
-  <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Visual>
@@ -1015,8 +1157,23 @@
   <SignalColor>#00ff00</SignalColor><HfcColor>#FFC115</HfcColor>
   <BeatColor>#f00000</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
-  <FisheyeColor>#ffffff</FisheyeColor>
-  <Zoom>true</Zoom>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Text>

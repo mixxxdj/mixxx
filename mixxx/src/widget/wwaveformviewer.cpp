@@ -21,7 +21,7 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
     Q_ASSERT(m_pWaveformRenderer);
 
     m_pGroup = group;
-    
+
     setAcceptDrops(true);
 
     installEventFilter(this);
@@ -31,7 +31,7 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
     int desired_fps = 1;
     int update_interval = 1000 / desired_fps;
     m_iTimerID = startTimer(update_interval);
-    
+
     m_painting = false;
 }
 
@@ -47,7 +47,7 @@ void WWaveformViewer::setup(QDomNode node) {
     int sep = pos.indexOf(",");
     int x = pos.left(sep).toInt();
     int y = pos.mid(sep+1).toInt();
-    
+
     move(x,y);
 
     // Acquire size
@@ -58,19 +58,19 @@ void WWaveformViewer::setup(QDomNode node) {
 
     setFixedSize(x,y);
 
-    m_pWaveformRenderer->resize(x,y);
-
     m_pWaveformRenderer->setup(node);
+
+    m_pWaveformRenderer->resize(x,y);
 }
 
 void WWaveformViewer::paintEvent(QPaintEvent *event) {
     QPainter painter;
     painter.begin(this);
-    
+
     painter.setRenderHint(QPainter::Antialiasing);
 
     m_pWaveformRenderer->draw(&painter, event);
-    
+
     painter.end();
     m_painting = false;
     // QPainter goes out of scope and is destructed
@@ -80,7 +80,7 @@ void WWaveformViewer::timerEvent(QTimerEvent *qte) {
     //m_paintMutex.lock();
     if(!m_painting) {
         m_painting = true;
-               
+
         // The docs say update is better than repaint.
         update();
     }

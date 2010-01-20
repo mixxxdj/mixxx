@@ -630,6 +630,23 @@
   <BeatColor>#0000ff</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#404040</FisheyeColor>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Visual>
@@ -641,6 +658,23 @@
   <BeatColor>#0000ff</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#404040</FisheyeColor>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
  </Visual>
 
  <Text>

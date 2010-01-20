@@ -47,6 +47,8 @@ public:
     QString getFilename();
 
 private:
+    void initialize(QString qFilename);
+
     SoundSource *m_pSoundSource;
 };
 
