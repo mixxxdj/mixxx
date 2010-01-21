@@ -94,7 +94,7 @@ private:
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 	QHash<int, QString> m_timers;
-    int m_firstTimerId;
+    int m_primerTimerID;
 };
 
 #endif

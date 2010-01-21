@@ -45,6 +45,8 @@ MidiScriptEngine::~MidiScriptEngine() {
         stopTimer(i.key());
     }
     m_scriptEngineLock.unlock();
+
+    killTimer(m_primerTimerID);  // Stop the primer timer
     
     // Stop processing the event loop and terminate the thread.
     quit();
@@ -122,8 +124,13 @@ void MidiScriptEngine::run() {
     initializeScriptEngine();
     m_scriptEngineLock.unlock();
     emit(initialized());
+
+    // In order for timers to be created & destroyed at will in scripts, there must always be a timer running
+    // that was started before exec(). This "primer" timer must also be very short as new script timers
+    // must wait until this interval passes before they can begin firing.
+    m_primerTimerID = startTimer(20);    // Start the primer timer which fires once every time
+                                        // there are no more window system events to process.
     
-    m_firstTimerId = startTimer(500);
     // Run the Qt event loop indefinitely 
     exec();
 }
@@ -671,10 +678,8 @@ void MidiScriptEngine::stopTimer(int timerId) {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     
-    if ( event->timerId() == m_firstTimerId ) {
-        killTimer(event->timerId());
-        return;
-    }
+    // If the primer timer fired this, ignore it
+    if ( event->timerId() == m_primerTimerID ) return;
     
     execute(m_timers[event->timerId()]);
 }
