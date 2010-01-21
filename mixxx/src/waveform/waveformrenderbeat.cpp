@@ -22,12 +22,12 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
     m_dBpm = -1;
     m_dBeatFirst = -1;
     m_iSampleRate = -1;
-    
+
     m_dSamplesPerPixel = -1;
     m_dSamplesPerDownsample = -1;
     m_dBeatLength = -1;
     m_iNumSamples = 0;
-    
+
     m_pBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "file_bpm")));
     connect(m_pBpm, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBpm(double)));
 
@@ -80,7 +80,7 @@ void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
 
     m_dSamplesPerDownsample = n;
     m_dSamplesPerPixel = double(f)/z;
-    
+
     //qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
 
 }
@@ -90,6 +90,12 @@ void WaveformRenderBeat::setup(QDomNode node) {
     colorMarks.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
     colorMarks = WSkinColor::getCorrectColor(colorMarks);
 
+    colorHighlight = Qt::black;
+    QString highlight = WWidget::selectNodeQString(node, "BeatHighlightColor");
+    if (highlight != "") {
+        colorHighlight.setNamedColor(highlight);
+    }
+    colorHighlight = WSkinColor::getCorrectColor(colorHighlight);
 }
 
 
@@ -103,9 +109,9 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
     if(buffer == NULL)
         return;
-    
+
     int iCurPos = (int)(dPlayPos * m_iNumSamples);
-    
+
     if(iCurPos % 2 != 0)
         iCurPos--;
 
@@ -131,7 +137,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);
     pPainter->setPen(colorMarks);
-    
+
     double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
     double halfw = m_iWidth/2;
@@ -155,15 +161,15 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
         // i relative to the current play position in subpixels
         double i = (curPos - iCurPos)/m_dSamplesPerDownsample;
 
-        // If i is less than 20 subpixels from center, highlight it. 
+        // If i is less than 20 subpixels from center, highlight it.
         if(abs(i) < 20) {
-            pPainter->setPen(QColor(255,255,255));
+            pPainter->setPen(colorHighlight);
             reset = true;
         }
 
         // Translate from -subpixelHalfWidth..subpixelHalfwidth to 0..subpixelWidth
         i += subpixelHalfWidth;
-        
+
         pPainter->drawLine(QLineF(i,halfh,i,-halfh));
 
         if(reset) {
@@ -171,7 +177,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
             reset = false;
         }
     }
-    
+
     pPainter->restore();
-    
+
 }
