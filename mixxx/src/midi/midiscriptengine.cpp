@@ -642,7 +642,6 @@ int MidiScriptEngine::beginTimer(int interval, QString function) {
         m_scriptEngineLock.unlock();
     }
     
-    qDebug() << this->thread();
     int timerId = startTimer(interval);
     m_timers[timerId]=function;
     if (timerId==0) qDebug() << "MIDI Script timer could not be created";
