@@ -39,7 +39,7 @@ void WLabel::setup(QDomNode node)
 
     // Colors
     QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-    
+
     if(!WWidget::selectNode(node, "BgColor").isNull()) {
         m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
         //m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor)); //deprecated
@@ -49,7 +49,7 @@ void WLabel::setup(QDomNode node)
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
     //m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor)); //deprecated
     palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
-    
+
     m_pLabel->setPalette(palette);
 
     // Text
@@ -68,6 +68,11 @@ void WLabel::setup(QDomNode node)
     {
         if (selectNodeQString(node, "Alignment")=="right")
             m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    }
+
+    QString style = selectNodeQString(node, "Style");
+    if (style != "") {
+        m_pLabel->setStyleSheet(style);
     }
 }
 
