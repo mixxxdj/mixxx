@@ -109,7 +109,7 @@ RateControl::RateControl(const char* _group,
     // We need the sample rate so we can guesstimate something close
     // what latency is.
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
-    
+
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
 
@@ -122,16 +122,16 @@ RateControl::RateControl(const char* _group,
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
     m_pJogFilter->setFilterLength(5);
-    
+
     // Update Internal Settings
     // Set Pitchbend Mode
     m_eRateRampMode = (RateControl::RATERAMP_MODE)
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt();
-    
+
     // Set the Sensitivity
-    m_iRateRampSensitivity = 
+    m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
-    
+
 }
 
 RateControl::~RateControl() {
@@ -358,27 +358,22 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // If searching is in progress, it overrides the playback rate.
         rate = m_pRateSearch->get();
     } else if (paused) {
-        if (scratchFactor == 1.)
-            scratchFactor = 0;
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
-        rate *= scratchFactor;
-        rate += jogFactor; 
-        rate *= baserate;
-        rate += wheelFactor/10.;
+        // Scratch is centered around 1.0, so subtract 1.0
+        rate = scratchFactor - 1.0f + jogFactor + wheelFactor/10.;
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
         // There are four rate effects we apply: wheel, scratch, jog and temp.
         // Wheel: a linear additive effect
         // Scratch: a rate multiplier
-        // Jog: a linear additive effect whose value is filtered 
+        // Jog: a linear additive effect whose value is filtered
         // Temp: pitch bend
-        
-        rate = (1. + getRawRate()) * baserate;
+
+        rate = 1. + getRawRate() + getTempRate();
         rate += wheelFactor/10.;
         rate *= scratchFactor;
         rate += jogFactor;
-        rate += (getTempRate()) * baserate;
 
         // If we are reversing, flip the rate.
         if (m_pReverseButton->get()) {
@@ -386,54 +381,57 @@ double RateControl::calculateRate(double baserate, bool paused) {
         }
     }
 
+    // Scale the rate by the engine samplerate
+    rate *= baserate;
+
     return rate;
 }
 
 double RateControl::process(const double rate,
                             const double currentSample,
                             const double totalSamples,
-                            const int bufferSamples) 
+                            const int bufferSamples)
 {
-    /* 
+    /*
      * Code to handle temporary rate change buttons.
      *
      * We support two behaviours, the standard ramped pitch bending
      * and pitch shift stepping, which is the old behaviour.
      */
-    
+
     /*
      * Initialize certain values necessary for pitchbending. Most of this
      * code should be handled inside a slot, but we'd need to connect to
      * the troublesome Latency ControlObject... Either the Master or Soundcard
      * one.
      */
-    
+
     double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-    
-    
-    if ((m_ePbPressed) && (!m_bTempStarted)) 
+
+
+    if ((m_ePbPressed) && (!m_bTempStarted))
     {
         m_bTempStarted = true;
         m_dOldRate = m_pRateSlider->get();
-        
-        
-        if ( m_eRateRampMode == RATERAMP_STEP ) 
+
+
+        if ( m_eRateRampMode == RATERAMP_STEP )
         {
             // old temporary pitch shift behaviour
             double range = m_pRateRange->get();
-            
+
             // Avoid Division by Zero
             if (range == 0) {
                 qDebug() << "Avoiding a Division by Zero in RATERAMP_STEP code";
                 return m_dOldRate;
             }
-            
-            double change = m_pRateDir->get() * m_dTemp / 
+
+            double change = m_pRateDir->get() * m_dTemp /
                                     (100. * range);
-            double csmall = m_pRateDir->get() * m_dTempSmall / 
+            double csmall = m_pRateDir->get() * m_dTempSmall /
                                     (100. * range);
-            
-            
+
+
             if (buttonRateTempUp->get())
                 addRateTemp(change);
             else if (buttonRateTempDown->get())
@@ -443,16 +441,16 @@ double RateControl::process(const double rate,
             else if (buttonRateTempDownSmall->get())
                 subRateTemp(csmall);
         }
-        else 
+        else
         {
             m_dTempRateChange = ((double)latrate / ((double)m_iRateRampSensitivity / 100.));
-            
+
             if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
                 m_dRateTempRampbackChange = 0.0;
         }
-        
+
     }
-    
+
     if ((m_ePbCurrent) && (m_eRateRampMode == RATERAMP_LINEAR))
     {
         // apply ramped pitchbending
@@ -469,12 +467,12 @@ double RateControl::process(const double rate,
     {
         // No buttons pressed, so time to deinitialize
         m_bTempStarted = false;
-        
-        
+
+
         if ( m_eRateRampMode == RATERAMP_STEP )
             m_pRateSlider->set(m_dOldRate);
         else {
-            
+
             if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0 ))
             {
                 int period = 2;
@@ -484,12 +482,12 @@ double RateControl::process(const double rate,
                     resetRateTemp();
                     return 1;
                 }
-                
+
             }
-            
+
             if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE))
             {
-                
+
                 if ( fabs(m_dRateTemp) < m_dRateTempRampbackChange)
                     resetRateTemp();
                 else if ( m_dRateTemp > 0 )
@@ -501,7 +499,7 @@ double RateControl::process(const double rate,
                 resetRateTemp();
         }
     }
-    
+
     return 1;
 }
 
@@ -515,7 +513,7 @@ void RateControl::setRateTemp(double v)
     if ( m_dRateTemp < -1.0 )
         m_dRateTemp = -1.0;
     else if ( m_dRateTemp > 1.0 )
-        m_dRateTemp = 1.0; 
+        m_dRateTemp = 1.0;
     else if ( isnan(m_dRateTemp))
         m_dRateTemp = 0;
 }
