@@ -421,6 +421,8 @@ sources = Split("""
                 library/dao/settingsdao.cpp
                 library/librarymidicontrol.cpp
                 library/schemamanager.cpp
+                library/promotracksfeature.cpp
+                library/promotrackswebview.cpp
 
                 xmlparse.cpp
                 parser.cpp
@@ -547,19 +549,20 @@ if not conf.CheckLib('ogg'):
 
 #hack: check for these here, before conf.Finish happens
 have_mp4 = conf.CheckLib('mp4v2') or conf.CheckLib('mp4')
+have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
 
 # We have to check for libfaad version 2.6 or 2.7. In libfaad
 # version 2.7, the type for the samplerate is unsigned long*,
 # while in 2.6 the type is uint32_t*. We can use the optional
 # call parameter to CheckLibWithHeader to build a test file to
 # check which one this faad.h supports.
-have_faad_26 = conf.CheckLibWithHeader(
-	'libfaad', 'faad.h', 'c++',
-	call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);')
+have_faad_26 = (not conf.CheckLibWithHeader(
+                'libfaad', 'faad.h', 'c++',
+                call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);'))
 if not have_faad_26:	# This is here to prevent linking faad twice (only do one CheckLib)
 	have_faad = conf.CheckLib('faad')
 else:
-	have_faad=have_faad_26
+	have_faad = have_faad_26
 
 have_m4a = have_mp4 and have_faad
 flags_m4a = getFlags(env, 'm4a', 0)
@@ -642,7 +645,8 @@ if platform == 'linux':
 		'QtSvg',
 		'QtSql',
 		'QtScript',
-		'QtXmlPatterns'
+		'QtXmlPatterns',
+		'QtWebKit'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
@@ -661,13 +665,14 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtSql.framework/Headers/',
+				'/Library/Frameworks/QtWebKit.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 
 	#Non-standard libpaths for fink and darwin ports
@@ -679,7 +684,7 @@ if platform == 'osx':
 		print 'Did not find CoreMIDI framework, exiting! (Please install it)'
 		Exit(1)
 	else:
-		env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
+		env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework QuickTime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
 
 
 
@@ -731,6 +736,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtGui')
 	env.Append(LIBS = 'QtCore')
 	env.Append(LIBS = 'QtOpenGL')
+	env.Append(LIBS = 'QtWebKit')
 	env.Append(LIBS = 'QtScript')
 	env.Append(LIBS = 'sndfile') #? we shouldn't have to do this...
 	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
@@ -742,6 +748,7 @@ if 'win' in platform:
 	env.Append(LIBS = 'QtSql4');
 	env.Append(LIBS = 'QtGui4');
 	env.Append(LIBS = 'QtCore4');
+	env.Append(LIBS = 'QtWebKit4');
 	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
 	env.Append(LIBS = 'ogg_static')
@@ -1027,11 +1034,14 @@ if int(flags_m4a):
 			env.Append(CPPDEFINES = '__M4AHACK__')
 			print "libfaad 2.6 compatibility mode... enabled"
 
+		if have_mp4v2_h:
+			env.Append(CPPDEFINES = '__MP4V2__')
+
 	#	env.ParseConfig('pkg-config libmp4v2-dev --silence-errors --cflags --libs') # no pkg-config data for libmp4v2-dev
 	#	FIXME: should do conf.CheckCHeader('mp4.h') or something...
 		env.Append(CPPDEFINES = '__M4A__')
 		build_flags += 'm4a '
-		sources += Split("""soundsourcem4a.cpp m4a/mp4-mixxx.cpp""");  # MP4/M4A Support
+		sources += Split("""soundsourcem4a.cpp""");  # MP4/M4A Support
 		env.Append(LIBS = 'libmp4v2')
 		env.Append(LIBS = 'libfaad')
 	else:
@@ -1496,7 +1506,7 @@ if platform == 'osx':
 		 STRIP=True,
 		 #STRIP=(type == 'RELEASE')
 		 )
-	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)

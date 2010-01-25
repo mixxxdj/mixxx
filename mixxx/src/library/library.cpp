@@ -18,6 +18,7 @@
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
+#include "library/promotracksfeature.h"
 
 #include "wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -38,6 +39,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
+    if(PromoTracksFeature::isSupported())
+        addFeature(new PromoTracksFeature(this, pConfig, m_pTrackCollection));
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);

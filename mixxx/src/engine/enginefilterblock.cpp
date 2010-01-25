@@ -31,7 +31,7 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     high = new EngineFilterIIR(bessel_highpass4_DJM800,4);
     qDebug() << "Using LoFi EQs";
 #else
-	
+
 	//Setup Filter Controls
 	if(ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency")) == NULL)
 	{
@@ -88,9 +88,9 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
-    delete m_pTemp3;
-    delete m_pTemp2;
-    delete m_pTemp1;
+    delete [] m_pTemp3;
+    delete [] m_pTemp2;
+    delete [] m_pTemp1;
     delete filterpotLow;
     delete filterKillLow;
     delete filterpotMid;

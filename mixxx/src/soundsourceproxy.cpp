@@ -117,7 +117,8 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
     else if (qFilename.toLower().endsWith(".ogg"))
 	return SoundSourceOggVorbis::ParseHeader(p);
 #ifdef __M4A__
-    else if (qFilename.toLower().endsWith(".m4a"))
+    else if (qFilename.toLower().endsWith(".m4a") ||
+	     qFilename.toLower().endsWith(".mp4"))
 	return SoundSourceM4A::ParseHeader(p);
 #endif
 #ifdef __SNDFILE__

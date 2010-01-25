@@ -25,6 +25,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cuedao.h"
+#include "library/dao/playlistdao.h"
 #include "trackcollection.h"
 #include "libraryscannerdlg.h"
 
@@ -49,6 +50,7 @@ class LibraryScanner : public QThread
         LibraryHashDAO m_libraryHashDao;
         CueDAO m_cueDao;
         TrackDAO m_trackDao;
+        PlaylistDAO m_playlistDao;          
         QSqlDatabase m_database;            /**Hang on to a different DB connection
                                                since we run in a different thread */
         QStringList nameFilters;

@@ -35,8 +35,13 @@
 // #include "debug.h"
 // #include "file.h"
 
-#include <mp4.h>
-#include <faad.h>
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
+#include <neaacdec.h>
 
 #include <errno.h>
 #include <string.h>
@@ -177,18 +182,12 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	}
 
 	/* init decoder according to mpeg-4 audio config */
-#ifdef __MINGW32__
         if (faacDecInit2(priv->decoder, buf, buf_size,
-                         (long unsigned int*) &priv->sample_rate, &priv->channels) < 0) {
-#elifdef __M4AHACK__
-        if (faacDecInit2(priv->decoder, buf, buf_size,
+#ifdef __M4AHACK__
                          (uint32_t*)&priv->sample_rate, &priv->channels) < 0) {
-
 #else
-        if (faacDecInit2(priv->decoder, buf, buf_size,
-                         (unsigned int*)&priv->sample_rate, &priv->channels) < 0) {
+                         (unsigned long*)&priv->sample_rate, &priv->channels) < 0) {
 #endif
-
     free(buf);
 		goto out;
 	}
@@ -386,9 +385,9 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
   // the sample'th sample is. For x in (0,2047), the frame offset is x. For x in
   // (2048,4095) the offset is x-2048 and so on. sample % 2048 is therefore
   // suitable for calculating the offset.
-  int frame_for_sample = 1 + (sample / (2 * 1024));
-  int frame_offset_samples = sample % (2 * 1024);
-  int frame_offset_bytes = frame_offset_samples * 2;
+  unsigned int frame_for_sample = 1 + (sample / (2 * 1024));
+  unsigned int frame_offset_samples = sample % (2 * 1024);
+  unsigned int frame_offset_bytes = frame_offset_samples * 2;
 
   //qDebug() << "Seeking to" << frame_for_sample << ":" << frame_offset;
 

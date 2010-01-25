@@ -204,8 +204,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 	m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
 	m_pPlayer2 = new Player(config, buffer2, "[Channel2]");
 
-	//Connect the player to the track collection so that when a track is unloaded, it's data
-	//(eg. waveform summary) is saved back to the database.
+	//Connect the player to the track collection so that when a track is unloaded,
+	//it's data (eg. waveform summary) is saved back to the database.
 	connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
             SLOT(updateTrackInDatabase(TrackInfoObject*)));
@@ -860,9 +860,9 @@ void MixxxApp::slotFileLoadSongPlayer1()
 
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
-        //TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
-        //if (pTrack)
-        //    m_pTrack->slotLoadPlayer1(pTrack);
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer1->slotLoadTrack(pTrack);
     }
 }
 
@@ -884,9 +884,9 @@ void MixxxApp::slotFileLoadSongPlayer2()
 
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
-        //TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
-        //if (pTrack)
-        //    m_pTrack->slotLoadPlayer2(pTrack);
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer2->slotLoadTrack(pTrack);
     }
 }
 
@@ -1085,6 +1085,7 @@ void MixxxApp::slotHelpAbout()
 "Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"Oliver St&ouml;neberg<br>"
 "C. Stewart<br>"
 
 "</p>"
