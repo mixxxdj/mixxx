@@ -599,7 +599,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTextCh1 = p;
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                     m_pTextCh2 = p;
-		else
+                else
                     m_qWidgetList.append(p);
 
                 // Set position
@@ -634,6 +634,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 //QPalette palette;
                 palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
                 p->setPalette(palette);
+
+                QString style = WWidget::selectNodeQString(node, "Style");
+                if (style != "") {
+                    p->setStyleSheet(style);
+                }
 
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
@@ -792,7 +797,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pLibraryWidget = new WLibrary(m_pSplitter);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
-                    
+
                     m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
                     m_pLibrarySidebar->installEventFilter(m_pKeyboard);
 
@@ -843,7 +848,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 setupTabWidget(node);
 
                 setupTrackSourceViewWidget(node);
-                
+
                 // Applies the node settings to every view registered in the
                 // Library widget.
                 m_pLibraryWidget->setup(node);

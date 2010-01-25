@@ -226,9 +226,11 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
     return chunk;
 }
 
-Chunk* CachingReader::getChunk(int chunk_number) {
-
+Chunk* CachingReader::getChunk(int chunk_number, bool* cache_miss) {
     Chunk* chunk = lookupChunk(chunk_number);
+
+    if (cache_miss != NULL)
+        *cache_miss = (chunk == NULL);
 
     // If it wasn't in the cache, read it from file.
     if (chunk == NULL) {
@@ -317,10 +319,16 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Sanity checks
     Q_ASSERT(start_chunk <= end_chunk);
 
+    bool cache_miss = false;
     // Need to lock while we're touching Chunk's
     m_readerMutex.lock();
     for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
-        Chunk* current = getChunk(chunk_num);
+
+        Chunk* current = getChunk(chunk_num, &cache_miss);
+
+        if (cache_miss) {
+            qDebug() << "Cache miss in read() on chunk" << chunk_num;
+        }
 
         // getChunk gets a chunk at any cost. If it has failed to lookup the
         // chunk, then there is a serious issue.
@@ -388,19 +396,77 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 }
 
 void CachingReader::hint(Hint& hint) {
-    m_hintQueueMutex.lock();
-    m_hintQueue.enqueue(hint);
-    m_hintQueueMutex.unlock();
 }
 
 void CachingReader::hint(QList<Hint>& hintList) {
-    m_hintQueueMutex.lock();
+}
+
+void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
+    QMutexLocker lock(&m_readerMutex);
+
+    // If no file is loaded, skip.
+    if (m_iTrackSampleRate == 0)
+        return;
+
     QListIterator<Hint> iterator(hintList);
-    while (iterator.hasNext()) {
-        const Hint& hint = iterator.next();
-        m_hintQueue.enqueue(hint);
+
+    // To prevent every bit of code having to guess how many samples
+    // forward it makes sense to keep in memory, the hinter can provide
+    // either 0 for a forward hint or -1 for a backward hint. We should
+    // be calculating an appropriate number of samples to go backward as
+    // some function of the latency, but for now just leave this as a
+    // constant. 2048 is a pretty good number of samples because 25ms
+    // latency corresponds to 1102.5 mono samples and we need double
+    // that for stereo samples.
+    const int default_samples = 2048;
+
+    QSet<int> chunksToFreshen;
+    while(iterator.hasNext()) {
+        // Copy, don't use reference.
+        Hint hint = iterator.next();
+
+        if (hint.length == 0) {
+            hint.length = default_samples;
+        } else if (hint.length == -1) {
+            hint.sample -= default_samples;
+            hint.length = default_samples;
+            if (hint.sample < 0) {
+                hint.length += hint.sample;
+                hint.sample = 0;
+            }
+        }
+        Q_ASSERT(hint.sample >= 0);
+        Q_ASSERT(hint.length >= 0);
+        int start_chunk = chunkForSample(hint.sample);
+        int end_chunk = chunkForSample(hint.sample + hint.length);
+
+        for (int current = start_chunk; current <= end_chunk; ++current) {
+            chunksToFreshen.insert(current);
+        }
     }
-    m_hintQueueMutex.unlock();
+
+    // For every chunk that the hints indicated, check if it is in the cache. If
+    // any are not, then wake.
+    bool shouldWake = false;
+    QSetIterator<int> setIterator(chunksToFreshen);
+    while(setIterator.hasNext()) {
+        int chunk = setIterator.next();
+
+        // This will cause the chunk to be 'freshened' in the cache. The
+        // chunk will be moved to the end of the LRU list.
+        if (lookupChunk(chunk) == NULL) {
+            shouldWake = true;
+            m_chunksToRead.insert(chunk);
+            //qDebug() << "Checking chunk " << chunk << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
+        }
+
+    }
+
+    lock.unlock();
+    // If there are chunks to be read, wake up.
+    if (shouldWake) {
+        wake();
+    }
 }
 
 void CachingReader::run() {
@@ -433,51 +499,13 @@ void CachingReader::run() {
             loadTrack(pLoadTrack);
         }
 
-        hintList.clear();
-
-        m_hintQueueMutex.lock();
-        if (m_pCurrentSoundSource == NULL) {
-            m_hintQueue.clear();
-        } else {
-            while (!m_hintQueue.isEmpty()) {
-                hintList.push_back(m_hintQueue.takeFirst());
-            }
+        // Read the requested chunks.
+        QSetIterator<int> iterator(m_chunksToRead);
+        while (iterator.hasNext()) {
+            int chunk = iterator.next();
+            getChunk(chunk);
         }
-        m_hintQueueMutex.unlock();
-
-        while (!hintList.isEmpty()) {
-            Hint hint = hintList.takeLast();
-
-            // To prevent every bit of code having to guess how many samples
-            // forward it makes sense to keep in memory, the hinter can provide
-            // either 0 for a forward hint or -1 for a backward hint. We should
-            // be calculating an appropriate number of samples to go backward as
-            // some function of the latency, but for now just leave this as a
-            // constant. 2048 is a pretty good number of samples because 25ms
-            // latency corresponds to 1102.5 mono samples and we need double
-            // that for stereo samples.
-            const int default_samples = 2048;
-
-            if (hint.length == 0) {
-                hint.length = default_samples;
-            } else if (hint.length == -1) {
-                hint.sample -= default_samples;
-                hint.length = default_samples;
-                if (hint.sample < 0) {
-                    hint.length += hint.sample;
-                    hint.sample = 0;
-                }
-            }
-            Q_ASSERT(hint.sample >= 0);
-            Q_ASSERT(hint.length >= 0);
-            int start_chunk = chunkForSample(hint.sample);
-            int end_chunk = chunkForSample(hint.sample + hint.length);
-
-            for (int current = start_chunk; current <= end_chunk; ++current) {
-                // This will ensure the chunk is in the cache.
-                getChunk(current);
-            }
-        }
+        m_chunksToRead.clear();
 
         m_readerMutex.unlock();
     }
@@ -514,10 +542,8 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
 
-    // Before emitting trackLoaded, clear the hint queue.
-    m_hintQueueMutex.lock();
-    m_hintQueue.clear();
-    m_hintQueueMutex.unlock();
+    // Clear the chunks to read list.
+    m_chunksToRead.clear();
 
     // Emit that the track is loaded.
     emit(trackLoaded(pTrack, m_iTrackSampleRate, m_iTrackNumSamples));

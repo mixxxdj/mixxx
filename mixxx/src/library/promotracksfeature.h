@@ -1,0 +1,54 @@
+// PromoTracksfeature.h
+// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
+// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+
+#ifndef PROMOTRACKSFEATURE_H 
+#define PROMOTRACKSFEATURE_H
+
+#include <QStringListModel>
+
+#include "library/libraryfeature.h"
+#include "library/dao/playlistdao.h"
+#include "configobject.h"
+
+class PlaylistTableModel;
+class ProxyTrackModel;
+class TrackCollection;
+
+class PromoTracksFeature : public LibraryFeature {
+    Q_OBJECT
+    public:
+    PromoTracksFeature(QObject* parent,
+                  ConfigObject<ConfigValue>* pConfig,
+                  TrackCollection* pTrackCollection);
+    virtual ~PromoTracksFeature();
+    static bool isSupported();
+
+    QVariant title();
+    QIcon getIcon();
+
+    bool dropAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dragMoveAccept(QUrl url);
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+
+    void bindWidget(WLibrarySidebar* sidebarWidget,
+                    WLibrary* libraryWidget);
+
+    QAbstractItemModel* getChildModel();
+
+public slots:
+    void activate();
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+
+private:
+    ConfigObject<ConfigValue>* m_pConfig;
+    TrackCollection* m_pTrackCollection;
+    const static QString m_sPromoTracksViewName;
+    QStringListModel m_childModel;
+};
+
+
+#endif /* PROMOTRACKSFEATURE_H */

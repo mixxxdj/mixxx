@@ -263,7 +263,7 @@ double EngineBuffer::getRate()
 void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
-    pause.lock();
+
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
@@ -293,13 +293,16 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
+    // Give EngineControl's a chance to veto or correct the seek target.
+
+
     // Seek reader
     Hint seek_hint;
     seek_hint.sample = new_playpos;
     seek_hint.length = 0;
     seek_hint.priority = 1;
-    m_pReader->hint(seek_hint);
-    m_pReader->wake();
+    // m_pReader->hint(seek_hint);
+    // m_pReader->wake();
     setNewPlaypos(new_playpos);
 }
 
@@ -559,10 +562,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Wake up the reader so that it processes our hints / loads new files
-    // (hopefully) before the next callback.
-    m_pReader->wake();
-
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -639,25 +638,7 @@ void EngineBuffer::hintReader(const double dRate,
                               const int iSourceSamples) {
     m_hintList.clear();
 
-    // Need to hint the current playposition.
-    Hint current_position;
-
-    // Make sure that we have enough samples to do n more process() calls
-    // without reading again either forward or reverse.
-    int n = 1; // 5? 10? 20? who knows!
-    int length_to_cache = iSourceSamples * n;
-    current_position.length = length_to_cache * 2;
-    current_position.sample = filepos_play - length_to_cache;
-
-    // If we are trying to cache before the start of the track,
-    if (current_position.sample < 0) {
-        current_position.length += current_position.sample;
-        current_position.sample = 0;
-    }
-
-    // top priority, we need to read this data immediately
-    current_position.priority = 1;
-    m_hintList.append(current_position);
+    m_pReadAheadManager->hintReader(m_hintList, iSourceSamples);
 
     m_pLoopingControl->hintReader(m_hintList);
 
@@ -667,11 +648,13 @@ void EngineBuffer::hintReader(const double dRate,
         pControl->hintReader(m_hintList);
     }
 
-    m_pReader->hint(m_hintList);
+    m_pReader->hintAndMaybeWake(m_hintList);
 }
 
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+    pause.lock();
     m_pReader->newTrack(pTrack);
+    m_pReader->wake();
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {

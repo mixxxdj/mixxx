@@ -56,8 +56,11 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
 void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource) {
 
-    // CHANGING THIS WILL BREAK TONALANALYSER!!!!
-    const int ANALYSISBLOCKSIZE = 2*32768;
+    // TonalAnalyser requires a block size of 65536. Using a different value
+    // breaks the tonal analyser. We need to use a smaller block size becuase on
+    // Linux, the AnalyserQueue can starve the CPU of its resources, resulting
+    // in xruns.. A block size of 8192 seems to do fine.
+    const int ANALYSISBLOCKSIZE = 8192;
 
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
@@ -104,6 +107,13 @@ void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSou
         int progress = ((float)processedSamples)/totalSamples * 100; //fp div here prevents insano signed overflow
         emit(trackProgress(tio, progress));
 
+        // Since this is a background analysis queue, we should co-operatively
+        // yield every now and then to try and reduce CPU contention. The
+        // analyser queue is CPU intensive so we want to get out of the way of
+        // the audio callback thread.
+        //QThread::yieldCurrentThread();
+        QThread::usleep(10);
+
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
     delete[] data16;
     delete[] samples;
@@ -117,10 +127,16 @@ void AnalyserQueue::run() {
 
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
+
+    // If there are no analysers, don't waste time running.
+    if (m_aq.size() == 0)
+        return;
+
 	while (!m_exit) {
-		TrackInfoObject* next = dequeueNextBlocking();
-        if (m_exit) //When exit is set, it makes the above unblock first.
-            return;
+      TrackInfoObject* next = dequeueNextBlocking();
+
+      if (m_exit) //When exit is set, it makes the above unblock first.
+          return;
 
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);

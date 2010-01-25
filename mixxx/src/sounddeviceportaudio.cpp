@@ -26,7 +26,8 @@
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, SoundManager * sm, const PaDeviceInfo * deviceInfo,
                                            unsigned int devIndex)
-    : SoundDevice(config, sm)
+        : SoundDevice(config, sm),
+          m_bSetThreadPriority(false)
 {
     //qDebug() << "SoundDevicePortAudio::SoundDevicePortAudio()";
     m_deviceInfo = deviceInfo;
@@ -76,7 +77,7 @@ int SoundDevicePortAudio::open()
 			AudioSource src = srcIt.next();
 			if((src.channelBase + src.channels) > m_outputParams.channelCount)
 				m_outputParams.channelCount = src.channelBase + src.channels;
-            
+
         }
     }
 
@@ -93,7 +94,7 @@ int SoundDevicePortAudio::open()
         {
 			AudioReceiver recv = recvIt.next();
 			if((recv.channelBase + recv.channels) > m_inputParams.channelCount)
-				m_inputParams.channelCount = recv.channelBase + recv.channels;            
+				m_inputParams.channelCount = recv.channelBase + recv.channels;
         }
     }
 
@@ -114,7 +115,7 @@ int SoundDevicePortAudio::open()
 
     //Calculate the latency in samples
     int iMaxChannels = math_max(m_outputParams.channelCount, m_inputParams.channelCount); //Max channels opened for input or output
-    
+
     /*
     int iLatencySamples = (int)((float)(m_dSampleRate*iMaxChannels)/1000.f*(float)iLatencyMSec);
 
@@ -150,7 +151,7 @@ int SoundDevicePortAudio::open()
     for (i = 1; iFramesPerBuffer > i; i <<= 1) ;
     iFramesPerBuffer = i;
     qDebug() << "iFramesPerBuffer" << iFramesPerBuffer;
-    
+
     //PortAudio's JACK backend also only properly supports paFramesPerBufferUnspecified in non-blocking mode
     //because the latency comes from the JACK daemon. (PA should give an error or something though, but it doesn't.)
     if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_JACK_STRING)
@@ -200,7 +201,7 @@ int SoundDevicePortAudio::open()
     {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
-    
+
 #ifdef __LINUX__
     //Attempt to dynamically load and resolve stuff in the PortAudio library
     //in order to enable RT priority with ALSA.
@@ -208,8 +209,8 @@ int SoundDevicePortAudio::open()
     if (!portaudio.load())
        qDebug() << "Failed to dynamically load PortAudio library";
     else
-       qDebug() << "Dynamically loaded PortAudio library!";        
-    
+       qDebug() << "Dynamically loaded PortAudio library!";
+
     EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve("PaAlsa_EnableRealtimeScheduling");
     if (enableRealtime)
     {
@@ -257,7 +258,7 @@ int SoundDevicePortAudio::close()
         PaError err = Pa_StopStream(m_pStream);
         //PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream seems to wait
                                                    //until all the buffers have been flushed, which can take a
-                                                   //few (annoying) seconds when you're doing soundcard input. 
+                                                   //few (annoying) seconds when you're doing soundcard input.
                                                    //(it flushes the input buffer, and then some, or something)
                                                    //BIG FAT WARNING: Pa_AbortStream() will kill threads while they're
                                                    //waiting on a mutex, which will leave the mutex in an screwy
@@ -302,38 +303,45 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     iFrameSize = m_outputParams.channelCount;
     iVCGain = 1;
     i = 0;
-  
+
+    // Turn on TimeCritical priority for the callback thread. If we are running
+    // in Linux userland, for example, this will have no effect.
+    if(!m_bSetThreadPriority) {
+        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
+        m_bSetThreadPriority = true;
+    }
+
     //Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0)
     {
         //Note: Input is processed first so that any ControlObject changes made in response to input
         //      is processed as soon as possible (that is, when m_pSoundManager->requestBuffer() is
         //      called below.)
-        
+
         //Apply software preamp
         //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
         iVCGain = pControlObjectVinylControlGain->get();
         for (i=0; i < framesPerBuffer*m_inputParams.channelCount; i++)
             in[i] *= iVCGain;
-            
+
         //qDebug() << in[0];
 
         m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer, m_inputParams.channelCount);
-    } 
-    
+    }
+
     if (output && framesPerBuffer > 0)
     {
 		assert(iFrameSize > 0);
         CSAMPLE** outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
-	//qDebug() << framesPerBuffer;		
+	//qDebug() << framesPerBuffer;
 
         //Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-        
+
         for (unsigned int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Interlace Audio data onto portaudio buffer
