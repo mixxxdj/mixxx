@@ -54,9 +54,6 @@
     #define S_ISDIR(mode) (mode & _S_IFDIR)
     #define strcasecmp stricmp
     #define strncasecmp strnicmp
-#else
-    #define strcasecmp strcmpi
-    #define strncasecmp strncmpi
 #endif
 
 
