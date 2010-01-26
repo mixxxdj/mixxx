@@ -187,9 +187,17 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
         value = NULL;
     }
 
+#ifndef _MSC_VER
     u_int16_t bpm = 0;
+#else
+    // MSVC doesn't know what a u_int16_t is, so we have to tell it
+    unsigned short bpm = 0;
+#endif
     if (MP4GetMetadataTempo(mp4file, &bpm)) {
         if(bpm > 0) {
+#ifdef _MSC_VER
+            Q_ASSERT(sizeof(bpm)==2);   // Just making sure we're in bounds
+#endif
             Track->setBpm(bpm);
             Track->setBpmConfirm(true);
         }
