@@ -167,7 +167,7 @@ else:
 
 
 
-#Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
+#Set up our environment, tell SCONS to use its QT tools, and set some enviroment variables for it.
 #The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
 #and on Windows where all the paths are set in the shell.
 if platform in ('linux', 'bsd'):
@@ -467,12 +467,12 @@ sources = Split("""
 
 #Set up the library path on Windows:
 if platform == 'win64':
-	env.Append(CPPPATH='#/../mixxx-win64lib') #If you add more directories, separate them with a semicolon (;)
-	env.Append(LIBPATH='#/../mixxx-win64lib')
+	env.Append(CPPPATH='#/../mixxx-win64lib-msvc') #If you add more directories, separate them with a semicolon (;)
+	env.Append(LIBPATH='#/../mixxx-win64lib-msvc')
 
 if platform == 'win32':
-	env.Append(CPPPATH='#/../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
-	env.Append(LIBPATH='#/../mixxx-winlib')
+	env.Append(CPPPATH='#/../mixxx-win32lib-msvc') #If you add more directories, separate them with a semicolon (;)
+	env.Append(LIBPATH='#/../mixxx-win32lib-msvc')
 
 if 'win' in platform:
 	env.Append(CPPPATH='../../lib/ladspa') #If you add more directories, separate them with a semicolon (;)
@@ -550,7 +550,7 @@ if not conf.CheckLib('ogg'):
 
 #hack: check for these here, before conf.Finish happens
 have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-have_mp4 = (have_mp4v2_h and (conf.CheckLib('mp4v2') or conf.CheckLib('libmp4v2'))) or conf.CheckLib('mp4')
+have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'])) or conf.CheckLib('mp4')
 
 # We have to check for libfaad version 2.6 or 2.7. In libfaad
 # version 2.7, the type for the samplerate is unsigned long*,
@@ -566,7 +566,7 @@ else:
 	have_faad_26 = 0
 
 if not have_faad_26:	# This is here to prevent linking faad twice (only do one CheckLib)
-	have_faad = conf.CheckLib('faad') or conf.CheckLib('libfaad')
+	have_faad = conf.CheckLib(['faad', 'libfaad'])
 else:
 	have_faad = have_faad_26
 
@@ -819,28 +819,31 @@ if 'win' in platform:
 
 #SoundTouch
 #XXX this should be done with a subsconscript
-env.Append(CPPPATH=['#lib/soundtouch-1.5.0'])
+
+soundtouch_path = 'soundtouch-1.4.1'
+
+env.Append(CPPPATH=['#lib/'+soundtouch_path])
 sources += Split("""engine/enginebufferscalest.cpp
-                    #lib/soundtouch-1.5.0/SoundTouch.cpp
-                    #lib/soundtouch-1.5.0/TDStretch.cpp
-                    #lib/soundtouch-1.5.0/RateTransposer.cpp
-                    #lib/soundtouch-1.5.0/AAFilter.cpp
-                    #lib/soundtouch-1.5.0/FIFOSampleBuffer.cpp
-                    #lib/soundtouch-1.5.0/FIRFilter.cpp
-                    #lib/soundtouch-1.5.0/PeakFinder.cpp
-                    #lib/soundtouch-1.5.0/BPMDetect.cpp
+                    #lib/""" + soundtouch_path + """/SoundTouch.cpp
+                    #lib/""" + soundtouch_path + """/TDStretch.cpp
+                    #lib/""" + soundtouch_path + """/RateTransposer.cpp
+                    #lib/""" + soundtouch_path + """/AAFilter.cpp
+                    #lib/""" + soundtouch_path + """/FIFOSampleBuffer.cpp
+                    #lib/""" + soundtouch_path + """/FIRFilter.cpp
+                    #lib/""" + soundtouch_path + """/PeakFinder.cpp
+                    #lib/""" + soundtouch_path + """/BPMDetect.cpp
                     """)
 
 if 'win' in platform:
 	if platform == 'win32':
-		sources += Split("""#lib/soundtouch-1.5.0/cpu_detect_x86_win.cpp""")
+		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x86_win.cpp""")
 	if platform == 'win64':
-		sources += Split("""#lib/soundtouch-1.5.0/cpu_detect_x64_win.cpp""")
+		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x64_win.cpp""")
 else:
 	if machine == 'x86_64':
-		sources += Split("""#lib/soundtouch-1.5.0/cpu_detect_x64_gcc.cpp""")
+		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x64_gcc.cpp""")
 	else:
-		sources += Split("""#lib/soundtouch-1.5.0/cpu_detect_x86_gcc.cpp""")
+		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x86_gcc.cpp""")
 
 
 #KissFFT
@@ -1264,12 +1267,12 @@ else:
 # the optimization stuff. It's safe to assume that if opt > 1, then MMX and SSE
 # are enabled.
 if (not 'win' in platform and int(flags_optimize) > 1) or ('win' in platform and int(flags_optimize) > 2):
-    sources += Split("""#lib/soundtouch-1.5.0/mmx_optimized.cpp #lib/soundtouch-1.5.0/sse_optimized.cpp""")
+    sources += Split("""#lib/""" + soundtouch_path + """/mmx_optimized.cpp #lib/""" + soundtouch_path + """/sse_optimized.cpp""")
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
 # Enable SoundTouch Windows 3dNow optimizations if we're on AMD
 if 'win' in platform and not 'makerelease' in COMMAND_LINE_TARGETS and 'AMD' in machine:
-    sources += Split("""#lib/soundtouch-1.5.0/3dnow_win.cpp""")
+    sources += Split("""#lib/""" + soundtouch_path + """/3dnow_win.cpp""")
 
 #Debugging output
 flags_qdebug = getFlags(env, 'qdebug', 0)
@@ -1431,9 +1434,9 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 
 #Windows DLLs
 if platform == 'win64':
-	dll_files = Glob('#/../mixxx-win64lib/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+	dll_files = Glob('#/../mixxx-win64lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 else:
-	dll_files = Glob('#/../mixxx-winlib/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+	dll_files = Glob('#/../mixxx-win32lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll""")
 
