@@ -305,8 +305,10 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     Q_ASSERT(num_samples >= 0);
 
     // If asked to read 0 samples, don't do anything. (this is a perfectly
-    // reasonable request that happens sometimes.
-    if (num_samples == 0) {
+    // reasonable request that happens sometimes. If no track is loaded, don't
+    // do anything.
+    if (num_samples == 0 ||
+        m_iTrackSampleRate == 0) {
         return 0;
     }
 
