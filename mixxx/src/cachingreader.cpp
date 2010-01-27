@@ -528,12 +528,17 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
         delete m_pCurrentSoundSource;
         m_pCurrentSoundSource = NULL;
     }
+    m_iTrackSampleRate = 0;
+    m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
     QFileInfo fileInfo(filename);
 
     if (filename.isEmpty() || !fileInfo.exists()) {
         qDebug() << "Couldn't load track with filename: " << filename;
+        emit(trackLoadFailed(
+            pTrack,
+            QString("The file '%1' could not be found.").arg(filename)));
         return;
     }
 

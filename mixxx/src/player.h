@@ -19,6 +19,7 @@ class Player : public QObject
 public slots:
     void slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackInfoObject* pTrackInfoObject);
+    void slotLoadFailed(TrackInfoObject* pTrackInfoObject, QString reason);
 signals:
     void newTrackLoaded(TrackInfoObject* m_pLoadedTrack);
     void unloadingTrack(TrackInfoObject* m_pAboutToBeUnloaded);
