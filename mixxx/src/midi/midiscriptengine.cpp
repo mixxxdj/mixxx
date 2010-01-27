@@ -38,15 +38,15 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
 
 MidiScriptEngine::~MidiScriptEngine() {
     // Stop & remove all remaining timers
-    QHashIterator<int, QString> i(m_timers);
+    QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
     m_scriptEngineLock.lock();
     while (i.hasNext()) {
         i.next();
         stopTimer(i.key());
     }
-    m_scriptEngineLock.unlock();
 
     killTimer(m_primerTimerID);  // Stop the primer timer
+    m_scriptEngineLock.unlock();
     
     // Stop processing the event loop and terminate the thread.
     quit();
@@ -633,7 +633,7 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
    Input:   Number of milliseconds, script function to call
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
-int MidiScriptEngine::beginTimer(int interval, QString function) {
+int MidiScriptEngine::beginTimer(int interval, QString function, bool oneShot) {
     // When this function runs, assert that somebody is holding the script
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
@@ -642,10 +642,20 @@ int MidiScriptEngine::beginTimer(int interval, QString function) {
         m_scriptEngineLock.unlock();
     }
     
+    if (interval<20) {
+        qDebug() << "Timer request for" << interval << "ms is too short. Setting to the minimum of 20ms.";
+        interval=20;
+    }
     int timerId = startTimer(interval);
-    m_timers[timerId]=function;
+    QPair<QString, bool> timerTarget;
+    timerTarget.first = function;
+    timerTarget.second = oneShot;
+    m_timers[timerId]=timerTarget;
     if (timerId==0) qDebug() << "MIDI Script timer could not be created";
-    else if (m_pMidiDevice->midiDebugging()) qDebug() << "Starting Timer:" << timerId;
+    else if (m_pMidiDevice->midiDebugging()) {
+        if (oneShot) qDebug() << "Starting one-shot timer:" << timerId;
+        else qDebug() << "Starting Timer:" << timerId;
+    }
     return timerId;
 }
 
@@ -664,7 +674,11 @@ void MidiScriptEngine::stopTimer(int timerId) {
         m_scriptEngineLock.unlock();
     }
     
-    if (m_pMidiDevice->midiDebugging()) qDebug() << "Killing Timer:" << timerId;
+    if (!m_timers.contains(timerId)) {
+        qDebug() << "Killing timer" << timerId << ": That timer does not exist!";
+        return;
+    }
+    if (m_pMidiDevice->midiDebugging()) qDebug() << "Killing timer:" << timerId;
     
     killTimer(timerId);
     m_timers.remove(timerId);
@@ -676,9 +690,20 @@ void MidiScriptEngine::stopTimer(int timerId) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::timerEvent(QTimerEvent *event) {
+    int timerId = event->timerId();
     
     // If the primer timer fired this, ignore it
-    if ( event->timerId() == m_primerTimerID ) return;
+    if ( timerId == m_primerTimerID ) return;
     
-    execute(m_timers[event->timerId()]);
+    if (!m_timers.contains(timerId)) {
+        qDebug() << "Timer" << timerId << "fired but there's no function mapped to it!";
+        return;
+    }
+    QPair<QString, bool> timerTarget = m_timers[timerId];
+    execute(timerTarget.first);
+    if (timerTarget.second) {
+        m_scriptEngineLock.lock();
+        stopTimer(timerId);
+        m_scriptEngineLock.unlock();
+    }
 }

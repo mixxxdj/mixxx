@@ -58,7 +58,7 @@ public:
     Q_INVOKABLE bool connectControl(QString group, QString name,
                                     QString function, bool disconnect = false);
     Q_INVOKABLE void trigger(QString group, QString name);
-    Q_INVOKABLE int beginTimer(int interval, QString function);
+    Q_INVOKABLE int beginTimer(int interval, QString function, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
 
 public slots:
@@ -93,9 +93,8 @@ private:
     QMap<QString,QStringList> m_scriptErrors;
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
-	QHash<int, QString> m_timers;
+	QHash<int, QPair<QString, bool> > m_timers;
     int m_primerTimerID;
 };
 
 #endif
-
