@@ -118,7 +118,9 @@ void MidiScriptEngine::initializeScriptEngine() {
 void MidiScriptEngine::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiScriptEngine %1").arg(++id));
-    //qDebug() << QString("----------------------------------MidiScriptEngine: Run Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+    
+    // Prevent the script engine from strangling other parts of Mixxx
+    QThread::currentThread()->setPriority(QThread::LowPriority);
 
     m_scriptEngineLock.lock();
     initializeScriptEngine();
@@ -128,8 +130,7 @@ void MidiScriptEngine::run() {
     // In order for timers to be created & destroyed at will in scripts, there must always be a timer running
     // that was started before exec(). This "primer" timer must also be very short as new script timers
     // must wait until this interval passes before they can begin firing.
-    m_primerTimerID = startTimer(20);    // Start the primer timer which fires once every time
-                                        // there are no more window system events to process.
+    m_primerTimerID = startTimer(20);   // Start the primer timer
     
     // Run the Qt event loop indefinitely 
     exec();
@@ -654,7 +655,7 @@ int MidiScriptEngine::beginTimer(int interval, QString function, bool oneShot) {
     if (timerId==0) qDebug() << "MIDI Script timer could not be created";
     else if (m_pMidiDevice->midiDebugging()) {
         if (oneShot) qDebug() << "Starting one-shot timer:" << timerId;
-        else qDebug() << "Starting Timer:" << timerId;
+        else qDebug() << "Starting timer:" << timerId;
     }
     return timerId;
 }
