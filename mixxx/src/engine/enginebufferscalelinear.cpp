@@ -108,11 +108,17 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // the new EngineBuffer implementation)
     new_playpos = playpos;
 
+    const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size);
+
+    // Guard against buf_size == 0
+    if (iRateLerpLength == 0)
+        return buffer;
+
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
-    for (int j = 0; j < RATE_LERP_LENGTH; j+=2)
+    for (int j = 0; j < iRateLerpLength; j+=2)
     {
-        rate_add = (rate_add_diff) / RATE_LERP_LENGTH * j + rate_add_old;
+        rate_add = (rate_add_diff) / iRateLerpLength * j + rate_add_old;
         samples += fabs(rate_add);
     }
 
@@ -122,7 +128,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // qDebug("rate_add %f", rate_add);
     // qDebug("rate_add_abs %f", rate_add_abs);
 
-    samples += (rate_add_abs * ((buf_size - RATE_LERP_LENGTH)/2));
+    samples += (rate_add_abs * ((buf_size - iRateLerpLength)/2));
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
     samples *= 2;
@@ -193,11 +199,11 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             continue;
         }
 
-        //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-        //prevvents the change from being discontinuous and helps improve sound
-        //quality.
-        if (i < RATE_LERP_LENGTH) {
-            rate_add = (rate_add_diff) / RATE_LERP_LENGTH * i + rate_add_old;
+        //Smooth any changes in the playback rate over iRateLerpLength
+        //samples. This prevents the change from being discontinuous and helps
+        //improve sound quality.
+        if (i < iRateLerpLength) {
+            rate_add = (rate_add_diff) / iRateLerpLength * i + rate_add_old;
         }
         else {
             rate_add = rate_add_new;
@@ -209,7 +215,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         buffer[i] = m_fPreviousL + frac * (buffer_int[current_sample] - m_fPreviousL);
         buffer[i+1] = m_fPreviousR + frac * (buffer_int[current_sample+1] - m_fPreviousR);
 
-        if (i < RATE_LERP_LENGTH)
+        if (i < iRateLerpLength)
             buffer_index += fabs(rate_add);
         else
             buffer_index += rate_add_abs;
