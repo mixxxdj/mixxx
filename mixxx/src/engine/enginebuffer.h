@@ -23,7 +23,7 @@
 #include "defs.h"
 #include "engineobject.h"
 #include "configobject.h"
-#include "monitor.h"
+// #include "monitor.h"
 #include "rotary.h"
 
 class EngineControl;
