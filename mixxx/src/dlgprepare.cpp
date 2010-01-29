@@ -172,10 +172,6 @@ void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QIt
 
 void DlgPrepare::selectAll()
 {
-    //Screw you QSqlTableModel.
-    while(m_pPrepareLibraryTableModel->canFetchMore()) {
-        m_pPrepareLibraryTableModel->fetchMore();
-    }
     m_pPrepareLibraryTableView->selectAll();
 }
 
