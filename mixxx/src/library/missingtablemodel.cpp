@@ -10,7 +10,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.missing"),
-          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
           m_currentSearch("") {
@@ -85,11 +85,6 @@ MissingTableModel::MissingTableModel(QObject* parent,
 
     select(); //Populate the data model.
 
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
-
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 
@@ -152,11 +147,6 @@ void MissingTableModel::slotSearch(const QString& searchText) {
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString MissingTableModel::currentSearch() {

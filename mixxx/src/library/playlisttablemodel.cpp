@@ -9,7 +9,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.playlist"),
-          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -110,11 +110,6 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     slotSearch("");
 
     select(); //Populate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 
@@ -140,11 +135,6 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
     select(); //Repopulate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
@@ -169,11 +159,6 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -275,11 +260,6 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     }
 
     select();
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PlaylistTableModel::search(const QString& searchText) {
@@ -306,14 +286,6 @@ void PlaylistTableModel::slotSearch(const QString& searchText)
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString PlaylistTableModel::currentSearch() {

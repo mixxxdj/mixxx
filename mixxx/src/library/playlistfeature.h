@@ -13,7 +13,6 @@
 #include "library/dao/trackdao.h"
 
 class PlaylistTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
 class PlaylistFeature : public LibraryFeature {
@@ -48,7 +47,6 @@ public slots:
 
  private:
     PlaylistTableModel* m_pPlaylistTableModel;
-    ProxyTrackModel* m_pPlaylistModelProxy;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
     QAction *m_pCreatePlaylistAction;

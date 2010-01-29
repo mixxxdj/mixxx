@@ -6,7 +6,6 @@
 
 #include "library/preparefeature.h"
 #include "library/librarytablemodel.h"
-#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
 #include "widget/wlibrary.h"
