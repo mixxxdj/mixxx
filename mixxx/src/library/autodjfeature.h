@@ -12,7 +12,6 @@
 #include "configobject.h"
 
 class PlaylistTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
 class AutoDJFeature : public LibraryFeature {
