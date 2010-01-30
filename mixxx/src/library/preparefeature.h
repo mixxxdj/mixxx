@@ -10,7 +10,6 @@
 #include "configobject.h"
 
 class LibraryTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
 class PrepareFeature : public LibraryFeature {

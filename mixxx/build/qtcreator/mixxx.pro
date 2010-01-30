@@ -1,5 +1,5 @@
-CONFIG += debug link_pkgconfig ladspa alsaseqmidi script vinylcontrol m4a
-
+CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a
+# ladspa
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -7,13 +7,66 @@ DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptst
     BPMSCHEME_FILE=\\\"mixxxbpmscheme.xml\\\" \
     TRACK_FILE=\\\"mixxxtrack.xml\\\"
 
+## Cross compile:
+# Project MESSAGE: MAKEFILE_GENERATOR is [[ MINGW ]]
+# DIRLIST_SEPARATOR is [[ : ]]
+# DIR_SEPARATOR is [[ / ]]
+
+## Native Windows MinGW
+# Project MESSAGE: MAKEFILE_GENERATOR is [[ MINGW ]]
+# DIRLIST_SEPARATOR is [[ ; ]]
+# DIR_SEPARATOR is [[ \ ]]
+
+# Linux / BSD?
+# Project MESSAGE: MAKEFILE_GENERATOR is [[ UNIX ]]
+
+DESTDIR=unknown_build
+contains(MAKEFILE_GENERATOR, MINGW) {
+  DIRLIST_SEPARATOR(:) {
+    DESTDIR=xmingw-win32_build
+  } else {
+    DESTDIR=mingw-win32_build
+  }
+}
+contains(MAKEFILE_GENERATOR, UNIX) {
+    DESTDIR=$$system(uname)_build
+}
+
+# Attempt to move the build/qtcreator
+# BASE_DIR=../..
+# OUT_PWD=$$BASE_DIR
+# The above works to load inside QtCreator, but fails to compile when make runs because files are
+# trying to reference each other in ../.. rather then in the compile CWD
+# Since I don't know how to fix this problem, the work around is to copy mixxx.pro back
+# to Mixxx/mixxx checkout directory and load into from there using BASE_DIR=.
+OUTDIRCHECK = $$basename(OUT_PWD)
+contains(OUTDIRCHECK,qtcreator) {
+  error("Copy mixxx.pro from Mixxx/mixxx/build/qtcreator/mixxx.pro to Mixxx/mixxx/mixxx.pro (so that /src is a subdirectory) then reopen from there.")
+}
+
+BASE_DIR=.
+
+DESTDIR=$$BASE_DIR/$$DESTDIR
+
+message(BASE_DIR is [[ $$BASE_DIR ]])
+message(PWD is [[ $$PWD ]])
+message(IN_PWD is [[ $$IN_PWD ]])
+message(OUT_PWD is [[ $$OUT_PWD ]])
+
+
+BUILDDIR = $$DESTDIR
+UI_DIR = $$BUILDDIR/ui
+RCC_DIR = $$BUILDDIR/rcc
+MOC_DIR = $$BUILDDIR/moc
+OBJECTS_DIR = $$BUILDDIR/obj
+
 win32-g++ { # Bit ugly, but you can thank MS-DOS shell for f-ing up the normal way of parsing.
     QMAKE_CXXFLAGS += "\"-DSETTINGS_PATH=\\\"Local\\ Settings/Application\\ Data/Mixxx/\\\"\""
-	DEFINES += __WINDOWS__
+    DEFINES += __WINDOWS__
 } else {
   win32 { # i586-mingw32msvc-g++ -- cross compiling
     DEFINES += "SETTINGS_PATH=\\\"Local\ Settings/Application\ Data/Mixxx/\\\""
-	DEFINES += __WINDOWS__
+    DEFINES += __WINDOWS__
   } else {
     DEFINES += SETTINGS_PATH=\\\".mixxx/\\\"
   }
@@ -24,6 +77,7 @@ TARGET = mixxx
 QT += core \
     gui \
     sql \
+    xmlpatterns \
     xml \
     network \
     svg \
@@ -31,34 +85,20 @@ QT += core \
     script \
     qt3support
 
-DESTDIR = win32_build
-unix {
-  win32 { # This should only happen when cross compiling...
-    DESTDIR = win32_build
-  }
-}
-
-BUILDDIR = $$DESTDIR
-UI_DIR = $$BUILDDIR/ui
-RCC_DIR = $$BUILDDIR/rcc
-MOC_DIR = $$BUILDDIR/moc
-OBJECTS_DIR = $$BUILDDIR/obj
-
 CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
     exists($$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp) {
         message(found gdbmacros.cpp relative to QTDIR)
         SOURCES += $$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp
     } else {
-        exists($$(HOME)/qtcreator-1.0.0/share/qtcreator/gdbmacros/gdbmacros.cpp) {
-            message(found gdbmacros.cpp relative to $$(HOME)/qtcreator-1.0.0)
-            SOURCES += $$(HOME)/qtcreator-1.0.0/share/qtcreator/gdbmacros/gdbmacros.cpp
+        exists($$(HOME)/qtcreator-1.3.0/share/qtcreator/gdbmacros/gdbmacros.cpp) {
+            message(found gdbmacros.cpp relative to $$(HOME)/qtcreator-1.3.0)
+            SOURCES += $$(HOME)/qtcreator-1.3.0/share/qtcreator/gdbmacros/gdbmacros.cpp
         }
     }
 }
 
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgbpmschemedlg.h \
-    $$UI_DIR/ui_dlgbpmtapdlg.h \
     $$UI_DIR/ui_dlgmidilearning.h \
     $$UI_DIR/ui_dlgprefbpmdlg.h \
     $$UI_DIR/ui_dlgprefcontrolsdlg.h \
@@ -68,353 +108,506 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
-    $$UI_DIR/ui_dlgprefshoutcastdlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
     $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \
     lib/kissfft \
-	lib/ladspa \
-	/sw/include \
+    lib/ladspa \
+    /sw/include \
     $$UI_DIR
-HEADERS += src/analyser.h \
-    src/analyserbpm.h \
-    src/analyserqueue.h \
-    src/analyserwaveform.h \
-    src/analyserwavesummary.h \
-    src/configobject.h \
-    src/controlbeat.h \
-    src/controlevent.h \
-	src/engine/bpmcontrol.h \
-    src/engine/engineabstractrecord.h \
-    src/engine/enginebuffer.h \
-    src/engine/enginebuffercue.h \
-    src/engine/enginebufferscale.h \
-    src/engine/enginebufferscaledummy.h \
-    src/engine/enginebufferscalelinear.h \
-    src/engine/enginebufferscalereal.h \
-    src/engine/enginebufferscalest.h \
-    src/engine/enginechannel.h \
-    src/engine/engineclipping.h \
-    src/engine/enginedelay.h \
-    src/engine/enginefilter.h \
-    src/engine/enginefilterblock.h \
-    src/engine/enginefilterbutterworth8.h \
-    src/engine/enginefilteriir.h \
-    src/engine/enginefilterrbj.h \
-    src/engine/engineflanger.h \
-    src/engine/enginemaster.h \
-    src/engine/engineobject.h \
-    src/engine/enginepregain.h \
-    src/engine/enginesidechain.h \
-    src/engine/enginespectralfwd.h \
-    src/engine/enginetemporal.h \
-    src/engine/enginevinylsoundemu.h \
-    src/engine/enginevolume.h \
-    src/engine/enginevumeter.h \
-    src/engine/enginexfader.h \
-	src/engine/loopingcontrol.h \
-	src/engine/enginecontrol.h \
-	src/engine/ratecontrol.h \
-	src/engine/readaheadmanager.h \
-    src/waveform/glwaveformrenderer.h \
-    src/waveform/renderobject.h \
-    src/waveform/waveformrenderbackground.h \
-    src/waveform/waveformrenderbeat.h \
-    src/waveform/waveformrenderer.h \
-    src/waveform/waveformrendermark.h \
-    src/waveform/waveformrendersignal.h \
-    src/waveform/waveformrendersignalpixmap.h \
-	src/widget/hexspinbox.h \
-    src/widget/wabstractcontrol.h \
-    src/widget/wdisplay.h \
-    src/widget/wglwaveformviewer.h \
-    src/widget/wknob.h \
-    src/widget/wlabel.h \
-    src/widget/wnumber.h \
-    src/widget/wnumberbpm.h \
-    src/widget/wnumberpos.h \
-    src/widget/wnumberrate.h \
-    src/widget/woverview.h \
-    src/widget/wpixmapstore.h \
-    src/widget/wpushbutton.h \
-    src/widget/wsearchlineedit.h \
-    src/widget/wskincolor.h \
-    src/widget/wslider.h \
-    src/widget/wslidercomposed.h \
-    src/widget/wstatuslight.h \
-    src/widget/wvisualsimple.h \
-    src/widget/wvumeter.h \
-    src/widget/wwaveformviewer.h \
-    src/widget/wwidget.h \
-    src/bpm/bpmreceiver.h \
-    src/bpm/bpmscheme.h \
-    src/bpm/wavesegmentation.h \
-    src/controlgroupdelegate.h \
-    src/controlvaluedelegate.h \
-    src/controllogpotmeter.h \
-    src/controlnull.h \
-    src/controlobject.h \
-    src/controlobjectthread.h \
-    src/controlobjectthreadmain.h \
-    src/controlobjectthreadwidget.h \
-    src/controlpotmeter.h \
-    src/controlpushbutton.h \
-    src/controlttrotary.h \
-    src/defs.h \
-    src/defs_audiofiles.h \
-    src/defs_mixxxcmetrics.h \
-    src/defs_promo.h \
-    src/defs_urls.h \
-    src/dlgabout.h \
-    src/dlgbpmscheme.h \
-    src/dlgbpmtap.h \
-    src/dlgmidilearning.h \
-    src/dlgprefbpm.h \
-    src/dlgprefcontrols.h \
-    src/dlgprefcrossfader.h \
-    src/dlgprefeq.h \
-    src/dlgpreferences.h \
-    src/dlgprefmidibindings.h \
-    src/dlgprefnomidi.h \
-    src/dlgprefplaylist.h \
-    src/dlgprefsound.h \
-    src/fakemonitor.h \
-    src/imgcolor.h \
-    src/imginvert.h \
-    src/imgloader.h \
-    src/imgsource.h \
-    src/input.h \
-    src/libraryscanner.h \
-    src/libraryscannerdlg.h \
-    src/mathstuff.h \
-    src/midichanneldelegate.h \
-    src/mididevicehandler.h \
-    src/midiinputmappingtablemodel.h \
-    src/midiledhandler.h \
-    src/midimapping.h \
-    src/midimessage.h \
-    src/midinodelegate.h \
-	src/midioptiondelegate.h \
-    src/midiobject.h \
-    src/midiobjectnull.h \
-    src/midioutputmapping.h \
-	src/midioutputmappingtablemodel.h \
-    src/midistatusdelegate.h \
-    src/mixxx.h \
-    src/mixxxcontrol.h \
-    src/mixxxkeyboard.h \
-    src/mixxxview.h \
-    src/monitor.h \
-    src/parser.h \
-    src/parserm3u.h \
-    src/parserpls.h \
-    src/peaklist.h \
-    src/playerinfo.h \
-    src/probabilityvector.h \
-    src/proxymodel.h \
-	src/cachingreader.h \
-    src/rotary.h \
-    src/rtthread.h \
-    src/segmentation.h \
-    src/sounddevice.h \
-    src/sounddeviceportaudio.h \
-    src/soundmanager.h \
-    src/soundsource.h \
-    src/soundsourcemp3.h \
-    src/soundsourceoggvorbis.h \
-    src/soundsourceproxy.h \
-    src/soundsourcesndfile.h \
-    src/track.h \
-    src/trackcollection.h \
-    src/trackimporter.h \
-    src/trackinfoobject.h \
-    src/trackplaylist.h \
-    src/trackplaylistlist.h \
-    src/waveformviewerfactory.h \
-    src/windowkaiser.h \
-    src/wipodtracksmodel.h \
-    src/wplaylistlistmodel.h \
-    src/wpromotracksmodel.h \
-    src/wtracktablefilter.h \
-    src/wtracktablemodel.h \
-    src/wtracktableview.h \
-    src/xmlparse.h \
-    src/errordialog.h \
-	src/upgrade.h
 
-SOURCES += src/analyserbpm.cpp \
-    src/analyserqueue.cpp \
-    src/analyserwaveform.cpp \
-    src/analyserwavesummary.cpp \
-    src/configobject.cpp \
-    src/controlbeat.cpp \
-    src/controlevent.cpp \
-	src/engine/bpmcontrol.cpp \
-    src/engine/enginebuffer.cpp \
-    src/engine/enginebuffercue.cpp \
-    src/engine/enginebufferscale.cpp \
-    src/engine/enginebufferscaledummy.cpp \
-    src/engine/enginebufferscalelinear.cpp \
-    src/engine/enginebufferscalereal.cpp \
-    src/engine/enginebufferscalest.cpp \
-    src/engine/enginechannel.cpp \
-    src/engine/engineclipping.cpp \
-    src/engine/enginedelay.cpp \
-    src/engine/enginefilter.cpp \
-    src/engine/enginefilterblock.cpp \
-    src/engine/enginefilterbutterworth8.cpp \
-    src/engine/enginefilteriir.cpp \
-    src/engine/enginefilterrbj.cpp \
-    src/engine/engineflanger.cpp \
-    src/engine/enginemaster.cpp \
-    src/engine/engineobject.cpp \
-    src/engine/enginepregain.cpp \
-    src/engine/enginesidechain.cpp \
-    src/engine/enginespectralfwd.cpp \
-    src/engine/enginetemporal.cpp \
-    src/engine/enginevinylsoundemu.cpp \
-    src/engine/enginevolume.cpp \
-    src/engine/enginevumeter.cpp \
-    src/engine/enginexfader.cpp \
-	src/engine/loopingcontrol.cpp \
-	src/engine/ratecontrol.cpp \
-	src/engine/enginecontrol.cpp \
-	src/engine/readaheadmanager.cpp \
-    src/waveform/glwaveformrenderer.cpp \
-    src/waveform/renderobject.cpp \
-    src/waveform/waveformrenderbackground.cpp \
-    src/waveform/waveformrenderbeat.cpp \
-    src/waveform/waveformrenderer.cpp \
-    src/waveform/waveformrendermark.cpp \
-    src/waveform/waveformrendersignal.cpp \
-    src/waveform/waveformrendersignalpixmap.cpp \
-	src/widget/hexspinbox.cpp \
-    src/widget/wabstractcontrol.cpp \
-    src/widget/wdisplay.cpp \
-    src/widget/wglwaveformviewer.cpp \
-    src/widget/wknob.cpp \
-    src/widget/wlabel.cpp \
-    src/widget/wnumber.cpp \
-    src/widget/wnumberbpm.cpp \
-    src/widget/wnumberpos.cpp \
-    src/widget/wnumberrate.cpp \
-    src/widget/woverview.cpp \
-    src/widget/wpixmapstore.cpp \
-    src/widget/wpushbutton.cpp \
-    src/widget/wsearchlineedit.cpp \
-    src/widget/wskincolor.cpp \
-    src/widget/wslider.cpp \
-    src/widget/wslidercomposed.cpp \
-    src/widget/wstatuslight.cpp \
-    src/widget/wvisualsimple.cpp \
-    src/widget/wvumeter.cpp \
-    src/widget/wwaveformviewer.cpp \
-    src/widget/wwidget.cpp \
-    src/bpm/bpmscheme.cpp \
-    src/bpm/wavesegmentation.cpp \
-    src/controlgroupdelegate.cpp \
-    src/controlvaluedelegate.cpp \
-    src/controllogpotmeter.cpp \
-    src/controlnull.cpp \
-    src/controlobject.cpp \
-    src/controlobjectthread.cpp \
-    src/controlobjectthreadmain.cpp \
-    src/controlobjectthreadwidget.cpp \
-    src/controlpotmeter.cpp \
-    src/controlpushbutton.cpp \
-    src/controlttrotary.cpp \
-    src/dlgabout.cpp \
-    src/dlgbpmscheme.cpp \
-    src/dlgbpmtap.cpp \
-    src/dlgmidilearning.cpp \
-    src/dlgprefbpm.cpp \
-    src/dlgprefcontrols.cpp \
-    src/dlgprefcrossfader.cpp \
-    src/dlgprefeq.cpp \
-    src/dlgpreferences.cpp \
-    src/dlgprefmidibindings.cpp \
-    src/dlgprefnomidi.cpp \
-    src/dlgprefplaylist.cpp \
-    src/dlgprefsound.cpp \
-    src/fakemonitor.cpp \
-    src/imgcolor.cpp \
-    src/imginvert.cpp \
-    src/imgloader.cpp \
-    src/input.cpp \
-    src/libraryscanner.cpp \
-    src/libraryscannerdlg.cpp \
-    src/mathstuff.cpp \
-    src/midichanneldelegate.cpp \
-    src/mididevicehandler.cpp \
-    src/midiinputmappingtablemodel.cpp \
-    src/midiledhandler.cpp \
-    src/midimapping.cpp \
-    src/midimessage.cpp \
-    src/midinodelegate.cpp \
-	src/midioptiondelegate.cpp \
-    src/midiobject.cpp \
-    src/midiobjectnull.cpp \
-	src/midioutputmappingtablemodel.cpp \
-    src/midistatusdelegate.cpp \
-    src/mixxx.cpp \
-    src/mixxxcontrol.cpp \
-    src/mixxxkeyboard.cpp \
-    src/mixxxview.cpp \
-    src/monitor.cpp \
-    src/parser.cpp \
-    src/parserm3u.cpp \
-    src/parserpls.cpp \
-    src/peaklist.cpp \
-    src/playerinfo.cpp \
-    src/probabilityvector.cpp \
-    src/proxymodel.cpp \
-    src/cachingreader.cpp \
-    src/rotary.cpp \
-    src/rtthread.cpp \
-    src/segmentation.cpp \
-    src/sounddevice.cpp \
-    src/sounddeviceportaudio.cpp \
-    src/soundmanager.cpp \
-    src/soundsource.cpp \
-    src/soundsourcemp3.cpp \
-    src/soundsourceoggvorbis.cpp \
-    src/soundsourceproxy.cpp \
-    src/soundsourcesndfile.cpp \
-    src/track.cpp \
-    src/trackcollection.cpp \
-    src/trackimporter.cpp \
-    src/trackinfoobject.cpp \
-    src/trackplaylist.cpp \
-    src/trackplaylistlist.cpp \
-    src/waveformviewerfactory.cpp \
-    src/windowkaiser.cpp \
-    src/wipodtracksmodel.cpp \
-    src/wplaylistlistmodel.cpp \
-    src/wpromotracksmodel.cpp \
-    src/wtracktablefilter.cpp \
-    src/wtracktablemodel.cpp \
-    src/wtracktableview.cpp \
-    src/xmlparse.cpp \
-    src/main.cpp \
-    src/errordialog.cpp \
-	src/upgrade.cpp
+## Generate lists of all code/form files present in a source directory for inclusion in a .pro file
+# EXCLUDE_SHOUTCAST=shoutcast|encodermp3|encodervorbis
+# EXCLUDE_STUDIO=/script/
+# EXCLUDE_FFMPEG=ffmpeg
+# EXCLUDE_TONAL=tonal
+# EXCLUDE_LADSPA=ladspa
+# FIND_EXCLUDE=~|unused|patch|diff|/test/|/lib/|.scon|${EXCLUDE_SHOUTCAST}|${EXCLUDE_STUDIO}|${EXCLUDE_FFMPEG}|${EXCLUDE_TONAL}|${EXCLUDE_LADSPA}
+# for FILE_EXT in h cpp ui; do
+#   find . | egrep -ive "${FIND_EXCLUDE}" | grep \\.${FILE_EXT} | sort -ui | sed -e "s=./=\$\$BASE_DIR/=" -e "s=\.${FILE_EXT}=\.${FILE_EXT} \\\="
+# done
+
+HEADERS += \
+$$BASE_DIR/src/analyserbpm.h \
+$$BASE_DIR/src/analyser.h \
+$$BASE_DIR/src/analyserqueue.h \
+$$BASE_DIR/src/analyserwaveform.h \
+$$BASE_DIR/src/analyserwavesummary.h \
+$$BASE_DIR/src/bpm/bpmreceiver.h \
+$$BASE_DIR/src/bpm/bpmscheme.h \
+$$BASE_DIR/src/bpm/wavesegmentation.h \
+$$BASE_DIR/src/build.h \
+$$BASE_DIR/src/cachingreader.h \
+$$BASE_DIR/src/configobject.h \
+$$BASE_DIR/src/controlbeat.h \
+$$BASE_DIR/src/controlevent.h \
+$$BASE_DIR/src/controlgroupdelegate.h \
+$$BASE_DIR/src/controllogpotmeter.h \
+$$BASE_DIR/src/controlnull.h \
+$$BASE_DIR/src/controlobject.h \
+$$BASE_DIR/src/controlobjectthread.h \
+$$BASE_DIR/src/controlobjectthreadmain.h \
+$$BASE_DIR/src/controlobjectthreadwidget.h \
+$$BASE_DIR/src/controlpotmeter.h \
+$$BASE_DIR/src/controlpushbutton.h \
+$$BASE_DIR/src/controlttrotary.h \
+$$BASE_DIR/src/controlvaluedelegate.h \
+$$BASE_DIR/src/defs_audiofiles.h \
+$$BASE_DIR/src/defs.h \
+$$BASE_DIR/src/defs_mixxxcmetrics.h \
+$$BASE_DIR/src/defs_promo.h \
+$$BASE_DIR/src/defs_urls.h \
+$$BASE_DIR/src/defs_version.h \
+$$BASE_DIR/src/dlgabout.h \
+$$BASE_DIR/src/dlgautodj.h \
+$$BASE_DIR/src/dlgbpmscheme.h \
+$$BASE_DIR/src/dlgladspa.h \
+$$BASE_DIR/src/dlgmidilearning.h \
+$$BASE_DIR/src/dlgprefbpm.h \
+$$BASE_DIR/src/dlgprefcontrols.h \
+$$BASE_DIR/src/dlgprefcrossfader.h \
+$$BASE_DIR/src/dlgprefeq.h \
+$$BASE_DIR/src/dlgpreferences.h \
+$$BASE_DIR/src/dlgprefmidibindings.h \
+$$BASE_DIR/src/dlgprefnomidi.h \
+$$BASE_DIR/src/dlgprefplaylist.h \
+$$BASE_DIR/src/dlgprefrecord.h \
+$$BASE_DIR/src/dlgprefsound.h \
+$$BASE_DIR/src/dlgprefvinyl.h \
+$$BASE_DIR/src/dlgprepare.h \
+$$BASE_DIR/src/dlgtrackinfo.h \
+$$BASE_DIR/src/encoder.h \
+$$BASE_DIR/src/engine/bpmcontrol.h \
+$$BASE_DIR/src/engine/cuecontrol.h \
+$$BASE_DIR/src/engine/engineabstractrecord.h \
+$$BASE_DIR/src/engine/enginebuffer.h \
+$$BASE_DIR/src/engine/enginebufferscaledummy.h \
+$$BASE_DIR/src/engine/enginebufferscale.h \
+$$BASE_DIR/src/engine/enginebufferscalelinear.h \
+$$BASE_DIR/src/engine/enginebufferscalereal.h \
+$$BASE_DIR/src/engine/enginebufferscalest.h \
+$$BASE_DIR/src/engine/enginechannel.h \
+$$BASE_DIR/src/engine/engineclipping.h \
+$$BASE_DIR/src/engine/enginecontrol.h \
+$$BASE_DIR/src/engine/enginedelay.h \
+$$BASE_DIR/src/engine/enginefilterblock.h \
+$$BASE_DIR/src/engine/enginefilterbutterworth8.h \
+$$BASE_DIR/src/engine/enginefilter.h \
+$$BASE_DIR/src/engine/enginefilteriir.h \
+$$BASE_DIR/src/engine/engineflanger.h \
+$$BASE_DIR/src/engine/engineladspa.h \
+$$BASE_DIR/src/engine/enginemaster.h \
+$$BASE_DIR/src/engine/engineobject.h \
+$$BASE_DIR/src/engine/enginepregain.h \
+$$BASE_DIR/src/engine/enginesidechain.h \
+$$BASE_DIR/src/engine/enginespectralfwd.h \
+$$BASE_DIR/src/engine/enginevinylcontrol.h \
+$$BASE_DIR/src/engine/enginevinylsoundemu.h \
+$$BASE_DIR/src/engine/enginevolume.h \
+$$BASE_DIR/src/engine/enginevumeter.h \
+$$BASE_DIR/src/engine/enginexfader.h \
+$$BASE_DIR/src/engine/loopingcontrol.h \
+$$BASE_DIR/src/engine/ratecontrol.h \
+$$BASE_DIR/src/engine/readaheadmanager.h \
+$$BASE_DIR/src/errordialog.h \
+$$BASE_DIR/src/imgcolor.h \
+$$BASE_DIR/src/imginvert.h \
+$$BASE_DIR/src/imgloader.h \
+$$BASE_DIR/src/imgsource.h \
+$$BASE_DIR/src/input.h \
+$$BASE_DIR/src/ladspa/ladspacontrol.h \
+$$BASE_DIR/src/ladspa/ladspainstance.h \
+$$BASE_DIR/src/ladspa/ladspainstancemono.h \
+$$BASE_DIR/src/ladspa/ladspainstancestereo.h \
+$$BASE_DIR/src/ladspa/ladspalibrary.h \
+$$BASE_DIR/src/ladspa/ladspaloader.h \
+$$BASE_DIR/src/ladspa/ladspaplugin.h \
+$$BASE_DIR/src/ladspa/ladspapreset.h \
+$$BASE_DIR/src/ladspa/ladspapresetinstance.h \
+$$BASE_DIR/src/ladspa/ladspapresetknob.h \
+$$BASE_DIR/src/ladspa/ladspapresetmanager.h \
+$$BASE_DIR/src/ladspa/ladspapresetslot.h \
+$$BASE_DIR/src/ladspaview.h \
+$$BASE_DIR/src/library/abstractxmltrackmodel.h \
+$$BASE_DIR/src/library/autodjfeature.h \
+$$BASE_DIR/src/library/browsefeature.h \
+$$BASE_DIR/src/library/browsefilter.h \
+$$BASE_DIR/src/library/browsetablemodel.h \
+$$BASE_DIR/src/library/cratefeature.h \
+$$BASE_DIR/src/library/cratetablemodel.h \
+$$BASE_DIR/src/library/dao/cratedao.h \
+$$BASE_DIR/src/library/dao/cuedao.h \
+$$BASE_DIR/src/library/dao/cue.h \
+$$BASE_DIR/src/library/dao/dao.h \
+$$BASE_DIR/src/library/dao/libraryhashdao.h \
+$$BASE_DIR/src/library/dao/playlistdao.h \
+$$BASE_DIR/src/library/dao/settingsdao.h \
+$$BASE_DIR/src/library/dao/trackdao.h \
+$$BASE_DIR/src/library/itunesfeature.h \
+$$BASE_DIR/src/library/itunesplaylistmodel.h \
+$$BASE_DIR/src/library/itunestrackmodel.h \
+$$BASE_DIR/src/library/legacylibraryimporter.h \
+$$BASE_DIR/src/library/libraryfeature.h \
+$$BASE_DIR/src/library/library.h \
+$$BASE_DIR/src/library/librarymidicontrol.h \
+$$BASE_DIR/src/library/libraryscannerdlg.h \
+$$BASE_DIR/src/library/libraryscanner.h \
+$$BASE_DIR/src/library/librarytablemodel.h \
+$$BASE_DIR/src/library/libraryview.h \
+$$BASE_DIR/src/library/missingtablemodel.h \
+$$BASE_DIR/src/library/mixxxlibraryfeature.h \
+$$BASE_DIR/src/library/playlistfeature.h \
+$$BASE_DIR/src/library/playlisttablemodel.h \
+$$BASE_DIR/src/library/preparecratedelegate.h \
+$$BASE_DIR/src/library/preparefeature.h \
+$$BASE_DIR/src/library/preparelibrarytablemodel.h \
+$$BASE_DIR/src/library/proxytrackmodel.h \
+$$BASE_DIR/src/library/rhythmboxfeature.h \
+$$BASE_DIR/src/library/rhythmboxplaylistmodel.h \
+$$BASE_DIR/src/library/rhythmboxtrackmodel.h \
+$$BASE_DIR/src/library/schemamanager.h \
+$$BASE_DIR/src/library/searchthread.h \
+$$BASE_DIR/src/library/sidebarmodel.h \
+$$BASE_DIR/src/library/trackcollection.h \
+$$BASE_DIR/src/library/trackmodel.h \
+$$BASE_DIR/src/m4a/comment.h \
+$$BASE_DIR/src/m4a/ip.h \
+$$BASE_DIR/src/m4a/sf.h \
+$$BASE_DIR/src/mathstuff.h \
+$$BASE_DIR/src/midi/midichanneldelegate.h \
+$$BASE_DIR/src/midi/mididevicedummy.h \
+$$BASE_DIR/src/midi/mididevice.h \
+$$BASE_DIR/src/midi/mididevicemanager.h \
+$$BASE_DIR/src/midi/midideviceportmidi.h \
+$$BASE_DIR/src/midi/midiinputmapping.h \
+$$BASE_DIR/src/midi/midiinputmappingtablemodel.h \
+$$BASE_DIR/src/midi/midiledhandler.h \
+$$BASE_DIR/src/midi/midimapping.h \
+$$BASE_DIR/src/midi/midimessage.h \
+$$BASE_DIR/src/midi/midinodelegate.h \
+$$BASE_DIR/src/midi/midioptiondelegate.h \
+$$BASE_DIR/src/midi/midioutputmapping.h \
+$$BASE_DIR/src/midi/midioutputmappingtablemodel.h \
+$$BASE_DIR/src/midi/midiscriptengine.h \
+$$BASE_DIR/src/midi/midistatusdelegate.h \
+$$BASE_DIR/src/mixxxcontrol.h \
+$$BASE_DIR/src/mixxxevent.h \
+$$BASE_DIR/src/mixxx.h \
+$$BASE_DIR/src/mixxxkeyboard.h \
+$$BASE_DIR/src/mixxxview.h \
+$$BASE_DIR/src/parser.h \
+$$BASE_DIR/src/parserm3u.h \
+$$BASE_DIR/src/parserpls.h \
+$$BASE_DIR/src/peaklist.h \
+$$BASE_DIR/src/player.h \
+$$BASE_DIR/src/playerinfo.h \
+$$BASE_DIR/src/probabilityvector.h \
+$$BASE_DIR/src/recording/defs_recording.h \
+$$BASE_DIR/src/recording/enginerecord.h \
+$$BASE_DIR/src/recording/writeaudiofile.h \
+$$BASE_DIR/src/rotary.h \
+$$BASE_DIR/src/rtthread.h \
+$$BASE_DIR/src/segmentation.h \
+$$BASE_DIR/src/sounddevice.h \
+$$BASE_DIR/src/sounddeviceportaudio.h \
+$$BASE_DIR/src/soundmanager.h \
+$$BASE_DIR/src/soundsource.h \
+$$BASE_DIR/src/soundsourcem4a.h \
+$$BASE_DIR/src/soundsourcemp3.h \
+$$BASE_DIR/src/soundsourceoggvorbis.h \
+$$BASE_DIR/src/soundsourceproxy.h \
+$$BASE_DIR/src/soundsourcesndfile.h \
+$$BASE_DIR/src/trackinfoobject.h \
+$$BASE_DIR/src/transposeproxymodel.h \
+$$BASE_DIR/src/upgrade.h \
+$$BASE_DIR/src/vinylcontrol.h \
+$$BASE_DIR/src/vinylcontrolproxy.h \
+$$BASE_DIR/src/vinylcontrolscratchlib.h \
+$$BASE_DIR/src/vinylcontrolsignalwidget.h \
+$$BASE_DIR/src/vinylcontrolxwax.h \
+$$BASE_DIR/src/waveform/glwaveformrenderer.h \
+$$BASE_DIR/src/waveform/renderobject.h \
+$$BASE_DIR/src/waveformviewerfactory.h \
+$$BASE_DIR/src/waveform/waveformrenderbackground.h \
+$$BASE_DIR/src/waveform/waveformrenderbeat.h \
+$$BASE_DIR/src/waveform/waveformrenderer.h \
+$$BASE_DIR/src/waveform/waveformrendermark.h \
+$$BASE_DIR/src/waveform/waveformrendermarkrange.h \
+$$BASE_DIR/src/waveform/waveformrendersignal.h \
+$$BASE_DIR/src/waveform/waveformrendersignalpixmap.h \
+$$BASE_DIR/src/widget/hexspinbox.h \
+$$BASE_DIR/src/widget/wabstractcontrol.h \
+$$BASE_DIR/src/widget/wbrowsetableview.h \
+$$BASE_DIR/src/widget/wdisplay.h \
+$$BASE_DIR/src/widget/wglwaveformviewer.h \
+$$BASE_DIR/src/widget/wknob.h \
+$$BASE_DIR/src/widget/wlabel.h \
+$$BASE_DIR/src/widget/wlibrary.h \
+$$BASE_DIR/src/widget/wlibrarysidebar.h \
+$$BASE_DIR/src/widget/wlibrarytableview.h \
+$$BASE_DIR/src/widget/wlibrarytextbrowser.h \
+$$BASE_DIR/src/widget/wnumberbpm.h \
+$$BASE_DIR/src/widget/wnumber.h \
+$$BASE_DIR/src/widget/wnumberpos.h \
+$$BASE_DIR/src/widget/wnumberrate.h \
+$$BASE_DIR/src/widget/woverview.h \
+$$BASE_DIR/src/widget/wpixmapstore.h \
+$$BASE_DIR/src/widget/wpreparecratestableview.h \
+$$BASE_DIR/src/widget/wpreparelibrarytableview.h \
+$$BASE_DIR/src/widget/wpushbutton.h \
+$$BASE_DIR/src/widget/wsearchlineedit.h \
+$$BASE_DIR/src/widget/wskincolor.h \
+$$BASE_DIR/src/widget/wslidercomposed.h \
+$$BASE_DIR/src/widget/wslider.h \
+$$BASE_DIR/src/widget/wstatuslight.h \
+$$BASE_DIR/src/widget/wtracktableviewheader.h \
+$$BASE_DIR/src/widget/wvisualsimple.h \
+$$BASE_DIR/src/widget/wvumeter.h \
+$$BASE_DIR/src/widget/wwaveformviewer.h \
+$$BASE_DIR/src/widget/wwidget.h \
+$$BASE_DIR/src/windowkaiser.h \
+$$BASE_DIR/src/wtracktableview.h \
+$$BASE_DIR/src/xmlparse.h
+
+
+SOURCES += \
+$$BASE_DIR/src/analyserbpm.cpp \
+$$BASE_DIR/src/analyserqueue.cpp \
+$$BASE_DIR/src/analyserwaveform.cpp \
+$$BASE_DIR/src/analyserwavesummary.cpp \
+$$BASE_DIR/src/bpm/bpmscheme.cpp \
+$$BASE_DIR/src/bpm/wavesegmentation.cpp \
+$$BASE_DIR/src/cachingreader.cpp \
+$$BASE_DIR/src/configobject.cpp \
+$$BASE_DIR/src/controlbeat.cpp \
+$$BASE_DIR/src/controlevent.cpp \
+$$BASE_DIR/src/controlgroupdelegate.cpp \
+$$BASE_DIR/src/controllogpotmeter.cpp \
+$$BASE_DIR/src/controlnull.cpp \
+$$BASE_DIR/src/controlobject.cpp \
+$$BASE_DIR/src/controlobjectthread.cpp \
+$$BASE_DIR/src/controlobjectthreadmain.cpp \
+$$BASE_DIR/src/controlobjectthreadwidget.cpp \
+$$BASE_DIR/src/controlpotmeter.cpp \
+$$BASE_DIR/src/controlpushbutton.cpp \
+$$BASE_DIR/src/controlttrotary.cpp \
+$$BASE_DIR/src/controlvaluedelegate.cpp \
+$$BASE_DIR/src/dlgabout.cpp \
+$$BASE_DIR/src/dlgautodj.cpp \
+$$BASE_DIR/src/dlgbpmscheme.cpp \
+$$BASE_DIR/src/dlgladspa.cpp \
+$$BASE_DIR/src/dlgmidilearning.cpp \
+$$BASE_DIR/src/dlgprefbpm.cpp \
+$$BASE_DIR/src/dlgprefcontrols.cpp \
+$$BASE_DIR/src/dlgprefcrossfader.cpp \
+$$BASE_DIR/src/dlgprefeq.cpp \
+$$BASE_DIR/src/dlgpreferences.cpp \
+$$BASE_DIR/src/dlgprefmidibindings.cpp \
+$$BASE_DIR/src/dlgprefnomidi.cpp \
+$$BASE_DIR/src/dlgprefplaylist.cpp \
+$$BASE_DIR/src/dlgprefrecord.cpp \
+$$BASE_DIR/src/dlgprefsound.cpp \
+$$BASE_DIR/src/dlgprefvinyl.cpp \
+$$BASE_DIR/src/dlgprepare.cpp \
+$$BASE_DIR/src/dlgtrackinfo.cpp \
+$$BASE_DIR/src/encoder.cpp \
+$$BASE_DIR/src/engine/bpmcontrol.cpp \
+$$BASE_DIR/src/engine/cuecontrol.cpp \
+$$BASE_DIR/src/engine/enginebuffer.cpp \
+$$BASE_DIR/src/engine/enginebufferscale.cpp \
+$$BASE_DIR/src/engine/enginebufferscaledummy.cpp \
+$$BASE_DIR/src/engine/enginebufferscalelinear.cpp \
+$$BASE_DIR/src/engine/enginebufferscalereal.cpp \
+$$BASE_DIR/src/engine/enginebufferscalest.cpp \
+$$BASE_DIR/src/engine/enginechannel.cpp \
+$$BASE_DIR/src/engine/engineclipping.cpp \
+$$BASE_DIR/src/engine/enginecontrol.cpp \
+$$BASE_DIR/src/engine/enginedelay.cpp \
+$$BASE_DIR/src/engine/enginefilterblock.cpp \
+$$BASE_DIR/src/engine/enginefilterbutterworth8.cpp \
+$$BASE_DIR/src/engine/enginefilter.cpp \
+$$BASE_DIR/src/engine/enginefilteriir.cpp \
+$$BASE_DIR/src/engine/engineflanger.cpp \
+$$BASE_DIR/src/engine/engineladspa.cpp \
+$$BASE_DIR/src/engine/enginemaster.cpp \
+$$BASE_DIR/src/engine/engineobject.cpp \
+$$BASE_DIR/src/engine/enginepregain.cpp \
+$$BASE_DIR/src/engine/enginesidechain.cpp \
+$$BASE_DIR/src/engine/enginespectralfwd.cpp \
+$$BASE_DIR/src/engine/enginevinylcontrol.cpp \
+$$BASE_DIR/src/engine/enginevinylsoundemu.cpp \
+$$BASE_DIR/src/engine/enginevolume.cpp \
+$$BASE_DIR/src/engine/enginevumeter.cpp \
+$$BASE_DIR/src/engine/enginexfader.cpp \
+$$BASE_DIR/src/engine/loopingcontrol.cpp \
+$$BASE_DIR/src/engine/ratecontrol.cpp \
+$$BASE_DIR/src/engine/readaheadmanager.cpp \
+$$BASE_DIR/src/errordialog.cpp \
+$$BASE_DIR/src/imgcolor.cpp \
+$$BASE_DIR/src/imginvert.cpp \
+$$BASE_DIR/src/imgloader.cpp \
+$$BASE_DIR/src/input.cpp \
+$$BASE_DIR/src/ladspa/ladspacontrol.cpp \
+$$BASE_DIR/src/ladspa/ladspainstance.cpp \
+$$BASE_DIR/src/ladspa/ladspainstancemono.cpp \
+$$BASE_DIR/src/ladspa/ladspainstancestereo.cpp \
+$$BASE_DIR/src/ladspa/ladspalibrary.cpp \
+$$BASE_DIR/src/ladspa/ladspaloader.cpp \
+$$BASE_DIR/src/ladspa/ladspaplugin.cpp \
+$$BASE_DIR/src/ladspa/ladspapreset.cpp \
+$$BASE_DIR/src/ladspa/ladspapresetinstance.cpp \
+$$BASE_DIR/src/ladspa/ladspapresetknob.cpp \
+$$BASE_DIR/src/ladspa/ladspapresetmanager.cpp \
+$$BASE_DIR/src/ladspa/ladspapresetslot.cpp \
+$$BASE_DIR/src/ladspaview.cpp \
+$$BASE_DIR/src/library/abstractxmltrackmodel.cpp \
+$$BASE_DIR/src/library/autodjfeature.cpp \
+$$BASE_DIR/src/library/browsefeature.cpp \
+$$BASE_DIR/src/library/browsefilter.cpp \
+$$BASE_DIR/src/library/browsetablemodel.cpp \
+$$BASE_DIR/src/library/cratefeature.cpp \
+$$BASE_DIR/src/library/cratetablemodel.cpp \
+$$BASE_DIR/src/library/dao/cratedao.cpp \
+$$BASE_DIR/src/library/dao/cue.cpp \
+$$BASE_DIR/src/library/dao/cuedao.cpp \
+$$BASE_DIR/src/library/dao/libraryhashdao.cpp \
+$$BASE_DIR/src/library/dao/playlistdao.cpp \
+$$BASE_DIR/src/library/dao/settingsdao.cpp \
+$$BASE_DIR/src/library/dao/trackdao.cpp \
+$$BASE_DIR/src/library/itunesfeature.cpp \
+$$BASE_DIR/src/library/itunesplaylistmodel.cpp \
+$$BASE_DIR/src/library/itunestrackmodel.cpp \
+$$BASE_DIR/src/library/legacylibraryimporter.cpp \
+$$BASE_DIR/src/library/library.cpp \
+$$BASE_DIR/src/library/libraryfeature.cpp \
+$$BASE_DIR/src/library/librarymidicontrol.cpp \
+$$BASE_DIR/src/library/libraryscanner.cpp \
+$$BASE_DIR/src/library/libraryscannerdlg.cpp \
+$$BASE_DIR/src/library/librarytablemodel.cpp \
+$$BASE_DIR/src/library/missingtablemodel.cpp \
+$$BASE_DIR/src/library/mixxxlibraryfeature.cpp \
+$$BASE_DIR/src/library/playlistfeature.cpp \
+$$BASE_DIR/src/library/playlisttablemodel.cpp \
+$$BASE_DIR/src/library/preparecratedelegate.cpp \
+$$BASE_DIR/src/library/preparefeature.cpp \
+$$BASE_DIR/src/library/preparelibrarytablemodel.cpp \
+$$BASE_DIR/src/library/proxytrackmodel.cpp \
+$$BASE_DIR/src/library/rhythmboxfeature.cpp \
+$$BASE_DIR/src/library/rhythmboxplaylistmodel.cpp \
+$$BASE_DIR/src/library/rhythmboxtrackmodel.cpp \
+$$BASE_DIR/src/library/schemamanager.cpp \
+$$BASE_DIR/src/library/searchthread.cpp \
+$$BASE_DIR/src/library/sidebarmodel.cpp \
+$$BASE_DIR/src/library/trackcollection.cpp \
+$$BASE_DIR/src/m4a/mp4-mixxx.cpp \
+$$BASE_DIR/src/main.cpp \
+$$BASE_DIR/src/mathstuff.cpp \
+$$BASE_DIR/src/midi/midichanneldelegate.cpp \
+$$BASE_DIR/src/midi/mididevice.cpp \
+$$BASE_DIR/src/midi/mididevicemanager.cpp \
+$$BASE_DIR/src/midi/midideviceportmidi.cpp \
+$$BASE_DIR/src/midi/midiinputmappingtablemodel.cpp \
+$$BASE_DIR/src/midi/midiledhandler.cpp \
+$$BASE_DIR/src/midi/midimapping.cpp \
+$$BASE_DIR/src/midi/midimessage.cpp \
+$$BASE_DIR/src/midi/midinodelegate.cpp \
+$$BASE_DIR/src/midi/midioptiondelegate.cpp \
+$$BASE_DIR/src/midi/midioutputmappingtablemodel.cpp \
+$$BASE_DIR/src/midi/midiscriptengine.cpp \
+$$BASE_DIR/src/midi/midistatusdelegate.cpp \
+$$BASE_DIR/src/mixxxcontrol.cpp \
+$$BASE_DIR/src/mixxx.cpp \
+$$BASE_DIR/src/mixxxkeyboard.cpp \
+$$BASE_DIR/src/mixxxview.cpp \
+$$BASE_DIR/src/parser.cpp \
+$$BASE_DIR/src/parserm3u.cpp \
+$$BASE_DIR/src/parserpls.cpp \
+$$BASE_DIR/src/peaklist.cpp \
+$$BASE_DIR/src/player.cpp \
+$$BASE_DIR/src/playerinfo.cpp \
+$$BASE_DIR/src/probabilityvector.cpp \
+$$BASE_DIR/src/recording/enginerecord.cpp \
+$$BASE_DIR/src/recording/writeaudiofile.cpp \
+$$BASE_DIR/src/rotary.cpp \
+$$BASE_DIR/src/rtthread.cpp \
+$$BASE_DIR/src/segmentation.cpp \
+$$BASE_DIR/src/sounddevice.cpp \
+$$BASE_DIR/src/sounddeviceportaudio.cpp \
+$$BASE_DIR/src/soundmanager.cpp \
+$$BASE_DIR/src/soundsource.cpp \
+$$BASE_DIR/src/soundsourcem4a.cpp \
+$$BASE_DIR/src/soundsourcemp3.cpp \
+$$BASE_DIR/src/soundsourceoggvorbis.cpp \
+$$BASE_DIR/src/soundsourceproxy.cpp \
+$$BASE_DIR/src/soundsourcesndfile.cpp \
+$$BASE_DIR/src/trackinfoobject.cpp \
+$$BASE_DIR/src/upgrade.cpp \
+$$BASE_DIR/src/vinylcontrol.cpp \
+$$BASE_DIR/src/vinylcontrolproxy.cpp \
+$$BASE_DIR/src/vinylcontrolscratchlib.cpp \
+$$BASE_DIR/src/vinylcontrolsignalwidget.cpp \
+$$BASE_DIR/src/vinylcontrolxwax.cpp \
+$$BASE_DIR/src/waveform/glwaveformrenderer.cpp \
+$$BASE_DIR/src/waveform/renderobject.cpp \
+$$BASE_DIR/src/waveformviewerfactory.cpp \
+$$BASE_DIR/src/waveform/waveformrenderbackground.cpp \
+$$BASE_DIR/src/waveform/waveformrenderbeat.cpp \
+$$BASE_DIR/src/waveform/waveformrenderer.cpp \
+$$BASE_DIR/src/waveform/waveformrendermark.cpp \
+$$BASE_DIR/src/waveform/waveformrendermarkrange.cpp \
+$$BASE_DIR/src/waveform/waveformrendersignal.cpp \
+$$BASE_DIR/src/waveform/waveformrendersignalpixmap.cpp \
+$$BASE_DIR/src/widget/hexspinbox.cpp \
+$$BASE_DIR/src/widget/wabstractcontrol.cpp \
+$$BASE_DIR/src/widget/wbrowsetableview.cpp \
+$$BASE_DIR/src/widget/wdisplay.cpp \
+$$BASE_DIR/src/widget/wglwaveformviewer.cpp \
+$$BASE_DIR/src/widget/wknob.cpp \
+$$BASE_DIR/src/widget/wlabel.cpp \
+$$BASE_DIR/src/widget/wlibrary.cpp \
+$$BASE_DIR/src/widget/wlibrarysidebar.cpp \
+$$BASE_DIR/src/widget/wlibrarytableview.cpp \
+$$BASE_DIR/src/widget/wlibrarytextbrowser.cpp \
+$$BASE_DIR/src/widget/wnumberbpm.cpp \
+$$BASE_DIR/src/widget/wnumber.cpp \
+$$BASE_DIR/src/widget/wnumberpos.cpp \
+$$BASE_DIR/src/widget/wnumberrate.cpp \
+$$BASE_DIR/src/widget/woverview.cpp \
+$$BASE_DIR/src/widget/wpixmapstore.cpp \
+$$BASE_DIR/src/widget/wpreparecratestableview.cpp \
+$$BASE_DIR/src/widget/wpreparelibrarytableview.cpp \
+$$BASE_DIR/src/widget/wpushbutton.cpp \
+$$BASE_DIR/src/widget/wsearchlineedit.cpp \
+$$BASE_DIR/src/widget/wskincolor.cpp \
+$$BASE_DIR/src/widget/wslidercomposed.cpp \
+$$BASE_DIR/src/widget/wslider.cpp \
+$$BASE_DIR/src/widget/wstatuslight.cpp \
+$$BASE_DIR/src/widget/wtracktableviewheader.cpp \
+$$BASE_DIR/src/widget/wvisualsimple.cpp \
+$$BASE_DIR/src/widget/wvumeter.cpp \
+$$BASE_DIR/src/widget/wwaveformviewer.cpp \
+$$BASE_DIR/src/widget/wwidget.cpp \
+$$BASE_DIR/src/windowkaiser.cpp \
+$$BASE_DIR/src/wtracktableview.cpp \
+$$BASE_DIR/src/xmlparse.cpp
+
 	
 # Soundtouch
-INCLUDEPATH += lib/soundtouch-1.4.1
-SOURCES += lib/soundtouch-1.4.1/SoundTouch.cpp \
-    lib/soundtouch-1.4.1/TDStretch.cpp \
-    lib/soundtouch-1.4.1/RateTransposer.cpp \
-    lib/soundtouch-1.4.1/AAFilter.cpp \
-    lib/soundtouch-1.4.1/FIFOSampleBuffer.cpp \
-    lib/soundtouch-1.4.1/FIRFilter.cpp \
-    lib/soundtouch-1.4.1/PeakFinder.cpp \
-    lib/soundtouch-1.4.1/BPMDetect.cpp \
-    lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp
+INCLUDEPATH += $$BASE_DIR/lib/soundtouch-1.4.1
+SOURCES += $$BASE_DIR/lib/soundtouch-1.4.1/SoundTouch.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/TDStretch.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/RateTransposer.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/AAFilter.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/FIFOSampleBuffer.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/FIRFilter.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/PeakFinder.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/BPMDetect.cpp \
+    $$BASE_DIR/lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp
 
 # Fidlib
-SOURCES += lib/fidlib-0.9.9/fidlib.c
+SOURCES += $$BASE_DIR/lib/fidlib-0.9.9/fidlib.c
 win32-g++ {
     DEFINES += T_MINGW
 }
@@ -423,34 +616,34 @@ win32-g++ {
 }
 
 # kissfft
-SOURCES += lib/kissfft/kiss_fft.c
+SOURCES += $$BASE_DIR/lib/kissfft/kiss_fft.c
 
-FORMS += src/dlgaboutdlg.ui \
-    src/dlgbpmschemedlg.ui \
-    src/dlgbpmtapdlg.ui \
-    src/dlgmidilearning.ui \
-    src/dlgprefbpmdlg.ui \
-    src/dlgprefcontrolsdlg.ui \
-    src/dlgprefcrossfaderdlg.ui \
-    src/dlgprefeqdlg.ui \
-    src/dlgpreferencesdlg.ui \
-    src/dlgprefmidibindingsdlg.ui \
-    src/dlgprefplaylistdlg.ui \
-    src/dlgprefsounddlg.ui \
-    src/dlgprefvinyldlg.ui \
-    src/dlgprefnomididlg.ui
+FORMS += \
+$$BASE_DIR/src/dlgaboutdlg.ui \
+$$BASE_DIR/src/dlgautodj.ui \
+$$BASE_DIR/src/dlgbpmschemedlg.ui \
+$$BASE_DIR/src/dlgmidilearning.ui \
+$$BASE_DIR/src/dlgprefbpmdlg.ui \
+$$BASE_DIR/src/dlgprefcontrolsdlg.ui \
+$$BASE_DIR/src/dlgprefcrossfaderdlg.ui \
+$$BASE_DIR/src/dlgprefeqdlg.ui \
+$$BASE_DIR/src/dlgpreferencesdlg.ui \
+$$BASE_DIR/src/dlgprefmidibindingsdlg.ui \
+$$BASE_DIR/src/dlgprefnomididlg.ui \
+$$BASE_DIR/src/dlgprefplaylistdlg.ui \
+$$BASE_DIR/src/dlgprefrecorddlg.ui \
+$$BASE_DIR/src/dlgprefsounddlg.ui \
+$$BASE_DIR/src/dlgprefvinyldlg.ui \
+$$BASE_DIR/src/dlgprepare.ui \
+$$BASE_DIR/src/dlgtrackinfo.ui \
+$$BASE_DIR/src/script/scriptstudio.ui
 
-RESOURCES += res/mixxx.qrc
-HEADERS += src/recording/defs_recording.h \
-    src/recording/enginerecord.h \
-    src/recording/writeaudiofile.h \
-    src/dlgprefrecord.h
-SOURCES += src/recording/enginerecord.cpp \
-    src/recording/writeaudiofile.cpp \
-    src/dlgprefrecord.cpp
-FORMS += src/dlgprefrecorddlg.ui
+
+RESOURCES += $$BASE_DIR/src/../res/mixxx.qrc
+
+FORMS += $$BASE_DIR/src/dlgprefrecorddlg.ui
 !win32:unix {
-    !macx { 
+    !macx {
         DEFINES += __LINUX__ \
             TEMPORAL \
             __UNIX__ \
@@ -461,22 +654,10 @@ FORMS += src/dlgprefrecorddlg.ui
         }
         UNIX_SHARE_PATH = $${PREFIX}/share/mixxx
         DEFINES += UNIX_SHARE_PATH=\\\"$$UNIX_SHARE_PATH\\\"
-        CONFIG(alsaseqmidi) {
-            DEFINES += __ALSASEQMIDI__
-            HEADERS += src/midiobjectalsaseq.h
-            SOURCES += src/midiobjectalsaseq.cpp
-        }
         CONFIG(portmidi) {
             DEFINES += __PORTMIDI__
-            HEADERS += src/midiobjectportmidi.h
-            SOURCES += src/midiobjectportmidi.cpp
         }
-        CONFIG(ossmidi) {
-            DEFINES += __OSSMIDI__
-            HEADERS += src/midiobjectoss.h
-            SOURCES += src/midiobjectoss.cpp
-        }
-        LIBS += -lasound
+        LIBS += -lasound -lportmidi -lporttime
         PKGCONFIG += portaudio-2.0 \
             jack \
             id3tag \
@@ -485,189 +666,132 @@ FORMS += src/dlgprefrecorddlg.ui
             sndfile
     }
 }
-macx { 
-    DEFINES += __COREMIDI__
+macx {
+    # Needed for portmidi on OSX?  Probably not...
     LIBS += -framework CoreMIDI \
         -framework CoreFoundation \
         -framework CoreAudio \
         -framework AudioToolbox \
         -framework AudioUnit \
-		-L/sw/lib \
+        -L/sw/lib \
         -lportaudio \
-		-lmad \
-		-lsndfile \
-		-logg \
-		-lvorbis \
-		-lvorbisfile \
-		-lfftw3 \
-		-lid3tag
-    HEADERS += src/midiobjectcoremidi.h
-    SOURCES += src/midiobjectcoremidi.cpp
+        -lmad \
+        -lsndfile \
+        -logg \
+        -lvorbis \
+        -lvorbisfile \
+        -lfftw3 \
+        -lid3tag
 }
-win32 { 
+win32 {
     DEFINES += __WINMIDI__
-    HEADERS += src/midiobjectwin.h
-    SOURCES += src/midiobjectwin.cpp
-    LIBS += ../mixxx-winlib/libsndfile-1.dll \
-		../mixxx-winlib/portaudio_x86.dll \
-		../mixxx-winlib/libmad.a \ # libmad-0.15.1b
-        ../mixxx-winlib/libid3tag.a \ # libid3tag-0.15.1b
-        ../mixxx-winlib/libvorbisfile.dll \
-        ../mixxx-winlib/libvorbis.dll \
-#        ../mixxx-winlib/libfftw3-3.dll \
-        ../mixxx-winlib/libogg.dll \
+    HEADERS += $$BASE_DIR/src/midiobjectwin.h
+    SOURCES += $$BASE_DIR/src/midiobjectwin.cpp
+    LIBS += $$BASE_DIR/../mixxx-winlib/libsndfile-1.dll \
+        $$BASE_DIR/../mixxx-winlib/portaudio_x86.dll \
+        $$BASE_DIR/../mixxx-winlib/libmad.a \ # libmad-0.15.1b
+        $$BASE_DIR/../mixxx-winlib/libid3tag.a \ # libid3tag-0.15.1b
+        $$BASE_DIR/../mixxx-winlib/libvorbisfile.dll \
+        $$BASE_DIR/../mixxx-winlib/libvorbis.dll \
+#        $$BASE_DIR/../mixxx-winlib/libfftw3-3.dll \
+        $$BASE_DIR/../mixxx-winlib/libogg.dll \
         -lwinmm
-    INCLUDEPATH += ../mixxx-winlib
+    INCLUDEPATH += $$BASE_DIR/../mixxx-winlib
 }
-CONFIG(ladspa) { 
+CONFIG(ladspa) {
     DEFINES += __LADSPA__
-    HEADERS += src/engine/engineladspa.h \
-        src/dlgladspa.h \
-        src/ladspaview.h \
-        src/ladspa/ladspacontrol.h \
-        src/ladspa/ladspainstance.h \
-        src/ladspa/ladspainstancemono.h \
-        src/ladspa/ladspainstancestereo.h \
-        src/ladspa/ladspalibrary.h \
-        src/ladspa/ladspaloader.h \
-        src/ladspa/ladspaplugin.h \
-        src/ladspa/ladspapreset.h \
-        src/ladspa/ladspapresetinstance.h \
-        src/ladspa/ladspapresetknob.h \
-        src/ladspa/ladspapresetmanager.h \
-        src/ladspa/ladspapresetslot.h
-    SOURCES += src/engine/engineladspa.cpp \
-        src/dlgladspa.cpp \
-        src/ladspaview.cpp \
-        src/ladspa/ladspacontrol.cpp \
-        src/ladspa/ladspainstance.cpp \
-        src/ladspa/ladspainstancemono.cpp \
-        src/ladspa/ladspainstancestereo.cpp \
-        src/ladspa/ladspalibrary.cpp \
-        src/ladspa/ladspaloader.cpp \
-        src/ladspa/ladspaplugin.cpp \
-        src/ladspa/ladspapreset.cpp \
-        src/ladspa/ladspapresetinstance.cpp \
-        src/ladspa/ladspapresetknob.cpp \
-        src/ladspa/ladspapresetmanager.cpp \
-        src/ladspa/ladspapresetslot.cpp
+    HEADERS += $$BASE_DIR/src/engine/engineladspa.h \
+        $$BASE_DIR/src/dlgladspa.h \
+        $$BASE_DIR/src/ladspaview.h \
+        $$BASE_DIR/src/ladspa/ladspacontrol.h \
+        $$BASE_DIR/src/ladspa/ladspainstance.h \
+        $$BASE_DIR/src/ladspa/ladspainstancemono.h \
+        $$BASE_DIR/src/ladspa/ladspainstancestereo.h \
+        $$BASE_DIR/src/ladspa/ladspalibrary.h \
+        $$BASE_DIR/src/ladspa/ladspaloader.h \
+        $$BASE_DIR/src/ladspa/ladspaplugin.h \
+        $$BASE_DIR/src/ladspa/ladspapreset.h \
+        $$BASE_DIR/src/ladspa/ladspapresetinstance.h \
+        $$BASE_DIR/src/ladspa/ladspapresetknob.h \
+        $$BASE_DIR/src/ladspa/ladspapresetmanager.h \
+        $$BASE_DIR/src/ladspa/ladspapresetslot.h
+    SOURCES += $$BASE_DIR/src/engine/engineladspa.cpp \
+        $$BASE_DIR/src/dlgladspa.cpp \
+        $$BASE_DIR/src/ladspaview.cpp \
+        $$BASE_DIR/src/ladspa/ladspacontrol.cpp \
+        $$BASE_DIR/src/ladspa/ladspainstance.cpp \
+        $$BASE_DIR/src/ladspa/ladspainstancemono.cpp \
+        $$BASE_DIR/src/ladspa/ladspainstancestereo.cpp \
+        $$BASE_DIR/src/ladspa/ladspalibrary.cpp \
+        $$BASE_DIR/src/ladspa/ladspaloader.cpp \
+        $$BASE_DIR/src/ladspa/ladspaplugin.cpp \
+        $$BASE_DIR/src/ladspa/ladspapreset.cpp \
+        $$BASE_DIR/src/ladspa/ladspapresetinstance.cpp \
+        $$BASE_DIR/src/ladspa/ladspapresetknob.cpp \
+        $$BASE_DIR/src/ladspa/ladspapresetmanager.cpp \
+        $$BASE_DIR/src/ladspa/ladspapresetslot.cpp
     win32{
         INCLUDEPATH += lib\ladspa
     }
 }
-CONFIG(script) { 
+CONFIG(script) {
     DEFINES += __MIDISCRIPT__
-    HEADERS += src/script/interp.h \
-        src/script/macro.h \
-        src/script/macrolist.h \
-        src/script/macrolistitem.h \
-        src/script/midiscriptengine.h \
-        src/script/numbercontrolevent.h \
-        src/script/numberrecorder.h \
-        src/script/playinterface.h \
-        src/script/qtscriptinterface.h \
-        src/script/recorder.h \
-        src/script/scriptcontrolevent.h \
-        src/script/scriptcontrolqueue.h \
-        src/script/scriptengine.h \
-        src/script/scriptrecorder.h \
-        src/script/scriptstudio.h \
-        src/script/sdatetime.h \
-        src/script/signalrecorder.h \
-        src/script/trackcontrolevent.h \
-        src/script/trackrecorder.h \
-        $$UI_DIR/ui_scriptstudio.h
-    SOURCES += src/script/macro.cpp \
-        src/script/macrolist.cpp \
-        src/script/macrolistitem.cpp \
-        src/script/midiscriptengine.cpp \
-        src/script/numbercontrolevent.cpp \
-        src/script/numberrecorder.cpp \
-        src/script/playinterface.cpp \
-        src/script/qtscriptinterface.cpp \
-        src/script/recorder.cpp \
-        src/script/scriptcontrolevent.cpp \
-        src/script/scriptcontrolqueue.cpp \
-        src/script/scriptengine.cpp \
-        src/script/scriptrecorder.cpp \
-        src/script/scriptstudio.cpp \
-        src/script/sdatetime.cpp \
-        src/script/signalrecorder.cpp \
-        src/script/trackcontrolevent.cpp \
-        src/script/trackrecorder.cpp
-    FORMS += src/script/scriptstudio.ui
 }
-CONFIG(tonal) { 
-    DEFINES += 
-    HEADERS += src/tonal/ChordCorrelator.hxx \
-        src/tonal/ChordExtractor.hxx \
-        src/tonal/ChordSegmentator.hxx \
-        src/tonal/CircularPeakPicking.hxx \
-        src/tonal/CircularPeakTunner.hxx \
-        src/tonal/CircularPeaksToPCP.hxx \
-        src/tonal/ConstantQFolder.hxx \
-        src/tonal/ConstantQTransform.hxx \
-        src/tonal/DiscontinuousSegmentation.hxx \
-        src/tonal/FourierTransform.hxx \
-        src/tonal/InstantTunningEstimator.hxx \
-        src/tonal/PCPSmother.hxx \
-        src/tonal/Segmentation.hxx \
-        src/tonal/SemitoneCenterFinder.hxx \
-        src/tonal/TonalAnalysis.hxx \
-        src/tonal/tonalanalyser.h
-    SOURCES += src/tonal/ConstantQFolder.cxx \
-        src/tonal/ConstantQTransform.cxx \
-        src/tonal/FourierTransform.cxx \
-        src/tonal/Segmentation.cxx \
-        src/tonal/TonalAnalysis.cxx \
-        src/tonal/tonalanalyser.cpp
+
+CONFIG(tonal) {
+#    DEFINES +=
+    HEADERS += $$BASE_DIR/src/tonal/ChordCorrelator.hxx \
+        $$BASE_DIR/src/tonal/ChordExtractor.hxx \
+        $$BASE_DIR/src/tonal/ChordSegmentator.hxx \
+        $$BASE_DIR/src/tonal/CircularPeakPicking.hxx \
+        $$BASE_DIR/src/tonal/CircularPeakTunner.hxx \
+        $$BASE_DIR/src/tonal/CircularPeaksToPCP.hxx \
+        $$BASE_DIR/src/tonal/ConstantQFolder.hxx \
+        $$BASE_DIR/src/tonal/ConstantQTransform.hxx \
+        $$BASE_DIR/src/tonal/DiscontinuousSegmentation.hxx \
+        $$BASE_DIR/src/tonal/FourierTransform.hxx \
+        $$BASE_DIR/src/tonal/InstantTunningEstimator.hxx \
+        $$BASE_DIR/src/tonal/PCPSmother.hxx \
+        $$BASE_DIR/src/tonal/Segmentation.hxx \
+        $$BASE_DIR/src/tonal/SemitoneCenterFinder.hxx \
+        $$BASE_DIR/src/tonal/TonalAnalysis.hxx \
+        $$BASE_DIR/src/tonal/tonalanalyser.h
+    SOURCES += $$BASE_DIR/src/tonal/ConstantQFolder.cxx \
+        $$BASE_DIR/src/tonal/ConstantQTransform.cxx \
+        $$BASE_DIR/src/tonal/FourierTransform.cxx \
+        $$BASE_DIR/src/tonal/Segmentation.cxx \
+        $$BASE_DIR/src/tonal/TonalAnalysis.cxx \
+        $$BASE_DIR/src/tonal/tonalanalyser.cpp
 }
-CONFIG(m4a) { 
+CONFIG(m4a) {
     DEFINES += __M4A__
-    HEADERS += src/soundsourcem4a.h \
-        src/m4a/comment.h \
-        src/m4a/ip.h \
-        src/m4a/sf.h
-    SOURCES += src/soundsourcem4a.cpp \
-        src/m4a/mp4-mixxx.cpp
+    DEFINES += __MP4V2__ __M4AHACK__
     win32{
-        INCLUDEPATH += ../mixxx-winlib/mp4v2/include \
-            ../mixxx-winlib/faad2/include
-        HEADERS += ../mixxx-winlib/mp4v2/include/mp4.h \
-            ../mixxx-winlib/mp4v2/include/mpeg4ip.h \
-            ../mixxx-winlib/mp4v2/include/mpeg4ip_version.h \
-            ../mixxx-winlib/mp4v2/include/mpeg4ip_win32.h
-        LIBS += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
-            ../mixxx-winlib/libfaad2.dll
+        INCLUDEPATH += $$BASE_DIR/../mixxx-winlib/mp4v2/include \
+            $$BASE_DIR/../mixxx-winlib/faad2/include
+        HEADERS += $$BASE_DIR/../mixxx-winlib/mp4v2/include/mp4.h \
+            $$BASE_DIR/../mixxx-winlib/mp4v2/include/mpeg4ip.h \
+            $$BASE_DIR/../mixxx-winlib/mp4v2/include/mpeg4ip_version.h \
+            $$BASE_DIR/../mixxx-winlib/mp4v2/include/mpeg4ip_win32.h
+        LIBS += $$BASE_DIR/../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
+            $$BASE_DIR/../mixxx-winlib/libfaad2.dll
     } else {
         LIBS += -lmp4v2 \
             -lfaad
     }
 }
-CONFIG(vinylcontrol) { 
+CONFIG(vinylcontrol) {
     DEFINES += __VINYLCONTROL__
-    HEADERS += src/vinylcontrol.h \
-        src/vinylcontrolproxy.h \
-        src/vinylcontrolscratchlib.h \
-        src/vinylcontrolsignalwidget.h \
-        src/vinylcontrolxwax.h \
-        lib/scratchlib/DAnalyse.h \
-        lib/xwax/timecoder.h \
-        src/engine/enginevinylcontrol.h \
-        src/dlgprefvinyl.h
-    SOURCES += src/vinylcontrol.cpp \
-        src/vinylcontrolproxy.cpp \
-        src/vinylcontrolscratchlib.cpp \
-        src/vinylcontrolsignalwidget.cpp \
-        src/vinylcontrolxwax.cpp \
-        lib/scratchlib/DAnalyse.cpp \
-        src/engine/enginevinylcontrol.cpp \
-        src/dlgprefvinyl.cpp
+    HEADERS += \
+        $$BASE_DIR/lib/scratchlib/DAnalyse.h \
+        $$BASE_DIR/lib/xwax/timecoder.h
+    SOURCES += \
+        $$BASE_DIR/lib/scratchlib/DAnalyse.cpp
 
-    INCLUDEPATH += lib/scratchlib \
-        lib/xwax
-    win32:SOURCES += lib/xwax/timecoder_win32.c
-    !win32:SOURCES += lib/xwax/timecoder.c
+    INCLUDEPATH += $$BASE_DIR/lib/scratchlib \
+        $$BASE_DIR/lib/xwax
+    win32:SOURCES += $$BASE_DIR/lib/xwax/timecoder_win32.c
+    !win32:SOURCES += $$BASE_DIR/lib/xwax/timecoder.c
 }
 CONFIG(cmetrics):DEFINES += __C_METRICS__ \
     client='MIXXX' \
@@ -676,34 +800,32 @@ CONFIG(cmetrics):DEFINES += __C_METRICS__ \
     -D__NO_INTTYPES__
 CONFIG(shoutcast) {
     DEFINES += __SHOUTCAST__
-    HEADERS += src/dlgprefshoutcast.h \
-        src/encodervorbis.h \
-        src/engine/engineshoutcast.h
-    SOURCES += src/dlgprefshoutcast.cpp \
-        src/encodervorbis.cpp \
-        src/engine/engineshoutcast.cpp
+    HEADERS += $$BASE_DIR/src/dlgprefshoutcast.h \
+        $$BASE_DIR/src/encodervorbis.h \
+        $$BASE_DIR/src/engine/engineshoutcast.h
+    SOURCES += $$BASE_DIR/src/dlgprefshoutcast.cpp \
+        $$BASE_DIR/src/encodervorbis.cpp \
+        $$BASE_DIR/src/engine/engineshoutcast.cpp
     LIBS += shout \
         vorbisenc
-    FORMS += src/dlgprefshoutcastdlg.ui
+    FORMS += $$BASE_DIR/src/dlgprefshoutcastdlg.ui
 }
 
 # CONFIG(record) {
 #    DEFINES += __RECORD__
-#    HEADERS += src/recording/defs_recording.h \
-#        src/recording/enginerecord.h \
-#        src/recording/writeaudiofile.h \
-#        src/dlgprefrecord.h
-#    SOURCES += src/recording/enginerecord.cpp \
-#        src/recording/writeaudiofile.cpp \
-#        src/dlgprefrecord.cpp
+#    HEADERS += $$BASE_DIR/src/recording/defs_recording.h \
+#        $$BASE_DIR/src/recording/enginerecord.h \
+#        $$BASE_DIR/src/recording/writeaudiofile.h \
+#        $$BASE_DIR/src/dlgprefrecord.h
+#    SOURCES += $$BASE_DIR/src/recording/enginerecord.cpp \
+#        $$BASE_DIR/src/recording/writeaudiofile.cpp \
+#        $$BASE_DIR/src/dlgprefrecord.cpp
 #    LIBS +=
-#    FORMS += src/dlgprefrecorddlg.ui
+#    FORMS += $$BASE_DIR/src/dlgprefrecorddlg.ui
 #}
 
 CONFIG(ffmpeg) {
     DEFINES += __FFMPEGFILE__
-    HEADERS += src/soundsourceffmpeg.h
-    SOURCES += src/soundsourceffmpeg.cpp
     PKGCONFIG += libavcodec  \
             libavformat
     LIBS += -lavcodec \
@@ -727,8 +849,8 @@ win32 {
     !exists($$DESTDIR):system( mkdir \"$$replace(DESTDIR, /,$$DIR_SEPARATOR)\" )
     # MinGW run-time
     DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll $$(QTDIR)/../mingw/bin/libexpat-1.dll
-    CONFIG(m4a): DLLs += ../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
-        ../mixxx-winlib/libfaad2.dll
+    CONFIG(m4a): DLLs += $$BASE_DIR/../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
+        $$BASE_DIR/../mixxx-winlib/libfaad2.dll
     # Qt4 libraries
     debug {
         DLLs += $$(QTDIR)/bin/Qt3Supportd4.dll \
@@ -752,13 +874,13 @@ win32 {
             $$(QTDIR)/bin/QtScript4.dll
     }
     # mixxx-winlibs DLLs
-    DLLs += ../mixxx-winlib/libogg.dll \
-		../mixxx-winlib/portaudio_x86.dll \	
-#        ../mixxx-winlib/portaudio.dll \
-        ../mixxx-winlib/libsndfile-1.dll \
-#        ../mixxx-winlib/sndfile.dll \
-        ../mixxx-winlib/libvorbis.dll \
-        ../mixxx-winlib/libvorbisfile.dll
+    DLLs += $$BASE_DIR/../mixxx-winlib/libogg.dll \
+        $$BASE_DIR/../mixxx-winlib/portaudio_x86.dll \	
+#        $$BASE_DIR/../mixxx-winlib/portaudio.dll \
+        $$BASE_DIR/../mixxx-winlib/libsndfile-1.dll \
+#        $$BASE_DIR/../mixxx-winlib/sndfile.dll \
+        $$BASE_DIR/../mixxx-winlib/libvorbis.dll \
+        $$BASE_DIR/../mixxx-winlib/libvorbisfile.dll
 
     # check if DLL exists at target, if not copy it there
     for(DLL, DLLs):!exists( $$DESTDIR/$$basename(DLL) ) {

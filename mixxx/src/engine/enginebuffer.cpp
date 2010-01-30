@@ -149,6 +149,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
             this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackInfoObject*, QString)));
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -263,7 +265,6 @@ double EngineBuffer::getRate()
 void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
-
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
@@ -272,6 +273,16 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
 
     m_pTrackSamples->set(iTrackNumSamples);
     emit(trackLoaded(pTrack));
+}
+
+void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
+                                       QString reason) {
+    file_srate_old = 0;
+    file_length_old = 0;
+    slotControlSeek(0.);
+    m_pTrackSamples->set(0);
+    pause.unlock();
+    emit(trackLoadFailed(pTrack, reason));
 }
 
 

@@ -5,13 +5,14 @@
 #include <QItemDelegate>
 #include <QtCore>
 #include "trackmodel.h"
+#include "library/basesqltablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 
 class TrackCollection;
 
-class PlaylistTableModel : public QSqlTableModel, public virtual TrackModel
+class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:

@@ -4,12 +4,14 @@
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
+
 #include "trackmodel.h"
 #include "library/dao/trackdao.h"
+#include "library/basesqltablemodel.h"
 
 class TrackCollection;
 
-class MissingTableModel : public QSqlTableModel, public virtual TrackModel
+class MissingTableModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:

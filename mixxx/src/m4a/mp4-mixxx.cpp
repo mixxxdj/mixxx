@@ -46,7 +46,16 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <unistd.h>
+#ifndef _MSC_VER
+    #include <unistd.h>
+#endif
+
+#ifdef MSVC
+    #define S_ISDIR(mode) (mode & _S_IFDIR)
+    #define strcasecmp stricmp
+    #define strncasecmp strnicmp
+#endif
+
 
 struct mp4_private {
 	char *overflow_buf;
