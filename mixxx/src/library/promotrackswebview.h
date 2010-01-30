@@ -12,7 +12,8 @@ class PromoTracksWebView : public QWebView, public LibraryView
 {
     Q_OBJECT 
     public:
-        PromoTracksWebView(QWidget* parent);
+        PromoTracksWebView(QWidget* parent, QString mixxxPath, 
+                           QString localURL, QString remoteURL);
         ~PromoTracksWebView();
         virtual void setup(QDomNode node);
         virtual void onSearchStarting() {};
@@ -24,10 +25,16 @@ class PromoTracksWebView : public QWebView, public LibraryView
 
     public slots: 
         void handleClickedLink(const QUrl& url);
+        void handleLoadFinished(bool ok);
 
     signals:
         void loadTrack(TrackInfoObject* pTrack);
         void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+
+    private:
+        QString m_sMixxxPath; /** Top-level path to directory that contains the promo directory. */
+        QString m_sLocalURL; /** URL to local copy of the promo tracks web page. */
+        QString m_sRemoteURL; /** URL to remotely hosted (promo.mixxx.org) copy of promo tracks web page.*/
 };
 
 

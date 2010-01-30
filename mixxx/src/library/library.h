@@ -23,6 +23,7 @@ class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
 class MixxxLibraryFeature;
+class PromoTracksFeature;
 class PlaylistFeature;
 class LibraryMIDIControl;
 
@@ -36,6 +37,7 @@ public:
     void bindWidget(WLibrarySidebar* sidebarWidget,
                     WLibrary* libraryWidget);
     void addFeature(LibraryFeature* feature);
+    QList<TrackInfoObject*> getTracksToAutoLoad();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -71,6 +73,7 @@ private:
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
+    PromoTracksFeature* m_pPromoTracksFeature;
     LibraryMIDIControl* m_pLibraryMIDIControl;
 };
 

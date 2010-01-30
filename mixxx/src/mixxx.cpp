@@ -348,6 +348,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     channel1->setEngineBuffer(buffer1);
     channel2->setEngineBuffer(buffer2);
 
+    //Automatically load specially marked promotional tracks on first run
+    QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
+    if (tracksToAutoLoad.count() > 0)
+        m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
+    if (tracksToAutoLoad.count() > 1)
+        m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif

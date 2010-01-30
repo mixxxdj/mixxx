@@ -14,6 +14,8 @@
 class PlaylistTableModel;
 class ProxyTrackModel;
 class TrackCollection;
+class TrackInfoObject;
+class PromoTracksWebView;
 
 class PromoTracksFeature : public LibraryFeature {
     Q_OBJECT
@@ -22,7 +24,8 @@ class PromoTracksFeature : public LibraryFeature {
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~PromoTracksFeature();
-    static bool isSupported();
+    static bool isSupported(ConfigObject<ConfigValue>* config);
+    QList<TrackInfoObject*> getTracksToAutoLoad();
 
     QVariant title();
     QIcon getIcon();
@@ -46,8 +49,13 @@ public slots:
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
+    PromoTracksWebView* m_pPromoTracksView;
     const static QString m_sPromoTracksViewName;
+    static QString m_sPromoLocalHTMLLocation;
+    static QString m_sPromoRemoteHTMLLocation;
+    QString m_sPromoAutoloadLocation;
     QStringListModel m_childModel;
+    QList<TrackInfoObject*> m_tracksToAutoLoad;
 };
 
 
