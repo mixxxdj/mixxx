@@ -7,11 +7,12 @@
 #include <QItemDelegate>
 #include <QSqlTableModel>
 
+#include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
 
 class TrackCollection;
 
-class CrateTableModel : public QSqlTableModel, public virtual TrackModel {
+class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
     Q_OBJECT
   public:
     CrateTableModel(QObject* parent, TrackCollection* pTrackCollection);

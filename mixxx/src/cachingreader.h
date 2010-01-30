@@ -102,6 +102,7 @@ class CachingReader : public QThread {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
+    void trackLoadFailed(TrackInfoObject *pTrack, QString reason);
 
   protected:
     void run();
