@@ -39,8 +39,13 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
-    if(PromoTracksFeature::isSupported())
-        addFeature(new PromoTracksFeature(this, pConfig, m_pTrackCollection));
+    if(PromoTracksFeature::isSupported(m_pConfig)) {
+        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig, 
+                                                       m_pTrackCollection);
+        addFeature(m_pPromoTracksFeature);
+    }
+    else
+        m_pPromoTracksFeature = NULL;
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
@@ -160,4 +165,12 @@ void Library::slotRefreshLibraryModels()
 void Library::slotCreatePlaylist()
 {
     m_pPlaylistFeature->slotCreatePlaylist();
+}
+
+QList<TrackInfoObject*> Library::getTracksToAutoLoad()
+{
+    if (m_pPromoTracksFeature)
+        return m_pPromoTracksFeature->getTracksToAutoLoad();
+    else
+        return QList<TrackInfoObject*>();
 }
