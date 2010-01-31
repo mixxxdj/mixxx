@@ -81,15 +81,12 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
 
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
-    emit(switchToView(m_sTrackViewName));
 
     m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
-    connect(pSidebarWidget, SIGNAL(clicked(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(activated(const QModelIndex&)),
+    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));

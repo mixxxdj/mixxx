@@ -1,5 +1,6 @@
 #include <QtDebug>
 #include <QUrl>
+#include <QApplication>
 
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
@@ -133,6 +134,11 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
 
 void SidebarModel::clicked(const QModelIndex& index) {
     qDebug() << "SidebarModel::clicked() index=" << index;
+
+    if (QApplication::mouseButtons() != Qt::LeftButton) {
+        return;
+    }
+
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
