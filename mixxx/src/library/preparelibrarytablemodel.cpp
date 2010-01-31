@@ -70,14 +70,12 @@ void PrepareLibraryTableModel::showRecentSongs()
 {
    m_bShowRecentSongs = true;
    search(m_currentSearch);
-   select();
 }
 
 void PrepareLibraryTableModel::showAllSongs()
 {
     m_bShowRecentSongs = false;
     search(m_currentSearch);
-    select();
 }
 
 

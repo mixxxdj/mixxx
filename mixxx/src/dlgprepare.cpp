@@ -250,7 +250,10 @@ void DlgPrepare::stopAnalysis()
 void DlgPrepare::showRecentSongs()
 {
     int datetimeColumn = m_pPrepareLibraryTableModel->fieldIndex(LIBRARYTABLE_DATETIMEADDED);
-    m_pPrepareLibraryTableView->sortByColumn(datetimeColumn, Qt::DescendingOrder);
+    // Don't tell the TableView to sortByColumn() because this generates excess
+    // select()'s. Use setSort() on the model, and it will take effect when
+    // showRecentSongs() select()'s.
+    m_pPrepareLibraryTableModel->setSort(datetimeColumn, Qt::DescendingOrder);
     m_pPrepareLibraryTableModel->showRecentSongs();
 }
 
