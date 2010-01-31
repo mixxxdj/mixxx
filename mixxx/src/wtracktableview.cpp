@@ -90,7 +90,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(true);
-    setSortingEnabled(true);
+    //setSortingEnabled(true);
+    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
+            this, SLOT(sortByColumn(int)), Qt::AutoConnection);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
