@@ -30,27 +30,17 @@
 #endif
 
 
-MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
+MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice, 
+                                   QList<QString>& scriptFileNames, 
+                                   QList<QString>& scriptFunctionPrefixes) :
     m_pEngine(NULL),
-    m_pMidiDevice(midiDevice)
+    m_pMidiDevice(midiDevice),
+    m_rScriptFileNames(scriptFileNames),
+    m_rScriptFunctionPrefixes(scriptFunctionPrefixes)
 {
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
-    // Disconnect the function call signal
-    disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
-                                                char, MidiStatusByte, QString)),
-            this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
-
-    // Stop processing the event loop and terminate the thread.
-    quit();
-    
-    // Clear the m_connectedControls hash so we stop responding
-    // to signals.
-    m_connectedControls.clear();
-
-    // Wait for the thread to terminate
-    wait();
 
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
@@ -60,6 +50,41 @@ MidiScriptEngine::~MidiScriptEngine() {
         engine->deleteLater();
     }
 
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Shuts down MIDI scripts in an orderly fashion
+            (stops timers then executes shutdown functions)
+Input:   -
+Output:  -
+-------- ------------------------------------------------------ */
+void MidiScriptEngine::gracefulShutdown() {
+    qDebug() << "MidiScriptEngine gracefully shutting down...";
+    // Clear the m_connectedControls hash so we stop responding
+    // to signals.
+    m_connectedControls.clear();
+    
+    // Disconnect the function call signal
+    disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+                                                            char, MidiStatusByte, QString)),
+                                this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+                
+    // Stop all timers
+    m_scriptEngineLock.lock();
+    stopAllTimers();
+    
+    // Call each script's shutdown function if it exists
+    QListIterator<QString> prefixIt(m_rScriptFunctionPrefixes);
+    while (prefixIt.hasNext()) {
+        QString shutName = prefixIt.next();
+        if (shutName!="") {
+            shutName.append(".shutdown");
+            qDebug() << "MidiScriptEngine: Executing" << shutName;
+            if (!internalExecute(shutName))
+                qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
+        }
+    }
+    
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -72,7 +97,11 @@ MidiScriptEngine::~MidiScriptEngine() {
         }
         it++;
     }
-    
+
+    m_scriptEngineLock.unlock();
+
+    // Stop processing the event loop and terminate the thread.
+    quit();
 }
 
 bool MidiScriptEngine::isReady() {
@@ -215,6 +244,40 @@ bool MidiScriptEngine::safeExecute(QString function) {
     if (checkException())
         return false;
 
+    return true;
+}
+
+
+/* -------- ------------------------------------------------------
+Purpose: Evaluate & run script code
+Input:   Code string
+Output:  false if an exception
+-------- ------------------------------------------------------ */
+bool MidiScriptEngine::internalExecute(QString scriptCode) {
+    // A special version of safeExecute since we're evaluating strings, not actual functions
+    //  (execute() would print an error that it's not a function every time a timer fires.)
+    if(m_pEngine == NULL)
+        return false;
+    
+    if (!m_pEngine->canEvaluate(scriptCode)) {
+        qCritical() << "MidiScriptEngine: ?Syntax error in function " << scriptCode;
+        return false;
+    }
+    
+    QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode);
+    
+    if (checkException())
+        return false;
+    
+    // If it's not a function, we're done.
+    if (!scriptFunction.isFunction())
+        return true;
+
+    // If it does happen to be a function, call it.
+    scriptFunction.call(QScriptValue());
+    if (checkException())
+        return false;
+    
     return true;
 }
 
@@ -693,12 +756,10 @@ void MidiScriptEngine::stopTimer(int timerId) {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::stopAllTimers() {
     QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
-    m_scriptEngineLock.lock();
     while (i.hasNext()) {
         i.next();
         stopTimer(i.key());
     }
-    m_scriptEngineLock.unlock();
 }
 
 /* -------- ------------------------------------------------------
@@ -714,25 +775,11 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
         return;
     }
     QPair<QString, bool> timerTarget = m_timers[timerId];
-    QMutexLocker locker(&m_scriptEngineLock);   //Lots of returns in this function. Keeps things simple.
+    m_scriptEngineLock.lock();
     if (timerTarget.second) stopTimer(timerId);
 
-    // Our own version of safeExecute since we're evaluating strings, not actual functions
-    //  (execute() would print an error that it's not a function every time a timer fires.)
-    if(m_pEngine == NULL) return;
-
-    if (!m_pEngine->canEvaluate(timerTarget.first)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in function " << timerTarget.first;
-        return;
-    }
+    if (!internalExecute(timerTarget.first))
+        qWarning() << "MidiScriptEngine: No" << timerTarget.first << "function in script";
     
-    QScriptValue scriptFunction = m_pEngine->evaluate(timerTarget.first);
-    if (checkException()) return;
-
-    // If it's not a function (which it likely isn't,) we're done.
-    if (!scriptFunction.isFunction()) return;
-
-    // If it does happen to be a function, call it.
-    scriptFunction.call(QScriptValue());
-    if (checkException()) return;
+    m_scriptEngineLock.unlock();
 }

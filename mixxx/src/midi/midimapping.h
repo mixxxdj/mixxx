@@ -111,9 +111,9 @@ signals:
     void midiLearningStarted();
     void midiLearningFinished(MidiMessage);
     void midiLearningFinished();
-    void stopScriptTimers();
     void callMidiScriptFunction(QString);
     void callMidiScriptFunction(QString, QString);
+    void shutdownMidiScriptEngine();
 
 private:
     int internalNumInputMidiMessages();
@@ -145,8 +145,8 @@ private:
     /** Actually loads script code from the files in the list */
     void loadScriptCode();
 
-    QList<QString> m_pScriptFileNames;
-    QList<QString> m_pScriptFunctionPrefixes;
+    QList<QString> m_scriptFileNames;
+    QList<QString> m_scriptFunctionPrefixes;
     MidiScriptEngine *m_pScriptEngine;
 
     QMutex m_scriptEngineInitializedMutex;

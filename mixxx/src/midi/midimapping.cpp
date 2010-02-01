@@ -81,7 +81,7 @@ void MidiMapping::startupScriptEngine() {
 
     qDebug () << "Starting script engine with output device" << m_pOutputMidiDevice->getName();
 
-    m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice);
+    m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice, m_scriptFileNames, m_scriptFunctionPrefixes);
 
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
@@ -94,8 +94,8 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
 
-    // Signal the MidiScriptEngine to stop all of its timers in preparation for shutdown
-    connect(this, SIGNAL(stopScriptTimers()), m_pScriptEngine, SLOT(stopAllTimers()));
+    // Allow this object to signal the MidiScriptEngine to run its shutdown routines
+    connect(this, SIGNAL(shutdownMidiScriptEngine()), m_pScriptEngine, SLOT(gracefulShutdown()));
 
     // Allow this object to signal the MidiScriptEngine to call functions
     connect(this, SIGNAL(callMidiScriptFunction(QString)),
@@ -111,7 +111,7 @@ void MidiMapping::loadScriptCode() {
 
     qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
 
-    QListIterator<QString> it(m_pScriptFileNames);
+    QListIterator<QString> it(m_scriptFileNames);
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
         // This should be a signal instead of a direct call, but I don't know how to block until it completes
@@ -127,7 +127,7 @@ void MidiMapping::initializeScripts() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
         // Call each script's init function if it exists
-        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
+        QListIterator<QString> prefixIt(m_scriptFunctionPrefixes);
         while (prefixIt.hasNext()) {
             QString initName = prefixIt.next();
             if (initName!="") {
@@ -144,21 +144,11 @@ void MidiMapping::initializeScripts() {
 void MidiMapping::shutdownScriptEngine() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
-        // Stop all MIDI script timers
-        emit(stopScriptTimers());
-
-        // Call each script's shutdown function if it exists
-        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
-        while (prefixIt.hasNext()) {
-            QString shutName = prefixIt.next();
-            if (shutName!="") {
-                shutName.append(".shutdown");
-                qDebug() << "MidiMapping: Signaling execution of" << shutName;
-                emit(callMidiScriptFunction(shutName));
-                //if (!m_pScriptEngine->execute(shutName))
-                //    qWarning() << "MidiMapping: No" << shutName << "function in script";
-            }
-        }
+        // Tell the script engine to do its shutdown sequence
+        emit(shutdownMidiScriptEngine());
+        // ...and wait for it to finish
+        m_pScriptEngine->wait();
+        
         qDebug() << "MidiMapping: Deleting MIDI script engine...";
         MidiScriptEngine *engine = m_pScriptEngine;
         m_pScriptEngine = NULL;
@@ -498,8 +488,8 @@ void MidiMapping::clearOutputMidiMapping(int index, int count) {
    -------- ------------------------------------------------------ */
 void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
     QMutexLocker Locker(&m_mappingLock);
-    m_pScriptFileNames.append(filename);
-    m_pScriptFunctionPrefixes.append(functionprefix);
+    m_scriptFileNames.append(filename);
+    m_scriptFunctionPrefixes.append(functionprefix);
 }
 #endif
 
@@ -553,8 +543,8 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
     m_mappingLock.lock();
 
 #ifdef __MIDISCRIPT__
-    m_pScriptFileNames.clear();
-    m_pScriptFunctionPrefixes.clear();
+    m_scriptFileNames.clear();
+    m_scriptFunctionPrefixes.clear();
 #endif
 
     // For each controller in the DOM
@@ -767,15 +757,15 @@ void MidiMapping::clearPreset() {
     controller.appendChild(scriptFiles);
 
 
-    for (int i = 0; i < m_pScriptFileNames.count(); i++) {
-//         qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
-        QString filename = m_pScriptFileNames[i];
+    for (int i = 0; i < m_scriptFileNames.count(); i++) {
+//         qDebug() << "MidiMapping: writing script block for" << m_scriptFileNames[i];
+        QString filename = m_scriptFileNames[i];
 
 
         //Don't need to write anything for the required mapping file.
         if (filename != REQUIRED_SCRIPT_FILE) {
             qDebug() << "MidiMapping: writing script block for" << filename;
-            QString functionPrefix = m_pScriptFunctionPrefixes[i];
+            QString functionPrefix = m_scriptFunctionPrefixes[i];
             QDomElement scriptFile = doc.createElement("file");
 
 
