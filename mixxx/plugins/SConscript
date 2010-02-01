@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+Import('build_dir')
+
+SConscript(File('soundsourcem4a/SConscript'), build_dir=Dir(build_dir), duplicate=0) 

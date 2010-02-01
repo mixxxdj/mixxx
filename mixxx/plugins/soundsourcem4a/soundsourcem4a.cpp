@@ -22,11 +22,8 @@
 #endif
 
 #include <QtDebug>
-
 #include "soundsourcem4a.h"
-
 #include "trackinfoobject.h"
-
 #include "m4a/mp4-mixxx.cpp"
 
 SoundSourceM4A::SoundSourceM4A(QString qFileName)

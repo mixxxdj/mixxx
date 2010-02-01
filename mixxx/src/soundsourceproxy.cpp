@@ -19,9 +19,6 @@
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "soundsourcemp3.h"
-#ifdef __M4A__
-	#include "soundsourcem4a.h"
-#endif
 #include "soundsourceoggvorbis.h"
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
@@ -30,9 +27,15 @@
 #include "soundsourceffmpeg.h"
 #endif
 
-//Added by qt3to4:
 #include <Q3ValueList>
+#include <QLibrary>
+#include <QDebug>
 
+//M4A Plugin filename
+#define PLUGIN_M4A "libsoundsourcem4a"
+
+//Static memory allocation
+QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
 
 SoundSourceProxy::SoundSourceProxy(QString qFilename)
 	: SoundSource(qFilename),
@@ -63,11 +66,13 @@ void SoundSourceProxy::initialize(QString qFilename) {
 	m_pSoundSource = new SoundSourceMp3(qFilename);
     else if (qFilename.toLower().endsWith(".ogg"))
 	m_pSoundSource = new SoundSourceOggVorbis(qFilename);
-#ifdef __M4A__
+
     else if (qFilename.toLower().endsWith(".m4a") ||
-	     qFilename.toLower().endsWith(".mp4"))
-	m_pSoundSource = new SoundSourceM4A(qFilename);
-#endif
+	     qFilename.toLower().endsWith(".mp4")) 
+    {
+        initPlugin(PLUGIN_M4A, qFilename);
+    }
+	
 #ifdef __SNDFILE__
     else if (qFilename.toLower().endsWith(".wav") ||
 	     qFilename.toLower().endsWith(".aif") ||
@@ -80,6 +85,34 @@ void SoundSourceProxy::initialize(QString qFilename) {
 SoundSourceProxy::~SoundSourceProxy()
 {
     delete m_pSoundSource;
+}
+
+void SoundSourceProxy::initPlugin(QString lib_filename, QString track_filename) {
+    typedef SoundSource* (*getSoundSource)(QString filename);
+    
+    QLibrary* plugin = getPlugin(lib_filename);
+    
+    getSoundSource getter = (getSoundSource)plugin->resolve("getSoundSource");
+    if (getter)
+    {
+        m_pSoundSource = getter(track_filename);
+    }
+}
+
+QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
+{
+    QLibrary* plugin;
+    if (m_plugins.contains(lib_filename))
+    	plugin = m_plugins.value(lib_filename);
+    else {
+    	plugin = new QLibrary(lib_filename);
+	if (!plugin->load())
+ 	    qDebug() << "Failed to dynamically load" << lib_filename;
+	else
+	    qDebug() << "Dynamically loaded" << lib_filename;        
+    	m_plugins.insert(lib_filename, plugin);
+    }
+    return plugin;
 }
 
 long SoundSourceProxy::seek(long l)
@@ -108,6 +141,8 @@ long unsigned SoundSourceProxy::length()
 
 int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 {
+    typedef int (*ParseHeaderFunction)(TrackInfoObject*);
+    
     QString qFilename = p->getFilename();
 #ifdef __FFMPEGFILE__
     return SoundSourceFFmpeg::ParseHeader(p);
@@ -116,11 +151,18 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 	return SoundSourceMp3::ParseHeader(p);
     else if (qFilename.toLower().endsWith(".ogg"))
 	return SoundSourceOggVorbis::ParseHeader(p);
-#ifdef __M4A__
+
     else if (qFilename.toLower().endsWith(".m4a") ||
 	     qFilename.toLower().endsWith(".mp4"))
-	return SoundSourceM4A::ParseHeader(p);
-#endif
+    {
+    	QLibrary* plugin = getPlugin(PLUGIN_M4A);
+    	ParseHeaderFunction parseFn = (ParseHeaderFunction)plugin->resolve("getParseHeader");
+    	if (parseFn)
+	{
+	    return parseFn(p);
+	}
+    }
+
 #ifdef __SNDFILE__
     else if (qFilename.toLower().endsWith(".wav") ||
 	     qFilename.toLower().endsWith(".aif") ||
