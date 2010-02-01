@@ -111,6 +111,9 @@ signals:
     void midiLearningStarted();
     void midiLearningFinished(MidiMessage);
     void midiLearningFinished();
+    void stopScriptTimers();
+    void callMidiScriptFunction(QString);
+    void callMidiScriptFunction(QString, QString);
 
 private:
     int internalNumInputMidiMessages();

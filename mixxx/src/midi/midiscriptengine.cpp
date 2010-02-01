@@ -37,17 +37,11 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
-    // Stop & remove all remaining timers
-    QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
-    m_scriptEngineLock.lock();
-    while (i.hasNext()) {
-        i.next();
-        stopTimer(i.key());
-    }
+    // Disconnect the function call signal
+    disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+                                                char, MidiStatusByte, QString)),
+            this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
 
-    killTimer(m_primerTimerID);  // Stop the primer timer
-    m_scriptEngineLock.unlock();
-    
     // Stop processing the event loop and terminate the thread.
     quit();
     
@@ -57,7 +51,7 @@ MidiScriptEngine::~MidiScriptEngine() {
 
     // Wait for the thread to terminate
     wait();
-    
+
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
     if(m_pEngine != NULL) {
@@ -104,8 +98,15 @@ void MidiScriptEngine::initializeScriptEngine() {
     // 'engine'.
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
+
+    // Make the MidiDevice instance available to scripts as
+    // 'midi'.
     engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiDevice));
 
+    // Allow the MidiDevice to signal script function calls
+    connect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+                                                char, MidiStatusByte, QString)),
+            this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
 }
 
 
@@ -127,11 +128,6 @@ void MidiScriptEngine::run() {
     m_scriptEngineLock.unlock();
     emit(initialized());
 
-    // In order for timers to be created & destroyed at will in scripts, there must always be a timer running
-    // that was started before exec(). This "primer" timer must also be very short as new script timers
-    // must wait until this interval passes before they can begin firing.
-    m_primerTimerID = startTimer(20);   // Start the primer timer
-    
     // Run the Qt event loop indefinitely 
     exec();
 }
@@ -157,6 +153,7 @@ bool MidiScriptEngine::evaluate(QString filepath) {
 bool MidiScriptEngine::execute(QString function) {
     m_scriptEngineLock.lock();
     bool ret = safeExecute(function);
+    if (!ret) qDebug() << "MidiScriptEngine: Invalid script function" << function;
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -169,6 +166,7 @@ bool MidiScriptEngine::execute(QString function) {
 bool MidiScriptEngine::execute(QString function, QString data) {
     m_scriptEngineLock.lock();
     bool ret = safeExecute(function, data);
+    if (!ret) qDebug() << "MidiScriptEngine: Invalid script function" << function;
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -184,6 +182,7 @@ bool MidiScriptEngine::execute(QString function, char channel,
                                QString group) {
     m_scriptEngineLock.lock();
     bool ret = safeExecute(function, channel, control, value, status, group);
+    if (!ret) qDebug() << "MidiScriptEngine: Invalid script function" << function;
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -196,9 +195,8 @@ bool MidiScriptEngine::execute(QString function, char channel,
 bool MidiScriptEngine::safeExecute(QString function) {
     //qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
-    if(m_pEngine == NULL) {
+    if(m_pEngine == NULL)
         return false;
-    }
 
     if (!m_pEngine->canEvaluate(function)) {
         qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
@@ -207,11 +205,15 @@ bool MidiScriptEngine::safeExecute(QString function) {
     
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
     
-    if (checkException()) return false;
-    if (!scriptFunction.isFunction()) return false;
+    if (checkException())
+        return false;
+
+    if (!scriptFunction.isFunction())
+        return false;
 
     scriptFunction.call(QScriptValue());
-    if (checkException()) return false;
+    if (checkException())
+        return false;
 
     return true;
 }
@@ -629,12 +631,12 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
 
 
 /* -------- ------------------------------------------------------
-   Purpose: Creates & starts a timer that calls a script function
+   Purpose: Creates & starts a timer that runs some script code
                 on timeout
    Input:   Number of milliseconds, script function to call
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
-int MidiScriptEngine::beginTimer(int interval, QString function, bool oneShot) {
+int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot) {
     // When this function runs, assert that somebody is holding the script
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
@@ -649,7 +651,7 @@ int MidiScriptEngine::beginTimer(int interval, QString function, bool oneShot) {
     }
     int timerId = startTimer(interval);
     QPair<QString, bool> timerTarget;
-    timerTarget.first = function;
+    timerTarget.first = scriptCode;
     timerTarget.second = oneShot;
     m_timers[timerId]=timerTarget;
     if (timerId==0) qDebug() << "MIDI Script timer could not be created";
@@ -661,8 +663,7 @@ int MidiScriptEngine::beginTimer(int interval, QString function, bool oneShot) {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Stops & removes a timer that calls a script function
-                on timeout
+   Purpose: Stops & removes a timer
    Input:   ID of timer to stop
    Output:  -
    -------- ------------------------------------------------------ */
@@ -686,25 +687,52 @@ void MidiScriptEngine::stopTimer(int timerId) {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Calls the appropriate script function on timer events
+   Purpose: Stops & removes all timers (for shutdown)
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::stopAllTimers() {
+    QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
+    m_scriptEngineLock.lock();
+    while (i.hasNext()) {
+        i.next();
+        stopTimer(i.key());
+    }
+    m_scriptEngineLock.unlock();
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Runs the appropriate script code on timer events
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
     
-    // If the primer timer fired this, ignore it
-    if ( timerId == m_primerTimerID ) return;
-    
     if (!m_timers.contains(timerId)) {
         qDebug() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
     }
     QPair<QString, bool> timerTarget = m_timers[timerId];
-    execute(timerTarget.first);
-    if (timerTarget.second) {
-        m_scriptEngineLock.lock();
-        stopTimer(timerId);
-        m_scriptEngineLock.unlock();
+    QMutexLocker locker(&m_scriptEngineLock);   //Lots of returns in this function. Keeps things simple.
+    if (timerTarget.second) stopTimer(timerId);
+
+    // Our own version of safeExecute since we're evaluating strings, not actual functions
+    //  (execute() would print an error that it's not a function every time a timer fires.)
+    if(m_pEngine == NULL) return;
+
+    if (!m_pEngine->canEvaluate(timerTarget.first)) {
+        qCritical() << "MidiScriptEngine: ?Syntax error in function " << timerTarget.first;
+        return;
     }
+    
+    QScriptValue scriptFunction = m_pEngine->evaluate(timerTarget.first);
+    if (checkException()) return;
+
+    // If it's not a function (which it likely isn't,) we're done.
+    if (!scriptFunction.isFunction()) return;
+
+    // If it does happen to be a function, call it.
+    scriptFunction.call(QScriptValue());
+    if (checkException()) return;
 }
