@@ -1243,7 +1243,7 @@ if int(flags_optimize) > 1:
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
 # Enable SoundTouch Windows 3dNow optimizations if we're on AMD
-if 'win' in platform and int(flags_optimize) in (5,6,7):
+if 'win' in platform and not 'makerelease' in COMMAND_LINE_TARGETS and 'AMD' in machine:
     sources += Split("""#lib/soundtouch-1.4.1/3dnow_win.cpp""")
 
 #Debugging output

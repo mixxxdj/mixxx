@@ -38,16 +38,6 @@ public:
     bool hasErrors(QString filename);
     const QStringList getErrors(QString filename);
 
-    // Evaluate a script file
-    bool evaluate(QString filepath);
-    // Execute a particular function
-    bool execute(QString function); 
-    // Execute a particular function with a data string (e.g. a device ID)
-    bool execute(QString function, QString data); 
-    // Execute a particular function with all the data
-    bool execute(QString function, char channel,
-                 char control, char value, MidiStatusByte status, QString group); 
-
     // Lookup registered script functions
     QStringList getScriptFunctions();
 
@@ -58,11 +48,21 @@ public:
     Q_INVOKABLE bool connectControl(QString group, QString name,
                                     QString function, bool disconnect = false);
     Q_INVOKABLE void trigger(QString group, QString name);
-    Q_INVOKABLE int beginTimer(int interval, QString function, bool oneShot = false);
+    Q_INVOKABLE int beginTimer(int interval, QString scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
 
 public slots:
     void slotValueChanged(double value);
+    // Evaluate a script file
+    bool evaluate(QString filepath);
+    // Execute a particular function
+    bool execute(QString function); 
+    // Execute a particular function with a data string (e.g. a device ID)
+    bool execute(QString function, QString data); 
+    // Execute a particular function with all the data
+    bool execute(QString function, char channel,
+                 char control, char value, MidiStatusByte status, QString group);
+    void stopAllTimers();
     
 signals:
     void initialized();
@@ -94,7 +94,6 @@ private:
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 	QHash<int, QPair<QString, bool> > m_timers;
-    int m_primerTimerID;
 };
 
 #endif

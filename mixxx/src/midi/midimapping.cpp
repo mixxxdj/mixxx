@@ -94,6 +94,14 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
 
+    // Signal the MidiScriptEngine to stop all of its timers in preparation for shutdown
+    connect(this, SIGNAL(stopScriptTimers()), m_pScriptEngine, SLOT(stopAllTimers()));
+
+    // Allow this object to signal the MidiScriptEngine to call functions
+    connect(this, SIGNAL(callMidiScriptFunction(QString)),
+            m_pScriptEngine, SLOT(execute(QString)));
+    connect(this, SIGNAL(callMidiScriptFunction(QString, QString)),
+            m_pScriptEngine, SLOT(execute(QString, QString)));
 }
 
 void MidiMapping::loadScriptCode() {
@@ -106,6 +114,7 @@ void MidiMapping::loadScriptCode() {
     QListIterator<QString> it(m_pScriptFileNames);
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
+        // This should be a signal instead of a direct call, but I don't know how to block until it completes
         m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
 
         if(m_pScriptEngine->hasErrors(curScriptFileName)) {
@@ -123,9 +132,10 @@ void MidiMapping::initializeScripts() {
             QString initName = prefixIt.next();
             if (initName!="") {
                 initName.append(".init");
-                qDebug() << "MidiMapping: Executing" << initName;
-                if (!m_pScriptEngine->execute(initName, m_deviceName))
-                    qWarning() << "MidiMapping: No" << initName << "function in script";
+                qDebug() << "MidiMapping: Signaling execution of" << initName;
+                emit(callMidiScriptFunction(initName, m_deviceName));
+                //if (!m_pScriptEngine->execute(initName, m_deviceName))
+                //    qWarning() << "MidiMapping: No" << initName << "function in script";
             }
         }
     }
@@ -134,15 +144,19 @@ void MidiMapping::initializeScripts() {
 void MidiMapping::shutdownScriptEngine() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
+        // Stop all MIDI script timers
+        emit(stopScriptTimers());
+
         // Call each script's shutdown function if it exists
         QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
         while (prefixIt.hasNext()) {
             QString shutName = prefixIt.next();
             if (shutName!="") {
                 shutName.append(".shutdown");
-                qDebug() << "MidiMapping: Executing" << shutName;
-                if (!m_pScriptEngine->execute(shutName))
-                    qWarning() << "MidiMapping: No" << shutName << "function in script";
+                qDebug() << "MidiMapping: Signaling execution of" << shutName;
+                emit(callMidiScriptFunction(shutName));
+                //if (!m_pScriptEngine->execute(shutName))
+                //    qWarning() << "MidiMapping: No" << shutName << "function in script";
             }
         }
         qDebug() << "MidiMapping: Deleting MIDI script engine...";
