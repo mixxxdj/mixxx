@@ -59,7 +59,7 @@ Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
 void MidiScriptEngine::gracefulShutdown() {
-    qDebug() << "MidiScriptEngine gracefully shutting down...";
+    qDebug() << "MidiScriptEngine shutting down...";
     // Clear the m_connectedControls hash so we stop responding
     // to signals.
     m_connectedControls.clear();
@@ -72,19 +72,19 @@ void MidiScriptEngine::gracefulShutdown() {
     // Stop all timers
     m_scriptEngineLock.lock();
     stopAllTimers();
-    
+
     // Call each script's shutdown function if it exists
     QListIterator<QString> prefixIt(m_rScriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
         QString shutName = prefixIt.next();
         if (shutName!="") {
             shutName.append(".shutdown");
-            qDebug() << "MidiScriptEngine: Executing" << shutName;
+            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Executing" << shutName;
             if (!internalExecute(shutName))
                 qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
         }
     }
-    
+        
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -138,6 +138,27 @@ void MidiScriptEngine::initializeScriptEngine() {
             this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
 }
 
+/* -------- ------------------------------------------------------
+   Purpose: Run the initialization function for each loaded script
+                if it exists
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::initializeScripts() {
+    m_scriptEngineLock.lock();    
+    QListIterator<QString> prefixIt(m_rScriptFunctionPrefixes);
+    while (prefixIt.hasNext()) {
+        QString initName = prefixIt.next();
+            if (initName!="") {
+                initName.append(".init");
+            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Executing" << initName;
+            if (!safeExecute(initName, m_pMidiDevice->getName()))
+                qWarning() << "MidiScriptEngine: No" << initName << "function in script";
+        }
+    }
+    m_scriptEngineLock.unlock();
+    emit(initialized());
+}
 
 /* -------- ------------------------------------------------------
    Purpose: Create the MidiScriptEngine object (so it is owned in this
