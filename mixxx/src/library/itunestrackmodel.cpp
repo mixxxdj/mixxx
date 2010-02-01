@@ -28,10 +28,17 @@ ITunesTrackModel::ITunesTrackModel()
     itunesXmlPath = MIXXX_ITUNES_DB_LOCATION;
 
     QFile db(itunesXmlPath);
-    if ( ! db.exists())
+    if (!db.exists())
         return;
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    // Workaround for Bug #501916. Read the file, convert it to UTF-8 and then
+    // load it.
+    QByteArray db_bytes_utf8 = QString(db.readAll()).toUtf8();
+    QBuffer buffer(&db_bytes_utf8);
+    if (!buffer.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     /*
@@ -40,7 +47,7 @@ ITunesTrackModel::ITunesTrackModel()
      *
      * TODO: filter /key='Track Type'/string='URL' (remote) files
      */
-    query.setFocus(&db);
+    query.setFocus(&buffer);
     query.setQuery("/plist[@version='1.0']/dict[key='Tracks']/dict/dict");
     if ( ! query.isValid())
         return;
