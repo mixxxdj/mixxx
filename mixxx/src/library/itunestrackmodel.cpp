@@ -267,7 +267,7 @@ QString ITunesTrackModel::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
 		musicFolder = QDir::homePath() + "/Music/iTunes/iTunes Music Library.xml";
-#elif defined(__WIN__)
+#elif defined(__WINDOWS__)
     QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
 		// if the value method fails it returns QTDir::homePath
     musicFolder = settings.value("My Music", QDir::homePath()).toString();
