@@ -22,6 +22,7 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 
+class QLibrary;
 class TrackInfoObject;
 
 /**
@@ -48,8 +49,11 @@ public:
 
 private:
     void initialize(QString qFilename);
+    void initPlugin(QString lib_filename, QString track_filename);
+    static QLibrary* getPlugin(QString lib_filename);
 
     SoundSource *m_pSoundSource;
+    static QMap<QString, QLibrary*> m_plugins;
 };
 
 #endif

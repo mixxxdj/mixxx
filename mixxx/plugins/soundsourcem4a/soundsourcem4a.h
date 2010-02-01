@@ -24,12 +24,16 @@
 #endif
 
 #include <neaacdec.h>
-
 #include <QString>
-
 #include "soundsource.h"
-
 #include "m4a/ip.h"
+
+//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
+#ifdef Q_WS_WIN
+#define MY_EXPORT __declspec(dllexport)
+#else
+#define MY_EXPORT
+#endif
 
 class TrackInfoObject;
 
@@ -48,5 +52,15 @@ class SoundSourceM4A : public SoundSource {
   MP4FileHandle mp4file;
   input_plugin_data ipd;
 };
+
+extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
+{
+    return new SoundSourceM4A(filename);
+}
+
+extern "C" MY_EXPORT int ParseHeader(TrackInfoObject* track)
+{
+    return SoundSourceM4A::ParseHeader(track);
+}
 
 #endif
