@@ -27,16 +27,6 @@
 class TrackInfoObject;
 class QSqlDatabase;
 
-#if defined(__APPLE__)
-#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "/Music/iTunes/iTunes Music Library.xml"
-#elif defined(__WIN__)
-#define MIXXX_ITUNES_DB_LOCATION QDir::homePath() + "/My Documents/My Music/iTunes/iTunes Music Library.xml"
-#elif defined(__LINUX__)
-#define MIXXX_ITUNES_DB_LOCATION  QDir::homePath() + "/.itunes.xml"
-#else
-#define MIXXX_ITUNES_DB_LOCATION ""
-#endif
-
 /**
    @author Phillip Whelan
 */
@@ -61,6 +51,7 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     virtual ~ITunesTrackModel();
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual bool isColumnInternal(int column);
+    static QString getiTunesMusicPath();
 
   public slots:
 

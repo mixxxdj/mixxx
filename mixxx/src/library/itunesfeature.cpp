@@ -21,7 +21,7 @@ ITunesFeature::~ITunesFeature() {
 }
 
 bool ITunesFeature::isSupported() {
-    return (QFile::exists(MIXXX_ITUNES_DB_LOCATION));
+    return (QFile::exists(ITunesTrackModel::getiTunesMusicPath()));
 }
 
 
