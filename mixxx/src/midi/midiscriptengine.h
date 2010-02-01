@@ -64,6 +64,7 @@ public slots:
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
                  char control, char value, MidiStatusByte status, QString group);
+    void initializeScripts();
     void gracefulShutdown();
     
 signals:

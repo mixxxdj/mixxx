@@ -94,6 +94,9 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
 
+    // Allow this object to signal the MidiScriptEngine to run the initialization
+    //  functions in the loaded scripts
+    connect(this, SIGNAL(initMidiScripts()), m_pScriptEngine, SLOT(initializeScripts()));
     // Allow this object to signal the MidiScriptEngine to run its shutdown routines
     connect(this, SIGNAL(shutdownMidiScriptEngine()), m_pScriptEngine, SLOT(gracefulShutdown()));
 
@@ -126,19 +129,13 @@ void MidiMapping::loadScriptCode() {
 void MidiMapping::initializeScripts() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
-        // Call each script's init function if it exists
-        QListIterator<QString> prefixIt(m_scriptFunctionPrefixes);
-        while (prefixIt.hasNext()) {
-            QString initName = prefixIt.next();
-            if (initName!="") {
-                initName.append(".init");
-                qDebug() << "MidiMapping: Signaling execution of" << initName;
-                emit(callMidiScriptFunction(initName, m_deviceName));
-                //if (!m_pScriptEngine->execute(initName, m_deviceName))
-                //    qWarning() << "MidiMapping: No" << initName << "function in script";
-            }
-        }
-    }
+        m_scriptEngineInitializedMutex.lock();
+        // Tell the script engine to run the init function in all loaded scripts
+        emit(initMidiScripts());
+        // Wait until it's done
+        m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+        m_scriptEngineInitializedMutex.unlock();
+    }    
 }
 
 void MidiMapping::shutdownScriptEngine() {
@@ -149,7 +146,6 @@ void MidiMapping::shutdownScriptEngine() {
         // ...and wait for it to finish
         m_pScriptEngine->wait();
         
-        qDebug() << "MidiMapping: Deleting MIDI script engine...";
         MidiScriptEngine *engine = m_pScriptEngine;
         m_pScriptEngine = NULL;
         delete engine;
