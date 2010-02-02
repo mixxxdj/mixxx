@@ -113,9 +113,9 @@ signals:
     void midiLearningFinished();
     void callMidiScriptFunction(QString);
     void callMidiScriptFunction(QString, QString);
-    void loadMidiScriptFiles();
-    void initMidiScripts();
-    void shutdownMidiScriptEngine();
+    void loadMidiScriptFiles(QList<QString>);
+    void initMidiScripts(QList<QString>);
+    void shutdownMidiScriptEngine(QList<QString>);
 
 private:
     int internalNumInputMidiMessages();
