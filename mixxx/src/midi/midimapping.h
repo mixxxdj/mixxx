@@ -113,6 +113,7 @@ signals:
     void midiLearningFinished();
     void callMidiScriptFunction(QString);
     void callMidiScriptFunction(QString, QString);
+    void loadMidiScriptFiles();
     void initMidiScripts();
     void shutdownMidiScriptEngine();
 

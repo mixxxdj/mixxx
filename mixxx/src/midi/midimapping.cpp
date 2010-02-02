@@ -85,6 +85,7 @@ void MidiMapping::startupScriptEngine() {
 
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
+    // Let the script engine tell us when it's done with each task
     connect(m_pScriptEngine, SIGNAL(initialized()),
             this, SLOT(slotScriptEngineReady()),
             Qt::DirectConnection);
@@ -94,6 +95,8 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
 
+    // Allow this object to signal the MidiScriptEngine to load the list of script files
+    connect(this, SIGNAL(loadMidiScriptFiles()), m_pScriptEngine, SLOT(loadScriptFiles()));
     // Allow this object to signal the MidiScriptEngine to run the initialization
     //  functions in the loaded scripts
     connect(this, SIGNAL(initMidiScripts()), m_pScriptEngine, SLOT(initializeScripts()));
@@ -109,20 +112,13 @@ void MidiMapping::startupScriptEngine() {
 
 void MidiMapping::loadScriptCode() {
     QMutexLocker Locker(&m_mappingLock);
-
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-
-    qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
-
-    QListIterator<QString> it(m_scriptFileNames);
-    while (it.hasNext()) {
-        QString curScriptFileName = it.next();
-        // This should be a signal instead of a direct call, but I don't know how to block until it completes
-        m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
-
-        if(m_pScriptEngine->hasErrors(curScriptFileName)) {
-            qDebug() << "Errors occured while loading " << curScriptFileName;
-        }
+    if(m_pScriptEngine) {
+        m_scriptEngineInitializedMutex.lock();
+        // Tell the script engine to run the init function in all loaded scripts
+        emit(loadMidiScriptFiles());
+        // Wait until it's done
+        m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+        m_scriptEngineInitializedMutex.unlock();
     }
 }
 

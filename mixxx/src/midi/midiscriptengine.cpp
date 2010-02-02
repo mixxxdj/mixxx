@@ -92,9 +92,7 @@ void MidiScriptEngine::gracefulShutdown() {
     while(it != end) {
         ConfigKey key = *it;
         ControlObjectThread *cot = m_controlCache.take(key);
-        if(cot != NULL) {
-            delete cot;
-        }
+        delete cot;
         it++;
     }
 
@@ -136,6 +134,34 @@ void MidiScriptEngine::initializeScriptEngine() {
     connect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
                                                 char, MidiStatusByte, QString)),
             this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Load all script files given in the shared list
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::loadScriptFiles() {
+    qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
+    
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    
+    QString scriptPath = config->getConfigPath().append("midi/");
+    delete config;
+    
+    QListIterator<QString> it(m_rScriptFileNames);
+    m_scriptEngineLock.lock();
+    while (it.hasNext()) {
+        QString curScriptFileName = it.next();
+        safeEvaluate(scriptPath+curScriptFileName);
+        
+        if(m_scriptErrors.contains(curScriptFileName)) {
+            qDebug() << "Errors occured while loading " << curScriptFileName;
+        }
+    }
+
+    m_scriptEngineLock.unlock();
+    emit(initialized());
 }
 
 /* -------- ------------------------------------------------------
@@ -396,14 +422,17 @@ bool MidiScriptEngine::checkException() {
         error << filename << errorMessage << QString(line);
         m_scriptErrors.insert(filename, error);
         
-        qCritical() << "MidiScriptEngine uncaught exception : "
-                    << errorMessage
-                    << "at " << filename << " line"
-                    << line;
-        // qCritical() << "MidiScriptEngine: uncaught exception"
-        //             << m_pEngine->uncaughtException().toString()
-        //             << "\nBacktrace:\n"
-        //             << m_pEngine->uncaughtExceptionBacktrace();
+        if (m_pMidiDevice->midiDebugging())
+            qCritical() << "MidiScriptEngine: uncaught exception:"
+                        << errorMessage
+                        << "in" << filename << "at line"
+                        << line
+                        << "\nBacktrace:\n"
+                        << backtrace;
+        else qCritical() << "MidiScriptEngine: uncaught exception:"
+                         << errorMessage
+                         << "in" << filename << "at line"
+                         << line;
         
         return true;
     }
@@ -431,7 +460,8 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
 //     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
 
-    qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
+    if (m_pMidiDevice->midiDebugging())
+        qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
 
     // grep 'function' midi/midi-mappings-scripts.js|grep -i '(msg)'|sed -e 's/function \(.*\)(msg).*/\1/i' -e 's/[= ]//g'
     QRegExp rx("*.*function*(*)*");    // Find all lines with function names in them
@@ -445,14 +475,13 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
         if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
             QStringList field = line.split(" ");
-            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
-//             functionList.append(field[0]);
+            if (m_pMidiDevice->midiDebugging())
+                qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
             m_scriptFunctions.append(field[0]);
         }
         position = codeLines.indexOf(rx);
     }
 
-//     m_scriptFunctions = functionList;
 }
 
 ControlObjectThread* MidiScriptEngine::getControlObjectThread(QString group, QString name) {
