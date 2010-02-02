@@ -31,9 +31,7 @@ class MidiScriptEngine : public QThread {
     Q_OBJECT
 
 public:
-    MidiScriptEngine(MidiDevice* midiDevice,
-                     QList<QString>& scriptFileNames, 
-                     QList<QString>& scriptFunctionPrefixes);
+    MidiScriptEngine(MidiDevice* midiDevice);
     ~MidiScriptEngine();
 
     bool isReady();
@@ -64,9 +62,9 @@ public slots:
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
                  char control, char value, MidiStatusByte status, QString group);
-    void loadScriptFiles();
-    void initializeScripts();
-    void gracefulShutdown();
+    void loadScriptFiles(QList<QString> scriptFileNames);
+    void initializeScripts(QList<QString> scriptFunctionPrefixes);
+    void gracefulShutdown(QList<QString> scriptFunctionPrefixes);
     
 signals:
     void initialized();
@@ -93,8 +91,6 @@ private:
     
     
     MidiDevice* m_pMidiDevice;
-    QList<QString>& m_rScriptFileNames;
-    QList<QString>& m_rScriptFunctionPrefixes;
     QHash<ConfigKey, QString> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;

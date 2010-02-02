@@ -47,6 +47,8 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
         qDebug() << "Creating new MIDI presets directory" << BINDINGS_PATH;
         QDir().mkpath(BINDINGS_PATH);
     }
+    // So we can signal the MidiScriptEngine and pass a QList
+    qRegisterMetaType<QList<QString> >("QList<QString>");
 
     //Q_ASSERT(outputMidiDevice);
 
@@ -81,7 +83,7 @@ void MidiMapping::startupScriptEngine() {
 
     qDebug () << "Starting script engine with output device" << m_pOutputMidiDevice->getName();
 
-    m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice, m_scriptFileNames, m_scriptFunctionPrefixes);
+    m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice);
 
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
@@ -96,12 +98,12 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedMutex.unlock();
 
     // Allow this object to signal the MidiScriptEngine to load the list of script files
-    connect(this, SIGNAL(loadMidiScriptFiles()), m_pScriptEngine, SLOT(loadScriptFiles()));
+    connect(this, SIGNAL(loadMidiScriptFiles(QList<QString>)), m_pScriptEngine, SLOT(loadScriptFiles(QList<QString>)));
     // Allow this object to signal the MidiScriptEngine to run the initialization
     //  functions in the loaded scripts
-    connect(this, SIGNAL(initMidiScripts()), m_pScriptEngine, SLOT(initializeScripts()));
+    connect(this, SIGNAL(initMidiScripts(QList<QString>)), m_pScriptEngine, SLOT(initializeScripts(QList<QString>)));
     // Allow this object to signal the MidiScriptEngine to run its shutdown routines
-    connect(this, SIGNAL(shutdownMidiScriptEngine()), m_pScriptEngine, SLOT(gracefulShutdown()));
+    connect(this, SIGNAL(shutdownMidiScriptEngine(QList<QString>)), m_pScriptEngine, SLOT(gracefulShutdown(QList<QString>)));
 
     // Allow this object to signal the MidiScriptEngine to call functions
     connect(this, SIGNAL(callMidiScriptFunction(QString)),
@@ -115,7 +117,7 @@ void MidiMapping::loadScriptCode() {
     if(m_pScriptEngine) {
         m_scriptEngineInitializedMutex.lock();
         // Tell the script engine to run the init function in all loaded scripts
-        emit(loadMidiScriptFiles());
+        emit(loadMidiScriptFiles(m_scriptFileNames));
         // Wait until it's done
         m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
         m_scriptEngineInitializedMutex.unlock();
@@ -127,7 +129,7 @@ void MidiMapping::initializeScripts() {
     if(m_pScriptEngine) {
         m_scriptEngineInitializedMutex.lock();
         // Tell the script engine to run the init function in all loaded scripts
-        emit(initMidiScripts());
+        emit(initMidiScripts(m_scriptFunctionPrefixes));
         // Wait until it's done
         m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
         m_scriptEngineInitializedMutex.unlock();
@@ -138,7 +140,7 @@ void MidiMapping::shutdownScriptEngine() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
         // Tell the script engine to do its shutdown sequence
-        emit(shutdownMidiScriptEngine());
+        emit(shutdownMidiScriptEngine(m_scriptFunctionPrefixes));
         // ...and wait for it to finish
         m_pScriptEngine->wait();
         

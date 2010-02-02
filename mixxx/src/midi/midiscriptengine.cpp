@@ -30,13 +30,9 @@
 #endif
 
 
-MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice, 
-                                   QList<QString>& scriptFileNames, 
-                                   QList<QString>& scriptFunctionPrefixes) :
+MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_pEngine(NULL),
-    m_pMidiDevice(midiDevice),
-    m_rScriptFileNames(scriptFileNames),
-    m_rScriptFunctionPrefixes(scriptFunctionPrefixes)
+    m_pMidiDevice(midiDevice)
 {
 }
 
@@ -58,8 +54,9 @@ Purpose: Shuts down MIDI scripts in an orderly fashion
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-void MidiScriptEngine::gracefulShutdown() {
+void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
     qDebug() << "MidiScriptEngine shutting down...";
+    m_scriptEngineLock.lock();
     // Clear the m_connectedControls hash so we stop responding
     // to signals.
     m_connectedControls.clear();
@@ -70,11 +67,10 @@ void MidiScriptEngine::gracefulShutdown() {
                                 this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
                 
     // Stop all timers
-    m_scriptEngineLock.lock();
     stopAllTimers();
 
     // Call each script's shutdown function if it exists
-    QListIterator<QString> prefixIt(m_rScriptFunctionPrefixes);
+    QListIterator<QString> prefixIt(scriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
         QString shutName = prefixIt.next();
         if (shutName!="") {
@@ -141,7 +137,7 @@ void MidiScriptEngine::initializeScriptEngine() {
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiScriptEngine::loadScriptFiles() {
+void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
     qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
     
     ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
@@ -149,7 +145,7 @@ void MidiScriptEngine::loadScriptFiles() {
     QString scriptPath = config->getConfigPath().append("midi/");
     delete config;
     
-    QListIterator<QString> it(m_rScriptFileNames);
+    QListIterator<QString> it(scriptFileNames);
     m_scriptEngineLock.lock();
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
@@ -170,9 +166,9 @@ void MidiScriptEngine::loadScriptFiles() {
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiScriptEngine::initializeScripts() {
+void MidiScriptEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
     m_scriptEngineLock.lock();    
-    QListIterator<QString> prefixIt(m_rScriptFunctionPrefixes);
+    QListIterator<QString> prefixIt(scriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
         QString initName = prefixIt.next();
             if (initName!="") {
@@ -785,9 +781,7 @@ void MidiScriptEngine::stopTimer(int timerId) {
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
     Q_ASSERT(!lock);
-    if(lock) {
-        m_scriptEngineLock.unlock();
-    }
+    if(lock) m_scriptEngineLock.unlock();
     
     if (!m_timers.contains(timerId)) {
         qDebug() << "Killing timer" << timerId << ": That timer does not exist!";
@@ -805,6 +799,12 @@ void MidiScriptEngine::stopTimer(int timerId) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::stopAllTimers() {
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) m_scriptEngineLock.unlock();
+    
     QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
     while (i.hasNext()) {
         i.next();
@@ -824,8 +824,8 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
         qDebug() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
     }
-    QPair<QString, bool> timerTarget = m_timers[timerId];
     m_scriptEngineLock.lock();
+    QPair<QString, bool> timerTarget = m_timers[timerId];
     if (timerTarget.second) stopTimer(timerId);
 
     if (!internalExecute(timerTarget.first))
