@@ -1420,7 +1420,7 @@ midimappings_files = Glob('#res/midi/*')
 keyboardmappings_files = Glob('#res/keyboard/*')
 
 #Promo tracks
-promotracks_files = Glob('#promo/*')
+promotracks_files = Glob('#res/promo/*')
 
 #LADSPA shizzle
 ladspapresets_files = Glob('#res/ladspa_presets/*')
@@ -1682,7 +1682,7 @@ def BuildUbuntuPackage(target, source, env):
 			print "* Applying post export patch"
 			print
 			os.system('cp --dereference -r post-export-patch/* ubuntu/'+mixxx_dir)
-
+		
 		os.chdir('ubuntu')
 		# Tar the source code
 		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz ... (this can take a couple minutes)"
