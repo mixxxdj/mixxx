@@ -1088,6 +1088,8 @@ void MixxxApp::slotHelpAbout()
 "Oliver St&ouml;neberg<br>"
 "C. Stewart<br>"
 "Tobias Rafreider<br>"
+"Bill Egert<br>"
+"Zach Shutters<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
