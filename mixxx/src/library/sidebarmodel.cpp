@@ -5,8 +5,8 @@
 #include "library/sidebarmodel.h"
 
 SidebarModel::SidebarModel(QObject* parent)
-    : QAbstractItemModel(parent) {
-
+    : m_iDefaultSelectedIndex(0),
+      QAbstractItemModel(parent) {
 }
 
 SidebarModel::~SidebarModel() {
@@ -33,12 +33,17 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
 QModelIndex SidebarModel::getDefaultSelection() {
     if (m_sFeatures.size() == 0)
         return QModelIndex();
-    return createIndex(0, 0, (void*)this);
+    return createIndex(m_iDefaultSelectedIndex, 0, (void*)this);
+}
+
+void SidebarModel::setDefaultSelection(unsigned int index)
+{
+    m_iDefaultSelectedIndex = index;
 }
 
 void SidebarModel::activateDefaultSelection() {
     if (m_sFeatures.size() > 0) {
-        m_sFeatures[0]->activate();
+        m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
 }
 

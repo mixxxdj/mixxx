@@ -89,10 +89,11 @@ void PromoTracksFeature::activate() {
     //qDebug() << "PromoTracksFeature::activate()";
     //emit(showTrackModel(m_pPromoTracksTableModelProxy));
     
+    /*
     if (m_pPromoTracksView->page()->bytesReceived() == 0) {
         qDebug() << "PROMO: Loading local page";
         m_pPromoTracksView->load(m_sPromoLocalHTMLLocation);
-    }
+    }*/
     emit(switchToView(m_sPromoTracksViewName));
 }
 

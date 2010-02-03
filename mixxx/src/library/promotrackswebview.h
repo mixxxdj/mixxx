@@ -26,6 +26,7 @@ class PromoTracksWebView : public QWebView, public LibraryView
     public slots: 
         void handleClickedLink(const QUrl& url);
         void handleLoadFinished(bool ok);
+        void checkWebpageLoadingProgress();
 
     signals:
         void loadTrack(TrackInfoObject* pTrack);
@@ -35,6 +36,7 @@ class PromoTracksWebView : public QWebView, public LibraryView
         QString m_sMixxxPath; /** Top-level path to directory that contains the promo directory. */
         QString m_sLocalURL; /** URL to local copy of the promo tracks web page. */
         QString m_sRemoteURL; /** URL to remotely hosted (promo.mixxx.org) copy of promo tracks web page.*/
+        bool m_bOfflineMode; /** Load promo tracks page locally if we're offline */
 };
 
 

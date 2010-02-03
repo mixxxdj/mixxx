@@ -21,9 +21,19 @@
 #include "configobject.h"
 #include "upgrade.h"
 
+Upgrade::Upgrade()
+{
+    m_bFirstRun = false;
+}
+
+Upgrade::~Upgrade()
+{
+
+}
+
 // We return the ConfigObject here because we have to make changes to the
 // configuration and the location of the file may change between releases.
-ConfigObject<ConfigValue>* versionUpgrade() {
+ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 
 /*  Pre-1.7.0:
 *
@@ -144,7 +154,9 @@ ConfigObject<ConfigValue>* versionUpgrade() {
     if (configVersion.isEmpty()) {
         qDebug() << "No version number in configuration file. Setting to" << VERSION;
         config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
-        return config;
+
+        //This must have been the first run... right? :)
+        m_bFirstRun = true;
     }
     
     // Allows for incremental upgrades incase someone upgrades from a few versions prior

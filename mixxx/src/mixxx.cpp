@@ -72,7 +72,7 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-
+    
     QString buildRevision, buildFlags;
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
@@ -90,6 +90,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     }
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
+    QCoreApplication::setApplicationName("Mixxx");
+    QCoreApplication::setApplicationVersion(VERSION);
     setWindowTitle(tr("Mixxx " VERSION));
     setWindowIcon(QIcon(":/images/icon.svg"));
 
@@ -99,7 +101,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pMidiDeviceManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
-    config = versionUpgrade();  // This static function is located in upgrade.cpp
+    Upgrade upgrader;
+    config = upgrader.versionUpgrade();  
+    bool bFirstRun = upgrader.isFirstRun();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -198,7 +202,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this, config);
+    m_pLibrary = new Library(this, config, bFirstRun);
 
 	//Create the "players" (virtual playback decks)
 	m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
@@ -349,11 +353,14 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     channel2->setEngineBuffer(buffer2);
 
     //Automatically load specially marked promotional tracks on first run
-    QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
-    if (tracksToAutoLoad.count() > 0)
-        m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
-    if (tracksToAutoLoad.count() > 1)
-        m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+    if (bFirstRun) 
+    {
+        QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
+        if (tracksToAutoLoad.count() > 0)
+            m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
+        if (tracksToAutoLoad.count() > 1)
+            m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+    }
 
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
