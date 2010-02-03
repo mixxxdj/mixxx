@@ -18,6 +18,15 @@
 #ifndef UPGRADE_H
 #define UPGRADE_H
 
-ConfigObject<ConfigValue>* versionUpgrade();
+class Upgrade
+{
+    public:
+        Upgrade();
+        ~Upgrade();
+        ConfigObject<ConfigValue>* versionUpgrade();
+        bool isFirstRun() { return m_bFirstRun; };
+    private:
+        bool m_bFirstRun;
+};
 
 #endif
