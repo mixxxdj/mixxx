@@ -1,6 +1,19 @@
-// promotracksfeature.cpp
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+/***************************************************************************
+                          promotracksfeature.cpp
+                             -------------------
+    begin                : Jan 2010
+    copyright            : (C) 2010 Albert Santoni
+    email                : alberts@mixxx.org
+***************************************************************************/
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <QtDebug>
 
@@ -9,13 +22,14 @@
 #include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
+#include "defs_version.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
 const QString PromoTracksFeature::m_sPromoTracksViewName = tr("Featured Artists");
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
 QString PromoTracksFeature::m_sPromoRemoteHTMLLocation;
-#define LOCAL_HTML_LOCATION (config->getConfigPath() + "/promo/1.8.0~beta1/index.html")
+#define LOCAL_HTML_LOCATION (config->getConfigPath() + "/promo/" + VERSION + "/index.html")
 
 PromoTracksFeature::PromoTracksFeature(QObject* parent,
                              ConfigObject<ConfigValue>* config,
@@ -25,9 +39,9 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
           m_pPromoTracksView(NULL),
           m_pTrackCollection(pTrackCollection) {
 
-    m_sPromoRemoteHTMLLocation = "http://promo.mixxx.org/1.8.0~beta1/index.html"; //m_pConfig->getConfigPath() + "/promo/promotracks.html";
+    m_sPromoRemoteHTMLLocation = QString("http://promo.mixxx.org/%1/index.html").arg(VERSION); //m_pConfig->getConfigPath() + "/promo/promotracks.html";
     m_sPromoLocalHTMLLocation = LOCAL_HTML_LOCATION;
-    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/1.8.0~beta1/autoload.dat";
+    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/autoload.dat";
 
     //Load the extra.dat file so we can peek at some extra information, such 
     //as which songs to auto-load into Mixxx's players.

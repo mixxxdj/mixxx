@@ -1,6 +1,19 @@
-// PromoTracksfeature.h
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+/***************************************************************************
+                          promotracksfeature.cpp
+                             -------------------
+    begin                : Jan 2010
+    copyright            : (C) 2010 Albert Santoni
+    email                : alberts@mixxx.org
+***************************************************************************/
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #ifndef PROMOTRACKSFEATURE_H 
 #define PROMOTRACKSFEATURE_H
