@@ -1,3 +1,20 @@
+/***************************************************************************
+                          promotrackswebview.h
+                             -------------------
+    begin                : Jan 2010
+    copyright            : (C) 2010 Albert Santoni
+    email                : alberts@mixxx.org
+***************************************************************************/
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
+
 #ifndef __PROMOTRACKSWEBVIEW_H_
 #define __PROMOTRACKSWEBVIEW_H_
 
@@ -31,6 +48,8 @@ class PromoTracksWebView : public QWebView, public LibraryView
     signals:
         void loadTrack(TrackInfoObject* pTrack);
         void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    protected:
+        virtual QString userAgentForUrl (const QUrl & url) const;
 
     private:
         QString m_sMixxxPath; /** Top-level path to directory that contains the promo directory. */

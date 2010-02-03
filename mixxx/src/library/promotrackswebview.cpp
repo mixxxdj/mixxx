@@ -1,3 +1,20 @@
+/***************************************************************************
+                          promotrackswebview.cpp
+                             -------------------
+    begin                : Jan 2010
+    copyright            : (C) 2010 Albert Santoni
+    email                : alberts@mixxx.org
+***************************************************************************/
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
+
 #include <QtXml>
 #include <QDebug>
 #include <QDesktopServices>
@@ -44,6 +61,11 @@ PromoTracksWebView::~PromoTracksWebView()
 void PromoTracksWebView::setup(QDomNode node)
 {
 
+}
+
+QString PromoTracksWebView::userAgentForUrl (const QUrl & url) const
+{
+    return QCoreApplication::applicationName() + " " + QCoreApplication::applicationVersion();
 }
 
 void PromoTracksWebView::handleLoadFinished(bool ok)
