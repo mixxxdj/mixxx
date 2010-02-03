@@ -55,7 +55,7 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
         {
             QString trackPath = extra.readLine();
             qDebug() << "PROMO: Auto-loading track" << trackPath;
-            m_tracksToAutoLoad.append(new TrackInfoObject(trackPath));
+            m_tracksToAutoLoad.append(new TrackInfoObject(m_pConfig->getConfigPath() + "/" + trackPath));
         }
         file.close();
     }
