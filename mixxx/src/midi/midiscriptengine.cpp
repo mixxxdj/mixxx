@@ -20,7 +20,7 @@
 #include "controlobjectthread.h"
 #include "mididevice.h"
 #include "midiscriptengine.h"
-
+// #include <QScriptSyntaxCheckResult>
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
@@ -75,7 +75,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
         QString shutName = prefixIt.next();
         if (shutName!="") {
             shutName.append(".shutdown");
-            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Executing" << shutName;
+            if (m_midiDebug) qDebug() << "MidiScriptEngine: Executing" << shutName;
             if (!internalExecute(shutName))
                 qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
         }
@@ -115,7 +115,7 @@ void MidiScriptEngine::initializeScriptEngine() {
     //qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
     //qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
 
-    qDebug() << "MIDI Device in script engine is:" << m_pMidiDevice->getName();
+    qDebug() << "MIDI Device in script engine is:" << m_pMidiDevice->getName();    
 
     // Make this MidiScriptEngine instance available to scripts as
     // 'engine'.
@@ -138,6 +138,10 @@ void MidiScriptEngine::initializeScriptEngine() {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
+    
+    // Set the Midi Debug flag
+    m_midiDebug = m_pMidiDevice->midiDebugging();
+    
     qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
     
     ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
@@ -167,13 +171,14 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
-    m_scriptEngineLock.lock();    
+    m_scriptEngineLock.lock();
+    
     QListIterator<QString> prefixIt(scriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
         QString initName = prefixIt.next();
             if (initName!="") {
                 initName.append(".init");
-            if (m_pMidiDevice->midiDebugging()) qDebug() << "MidiScriptEngine: Executing" << initName;
+            if (m_midiDebug) qDebug() << "MidiScriptEngine: Executing" << initName;
             if (!safeExecute(initName, m_pMidiDevice->getName()))
                 qWarning() << "MidiScriptEngine: No" << initName << "function in script";
         }
@@ -269,11 +274,6 @@ bool MidiScriptEngine::safeExecute(QString function) {
 
     if(m_pEngine == NULL)
         return false;
-
-    if (!m_pEngine->canEvaluate(function)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
-        return false;
-    }
     
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
     
@@ -301,9 +301,34 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
     //  (execute() would print an error that it's not a function every time a timer fires.)
     if(m_pEngine == NULL)
         return false;
-    
-    if (!m_pEngine->canEvaluate(scriptCode)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in function " << scriptCode;
+
+    // Check syntax
+    QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
+    QString error="";
+    switch (result.state()) {
+        case (QScriptSyntaxCheckResult::Valid): break;
+        case (QScriptSyntaxCheckResult::Intermediate):
+            error = "Incomplete code";
+            break;
+        case (QScriptSyntaxCheckResult::Error):
+            error = "Syntax error";
+            break;
+    }
+    if (error!="") {
+        error = QString("%1: %2 at line %3, column %4 of script code:\n%5\n")
+        .arg(error)
+        .arg(result.errorMessage())
+        .arg(result.errorLineNumber())
+        .arg(result.errorColumnNumber())
+        .arg(scriptCode);
+        
+        if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
+        else {
+            qDebug() << "MidiScriptEngine:" << error;
+            qWarning() << "There was an error in a MIDI script."
+                          "\nA control you just used is not working properly and you may experience erratic behavior."
+                          "\nCheck the console or mixxx.log file for details.";
+        }
         return false;
     }
     
@@ -336,11 +361,6 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
         return false;
     }
     
-    if (!m_pEngine->canEvaluate(function)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
-        return false;
-    }
-    
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
     
     if (checkException())
@@ -369,11 +389,6 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
     //qDebug() << QString("MidiScriptEngine: Exec2 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
-        return false;
-    }
-    
-    if (!m_pEngine->canEvaluate(function)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
         return false;
     }
     
@@ -418,18 +433,22 @@ bool MidiScriptEngine::checkException() {
         error << filename << errorMessage << QString(line);
         m_scriptErrors.insert(filename, error);
         
-        if (m_pMidiDevice->midiDebugging())
+        if (m_midiDebug)
             qCritical() << "MidiScriptEngine: uncaught exception:"
                         << errorMessage
                         << "in" << filename << "at line"
                         << line
                         << "\nBacktrace:\n"
                         << backtrace;
-        else qCritical() << "MidiScriptEngine: uncaught exception:"
+        else {
+            qDebug() << "MidiScriptEngine WARNING: uncaught exception:"
                          << errorMessage
                          << "in" << filename << "at line"
                          << line;
-        
+            qWarning() << "There was a problem with a MIDI script."
+                          "\nA control you just used is not working properly and you may experience erratic behavior."
+                          "\nCheck the console or mixxx.log file for details.";
+        }
         return true;
     }
     return false;
@@ -456,7 +475,7 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
 //     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
 
-    if (m_pMidiDevice->midiDebugging())
+    if (m_midiDebug)
         qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
 
     // grep 'function' midi/midi-mappings-scripts.js|grep -i '(msg)'|sed -e 's/function \(.*\)(msg).*/\1/i' -e 's/[= ]//g'
@@ -471,7 +490,7 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
         if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
             QStringList field = line.split(" ");
-            if (m_pMidiDevice->midiDebugging())
+            if (m_midiDebug)
                 qDebug() << "MidiScriptEngine: Found function:" << field[0] << "at line" << position;
             m_scriptFunctions.append(field[0]);
         }
@@ -600,13 +619,8 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     if(m_pEngine == NULL) {
         return false;
     }
-
-    if (!m_pEngine->canEvaluate(function)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
-        return false;
-    }
+    
     QScriptValue slot = m_pEngine->evaluate(function);
-
 
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
@@ -682,6 +696,8 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
     if(m_pEngine == NULL) {
         return false;
     }
+    
+    qDebug() << "MidiScriptEngine: Loading" << filename;
 
     // Read in the script file
     QFile input(filename);
@@ -697,8 +713,33 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
     scriptCode.append('\n');
     input.close();
     
-    if (!m_pEngine->canEvaluate(scriptCode)) {
-        qCritical() << "MidiScriptEngine: ?Syntax error in script file:" << filename;
+    // Check syntax
+    QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
+    QString error="";
+    switch (result.state()) {
+        case (QScriptSyntaxCheckResult::Valid): break;
+        case (QScriptSyntaxCheckResult::Intermediate):
+            error = "Incomplete code";
+            break;
+        case (QScriptSyntaxCheckResult::Error):
+            error = "Syntax error";
+            break;
+    }
+    if (error!="") {
+        error = QString("%1 at line %2, column %3 in file %4: %5")
+                        .arg(error)
+                        .arg(result.errorLineNumber())
+                        .arg(result.errorColumnNumber())
+                        .arg(filename)
+                        .arg(result.errorMessage());
+                        
+        if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
+        else {
+            qDebug() << "MidiScriptEngine:" << error;
+            qWarning() << "There was an error in the MIDI script file" << filename
+                       << "\nThe functionality provided by this script file will be disabled."
+                          "\nCheck the console or mixxx.log file for details.";
+        }
         return false;
     }
 
@@ -710,7 +751,6 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
         return false;
     
     // Add the code we evaluated to our index
-    qDebug() << "MidiScriptEngine: Loading" << filename;
     generateScriptFunctions(scriptCode);
 
     return true;
@@ -764,7 +804,7 @@ int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot)
     timerTarget.second = oneShot;
     m_timers[timerId]=timerTarget;
     if (timerId==0) qDebug() << "MIDI Script timer could not be created";
-    else if (m_pMidiDevice->midiDebugging()) {
+    else if (m_midiDebug) {
         if (oneShot) qDebug() << "Starting one-shot timer:" << timerId;
         else qDebug() << "Starting timer:" << timerId;
     }
@@ -787,7 +827,7 @@ void MidiScriptEngine::stopTimer(int timerId) {
         qDebug() << "Killing timer" << timerId << ": That timer does not exist!";
         return;
     }
-    if (m_pMidiDevice->midiDebugging()) qDebug() << "Killing timer:" << timerId;
+    if (m_midiDebug) qDebug() << "Killing timer:" << timerId;
     
     killTimer(timerId);
     m_timers.remove(timerId);
@@ -828,8 +868,6 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     QPair<QString, bool> timerTarget = m_timers[timerId];
     if (timerTarget.second) stopTimer(timerId);
 
-    if (!internalExecute(timerTarget.first))
-        qWarning() << "MidiScriptEngine: No" << timerTarget.first << "function in script";
-    
+    internalExecute(timerTarget.first);
     m_scriptEngineLock.unlock();
 }
