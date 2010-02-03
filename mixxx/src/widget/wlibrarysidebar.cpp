@@ -20,8 +20,10 @@ WLibrarySidebar::~WLibrarySidebar() {
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
 {
-    QModelIndex clickedItem = indexAt(event->pos());
-    emit(rightClicked(event->globalPos(), clickedItem));
+    if (event->state() & Qt::RightButton) {
+        QModelIndex clickedItem = indexAt(event->pos());
+        emit(rightClicked(event->globalPos(), clickedItem));
+    }
 }
 
 /** Drag enter event, happens when a dragged item enters the track sources view*/

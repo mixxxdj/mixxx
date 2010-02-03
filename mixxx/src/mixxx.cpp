@@ -1101,6 +1101,7 @@ void MixxxApp::slotHelpAbout()
 "Bas van Schaik<br>"
 "Oliver St&ouml;neberg<br>"
 "C. Stewart<br>"
+"Tobias Rafreider<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
