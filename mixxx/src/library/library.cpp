@@ -30,11 +30,19 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun)
     : m_pConfig(pConfig) {
     m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
     m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
+
+    //Show the promo tracks view on first run, otherwise show the library
+    if (firstRun) {
+        qDebug() << "First Run, switching to PROMO view!";
+        m_pSidebarModel->setDefaultSelection(1);
+        //Note the promo tracks item has index=1... hardcoded hack. :/
+    }
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
@@ -89,7 +97,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
 
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
-    emit(switchToView(m_sTrackViewName));
+    
 
     m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
 
@@ -101,6 +109,12 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+    
+    QListIterator<LibraryFeature*> feature_it(m_features);
+    while(feature_it.hasNext()) {
+        LibraryFeature* feature = feature_it.next();
+        feature->bindWidget(pSidebarWidget, pLibraryWidget);
+    }
 
     // Enable the default selection
     pSidebarWidget->selectionModel()
@@ -108,11 +122,6 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
 
-    QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pSidebarWidget, pLibraryWidget);
-    }
 }
 
 void Library::addFeature(LibraryFeature* feature) {

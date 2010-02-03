@@ -31,7 +31,8 @@ class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
-            ConfigObject<ConfigValue>* pConfig);
+            ConfigObject<ConfigValue>* pConfig,
+            bool firstRun);
     virtual ~Library();
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
