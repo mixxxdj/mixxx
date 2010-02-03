@@ -425,6 +425,8 @@ sources = Split("""
                 library/dao/settingsdao.cpp
                 library/librarymidicontrol.cpp
                 library/schemamanager.cpp
+                library/promotracksfeature.cpp
+                library/promotrackswebview.cpp
 
                 xmlparse.cpp
                 parser.cpp
@@ -652,7 +654,8 @@ if platform == 'linux':
 		'QtSvg',
 		'QtSql',
 		'QtScript',
-		'QtXmlPatterns'
+		'QtXmlPatterns',
+		'QtWebKit'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
@@ -671,13 +674,14 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtSql.framework/Headers/',
+				'/Library/Frameworks/QtWebKit.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 
 	#Non-standard libpaths for fink and darwin ports
@@ -741,6 +745,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtGui')
 	env.Append(LIBS = 'QtCore')
 	env.Append(LIBS = 'QtOpenGL')
+	env.Append(LIBS = 'QtWebKit')
 	env.Append(LIBS = 'QtScript')
 	env.Append(LIBS = 'sndfile') #? we shouldn't have to do this...
 	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
@@ -752,6 +757,7 @@ if 'win' in platform:
 	env.Append(LIBS = 'QtSql4');
 	env.Append(LIBS = 'QtGui4');
 	env.Append(LIBS = 'QtCore4');
+	env.Append(LIBS = 'QtWebKit4');
 	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
 	env.Append(LIBS = 'ogg_static')
