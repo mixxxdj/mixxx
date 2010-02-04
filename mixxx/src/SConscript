@@ -778,6 +778,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 			    '$QTDIR/include/QtXml',
 			    '$QTDIR/include/QtSql',
 			    '$QTDIR/include/QtOpenGL',
+			    '$QTDIR/include/QtWebKit',
 			    '$QTDIR/include/Qt'])
 
 if 'win' in platform:
@@ -1277,8 +1278,8 @@ if (not 'win' in platform and int(flags_optimize) > 1) or ('win' in platform and
     sources += Split("""#lib/""" + soundtouch_path + """/mmx_optimized.cpp #lib/""" + soundtouch_path + """/sse_optimized.cpp""")
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
-# Enable SoundTouch Windows 3dNow optimizations if we're on AMD
-if 'win' in platform and not 'makerelease' in COMMAND_LINE_TARGETS and 'AMD' in machine:
+# Enable SoundTouch Windows 3dNow optimizations (decides at runtime if they're useful)
+if 'win' in platform:
     sources += Split("""#lib/""" + soundtouch_path + """/3dnow_win.cpp""")
 
 #Debugging output
@@ -1445,7 +1446,8 @@ if platform == 'win64':
 else:
 	dll_files = Glob('#/../mixxx-win32lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll""")
+dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
+$QTDIR/bin/phonon4.dll""")
 
 if int(flags_script):
 	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
@@ -1622,7 +1624,7 @@ def BuildRelease(target, source, env):
 			_winreg.CloseKey(hklm)
 
 			# Call the NSIS build
-			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s Mixxx.nsi' % {'path':nsis_location, \
+			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % {'path':nsis_location, \
 'version':env['MIXXX_VERSION'], '64bit':buildwin64}
 			type(command) == str
 			print "Using command:" + command
