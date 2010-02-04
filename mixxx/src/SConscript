@@ -1717,9 +1717,9 @@ def BuildUbuntuPackage(target, source, env):
 		print "Aborted building installer"
 
 #Build the Ubuntu package if "makeubuntu" was passed as an argument
-versiondebbld = Builder(action = BuildUbuntuPackage, suffix = '.foo', src_suffix = '.bar')
+versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suffix = '.bar')
 env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
 
 if 'makeubuntu' in COMMAND_LINE_TARGETS:
-	makeubuntu = env.BuildUbuntuPackage('', binary_files)
+	makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
 	env.Alias('makeubuntu', makeubuntu)
