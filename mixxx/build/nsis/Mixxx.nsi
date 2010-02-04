@@ -57,7 +57,7 @@ BrandingText " "
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-;InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+;InstallDirRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" ""
 
 ;Interface Settings
 !define MUI_ABORTWARNING
@@ -109,10 +109,14 @@ Section "Mixxx (required)" SecMixxx
   File "${BASE_BUILD_DIR}\dist\mixxx.exe"
   File "${BASE_BUILD_DIR}\dist\*.dll"
   
+  ; Put other files there
+  File "${BASE_BUILD_DIR}\dist\*.xml"
+  
   ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
   ; and place the appropriate versions of the listed DLL files and their manifest files
   ; into the mixxx-win[64]lib-msvc directory for packaging before making the installer
-  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest, Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
+  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest,
+  ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   
@@ -138,7 +142,7 @@ Section "Mixxx (required)" SecMixxx
   File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist\midi\*.*
 
   SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
-  File "${BASE_BUILD_DIR}\dist\promo\${PRODUCT_VERSION}\*"
+  File /r "${BASE_BUILD_DIR}\dist\promo\${PRODUCT_VERSION}\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist\keyboard\Standard.kbd.cfg"
@@ -148,7 +152,6 @@ Section "Mixxx (required)" SecMixxx
   File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist\skins\*.*
 
   ; Write the installation path into the registry
-  ;WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
   
   ; Write the uninstall keys for Windows
@@ -221,6 +224,7 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
+  Delete $INSTDIR\*.xml
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\uninst.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
