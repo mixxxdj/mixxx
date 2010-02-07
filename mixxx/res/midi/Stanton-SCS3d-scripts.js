@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.21             */
+/*      Stanton SCS.3d MIDI controller script v1.30             */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.x                                 */
@@ -34,6 +34,7 @@ StantonSCS3d.buttons = { "fx":0x20, "eq":0x26, "loop":0x22, "trig":0x28, "vinyl"
 StantonSCS3d.buttonLEDs = { 0x48:0x62, 0x4A:0x61, 0x4C:0x60, 0x4e:0x5f, 0x4f:0x67, 0x51:0x68, 0x53:0x69, 0x55:0x6a,
                             0x56:0x64, 0x58:0x65, 0x5A:0x6C, 0x5C:0x5D }; // Maps surface buttons to corresponding circle LEDs
 StantonSCS3d.mode_store = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // Set vinyl mode on both decks
+StantonSCS3d.scratchncue = [ false, false, false ];  // Scratch + cue mode for each deck (starts at zero)
 StantonSCS3d.deck = 1;  // Currently active virtual deck
 StantonSCS3d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS3d.state = { "pitchAbs":0, "jog":0, "changedDeck":false }; // Temporary state variables
@@ -349,11 +350,22 @@ StantonSCS3d.playButton = function (channel, control, value, status) {
 StantonSCS3d.cueButton = function (channel, control, value, status) {
     var byte1 = 0x90 + channel;
     if ((status & 0xF0) != 0x80) {    // If button down
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",1);
+        if (StantonSCS3d.modifier["vinyl2"]) {  // If vinyl held down in vinyl2 mode
+            // Force the timer on the mode button to expire to avoid unintended mode changes
+            StantonSCS3d.modifier["time"] = new Date()-1000;
+            // Toggle scratch & cue mode
+            if (StantonSCS3d.scratchncue[StantonSCS3d.deck]) StantonSCS3d.scratchncue[StantonSCS3d.deck]=false;
+            else StantonSCS3d.scratchncue[StantonSCS3d.deck]=true;
+            // Flash the Stanton logo to acknowledge
+            midi.sendShortMsg(0x90,0x7A,0x00);
+            midi.sendShortMsg(0x90,0x7A,0x01);
+        }
+        else engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",1);
         StantonSCS3d.modifier["cue"]=1;   // Set button modifier flag
         return;
     }
-    if (StantonSCS3d.modifier["play"]==0) engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
+    if (StantonSCS3d.modifier["play"]==0 && !StantonSCS3d.modifier["vinyl2"])
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
     StantonSCS3d.modifier["cue"]=0;   // Clear button modifier flag
 }
 
@@ -1035,6 +1047,12 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
                 if (StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck);
                 else {
                     StantonSCS3d.scratch["touching"] = true;
+                    // Recall the cue point if in "scratch & cue" mode only when playing (or if it was playing)
+                    if (StantonSCS3d.scratchncue[StantonSCS3d.deck]
+                        && (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1
+                        || StantonSCS3d.scratch["wasPlaying"]))
+                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_preview",0);
+                    
                     if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1) {
                         engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",0);
                         engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",(1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch")));  // So it ramps down when you touch
@@ -1071,10 +1089,10 @@ StantonSCS3d.S3touch = function () {
 StantonSCS3d.S4touch = function (channel, control, value, status) {
     if (StantonSCS3d.modifier["Deck"]==1) return;   // If we're modifying the cross-fader, ignore this touch
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
-    if (StantonSCS3d.modifier[currentMode]==1){ // If the current mode button is held down, reset the control to center
+    if (StantonSCS3d.modifier[currentMode]==1){ // If the current mode button is held down
         switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoDelay",4950); break;
-            case "eq": engine.setValue("[Channel"+StantonSCS3d.deck+"]","filterMid",1); break;
+            case "fx": engine.setValue("[Flanger]","lfoDelay",4950); break; // reset the control to center
+            case "eq": engine.setValue("[Channel"+StantonSCS3d.deck+"]","filterMid",1); break;  // reset the control to center
         }
     }
     if ((status & 0xF0) == 0x90) {    // If button down
@@ -1084,6 +1102,12 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
                 if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck);
                 else {
                     StantonSCS3d.scratch["touching"] = true;
+                    // Recall the cue point if in "scratch & cue" mode only when playing (or if it was playing)
+                    if (currentMode=="vinyl2" && StantonSCS3d.scratchncue[StantonSCS3d.deck]
+                        && (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1
+                        || StantonSCS3d.scratch["wasPlaying"]))
+                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_preview",0);
+                    
                     if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1) {
                         engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",0);
                         engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",(1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch")));  // So it ramps down when you touch
