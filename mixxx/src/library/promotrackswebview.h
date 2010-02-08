@@ -49,7 +49,7 @@ class PromoTracksWebView : public QWebView, public LibraryView
         void loadTrack(TrackInfoObject* pTrack);
         void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
     protected:
-        virtual QString userAgentForUrl (const QUrl & url) const;
+        //virtual QString userAgentForUrl (const QUrl & url) const;
 
     private:
         QString m_sMixxxPath; /** Top-level path to directory that contains the promo directory. */
