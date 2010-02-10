@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3m MIDI controller script v1.0              */
+/*      Stanton SCS.3m MIDI controller script v1.01             */
 /*          Copyright (C) 2010, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.x                                 */
@@ -7,7 +7,6 @@
 
 function StantonSCS3m() {}
 
-// ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/stanton_scs.3m_mixxx_user_guide  for details
 
 // ----------   Other global variables    ----------
@@ -315,6 +314,7 @@ StantonSCS3m.PitchRbR = function (channel, control, value, status) {
 }
 
 StantonSCS3m.PitchBendButton = function (status, side, comp) {
+    if (StantonSCS3m.modifier["Master"]) return;    // Skip if Master button is held
     var deck = StantonSCS3m.SideToDeck(side);
     if (engine.getValue("[Channel"+deck+"]","rate_dir") == comp) {   // Go in the appropriate direction
         if ((status & 0xF0) == 0x90)    // If button down
