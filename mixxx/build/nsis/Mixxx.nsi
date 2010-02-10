@@ -261,7 +261,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins"
   RMDir "$INSTDIR\midi"
   RMDir "$INSTDIR\keyboard"
-  RMDir "$INSTDIR\promo\${PRODUCT_VERSION}"
+  RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
   RMDir "$INSTDIR\promo"
 
 

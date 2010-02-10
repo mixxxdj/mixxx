@@ -181,15 +181,15 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-         QMessageBox::critical(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(1,input);
+         //QMessageBox::critical(0, "Mixxx", input);
+        dialogHelper->requestErrorDialog(1,input);
 //         exit(-1);
         break; //NOTREACHED(?)
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-        QMessageBox::critical(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(1,input);
+        //QMessageBox::critical(0, "Mixxx", input);
+        dialogHelper->requestErrorDialog(1,input);
         abort();
         break; //NOTREACHED
     }
