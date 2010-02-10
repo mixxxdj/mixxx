@@ -1,6 +1,6 @@
 /****************************************************************/
 /*      Stanton SCS.3d MIDI controller script v1.30             */
-/*          Copyright (C) 2009, Sean M. Pappalardo              */
+/*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.x                                 */
 /****************************************************************/
@@ -375,7 +375,6 @@ StantonSCS3d.syncButton = function (channel, control, value, status) {
         engine.setValue("[Channel"+StantonSCS3d.deck+"]","beatsync",1);
         return;
     }
-    midi.sendShortMsg(byte1,control,0x00);  // SYNC button blue
     engine.setValue("[Channel"+StantonSCS3d.deck+"]","beatsync",0);
 }
 
