@@ -10,6 +10,7 @@
 
 #include "defs.h"
 
+struct Hint;
 class EngineControl;
 class CachingReader;
 
@@ -42,6 +43,11 @@ public:
     void setNewPlaypos(int iNewPlaypos);
 
     void notifySeek(int iSeekPosition);
+
+    // hintReader allows the ReadAheadManager to provide hints to the reader to
+    // indicate that the given portion of a song is about to be read.
+    void hintReader(QList<Hint>& hintList, int iSamplesPerBuffer);
+
 private:
     // A broken method for choosing which EngineControl to trust for determining
     // when to take loops and jumps. Currently the RAMAN just uses the first

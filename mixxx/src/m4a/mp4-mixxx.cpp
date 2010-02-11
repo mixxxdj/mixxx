@@ -35,13 +35,27 @@
 // #include "debug.h"
 // #include "file.h"
 
-#include <mp4.h>
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
 #include <neaacdec.h>
 
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <unistd.h>
+#ifndef _MSC_VER
+    #include <unistd.h>
+#endif
+
+#ifdef _MSC_VER
+    #define S_ISDIR(mode) (mode & _S_IFDIR)
+    #define strcasecmp stricmp
+    #define strncasecmp strnicmp
+#endif
+
 
 struct mp4_private {
 	char *overflow_buf;

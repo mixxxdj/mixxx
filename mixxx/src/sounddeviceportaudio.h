@@ -67,6 +67,9 @@ class SoundDevicePortAudio : SoundDevice
         PaStreamParameters m_outputParams;
         /** Description of the input stream coming from the soundcard */
 	    PaStreamParameters m_inputParams;
+
+  private:
+    bool m_bSetThreadPriority;
 };
 
 
@@ -76,5 +79,5 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags,
                         void *_sounddevice);
-                        
-#endif                       
+
+#endif

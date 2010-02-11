@@ -86,6 +86,11 @@ class CachingReader : public QThread {
     void hint(Hint& hint);
     void hint(QList<Hint>& hintList);
 
+    // Issue a list of hints, but check whether any of the hints request a chunk
+    // that is not in the cache. If any hints do request a chunk not in cache,
+    // then wake the reader so that it can process them.
+    void hintAndMaybeWake(QList<Hint>& hintList);
+
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
@@ -97,6 +102,7 @@ class CachingReader : public QThread {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
+    void trackLoadFailed(TrackInfoObject *pTrack, QString reason);
 
   protected:
     void run();
@@ -122,10 +128,6 @@ class CachingReader : public QThread {
     // Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(TrackInfoObject *pTrack);
 
-    // Queue of recent hints, and the corresponding lock.
-    QMutex m_hintQueueMutex;
-    QQueue<Hint> m_hintQueue;
-
     // Queue of Tracks to load, and the corresponding lock.
     QMutex m_trackQueueMutex;
     QQueue<TrackInfoObject*> m_trackQueue;
@@ -139,9 +141,15 @@ class CachingReader : public QThread {
     // hold it if you touch them.
     //
 
+    // Chunks that should be read into memory when the CachingReader wakes
+    // up. Readers and writers must holds the reader lock.
+    QSet<int> m_chunksToRead;
+
     // Look up chunk_number at any cost. Reads from SoundSource if
-    // necessary. Returns NULL if chunk_number is not valid.
-    Chunk* getChunk(int chunk_number);
+    // necessary. Returns NULL if chunk_number is not valid. If cache_miss is
+    // not NULL, sets it to true or false whether or not the chunk was fetched
+    // from cache or not.
+    Chunk* getChunk(int chunk_number, bool* cache_miss=NULL);
 
     // Read the given chunk_number from the file into pChunk's data
     // buffer. Fills length/sample information about Chunk* as well.
@@ -164,13 +172,20 @@ class CachingReader : public QThread {
     Chunk* allocateChunkExpireLRU();
 
     // Given a sample number, return the chunk number corresponding to it.
-    int chunkForSample(int sample_number) {
-        return int(floor(double(sample_number) / double(kSamplesPerChunk)));
+    inline int chunkForSample(int sample_number) {
+        return sample_number / kSamplesPerChunk;
+        //return int(floor(double(sample_number) / double(kSamplesPerChunk)));
     }
 
     // Given a chunk number, return the start sample number for the chunk.
-    int sampleForChunk(int chunk_number) {
+    inline int sampleForChunk(int chunk_number) {
         return chunk_number * kSamplesPerChunk;
+    }
+
+    inline bool isChunkValid(int chunk_number) {
+        return m_iTrackSampleRate != 0 &&
+                chunk_number >= 0 &&
+                sampleForChunk(chunk_number) < m_iTrackNumSamples;
     }
 
     const char* m_pGroup;
