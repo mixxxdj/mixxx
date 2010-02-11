@@ -23,7 +23,7 @@
 #include "defs.h"
 #include "engineobject.h"
 #include "configobject.h"
-#include "monitor.h"
+// #include "monitor.h"
 #include "rotary.h"
 
 class EngineControl;
@@ -108,11 +108,14 @@ public slots:
 
 signals:
     void trackLoaded(TrackInfoObject *pTrack);
+    void trackLoadFailed(TrackInfoObject *pTrack, QString reason);
     void loadNextTrack();
 
 private slots:
     void slotTrackLoaded(TrackInfoObject *pTrack,
                          int iSampleRate, int iNumSamples);
+    void slotTrackLoadFailed(TrackInfoObject *pTrack,
+                             QString reason);
 
 private:
 

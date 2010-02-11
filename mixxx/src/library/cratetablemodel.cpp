@@ -9,7 +9,7 @@
 #include "library/dao/cratedao.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : QSqlTableModel(pParent, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),
@@ -161,14 +161,6 @@ void CrateTableModel::slotSearch(const QString& searchText) {
     }
 
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString CrateTableModel::currentSearch() {

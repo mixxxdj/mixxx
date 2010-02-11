@@ -2,6 +2,7 @@
 #include <QtGui>
 #include <QtSql>
 #include <QtDebug>
+#include <QSettings>
 #include <QRegExp>
 #include <QtXmlPatterns/QXmlQuery>
 
@@ -20,18 +21,20 @@ ITunesTrackModel::ITunesTrackModel()
     QRegExp supportedFileRegex(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX,
                                Qt::CaseInsensitive);
 
-    /*
-     * Try and open the ITunes DB. An API call which tells us where
-     * the file is would be nice.
-     */
-    QString itunesXmlPath;
-    itunesXmlPath = MIXXX_ITUNES_DB_LOCATION;
+    QString itunesXmlPath = getiTunesMusicPath();
 
     QFile db(itunesXmlPath);
-    if ( ! db.exists())
+    if (!db.exists())
         return;
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    // Workaround for Bug #501916. Read the file, convert it to UTF-8 and then
+    // load it.
+    QByteArray db_bytes_utf8 = QString(db.readAll()).toUtf8();
+    QBuffer buffer(&db_bytes_utf8);
+    if (!buffer.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     /*
@@ -40,7 +43,7 @@ ITunesTrackModel::ITunesTrackModel()
      *
      * TODO: filter /key='Track Type'/string='URL' (remote) files
      */
-    query.setFocus(&db);
+    query.setFocus(&buffer);
     query.setQuery("/plist[@version='1.0']/dict[key='Tracks']/dict/dict");
     if ( ! query.isValid())
         return;
@@ -258,4 +261,22 @@ TrackInfoObject* ITunesTrackModel::getTrackById(QString id) {
         return NULL;
     }
     return parseTrackNode(m_mTracksById[id]);
+}
+
+QString ITunesTrackModel::getiTunesMusicPath() {
+    QString musicFolder;
+#if defined(__APPLE__)
+		musicFolder = QDir::homePath() + "/Music/iTunes/iTunes Music Library.xml";
+#elif defined(__WINDOWS__)
+    QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
+		// if the value method fails it returns QTDir::homePath
+    musicFolder = settings.value("My Music", QDir::homePath()).toString();
+    musicFolder += "\\iTunes\\iTunes Music Library.xml";
+#elif defined(__LINUX__)
+		musicFolder =  QDir::homePath() + "/.itunes.xml";
+#else
+		musicFolder = "";
+#endif
+    qDebug() << "ITunesLibrary=[" << musicFolder << "]";
+    return musicFolder;
 }

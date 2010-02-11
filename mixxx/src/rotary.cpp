@@ -60,9 +60,6 @@ double Rotary::filter(double dValue)
     dMagnitude /= (double)m_iFilterLength;
     //qDebug() << "filter in " << dValue << ", out " << dMagnitude;
 
-    if (m_dLastValue!=dMagnitude)
-        return dMagnitude;
-
     m_dLastValue = dMagnitude;
 
     return dMagnitude;

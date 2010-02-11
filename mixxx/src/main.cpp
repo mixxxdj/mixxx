@@ -175,20 +175,20 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtWarningMsg:
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
-//         QMessageBox::warning(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(0,input);
+        //QMessageBox::warning(0, "Mixxx", input);
+        //dialogHelper->requestErrorDialog(0,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-//         QMessageBox::critical(0, "Mixxx", input);
+         //QMessageBox::critical(0, "Mixxx", input);
         dialogHelper->requestErrorDialog(1,input);
 //         exit(-1);
         break; //NOTREACHED(?)
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-//         QMessageBox::critical(0, "Mixxx", input);
+        //QMessageBox::critical(0, "Mixxx", input);
         dialogHelper->requestErrorDialog(1,input);
         abort();
         break; //NOTREACHED
@@ -293,8 +293,9 @@ int main(int argc, char * argv[])
      QDir dir(QApplication::applicationDirPath());
      dir.cdUp();
      dir.cd("PlugIns");
-     QApplication::addLibraryPath(dir.absolutePath());
-     //qDebug() << dir.absolutePath() << QApplication::applicationDirPath();
+     //For some reason we need to do setLibraryPaths() and not addLibraryPath().
+     //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
+     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);

@@ -17,7 +17,12 @@
 #ifndef SOUNDSOURCEM4A_H
 #define SOUNDSOURCEM4A_H
 
-#include <mp4.h>
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
 #include <neaacdec.h>
 
 #include <QString>

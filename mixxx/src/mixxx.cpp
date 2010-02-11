@@ -72,7 +72,7 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-
+    
     QString buildRevision, buildFlags;
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
@@ -90,6 +90,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     }
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
+    QCoreApplication::setApplicationName("Mixxx");
+    QCoreApplication::setApplicationVersion(VERSION);
     setWindowTitle(tr("Mixxx " VERSION));
     setWindowIcon(QIcon(":/images/icon.svg"));
 
@@ -99,7 +101,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pMidiDeviceManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
-    config = versionUpgrade();  // This static function is located in upgrade.cpp
+    Upgrade upgrader;
+    config = upgrader.versionUpgrade();  
+    bool bFirstRun = upgrader.isFirstRun();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -198,14 +202,14 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this, config);
+    m_pLibrary = new Library(this, config, bFirstRun);
 
 	//Create the "players" (virtual playback decks)
 	m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
 	m_pPlayer2 = new Player(config, buffer2, "[Channel2]");
 
-	//Connect the player to the track collection so that when a track is unloaded, it's data
-	//(eg. waveform summary) is saved back to the database.
+	//Connect the player to the track collection so that when a track is unloaded,
+	//it's data (eg. waveform summary) is saved back to the database.
 	connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
             SLOT(updateTrackInDatabase(TrackInfoObject*)));
@@ -347,6 +351,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
     channel2->setEngineBuffer(buffer2);
+
+    //Automatically load specially marked promotional tracks on first run
+    if (bFirstRun) 
+    {
+        QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
+        if (tracksToAutoLoad.count() > 0)
+            m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
+        if (tracksToAutoLoad.count() > 1)
+            m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+    }
 
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
@@ -860,9 +874,9 @@ void MixxxApp::slotFileLoadSongPlayer1()
 
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
-        //TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
-        //if (pTrack)
-        //    m_pTrack->slotLoadPlayer1(pTrack);
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer1->slotLoadTrack(pTrack);
     }
 }
 
@@ -884,9 +898,9 @@ void MixxxApp::slotFileLoadSongPlayer2()
 
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
-        //TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
-        //if (pTrack)
-        //    m_pTrack->slotLoadPlayer2(pTrack);
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer2->slotLoadTrack(pTrack);
     }
 }
 
@@ -1085,7 +1099,11 @@ void MixxxApp::slotHelpAbout()
 "Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"Oliver St&ouml;neberg<br>"
 "C. Stewart<br>"
+"Tobias Rafreider<br>"
+"Bill Egert<br>"
+"Zach Shutters<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

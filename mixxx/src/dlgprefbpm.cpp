@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dlgprefmixer.cpp  -  description
+                          dlgprefbpm.cpp  -  description
                              -------------------
     begin                : Thu Jun 7 2007
     copyright            : (C) 2007 by John Sully
@@ -434,4 +434,3 @@ void DlgPrefBpm::populateBpmSchemeList()
         }
     }
 }
-
