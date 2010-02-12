@@ -8,9 +8,9 @@
 #define __DEFS_AUDIOFILES_H__
 
 /** The types of audio files we support */
-#define MIXXX_SUPPORTED_AUDIO_FILETYPES "*.wav *.mp3 *.m4a *.ogg *.aiff *.aif *.flac"
+#define MIXXX_SUPPORTED_AUDIO_FILETYPES "*.wav *.mp3 *.m4a *.ogg *.oga *.aiff *.aif *.flac"
 
 /** A regex for the types of audio files we support */
-#define MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX "\\.(mp3|m4a|ogg|aiff|aif|wav|flac)"
+#define MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX "\\.(mp3|m4a|ogg|oga|aiff|aif|wav|flac)"
 
 #endif
