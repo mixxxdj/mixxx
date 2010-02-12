@@ -109,16 +109,15 @@ inline long unsigned SoundSourceM4A::length(){
 }
 
 int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
-    if (Track->getHeaderParsed()) return OK;
 	QString mp4FileName = Track->getLocation();
     char *value;
     MP4FileHandle mp4file = MP4Read(mp4FileName);
     if (mp4file == MP4_INVALID_FILE_HANDLE) {
-     qDebug() << "mp4: " << mp4FileName << "could not be opened using the MP4 decoder.";
-     Track->setHeaderParsed(false);
+     qDebug() << "SSM4A::ParseHeader : invalid file";
      return ERR;
    }
 
+   Track->setType("m4a");
    if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
      Track->setTitle(value);
      free(value);
@@ -138,8 +137,6 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
            Track->setBpmConfirm(true);
        }
    }
-   Track->setHeaderParsed(true);
-   Track->setType("m4a");
 
    // We are only interested in first track for the initial dev iteration
    int trackId = MP4FindTrackId(mp4file, 0);
@@ -149,5 +146,6 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
    Track->setChannels(2); // FIXME: hard-coded to 2 channels - real value is not available until faacDecInit2 is called
 
    MP4Close(mp4file);
+   Track->setHeaderParsed(true);
    return OK;
 }
