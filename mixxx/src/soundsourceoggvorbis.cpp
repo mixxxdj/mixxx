@@ -225,53 +225,51 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 
 #ifdef __WINDOWS__
     if (ov_fopen(qBAFilename.data(), &vf) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";        
+        qDebug() << "oggvorbis::ParseHeader : Input does not appear to be an Ogg bitstream.";        
         return ERR;
     }
 #else
     FILE * vorbisfile = fopen(qBAFilename.data(), "r");
 
     if (!vorbisfile) {
-        qDebug() << "oggvorbis: file cannot be opened.\n";
+        qDebug() << "oggvorbis::ParseHeader : file cannot be opened.\n";
         return ERR;
     }
 
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.\n";
+        qDebug() << "oggvorbis::ParseHeader : Input does not appear to be an Ogg bitstream.\n";
+		fclose(vorbisfile);	//should be closed if ov_open fails
         return ERR;
     }
 #endif
 
 
-
+    Track->setType("ogg");
     comment = ov_comment(&vf, -1);
     if (comment == NULL) {
-        qDebug() << "oggvorbis: fatal error reading file.";
-        ov_clear(&vf);
-        return ERR;
-    }
+		qDebug() << "oggvorbis::ParseHeader : no tags in file";
+    } else {
+		//precache
+		const char* title_p = vorbis_comment_query(comment, (char*)"title", 0); //the char* cast is to shut up the compiler; libvorbis should take `const char*` here but I don't expect us to get them to change that -kousu 2009/02
+		const char* artist_p = vorbis_comment_query(comment, (char*)"artist", 0);
+		const char* bpm_p = vorbis_comment_query(comment, (char*)"TBPM", 0);
     
-    //precache
-    const char* title_p = vorbis_comment_query(comment, (char*)"title", 0); //the char* cast is to shut up the compiler; libvorbis should take `const char*` here but I don't expect us to get them to change that -kousu 2009/02
-    const char* artist_p = vorbis_comment_query(comment, (char*)"artist", 0);
-    const char* bpm_p = vorbis_comment_query(comment, (char*)"TBPM", 0);
-    
-    if(title_p)
-      Track->setTitle(title_p);
-    if(artist_p)
-      Track->setArtist(artist_p);
-    if (bpm_p) {
-        float bpm = str2bpm(bpm_p);
-        if(bpm > 0.0f) {
-            Track->setBpm(bpm);
-            Track->setBpmConfirm(true);
-        }
-    }
-    Track->setHeaderParsed(true);
+		if(title_p)
+			Track->setTitle(title_p);
+		if(artist_p)
+			Track->setArtist(artist_p);
+		if (bpm_p) {
+			float bpm = str2bpm(bpm_p);
+			if(bpm > 0.0f) {
+				Track->setBpm(bpm);
+				Track->setBpmConfirm(true);
+			}
+		}
+	}
 
-    Track->setType("ogg");
     int duration = (int)ov_time_total(&vf, -1);
     if (duration == OV_EINVAL)
+		ov_clear(&vf);	//close on return !
         return ERR;
     Track->setDuration(duration);
     Track->setBitrate(ov_bitrate(&vf, -1)/1000);
@@ -284,12 +282,13 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     }
     else
     {
-        qDebug() << "oggvorbis: fatal error reading file.";
+        qDebug() << "oggvorbis::ParseHeader : fatal error reading file.";
         ov_clear(&vf);
         return ERR;
     }
     
     ov_clear(&vf);
+	Track->setHeaderParsed(true);
     return OK;
 }
 
