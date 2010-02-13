@@ -268,9 +268,10 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 	}
 
     int duration = (int)ov_time_total(&vf, -1);
-    if (duration == OV_EINVAL)
+    if (duration == OV_EINVAL) {
 		ov_clear(&vf);	//close on return !
         return ERR;
+    }
     Track->setDuration(duration);
     Track->setBitrate(ov_bitrate(&vf, -1)/1000);
 
