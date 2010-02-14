@@ -312,8 +312,9 @@ void EngineBuffer::slotControlSeek(double change)
     seek_hint.sample = new_playpos;
     seek_hint.length = 0;
     seek_hint.priority = 1;
-    // m_pReader->hint(seek_hint);
-    // m_pReader->wake();
+    QList<Hint> hint_list;
+    hint_list.append(seek_hint);
+    m_pReader->hintAndMaybeWake(hint_list);
     setNewPlaypos(new_playpos);
 }
 
