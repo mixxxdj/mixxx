@@ -33,9 +33,6 @@
 #include "controlobject.h"
 
 
-
-int TrackInfoObject::siMaxTimesPlayed = 1;
-
 TrackInfoObject::TrackInfoObject(const QString sLocation)
         : m_sLocation(sLocation),
           m_qMutex(QMutex::Recursive),
@@ -63,9 +60,6 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     m_dVisualResampleRate = 0;
     QFileInfo fileInfo(sLocation);
     m_sFilename = fileInfo.fileName();
-
-    m_fBpmFactors = new float[NumBpmFactors];
-    generateBpmFactors();
 
     //qDebug() << "new TrackInfoObject....";
 
@@ -104,18 +98,12 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 
-    m_fBpmFactors = new float[NumBpmFactors];
-    generateBpmFactors();
-
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
 
     //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_bIsValid = true;
-
-    if (m_iTimesPlayed>siMaxTimesPlayed)
-        siMaxTimesPlayed = m_iTimesPlayed;
 
     // Check that the actual file exists:
     checkFileExists();
@@ -126,7 +114,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    delete [] m_fBpmFactors;
 }
 
 bool TrackInfoObject::isValid() const {
@@ -276,31 +263,12 @@ void TrackInfoObject::setBpm(float f)
 {
     QMutexLocker lock(&m_qMutex);
     m_fBpm = f;
-    generateBpmFactors();
     setDirty(true);
     lock.unlock();
 
     //Tell the GUI to update the bpm label...
     qDebug() << "TrackInfoObject: emitting bpmUpdated signal!";
     emit(bpmUpdated(f));
-}
-
-void TrackInfoObject::generateBpmFactors()
-{
-    for (int i = 0; i < NumBpmFactors; i++) {
-        m_fBpmFactors[i] = m_fBpm * Factors[i];
-    }
-}
-
-void TrackInfoObject::getBpmFactors(float * f) const
-{
-    QMutexLocker lock(&m_qMutex);
-    if (f) {
-        for (int i = 0; i < NumBpmFactors; i++)
-        {
-            f[i] = m_fBpmFactors[i];
-        }
-    }
 }
 
 QString TrackInfoObject::getBpmStr() const
@@ -453,8 +421,6 @@ void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
     ++m_iTimesPlayed;
-    if (m_iTimesPlayed>siMaxTimesPlayed)
-        siMaxTimesPlayed = m_iTimesPlayed;
     setDirty(true);
 }
 

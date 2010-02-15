@@ -43,10 +43,6 @@ class Cue;
 
 #include "segmentation.h"
 
-#define NumBpmFactors 4
-
-const float Factors[NumBpmFactors]={0.33, 0.5, 2, 0.25};
-
 class TrackInfoObject : public QObject
 {
     Q_OBJECT
@@ -76,9 +72,6 @@ public:
     float getBpm() const;
     /** Set BPM */
     void setBpm(float);
-
-    /** Get BPM Correction Factors */
-    void getBpmFactors(float*) const;
     /** Returns BPM as a string */
     QString getBpmStr() const;
     /** Retruns if BPM was confirmed (edited or verified manually) */
@@ -211,9 +204,6 @@ public:
     void cuesUpdated();
 
   private:
-    // Generate BPM factors -- should hold the lock to call.
-    void generateBpmFactors();
-
     // Method for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
@@ -272,8 +262,6 @@ public:
     int m_iTimesPlayed;
     /** Beat per minutes (BPM) */
     float m_fBpm;
-    /** Bpm Correction Factors */
-    float* m_fBpmFactors;
     /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */
     float m_fMinBpm;
     /** Maximum BPM range. If this is 0.0, then the config max BPM will be used */
@@ -296,9 +284,6 @@ public:
     QVector<float> *m_pVisualWave;
     /** Wave summary info */
     QByteArray m_waveSummary;
-
-    /** Maximum number of times any one track have been played */
-    static int siMaxTimesPlayed;
 
     /** Mutex protecting access to object */
     mutable QMutex m_qMutex;
