@@ -77,17 +77,6 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) 
 
         idx++;
     }
-
-
-    qDebug() << rhythmplaylistdb.doctype().name();
-    qDebug() << "RhythmboxPlaylistModel: m_playlistNodes size is" << m_playlistNodes.size();
-
-    QMapIterator<QString, QDomNodeList>iter (m_mPlaylists);
-    while (iter.hasNext())
-    {
-        iter.next();
-        qDebug() << "RB Playlist: " << iter.key();
-    }
 }
 
 RhythmboxPlaylistModel::~RhythmboxPlaylistModel()
@@ -107,6 +96,9 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     if (!index.isValid())
         return QVariant();
 
+    // TODO(XXX) THIS IS SOAKED IN WASTE. It creates a new TIO for every
+    // row. The trackmodel need some sort of 'getIndexOfTrack' call, and then
+    // you simply pass this whole call off to RhythmboxTrackModel::data(index).
     TrackInfoObject *pTrack = getTrack(index);
     if ( pTrack == NULL )
         return QVariant();
@@ -169,7 +161,7 @@ QVariant RhythmboxPlaylistModel::headerData ( int section, Qt::Orientation orien
                 return QString(tr("Album"));
 
             case RhythmboxPlaylistModel::COLUMN_DATE:
-                return QString(tr("Date"));
+                return QString(tr("Year"));
 
             case RhythmboxPlaylistModel::COLUMN_GENRE:
                 return QString(tr("Genre"));

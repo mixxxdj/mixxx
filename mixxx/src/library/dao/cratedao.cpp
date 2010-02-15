@@ -126,7 +126,8 @@ unsigned int CrateDAO::crateSize(int crateId) {
 bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     QSqlQuery query;
 
-    query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
+    query.prepare("INSERT INTO " CRATE_TRACKS_TABLE
+                  " (crate_id, track_id) VALUES (:crate_id, :track_id)");
     query.bindValue(":crate_id", crateId);
     query.bindValue(":track_id", trackId);
 

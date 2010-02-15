@@ -15,4 +15,4 @@
  ***************************************************************************/
  
 // Doing this in its own file avoids needlessly rebuilding everything when just the version number changes
-#define VERSION "trunk"
+#define VERSION "1.8.0~beta1"

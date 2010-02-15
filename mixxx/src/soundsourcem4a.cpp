@@ -34,7 +34,7 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
 
     // Initialize variables to invalid values in case loading fails.
     mp4file = MP4_INVALID_FILE_HANDLE;
-    filelength = -1;
+    filelength = 0;
     channels = 0;
     memset(&ipd, 0, sizeof(ipd));
 
@@ -47,11 +47,11 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
 
     int mp4_open_status = mp4_open(&ipd);
     if (mp4_open_status != 0) {
-        // The file was loading and failing iratically because
+        // The file was loading and failing erratically because
         // ipd.remote was an in an uninitialized state, it needed to be
         // set to false.
-        qDebug() << "SSM4A: failed to open MP4 file '"
-                 << qFileName << "' w/ status:" << mp4_open_status << " FIXME.";
+        qDebug() << "SSM4A::constructor: failed to open MP4 file "
+                 << qFileName << " with status:" << mp4_open_status;
         return;
     }
 
@@ -82,7 +82,7 @@ SoundSourceM4A::~SoundSourceM4A() {
 
 long SoundSourceM4A::seek(long filepos){
     // Abort if file did not load.
-    if (filelength == -1)
+    if (filelength == 0)
         return 0;
 
     qDebug() << "SSM4A::seek()" << filepos;
@@ -96,23 +96,21 @@ long SoundSourceM4A::seek(long filepos){
 
 unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destination) {
     // Abort if file did not load.
-    if (filelength == -1)
-        return -1;
+    if (filelength == 0)
+        return 0;
 
     //qDebug() << "SSM4A::read()" << size;
 
     // We want to read a total of "size" samples, and the mp4_read()
     // function wants to know how many bytes we want to decode. One
-    // sample is 16-bits = 2 bytes here, so we multiply size by 2 to
+    // sample is 16-bits = 2 bytes here, so we multiply size by channels to
     // get the number of bytes we want to decode.
 
-    // rryan 2/2009 Can M4A files be non-stereo? If so, we need to
-    // replicate logic here similar to in other areas.
-
-    int total_bytes_to_decode = size * 2;
+    int total_bytes_to_decode = size * channels;
     int total_bytes_decoded = 0;
     int num_bytes_req = 4096;
     char* buffer = (char*)destination;
+    SAMPLE * as_buffer = (SAMPLE*) destination;	//pointer for mono->stereo filling.
     do {
         if (total_bytes_decoded + num_bytes_req > total_bytes_to_decode)
             num_bytes_req = total_bytes_to_decode - total_bytes_decoded;
@@ -122,47 +120,54 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
                                buffer,
                                num_bytes_req);
         if(numRead <= 0) {
-            qDebug() << "EOF";
+            qDebug() << "SSM4A::read: EOF";
             break;
         }
         buffer += numRead;
         total_bytes_decoded += numRead;
     } while (total_bytes_decoded < total_bytes_to_decode);
 
+    // At this point *destination should be filled. If mono : double all samples
+    // (L => R)
+    if (channels == 1) {
+        for (int i = total_bytes_decoded/2-1; i >= 0; --i) {
+            // as_buffer[i] is an audio sample (s16)
+            //scroll through , copying L->R & expanding buffer
+            as_buffer[i*2+1] = as_buffer[i];
+            as_buffer[i*2] = as_buffer[i];
+        }
+    }
+
     // Tell us about it only if we end up decoding a different value
     // then what we expect.
 
-    if (total_bytes_decoded % (size * 2))
-        qDebug() << "MP4READ: total_bytes_decoded:"
+    if (total_bytes_decoded % (size * 2)) {
+        qDebug() << "SSM4A::read : total_bytes_decoded:"
                  << total_bytes_decoded
                  << "size:"
                  << size;
+    }
 
     //There are two bytes in a 16-bit sample, so divide by 2.
     return total_bytes_decoded / 2;
 }
 
 inline long unsigned SoundSourceM4A::length(){
-     if (filelength == -1)
-         return -1;
-     return filelength;
-     //return channels * mp4_duration(&ipd) * SRATE;
+    return filelength;
+    //return channels * mp4_duration(&ipd) * SRATE;
 }
 
 int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
-    if (Track->getHeaderParsed())
-        return OK;
-
     QString mp4FileName = Track->getLocation();
     MP4FileHandle mp4file = MP4Read(mp4FileName);
 
     if (mp4file == MP4_INVALID_FILE_HANDLE) {
-        qDebug() << "mp4: " << mp4FileName
+        qDebug() << "SSM4A::ParseHeader : " << mp4FileName
                  << "could not be opened using the MP4 decoder.";
-        Track->setHeaderParsed(false);
         return ERR;
     }
 
+    Track->setType("m4a");
     char* value = NULL;
     if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
         Track->setTitle(value);
@@ -182,9 +187,17 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
         value = NULL;
     }
 
+#ifndef _MSC_VER
     u_int16_t bpm = 0;
+#else
+    // MSVC doesn't know what a u_int16_t is, so we have to tell it
+    unsigned short bpm = 0;
+#endif
     if (MP4GetMetadataTempo(mp4file, &bpm)) {
         if(bpm > 0) {
+#ifdef _MSC_VER
+            Q_ASSERT(sizeof(bpm)==2);   // Just making sure we're in bounds
+#endif
             Track->setBpm(bpm);
             Track->setBpmConfirm(true);
         }
@@ -194,7 +207,7 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
     int track_id = MP4FindTrackId(mp4file, 0, MP4_AUDIO_TRACK_TYPE);
 
     if (track_id == MP4_INVALID_TRACK_ID) {
-        qDebug() << "Could not find any audio tracks in " << mp4FileName;
+        qDebug() << "SSM4A::ParseHeader: Could not find any audio tracks in " << mp4FileName;
     }
 
     // Get the track duration in time scale units of the mp4
@@ -209,7 +222,6 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
 
     MP4Close(mp4file);
     Track->setHeaderParsed(true);
-    Track->setType("m4a");
     // FIXME: hard-coded to 2 channels - real value is not available until
     // faacDecInit2 is called
     Track->setChannels(2);

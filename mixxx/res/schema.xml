@@ -49,12 +49,16 @@ METADATA
         mixxx_deleted integer,
         played integer);
 
-      CREATE TABLE Playlists (id INTEGER primary key,
-        name varchar(48), position INTEGER,
+      CREATE TABLE Playlists (
+        id INTEGER primary key,
+        name varchar(48),
+        position INTEGER,
+        hidden INTEGER DEFAULT 0 NOT NULL,
         date_created datetime,
         date_modified datetime);
 
-      CREATE TABLE PlaylistTracks (id INTEGER primary key,
+      CREATE TABLE PlaylistTracks (
+        id INTEGER primary key,
         playlist_id INTEGER REFERENCES Playlists(id),
         track_id INTEGER REFERENCES library(id),
         position INTEGER);

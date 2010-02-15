@@ -142,20 +142,13 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":label", cue->getLabel());
 
         if (query.exec()) {
-            query.prepare("SELECT last_insert_rowid()");
-            if (query.exec()) {
-                Q_ASSERT(query.next());
-                int id = query.value(0).toInt();
-                cue->setId(id);
-                cue->setDirty(false);
-                Q_ASSERT(m_database.commit());
-                return true;
-            } else {
-                qDebug() << query.executedQuery() << query.lastError();
-            }
-        } else {
-            qDebug() << query.executedQuery() << query.lastError();
+            int id = query.lastInsertId().toInt();
+            cue->setId(id);
+            cue->setDirty(false);
+            Q_ASSERT(m_database.commit());
+            return true;
         }
+        qDebug() << query.executedQuery() << query.lastError();
         m_database.rollback();
     } else {
         // Update cue

@@ -6,7 +6,7 @@
 WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
     //Set some properties
     setHeaderHidden(true);
-
+    setSelectionMode(QAbstractItemView::SingleSelection);
     //Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
@@ -20,14 +20,16 @@ WLibrarySidebar::~WLibrarySidebar() {
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
 {
+    //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
     emit(rightClicked(event->globalPos(), clickedItem));
+    //}
 }
 
 /** Drag enter event, happens when a dragged item enters the track sources view*/
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 {
-    qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         event->acceptProposedAction();
@@ -38,8 +40,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
  */
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
-    qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-    qDebug() << event->mimeData();
+    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
 
     if (event->mimeData()->hasUrls())
     {
@@ -107,7 +108,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event)
             if (sidebarModel) {
                 foreach (url, urls)
                 {
-                    qDebug() << "dropEvent" << url;
+                    //qDebug() << "dropEvent" << url;
                     QModelIndex destIndex = indexAt(event->pos());
                     if (sidebarModel->dropAccept(destIndex, url))
                     {

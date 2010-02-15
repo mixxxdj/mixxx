@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundsourcemp4.h  -  mp4/m4a decoder
+                          soundsourcem4a.h  -  mp4/m4a decoder
                              -------------------
     copyright            : (C) 2008 by Garth Dahlstrom
     email                : ironstorm@users.sf.net
@@ -17,7 +17,12 @@
 #ifndef SOUNDSOURCEM4A_H
 #define SOUNDSOURCEM4A_H
 
-#include <mp4.h>
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
 #include <neaacdec.h>
 
 #include <QString>

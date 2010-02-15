@@ -18,32 +18,23 @@
 #include "soundsourcemp3.h"
 #include <QtDebug>
 
+char SoundSourceMp3::m_sInputBuf[READLENGTH];
 
-SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
+SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename),
+                                                    m_file(qFilename)
 {
-    QFile file( qFilename );
-    if (!file.open(QIODevice::ReadOnly)) {
+    if (!m_file.open(QIODevice::ReadOnly)) {
         //qDebug() << "MAD: Open failed:" << qFilename;
     }
 
-    // Read the whole file into inputbuf:
-    inputbuf_len = file.size();
-    inputbuf = new char[inputbuf_len];
-    unsigned int tmp = file.read(inputbuf, inputbuf_len);
-    if (tmp != inputbuf_len) {
-        // qDebug() << "MAD: ERR reading mp3-file: "
-        //          << qFilename
-        //          << "\nRead only "
-        //          << tmp
-        //          << "bytes, but wanted"
-        //          << inputbuf_len
-        //          << "bytes";
-    }
+    // Get a pointer to the file using memory mapped IO
+    inputbuf_len = m_file.size();
+    inputbuf = m_file.map(0, inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
     mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-    mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+    mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
 
     /*
        Decode all the headers, and fill in stats:
@@ -135,7 +126,9 @@ SoundSourceMp3::~SoundSourceMp3()
     mad_stream_finish(&Stream);
     mad_frame_finish(Frame);
     mad_synth_finish(&Synth);
-    delete [] inputbuf;
+
+    m_file.unmap(inputbuf);
+    m_file.close();
 
     m_qSeekList.clear();
 }
@@ -157,7 +150,7 @@ long SoundSourceMp3::seek(long filepos)
         mad_stream_finish(&Stream);
         mad_stream_init(&Stream);
         mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-        mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+        mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
         mad_frame_init(Frame);
         mad_synth_init(&Synth);
         rest=-1;
@@ -191,7 +184,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_stream_finish(&Stream);
             mad_stream_init(&Stream);
             mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-            mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+            mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
             mad_frame_init(Frame);
             mad_synth_init(&Synth);
             rest = -1;
@@ -212,7 +205,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_stream_init(&Stream);
             mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
 //        qDebug() << "mp3 restore " << cur->m_pStreamPos;
-            mad_stream_buffer(&Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
+            mad_stream_buffer(&Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos - inputbuf));
 
             // Mute'ing is done here to eliminate potential pops/clicks from skipping
             // Rob Leslie explains why here:
@@ -388,7 +381,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     int i;
 
     // If samples are left from previous read, then copy them to start of destination
-    // Make sure to take into account the case where there are more samples left over 
+    // Make sure to take into account the case where there are more samples left over
     // from the previous read than the client requested.
     if (rest > 0)
     {
@@ -593,18 +586,16 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     unsigned int frames = 0;
 
     // Number of bytes to read at a time to determine duration
-    const unsigned int READLENGTH = 5000;
-    char *inputbuf = new char[READLENGTH];
+
     const unsigned int DESIRED_FRAMES = 10;
     while(frames < DESIRED_FRAMES) {
 
-        unsigned int readbytes = file.read(inputbuf, READLENGTH);
+        unsigned int readbytes = file.read((char*)m_sInputBuf, READLENGTH);
         if(readbytes != READLENGTH) {
             //qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
             if(readbytes == -1) {
                 // fatal error, no bytes were read
                 qDebug() << "MAD: fatal error reading mp3 file";
-                delete inputbuf; // don't leak memory!
                 return ERR;
             } else if(readbytes == 0) {
                 // EOF, just break out of the loop
@@ -615,7 +606,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
         // This preserves skiplen, so if we had a buffer error earlier
         // the skip will occur when we give it more data.
-        mad_stream_buffer(&Stream, (unsigned char *) inputbuf, readbytes);
+        mad_stream_buffer(&Stream,(unsigned char *)m_sInputBuf, readbytes);
 
         while((Stream.bufend - Stream.this_frame) > 0) {
             if(mad_header_decode(&Header,&Stream) == -1) {
@@ -652,12 +643,12 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
     //qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
     //qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
-    
+
     if (constantbitrate && frames>0) {
         // This means that duration is an approximation.
         // We take the duration of one frame and multiply it by
         // the number of frames we think can fit in the file size.
-        
+
         // duration per frame * file_length bytes / (bytes per frame) = duration
         //mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
         mad_timer_multiply(&dur, Track->getLength()/bytesperframe);
@@ -672,7 +663,6 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     Track->setChannels(MAD_NCHANNELS(&Header));
 
     mad_stream_finish(&Stream);
-    delete [] inputbuf;
     file.close();
     return OK;
 
@@ -697,7 +687,7 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
             }
             else
                 framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-            
+
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
             if (strlen>0) {
                 str->setUtf16((ushort *)framestr,strlen);

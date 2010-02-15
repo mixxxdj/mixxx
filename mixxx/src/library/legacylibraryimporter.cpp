@@ -1,8 +1,8 @@
 /**************************************************************************
  * 1.7.x library upgrade code
- * 
- * Description: 
- * 
+ *
+ * Description:
+ *
  * Parse the mixxxtrack.xml file in order to create list of of songs to be
  * added to the sqlite database 1.8+ uses
  *
@@ -18,9 +18,16 @@
 #include "xmlparse.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
 
+struct LegacyPlaylist
+{
+    QString name;
+    QList<int> indexes;
+};
 
-LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao) : QObject(),
-    m_trackDao(trackDao)
+LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao, 
+                                             PlaylistDAO& playlistDao) : QObject(),
+    m_trackDao(trackDao),
+    m_playlistDao(playlistDao)
 {
 }
 
@@ -35,47 +42,121 @@ void LegacyLibraryImporter::import()
     if(!file.open(QIODevice::ReadOnly)) {
         //qDebug() << "Could not import legacy 1.7 XML library: " << trackXML;
         return;
-    } else {
+    }
 
-        QString* errorMsg = NULL;
-        int* errorLine = NULL; 
-        int* errorColumn = NULL;
-    
-        qDebug() << "Starting upgrade from 1.7 library...";
+    QString* errorMsg = NULL;
+    int* errorLine = NULL;
+    int* errorColumn = NULL;
 
-        if (doc.setContent(&file, false, errorMsg, errorLine, errorColumn)) {
-            QDomNodeList trackList = doc.elementsByTagName("Track");
-            QDomNode track;
+    qDebug() << "Starting upgrade from 1.7 library...";
 
-            for (int i = 0; i < trackList.size(); i++) {
-                //blah, can't figure out how to use an iterator with QDomNodeList
-                track = trackList.at(i);
-                TrackInfoObject trackInfo17(track);
-                //Only add the track to the DB if the file exists on disk,
-                //because Mixxx <= 1.7 had no logic to deal with detecting deleted
-                //files.
-                QFileInfo info(trackInfo17.getLocation());
-                if(info.exists()) {
-                    //Create a TrackInfoObject by directly parsing
-                    //the actual MP3/OGG/whatever because 1.7 didn't parse
-                    //genre and album tags (so the imported TIO doesn't have
-                    //those fields).
-                    emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
-                    TrackInfoObject trackInfoNew(trackInfo17.getLocation());
-                    trackInfo17.setGenre(trackInfoNew.getGenre());
-                    trackInfo17.setAlbum(trackInfoNew.getAlbum());
-                    trackInfo17.setYear(trackInfoNew.getYear());
-                    trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
-                    m_trackDao.addTrack(&trackInfo17);	    
+    QHash<int, QString> playlistHashTable; //Maps track indices onto track locations
+    QList<LegacyPlaylist> legacyPlaylists; // <= 1.7 playlists
+
+    if (doc.setContent(&file, false, errorMsg, errorLine, errorColumn)) {
+
+        QDomNodeList playlistList = doc.elementsByTagName("Playlist");
+        QDomNode playlist;
+        for (int i = 0; i < playlistList.size(); i++)
+        {
+            LegacyPlaylist legPlaylist;
+            playlist = playlistList.at(i);
+            
+            QString name = playlist.firstChildElement("Name").text();
+            
+            legPlaylist.name = name;
+
+            //Store the IDs in the hash table so we can map them to track locations later,
+            //and also store them in-order in a temporary playlist struct.
+            QDomElement listNode = playlist.firstChildElement("List").toElement();
+            QDomNodeList trackIDs = listNode.elementsByTagName("Id");
+            for (int j = 0; j < trackIDs.size(); j++)
+            {
+                int id = trackIDs.at(j).toElement().text().toInt();
+                if (!playlistHashTable.contains(id))
+                    playlistHashTable.insert(id, "");
+                legPlaylist.indexes.push_back(id); //Save this track id.
+            }
+            //Save this playlist in our list.
+            legacyPlaylists.push_back(legPlaylist);
+        }
+
+        QDomNodeList trackList = doc.elementsByTagName("Track");
+        QDomNode track;
+
+        for (int i = 0; i < trackList.size(); i++) {
+            //blah, can't figure out how to use an iterator with QDomNodeList
+            track = trackList.at(i);
+            TrackInfoObject trackInfo17(track);
+            //Only add the track to the DB if the file exists on disk,
+            //because Mixxx <= 1.7 had no logic to deal with detecting deleted
+            //files.
+
+            if (trackInfo17.exists()) {
+                //Create a TrackInfoObject by directly parsing
+                //the actual MP3/OGG/whatever because 1.7 didn't parse
+                //genre and album tags (so the imported TIO doesn't have
+                //those fields).
+                emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
+                TrackInfoObject trackInfoNew(trackInfo17.getLocation());
+                trackInfo17.setGenre(trackInfoNew.getGenre());
+                trackInfo17.setAlbum(trackInfoNew.getAlbum());
+                trackInfo17.setYear(trackInfoNew.getYear());
+                trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
+                m_trackDao.addTrack(&trackInfo17);
+
+                //Check if this track is used in a playlist anywhere. If it is, save the
+                //track location. (The "id" of a track in 1.8 is a database index, so it's totally
+                //different. Using the track location is the best way for us to identify the song.)
+                int id = trackInfo17.getId();
+                if (playlistHashTable.contains(id))
+                    playlistHashTable[id] = trackInfo17.getLocation();
+            }
+        }
+
+
+        //Create the imported playlists
+        QListIterator<LegacyPlaylist> it(legacyPlaylists);
+        LegacyPlaylist current;
+        while (it.hasNext())
+        {
+            current = it.next();
+            emit(progress("Upgrading Mixxx 1.7 Playlists: " + current.name));
+            
+            //Create the playlist with the imported name.
+            //qDebug() << "Importing playlist:" << current.name;
+            m_playlistDao.createPlaylist(current.name, false);
+            int playlistId = m_playlistDao.getPlaylistIdFromName(current.name);
+            
+            //For each track ID in the XML...
+            QList<int> trackIDs = current.indexes;
+            for (int i = 0; i < trackIDs.size(); i++)
+            {   
+                QString trackLocation;
+                int id = trackIDs[i];
+                //qDebug() << "track ID:" << id; 
+
+                //Try to resolve the (XML's) track ID to a track location. 
+                if (playlistHashTable.contains(id)) {
+                    trackLocation = playlistHashTable[id];
+                    //qDebug() << "Resolved to:" << trackLocation;
+                }
+
+                //Get the database's track ID (NOT the XML's track ID!)
+                int dbTrackId = m_trackDao.getTrackId(trackLocation);
+
+                if (dbTrackId >= 0) {
+                    //Add it to the database's playlist.
+                    m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);
                 }
             }
-
-            //now change the file to mixxxtrack.bak so that its not readded next time program loads
-            file.copy(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxtrack.bak"));
-            file.remove();
-        } else {
-            qDebug() << errorMsg << " line: " << errorLine << " column: " << errorColumn;
         }
+
+        //now change the file to mixxxtrack.bak so that its not readded next time program loads
+        file.copy(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxtrack.bak"));
+        file.remove();
+    } else {
+        qDebug() << errorMsg << " line: " << errorLine << " column: " << errorColumn;
     }
 
     file.close();

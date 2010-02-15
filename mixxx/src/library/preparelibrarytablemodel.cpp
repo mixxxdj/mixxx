@@ -12,8 +12,11 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
           LibraryTableModel(parent, pTrackCollection) {
 
     m_bShowRecentSongs = true;
-    search("");
+    slotSearch("");
     select();
+
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 
@@ -34,8 +37,14 @@ bool PrepareLibraryTableModel::isColumnInternal(int column) {
     return result;
 }
 
-
 void PrepareLibraryTableModel::search(const QString& searchText) {
+    // qDebug() << "PrepareLibraryTableModel::search()" << searchText
+    //          << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void PrepareLibraryTableModel::slotSearch(const QString& searchText)
+{
     m_currentSearch = searchText;
     QString baseFilter;
     if (m_bShowRecentSongs)
@@ -43,26 +52,30 @@ void PrepareLibraryTableModel::search(const QString& searchText) {
     else
         baseFilter = DEFAULT_LIBRARYFILTER;
 
+    QString filter;
     if (searchText == "")
-        setFilter(baseFilter);
-    else
-        setFilter(baseFilter + " " +
-                  "artist LIKE \'%" + searchText + "%\' OR "
-                  "title  LIKE \'%" + searchText + "%\'");
+        filter = baseFilter;
+    else {
+        QSqlField search("search", QVariant::String);
+        search.setValue("%" + searchText + "%");
+        QString escapedText = database().driver()->formatValue(search);
+        filter = "(" + baseFilter + " AND " +
+                "(artist LIKE " + escapedText + " OR "
+                "title  LIKE " + escapedText + "))";
+    }
+    setFilter(filter);
 }
 
 void PrepareLibraryTableModel::showRecentSongs()
 {
    m_bShowRecentSongs = true;
    search(m_currentSearch);
-   select();
 }
 
 void PrepareLibraryTableModel::showAllSongs()
 {
     m_bShowRecentSongs = false;
     search(m_currentSearch);
-    select();
 }
 
 

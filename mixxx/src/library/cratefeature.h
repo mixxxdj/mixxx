@@ -47,7 +47,6 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pDeleteCrateAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;
-    ProxyTrackModel m_crateTableModelProxy;
     QModelIndex m_lastRightClickedIndex;
 };
 

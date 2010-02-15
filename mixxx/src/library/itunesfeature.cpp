@@ -1,3 +1,4 @@
+#include <QMessageBox>
 #include <QtDebug>
 
 #include "library/itunesfeature.h"
@@ -20,7 +21,7 @@ ITunesFeature::~ITunesFeature() {
 }
 
 bool ITunesFeature::isSupported() {
-    return (QFile::exists(MIXXX_ITUNES_DB_LOCATION));
+    return (QFile::exists(ITunesTrackModel::getiTunesMusicPath()));
 }
 
 
@@ -33,9 +34,18 @@ QIcon ITunesFeature::getIcon() {
 }
 
 void ITunesFeature::activate() {
-    qDebug("ITunesFeature::activate()");
+    //qDebug("ITunesFeature::activate()");
 
     if (!m_pITunesTrackModel) {
+        if (QMessageBox::question(
+            NULL,
+            tr("Load iTunes Library?"),
+            tr("Would you like to load your iTunes library?"),
+            QMessageBox::Ok,
+            QMessageBox::Cancel)
+            == QMessageBox::Cancel) {
+            return;
+        }
         m_pITunesTrackModel = new ITunesTrackModel();
         m_pITunesPlaylistModel = new ITunesPlaylistModel(m_pITunesTrackModel);
 
@@ -60,7 +70,7 @@ void ITunesFeature::activate() {
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
-    qDebug() << "ITunesFeature::activateChild()" << index;
+    //qDebug() << "ITunesFeature::activateChild()" << index;
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);

@@ -48,7 +48,7 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 
 #ifdef __SHOUTCAST__
     // Shoutcast
-    shoutcast = 0;
+    shoutcast = NULL;
 //    shoutcast = new EngineShoutcast(m_pConfig);
     ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
     m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
@@ -70,6 +70,11 @@ EngineSideChain::~EngineSideChain()
     m_waitLock.lock();
     m_waitForFullBuffer.wakeAll();
     m_waitLock.unlock();
+
+#ifdef __SHOUTCAST__
+    if (shoutcast)
+        shoutcast->shutdown();
+#endif
 
     wait(); //Wait until the thread has finished.
 
@@ -190,12 +195,16 @@ void EngineSideChain::run()
         //                hit here.
 
         //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-        if ((bool)m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() != (bool)shoutcast) {
-            if (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt()) {
+
+        bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+        bool shoutcastEnabled = (shoutcast != NULL);
+
+        if (prefEnabled != shoutcastEnabled) {
+            if (prefEnabled) {
                 shoutcast = new EngineShoutcast(m_pConfig);
             } else {
                 delete shoutcast;
-                shoutcast = 0;
+                shoutcast = NULL;
             }
         }
         if (shoutcast) {

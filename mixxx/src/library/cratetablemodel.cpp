@@ -9,7 +9,7 @@
 #include "library/dao/cratedao.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : QSqlTableModel(pParent, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),
@@ -29,7 +29,7 @@ void CrateTableModel::setCrate(int crateId) {
     QString tableName = QString("crate_%1").arg(m_iCrateId);
     QSqlQuery query;
 
-    QString queryString = QString("CREATE TEMPORARY VIEW %1 AS "
+    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT "
                                   "library." + LIBRARYTABLE_ID + "," +
                                   LIBRARYTABLE_ARTIST + "," +
@@ -39,7 +39,8 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_DURATION + "," +
                                   LIBRARYTABLE_GENRE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
-                                  LIBRARYTABLE_BPM + ","
+                                  LIBRARYTABLE_BPM + "," +
+                                  LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
                                   LIBRARYTABLE_COMMENT + "," +
                                   LIBRARYTABLE_MIXXXDELETED + " " +
@@ -50,7 +51,6 @@ void CrateTableModel::setCrate(int crateId) {
                                   " ON library.location = track_locations.id "
                                   "WHERE " CRATE_TRACKS_TABLE ".crate_id = %2");
     queryString = queryString.arg(tableName).arg(crateId);
-    qDebug() << queryString;
     query.prepare(queryString);
 
     if (!query.exec()) {
@@ -58,7 +58,6 @@ void CrateTableModel::setCrate(int crateId) {
         qDebug() << "Error creating temporary view for crate "
                  << crateId << ":" << query.executedQuery() << query.lastError();
     }
-    qDebug() << query.executedQuery();
 
     setTable(tableName);
 
@@ -91,6 +90,8 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Bitrate"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
 }
 
 void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
@@ -139,8 +140,8 @@ void CrateTableModel::moveTrack(const QModelIndex& sourceIndex,
 }
 
 void CrateTableModel::search(const QString& searchText) {
-    qDebug() << "CrateTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "CrateTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
@@ -160,14 +161,6 @@ void CrateTableModel::slotSearch(const QString& searchText) {
     }
 
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString CrateTableModel::currentSearch() {

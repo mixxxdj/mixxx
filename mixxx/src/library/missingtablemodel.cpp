@@ -10,7 +10,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.missing"),
-          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
           m_currentSearch("") {
@@ -20,7 +20,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
     //query.exec();
     QString tableName("missing_songs");
 
-    query.prepare("CREATE TEMPORARY VIEW " + tableName + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                   "SELECT " +
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
@@ -30,6 +30,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location" + "," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
@@ -44,10 +45,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
         qDebug() << query.executedQuery() << query.lastError();
     }
 
-    qDebug() << query.executedQuery();
-
     //Print out any SQL error, if there was one.
-
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
@@ -82,13 +80,10 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   Qt::Horizontal, tr("Bitrate"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
 
     select(); //Populate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
@@ -132,8 +127,8 @@ void MissingTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
 
 void MissingTableModel::search(const QString& searchText)
 {
-    qDebug() << "MissingTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "MissingTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
@@ -152,11 +147,6 @@ void MissingTableModel::slotSearch(const QString& searchText) {
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString MissingTableModel::currentSearch() {
