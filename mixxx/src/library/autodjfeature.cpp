@@ -50,7 +50,7 @@ QAbstractItemModel* AutoDJFeature::getChildModel() {
 }
 
 void AutoDJFeature::activate() {
-    qDebug() << "AutoDJFeature::activate()";
+    //qDebug() << "AutoDJFeature::activate()";
     //emit(showTrackModel(m_pAutoDJTableModelProxy));
     emit(switchToView("Auto DJ"));
 }
@@ -93,7 +93,6 @@ bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
-    qDebug() << "dragMoveAccept";
     return true;
 }
 

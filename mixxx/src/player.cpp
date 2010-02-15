@@ -30,6 +30,8 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     //finish doing stuff.
     connect(m_pEngineBuffer, SIGNAL(trackLoaded(TrackInfoObject*)),
             this, SLOT(slotFinishLoading(TrackInfoObject*)));
+    connect(m_pEngineBuffer, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
+            this, SLOT(slotLoadFailed(TrackInfoObject*, QString)));
 
     //Get cue point control object
     m_pCuePoint = new ControlObjectThreadMain(
@@ -73,7 +75,8 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
         // relying on this -- but if it's being unloaded maybe that's a good
         // thing.
         m_pLoadedTrack->disconnect();
-        emit(unloadingTrack(m_pLoadedTrack)); //Causes the track's data to be saved back to the library database.
+        // Causes the track's data to be saved back to the library database.
+        emit(unloadingTrack(m_pLoadedTrack));
     }
 
     //TODO: Free m_pLoadedTrack, but make sure nobody else still has a pointer to it...
@@ -87,6 +90,24 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 
     //Request a new track from the reader
     m_pEngineBuffer->loadTrack(track);
+}
+
+void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
+    // Alert user.
+    if (m_pLoadedTrack) {
+        // TODO(XXX) This could be a help or a hurt. This should disconnect
+        // every signal connected to the track. Other parts of Mixxx might be
+        // relying on this -- but if it's being unloaded maybe that's a good
+        // thing.
+        m_pLoadedTrack->disconnect();
+        // Causes the track's data to be saved back to the library database.
+        emit(unloadingTrack(m_pLoadedTrack));
+    }
+    m_pDuration->slotSet(0);
+    m_pBPM->slotSet(0);
+    m_pLoopInPoint->slotSet(-1);
+    m_pLoopOutPoint->slotSet(-1);
+    m_pLoadedTrack = NULL;
 }
 
 void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)

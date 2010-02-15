@@ -3,12 +3,14 @@
 
 #include <QtSql>
 #include <QtCore>
+
+#include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
 #include "library/dao/trackdao.h"
 
 class TrackCollection;
 
-class LibraryTableModel : public QSqlRelationalTableModel, public virtual TrackModel
+class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:

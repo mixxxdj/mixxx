@@ -6,7 +6,6 @@
 
 #include "library/preparefeature.h"
 #include "library/librarytablemodel.h"
-#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
 #include "widget/wlibrary.h"
@@ -48,8 +47,8 @@ QAbstractItemModel* PrepareFeature::getChildModel() {
 }
 
 void PrepareFeature::activate() {
-    qDebug() << "PrepareFeature::activate()";
-    emit(switchToView("Prepare"));
+    //qDebug() << "PrepareFeature::activate()";
+    emit(switchToView(m_sPrepareViewName));
 }
 
 void PrepareFeature::activateChild(const QModelIndex& index) {

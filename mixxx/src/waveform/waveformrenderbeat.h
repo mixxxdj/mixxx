@@ -41,6 +41,7 @@ private:
     double m_dBpm;
     double m_dBeatFirst;
     QColor colorMarks;
+    QColor colorHighlight;
     double m_dSamplesPerPixel;
     double m_dSamplesPerDownsample;
     double m_dBeatLength;

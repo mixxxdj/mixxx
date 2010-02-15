@@ -35,13 +35,27 @@
 // #include "debug.h"
 // #include "file.h"
 
-#include <mp4.h>
-#include <faad.h>
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
+#include <neaacdec.h>
 
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <unistd.h>
+#ifndef _MSC_VER
+    #include <unistd.h>
+#endif
+
+#ifdef _MSC_VER
+    #define S_ISDIR(mode) (mode & _S_IFDIR)
+    #define strcasecmp stricmp
+    #define strncasecmp strnicmp
+#endif
+
 
 struct mp4_private {
 	char *overflow_buf;
@@ -112,7 +126,6 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	unsigned char *buf;
 	unsigned int buf_size;
 
-
 	/* http://sourceforge.net/forum/message.php?msg_id=3578887 */
 	if (ip_data->remote)
 		return -IP_ERROR_FUNCTION_NOT_SUPPORTED;
@@ -178,12 +191,11 @@ static int mp4_open(struct input_plugin_data *ip_data)
 	}
 
 	/* init decoder according to mpeg-4 audio config */
-#ifdef __MINGW32__
         if (faacDecInit2(priv->decoder, buf, buf_size,
-                         (long unsigned int*) &priv->sample_rate, &priv->channels) < 0) {
+#ifdef __M4AHACK__
+                         (uint32_t*)&priv->sample_rate, &priv->channels) < 0) {
 #else
-        if (faacDecInit2(priv->decoder, buf, buf_size,
-                         (uint32_t*) &priv->sample_rate, &priv->channels) < 0) {
+                         (unsigned long*)&priv->sample_rate, &priv->channels) < 0) {
 #endif
     free(buf);
 		goto out;
@@ -382,9 +394,9 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
   // the sample'th sample is. For x in (0,2047), the frame offset is x. For x in
   // (2048,4095) the offset is x-2048 and so on. sample % 2048 is therefore
   // suitable for calculating the offset.
-  int frame_for_sample = 1 + (sample / (2 * 1024));
-  int frame_offset_samples = sample % (2 * 1024);
-  int frame_offset_bytes = frame_offset_samples * 2;
+  unsigned int frame_for_sample = 1 + (sample / (2 * 1024));
+  unsigned int frame_offset_samples = sample % (2 * 1024);
+  unsigned int frame_offset_bytes = frame_offset_samples * 2;
 
   //qDebug() << "Seeking to" << frame_for_sample << ":" << frame_offset;
 

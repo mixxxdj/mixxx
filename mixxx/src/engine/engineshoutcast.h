@@ -43,7 +43,11 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     void writePage(unsigned char *header, unsigned char *body,
                    int headerLen, int bodyLen);
-public slots:    
+
+    void shutdown() {
+        m_bQuit = true;
+    }
+public slots:
     /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
     void updateFromPreferences();
 //    static void wrapper2writePage();
@@ -69,6 +73,7 @@ private:
     ControlObjectThread* m_pCrossfader;
     ControlObjectThread* m_pVolume1;
     ControlObjectThread* m_pVolume2;
+    volatile bool m_bQuit;
 };
 
 #endif

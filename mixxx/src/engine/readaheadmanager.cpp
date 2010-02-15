@@ -115,6 +115,27 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     m_iCurrentPosition = iSeekPosition;
 }
 
+void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) {
+    Hint current_position;
+
+    // Make sure that we have enough samples to do n more process() calls
+    // without reading again either forward or reverse.
+    int n = 64; // 5? 10? 20? who knows!
+    int length_to_cache = iSamplesPerBuffer * n;
+    current_position.length = length_to_cache;
+    current_position.sample = m_iCurrentPosition;
+
+    // If we are trying to cache before the start of the track,
+    if (current_position.sample < 0) {
+        current_position.length += current_position.sample;
+        current_position.sample = 0;
+    }
+
+    // top priority, we need to read this data immediately
+    current_position.priority = 1;
+    hintList.append(current_position);
+}
+
 QPair<int, double> ReadAheadManager::getSoonestTrigger(double dRate,
                                                        int iCurrentSample) {
 

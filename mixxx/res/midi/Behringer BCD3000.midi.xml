@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.1">
   <info>
-    <name>Behringer BCD3000.midi.xml</name>
+    <name>Behringer BCD3000</name>
     <author>Aposto</author>
-    <description>Conversion of the file Behringer BCD3000.midi.xml for Mixxx 1.6.2</description>
+    <description>A complete mapping for the Behringer BCD3000 two-deck MIDI controller for Mixxx 1.7</description>
   </info>
-  <controller id="Behringer BCD3000" port="Port">
+  <controller id="Behringer BCD3000" port="">
   <scriptfiles>
-   <file filename="Behringer-BCD3000-scripts.js" functionprefix="BCD3000"/>
+   <file filename="Behringer-BCD3000-scripts.js" functionprefix="BehringerBCD3000"/>
   </scriptfiles>
     <controls>
      <control>
@@ -36,7 +36,7 @@
      </control>
      <control>
        <group>[Channel1]</group>
-       <key>BCD3000.scratch1</key>
+       <key>BehringerBCD3000.scratch1</key>
        <status>0x90</status>
        <midino>0x11</midino>
        <options>
@@ -249,7 +249,7 @@
      </control>
      <control>
        <group>[Channel2]</group>
-       <key>BCD3000.scratch2</key>
+       <key>BehringerBCD3000.scratch2</key>
        <status>0x90</status>
        <midino>0x19</midino>
        <options>
@@ -450,7 +450,7 @@
      </control>     
      <control>
        <group>[Channel1]</group>
-       <key>BCD3000.jog_wheel1</key>
+       <key>BehringerBCD3000.jog_wheel1</key>
        <status>0xB0</status>
        <midino>0x13</midino>
        <options>
@@ -459,7 +459,7 @@
      </control>
      <control>
        <group>[Channel2]</group>
-       <key>BCD3000.jog_wheel2</key>
+       <key>BehringerBCD3000.jog_wheel2</key>
        <status>0xB0</status>
        <midino>0x12</midino>
        <options>

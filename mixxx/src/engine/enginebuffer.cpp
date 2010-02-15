@@ -149,6 +149,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
             this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackInfoObject*, QString)));
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -263,7 +265,6 @@ double EngineBuffer::getRate()
 void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
-    pause.lock();
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     pause.unlock();
@@ -272,6 +273,16 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
 
     m_pTrackSamples->set(iTrackNumSamples);
     emit(trackLoaded(pTrack));
+}
+
+void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
+                                       QString reason) {
+    file_srate_old = 0;
+    file_length_old = 0;
+    slotControlSeek(0.);
+    m_pTrackSamples->set(0);
+    pause.unlock();
+    emit(trackLoadFailed(pTrack, reason));
 }
 
 
@@ -293,13 +304,17 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
+    // Give EngineControl's a chance to veto or correct the seek target.
+
+
     // Seek reader
     Hint seek_hint;
     seek_hint.sample = new_playpos;
     seek_hint.length = 0;
     seek_hint.priority = 1;
-    m_pReader->hint(seek_hint);
-    m_pReader->wake();
+    QList<Hint> hint_list;
+    hint_list.append(seek_hint);
+    m_pReader->hintAndMaybeWake(hint_list);
     setNewPlaypos(new_playpos);
 }
 
@@ -559,10 +574,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Wake up the reader so that it processes our hints / loads new files
-    // (hopefully) before the next callback.
-    m_pReader->wake();
-
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -639,25 +650,7 @@ void EngineBuffer::hintReader(const double dRate,
                               const int iSourceSamples) {
     m_hintList.clear();
 
-    // Need to hint the current playposition.
-    Hint current_position;
-
-    // Make sure that we have enough samples to do n more process() calls
-    // without reading again either forward or reverse.
-    int n = 1; // 5? 10? 20? who knows!
-    int length_to_cache = iSourceSamples * n;
-    current_position.length = length_to_cache * 2;
-    current_position.sample = filepos_play - length_to_cache;
-
-    // If we are trying to cache before the start of the track,
-    if (current_position.sample < 0) {
-        current_position.length += current_position.sample;
-        current_position.sample = 0;
-    }
-
-    // top priority, we need to read this data immediately
-    current_position.priority = 1;
-    m_hintList.append(current_position);
+    m_pReadAheadManager->hintReader(m_hintList, iSourceSamples);
 
     m_pLoopingControl->hintReader(m_hintList);
 
@@ -667,11 +660,13 @@ void EngineBuffer::hintReader(const double dRate,
         pControl->hintReader(m_hintList);
     }
 
-    m_pReader->hint(m_hintList);
+    m_pReader->hintAndMaybeWake(m_hintList);
 }
 
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+    pause.lock();
     m_pReader->newTrack(pTrack);
+    m_pReader->wake();
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {

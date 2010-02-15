@@ -31,20 +31,21 @@ class ErrorDialog : public QObject {
 public:
     ErrorDialog();
     ~ErrorDialog();
-    /** A qMessageHandler calls this to emit a signal to display the requested message box */
+    /** A qMessageHandler calls either of these to emit a signal to display the requested message box */
     void requestErrorDialog(int type, QString message);
+    void requestErrorDialog(int type, QString title, QString message);
     /** Allows a means for main() to skip exec() if there was a critical or fatal error dialog displayed on app initialization */
     bool checkError();
 
 signals:
-    void showErrorDialog(int type, QString message);
+    void showErrorDialog(int type, QString title, QString message);
 
 private:
     bool m_errorCondition;
 
 private slots:
     /** Actually displays the box */
-    void errorDialog(int type, QString message);
+    void errorDialog(int type, QString title, QString message);
 };
 
 #endif

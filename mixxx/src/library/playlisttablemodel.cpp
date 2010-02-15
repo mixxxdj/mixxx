@@ -9,7 +9,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.playlist"),
-          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -39,7 +39,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistTableName);
 
-    query.prepare("CREATE TEMPORARY VIEW " + driver->formatValue(playlistNameField) + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + driver->formatValue(playlistNameField) + " AS "
                   "SELECT " +
                   "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION + "," +
                   //"playlist_id, " + //DEBUG
@@ -51,6 +51,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
                   "track_locations.location,"
                   "library." + LIBRARYTABLE_COMMENT + "," +
@@ -65,10 +66,9 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     //query.bindValue(":playlist_name", playlistTableName);
     //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
-        qDebug() << query.executedQuery() << query.lastError();
+        // It's normal for this to fail.
+        //qDebug() << query.executedQuery() << query.lastError();
     }
-
-    //qDebug() << query.executedQuery();
 
     //Print out any SQL error, if there was one.
     /*
@@ -102,17 +102,14 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   Qt::Horizontal, tr("Track #"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
                   Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
 
     slotSearch("");
 
     select(); //Populate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 
@@ -138,11 +135,6 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
     select(); //Repopulate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
@@ -167,11 +159,6 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -273,16 +260,11 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     }
 
     select();
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PlaylistTableModel::search(const QString& searchText) {
-    qDebug() << "PlaylistTableModel::search()" << searchText
-             << QThread::currentThread();
+    // qDebug() << "PlaylistTableModel::search()" << searchText
+    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
@@ -304,14 +286,6 @@ void PlaylistTableModel::slotSearch(const QString& searchText)
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString PlaylistTableModel::currentSearch() {

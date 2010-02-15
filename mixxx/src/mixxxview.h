@@ -49,6 +49,7 @@ class QSplitter;
 class QStackedWidget;
 class WTrackTableView;
 class WLibrarySidebar;
+class WSearchLineEdit;
 class LADSPAView;
 class WaveformRenderer;
 class Player;
@@ -92,7 +93,7 @@ public:
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Pointer to SearchBox */
     QLabel *m_pSearchLabel;
-    QLineEdit *m_pLineEditSearch;
+    WSearchLineEdit *m_pLineEditSearch;
     /** Pointer to Search PushButton*/
     QPushButton *m_pPushButton;
     /** Pointer to overview displays */
@@ -144,6 +145,8 @@ private:
     Library* m_pLibrary;
     // The library sidebar
     WLibrarySidebar* m_pLibrarySidebar;
+    // Contains the actual library sidebar widget and the search box in a vertical box layout.
+    QWidget* m_pLibrarySidebarPage;
 
 	Player* m_pPlayer1;
 	Player* m_pPlayer2;

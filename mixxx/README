@@ -1,19 +1,17 @@
-Mixxx 1.7.2
+Mixxx 1.8.0
 
 * HOMEPAGE *************************************************
 http://www.mixxx.org
 
 
 * ABOUT ****************************************************
-Mixxx is open source software for DJ'ing. You can use MP3s, 
-Ogg Vorbis files, and other formats as audio input. Mixxx
-can be controlled through the GUI and with external 
-controllers including MIDI devices, and more.
-This release works on Linux, Windows and MacOS X.
+Mixxx is open source software for DJ'ing. You can perform  
+live beatmixes with MP3s, OGGs, and other formats. Mixxx 
+also supports a number of DJ MIDI controllers.
+Mixxx works on Linux, Windows and MacOS X.
 
 Mixxx is released under GPL v2. See LICENSE file in this 
 directory for a copy of the licence.
-
 
 * NEWS *****************************************************
 
@@ -42,7 +40,8 @@ Mixxx has the following dependencies:
 - libvorbisfile
 - libsndfile
 - PortAudio-v19
-- QT 4.4+
+- portmidi
+- QT 4.5+
 - scons
 
 NOTE: If you want JACK support in Mixxx, make sure you 
@@ -64,6 +63,10 @@ build flags, for example:
 To install Mixxx after compilation, run:
 
    $ sudo scons prefix=/usr install
+
+More detailed compiling instructions are available for your
+platform on our wiki:
+    http://www.mixxx.org/wiki/
 
 * HERCULES DJ CONSOLE USERS ON LINUX ***********************
 

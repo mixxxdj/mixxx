@@ -40,9 +40,9 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     // Won't happen in practice since the WTrackTableView new's a new
     // WTrackTableViewHeader each time a new TrackModel is loaded.
-    if (oldTrackModel) {
-        saveHeaderState();
-    }
+    // if (oldTrackModel) {
+    //     saveHeaderState();
+    // }
 
     // First clear all the context menu actions for the old model.
     clearActions();
@@ -87,7 +87,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     // Convert the QByteArray to a Base64 string and save it.
     QString headerState = QString(saveState().toBase64());
     bool result = track_model->setModelSetting("header_state", headerState);
-    qDebug() << "Saving old header state:" << result << headerState;
+    //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
@@ -101,7 +101,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     if (!headerStateString.isNull()) {
         // Load the previous header state (stored as a Base 64 string). Decode
         // it and restore it.
-        qDebug() << "Restoring header state" << headerStateString;
+        //qDebug() << "Restoring header state" << headerStateString;
         QByteArray headerState = headerStateString.toAscii();
         headerState = QByteArray::fromBase64(headerState);
         restoreState(headerState);

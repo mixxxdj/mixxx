@@ -5,11 +5,14 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QTimer>
+#include <QDomNode>
+#include <QColor>
 
 class WSearchLineEdit : public QLineEdit {
     Q_OBJECT
   public:
-    WSearchLineEdit(QString& skinpath, QWidget* parent = 0);
+    WSearchLineEdit(QString& skinpath, QDomNode node, QWidget* parent = 0);
+    void setup(QDomNode node);
 
   protected:
     void resizeEvent(QResizeEvent*);
@@ -35,6 +38,7 @@ class WSearchLineEdit : public QLineEdit {
     QTimer m_searchTimer;
     QToolButton* m_clearButton;
     bool m_place;
+    QColor m_fgc; //Foreground colour
 };
 
 #endif

@@ -68,15 +68,13 @@ double LoopingControl::process(const double dRate,
     bool reverse = dRate < 0;
 
     double retval = currentSample;
-    if(m_bLoopingEnabled) {
-        if (reverse) {
-            if (m_iLoopEndSample != -1 &&
-                currentSample <= m_iLoopStartSample)
-                retval = m_iLoopEndSample;
-        } else {
-            if (m_iLoopStartSample != -1 &&
-                currentSample >= m_iLoopEndSample)
-                retval = m_iLoopStartSample;
+    if(m_bLoopingEnabled &&
+       m_iLoopStartSample != kNoTrigger &&
+       m_iLoopEndSample != kNoTrigger) {
+        bool outsideLoop = (currentSample >= m_iLoopEndSample ||
+                            currentSample <= m_iLoopStartSample);
+        if (outsideLoop) {
+            retval = reverse ? m_iLoopEndSample : m_iLoopStartSample;
         }
     }
 
@@ -150,15 +148,31 @@ void LoopingControl::slotLoopIn(double val) {
         // set loop in position
         m_iLoopStartSample = m_iCurrentSample;
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
-        //qDebug() << "set loop_in to " << m_iLoopStartSample;
+
+        // Reset the loop out position if it is before the loop in so that loops
+        // cannot be inverted.
+        if (m_iLoopEndSample != -1 &&
+            m_iLoopEndSample < m_iLoopStartSample) {
+            m_iLoopEndSample = -1;
+            m_pCOLoopEndPosition->set(kNoTrigger);
+        }
     }
 }
 
 void LoopingControl::slotLoopOut(double val) {
     if (val == 1.0f) {
+
+        // If the user is trying to set a loop-out before the loop in or without
+        // having a loop-in, then ignore it.
+        if (m_iLoopStartSample == -1 ||
+            m_iCurrentSample < m_iLoopStartSample) {
+            return;
+        }
+
         //set loop out position and start looping
         m_iLoopEndSample = m_iCurrentSample;
         m_pCOLoopEndPosition->set(m_iLoopEndSample);
+
         if (m_iLoopStartSample != -1 &&
             m_iLoopEndSample != -1) {
             m_bLoopingEnabled = true;
@@ -177,7 +191,8 @@ void LoopingControl::slotReloopExit(double val) {
             //qDebug() << "reloop_exit looping off";
         } else {
             // If we're not looping, jump to the loop-in point and start looping
-            if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1) {
+            if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1 &&
+                m_iLoopStartSample <= m_iLoopEndSample) {
                 m_bLoopingEnabled = true;
                 m_pCOLoopEnabled->set(1.0f);
             }
@@ -188,24 +203,39 @@ void LoopingControl::slotReloopExit(double val) {
 
 void LoopingControl::slotLoopStartPos(double pos) {
     int newpos = pos;
-    if (newpos == -1.0f) {
-        m_bLoopingEnabled = false;
-        m_pCOLoopEnabled->set(0.0f);
-    }
     if (newpos >= 0 && !even(newpos)) {
         newpos--;
     }
+    if (pos == -1.0f) {
+        m_bLoopingEnabled = false;
+        m_pCOLoopEnabled->set(0.0f);
+    }
+
     m_iLoopStartSample = newpos;
+
+    if (m_iLoopEndSample != -1 &&
+        m_iLoopEndSample < m_iLoopStartSample) {
+        m_iLoopEndSample = -1;
+        m_pCOLoopEndPosition->set(kNoTrigger);
+    }
 }
 
 void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
-    if (newpos == -1.0f) {
-        m_bLoopingEnabled = false;
-        m_pCOLoopEnabled->set(0.0f);
-    }
+
     if (newpos >= 0 && !even(newpos)) {
         newpos--;
+    }
+
+    // Reject if the loop-in is not set, or if this is before the start point.
+    if (m_iLoopStartSample == -1 ||
+        newpos < m_iLoopStartSample) {
+        return;
+    }
+
+    if (pos == -1.0f) {
+        m_bLoopingEnabled = false;
+        m_pCOLoopEnabled->set(0.0f);
     }
     m_iLoopEndSample = newpos;
 }
