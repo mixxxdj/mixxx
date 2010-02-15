@@ -215,6 +215,9 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
                  << query.lastError();
     }
 
+    pTrack->setId(trackId);
+    pTrack->setDirty(false);
+
     //If addTrack() is called on a track that already exists in the library but
     //has been "removed" (ie. mixxx_deleted is 1), then the above INSERT will
     //fail silently. What we really want to do is just mark the track as
@@ -233,7 +236,6 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
 
     //Commit the transaction
     m_database.commit();
-
 }
 
   /** Removes a track from the library track collection. */
@@ -293,6 +295,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         //int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
         int channels = query.value(query.record().indexOf("channels")).toInt();
 
+        track->setId(trackId);
         track->setArtist(artist);
         track->setTitle(title);
         track->setAlbum(album);
@@ -313,6 +316,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setChannels(channels);
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+        track->setDirty(false);
 
     }
     //query.finish();
