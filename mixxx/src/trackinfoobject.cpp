@@ -687,6 +687,7 @@ void TrackInfoObject::setChordData(Segmentation<QString> cd) {
 void TrackInfoObject::setDirty(bool bDirty) {
     QMutexLocker lock(&m_qMutex);
     m_bDirty = bDirty;
+    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
 }
 
 bool TrackInfoObject::isDirty() {

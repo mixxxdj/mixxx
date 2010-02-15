@@ -39,36 +39,44 @@ Q_OBJECT
 
     void initialize();
     int getTrackId(QString location);
-    QString getTrackLocation(int id);
     bool trackExistsInDatabase(QString location);
-    void addTrack(QString location);
-    void addTrack(TrackInfoObject * pTrack);
+    QString getTrackLocation(int id);
+    int addTrack(QString location);
     void removeTrack(int id);
     TrackInfoObject *getTrack(int id) const;
+
+    // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
     void invalidateTrackLocations(QString directory);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
     void detectMovedFiles();
+
   public slots:
-    void updateTrackInDatabase(TrackInfoObject* pTrack);
+    void saveTrack(TrackInfoObject* pTrack);
+
   private:
+    void updateTrack(TrackInfoObject* pTrack);
+    void addTrack(TrackInfoObject * pTrack);
     TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
-    //Prevents evil copy constructors! (auto-generated ones by the compiler that don't compile)
+
+    // Prevents evil copy constructors! (auto-generated ones by the compiler
+    // that don't compile)
     TrackDAO(TrackDAO&);
     bool operator=(TrackDAO&);
-    /***NOTE: If you get a compile error complaining about these, it means you're copying
-              a track DAO, which is probably not what you meant to do. Did you declare:
-                 TrackDAO m_trackDAO;
-              instead of:
-                 TrackDAO &m_trackDAO;
-              Go back and check your code...
-         -- Albert Nov 1/2009
+    /**
+       NOTE: If you get a compile error complaining about these, it means you're
+             copying a track DAO, which is probably not what you meant to
+             do. Did you declare:
+               TrackDAO m_trackDAO;
+             instead of:
+               TrackDAO &m_trackDAO;
+             Go back and check your code...
+       -- Albert Nov 1/2009
      */
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
-
 };
 
 #endif //TRACKDAO_H
