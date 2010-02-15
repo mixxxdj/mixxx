@@ -28,13 +28,12 @@
 #include "defs.h"
 
 #include "library/dao/cue.h"
+#include "library/dao/trackdao.h"
 
 class QString;
 class QDomElement;
 class QDomDocument;
 class QDomNode;
-//class WTrackTable;
-//class WTrackTableItem;
 class ControlObject;
 class BpmDetector;
 class BpmReceiver;
@@ -42,7 +41,6 @@ class BpmScheme;
 class TrackPlaylist;
 class Cue;
 
-//template <class T> class Segmentation;
 #include "segmentation.h"
 
 #define NumBpmFactors 4
@@ -82,8 +80,7 @@ public:
     float getBpm() const;
     /** Set BPM */
     void setBpm(float);
-    /** Set BPM Correction Factors */
-    void generateBpmFactors();
+
     /** Get BPM Correction Factors */
     void getBpmFactors(float*) const;
     /** Returns BPM as a string */
@@ -158,21 +155,15 @@ public:
     /** Return filename */
     QString getFilename() const;
     /** Return true if the file exist */
-    bool exists()  const;
+    bool exists() const;
     /** Return number of times the track has been played */
     int getTimesPlayed() const;
     /** Increment times played with one */
     void incTimesPlayed();
-    /** Returns the score */
-    int getScore() const;
-    /** Returns the score as string */
-    QString getScoreStr() const;
-    /** Updates the score */
-    void updateScore();
-    /** Get id */
+
     int getId() const;
-    /** Set id */
-    void setId(int iId);
+
+
     /** Get URL for track */
     QString getURL();
     /** Set URL for track */
@@ -207,15 +198,13 @@ public:
     const QList<Cue*>& getCuePoints();
     void setCuePoints(QList<Cue*> cuePoints);
 
-
+    bool isDirty();
 
     /** Set the track's full file path */
     void setLocation(QString location);
 
-	const Segmentation<QString>* getChordData() { return &m_chordData; }
-	void setChordData(Segmentation<QString> cd) {
-		m_chordData = cd;
-	}
+    const Segmentation<QString>* getChordData();
+    void setChordData(Segmentation<QString> cd);
 
   public slots:
     void slotCueUpdated();
@@ -226,14 +215,30 @@ public:
     void cuesUpdated();
 
   private:
-    /** Method for parsing information from knowing only the file name.
-        It assumes that the filename is written like: "artist - trackname.xxx" */
+    // Generate BPM factors -- should hold the lock to call.
+    void generateBpmFactors();
+
+    // Method for parsing information from knowing only the file name.  It
+    // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
-    /** Flag which determines if the file exists or not. */
+
+    // Set whether the TIO is dirty not. This should never be called except by
+    // TIO local methods or the TrackDAO.
+    void setDirty(bool bDirty);
+
+    // Set a unique identifier for the track. Only used by services like
+    // TrackDAO
+    void setId(int iId);
+
+    // Flag that indicates whether or not the TIO has changed. This is used by
+    // TrackDAO to determine whether or not to write the Track back.
+    bool m_bDirty;
+
+    // Flag which indicates whether the file exists or not.
     bool m_bExists;
-    /** File name */
+    // Filename
     QString m_sFilename;
-    /** Full path to the file */
+    // The full path to the file
     QString m_sLocation;
 
 
@@ -283,8 +288,6 @@ public:
     bool m_bHeaderParsed;
     /** Position of first beat in song */
     float m_fBeatFirst;
-    /** Score. Reflects the relative number of times the track has been played */
-    int m_iScore;
     /** Id. Unique ID of track */
     int m_iId;
     /** Cue point in samples or something */
@@ -297,11 +300,6 @@ public:
     QVector<float> *m_pVisualWave;
     /** Wave summary info */
     QByteArray m_waveSummary;
-    /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
-    //WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
-    //                *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
-    /** Pointer to WTrackTable where the current item was inserted last */
-    //WTrackTable *m_pTableTrack;
 
     /** Maximum number of times any one track have been played */
     static int siMaxTimesPlayed;
@@ -310,10 +308,11 @@ public:
     mutable QMutex m_qMutex;
     /** True if object contains valid information */
     bool m_bIsValid;
-    int iTemp;
-    double m_dVisualResampleRate;
 
-	Segmentation<QString> m_chordData;
+    double m_dVisualResampleRate;
+    Segmentation<QString> m_chordData;
+
+    friend class TrackDAO;
 };
 
 #endif
