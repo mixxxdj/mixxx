@@ -56,6 +56,7 @@ public:
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     ~TrackInfoObject();
+
     /** Returns true if the object contains valid information */
     bool isValid() const;
     int parse();
@@ -64,12 +65,7 @@ public:
         exists */
     bool checkFileExists();
     void writeToXML( QDomDocument &, QDomElement & );
-    /** Insert at the values in a WTrackTable at a given row */
-    //void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow);
-    /** Reset pointers to table cells */
-    //void removeFromTrackTable();
-	/** Assists in clearing the table*/
-	//void clearTrackTableRow();
+
     /** Returns the duration in seconds */
     int getDuration() const;
     /** Returns the duration as a string: H:MM:SS */
@@ -306,6 +302,7 @@ public:
 
     /** Mutex protecting access to object */
     mutable QMutex m_qMutex;
+
     /** True if object contains valid information */
     bool m_bIsValid;
 

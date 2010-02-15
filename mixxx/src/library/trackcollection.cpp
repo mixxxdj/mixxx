@@ -137,6 +137,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             emit(progressLoading(file.fileName()));
             //qDebug() << "Loading" << file.fileName();
 
+            // TODO(XXX) addTrack repeats the work of using QFileInfo
             trackDao.addTrack(file.absoluteFilePath());
 
         } else {
