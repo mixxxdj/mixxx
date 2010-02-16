@@ -56,6 +56,11 @@ Q_OBJECT
   public slots:
     void saveTrack(TrackInfoObject* pTrack);
 
+    // TrackDAO provides a cache of TrackInfoObject's that have been requested
+    // via getTrack(). saveDirtyTracks() saves all cached tracks marked dirty
+    // to the database.
+    void saveDirtyTracks();
+
   private:
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject * pTrack);

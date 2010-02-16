@@ -85,4 +85,13 @@ METADATA
 
     </sql>
   </revision>
+  <revision version="2">
+    <description>
+      Add a header_parsed integer column to the library to indicate when a
+      track's tags have been parsed.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN header_parsed integer DEFAULT 0;
+    </sql>
+  </revision>
 </schema>
