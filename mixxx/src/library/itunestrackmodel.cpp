@@ -250,7 +250,11 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     QByteArray strlocbytes = strloc.toUtf8();
     QUrl location = QUrl::fromEncoded(strlocbytes);
     //Strip the crappy localhost from the URL since Qt barfs on this :(
+#if defined(__WINDOWS__)
+    pTrack->setLocation(location.toLocalFile().remove("//localhost/"));
+#else
     pTrack->setLocation(location.toLocalFile().remove("//localhost"));
+#endif
     //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
 
     return pTrack;
