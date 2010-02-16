@@ -48,9 +48,9 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 
     // Set the track duration in seconds
     if(getSrate())
-	pTrack->setDuration(length()/(2*getSrate()));
+        pTrack->setDuration(length()/(2*getSrate()));
     else
-	pTrack->setDuration(0);
+        pTrack->setDuration(0);
 }
 
 void SoundSourceProxy::initialize(QString qFilename) {

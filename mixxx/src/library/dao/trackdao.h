@@ -4,6 +4,7 @@
 #define TRACKDAO_H
 
 #include <QObject>
+#include <QMap>
 #include <QSqlDatabase>
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
@@ -77,6 +78,7 @@ Q_OBJECT
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
+    mutable QMap<int, TrackInfoObject*> m_tracks;
 };
 
 #endif //TRACKDAO_H

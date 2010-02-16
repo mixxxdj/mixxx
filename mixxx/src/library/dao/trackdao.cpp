@@ -314,6 +314,8 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
         track->setDirty(false);
 
+        m_tracks[trackId] = track;
+
     }
     //query.finish();
 
@@ -323,6 +325,12 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
 TrackInfoObject *TrackDAO::getTrack(int id) const
 {
     qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
+
+    if (m_tracks.contains(id)) {
+        qDebug() << "Returning cached TIO for track" << id;
+        return m_tracks[id];
+    }
+
     QSqlQuery query(m_database);
 
     query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
