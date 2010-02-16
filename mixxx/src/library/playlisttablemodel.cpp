@@ -9,7 +9,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.playlist"),
-          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),

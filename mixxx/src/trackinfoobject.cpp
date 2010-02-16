@@ -697,10 +697,21 @@ void TrackInfoObject::setChordData(Segmentation<QString> cd) {
 
 void TrackInfoObject::setDirty(bool bDirty) {
     QMutexLocker lock(&m_qMutex);
-    if (m_bDirty != bDirty) {
-        qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
-    }
+    bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
+    lock.unlock();
+    if (change) {
+        qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
+        if (m_bDirty)
+            emit(dirty());
+        else
+            emit(clean());
+    }
+    // Emit a changed signal regardless if this attempted to set us dirty.
+    if (bDirty)
+        emit(changed());
+
+
     //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
 }
 

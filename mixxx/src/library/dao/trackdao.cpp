@@ -81,14 +81,43 @@ bool TrackDAO::trackExistsInDatabase(QString location)
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
     // If track's id is not -1, then update, otherwise add.
-    if (pTrack->getId() != -1) {
+    int trackId = pTrack->getId();
+    if (trackId != -1) {
         if (pTrack->isDirty()) {
             updateTrack(pTrack);
+            m_dirtyTracks.remove(trackId);
+            emit(trackClean(trackId));
         } else {
+            Q_ASSERT(!m_dirtyTracks.contains(trackId));
             qDebug() << "Skipping track update for track" << pTrack->getId();
         }
     } else {
         addTrack(pTrack);
+    }
+}
+
+bool TrackDAO::isDirty(int trackId) {
+    return m_dirtyTracks.contains(trackId);
+}
+
+void TrackDAO::slotTrackDirty() {
+    TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
+    if (pTrack) {
+        int id = pTrack->getId();
+        if (id != -1) {
+            m_dirtyTracks.insert(id);
+            emit(trackDirty(id));
+        }
+    }
+}
+
+void TrackDAO::slotTrackChanged() {
+    TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
+    if (pTrack) {
+        int id = pTrack->getId();
+        if (id != -1) {
+            emit(trackChanged(id));
+        }
     }
 }
 
@@ -280,6 +309,13 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
     int locationId = -1;
     while (query.next()) {
         track = new TrackInfoObject();
+
+        // Listen to dirty and changed signals
+        connect(track, SIGNAL(dirty()),
+                this, SLOT(slotTrackDirty()));
+        connect(track, SIGNAL(changed()),
+                this, SLOT(slotTrackChanged()));
+
         int trackId = query.value(query.record().indexOf("id")).toInt();
 
         QString artist = query.value(query.record().indexOf("artist")).toString();

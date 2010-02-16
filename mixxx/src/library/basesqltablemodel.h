@@ -4,12 +4,19 @@
 #define BASESQLTABLEMODEL_H
 
 #include <QtCore>
+#include <QHash>
 #include <QtSql>
+
+#include "library/dao/trackdao.h"
+
+class TrackCollection;
+class TrackInfoObject;
 
 class BaseSqlTableModel : public QSqlRelationalTableModel {
     Q_OBJECT
   public:
-    BaseSqlTableModel(QObject* parent = NULL,
+    BaseSqlTableModel(QObject* parent,
+                      TrackCollection* pTrackCollection,
                       QSqlDatabase db = QSqlDatabase());
     virtual ~BaseSqlTableModel();
 
@@ -19,10 +26,17 @@ class BaseSqlTableModel : public QSqlRelationalTableModel {
 
   protected:
     virtual QString orderByClause() const;
+  private slots:
+    void trackChanged(int trackId);
   private:
     QString m_qTableName;
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
+    QHash<int, int> m_rowToTrackId;
+    QHash<int, int> m_trackIdToRow;
+    QSet<int> m_trackOverrides;
+    TrackCollection* m_pTrackCollection;
+    TrackDAO& m_trackDAO;
 };
 
 #endif /* BASESQLTABLEMODEL_H */

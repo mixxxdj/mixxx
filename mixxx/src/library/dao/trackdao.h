@@ -4,6 +4,7 @@
 #define TRACKDAO_H
 
 #include <QObject>
+#include <QSet>
 #include <QMap>
 #include <QSqlDatabase>
 #include "library/dao/cuedao.h"
@@ -45,6 +46,7 @@ Q_OBJECT
     int addTrack(QString location);
     void removeTrack(int id);
     TrackInfoObject *getTrack(int id) const;
+    bool isDirty(int trackId);
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
@@ -53,6 +55,11 @@ Q_OBJECT
     void markTrackLocationsAsDeleted(QString directory);
     void detectMovedFiles();
 
+  signals:
+    void trackDirty(int trackId);
+    void trackClean(int trackId);
+    void trackChanged(int trackId);
+
   public slots:
     void saveTrack(TrackInfoObject* pTrack);
 
@@ -60,6 +67,10 @@ Q_OBJECT
     // via getTrack(). saveDirtyTracks() saves all cached tracks marked dirty
     // to the database.
     void saveDirtyTracks();
+
+  private slots:
+    void slotTrackDirty();
+    void slotTrackChanged();
 
   private:
     void updateTrack(TrackInfoObject* pTrack);
@@ -84,6 +95,7 @@ Q_OBJECT
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
     mutable QMap<int, TrackInfoObject*> m_tracks;
+    mutable QSet<int> m_dirtyTracks;
 };
 
 #endif //TRACKDAO_H
