@@ -9,7 +9,7 @@
 #include "library/dao/cratedao.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(pParent, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),

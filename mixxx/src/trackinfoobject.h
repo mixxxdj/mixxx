@@ -202,6 +202,9 @@ public:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
     void cuesUpdated();
+    void changed();
+    void dirty();
+    void clean();
 
   private:
     // Method for parsing information from knowing only the file name.  It

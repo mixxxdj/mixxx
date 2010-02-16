@@ -3,11 +3,18 @@
 
 #include <QtDebug>
 
+#include "trackinfoobject.h"
+#include "library/trackcollection.h"
 #include "library/basesqltablemodel.h"
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
+                                     TrackCollection* pTrackCollection,
                                      QSqlDatabase db) :
-        QSqlRelationalTableModel(parent, db) {
+        QSqlRelationalTableModel(parent, db),
+        m_pTrackCollection(pTrackCollection),
+        m_trackDAO(m_pTrackCollection->getTrackDAO()) {
+    connect(&m_trackDAO, SIGNAL(trackChanged(int)),
+            this, SLOT(trackChanged(int)));
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -16,6 +23,8 @@ BaseSqlTableModel::~BaseSqlTableModel() {
 bool BaseSqlTableModel::select() {
     qDebug() << "select()";
     bool result = QSqlRelationalTableModel::select();
+    m_rowToTrackId.clear();
+    m_trackIdToRow.clear();
 
     if (result) {
         // We need to fetch as much data as is available or else the database will
@@ -23,9 +32,31 @@ bool BaseSqlTableModel::select() {
         while (canFetchMore()) {
             fetchMore();
         }
+
+        // TODO(XXX) let child specify this
+        int idColumn = record().indexOf("id");
+        qDebug() << "idColumn" << idColumn;
+        for (int row = 0; row < rowCount(); ++row) {
+            QModelIndex ind = index(row, idColumn);
+            int trackId = QSqlRelationalTableModel::data(ind).toInt();
+            m_rowToTrackId[row] = trackId;
+            m_trackIdToRow[trackId] = row;
+        }
     }
 
     return result;
+}
+
+void BaseSqlTableModel::trackChanged(int trackId) {
+    m_trackOverrides.insert(trackId);
+    qDebug() << "trackChanged" << trackId;
+    if (m_trackIdToRow.contains(trackId)) {
+        int row = m_trackIdToRow[trackId];
+        qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
+        QModelIndex left = index(row, 0);
+        QModelIndex right = index(row, columnCount());
+        emit(dataChanged(left, right));
+    }
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName) {
