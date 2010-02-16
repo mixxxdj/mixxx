@@ -1,7 +1,6 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <QMutableMapIterator>
 #include <QSqlQuery>
 #include <QSqlError>
 #include "trackinfoobject.h"
@@ -122,7 +121,7 @@ void TrackDAO::slotTrackChanged() {
 }
 
 void TrackDAO::saveDirtyTracks() {
-    QMapIterator<int, TrackInfoObject*> it(m_tracks);
+    QHashIterator<int, TrackInfoObject*> it(m_tracks);
     while (it.hasNext()) {
         it.next();
         TrackInfoObject* pTrack = it.value();
@@ -310,12 +309,6 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
     while (query.next()) {
         track = new TrackInfoObject();
 
-        // Listen to dirty and changed signals
-        connect(track, SIGNAL(dirty()),
-                this, SLOT(slotTrackDirty()));
-        connect(track, SIGNAL(changed()),
-                this, SLOT(slotTrackChanged()));
-
         int trackId = query.value(query.record().indexOf("id")).toInt();
 
         QString artist = query.value(query.record().indexOf("artist")).toString();
@@ -364,6 +357,12 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
         track->setDirty(false);
+
+        // Listen to dirty and changed signals
+        connect(track, SIGNAL(dirty()),
+                this, SLOT(slotTrackDirty()));
+        connect(track, SIGNAL(changed()),
+                this, SLOT(slotTrackChanged()));
 
         m_tracks[trackId] = track;
 

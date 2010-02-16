@@ -136,6 +136,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
+        (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
         return true;
     }
@@ -150,7 +151,7 @@ QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value = BaseSqlTableModel::data(item, role);
 
     if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {

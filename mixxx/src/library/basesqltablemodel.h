@@ -23,6 +23,7 @@ class BaseSqlTableModel : public QSqlRelationalTableModel {
     virtual void setTable(const QString& tableName);
     virtual void setSort(int column, Qt::SortOrder order);
     virtual bool select();
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
   protected:
     virtual QString orderByClause() const;
