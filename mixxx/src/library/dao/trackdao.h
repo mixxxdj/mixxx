@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QSet>
-#include <QMap>
+#include <QHash>
 #include <QSqlDatabase>
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
@@ -29,7 +29,8 @@ const QString LIBRARYTABLE_SAMPLERATE = "samplerate";
 const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
 const QString LIBRARYTABLE_CHANNELS = "channels";
 const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
-const QString LIBRARYTABLE_DATETIMEADDED= "datetime_added";
+const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
+const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 
 class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT
@@ -94,7 +95,7 @@ Q_OBJECT
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
-    mutable QMap<int, TrackInfoObject*> m_tracks;
+    mutable QHash<int, TrackInfoObject*> m_tracks;
     mutable QSet<int> m_dirtyTracks;
 };
 
