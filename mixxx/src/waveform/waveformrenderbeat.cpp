@@ -65,6 +65,12 @@ void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
     m_dBeatFirst = -1;
     m_dBeatLength = -1;
     m_iNumSamples = 0;
+    m_iSampleRate = 0;
+    m_dSamplesPerDownsample = -1;
+    m_dSamplesPerPixel = -1;
+
+    if (!m_pTrack)
+        return;
 
     // calculate beat info for this track:
 
