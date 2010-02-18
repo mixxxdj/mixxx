@@ -203,8 +203,8 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
     const QList<Cue*>& cueList = pTrack->getCuePoints();
     const QList<Cue*>& oldCueList = getCuesForTrack(trackId);
 
-    //qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
-    //<< "new size:" << cueList.size();
+    // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
+    //          << "new size:" << cueList.size();
 
     QListIterator<Cue*> oldCues(oldCueList);
     QSet<int> oldIds;
@@ -224,13 +224,21 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
             // New cue
             cue->setTrackId(trackId);
             saveCue(cue);
-        } else if (oldIds.contains(cue->getId())) {
+        } else {
+            oldIds.remove(cue->getId());
             qDebug() << "Updating cue" << cue->getId();
             // Update cue
             saveCue(cue);
-        } else {
+        }
+    }
+
+    cueIt = QListIterator<Cue*>(oldCueList);
+    while (cueIt.hasNext()) {
+        Cue* cue = cueIt.next();
+        // If the cue's id is still in the oldIds set, then it was not a member
+        // of the new set of Cues, so the cue should be deleted.
+        if (oldIds.contains(cue->getId())) {
             qDebug() << "Deleting cue" << cue->getId();
-            // Delete cue
             deleteCue(cue);
         }
     }
