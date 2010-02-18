@@ -635,17 +635,18 @@ float TrackInfoObject::getCuePoint()
 }
 
 void TrackInfoObject::slotCueUpdated() {
+    setDirty(true);
     emit(cuesUpdated());
 }
 
 Cue* TrackInfoObject::addCue() {
     qDebug() << "TrackInfoObject::addCue()";
     QMutexLocker lock(&m_qMutex);
-    // TODO(XXX) when TIO's know their own id, replace -1 here.
-    Cue* cue = new Cue(-1);
+    Cue* cue = new Cue(m_iId);
     connect(cue, SIGNAL(updated()),
             this, SLOT(slotCueUpdated()));
     m_cuePoints.push_back(cue);
+    setDirty(true);
     lock.unlock();
     emit(cuesUpdated());
     return cue;
@@ -655,6 +656,7 @@ void TrackInfoObject::removeCue(Cue* cue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(cue, 0, this, 0);
     m_cuePoints.remove(cue);
+    setDirty(true);
     lock.unlock();
     emit(cuesUpdated());
 }
