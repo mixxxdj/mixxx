@@ -161,6 +161,8 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
         unloadTrack(m_pLoadedTrack);
 
     m_pLoadedTrack = pTrack;
+    connect(pTrack, SIGNAL(cuesUpdated()),
+            this, SLOT(trackCuesUpdated()));
 
     Cue* loadCue = NULL;
     Cue* otherCue = NULL;
@@ -243,6 +245,11 @@ void CueControl::trackCuesUpdated() {
     if (!m_pLoadedTrack)
         return;
 
+    // We don't know what changed so we have to detach everything and re-attach.
+    for (int i = 0; i < m_iNumHotCues; ++i) {
+        detachCue(i);
+    }
+
     const QList<Cue*>& cuePoints = m_pLoadedTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
     while (it.hasNext()) {
@@ -253,10 +260,7 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            if (m_hotcue[hotcue] != pCue) {
-                detachCue(hotcue);
-                attachCue(pCue, hotcue);
-            }
+            attachCue(pCue, hotcue);
         }
     }
 }
@@ -392,6 +396,12 @@ void CueControl::hotcueClear(double v) {
         return;
 
     int hotcue = senderHotcue(sender());
+
+    Cue* pCue = m_hotcue[hotcue];
+    if (pCue) {
+        pCue->setHotCue(-1);
+    }
+
     detachCue(hotcue);
 }
 
