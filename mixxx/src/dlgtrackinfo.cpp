@@ -116,7 +116,12 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
         Cue* pCue = it.next();
 
         QString rowStr = QString("%1").arg(row);
-        QString hotcue = QString("%1").arg(pCue->getHotCue());
+
+        int iHotcue = pCue->getHotCue();
+        QString hotcue = "";
+        if (iHotcue != -1) {
+            hotcue = QString("%1").arg(iHotcue);
+        }
 
         int position = pCue->getPosition();
         double totalSeconds;
@@ -172,9 +177,15 @@ void DlgTrackInfo::unloadTrack(TrackInfoObject* pTrack) {
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
         Cue* pCue = m_cueMap.take(oldRow);
-        int hotcue = hotcueItem->data(Qt::DisplayRole).toInt();
+
+        QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
+        if (vHotcue.canConvert<int>()) {
+            pCue->setHotCue(vHotcue.toInt());
+        } else {
+            pCue->setHotCue(-1);
+        }
+
         QString label = labelItem->data(Qt::DisplayRole).toString();
-        pCue->setHotCue(hotcue);
         pCue->setLabel(label);
     }
 
