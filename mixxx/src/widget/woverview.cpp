@@ -385,7 +385,9 @@ void WOverview::paintEvent(QPaintEvent *)
 
             QFont font;
             font.setBold(false);
-            font.setPixelSize(height());
+            int textWidth = 8;
+            int textHeight = 10;
+            font.setPixelSize(2*textHeight);
             paint.setPen(m_qColorMarker);
             paint.setFont(font);
 
@@ -399,9 +401,10 @@ void WOverview::paintEvent(QPaintEvent *)
                 //                fPos, height());
                 // paint.drawLine(fPos+1, 0,
                 //                fPos+1, height());
-                int textWidth = 5;
-                QRectF rect(fPos-5, 0,
-                            fPos+5, height());
+
+                int halfHeight = height()/2;
+                QRectF rect(QPointF(fPos-textWidth, halfHeight-textHeight),
+                            QPointF(fPos+textWidth, halfHeight+textHeight));
 
                 paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i));
             }
