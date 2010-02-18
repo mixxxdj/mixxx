@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3m MIDI controller script v1.01             */
+/*      Stanton SCS.3m MIDI controller script v1.02             */
 /*          Copyright (C) 2010, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.x                                 */
@@ -15,7 +15,7 @@ StantonSCS3m.id = "";   // The ID for the particular device being controlled for
 StantonSCS3m.channel = 0;   // MIDI channel the device is on
 StantonSCS3m.sysex = [0xF0, 0x00, 0x01, 0x60];    // Preamble for all SysEx messages for this device
 StantonSCS3m.modifier = { };    // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
-StantonSCS3m.mode_store = { "[Channel1]":"eq", "[Channel2]":"eq", "Master":"main" };   // Set EQ mode on both decks
+StantonSCS3m.mode_store = { "[Channel1]":"fx", "[Channel2]":"fx", "Master":"alt" };   // Set to opposite default on both
 
 // Signals to (dis)connect by mode: Group, Key, Function name
 StantonSCS3m.modeSignals = {"fx":[ ["[Flanger]", "lfoDepth", "StantonSCS3m.FXDepthLEDs"],
@@ -171,6 +171,20 @@ StantonSCS3m.SideToDeck = function (side) { // For future n-deck support
     return deck;
 }
 
+StantonSCS3m.sliderMode = function (control,value) {
+    // FIXME: This is a hack, present due to the fact that the SCS.3m
+    // wasn't designed to have its slider modes changed quickly on-the-fly
+    // It needs about 10ms between slider change commands
+    midi.sendShortMsg(0xBF,control,value);
+    
+    // 10ms pause - TODO: This needs a timer in 1.8
+    var date = new Date();
+    var curDate = null;
+    
+    do { curDate = new Date(); }
+    while(curDate-date < 10);
+}
+
 // ------------------- Surface Controls -----------------------
 
 StantonSCS3m.Deck = function (channel, control, value, status) {
@@ -196,8 +210,8 @@ StantonSCS3m.Deck = function (channel, control, value, status) {
         StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "pregain", "StantonSCS3m.gainLEDs"+side);
         StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "playposition", "StantonSCS3m.needleDropLEDs");
         // Change the slider mode - 0x70 = absolute, 0x71 = relative
-        midi.sendShortMsg(0xBF,volslider,0x71);  // Relative gain control
-        midi.sendShortMsg(0xBF,0,0x7F);
+        StantonSCS3m.sliderMode(volslider,0x71);  // Relative gain control
+        StantonSCS3m.sliderMode(0,0x7F);    // End of sequence
         // Use the mode buttons for other functions
         //  so connect applicable signals
         StantonSCS3m.doConnectSignal("[Channel"+deck+"]","beatsync","StantonSCS3m.EQ"+side+"ButtonLED");
@@ -213,17 +227,17 @@ StantonSCS3m.Deck = function (channel, control, value, status) {
         StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "volume", "StantonSCS3m.volumeLEDs"+side);
         StantonSCS3m.doConnectSignal("[Master]","crossfader","StantonSCS3m.crossfaderLEDs");
         // Change the slider mode - 0x70 = absolute, 0x71 = relative
-        midi.sendShortMsg(0xBF,volslider,0x70);  // Absolute volume control
-        midi.sendShortMsg(0xBF,0,0x7F);
+        StantonSCS3m.sliderMode(volslider,0x70);  // Absolute volume control
+        StantonSCS3m.sliderMode(0,0x7F);    // End of sequence
         // Restore the button LEDs
         var fx = { "L":0x0A, "R":0x0B };
         var eq = { "L":0x0C, "R":0x0D };
         var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-        switch (currentMode) {
-            case "fx": StantonSCS3m.modeButton(channel, fx[side], 0x80, "fx", side); break;
-            case "eq": StantonSCS3m.modeButton(channel, eq[side], 0x80, "eq", side); break;
-        }
         StantonSCS3m.modifier["Deck"+side] = false;
+        switch (currentMode) {
+            case "fx": StantonSCS3m.modeButton(channel, fx[side], 0x80+channel, "fx", side); break;
+            case "eq": StantonSCS3m.modeButton(channel, eq[side], 0x80+channel, "eq", side); break;
+        }
         midi.sendShortMsg(byte1,control,1); // Light just A/B
     }
 }
@@ -249,9 +263,9 @@ StantonSCS3m.Master = function (channel, control, value, status) {
     var sliderValues = StantonSCS3m.masterSliders[StantonSCS3m.mode_store["Master"]];
     for (i=0; i<sliderList.length; i++) {
 //         print("Stanton SCS.3m: slider number="+sliderList[i]+", value="+sliderValues[i]);
-        midi.sendShortMsg(0xBF,sliderList[i],sliderValues[i]);
+        StantonSCS3m.sliderMode(sliderList[i],sliderValues[i]);
     }
-    midi.sendShortMsg(0xBF,0,0x7F);
+    StantonSCS3m.sliderMode(0,0x7F);    // End of sequence
 }
 
 StantonSCS3m.PitchL = function (channel, control, value, status) {
@@ -472,11 +486,21 @@ StantonSCS3m.modeButton = function (channel, control, status, modeName, side) {
     if (currentMode == modeName || (StantonSCS3m.modifier["time"+modeName+side] != 0.0 && 
         ((new Date() - StantonSCS3m.modifier["time"+modeName+side])>300))) {
         switch (currentMode.charAt(currentMode.length-1)) {   // Return the button to its original color
-            case "2": midi.sendShortMsg(byte1,control,0x03); break;   // Make button purple
-            case "3": midi.sendShortMsg(byte1,control,0x00); break;   // Make button black
-            default:  midi.sendShortMsg(byte1,control,0x02); break;  // Make button red
+            case "2": midi.sendShortMsg(byte1,control,0x03); break; // Make button purple
+            case "3": midi.sendShortMsg(byte1,control,0x00); break; // Make button black
+            default:  midi.sendShortMsg(byte1,control,0x02); break; // Make button red
         }
-        StantonSCS3m.connectModeSignals(channel,side);  // Re-trigger signals
+        // Re-trigger signals
+        var signalList = StantonSCS3m.modeSignals[StantonSCS3m.mode_store["[Channel"+deck+"]"]];
+        for (i=0; i<signalList.length; i++) {
+            var group = signalList[i][0];
+            var calledFunction = signalList[i][2]+side;
+            if (group=="CurrentChannel") group = "[Channel"+deck+"]";
+            // FIXME: engine.trigger() doesn't work in 1.7.2!
+            var command = calledFunction+"("+engine.getValue(group,signalList[i][1])+")";
+//             if (StantonSCS3m.debug) print("Stanton SCS.3m: command="+command);
+            eval(command);
+        }
         return;
     }
     
