@@ -1,4 +1,5 @@
 #include <QtCore>
+#include <QMessageBox>
 
 #include "player.h"
 
@@ -95,13 +96,15 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
+    QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
     if (m_pLoadedTrack) {
         // TODO(XXX) This could be a help or a hurt. This should disconnect
         // every signal connected to the track. Other parts of Mixxx might be
         // relying on this -- but if it's being unloaded maybe that's a good
         // thing.
         m_pLoadedTrack->disconnect();
-        // Causes the track's data to be saved back to the library database.
+        // Causes the track's data to be saved back to the library database and
+        // for all the widgets to unload the track and blank themselves.
         emit(unloadingTrack(m_pLoadedTrack));
     }
     m_pDuration->slotSet(0);
