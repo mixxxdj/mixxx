@@ -328,9 +328,6 @@ void CueControl::hotcueGotoAndStop(double v) {
 void CueControl::hotcueActivate(double v) {
     qDebug() << "CueControl::hotcueActivate" << v;
 
-    if (v != 1.0)
-        return;
-
     QMutexLocker lock(&m_mutex);
 
     if (!m_pLoadedTrack)
@@ -340,13 +337,25 @@ void CueControl::hotcueActivate(double v) {
     Cue* pCue = m_hotcue[hotcue];
 
     if (pCue) {
-        if (pCue->getPosition() == -1) {
-            hotcueSet(v);
+        if (v == 1.0f) {
+            if (pCue->getPosition() == -1) {
+                hotcueSet(v);
+            } else {
+                if (m_pPlayButton->get() == 1.0f) {
+                    hotcueGoto(v);
+                } else {
+                    hotcueActivatePreview(v);
+                }
+            }
         } else {
-            hotcueGoto(v);
+            if (pCue->getPosition() != -1) {
+                hotcueActivatePreview(v);
+            }
         }
     } else {
-        hotcueSet(v);
+        if (v == 1.0f) {
+            hotcueSet(v);
+        }
     }
 }
 
