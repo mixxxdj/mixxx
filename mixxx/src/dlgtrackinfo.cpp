@@ -93,32 +93,42 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
         }
     }
     it = QListIterator<Cue*>(listPoints);
-    cueTable->setRowCount(listPoints.size());
     cueTable->setSortingEnabled(false);
     int row = 0;
 
     while (it.hasNext()) {
         Cue* pCue = it.next();
-        m_cueList.push_back(pCue);
 
         QString id = QString("%1").arg(pCue->getId());
         QString hotcue = QString("%1").arg(pCue->getHotCue());
 
         int position = pCue->getPosition();
-        double seconds;
+        double totalSeconds;
         if (position == -1)
-            seconds = -1;
+            continue;
         else {
-            seconds = position / sampleRate;
+            totalSeconds = float(position) / float(sampleRate);
         }
-        QString duration = QString("%1").arg(seconds);
+
+        int fraction = 100*(totalSeconds - floor(totalSeconds));
+        int seconds = int(totalSeconds) % 60;
+        int mins = int(totalSeconds) / 60;
+        //int hours = mins / 60; //Not going to worry about this for now. :)
+
+        //Construct a nicely formatted duration string now.
+        QString duration = QString("%1:%2.%3").arg(mins).arg(seconds, 2, 10, QChar('0')).arg(fraction, 2,10, QChar('0'));
+
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
+
+        m_cueList.push_back(pCue);
+        cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(id));
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
         cueTable->setItem(row, 3, new QTableWidgetItem(pCue->getLabel()));
+        row += 1;
     }
     cueTable->setSortingEnabled(true);
 }
@@ -136,6 +146,8 @@ void DlgTrackInfo::unloadTrack(TrackInfoObject* pTrack) {
         QTableWidgetItem* idItem = cueTable->item(row, 0);
         QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
         QTableWidgetItem* labelItem = cueTable->item(row, 3);
+        if (!idItem || !hotcueItem || !labelItem)
+            continue;
         int id = idItem->data(Qt::DisplayRole).toInt();
         int hotcue = hotcueItem->data(Qt::DisplayRole).toInt();
         QString label = labelItem->data(Qt::DisplayRole).toString();
