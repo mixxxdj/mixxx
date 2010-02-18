@@ -93,6 +93,7 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 }
 
 void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
+    qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     if (m_pLoadedTrack) {
         // TODO(XXX) This could be a help or a hurt. This should disconnect

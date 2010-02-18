@@ -169,6 +169,12 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
     update();
 }
 
+void WOverview::slotUnloadTrack(TrackInfoObject* pTrack) {
+    QByteArray ba;
+    setData(&ba, 0);
+    update();
+}
+
 void WOverview::cueChanged(double v) {
     qDebug() << "WOverview::cueChanged()";
     QObject* pSender = sender();
@@ -209,11 +215,11 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 
 void WOverview::redrawPixmap() {
 
-    if (!m_waveformSummary.size())
-        return;
-
     // Erase background
     m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
+
+    if (!m_waveformSummary.size())
+        return;
 
     QPainter paint(m_pScreenBuffer);
 

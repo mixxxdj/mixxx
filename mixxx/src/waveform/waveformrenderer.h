@@ -40,6 +40,7 @@ public:
 
 public slots:
     void slotNewTrack(TrackInfoObject *pTrack);
+    void slotUnloadTrack(TrackInfoObject* pTrack);
     void slotUpdateLatency(double latency);
     void slotUpdatePlayPos(double playpos);
     void slotUpdateRate(double rate);
