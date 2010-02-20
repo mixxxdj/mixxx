@@ -807,7 +807,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
-                    m_pLibraryWidget = new WLibrary(m_pSplitter);
+                    m_pLibraryWidget = new WLibrary(m_pSplitter, m_pKeyboard);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
 
