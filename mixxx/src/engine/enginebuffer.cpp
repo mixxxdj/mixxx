@@ -494,12 +494,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         } // else (bCurBufferPaused)
 
-        // Let RateControl do its logic. This is a temporary hack until this
-        // step is just processing a list of EngineControls
-        m_pRateControl->setCurrentSample(filepos_play);
-        m_pRateControl->process(rate, filepos_play,
-                                file_length_old, iBufferSize);
-
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();

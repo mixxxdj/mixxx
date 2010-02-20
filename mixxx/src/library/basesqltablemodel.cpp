@@ -129,11 +129,16 @@ QString BaseSqlTableModel::orderByClause() const {
     QString table = m_qTableName;
     QString field = database().driver()->escapeIdentifier(f.name(),
                                                            QSqlDriver::FieldName);
-    s.append(QLatin1String("ORDER BY lower("));
-    s.append(table);
-    s.append(QLatin1Char('.'));
-    s.append(field);
-    s.append(QLatin1Char(')'));
+    s.append(QLatin1String("ORDER BY "));
+    QString sort_field = QString("%1.%2").arg(table).arg(field);
+
+    // If the field is a string, sort using its lowercase form so sort is
+    // case-insensitive.
+    QVariant::Type type = f.type();
+    if (type == QVariant::String) {
+        sort_field = QString("lower(%1)").arg(sort_field);
+    }
+    s.append(sort_field);
 
     s += m_eSortOrder == Qt::AscendingOrder ? QLatin1String(" ASC") : QLatin1String(" DESC");
     return s;
