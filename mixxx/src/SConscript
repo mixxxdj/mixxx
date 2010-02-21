@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import SCons
@@ -207,7 +208,7 @@ vars.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole'
 vars.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
-vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
+vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 vars.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 vars.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
@@ -913,7 +914,7 @@ else:
 	print "Shoutcast support... disabled"
 
 #LADSPA
-flags_ladspa = 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
+flags_ladspa = getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['#lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CPPDEFINES = '__LADSPA__')
