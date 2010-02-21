@@ -11,6 +11,7 @@
 #include "playerinfo.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
+#include "mathstuff.h"
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineBuffer* buffer,
@@ -56,9 +57,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
 Player::~Player()
 {
     emit(unloadingTrack(m_pLoadedTrack));
-    // TODO(XXX) Really? Delete the TIO? Seems unsafe until we figure out the
-    // lifetime of TIOs issue.
-    delete m_pLoadedTrack;
     delete m_pCuePoint;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
@@ -71,6 +69,29 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 {
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {
+        // Save the loops that are currently set in a loop cue. If no loop cue is
+        // currently on the track, then create a new one.
+        int loopStart = m_pLoopInPoint->get();
+        int loopEnd = m_pLoopOutPoint->get();
+        if (loopStart != -1 && loopEnd != -1 &&
+            even(loopStart) && even(loopEnd) && loopStart <= loopEnd) {
+            Cue* pLoopCue = NULL;
+            QList<Cue*> cuePoints = m_pLoadedTrack->getCuePoints();
+            QListIterator<Cue*> it(cuePoints);
+            while (it.hasNext()) {
+                Cue* pCue = it.next();
+                if (pCue->getType() == Cue::LOOP) {
+                    pLoopCue = pCue;
+                }
+            }
+            if (!pLoopCue) {
+                pLoopCue = m_pLoadedTrack->addCue();
+                pLoopCue->setType(Cue::LOOP);
+            }
+            pLoopCue->setPosition(loopStart);
+            pLoopCue->setLength(loopEnd - loopStart);
+        }
+
         // TODO(XXX) This could be a help or a hurt. This should disconnect
         // every signal connected to the track. Other parts of Mixxx might be
         // relying on this -- but if it's being unloaded maybe that's a good
@@ -135,10 +156,24 @@ void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
     // Update TrackInfoObject of the helper class //FIXME
     //PlayerInfo::Instance().setTrackInfo(1, m_pLoadedTrack);
 
-    // Reset the loop points. TODO(XXX) once loops are stored in the DB, replace
-    // this with the default load loop.
+    // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
+
+    const QList<Cue*> trackCues = pTrackInfoObject->getCuePoints();
+    QListIterator<Cue*> it(trackCues);
+    while (it.hasNext()) {
+        Cue* pCue = it.next();
+        if (pCue->getType() == Cue::LOOP) {
+            int loopStart = pCue->getPosition();
+            int loopEnd = loopStart + pCue->getLength();
+            if (loopStart != -1 && loopEnd != -1 && even(loopStart) && even(loopEnd)) {
+                m_pLoopInPoint->slotSet(loopStart);
+                m_pLoopOutPoint->slotSet(loopEnd);
+                break;
+            }
+        }
+    }
 
     emit(newTrackLoaded(m_pLoadedTrack));
 }
