@@ -100,7 +100,9 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
+#ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
+#endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
 
@@ -745,17 +747,22 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget();
                     m_pTabWidgetLibraryPage = new QWidget(this);
+#ifdef __LADSPA__
                     //m_pTabWidgetEffectsPage = new QWidget();
                     //m_pDlgLADSPA = new DlgLADSPA(this);
-
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView; //m_pDlgLADSPA; 
+#endif
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
-      //              m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+#ifdef __LADSPA__
+//                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+#endif
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
+#ifdef __LADSPA__
     //                m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
+#endif
                 }
 
                 if (m_pTrackTableView == 0) {
@@ -770,17 +777,20 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //Add the library page to the tab widget.
                     m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);//, tr("Library"));
                     
+#ifdef __LADSPA__
                     //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);//, tr("Effects"));      
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);//, tr("Effects"));
+#endif
                     
                     /*
                     //XXX: Re-enable this to get the tab widget back, post 1.7.0 release.
                     //Add the library page to the tab widget.
                     m_pTabWidget->addWidget(m_pTabWidgetLibraryPage, tr("Library"));
-                    
+#ifdef __LADSPA__
                     //Add the effects page to the tab widget.
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));   
-		    */             
+                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage, tr("Effects"));
+#endif
+                    */
                 }
                 
                 //Move the tab widget into position and size it properly.

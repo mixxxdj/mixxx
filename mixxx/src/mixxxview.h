@@ -121,8 +121,10 @@ private:
     QStackedWidget* m_pTabWidget; //XXX: Temporarily turned this into a QStackedWidget instead of a QTabWidget to disable the tabs for 1.7.0 since LADSPA effects isn't finished.
     /** The widget containing the library/tracktable page */
     QWidget* m_pTabWidgetLibraryPage;
+#ifdef __LADSPA__
     /** The widget containing the effects/LADSPA page */
     QWidget* m_pTabWidgetEffectsPage;
+#endif
     /** The layout for the library page. Allows stuff to resize automatically */
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
