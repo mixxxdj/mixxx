@@ -423,7 +423,7 @@ double RateControl::process(const double rate,
             // Avoid Division by Zero
             if (range == 0) {
                 qDebug() << "Avoiding a Division by Zero in RATERAMP_STEP code";
-                return m_dOldRate;
+                return kNoTrigger;
             }
 
             double change = m_pRateDir->get() * m_dTemp /
@@ -480,7 +480,7 @@ double RateControl::process(const double rate,
                     m_dRateTempRampbackChange = fabs(m_dRateTemp / (double)period);
                 else {
                     resetRateTemp();
-                    return 1;
+                    return kNoTrigger;
                 }
 
             }
@@ -500,7 +500,7 @@ double RateControl::process(const double rate,
         }
     }
 
-    return 1;
+    return kNoTrigger;
 }
 
 double RateControl::getTempRate() {
