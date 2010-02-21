@@ -57,9 +57,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
 Player::~Player()
 {
     emit(unloadingTrack(m_pLoadedTrack));
-    // TODO(XXX) Really? Delete the TIO? Seems unsafe until we figure out the
-    // lifetime of TIOs issue.
-    delete m_pLoadedTrack;
     delete m_pCuePoint;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
@@ -89,6 +86,7 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
             }
             if (!pLoopCue) {
                 pLoopCue = m_pLoadedTrack->addCue();
+                pLoopCue->setType(Cue::LOOP);
             }
             pLoopCue->setPosition(loopStart);
             pLoopCue->setLength(loopEnd - loopStart);
