@@ -97,7 +97,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
             m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
     connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
+            m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
 
     // Default values for visuals
     m_pTextCh1 = 0;
