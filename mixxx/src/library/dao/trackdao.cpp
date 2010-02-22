@@ -147,6 +147,9 @@ int TrackDAO::addTrack(QString location)
 
 void TrackDAO::addTrack(TrackInfoObject * pTrack)
 {
+    QTime time;
+    time.start();
+
     //qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
  	//qDebug() << "TrackCollection::addTrack(), inserting into DB";
     Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
@@ -162,6 +165,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.prepare("INSERT INTO track_locations (location, directory, filename, filesize, fs_deleted, needs_verification) "
                   "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification)");
     query.bindValue(":location", pTrack->getLocation());
+    // TODO(XXX) QFileInfo stats the file!!!
     query.bindValue(":directory", QFileInfo(pTrack->getLocation()).path());
     query.bindValue(":filename", pTrack->getFilename());
     query.bindValue(":filesize", pTrack->getLength());
@@ -271,6 +275,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
 
     //Commit the transaction
     m_database.commit();
+    qDebug() << "addTrack took" << time.elapsed() << "ms";
 }
 
   /** Removes a track from the library track collection. */
@@ -374,13 +379,15 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
 
 TrackInfoObject *TrackDAO::getTrack(int id) const
 {
-    qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
     if (m_tracks.contains(id)) {
-        qDebug() << "Returning cached TIO for track" << id;
+        //qDebug() << "Returning cached TIO for track" << id;
         return m_tracks[id];
     }
 
+    QTime time;
+    time.start();
     QSqlQuery query(m_database);
 
     query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
@@ -390,6 +397,7 @@ TrackInfoObject *TrackDAO::getTrack(int id) const
     } else {
         qDebug() << QString("getTrack(%1)").arg(id) << query.lastError();
     }
+    qDebug() << "getTrack hit the database, took " << time.elapsed() << "ms";
 
     return track;
 }
@@ -397,10 +405,13 @@ TrackInfoObject *TrackDAO::getTrack(int id) const
 /** Saves a track's info back to the database */
 void TrackDAO::updateTrack(TrackInfoObject* pTrack)
 {
+    m_database.transaction();
+    QTime time;
+    time.start();
     Q_ASSERT(pTrack);
-    qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
 
-    qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
+    //qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
     int trackId = pTrack->getId();
     Q_ASSERT(trackId >= 0);
@@ -440,13 +451,20 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
 
     if (!query.exec()) {
         qDebug() << query.lastError();
+        m_database.rollback();
         return;
     }
     //query.finish();
 
+    qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
+    time.start();
     m_cueDao.saveTrackCues(trackId, pTrack);
+    m_database.commit();
 
+    qDebug() << "Update track in database took: " << time.elapsed() << "ms";
+    time.start();
     pTrack->setDirty(false);
+    qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
 
