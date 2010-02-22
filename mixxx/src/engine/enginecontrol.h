@@ -45,7 +45,9 @@ class EngineControl : public QObject {
     // Called by EngineBuffer::process every latency period. See the above
     // comments for information about guarantees that hold during this call. An
     // EngineControl can perform any upkeep operations that are necessary during
-    // this call.
+    // this call. If the EngineControl would like to request the playback
+    // position to be altered, it should return the sample to seek to from this
+    // method. Otherwise it should return kNoTrigger.
     virtual double process(const double dRate,
                            const double dCurrentSample,
                            const double dTotalSamples,

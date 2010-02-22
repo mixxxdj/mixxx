@@ -71,8 +71,8 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     QDomElement findNodeByKey(QDomNode dictNode, QString key) const;
     TrackInfoObject* getTrackById(QString id);
 
-    QMap<QString, QDomNode> m_mTracksById;
-    QMap<QString, QList<QString> > m_mPlaylists;
+    QHash<QString, QDomNode> m_mTracksById;
+    QHash<QString, QList<QString> > m_mPlaylists;
 
     friend class ITunesPlaylistModel;
 };
