@@ -343,10 +343,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //grabKeyboard();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player 1 and 2:
+    if (args.qlMusicFiles.count()>0)
+        this->slotLoadPlayer1((args.qlMusicFiles.at(0)));
     if (args.qlMusicFiles.count()>1)
-        this->slotLoadPlayer1((args.qlMusicFiles.at(1)));
-    if (args.qlMusicFiles.count()>2)
-        this->slotLoadPlayer2((args.qlMusicFiles.at(2)));
+        this->slotLoadPlayer2((args.qlMusicFiles.at(1)));
 
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
