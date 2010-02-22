@@ -163,7 +163,6 @@ TrackInfoObject *RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     }
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
-    pTrack->setLocation();
 
     return pTrack;
 }
