@@ -94,4 +94,40 @@ METADATA
       ALTER TABLE library ADD COLUMN header_parsed integer DEFAULT 0;
     </sql>
   </revision>
+  <revision version="3">
+    <description>
+      Change the location column to be a an integer. Change comment to be
+      varchar(256) and album/artist/title to be varchar(64).
+    </description>
+    <sql>
+      ALTER TABLE library RENAME TO library_old;
+
+      CREATE TABLE IF NOT EXISTS library (
+        id INTEGER primary key AUTOINCREMENT,
+        artist varchar(64),
+        title varchar(64),
+        album varchar(64),
+        year varchar(16),
+        genre varchar(64),
+        tracknumber varchar(3),
+        location integer REFERENCES track_locations(location),
+        comment varchar(256),
+        url varchar(256),
+        duration integer,
+        bitrate integer,
+        samplerate integer,
+        cuepoint integer,
+        bpm float,
+        wavesummaryhex blob,
+        channels integer,
+        datetime_added DEFAULT CURRENT_TIMESTAMP,
+        mixxx_deleted integer,
+        played integer,
+        header_parsed integer DEFAULT 0);
+
+      INSERT INTO library (id, artist, title, album, year, genre, tracknumber, location, comment, url, duration, bitrate, samplerate, bpm, cuepoint, bpm, wavesummaryhex, channels, datetime_added, mixxx_deleted, played, header_parsed) SELECT id, artist, title, album, year, genre, tracknumber, location, comment, url, duration, bitrate, samplerate, bpm, cuepoint, bpm, wavesummaryhex, channels, datetime_added, mixxx_deleted, played, header_parsed from library_old;
+
+      DROP TABLE library_old;
+    </sql>
+  </revision>
 </schema>
