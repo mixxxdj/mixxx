@@ -246,7 +246,34 @@ int main(int argc, char * argv[])
 
     for (int i=0; i<argc; ++i)
     {
-        if (argv[i]==QString("-f") || argv[i]==QString("--f"))
+        if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
+            printf("Mixxx digital DJ software - command line options");
+            printf("\n(These are case-sensitive.)\n\n\
+    [FILE]                  Load the specified music file(s) at start-up.\n\
+                            Each must be one of the following file types:\n\
+                            ");
+            printf(MIXXX_SUPPORTED_AUDIO_FILETYPES);
+            printf("\n\n");
+            printf("\
+                            Each file you specify will be loaded into the\n\
+                            next virtual deck.\n\
+\n\
+    --resourcePath PATH     Top-level directory where Mixxx should look\n\
+                            for its resource files such as MIDI mappings,\n\
+                            overriding the default installation location.\n\
+\n\
+    --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
+                            messages it receives and script functions it loads\n\
+\n\
+    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
+\n\
+    -h, --help              Display this help message and exit");
+    
+            printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
+            return(0);
+        }
+        
+        if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
         {
             args.bStartInFullscreen = true;
         }
@@ -256,8 +283,8 @@ int main(int argc, char * argv[])
     
     
     // set up the plugin paths...
-    qDebug() << "Setting up plugin paths...";
     /*
+    qDebug() << "Setting up plugin paths...";
     plugin_paths = QStringList();
     QString ladspaPath = QString(getenv("LADSPA_PATH"));
 
@@ -289,8 +316,9 @@ int main(int argc, char * argv[])
          plugin_paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
 #endif
     }
-    */
     qDebug() << "...done.";
+    */
+
     
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
