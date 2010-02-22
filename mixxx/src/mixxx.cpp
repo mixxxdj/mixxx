@@ -468,11 +468,6 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete config, " << qTime.elapsed();
     delete config;
-
-// Why is this here? The (MSVC 2008) linker even complains about it.
-//#ifdef __WINDOWS__
-//    _exit(0);
-//#endif
 }
 
 int MixxxApp::noSoundDlg(void)
