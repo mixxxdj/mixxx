@@ -227,7 +227,7 @@ if not 'win' in platform:
 else:
 	if platform == 'win64':
 		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
-	vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)\n  3 to use SSE code\n  4 to use SSE2 code.', 1)
+	vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
 	vars.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 	vars.Add('msvcdebug', 'Set to 1 to link against MS libraries with debugging info (implies debug=1)', 0)
 #env = Environment(options = opts)
@@ -1203,7 +1203,7 @@ if int(flags_optimize):
 			elif flags_optimize >= '2':
 				print "  Maximum optimizations (/Ox)"
 				env.Append(CXXFLAGS = '/Ox')
-			if not platform == 'win64':
+			if not platform == 'win64': # SSE and SSE2 are core instructions on AMD64
 				if flags_optimize == '3':
 					print "  SSE instructions enabled"
 					env.Append(CXXFLAGS = '/arch:SSE')
