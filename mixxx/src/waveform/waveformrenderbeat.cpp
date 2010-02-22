@@ -15,19 +15,21 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent) {
-
-    m_pParent = parent;
-
-    m_dBpm = -1;
-    m_dBeatFirst = -1;
-    m_iSampleRate = -1;
-
-    m_dSamplesPerPixel = -1;
-    m_dSamplesPerDownsample = -1;
-    m_dBeatLength = -1;
-    m_iNumSamples = 0;
-
+WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent)
+        : m_pParent(parent),
+          m_pBpm(NULL),
+          m_pBeatFirst(NULL),
+          m_pTrackSamples(NULL),
+          m_pTrack(NULL),
+          m_iWidth(0),
+          m_iHeight(0),
+          m_dBpm(-1),
+          m_dBeatFirst(-1),
+          m_dSamplesPerPixel(-1),
+          m_dSamplesPerDownsample(-1),
+          m_dBeatLength(-1),
+          m_iNumSamples(0),
+          m_iSampleRate(-1) {
     m_pBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "file_bpm")));
     connect(m_pBpm, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBpm(double)));
 
