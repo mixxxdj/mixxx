@@ -16,13 +16,13 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *parent) :
-    m_iWidth(0),
-    m_iHeight(0),
-    m_pParent(parent),
-    m_lines(0),
-    signalColor(255,255,255)
-{
+WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *parent)
+        : m_pParent(parent),
+          m_iWidth(0),
+          m_iHeight(0),
+          m_lines(0),
+          m_pTrack(NULL),
+          signalColor(255,255,255) {
 }
 
 void WaveformRenderSignal::resize(int w, int h) {
@@ -48,7 +48,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
     if(dPlayPos >= 0) {
         iCurPos = (int)(dPlayPos*numBufferSamples);
     }
-        
+
     if((iCurPos % 2) != 0)
         iCurPos--;
 
@@ -57,7 +57,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
     pPainter->setPen(signalColor);
 
     double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);
-    
+
     int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
 
     pPainter->scale(1.0/subpixelsPerPixel,m_iHeight*0.40);
@@ -67,7 +67,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
     if(m_lines.size() < subpixelWidth) {
         m_lines.resize(2*subpixelWidth);
     }
-    
+
     int halfw = subpixelWidth/2;
     for(int i=0;i<subpixelWidth;i++) {
         // Start at curPos minus half the waveform viewer
