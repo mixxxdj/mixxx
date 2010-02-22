@@ -32,6 +32,7 @@
 #include "qpixmap.h"
 #include "qsplashscreen.h"
 #include "errordialog.h"
+#include "defs_audiofiles.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -239,6 +240,9 @@ int main(int argc, char * argv[])
     // Construct a list of strings based on the command line arguments
     struct CmdlineArgs args;
     args.bStartInFullscreen = false; //Initialize vars
+    
+    // Only match supported file types since command line options are also parsed elsewhere
+    QRegExp fileRx(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive);
 
     for (int i=0; i<argc; ++i)
     {
@@ -246,7 +250,7 @@ int main(int argc, char * argv[])
         {
             args.bStartInFullscreen = true;
         }
-        else
+        else if (fileRx.indexIn(argv[i]) != -1)
             args.qlMusicFiles += argv[i];
     }
     
