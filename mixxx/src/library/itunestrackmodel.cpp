@@ -236,7 +236,20 @@ bool ITunesTrackModel::isColumnInternal(int column) {
 
 TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
-    TrackInfoObject *pTrack = new TrackInfoObject();
+    QString strloc = findValueByKey(songNode,"Location");
+    QByteArray strlocbytes = strloc.toUtf8();
+    QUrl location = QUrl::fromEncoded(strlocbytes);
+
+    QString trackLocation;
+    //Strip the crappy localhost from the URL since Qt barfs on this :(
+#if defined(__WINDOWS__)
+    trackLocation = location.toLocalFile().remove("//localhost/");
+#else
+    trackLocation = location.toLocalFile().remove("//localhost");
+#endif
+    //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
+
+    TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(findValueByKey(songNode, "Artist"));
     pTrack->setTitle(findValueByKey(songNode, "Name"));
@@ -245,17 +258,6 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     pTrack->setGenre(findValueByKey(songNode,"Genre"));
     // ITunes stores time in total milliseconds
     pTrack->setDuration(findValueByKey(songNode,"Total Time").toInt() / 1000);
-
-    QString strloc = findValueByKey(songNode,"Location");
-    QByteArray strlocbytes = strloc.toUtf8();
-    QUrl location = QUrl::fromEncoded(strlocbytes);
-    //Strip the crappy localhost from the URL since Qt barfs on this :(
-#if defined(__WINDOWS__)
-    pTrack->setLocation(location.toLocalFile().remove("//localhost/"));
-#else
-    pTrack->setLocation(location.toLocalFile().remove("//localhost"));
-#endif
-    //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
 
     return pTrack;
 }

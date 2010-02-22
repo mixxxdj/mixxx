@@ -26,6 +26,10 @@ PlaylistTableModel::~PlaylistTableModel() {
 void PlaylistTableModel::setPlaylist(int playlistId)
 {
     qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+    if (m_iPlaylistId == playlistId) {
+        // Skip switching playlist if we are already on this playlist.
+        return;
+    }
     m_iPlaylistId = playlistId;
 
     QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
