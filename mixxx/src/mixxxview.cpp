@@ -807,7 +807,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
-                    m_pLibraryWidget = new WLibrary(m_pSplitter, m_pKeyboard);
+                    m_pLibraryWidget = new WLibrary(m_pSplitter);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
 
@@ -824,7 +824,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     setupTrackSourceViewWidget(node);
 
                     m_pLibrary->bindWidget(m_pLibrarySidebar,
-                                        m_pLibraryWidget);
+                                           m_pLibraryWidget,
+                                           m_pKeyboard);
 
                     //Add the library sidebar to the splitter.
                     m_pSplitter->addWidget(m_pLibrarySidebarPage);

@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef PROMOTRACKSFEATURE_H 
+#ifndef PROMOTRACKSFEATURE_H
 #define PROMOTRACKSFEATURE_H
 
 #include <QStringListModel>
@@ -49,7 +49,8 @@ class PromoTracksFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
 
     QAbstractItemModel* getChildModel();
 

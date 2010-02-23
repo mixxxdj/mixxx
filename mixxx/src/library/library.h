@@ -26,6 +26,7 @@ class MixxxLibraryFeature;
 class PromoTracksFeature;
 class PlaylistFeature;
 class LibraryMIDIControl;
+class MixxxKeyboard;
 
 class Library : public QObject {
     Q_OBJECT
@@ -36,7 +37,8 @@ public:
     virtual ~Library();
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* pKeyboard);
     void addFeature(LibraryFeature* feature);
     QList<TrackInfoObject*> getTracksToAutoLoad();
 

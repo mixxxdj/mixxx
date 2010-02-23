@@ -31,7 +31,8 @@ class BrowseFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
-                            WLibrary* libraryWidget);
+                            WLibrary* libraryWidget,
+                            MixxxKeyboard* keyboard);
     QAbstractItemModel* getChildModel();
 
   public slots:
