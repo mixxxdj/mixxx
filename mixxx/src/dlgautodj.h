@@ -39,8 +39,13 @@ private:
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
     PlaylistDAO& m_playlistDao;
-    int m_iNextTrackIndex;
     bool m_bAutoDJEnabled;
+    bool m_bNextTrackAlreadyLoaded; /** Makes our Auto DJ logic assume the
+                                        next track that should be played is
+                                        already loaded. We need this flag to
+                                        make our first-track-gets-loaded-but-
+                                        not-removed-from-the-queue behaviour
+                                        work. */
     ControlObjectThreadMain* m_pCOPlayPos1;
     ControlObjectThreadMain* m_pCOPlayPos2;
     ControlObjectThreadMain* m_pCOPlay1;

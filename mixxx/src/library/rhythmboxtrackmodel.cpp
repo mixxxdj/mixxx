@@ -146,8 +146,8 @@ QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModel
 
 TrackInfoObject *RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
 {
-    TrackInfoObject *pTrack = new TrackInfoObject();
-
+    QString trackLocation = QUrl(songNode.firstChildElement("location").text()).toLocalFile();
+    TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(songNode.firstChildElement("artist").text());
     pTrack->setTitle(songNode.firstChildElement("title").text());
@@ -163,7 +163,6 @@ TrackInfoObject *RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     }
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
-    pTrack->setLocation(QUrl(songNode.firstChildElement("location").text()).toLocalFile());
 
     return pTrack;
 }

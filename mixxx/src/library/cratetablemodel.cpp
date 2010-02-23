@@ -24,6 +24,10 @@ CrateTableModel::~CrateTableModel() {
 
 void CrateTableModel::setCrate(int crateId) {
     qDebug() << "CrateTableModel::setCrate()" << crateId;
+    // Skip switching crate if we are already on this playlist.
+    if (m_iCrateId == crateId) {
+        return;
+    }
     m_iCrateId = crateId;
 
     QString tableName = QString("crate_%1").arg(m_iCrateId);

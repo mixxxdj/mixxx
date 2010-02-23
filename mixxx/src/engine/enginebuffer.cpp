@@ -134,6 +134,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
+    addControl(m_pLoopingControl);
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
@@ -312,8 +313,9 @@ void EngineBuffer::slotControlSeek(double change)
     seek_hint.sample = new_playpos;
     seek_hint.length = 0;
     seek_hint.priority = 1;
-    // m_pReader->hint(seek_hint);
-    // m_pReader->wake();
+    QList<Hint> hint_list;
+    hint_list.append(seek_hint);
+    m_pReader->hintAndMaybeWake(hint_list);
     setNewPlaypos(new_playpos);
 }
 
@@ -467,43 +469,35 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             if (!even(filepos_play))
                 filepos_play--;
 
-            // Adjust filepos_play in case we took any loops during this buffer
-            m_pLoopingControl->setCurrentSample(filepos_play);
-            filepos_play = m_pLoopingControl->process(rate,
-                                                      filepos_play,
-                                                      file_length_old,
-                                                      iBufferSize);
-
-            Q_ASSERT(round(filepos_play) == filepos_play);
-
-            // Safety check that LoopingControl didn't pass us a bogus value
-            if (!even(filepos_play))
-                filepos_play--;
-
-            // Fix filepos_play so that it is not out of bounds.
-            if (file_length_old > 0) {
-                if(filepos_play > file_length_old) {
-                    filepos_play = file_length_old;
-                    at_end = true;
-                } else if(filepos_play < 0) {
-                    filepos_play = 0;
-                    at_start = true;
-                }
-            }
-
         } // else (bCurBufferPaused)
-
-        // Let RateControl do its logic. This is a temporary hack until this
-        // step is just processing a list of EngineControls
-        m_pRateControl->setCurrentSample(filepos_play);
-        m_pRateControl->process(rate, filepos_play,
-                                file_length_old, iBufferSize);
 
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
             pControl->setCurrentSample(filepos_play);
-            pControl->process(rate, filepos_play, file_length_old, iBufferSize);
+            double control_seek = pControl->process(rate, filepos_play,
+                                                    file_length_old, iBufferSize);
+
+            if (control_seek != kNoTrigger) {
+                filepos_play = control_seek;
+                Q_ASSERT(round(filepos_play) == filepos_play);
+
+                // Safety check that the EngineControl didn't pass us a bogus
+                // value
+                if (!even(filepos_play))
+                    filepos_play--;
+
+                // Fix filepos_play so that it is not out of bounds.
+                if (file_length_old > 0) {
+                    if(filepos_play > file_length_old) {
+                        filepos_play = file_length_old;
+                        at_end = true;
+                    } else if(filepos_play < 0) {
+                        filepos_play = 0;
+                        at_start = true;
+                    }
+                }
+            }
         }
 
         // Give the Reader hints as to which chunks of the current song we
@@ -650,8 +644,6 @@ void EngineBuffer::hintReader(const double dRate,
     m_hintList.clear();
 
     m_pReadAheadManager->hintReader(m_hintList, iSourceSamples);
-
-    m_pLoopingControl->hintReader(m_hintList);
 
     QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {

@@ -72,7 +72,7 @@ extern "C" void crashDlg()
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 {
     app = a;
-    
+
     QString buildRevision, buildFlags;
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
@@ -102,7 +102,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     // Check to see if this is the first time this version of Mixxx is run after an upgrade and make any needed changes.
     Upgrade upgrader;
-    config = upgrader.versionUpgrade();  
+    config = upgrader.versionUpgrade();
     bool bFirstRun = upgrader.isFirstRun();
     QString qConfigPath = config->getConfigPath();
 
@@ -343,17 +343,17 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //grabKeyboard();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player 1 and 2:
+    if (args.qlMusicFiles.count()>0)
+        this->slotLoadPlayer1((args.qlMusicFiles.at(0)));
     if (args.qlMusicFiles.count()>1)
-        this->slotLoadPlayer1((args.qlMusicFiles.at(1)));
-    if (args.qlMusicFiles.count()>2)
-        this->slotLoadPlayer2((args.qlMusicFiles.at(2)));
+        this->slotLoadPlayer2((args.qlMusicFiles.at(1)));
 
     // Initialize visualization of temporal effects
     channel1->setEngineBuffer(buffer1);
     channel2->setEngineBuffer(buffer2);
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun) 
+    if (bFirstRun)
     {
         QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
         if (tracksToAutoLoad.count() > 0)
@@ -1099,6 +1099,7 @@ void MixxxApp::slotHelpAbout()
 "Tobias Rafreider<br>"
 "Bill Egert<br>"
 "Zach Shutters<br>"
+"Owen Williams<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

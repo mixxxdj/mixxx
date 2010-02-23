@@ -39,6 +39,7 @@ class ITunesTrackModel : public AbstractXmlTrackModel
         COLUMN_TITLE,
         COLUMN_ALBUM,
         COLUMN_DATE,
+        COLUMN_BPM,
         COLUMN_GENRE,
         COLUMN_LOCATION,
         COLUMN_DURATION,
@@ -71,8 +72,8 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     QDomElement findNodeByKey(QDomNode dictNode, QString key) const;
     TrackInfoObject* getTrackById(QString id);
 
-    QMap<QString, QDomNode> m_mTracksById;
-    QMap<QString, QList<QString> > m_mPlaylists;
+    QHash<QString, QDomNode> m_mTracksById;
+    QHash<QString, QList<QString> > m_mPlaylists;
 
     friend class ITunesPlaylistModel;
 };
