@@ -391,10 +391,10 @@ StantonSCS3d.cueButton = function (channel, control, value, status) {
 
 StantonSCS3d.syncButton = function (channel, control, value, status) {
     var byte1 = 0x90 + channel;
-    if ((status & 0xF0) != 0x80) {    // If button down
+    var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
+    if ((status & 0xF0) == 0x90) {    // If button down
         // If in DECK mode and Deck is held when this is pressed,
         //  toggle between multi and single deck mode
-        var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
         if (currentMode == "deck" && (!StantonSCS3d.singleDeck || StantonSCS3d.modifier["deck"]==1)) {
             // Flash the Stanton logo to acknowledge
             midi.sendShortMsg(0x90,0x7A,0x00);
@@ -417,6 +417,9 @@ StantonSCS3d.syncButton = function (channel, control, value, status) {
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","beatsync",1);
         return;
     }
+    // If button up
+    // Don't touch beatsync if we toggled modes
+    if (currentMode == "deck" && (!StantonSCS3d.singleDeck || StantonSCS3d.modifier["deck"]==1)) return;
 //     midi.sendShortMsg(byte1,control,0x00);  // SYNC button blue
     engine.setValue("[Channel"+StantonSCS3d.deck+"]","beatsync",0);
 }
