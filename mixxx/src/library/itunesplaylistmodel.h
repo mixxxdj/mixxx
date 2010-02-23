@@ -19,6 +19,7 @@ class ITunesPlaylistModel : public QAbstractTableModel, public TrackModel {
         COLUMN_TITLE,
         COLUMN_ALBUM,
         COLUMN_DATE,
+        COLUMN_BPM,
         COLUMN_GENRE,
         COLUMN_LOCATION,
         COLUMN_DURATION,

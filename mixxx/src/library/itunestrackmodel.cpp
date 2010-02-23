@@ -139,6 +139,7 @@ ITunesTrackModel::ITunesTrackModel()
     addColumnName(ITunesTrackModel::COLUMN_TITLE, "Title");
     addColumnName(ITunesTrackModel::COLUMN_ALBUM, "Album");
     addColumnName(ITunesTrackModel::COLUMN_DATE, "Date");
+    addColumnName(ITunesTrackModel::COLUMN_BPM, "BPM");
     addColumnName(ITunesTrackModel::COLUMN_GENRE, "Genre");
     addColumnName(ITunesTrackModel::COLUMN_LOCATION, "Location");
     addColumnName(ITunesTrackModel::COLUMN_DURATION, "Duration");
@@ -206,10 +207,25 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
             return findValueByKey(songNode,"Album");
         case ITunesTrackModel::COLUMN_DATE:
             return findValueByKey(songNode,"Year");
+        case ITunesTrackModel::COLUMN_BPM:
+            return findValueByKey(songNode,"BPM");
         case ITunesTrackModel::COLUMN_GENRE:
             return findValueByKey(songNode,"Genre");
-        case ITunesTrackModel::COLUMN_LOCATION:
-            return findValueByKey(songNode,"Location");
+        case ITunesTrackModel::COLUMN_LOCATION: {
+            /*
+             * Strip the crappy file://localhost/ from the URL and
+             * format URL as in method ITunesTrackModel::parseTrackNode(QDomNode songNode)
+             */
+            QString strloc = findValueByKey(songNode,"Location");
+            QByteArray strlocbytes = strloc.toUtf8();
+            QString location = QUrl::fromEncoded(strlocbytes).toLocalFile();
+#if defined(__WINDOWS__)
+            return location.remove("//localhost/");
+#else
+            return location.remove("//localhost");
+#endif
+        }
+
         case ITunesTrackModel::COLUMN_DURATION:
             value = findValueByKey(songNode,"Total Time");
             if (qVariantCanConvert<int>(value)) {
@@ -256,6 +272,8 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     pTrack->setAlbum(findValueByKey(songNode,"Album"));
     pTrack->setYear(findValueByKey(songNode,"Year"));
     pTrack->setGenre(findValueByKey(songNode,"Genre"));
+    pTrack->setBpm(findValueByKey(songNode,"BPM").toFloat());
+
     // ITunes stores time in total milliseconds
     pTrack->setDuration(findValueByKey(songNode,"Total Time").toInt() / 1000);
 
