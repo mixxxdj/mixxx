@@ -262,17 +262,17 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     
     
     if(title_p)
-      Track->setTitle(title_p);
+      Track->setTitle(QString::fromUtf8(title_p));
     if(artist_p)
-      Track->setArtist(artist_p);
+      Track->setArtist(QString::fromUtf8(artist_p));
     if(album_p)
-      Track->setAlbum(album_p);
+      Track->setAlbum(QString::fromUtf8(album_p));
     if(year_p)
-      Track->setYear(year_p);
+      Track->setYear(QString::fromUtf8(year_p));
     if(genre_p)
-      Track->setGenre(genre_p);
+      Track->setGenre(QString::fromUtf8(genre_p));
     if(track_p)
-      Track->setTrackNumber(track_p);
+      Track->setTrackNumber(QString::fromUtf8(track_p));
     if (bpm_p) {
         float bpm = str2bpm(bpm_p);
         if(bpm > 0.0f) {

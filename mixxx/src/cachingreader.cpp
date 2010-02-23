@@ -549,6 +549,14 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
 
+    if (m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
+        qDebug() << "Track is invalid: " << filename;
+        emit(trackLoadFailed(
+            pTrack,
+            QString("The file '%1' could not be loaded.").arg(filename)));
+        return;
+    }
+
     // Clear the chunks to read list.
     m_chunksToRead.clear();
 

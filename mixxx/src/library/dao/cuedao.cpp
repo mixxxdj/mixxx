@@ -125,7 +125,7 @@ bool CueDAO::deleteCuesForTrack(int trackId) {
 }
 
 bool CueDAO::saveCue(Cue* cue) {
-    qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
     Q_ASSERT(cue);
     if (cue->getId() == -1) {
         //Start the transaction
@@ -180,7 +180,7 @@ bool CueDAO::saveCue(Cue* cue) {
 }
 
 bool CueDAO::deleteCue(Cue* cue) {
-    qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
     if (cue->getId() != -1) {
         QSqlQuery query(m_database);
         query.prepare("DELETE FROM " CUE_TABLE " WHERE id = :id");
@@ -203,8 +203,8 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
     const QList<Cue*>& cueList = pTrack->getCuePoints();
     const QList<Cue*>& oldCueList = getCuesForTrack(trackId);
 
-    //qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
-    //<< "new size:" << cueList.size();
+    // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
+    //          << "new size:" << cueList.size();
 
     QListIterator<Cue*> oldCues(oldCueList);
     QSet<int> oldIds;
@@ -220,17 +220,25 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
     while (cueIt.hasNext()) {
         Cue* cue = cueIt.next();
         if (cue->getId() == -1) {
-            qDebug() << "Saving new cue";
+            //qDebug() << "Saving new cue";
             // New cue
             cue->setTrackId(trackId);
             saveCue(cue);
-        } else if (oldIds.contains(cue->getId())) {
-            qDebug() << "Updating cue" << cue->getId();
+        } else {
+            oldIds.remove(cue->getId());
+            //qDebug() << "Updating cue" << cue->getId();
             // Update cue
             saveCue(cue);
-        } else {
-            qDebug() << "Deleting cue" << cue->getId();
-            // Delete cue
+        }
+    }
+
+    cueIt = QListIterator<Cue*>(oldCueList);
+    while (cueIt.hasNext()) {
+        Cue* cue = cueIt.next();
+        // If the cue's id is still in the oldIds set, then it was not a member
+        // of the new set of Cues, so the cue should be deleted.
+        if (oldIds.contains(cue->getId())) {
+            //qDebug() << "Deleting cue" << cue->getId();
             deleteCue(cue);
         }
     }

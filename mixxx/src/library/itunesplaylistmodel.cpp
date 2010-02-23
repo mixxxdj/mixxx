@@ -55,6 +55,8 @@ QVariant ITunesPlaylistModel::data ( const QModelIndex & index, int role ) const
                 return pTrack->getAlbum();
             case ITunesPlaylistModel::COLUMN_DATE:
                 return pTrack->getYear();
+            case ITunesPlaylistModel::COLUMN_BPM:
+                return pTrack->getBpm();
             case ITunesPlaylistModel::COLUMN_GENRE:
                 return pTrack->getGenre();
             case ITunesPlaylistModel::COLUMN_LOCATION:
@@ -103,6 +105,9 @@ QVariant ITunesPlaylistModel::headerData ( int section, Qt::Orientation orientat
 
             case ITunesPlaylistModel::COLUMN_DATE:
                 return QString(tr("Date"));
+
+            case ITunesPlaylistModel::COLUMN_BPM:
+                return QString(tr("BPM"));
 
             case ITunesPlaylistModel::COLUMN_GENRE:
                 return QString(tr("Genre"));
