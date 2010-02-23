@@ -247,7 +247,7 @@ void TrackDAO::removeTrack(int id)
     //Mark the track as deleted!
     query.prepare("UPDATE library "
                   "SET mixxx_deleted=1 "
-                  "WHERE id==" + QString("%1").arg(id));
+                  "WHERE id = " + QString("%1").arg(id));
     query.exec();
     //query.finish();
 

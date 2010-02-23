@@ -24,6 +24,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
+#include "mixxxkeyboard.h"
 #include "librarymidicontrol.h"
 
 // This is is the name which we use to register the WTrackTableView with the
@@ -48,7 +49,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
     if(PromoTracksFeature::isSupported(m_pConfig)) {
-        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig, 
+        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
                                                        m_pTrackCollection);
         addFeature(m_pPromoTracksFeature);
     }
@@ -84,9 +85,11 @@ Library::~Library() {
 }
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
-                         WLibrary* pLibraryWidget) {
+                         WLibrary* pLibraryWidget,
+                         MixxxKeyboard* pKeyboard) {
     WTrackTableView* pTrackTableView =
         new WTrackTableView(pLibraryWidget, m_pConfig);
+    pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackInfoObject*)),
@@ -97,7 +100,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
 
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
-    
+
     m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
 
     // Setup the sources view
@@ -106,11 +109,11 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
-    
+
     QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pSidebarWidget, pLibraryWidget);
+        feature->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
     }
 
     // Enable the default selection

@@ -66,7 +66,8 @@ bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget) {
+                               WLibrary* libraryWidget,
+                               MixxxKeyboard* keyboard) {
     WBrowseTableView* pBrowseView = new WBrowseTableView(libraryWidget,
                                                          m_pConfig);
 
