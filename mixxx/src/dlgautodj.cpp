@@ -16,7 +16,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
 
     m_pConfig = pConfig;
     m_pTrackCollection = pTrackCollection;
-    m_iNextTrackIndex = 0;
     m_bAutoDJEnabled = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig);
 
@@ -126,8 +125,6 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
 {
     if (toggle) //Enable Auto DJ
     {
-        m_iNextTrackIndex = 0;
-
         if (m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 1.0f) {
             qDebug() << "One player must be stopped before enabling Auto DJ mode";
             pushButtonAutoDJ->setChecked(false);
@@ -147,6 +144,22 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
             pushButtonAutoDJ->setChecked(false);
             return;
         }
+        
+        //Manually override the "next track is already loaded" flag
+        //because we've already primed a player with the first track.
+        //We do this so that you don't lose the first song in your 
+        //Auto DJ queue if you enable Auto DJ then change your mind
+        //and disable it right away. This just makes it a little bit
+        //more user friendly. :)
+        m_bNextTrackAlreadyLoaded = true;
+
+        //If there are no tracks in the Auto DJ queue, disable Auto DJ mode.
+       /* if (m_pAutoDJTableModel->rowCount() == 0)
+        {
+            //Queue was empty. Disable and return.
+            pushButtonAutoDJ->setChecked(false);
+            return;
+        }*/ //don't need this code, above block takes care of this case.
 
         //If Player 1 is playing and player 2 is stopped...
         if (m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f) {
@@ -184,17 +197,20 @@ void DlgAutoDJ::player1PositionChanged(double value)
         //Crossfade!
         float crossfadeValue = -1.0f + 2*(value-posThreshold)/(1.0f-posThreshold);
         m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
-
         //If the second player is stopped, load a track into it and start
         //playing it!
         if (m_pCOPlay2->get() == 0.0f)
         {
             //Turn on STOP mode to tell Player 1 to stop at the end
             m_pCOTrackEndMode1->slotSet(0.0f);
-
+        
             //Load the next track into Player 2
-            if (!loadNextTrackFromQueue(true))
-                return;
+            if (!m_bNextTrackAlreadyLoaded) //Fudge to make us not skip the first track
+            {
+                if (!loadNextTrackFromQueue(true))
+                    return;
+            }
+            m_bNextTrackAlreadyLoaded = false; //Reset fudge
 
             //Turn on NEXT mode to tell Player 2 to start playing when the new track is loaded.
             //This helps us get around the fact that it takes time for the track to be loaded
@@ -227,8 +243,12 @@ void DlgAutoDJ::player2PositionChanged(double value)
             m_pCOTrackEndMode2->slotSet(0.0f);
 
             //Load the next track into player 1
-            if (!loadNextTrackFromQueue(true))
-                return;
+            if (!m_bNextTrackAlreadyLoaded) //Fudge to make us not skip the first track
+            {   
+                if (!loadNextTrackFromQueue(true))
+                    return;
+            }
+            m_bNextTrackAlreadyLoaded = false; //Reset fudge 
 
             //Turn on NEXT mode to tell Player 1 to start playing when the new track is loaded.
             //This helps us get around the fact that it takes time for the track to be loaded
@@ -261,6 +281,8 @@ bool DlgAutoDJ::loadNextTrackFromQueue(bool removeTopMostBeforeLoading)
         pushButtonAutoDJ->setChecked(false);
         return false;
     }
+    
+    m_bNextTrackAlreadyLoaded = false;
 
     emit(loadTrack(nextTrack));
 
