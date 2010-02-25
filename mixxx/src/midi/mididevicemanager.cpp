@@ -16,10 +16,6 @@
 
 #include <QtCore>
 #include "mididevice.h"
-//#include "midilearnlistener.h"
-//#include "midilearningprocessor.h"
-//#include "midicontrolprocessor.h"
-#include "midideviceportmidi.h"
 #include "dlgprefmidibindings.h"
 #include "mididevicemanager.h"
 #include "../mixxxcontrol.h"
@@ -31,6 +27,11 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 {
     m_pConfig = pConfig;
     m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
+
+    m_PMEnumerator = new PortMidiEnumerator();
+#ifdef __HSS1394__
+    m_HSSEnumerator = new Hss1394Enumerator();
+#endif
 }
 
 MidiDeviceManager::~MidiDeviceManager()
@@ -72,8 +73,12 @@ QList<MidiDevice*> MidiDeviceManager::getDeviceList(bool bOutputDevices, bool bI
     qDebug() << "MidiDeviceManager::getDeviceList";
     bool bMatchedCriteria = false;   //Whether or not the current device matched the filtering criteria
 
-    if (m_devices.empty())
-        this->queryDevices();
+    if (m_devices.empty()) {
+        m_devices = m_PMEnumerator->queryDevices();
+#ifdef __HSS1394__
+        m_devices.append(m_HSSEnumerator->queryDevices());
+#endif
+    }
 
     //Create a list of MIDI devices filtered to match the given input/output options.
     QList<MidiDevice*> filteredDeviceList;
@@ -101,98 +106,6 @@ void MidiDeviceManager::closeDevices()
     {
         qDebug() << "Closing MIDI device" << dev_it.peekNext()->getName();
         dev_it.next()->close();
-    }
-}
-
-/** Enumerate the MIDI devices 
-  * This method needs a bit of intelligence because PortMidi (and the underlying MIDI APIs) like to split
-  * output and input into separate devices. Eg. PortMidi would tell us the Hercules is two half-duplex devices.
-  * To help simplify a lot of code, we're going to aggregate these two streams into a single full-duplex device.
-  */
-void MidiDeviceManager::queryDevices()
-{
-    qDebug() << "Scanning MIDI devices:";
-    int iNumDevices = Pm_CountDevices();
-    
-    QListIterator<MidiDevice*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
-    
-    m_devices.clear();
-    
-    const PmDeviceInfo *deviceInfo, *inputDeviceInfo, *outputDeviceInfo;
-    int inputDevIndex, outputDevIndex;
-    QMap<int,QString> unassignedOutputDevices;
-    
-    // Build a complete list of output devices for later pairing
-    for (int i = 0; i < iNumDevices; i++)
-    {
-        deviceInfo = Pm_GetDeviceInfo(i);
-        if (deviceInfo->output) {
-            qDebug() << " Found output device" << "#" << i << deviceInfo->name;
-            QString deviceName = deviceInfo->name;
-            // Ignore "To" text in the device names
-            if (deviceName.indexOf("to",0,Qt::CaseInsensitive)!=-1) deviceName = deviceName.right(deviceName.length()-2);
-            unassignedOutputDevices[i] = deviceName;
-        }
-    }
-
-    // Search for input devices and pair them with output devices if applicable
-    for (int i = 0; i < iNumDevices; i++)
-    {
-        deviceInfo = Pm_GetDeviceInfo(i);
-        
-        //If we found an input device
-        if (deviceInfo->input)
-        {
-            qDebug() << " Found input device" << "#" << i << deviceInfo->name;
-            inputDeviceInfo = deviceInfo;
-            inputDevIndex = i;
-            
-            //Reset our output device variables before we look for one incase we find none.
-            outputDeviceInfo = NULL;
-            outputDevIndex = -1;
-            
-            //Search for a corresponding output device
-            QMapIterator<int, QString> j(unassignedOutputDevices);
-            while (j.hasNext()) {
-                j.next();
-                
-                // Ignore "From" text in the device names
-                QString deviceName = inputDeviceInfo->name;
-                if (deviceName.indexOf("from",0,Qt::CaseInsensitive)!=-1) deviceName = deviceName.right(deviceName.length()-4);
-
-                QByteArray outputName = QString(j.value()).toUtf8();
-                if (strcmp(outputName, deviceName) == 0) {
-                    outputDevIndex = j.key();
-                    outputDeviceInfo = Pm_GetDeviceInfo(outputDevIndex);
-                    
-                    unassignedOutputDevices.remove(outputDevIndex);
-                    
-                    qDebug() << "    Linking to output device #" << outputDevIndex << outputName;
-                    break;
-                }
-            }
-
-            //So at this point in the code, we either have an input-only MIDI device (outputDeviceInfo == NULL)
-            //or we've found a matching output MIDI device (outputDeviceInfo != NULL).
-            
-            //.... so create our (aggregate) MIDI device!            
-            MidiDevicePortMidi *currentDevice = new MidiDevicePortMidi(/*new MidiControlProcessor(NULL)*/ NULL,
-                                                                          inputDeviceInfo,
-                                                                          outputDeviceInfo,
-                                                                          inputDevIndex,
-                                                                          outputDevIndex); 
-            m_devices.push_back((MidiDevice*)currentDevice);
-            
-        }
-
-//         if (deviceInfo->input || deviceInfo->output)
-//         {
-//             MidiDevicePortMidi *currentDevice = new MidiDevicePortMidi(new MidiControlProcessor(NULL), deviceInfo, i);
-//             m_devices.push_back((MidiDevice*)currentDevice);
-//         }
     }
 }
 
