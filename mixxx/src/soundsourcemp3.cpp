@@ -502,11 +502,12 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     // mad-dev post in 2002-25-Jan on how to use libid3 by Rob Leslie
     // http://www.mars.org/mailman/public/mad-dev/2002-January/000439.html
     id3_file * fh = id3_file_open(qstrdup(location.toLocal8Bit()), ID3_FILE_MODE_READONLY);
-    if (fh!=0)
-    {
+    if (!fh) {
+		qDebug() << "SSMP3::ParseHeader : error opening ID3 tags";
+		//return ERR; //the file can still be valid without ID3 tags...
+	} else {
         id3_tag * tag = id3_file_tag(fh);
-        if (tag!=0)
-        {
+        if (tag!=0) {
             // Frame names can be found here:
             // http://www.id3.org/id3v2.4.0-frames.txt
             QString s;
@@ -537,8 +538,6 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
                 Track->setBpm(bpm);
                 Track->setBpmConfirm(true);
             }
-            Track->setHeaderParsed(true);
-
             /*
                // On some tracks this segfaults. TLEN is very seldom used anyway...
                QString dur;
@@ -550,6 +549,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
         // this closes 'tag' for us
         id3_file_close(fh);
     }
+
 
     // Get file length. This has to be done by one of these options:
     // 1) looking for the tag named TLEN (above),
@@ -664,6 +664,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
     mad_stream_finish(&Stream);
     file.close();
+	Track->setHeaderParsed(true);
     return OK;
 
 }

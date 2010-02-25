@@ -116,7 +116,9 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
+#ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
+#endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
@@ -783,7 +785,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
-                    //m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+#ifdef __LADSPA__
+//                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+#endif
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
