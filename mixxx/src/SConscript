@@ -215,6 +215,7 @@ vars.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Ca
 vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
+vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
 vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
@@ -525,7 +526,7 @@ if not conf.CheckLib(['mad','libmad']):
 #Check for libsndfile
 #if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
 if not conf.CheckLib(['sndfile', 'libsndfile']):
-	print "Did not find libsndfile or it\'s development headers, exiting!"
+	print "Did not find libsndfile or its development headers, exiting!"
 	Exit(1)
 else:
 	#env.Append(LIBS='sndfile') #XXX is this necessary?
@@ -602,18 +603,23 @@ if not conf.CheckHeader(['porttime.h']):
 
 if not platform == 'osx':   # OSX doesn't need PortTime for some reason
 	if not conf.CheckLib(['porttime', 'libporttime']):
-		print "Did not find PortTime or it\'s development headers, exiting!"
+		print "Did not find PortTime or its development headers, exiting!"
 		Exit(1)
 
 #Check for PortMIDI & PortTime
 if not conf.CheckLib(['portmidi', 'libportmidi']):
- 	print "Did not find PortMidi or it\'s development headers, exiting!"
+ 	print "Did not find PortMidi or its development headers, exiting!"
  	Exit(1)
-
 
 sources += Split("""midi/mididevice.cpp """);
 sources += Split("""midi/mididevicemanager.cpp """);
 sources += Split("""midi/midideviceportmidi.cpp """);
+
+#Check for HSS1394
+flags_hss1394 = getFlags(env, 'hss1394', 0)
+if int(flags_hss1394) and not conf.CheckLib(['hss1394', 'libhss1394']):
+ 	print "Did not find HSS1394 or its development headers, exiting!"
+ 	Exit(1)
 
 #Platform-specific checks for Linux...
 if platform == 'linux':
@@ -963,7 +969,7 @@ else:
 	print "Shoutcast support... disabled"
 
 #LADSPA
-flags_ladspa = getFlags(env, 'ladspa', 0) # 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
+flags_ladspa = getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['#lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CPPDEFINES = '__LADSPA__')
@@ -1145,6 +1151,17 @@ if int(flags_midiscript):
 else:
 	flags_midiscript = 0
 	print "MIDI Scripting... disabled"
+	
+# HSS1394
+if int(flags_hss1394):
+	print "HSS1394... enabled"
+
+	build_flags += 'hss1394 '
+	sources += Split("""midi/mididevicehss1394.cpp""")
+	env.Append(CPPDEFINES = '__HSS1394__')
+else:
+	flags_hss1394 = 0
+	print "HSS1394... disabled"
 
 # Profiling and Optimization
 if not 'win' in platform:
@@ -1684,7 +1701,7 @@ def BuildUbuntuPackage(target, source, env):
 			print "* Applying post export patch"
 			print
 			os.system('cp --dereference -r post-export-patch/* ubuntu/'+mixxx_dir)
-		
+
 		os.chdir('ubuntu')
 		# Tar the source code
 		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz ... (this can take a couple minutes)"
