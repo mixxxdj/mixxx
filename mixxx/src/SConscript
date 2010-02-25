@@ -608,12 +608,15 @@ if not platform == 'osx':   # OSX doesn't need PortTime for some reason
 
 #Check for PortMIDI & PortTime
 if not conf.CheckLib(['portmidi', 'libportmidi']):
- 	print "Did not find PortMidi or its development headers, exiting!"
- 	Exit(1)
+	print "Did not find PortMidi or its development headers, exiting!"
+	Exit(1)
 
-sources += Split("""midi/mididevice.cpp """);
-sources += Split("""midi/mididevicemanager.cpp """);
-sources += Split("""midi/midideviceportmidi.cpp """);
+sources += Split("""midi/mididevice.cpp 
+					midi/mididevicemanager.cpp
+					midi/midideviceenumerator.cpp
+					midi/midideviceportmidi.cpp
+					midi/portmidienumerator.cpp
+					""");
 
 #Check for HSS1394
 flags_hss1394 = getFlags(env, 'hss1394', 0)
@@ -1157,7 +1160,7 @@ if int(flags_hss1394):
 	print "HSS1394... enabled"
 
 	build_flags += 'hss1394 '
-	sources += Split("""midi/mididevicehss1394.cpp""")
+	sources += Split("""midi/mididevicehss1394.cpp midi/hss1394enumerator.cpp""")
 	env.Append(CPPDEFINES = '__HSS1394__')
 else:
 	flags_hss1394 = 0
