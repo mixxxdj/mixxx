@@ -963,7 +963,7 @@ else:
 	print "Shoutcast support... disabled"
 
 #LADSPA
-flags_ladspa = getFlags(env, 'ladspa', 0) # 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
+flags_ladspa = getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['#lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CPPDEFINES = '__LADSPA__')
@@ -1684,7 +1684,7 @@ def BuildUbuntuPackage(target, source, env):
 			print "* Applying post export patch"
 			print
 			os.system('cp --dereference -r post-export-patch/* ubuntu/'+mixxx_dir)
-		
+
 		os.chdir('ubuntu')
 		# Tar the source code
 		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz ... (this can take a couple minutes)"
