@@ -61,7 +61,7 @@ void SoundSourceProxy::initialize(QString qFilename) {
     QString filename = qFilename.toLower();
     if (filename.endsWith(".mp3"))
         m_pSoundSource = new SoundSourceMp3(qFilename);
-    else if (filename.endsWith(".ogg") || filename.endsWith(".oga"))
+    else if (filename.endsWith(".ogg"))
         m_pSoundSource = new SoundSourceOggVorbis(qFilename);
 #ifdef __M4A__
     else if (filename.endsWith(".m4a") ||
@@ -115,7 +115,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
     QString filename = qFilename.toLower();
     if (filename.endsWith(".mp3"))
         return SoundSourceMp3::ParseHeader(p);
-    else if (filename.endsWith(".ogg") || filename.endsWith(".oga"))
+    else if (filename.endsWith(".ogg"))
         return SoundSourceOggVorbis::ParseHeader(p);
 #ifdef __M4A__
     else if (filename.endsWith(".m4a") ||
