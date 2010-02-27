@@ -43,7 +43,9 @@ public:
     // Execute a particular function
     bool execute(QString function); 
     // Execute a particular function with a data string (e.g. a device ID)
-    bool execute(QString function, QString data); 
+    bool execute(QString function, QString data);
+    // Execute a particular function with a data buffer (e.g. a SysEx message)
+    bool execute(QString function, const unsigned char* data, unsigned int length);
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
                  char control, char value, MidiStatusByte status, QString group); 
@@ -73,6 +75,7 @@ private:
     bool safeEvaluate(QString filepath);
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);
+    bool safeExecute(QString function, const unsigned char* data, unsigned int length);
     bool safeExecute(QString function, char channel, 
                      char control, char value, MidiStatusByte status, QString group);
     void initializeScriptEngine();

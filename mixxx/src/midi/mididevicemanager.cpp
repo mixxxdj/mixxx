@@ -36,14 +36,10 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 
 MidiDeviceManager::~MidiDeviceManager()
 {
-    //Delete enumerators
-    PortMidiEnumerator* temp1 = m_pPMEnumerator;
-    m_pPMEnumerator = NULL;
-    delete temp1;
+    //Delete enumerators and they'll delete their Devices
+    delete m_pPMEnumerator;
 #ifdef __HSS1394__
-    Hss1394Enumerator* temp2 = m_pHSSEnumerator;
-    m_pHSSEnumerator = NULL;
-    delete temp2;
+    delete m_pHSSEnumerator;
 #endif
 }
 

@@ -11,9 +11,28 @@
 */
 typedef enum {
     MIDI_STATUS_NOTE_OFF   = 0x80,
-    MIDI_STATUS_NOTE_ON    = 0x90,    
+    MIDI_STATUS_NOTE_ON    = 0x90,
+    MIDI_STATUS_AFTERTOUCH = 0xA0,
     MIDI_STATUS_CC         = 0xB0,
+    MIDI_STATUS_PROGRAM_CH = 0xC0,
+    MIDI_STATUS_CH_AFTERTOUCH = 0xD0,
     MIDI_STATUS_PITCH_BEND = 0xE0,
+    MIDI_STATUS_SYSEX      = 0xF0,
+    MIDI_STATUS_TIME_CODE   = 0xF1,
+    MIDI_STATUS_SONG_POS    = 0xF2,
+    MIDI_STATUS_SONG        = 0xF3,
+    MIDI_STATUS_UNDEFINED1  = 0xF4,
+    MIDI_STATUS_UNDEFINED2  = 0xF5,
+    MIDI_STATUS_TUNE_REQ    = 0xF6,
+    MIDI_STATUS_EOX         = 0xF7,
+    MIDI_STATUS_TIMING_CLK  = 0xF8,
+    MIDI_STATUS_UNDEFINED3  = 0xF9,
+    MIDI_STATUS_START       = 0xFA,
+    MIDI_STATUS_CONTINUE    = 0xFB,
+    MIDI_STATUS_STOP        = 0xFC,
+    MIDI_STATUS_UNDEFINED4  = 0xFD,
+    MIDI_STATUS_ACTIVE_SENSE= 0xFE,
+    MIDI_STATUS_SYSTEM_RESET= 0xFF,
 } MidiStatusByte;
   
  // This enum is used in the decoding of the status message into voice categories
@@ -47,8 +66,9 @@ typedef enum {
           QString toString() const;
           bool operator==(const MidiMessage& other) const {
             //Compare high bits, which ignores the channel
-            if ((this->getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND) {
-                //Ignore midiNo for pitch messages because that byte is part of the message payload.
+            if ((this->getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND ||
+                (this->getMidiStatusByte() & 0xF0) == MIDI_STATUS_SYSEX) {
+                //Ignore midiNo for pitch and sysex messages because that byte is part of the message payload.
                 //(See the MIDI spec.)
                 return (this->getMidiStatusByte() == other.getMidiStatusByte());
             }

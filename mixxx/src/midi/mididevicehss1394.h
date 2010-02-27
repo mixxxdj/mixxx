@@ -28,26 +28,39 @@
   *@author Sean M. Pappalardo
   */
 
+class DeviceChannelListener : public hss1394::ChannelListener {
+    public:
+        DeviceChannelListener(int id, QString name, MidiDevice* midiDevice);
+        void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
+        void Disconnected();
+        void Reconnected();
+    private:
+        int m_iId;
+        QString m_sName;
+        MidiDevice *m_pMidiDevice;
+};
+
 /** An HSS1394-based implementation of MidiDevice */
 class MidiDeviceHss1394 : public MidiDevice {
-public:
-    MidiDeviceHss1394(MidiMapping* mapping, 
-                       const hss1394::TNodeInfo* deviceInfo, 
-                       int deviceIndex);
-    ~MidiDeviceHss1394();
-    int open();
-    int close();
-    void sendShortMsg(unsigned int word);
-    void sendSysexMsg(unsigned char data[], unsigned int length);
-protected:
-    void run();
-    const hss1394::TNodeInfo* m_pDeviceInfo;
-    int m_iDeviceIndex;
-    //PmEvent m_midiBuffer[MIXXX_HSS1394_BUFFER_LEN];
-    static QList<QString> m_deviceList;
-    QMutex m_mutex;         /** Protects access to this object. Makes it thread safe. */
-    static QMutex m_sHSSLock;    // HSS1394 is not thread-safe, so we need to only allow one thread at a time
-    bool m_bStopRequested;
+    public:
+        MidiDeviceHss1394(MidiMapping* mapping, 
+                           const hss1394::TNodeInfo deviceInfo, 
+                           int deviceIndex);
+        ~MidiDeviceHss1394();
+        int open();
+        int close();
+        void sendShortMsg(unsigned int word);
+        void sendSysexMsg(unsigned char data[], unsigned int length);
+
+    protected:
+        void run() { };
+        hss1394::TNodeInfo m_deviceInfo;
+        int m_iDeviceIndex;
+        static QList<QString> m_deviceList;
+        QMutex m_mutex;         /** Protects access to this object. Makes it thread safe. */
+        static QMutex m_sHSSLock;    // HSS1394 is not thread-safe, so we need to only allow one thread at a time
+        hss1394::Channel* m_pChannel;
+        DeviceChannelListener *m_pChannelListener;
 };
 
 #endif
