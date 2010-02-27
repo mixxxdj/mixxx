@@ -1,8 +1,8 @@
 /****************************************************************/
 /*      Stanton SCS.1d MIDI controller script vPre              */
-/*          Copyright (C) 2009, Sean M. Pappalardo              */
+/*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.x                                 */
+/*      For Mixxx version 1.8.x                                 */
 /****************************************************************/
 
 function StantonSCS1d() {}
@@ -24,7 +24,7 @@ StantonSCS1d.scratching = {     "sensitivity":0.11,          // How much the aud
 StantonSCS1d.debug = true;  // Enable/disable debugging messages to the console
 StantonSCS1d.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1d.channel = 0;   // MIDI channel the device is on
-StantonSCS1d.swVersion = "1.7";   // Mixxx version for display
+StantonSCS1d.swVersion = "1.8";   // Mixxx version for display
 StantonSCS1d.buttons = { "control":27, "browse":28, "vinyl":29, "deckSelect":64 };
 
 StantonSCS1d.platterMode = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // Set vinyl mode on both decks
@@ -452,6 +452,10 @@ StantonSCS1d.pitchReset = function (channel, control, value, status) {
     }
 }
 
+StantonSCS1d.platterMoved = function (data) {
+	print("SCS1d.PlatterMoved: "+data);
+}
+
 StantonSCS1d.platterGrabbed = function (channel, control, value, status) {
     // Ignore if the music speed is outside the motor abilities and the platter is stopped
     if (StantonSCS1d.state["outsideMotor"]) return;
@@ -621,6 +625,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
             midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
             midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
             if (!StantonSCS1d.fastDeckChange) { // Make flashy lights to signal a deck change
+				// TODO: Replace this with a timer
                 var number='1'.toInt();
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on

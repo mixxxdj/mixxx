@@ -2,7 +2,7 @@
 /*      Stanton SCS.1m MIDI controller script v1.1              */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.x                                 */
+/*      For Mixxx version 1.8.x                                 */
 /****************************************************************/
 
 function StantonSCS1m() {}
@@ -21,7 +21,7 @@ StantonSCS1m.debug = false; // Enable/disable debugging messages to the console
 StantonSCS1m.faderStart = true; // Allows decks to start when their channel or cross fader is opened (toggleable with the top button)
 StantonSCS1m.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1m.channel = 0;   // MIDI channel the device is on
-StantonSCS1m.swVersion = "1.7";   // Mixxx version for display
+StantonSCS1m.swVersion = "1.8";   // Mixxx version for display
 StantonSCS1m.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messages for this device
 StantonSCS1m.modifier = { };    // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS1m.selectKnobMode = "browse"; // Current mode for the gray select knob
@@ -593,6 +593,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
             StantonSCS1m.lastTime[deck]=message;
         }
         // Flash near the end of the track
+        // TODO: Use a timer for this
         if (trackTimeRemaining<=30 && trackTimeRemaining>15) {   // If <30s left, flash the LCD slowly
             if (StantonSCS1m.displayFlash[deck]==-1) StantonSCS1m.displayFlash[deck] = new Date();
             if (new Date() - StantonSCS1m.displayFlash[deck]>500) {
