@@ -323,8 +323,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(config);
-    //TODO: Try to open MIDI devices?
-    m_pMidiDeviceManager->queryDevices();
     m_pMidiDeviceManager->setupDevices();
 
 

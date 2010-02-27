@@ -30,8 +30,8 @@ class MidiDeviceEnumerator : public QObject
 {
 Q_OBJECT
     public:
-        MidiDeviceEnumerator() { };
-        virtual ~MidiDeviceEnumerator() = 0;
+        MidiDeviceEnumerator();
+        virtual ~MidiDeviceEnumerator();
         virtual QList<MidiDevice*> queryDevices() = 0;
 };
 

@@ -1,13 +1,10 @@
 /***************************************************************************
-                          portmidienumerator.h
-                    PortMIDI Device Enumerator Class
-                    --------------------------------
-    begin                : Thu Feb 25 2010
+                          MidiDeviceEnumerator.cpp
+                       MIDI Device Enumerator Class
+                       ----------------------------
+    begin                : Fri Feb 26 2010
     copyright            : (C) 2010 Sean M. Pappalardo
     email                : spappalardo@mixxx.org
-
-    This class handles discovery and enumeration of DJ controller devices
-    that appear under the PortMIDI cross-platform API.
 
 ***************************************************************************/
 
@@ -19,19 +16,13 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#ifndef PORTMIDIENUMERATOR_H
-#define PORTMIDIENUMERATOR_H
 
 #include "midideviceenumerator.h"
 
-class PortMidiEnumerator : public MidiDeviceEnumerator
+MidiDeviceEnumerator::MidiDeviceEnumerator() : QObject()
 {
-    public:
-        PortMidiEnumerator();
-        ~PortMidiEnumerator();
-        QList<MidiDevice*> queryDevices();
-    private:
-        QList<MidiDevice*> m_devices;
-};
+}
 
-#endif
+MidiDeviceEnumerator::~MidiDeviceEnumerator() {
+    // In this function, the inheriting class must delete the Devices it creates
+}
