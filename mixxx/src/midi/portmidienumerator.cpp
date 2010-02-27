@@ -25,7 +25,11 @@ PortMidiEnumerator::PortMidiEnumerator() : MidiDeviceEnumerator() {
 }
 
 PortMidiEnumerator::~PortMidiEnumerator() {
-    // Delete MidiDevice objects here
+    qDebug() << "Deleting PortMIDI devices...";
+    QListIterator<MidiDevice*> dev_it(m_devices);
+    while (dev_it.hasNext()) {
+        delete dev_it.next();
+    }
 }
 
 /** Enumerate the MIDI devices 

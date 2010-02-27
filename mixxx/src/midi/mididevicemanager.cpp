@@ -28,15 +28,23 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
     m_pConfig = pConfig;
     m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
 
-    m_PMEnumerator = new PortMidiEnumerator();
+    m_pPMEnumerator = new PortMidiEnumerator();
 #ifdef __HSS1394__
-    m_HSSEnumerator = new Hss1394Enumerator();
+    m_pHSSEnumerator = new Hss1394Enumerator();
 #endif
 }
 
 MidiDeviceManager::~MidiDeviceManager()
 {
-    closeDevices();
+    //Delete enumerators
+    PortMidiEnumerator* temp1 = m_pPMEnumerator;
+    m_pPMEnumerator = NULL;
+    delete temp1;
+#ifdef __HSS1394__
+    Hss1394Enumerator* temp2 = m_pHSSEnumerator;
+    m_pHSSEnumerator = NULL;
+    delete temp2;
+#endif
 }
 
 void MidiDeviceManager::saveMappings(bool onlyActive) {
@@ -74,9 +82,9 @@ QList<MidiDevice*> MidiDeviceManager::getDeviceList(bool bOutputDevices, bool bI
     bool bMatchedCriteria = false;   //Whether or not the current device matched the filtering criteria
 
     if (m_devices.empty()) {
-        m_devices = m_PMEnumerator->queryDevices();
+        m_devices = m_pPMEnumerator->queryDevices();
 #ifdef __HSS1394__
-        m_devices.append(m_HSSEnumerator->queryDevices());
+        m_devices.append(m_pHSSEnumerator->queryDevices());
 #endif
     }
 
@@ -99,15 +107,15 @@ QList<MidiDevice*> MidiDeviceManager::getDeviceList(bool bOutputDevices, bool bI
     return filteredDeviceList;
 }
 
-void MidiDeviceManager::closeDevices()
-{
-    QListIterator<MidiDevice*> dev_it(m_devices);
-    while (dev_it.hasNext())
-    {
-        qDebug() << "Closing MIDI device" << dev_it.peekNext()->getName();
-        dev_it.next()->close();
-    }
-}
+//void MidiDeviceManager::closeDevices()
+//{
+//    QListIterator<MidiDevice*> dev_it(m_devices);
+//    while (dev_it.hasNext())
+//    {
+//        qDebug() << "Closing MIDI device" << dev_it.peekNext()->getName();
+//        dev_it.next()->close();
+//    }
+//}
 
 /** Open whatever MIDI devices are selected in the preferences. */
 int MidiDeviceManager::setupDevices()

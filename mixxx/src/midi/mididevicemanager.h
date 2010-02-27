@@ -20,7 +20,7 @@
 #include "configobject.h"
 #include "portmidienumerator.h"
 #ifdef __HSS1394__
-    #include "hss1394numerator.h"
+    #include "hss1394enumerator.h"
 #endif
 
 class MidiDevice;
@@ -36,8 +36,7 @@ class MidiDeviceManager : public QObject
         QList<MidiDevice*> getDeviceList(bool bOutputDevices=true, bool bInputDevice=true);
         QStringList getConfigList(QString path);
         void saveMappings(bool onlyActive=false);
-        void closeDevices();
-        void queryDevices();
+        //void closeDevices();
         int setupDevices();
         ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
         void associateInputAndOutputDevices(MidiDevice* inputDevice, QString outputDeviceName);
@@ -47,9 +46,9 @@ class MidiDeviceManager : public QObject
         QList<MidiDevice*> m_devices;
         ConfigObject<ConfigValue> *m_pDeviceSettings;
         ConfigObject<ConfigValue> *m_pConfig;
-        PortMidiEnumerator m_PMEnumerator;
+        PortMidiEnumerator *m_pPMEnumerator;
 #ifdef __HSS1394__
-        Hss1394Enumerator m_HSSEnumerator;
+        Hss1394Enumerator *m_pHSSEnumerator;
 #endif
     };
     
