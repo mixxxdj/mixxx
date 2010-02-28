@@ -342,7 +342,7 @@ StantonSCS1m.pitchRangeKnob2 = function (channel, control, value, status) {
 StantonSCS1m.pitchRangeKnob = function (value,deck) {
     if (StantonSCS1m.checkInSetup()) return;
     var currentValue = engine.getValue("[Channel"+deck+"]","rateRange");
-    var newValue = currentValue+(value-64)*.01;
+    var newValue = Math.round(currentValue*100+(value-64))*0.01;
     if (newValue<=0.01) newValue=0.01;
     if (newValue>1) newValue=1;
     engine.setValue("[Channel"+deck+"]","rateRange",newValue);
@@ -541,6 +541,7 @@ StantonSCS1m.pitchColor = function (value, deck) {
     if (value<=0.25) midi.sendShortMsg(No,49+offset,96);
     else if (value<=0.5) midi.sendShortMsg(No,49+offset,127);
     else if (value>0.5) midi.sendShortMsg(No,49+offset,32);
+    engine.trigger("[Channel"+deck+"]","rate");    // Force pitch display to update
 }
 
 // Virtual platter rings & time displays

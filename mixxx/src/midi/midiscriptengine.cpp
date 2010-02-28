@@ -164,7 +164,7 @@ bool MidiScriptEngine::execute(QString function, QString data) {
    Input:   Function name, pointer to data buffer, length of buffer
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::execute(QString function, const unsigned char* data,
+bool MidiScriptEngine::execute(QString function, const unsigned char data[],
                                unsigned int length) {
     m_scriptEngineLock.lock();
     bool ret = safeExecute(function, data, length);
@@ -254,7 +254,7 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
    Input:   Function name, ponter to data buffer, length of buffer
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::safeExecute(QString function, const unsigned char* data,
+bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
                                     unsigned int length) {
 
     if(m_pEngine == NULL) {
@@ -273,14 +273,9 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char* data,
     if (!scriptFunction.isFunction())
         return false;
 
-    //unsigned char vMidi[];
-
-    //for (int i=0; i<length; i++) {
-    //    vMidi[i] = data[i];
-    //}
-
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, data);
+    args << QScriptValue(m_pEngine, (const char*)data);
+    args << QScriptValue(m_pEngine, length);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -485,6 +480,16 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
         cot->slotSet(newValue);
     }
 
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: qDebugs script output so it ends up in mixxx.log
+   Input:   String to log
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::log(QString message) {
+
+    qDebug()<<message;
 }
 
 /* -------- ------------------------------------------------------

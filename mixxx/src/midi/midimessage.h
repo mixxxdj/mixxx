@@ -66,10 +66,12 @@ typedef enum {
           QString toString() const;
           bool operator==(const MidiMessage& other) const {
             //Compare high bits, which ignores the channel
-            if ((this->getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND ||
-                (this->getMidiStatusByte() & 0xF0) == MIDI_STATUS_SYSEX) {
-                //Ignore midiNo for pitch and sysex messages because that byte is part of the message payload.
-                //(See the MIDI spec.)
+            unsigned short status = this->getMidiStatusByte();
+            if ((status & 0xF0) == MIDI_STATUS_PITCH_BEND ||
+                (status & 0xF0) == MIDI_STATUS_CH_AFTERTOUCH ||
+                (status & 0xF0) == MIDI_STATUS_SYSEX) {
+                //Ignore midiNo for pitch, channel after-touch and 0xFn messages
+                //  because that byte is part of the message payload. (See the MIDI spec.)
                 return (this->getMidiStatusByte() == other.getMidiStatusByte());
             }
             else {

@@ -247,7 +247,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
 #ifdef __MIDISCRIPT__
 // SysEx reception requires scripting
-void MidiDevice::receive(const unsigned char* data, unsigned int length) {
+void MidiDevice::receive(const unsigned char data[], unsigned int length) {
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
 
     QString message = m_strDeviceName+": [";

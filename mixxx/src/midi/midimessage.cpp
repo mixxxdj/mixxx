@@ -97,11 +97,13 @@ QString MidiMessage::toString() const
 uint qHash(const MidiMessage& key)
 {
     //& with 0xF0 to ignore the channel bits for comparison purposes.
-    if ((key.getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND ||
-        (key.getMidiStatusByte() & 0xF0) == MIDI_STATUS_SYSEX) { 
-        //Ignore midino for pitch bend messages because those bits are actually part of the 14-bit pitch bend payload.
-        //Ignore also for 0xFn messages since everything after the status byte is data in most cases
-        return key.getMidiStatusByte(); 
+    unsigned short status = key.getMidiStatusByte();
+    if ((status & 0xF0) == MIDI_STATUS_PITCH_BEND ||
+        (status & 0xF0) == MIDI_STATUS_CH_AFTERTOUCH ||
+        (status & 0xF0) == MIDI_STATUS_SYSEX) { 
+        //Ignore midino for pitch bend, channel after-touch and 0xFn messages
+        //  because that byte is part of the message payload.
+        return status; 
     }
     else
         return (key.getMidiByte2On() << 16) | (key.getMidiStatusByte() << 8) | key.getMidiNo();
