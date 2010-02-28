@@ -13,6 +13,14 @@ String.prototype.toInt = function() {
     return a;
 }
 
+// ----------------- Function overloads ---------------------
+
+// Causes script print() calls to qDebug instead
+//	so they get logged
+print = function(string) {
+	engine.log(string);
+}
+
 // ----------------- Generic functions ---------------------
 
 function secondstominutes(secs)

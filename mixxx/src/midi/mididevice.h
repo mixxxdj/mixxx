@@ -64,7 +64,9 @@ Q_OBJECT
         bool getMidiLearnStatus();
         void receive(MidiStatusByte status, char channel, char control, char value);
 #ifdef __MIDISCRIPT__
-        void receive(const unsigned char* data, unsigned int length);
+        /** Receives System Exclusive (and other unhandled and/or arbitrary-length)
+            messages and passes them straight to a script function. */
+        void receive(const unsigned char data[], unsigned int length);
 #endif
         bool midiDebugging();
         void setReceiveInhibit(bool inhibit);

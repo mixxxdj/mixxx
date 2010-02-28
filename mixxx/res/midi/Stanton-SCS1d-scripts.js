@@ -10,7 +10,7 @@ function StantonSCS1d() {}
 // ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/stanton_scs.1d_mixxx_user_guide  for details
 StantonSCS1d.pitchRanges = [ 0.08, 0.16, 0.25, 0.5 ];   // Pitch ranges (can add more, but the .rangeButton function would need to be extended.)
-StantonSCS1d.fastDeckChange = true;     // Skip the flashy lights if true, for juggling
+StantonSCS1d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
 StantonSCS1d.globalMode = false;        // Stay in the current modes on deck changes if true
 StantonSCS1d.platterSpeed = 0;          // Speed of the platter at 0% pitch: 0=33 RPM, 1=45 RPM
 StantonSCS1d.deckChangeWait = 1000;     // Time in milliseconds to hold the Deck Change button down to avoid changing decks
@@ -33,6 +33,7 @@ StantonSCS1d.padBank = { "deck":1, "bank1":1, "bank2":1 };
 StantonSCS1d.triggerBank = { 1:1, 2:1 };    // Trigger button bank for each deck
 StantonSCS1d.deck = 1;  // Currently active virtual deck
 StantonSCS1d.trackDuration = [0,0]; // Duration of the song on each deck (used for jog LCD and displays)
+StantonSCS1d.lastLight = [-1,-1];	// Last circle LCD values
 StantonSCS1d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS1d.state = { "pitchAbs":0, "jog":0, "dontMove":0, "platterGrabbed":false };   // Temporary state variables
 StantonSCS1d.mutex = { };   // Temporary mutual exclusion variables
@@ -40,7 +41,7 @@ StantonSCS1d.prevValues = { };  // Temporary previous value storage
 StantonSCS1d.inSetup = false;   // Flag for if the device is in setup mode
 StantonSCS1d.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messages for this device
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-StantonSCS1d.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0 };
+StantonSCS1d.scratch = { "revtime":1.8, "alpha":0.1, "beta":1.0, "prevTimeStamp":0 };
 
 // Pitch values for key change mode
 StantonSCS1d.pitchPoints = {    1:{ 8:-0.1998, 9:-0.1665, 10:-0.1332, 11:-0.0999, 12:-0.0666, 13:-0.0333,
@@ -100,19 +101,25 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
 
     // Welcome message
     var message = "Welcome";
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 1],message.toInt(), 0xF7),7+message.length);   // Set LCD1
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 6],message.toInt(), 0xF7),7+message.length);   // Set LCD6
+    // Set LCD1
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 1],message.toInt(), 0xF7),7+message.length);
+    // Set LCD6
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 6],message.toInt(), 0xF7),7+message.length);
     //midi.sendShortMsg(No,49,127);   // to orange
+    
     message = "to";
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 2],message.toInt(), 0xF7),7+message.length);   // Set LCD2
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 7],message.toInt(), 0xF7),7+message.length);   // Set LCD7
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 2],message.toInt(), 0xF7),7+message.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 7],message.toInt(), 0xF7),7+message.length);
     //midi.sendShortMsg(No,49+1,127); // to orange
+    
     message = "Mixxx  v";
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 3],message.toInt(), 0xF7),7+message.length);   // Set LCD3
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 8],message.toInt(), 0xF7),7+message.length);   // Set LCD8
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 3],message.toInt(), 0xF7),7+message.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 8],message.toInt(), 0xF7),7+message.length);
     //midi.sendShortMsg(No,49+2,127); // to orange
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 4],StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);   // Set LCD4
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 9],StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);   // Set LCD9
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 4],
+		StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 9],
+		StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);
     //midi.sendShortMsg(No,49+3,32);  // to red
     
     StantonSCS1d.id = id;   // Store the ID of this device for later use
@@ -139,7 +146,6 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel2]","visual_playposition","StantonSCS1d.circleBars2");
     engine.connectControl("[Channel1]","duration","StantonSCS1d.durationChange1");
     engine.connectControl("[Channel2]","duration","StantonSCS1d.durationChange2");
-    engine.connectControl("[Channel2]","play", "StantonSCS1d.playLED");
     
     //midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 16, 0xF7]),7); // Light all LEDs
 
@@ -152,20 +158,29 @@ StantonSCS1d.shutdown = function () {   // called when the MIDI device is closed
 
     // Graffiti :)
     var message = "Mixxx";
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 1],message.toInt(), 0xF7),7+message.length);   // Set LCD1
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 6],message.toInt(), 0xF7),7+message.length);   // Set LCD6
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 2],StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);   // Set LCD2
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 7],StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);   // Set LCD7
-    message = "was here";
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 3],message.toInt(), 0xF7),7+message.length);   // Set LCD3
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 8],message.toInt(), 0xF7),7+message.length);   // Set LCD8
-    message = "";
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 4],message.toInt(), 0xF7),7+message.length);   // Set LCD4
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 9],message.toInt(), 0xF7),7+message.length);   // Set LCD9
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 1],message.toInt(), 0xF7),7+message.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 6],message.toInt(), 0xF7),7+message.length);
     
-    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 36, 0x20, 0xF7]),8);    // clear jog LCD character (set to space)
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 2],
+		StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 7],
+		StantonSCS1d.swVersion.toInt(), 0xF7),7+StantonSCS1d.swVersion.length);
+    
+    message = "was here";
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 3],message.toInt(), 0xF7),7+message.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 8],message.toInt(), 0xF7),7+message.length);
+    
+    message = "";
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 4],message.toInt(), 0xF7),7+message.length);
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 9],message.toInt(), 0xF7),7+message.length);
+    
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 13, 0, 0xF7]),8); // Jog backlight off
+    // clear jog LCD character (set to space)
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 36, 0x20, 0xF7]),8);
+	midi.sendShortMsg(CC,2,0x00);	// Clear jog circle
     
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 17, 0xF7]),7); // Extinguish all LEDs
+
     print ("StantonSCS1d: \""+StantonSCS1d.id+"\" on MIDI channel "+(StantonSCS1d.channel+1)+" shut down.");
 }
 
@@ -420,13 +435,19 @@ StantonSCS1d.rangeButton = function (channel, control, value, status) {
             // Change the range
             var currentRange = engine.getValue("[Channel"+StantonSCS1d.deck+"]","rateRange");
             switch (true) {
-                case (currentRange<=StantonSCS1d.pitchRanges[0]):
+                case (currentRange<StantonSCS1d.pitchRanges[0]):
+                        engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[0]);
+                    break;
+                case (currentRange>=StantonSCS1d.pitchRanges[0] &&
+					  currentRange<StantonSCS1d.pitchRanges[1]):
                         engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[1]);
                     break;
-                case (currentRange<=StantonSCS1d.pitchRanges[1]):
+                case (currentRange>=StantonSCS1d.pitchRanges[1] &&
+					  currentRange<StantonSCS1d.pitchRanges[2]):
                         engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[2]);
                     break;
-                case (currentRange<=StantonSCS1d.pitchRanges[2]):
+                case (currentRange>=StantonSCS1d.pitchRanges[2] &&
+					  currentRange<StantonSCS1d.pitchRanges[3]):
                         engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[3]);
                     break;
                 case (currentRange>=StantonSCS1d.pitchRanges[3]):
@@ -452,8 +473,36 @@ StantonSCS1d.pitchReset = function (channel, control, value, status) {
     }
 }
 
-StantonSCS1d.platterMoved = function (data) {
-	print("SCS1d.PlatterMoved: "+data);
+StantonSCS1d.platterMoved = function (data, length) {
+	// Re-construct the 32-bit word
+	var iInfo = (data.charCodeAt(0) << 24) | (data.charCodeAt(1) << 16) | 
+				(data.charCodeAt(2) << 8) | data.charCodeAt(3);
+	
+	// Unpack the data
+	var iTimeStamp = (iInfo >>> 5);
+	var iQuad = 3 & ((((iInfo >>> 1) & 1) | (iInfo << 1)) ^ (iInfo & 1)); 
+	var iDirection = ((iInfo >>> 2) & 1) ^ 1;
+	iDirection = 1 - (iDirection << 1);
+	
+	if (StantonSCS1d.debug) print("Timestamp="+iTimeStamp+" Quad="+iQuad+" Dir="+iDirection+" Info="+iInfo+" Delta="+(iTimeStamp - StantonSCS1d.scratch["prevTimeStamp"]));
+	
+	StantonSCS1d.scratch["prevTimeStamp"] = iTimeStamp;
+	// Process the data
+	//	Timestamp range: 131071812 - 130547712 = 524,100
+	
+	if (iDirection==1) engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",1);
+	else engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",-0.5);
+
+	// Skip if the track start position hasn't been set yet
+    //if (scratch.variables["initialTrackPos"] == -1.0)
+	//	engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",0);
+    // If the slider start value hasn't been set yet, set it
+    //if (scratch.variables["initialControlValue"] == 0) {
+    //    scratch.variables["initialControlValue"] = sliderValue;
+    //     print("Initial slider="+scratch.variables["initialControlValue"]);
+    //    }
+	//var temp=scratch.filter(StantonSCS1d.deck, iTimeStamp, StantonSCS1d.scratch["revtime"], StantonSCS1d.scratch["alpha"], StantonSCS1d.scratch["beta"], divisions);
+	//engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",temp);
 }
 
 StantonSCS1d.platterGrabbed = function (channel, control, value, status) {
@@ -623,61 +672,55 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
             StantonSCS1d.deck--;
             midi.sendShortMsg(0x80 + channel,control,0); // Deck select button off
             midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
-            midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
+            // Blank jog character
+            //midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8);
+			// Deck number jog character
+            midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, '1'.toInt(), 0xF7]),8);
             if (!StantonSCS1d.fastDeckChange) { // Make flashy lights to signal a deck change
 				// TODO: Replace this with a timer
-                var number='1'.toInt();
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, number, 0xF7]),8); // 2 jog character
                 midi.sendShortMsg(byte1,control,32); // Deck select button green
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
                 midi.sendShortMsg(0x80 + channel,control,0); // Deck select button off
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, number, 0xF7]),8); // 2 jog character
                 midi.sendShortMsg(byte1,control,32); // Deck select button green
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
                 midi.sendShortMsg(0x80 + channel,control,0); // Deck select button off
                 StantonSCS1d.lightDelay();
             }
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, number, 0xF7]),8); // 2 jog character
-                midi.sendShortMsg(byte1,control,32); // Deck select button green
+			midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
+			midi.sendShortMsg(byte1,control,32); // Deck select button green
         }
         else {
             if (StantonSCS1d.debug) print("StantonSCS1d: Switching to deck 2");
             StantonSCS1d.deck++;
             midi.sendShortMsg(0x80 + channel,control,0); // Deck select button off
             midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
-            midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
+            // Blank jog character
+            //midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8);
+			// Deck number jog character
+            midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, '2'.toInt(), 0xF7]),8);
             if (!StantonSCS1d.fastDeckChange) { // Make flashy lights to signal a deck change
-                var number='2'.toInt();
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, number, 0xF7]),8); // 2 jog character
                 midi.sendShortMsg(byte1,control,64); // Deck select button red
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
                 midi.sendShortMsg(0x80 + channel,control,0); // Deck select button off
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, number, 0xF7]),8); // 2 jog character
                 midi.sendShortMsg(byte1,control,64); // Deck select button red
                 StantonSCS1d.lightDelay();
                 midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 0, 0xF7]),8); // Jog backlight off
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, 0x20, 0xF7]),8); // Blank jog character
                 midi.sendShortMsg(0x80 + channel,control,0); // Deck select button off
                 StantonSCS1d.lightDelay();
             }
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
-                midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, number, 0xF7]),8); // 2 jog character
-                midi.sendShortMsg(byte1,control,64); // Deck select button red
+			midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 13, 1, 0xF7]),8); // Jog backlight on
+			midi.sendShortMsg(byte1,control,64); // Deck select button red
         }
         StantonSCS1d.connectDeckSignals(channel);    // Connect static signals
         StantonSCS1d.padRefresh();  // Light pad section correctly
@@ -1681,7 +1724,7 @@ StantonSCS1d.circleBars = function (value) {
     var byte1 = 0xB0 + StantonSCS1d.channel;
     //midi.sendShortMsg(byte1,2,0);     // Clear circle markers
     StantonSCS1d.lastLight[StantonSCS1d.deck]=light;
-    midi.sendShortMsg(byte1,2,light);
+    midi.sendShortMsg(byte1,2,light+1);
 //     midi.sendShortMsg(byte1,2,18+light);   // Add this for two lights
 }
 

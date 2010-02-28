@@ -41,10 +41,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
 
     unsigned char status = pBuffer[0];
 
-    if (status==0xF9) { // Handle platter messages
-        m_pMidiDevice->receive(pBuffer, uBufferSize);
-    }
-    else if (uBufferSize==3) {
+    if (uBufferSize==3) {
         unsigned char opcode = status & 0xF0;
         unsigned char channel = status & 0x0F;
         unsigned char note = pBuffer[1];
@@ -53,8 +50,8 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
         m_pMidiDevice->receive((MidiStatusByte)status, channel, note, velocity);
     }
     else {
-        qDebug()<<"HSS1394 unhandled message of length" << uBufferSize
-                << "with status byte" << QString("%1").arg(status, 2, 16, QChar('0'));
+        // Handle platter messages and any others that are not 3 bytes
+        m_pMidiDevice->receive(pBuffer, uBufferSize);
     }
 }
 

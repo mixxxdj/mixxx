@@ -161,7 +161,7 @@ void MessageHandler( QtMsgType type, const char * input )
 #endif
     }
       
-    Q3TextStream Log( &Logfile );	
+    Q3TextStream Log( &Logfile );
     
     switch ( type ) {
     case QtDebugMsg:
