@@ -147,7 +147,15 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     control = new ControlNull();
 
     // Read keyboard configuration and set kdbConfig object in WWidget
-    kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
+    // Check first in user's Mixxx directory
+    QString userKeyboard = QDir::homePath().append("/").append(SETTINGS_PATH).append("Custom.kbd.cfg");
+    if (QFile::exists(userKeyboard)) {
+        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
+        kbdconfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
+    }
+    else
+        // Otherwise use the default
+        kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
 
     // Sample rate used by Player object

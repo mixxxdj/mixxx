@@ -28,12 +28,13 @@ public:
 public slots:
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
-    void player2PositionChanged(double value);    
+    void player2PositionChanged(double value);
 signals:
     void loadTrack(TrackInfoObject* tio);
+    void loadTrackToPlayer(TrackInfoObject* tio, int player);
 private:
     bool loadNextTrackFromQueue(bool removeTopMostBeforeLoading);
-    
+
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;

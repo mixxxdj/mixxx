@@ -19,6 +19,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bAutoDJEnabled = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig);
 
+    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackInfoObject*)),
+            this, SIGNAL(loadTrack(TrackInfoObject*)));
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
@@ -144,10 +149,10 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
             pushButtonAutoDJ->setChecked(false);
             return;
         }
-        
+
         //Manually override the "next track is already loaded" flag
         //because we've already primed a player with the first track.
-        //We do this so that you don't lose the first song in your 
+        //We do this so that you don't lose the first song in your
         //Auto DJ queue if you enable Auto DJ then change your mind
         //and disable it right away. This just makes it a little bit
         //more user friendly. :)
@@ -203,7 +208,7 @@ void DlgAutoDJ::player1PositionChanged(double value)
         {
             //Turn on STOP mode to tell Player 1 to stop at the end
             m_pCOTrackEndMode1->slotSet(0.0f);
-        
+
             //Load the next track into Player 2
             if (!m_bNextTrackAlreadyLoaded) //Fudge to make us not skip the first track
             {
@@ -244,11 +249,11 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
             //Load the next track into player 1
             if (!m_bNextTrackAlreadyLoaded) //Fudge to make us not skip the first track
-            {   
+            {
                 if (!loadNextTrackFromQueue(true))
                     return;
             }
-            m_bNextTrackAlreadyLoaded = false; //Reset fudge 
+            m_bNextTrackAlreadyLoaded = false; //Reset fudge
 
             //Turn on NEXT mode to tell Player 1 to start playing when the new track is loaded.
             //This helps us get around the fact that it takes time for the track to be loaded
@@ -281,11 +286,10 @@ bool DlgAutoDJ::loadNextTrackFromQueue(bool removeTopMostBeforeLoading)
         pushButtonAutoDJ->setChecked(false);
         return false;
     }
-    
+
     m_bNextTrackAlreadyLoaded = false;
 
     emit(loadTrack(nextTrack));
 
     return true;
 }
-

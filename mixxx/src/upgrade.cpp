@@ -179,15 +179,19 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
     
     // For the next release, if needed:
     /*
-    if (configVersion.startsWith("1.7.0")) {
-        qDebug() << "Upgrading from v1.7.0 to" << VERSION <<"...";
+    if (configVersion.startsWith("1.7")) {
+        qDebug() << "Upgrading from v1.7.x to" << VERSION <<"...";
         // Upgrade tasks go here
         configVersion = ConfigValue(VERSION);
         config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
     }
     */
 
-    if (configVersion == VERSION) qDebug() << "At current version" << VERSION;
+    if (configVersion == VERSION) qDebug() << "Configuration file is at the current version" << VERSION;
+    else {
+        qDebug() << "Warning: Configuration file is at version" << configVersion << "and I don't know how to upgrade it to the current" << VERSION;
+        qDebug() << "   (That means a function to do this needs to be added to upgrade.cpp.)";
+    }
 
     return config;
 }
