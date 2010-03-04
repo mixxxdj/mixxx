@@ -186,9 +186,10 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
                 rows.push_back(index.row());
                 QUrl url(getTrackLocation(index));
                 if (!url.isValid())
-                  qDebug() << "ERROR invalid url\n";
-                else
-                  urls.append(url);
+                    qDebug() << "ERROR invalid url\n";
+                else {
+                    urls.append(url);
+                }
             }
         }
     }

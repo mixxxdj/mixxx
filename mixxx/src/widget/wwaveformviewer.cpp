@@ -138,6 +138,9 @@ void WWaveformViewer::dropEvent(QDropEvent * event)
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
+        //If the file is on a network share, try just converting the URL to a string...
+        if (name == "")
+            name = url.toString(); 
 
         event->accept();
         emit(trackDropped(name));

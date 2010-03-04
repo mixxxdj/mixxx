@@ -11,6 +11,7 @@
 #include "dlgautodj.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -35,14 +36,18 @@ QIcon AutoDJFeature::getIcon() {
 }
 
 void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget) {
+                               WLibrary* libraryWidget,
+                               MixxxKeyboard* keyboard) {
 
     DlgAutoDJ* pAutoDJView = new DlgAutoDJ(libraryWidget,
                                            m_pConfig,
                                            m_pTrackCollection);
+    pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
     connect(pAutoDJView, SIGNAL(loadTrack(TrackInfoObject*)),
             this, SIGNAL(loadTrack(TrackInfoObject*)));
+    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
 }
 
 QAbstractItemModel* AutoDJFeature::getChildModel() {
