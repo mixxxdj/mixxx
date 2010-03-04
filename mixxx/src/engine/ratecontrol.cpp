@@ -412,9 +412,8 @@ double RateControl::process(const double rate,
     if ((m_ePbPressed) && (!m_bTempStarted))
     {
         m_bTempStarted = true;
-        m_dOldRate = m_pRateSlider->get();
-
-
+        
+        
         if ( m_eRateRampMode == RATERAMP_STEP )
         {
             // old temporary pitch shift behaviour
@@ -430,8 +429,7 @@ double RateControl::process(const double rate,
                                     (100. * range);
             double csmall = m_pRateDir->get() * m_dTempSmall /
                                     (100. * range);
-
-
+            
             if (buttonRateTempUp->get())
                 addRateTemp(change);
             else if (buttonRateTempDown->get())
@@ -451,29 +449,23 @@ double RateControl::process(const double rate,
 
     }
 
-    if ((m_ePbCurrent) && (m_eRateRampMode == RATERAMP_LINEAR))
-    {
-        // apply ramped pitchbending
-        if ( m_ePbCurrent == RateControl::RATERAMP_UP )
-            addRateTemp(m_dTempRateChange);
-        else if ( m_ePbCurrent == RateControl::RATERAMP_DOWN )
-            subRateTemp(m_dTempRateChange);
-    }
-    else if ((!m_ePbCurrent) && (m_eRateRampMode == RATERAMP_STEP))
-    {
-        resetRateTemp();
-    }
-    else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
-    {
-        // No buttons pressed, so time to deinitialize
-        m_bTempStarted = false;
-
-
-        if ( m_eRateRampMode == RATERAMP_STEP )
-            m_pRateSlider->set(m_dOldRate);
-        else {
-
-            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0 ))
+    if (m_eRateRampMode == RATERAMP_LINEAR) {
+        
+        if (m_ePbCurrent)
+        {
+            // apply ramped pitchbending
+            if ( m_ePbCurrent == RateControl::RATERAMP_UP )
+                addRateTemp(m_dTempRateChange);
+            else if ( m_ePbCurrent == RateControl::RATERAMP_DOWN )
+                subRateTemp(m_dTempRateChange);
+        }
+        else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
+        {
+            // No buttons pressed, so time to deinitialize
+            m_bTempStarted = false;
+            
+            
+            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0))
             {
                 int period = 2;
                 if (period)
@@ -484,8 +476,7 @@ double RateControl::process(const double rate,
                 }
 
             }
-
-            if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE))
+            else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTempRampbackChange == 0.0))
             {
 
                 if ( fabs(m_dRateTemp) < m_dRateTempRampbackChange)
@@ -499,7 +490,14 @@ double RateControl::process(const double rate,
                 resetRateTemp();
         }
     }
-
+    else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted))
+    {
+        if (!m_ePbCurrent) {
+            m_bTempStarted = false;
+            resetRateTemp();
+        }
+    }
+    
     return kNoTrigger;
 }
 
