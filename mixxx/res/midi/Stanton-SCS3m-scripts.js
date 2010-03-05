@@ -857,4 +857,8 @@ StantonSCS3m.Peak = function (numberLights, value, low, high) {
 Possibly add:
 - (Deck + Play = Reverse?)
 - Reset Master & head vols?
+
+TODO:
+- Rework slider mode changes to use presets
+- non-script lights appear to be broken
 */

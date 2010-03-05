@@ -177,7 +177,7 @@ void MessageHandler( QtMsgType type, const char * input )
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
         //QMessageBox::warning(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(0,input);
+        dialogHelper->requestErrorDialog(0,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
