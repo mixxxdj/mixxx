@@ -50,7 +50,7 @@ script.debug = function (channel, control, value, status) {
 // Used to control a generic Mixxx control setting (low..high) from an absolute control (0..127)
 script.absoluteSlider = function (group, key, value, low, high) {
     if (value==127) engine.setValue(group, key, high);
-    else engine.setValue(group, key, ((high-low)/127)*value);
+    else engine.setValue(group, key, (((high - low) / 127) * value) + low);
 }
 
 // Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control (0..127)
