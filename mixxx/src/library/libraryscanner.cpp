@@ -17,7 +17,7 @@
 
 #include <QtCore>
 #include <QtDebug>
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
@@ -30,7 +30,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_playlistDao(m_database),
     //Don't initialize m_database here, we need to do it in run() so the DB conn is in
     //the right thread.
-    nameFilters(QString(MIXXX_SUPPORTED_AUDIO_FILETYPES).split(" "))
+    nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "))
 {
 
     qDebug() << "Constructed LibraryScanner!!!";

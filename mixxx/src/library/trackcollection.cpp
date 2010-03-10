@@ -7,7 +7,7 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 #include "library/schemamanager.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
@@ -120,7 +120,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             return false;
         }
 
-        if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
+        if (file.fileName().count(QRegExp(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive))) {
             trackDao.markTrackLocationAsVerified(file.absoluteFilePath());
 
             //If the file already exists in the database, continue and go on to the next file.
@@ -142,7 +142,6 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
         } else {
             //qDebug() << "Skipping" << file.fileName() <<
             //    "because it did not match thesupported audio files filter:" <<
-            //    MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX;
         }
 
     }

@@ -26,6 +26,7 @@
 #include <neaacdec.h>
 #include <QString>
 #include "soundsource.h"
+#include "defs_version.h"
 #include "m4a/ip.h"
 
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
@@ -35,32 +36,38 @@
 #define MY_EXPORT
 #endif
 
-class TrackInfoObject;
 
 class SoundSourceM4A : public SoundSource {
- public:
-  SoundSourceM4A(QString qFileName);
-  ~SoundSourceM4A();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  inline long unsigned length();
-  static int ParseHeader( TrackInfoObject * );
- private:
-  int channels;
-  int trackId;
-  unsigned long filelength;
-  MP4FileHandle mp4file;
-  input_plugin_data ipd;
+    public:
+        SoundSourceM4A(QString qFileName);
+        ~SoundSourceM4A();
+        int open();
+        long seek(long);
+        int initializeDecoder();
+        unsigned read(unsigned long size, const SAMPLE*);
+        unsigned long length();
+        int parseHeader();
+        static QList<QString> supportedFileExtensions();
+    private:
+        int trackId;
+        unsigned long filelength;
+        MP4FileHandle mp4file;
+        input_plugin_data ipd;
 };
+
+extern "C" MY_EXPORT QString getMixxxVersion()
+{
+    return VERSION;
+}
 
 extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
 {
     return new SoundSourceM4A(filename);
 }
 
-extern "C" MY_EXPORT int ParseHeader(TrackInfoObject* track)
+extern "C" MY_EXPORT QList<QString> supportedFileExtensions() 
 {
-    return SoundSourceM4A::ParseHeader(track);
+    return SoundSourceM4A::supportedFileExtensions();
 }
 
 #endif

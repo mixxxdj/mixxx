@@ -375,6 +375,7 @@ sources = Split("""
 
                 peaklist.cpp
                 rotary.cpp
+                plugindownloader.cpp
                 wtracktableview.cpp
                 widget/wtracktableviewheader.cpp
                 widget/wlibrarysidebar.cpp
@@ -1346,6 +1347,10 @@ binary_files = mixxx_bin;
 # Mixxx essential resource files
 resource_files = Glob('#res/schema.xml')
 
+#Soundsource plugins
+Import('soundsource_plugins') #Grab these from the SConstruct above us
+soundsource_plugin_files = soundsource_plugins
+
 #Skins
 skin_files = Glob('#res/skins/*')
 
@@ -1403,13 +1408,16 @@ if platform in ('linux', 'bsd'):
 		if install_root != flags_prefix:
 			unix_share_path = install_root + "/share"
 			unix_bin_path   = install_root + "/bin"
+			unix_lib_path   = install_root + "/lib"
 		else:
 			unix_share_path = flags_prefix + "/share"
 			unix_bin_path   = flags_prefix + "/bin"
+			unix_lib_path   = flags_prefix + "/lib"
 
 		binary = env.Install(unix_bin_path, binary_files)
-                resource = env.Install(unix_share_path + "/mixxx", resource_files)
+		resource = env.Install(unix_share_path + "/mixxx", resource_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
+		soundsource_plugins = env.Install(unix_lib_path + "/", soundsource_plugin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
 		ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
@@ -1420,8 +1428,9 @@ if platform in ('linux', 'bsd'):
 
 		#Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
-                env.Alias('install', resource)
+		env.Alias('install', resource)
 		env.Alias('install', skins)
+		env.Alias('install', soundsource_plugins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
 		env.Alias('install', ladspapresets)
@@ -1474,7 +1483,7 @@ if platform == 'osx':
 
 if 'win' in platform:
 	skins = env.Install("#dist/skins", skin_files)
-        resource = env.Install("#dist/", resource_files)
+	resource = env.Install("#dist/", resource_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
 	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
 	ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
@@ -1486,7 +1495,7 @@ if 'win' in platform:
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
-        env.Alias('mixxx', resource)
+	env.Alias('mixxx', resource)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
 	env.Alias('mixxx', ladspapresets)

@@ -47,18 +47,19 @@ typedef struct MadSeekFrameType {
 /**
   *@author Tue and Ken Haste Andersen
   */
-class TrackInfoObject;
   
 class SoundSourceMp3 : public SoundSource {
 public:
     SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
+    int open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     unsigned long discard(unsigned long size);
     /** Return the length of the file in samples. */
     inline long unsigned length();
-    static int ParseHeader( TrackInfoObject * );
+    int parseHeader();
+    static QList<QString> supportedFileExtensions();
     
 private:
     /** Returns the position of the frame which was found. The found frame is set to
@@ -77,9 +78,9 @@ private:
     /** current play position. */
     mad_timer_t pos;
     mad_timer_t filelength;
-    mad_stream Stream;
+    mad_stream *Stream;
     mad_frame *Frame;
-    mad_synth Synth;
+    mad_synth *Synth;
     unsigned inputbuf_len;
     char *inputbuf;
     /** Start index in Synth buffer of samples left over from previous call to read */

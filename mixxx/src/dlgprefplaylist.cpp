@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
+#include "plugindownloader.h"
 #include <QtCore>
 #include <QtGui>
 
@@ -25,9 +26,18 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     setupUi(this);
     slotUpdate();
 
+    m_pPluginDownloader = new PluginDownloader(this);
+    //If the M4A plugin is present on disk, check the checkbox.
+    if (m_pPluginDownloader->checkForM4APlugin()) {
+        pushButtonM4A->setChecked(true);
+        pushButtonM4A->setEnabled(false);
+        pushButtonM4A->setText("Installed");
+    }
+
     // Connection
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
     connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
+    connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
 
 #ifdef __IPOD__
     // iPod related stuff
@@ -40,6 +50,15 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
 {
+}
+
+void DlgPrefPlaylist::slotM4ACheck()
+{
+    qDebug() << "slotM4ACheck";
+    if (!m_pPluginDownloader->checkForM4APlugin())
+    {
+        m_pPluginDownloader->downloadM4APlugin();
+    }
 }
 
 void DlgPrefPlaylist::slotUpdate()

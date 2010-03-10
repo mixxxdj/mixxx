@@ -204,11 +204,13 @@ finally:
 #	f.close()
 
 #Mixxx sources to build
-sources = Split(""" #src/trackinfoobject.cpp 
-                    #src/soundsource.cpp 
-                    #src/xmlparse.cpp 
-                    #src/library/dao/cue.cpp 
-                    #src/soundsourceproxy.cpp """)
+#sources = []
+sources = Split("""  #src/soundsource.cpp """) # Still have to build soundsource.o into this file because we're subclassing????
+#                    #src/trackinfoobject.cpp 
+#                    #src/soundsource.cpp 
+#                    #src/xmlparse.cpp 
+#                    #src/library/dao/cue.cpp 
+#                    #src/soundsourceproxy.cpp """)
 
 #Set up the library path on Windows:
 if platform == 'win64':
@@ -314,8 +316,8 @@ if platform == 'linux':
 
 		env.EnableQt4Modules([
 		'QtCore',
-		'Qt3Support',
-		'QtXml'
+#		'Qt3Support',
+#		'QtXml'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
@@ -327,9 +329,8 @@ if platform == 'linux':
 if platform == 'osx':
 
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework Qt3Support')
-	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
-	                      '/Library/Frameworks/Qt3Support.framework/Headers/'])
+	env.Append(LINKFLAGS = '-framework QtCore')
+	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/'])
 
 	#Non-standard libpaths for fink and darwin ports
 	env.Append(LIBPATH = ['/sw/lib'])
@@ -362,11 +363,9 @@ if platform in ('linux', 'bsd'): #a define for code that works on unix only can 
 
 if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtCore')
-	env.Append(LIBS = 'Qt3Support')
 	
 if 'win' in platform:
 	env.Append(LIBS = 'QtCore4');
-	env.Append(LIBS = 'Qt3Support');
 	
 env.Append(CPPDEFINES = ['QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
@@ -601,4 +600,30 @@ if 'win' in platform:
 else:
 	ssm4a_bin = env.SharedLibrary('soundsourcem4a', sources)
 
+#Pass this soundsourcem4a library object file back to the SConscript above us.
+Return("ssm4a_bin")
+
+"""
+if platform in ('linux', 'bsd'):
+	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
+	if not os.path.exists(flags_prefix):
+		print "Error: Prefix path does not exist!"
+		Exit(1)
+	else:
+		#install_root is used in Debian/Ubuntu packaging (check the debian/rules file in the Ubuntu package)
+		#Basically, the flags_prefix is compiled into strings in Mixxx, whereas the install_root is not. When you're
+		#building a Debian package, pbuilder wants to install Mixxx to a temporary directory, but you still need
+		#the compiled-in strings using /usr as the prefix. That's why we have install_root and flags_prefix.
+		install_root = ARGUMENTS.get('install_root', flags_prefix)
+		print "Install root: " + install_root
+		if install_root != flags_prefix:
+			unix_lib_path = install_root + "/share"
+		else:
+			unix_lib_path = flags_prefix + "/share"
+
+		plugin = env.Install(unix_lib_path + "/mixxx", plugin_files)
+
+		#Fire off this install builder when you run "scons install"
+		env.Alias('install', plugin)
+"""
 

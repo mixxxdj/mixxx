@@ -9,7 +9,7 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 
 ITunesTrackModel::ITunesTrackModel()
         : AbstractXmlTrackModel("mixxx.db.model.itunes") {
@@ -17,7 +17,7 @@ ITunesTrackModel::ITunesTrackModel()
     QString res, playlistRes;
     QDomDocument itunesdb;
 
-    QRegExp supportedFileRegex(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX,
+    QRegExp supportedFileRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
                                Qt::CaseInsensitive);
 
     /*
