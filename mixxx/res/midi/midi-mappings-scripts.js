@@ -149,13 +149,14 @@ scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0, "initi
 scratch.enable = function (currentDeck) {
     // Store scratch info at the point it was touched
     // Current position in seconds:
-    scratch.variables["initialTrackPos"] = scratch.variables["trackPos"] = engine.getValue("[Channel"+currentDeck+"]","playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
+    scratch.variables["initialTrackPos"] = scratch.variables["trackPos"] = engine.getValue("[Channel"+currentDeck+"]","visual_playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     
     scratch.variables["time"] = new Date()/1000;   // Current time in seconds
     
     // Stop the deck motion. This means we have to pause it if playing
     if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
         scratch.variables["play"]=true;
+        // TODO: ramp down
 //         engine.setValue("[Channel"+currentDeck+"]","play",0);   // pause playback
     }
     else scratch.variables["play"]=false;
@@ -181,8 +182,12 @@ scratch.disable = function (currentDeck) {
     scratch.variables["time"] = 0.0;
     scratch.variables["scratch"] = 0.0;
 //     print("MIDI Script: Scratch values CLEARED");
-    engine.setValue("[Channel"+currentDeck+"]","scratch",0.0); // disable scratching
-    if (scratch.variables["play"]) engine.setValue("[Channel"+currentDeck+"]","play",1); // resume playback
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 0);  // disable scratching
+    engine.setValue("[Channel"+currentDeck+"]","scratch",0);
+    if (scratch.variables["play"]) {
+        //TODO: ramp up
+        engine.setValue("[Channel"+currentDeck+"]","play",1); // resume playback
+    }
 }
 
 /* -------- ------------------------------------------------------
@@ -201,8 +206,11 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // If the slider start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = sliderValue;
+        scratch.variables["scratch"] = 1;
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 1);
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 1);
 //         print("Initial slider="+scratch.variables["initialControlValue"]);
-        }
+    }
     return scratch.filter(currentDeck, sliderValue, revtime, alpha, beta);
 }
 
@@ -222,8 +230,11 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     // If the wheel start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
+        scratch.variables["scratch"] = 1;
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 1);
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 1);
 //         print("Initial wheel="+scratch.variables["initialControlValue"]);
-        }
+    }
         
     // Take wrap around into account
     if (wheelValue>=0 && wheelValue<10 && scratch.variables["prevControlValue"]>117 && scratch.variables["prevControlValue"]<=127) scratch.variables["wrapCount"]+=1;
@@ -244,7 +255,7 @@ scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
     // ideal position = (initial_p + (y - x) / 128 * 1.8)
     var ideal_p = scratch.variables["initialTrackPos"] + (controlValue - scratch.variables["initialControlValue"]) / 128 * revtime;
     
-    var currentTrackPos = engine.getValue("[Channel"+currentDeck+"]","playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
+    var currentTrackPos = engine.getValue("[Channel"+currentDeck+"]","visual_playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     var newTime = new Date()/1000;
     var dt = newTime - scratch.variables["time"];
     scratch.variables["time"] = newTime;
@@ -259,13 +270,13 @@ scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
     // scratch.variables["trackPos"] += rx * alpha;   // Don't need this result so why waste the CPU time?
     
     // v += rx * BETA / dt;
-    // scratch.variables["scratch"] += rx * (beta / dt);   // This doesn't work
+//     scratch.variables["scratch"] += rx * beta / dt;   // This doesn't work
     scratch.variables["scratch"] = rx * beta;
     
 //     print("MIDI Script: Ideal position="+ideal_p+", Predicted position="+predicted_p + ", New scratch val=" + scratch.variables["scratch"]);
     
 //     var newPos = scratch.variables["trackPos"]/engine.getValue("[Channel"+currentDeck+"]","duration");
-//     engine.setValue("[Channel"+currentDeck+"]","playposition",newPos);
+//     engine.setValue("[Channel"+currentDeck+"]","visual_playposition",newPos);
 //     engine.setValue("[Channel"+currentDeck+"]","scratch",scratch.variables["scratch"]);
 
     return scratch.variables["scratch"];
