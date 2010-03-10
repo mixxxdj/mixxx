@@ -545,8 +545,9 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     }
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
+    m_pCurrentSoundSource->open(); //Open the song for reading
     m_pCurrentTrack = pTrack;
-    m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
+    m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
 
     // Clear the chunks to read list.

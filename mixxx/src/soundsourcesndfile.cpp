@@ -27,18 +27,6 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilenam
 {
     info = new SF_INFO;
     filelength = 0;
-    QByteArray qbaFilename = qFilename.toUtf8();
-    fh = sf_open( qbaFilename.data(), SFM_READ, info );
-    if (fh == 0 || !sf_format_check(info))
-    {
-        qDebug() << "libsndfile: Error opening file" << qFilename;
-        return;
-    }
-
-    channels = info->channels;
-
-    filelength = 2*info->frames; // File length with two interleaved channels
-    SRATE =  info->samplerate;
 }
 
 SoundSourceSndFile::~SoundSourceSndFile()
@@ -46,6 +34,34 @@ SoundSourceSndFile::~SoundSourceSndFile()
     if (filelength > 0)
         sf_close(fh);
     delete info;
+}
+
+QList<QString> SoundSourceSndFile::supportedFileExtensions()
+{
+    QList<QString> list;
+    list.push_back("aiff");
+    list.push_back("aif");
+    list.push_back("wav");
+    list.push_back("flac");
+    return list;
+}
+
+int SoundSourceSndFile::open()
+{
+    QByteArray qbaFilename = m_qFilename.toUtf8();
+    fh = sf_open( qbaFilename.data(), SFM_READ, info );
+    if (fh == 0 || !sf_format_check(info))
+    {
+        qDebug() << "libsndfile: Error opening file" << m_qFilename;
+        return ERR;
+    }
+
+    channels = info->channels;
+
+    filelength = channels*info->frames; // File length with two interleaved channels
+    m_iSampleRate =  info->samplerate;
+
+    return OK;
 }
 
 long SoundSourceSndFile::seek(long filepos)
@@ -122,39 +138,40 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
     return 0;
 }
 
-int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
+int SoundSourceSndFile::parseHeader()
 {
-    SF_INFO info;
-    QString location = Track->getLocation();
+    QString location = this->getFilename();
     QByteArray qbaLocation = location.toUtf8();
-    SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, &info);
+    SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, info);
     //const char* err = sf_strerror(0);
-    if (fh == 0 || !sf_format_check(&info))
+    if (fh == 0 || !sf_format_check(info))
     {
         qDebug() << "libsndfile: ERR opening file.";
         return ERR;
     }
 
-    Track->setType(location.section(".",-1).toLower());
-    Track->setBitrate((int)(info.samplerate*32./1000.));
-    Track->setDuration(info.frames/info.samplerate);
-    Track->setSampleRate(info.samplerate);
-    Track->setChannels(info.channels);
+    this->setType(location.section(".",-1).toLower());
+    this->setBitrate((int)(info->samplerate*32./1000.));
+    this->setDuration(info->frames/info->samplerate);
+    this->setSampleRate(info->samplerate);
+    this->setChannels(info->channels);
 
     const char *string;
     string = sf_get_string(fh, SF_STR_ARTIST);
 //    qDebug() << location << "SF_STR_ARTIST" << string;
     if(string && strlen(string))
-        Track->setArtist(string);
+        this->setArtist(string);
     string = sf_get_string(fh, SF_STR_TITLE);
     if(string && strlen(string))
-        Track->setTitle(string);
+        this->setTitle(string);
 //    qDebug() << location << "SF_STR_TITLE" << string;
     string = sf_get_string(fh, SF_STR_DATE);
     if (string && strlen(string))
-        Track->setYear(string);
+        this->setYear(string);
+
+    if (fh)
+        sf_close(fh);
     
-    sf_close( fh );
     return OK;
 }
 
@@ -166,66 +183,3 @@ inline long unsigned SoundSourceSndFile::length()
     return filelength;
 }
 
-Q3ValueList<long> * SoundSourceSndFile::getCuePoints()
-{
-    QByteArray qbaFilename = m_qFilename.toUtf8();
-
-    // Ensure that the file ends with ".wav"
-    if (!m_qFilename.endsWith(".wav"))
-        return 0;
-
-    // Open file
-    FILE * fh  = fopen(qbaFilename.data(), "r");
-
-    // Check the file magic header bytes
-    char str[4];
-    fread(&str, sizeof(char), 4, fh);
-    if (!strncmp(str, "RIFF", 4)==0)
-        return 0;
-    long no;
-    fread(&no, sizeof(long), 1, fh);
-    fread(&str, sizeof(char), 4, fh);
-    if (!strncmp(str, "WAVE", 4)==0)
-        return 0;
-
-    // Skip to the "cue " section, ignoring everything else
-    while (1)
-    {
-        if (feof(fh))
-            return 0;
-
-        fread(&str, sizeof(char), 4, fh);
-        fread(&no, sizeof(long), 1, fh);
-        if (strncmp(str, "cue ", 4)==0)
-            break;
-        else if (strncmp(str, "data", 4)==0)
-            return 0;
-        else
-            fseek(fh, no,SEEK_CUR);
-    }
-
-    // Read number of cue points
-    fread(&no, sizeof(long), 1, fh);
-    if (no<1)
-        return 0;
-
-    // Allocate cue point list
-    Q3ValueList<long> *pCueList = new Q3ValueList<long>;
-
-    // Read each cue point
-    for (int i=0; i<no; ++i)
-    {
-        if (feof(fh))
-            return 0;
-
-        // Seek to actual cue point data
-        fseek(fh, 5*4,SEEK_CUR);
-
-        long cuepoint;
-        fread(&cuepoint, sizeof(long), 1, fh);
-
-        pCueList->append(cuepoint*channels);
-    }
-
-    return pCueList;
-}

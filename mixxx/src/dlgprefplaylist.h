@@ -22,6 +22,7 @@
 #include "configobject.h"
 
 class QWidget;
+class PluginDownloader;
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -45,11 +46,16 @@ public slots:
     /** Attempt to guess the iPod's mount point */
     void slotDetectiPodMountPoint();
 
+    /** Starts up the PluginDownloader if the plugin isn't present */
+    void slotM4ACheck();
+
 signals:
     void apply();
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    /** SoundSource Plugin Downloader */
+    PluginDownloader* m_pPluginDownloader;
 };
 
 #endif

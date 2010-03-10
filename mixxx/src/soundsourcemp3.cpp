@@ -14,16 +14,47 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "trackinfoobject.h"
 #include "soundsourcemp3.h"
 #include <QtDebug>
 
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
-    QFile file( qFilename );
+    inputbuf = NULL;
+    Stream = new mad_stream;
+    mad_stream_init(Stream);
+    Synth = new mad_synth;
+    mad_synth_init(Synth);
+    Frame = new mad_frame; 
+    mad_frame_init(Frame);
+}
+
+SoundSourceMp3::~SoundSourceMp3()
+{
+    mad_stream_finish(Stream);
+    mad_frame_finish(Frame);
+    mad_synth_finish(Synth);
+    delete [] inputbuf;
+
+    //free(Synth);
+    //free(Stream);
+
+    m_qSeekList.clear();
+}
+
+QList<QString> SoundSourceMp3::supportedFileExtensions()
+{
+    QList<QString> list;
+    list.push_back("mp3");
+    return list;
+}
+
+int SoundSourceMp3::open()
+{
+    QFile file( m_qFilename );
     if (!file.open(QIODevice::ReadOnly)) {
-        //qDebug() << "MAD: Open failed:" << qFilename;
+        //qDebug() << "MAD: Open failed:" << m_qFilename;
+        return ERR;
     }
 
     // Read the whole file into inputbuf:
@@ -32,7 +63,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     unsigned int tmp = file.read(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len) {
         // qDebug() << "MAD: ERR reading mp3-file: "
-        //          << qFilename
+        //          << m_qFilename
         //          << "\nRead only "
         //          << tmp
         //          << "bytes, but wanted"
@@ -41,9 +72,9 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     }
 
     // Transfer it to the mad stream-buffer:
-    mad_stream_init(&Stream);
-    mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-    mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+    mad_stream_init(Stream);
+    mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
+    mad_stream_buffer(Stream, (unsigned char *) inputbuf, inputbuf_len);
 
     /*
        Decode all the headers, and fill in stats:
@@ -55,24 +86,24 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     currentframe = 0;
     pos = mad_timer_zero;
 
-    while ((Stream.bufend - Stream.this_frame) > 0)
+    while ((Stream->bufend - Stream->this_frame) > 0)
     {
-        if (mad_header_decode (&Header, &Stream) == -1) {
-            if (!MAD_RECOVERABLE (Stream.error))
+        if (mad_header_decode (&Header, Stream) == -1) {
+            if (!MAD_RECOVERABLE (Stream->error))
                 break;
-            if (Stream.error == MAD_ERROR_LOSTSYNC) {
+            if (Stream->error == MAD_ERROR_LOSTSYNC) {
                 // ignore LOSTSYNC due to ID3 tags
-                int tagsize = id3_tag_query (Stream.this_frame,Stream.bufend - Stream.this_frame);
+                int tagsize = id3_tag_query (Stream->this_frame,Stream->bufend - Stream->this_frame);
                 if (tagsize > 0) {
                     //qDebug() << "SSMP3::SSMP3() : skipping ID3 tag size " << tagsize;
-                    mad_stream_skip (&Stream, tagsize);
+                    mad_stream_skip (Stream, tagsize);
                     continue;
                 }
             }
 
             // qDebug() << "MAD: ERR decoding header "
             //          << currentframe << ": "
-            //          << mad_stream_errorstr(&Stream)
+            //          << mad_stream_errorstr(Stream)
             //          << " (len=" << mad_timer_count(filelength,MAD_UNITS_MILLISECONDS)
             //          << ")";
             continue;
@@ -81,18 +112,18 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         // Grab data from Header
 
         // This warns us only when the reported sample rate changes. (and when it is first set)
-        if(SRATE != Header.samplerate) {
-            //qDebug() << "SSMP3() :: Setting SRATE to " << Header.samplerate << " from " << SRATE;
+        if(m_iSampleRate != Header.samplerate) {
+            //qDebug() << "SSMP3() :: Setting m_iSampleRate to " << Header.samplerate << " from " << m_iSampleRate;
         }
 
-        SRATE = Header.samplerate;
+        this->setSampleRate(Header.samplerate);
         m_iChannels = MAD_NCHANNELS(&Header);
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
 
         // Add frame to list of frames
         MadSeekFrameType * p = new MadSeekFrameType;
-        p->m_pStreamPos = (unsigned char *)Stream.this_frame;
+        p->m_pStreamPos = (unsigned char *)Stream->this_frame;
         p->pos = length();
         m_qSeekList.append(p);
 
@@ -122,22 +153,12 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     qDebug() << "Size    = " << length();
  */
 
-    Frame = new mad_frame;
-
     m_qSeekList.setAutoDelete(true);
 
     // Re-init buffer:
     seek(0);
-}
 
-SoundSourceMp3::~SoundSourceMp3()
-{
-    mad_stream_finish(&Stream);
-    mad_frame_finish(Frame);
-    mad_synth_finish(&Synth);
-    delete [] inputbuf;
-
-    m_qSeekList.clear();
+    return OK;
 }
 
 long SoundSourceMp3::seek(long filepos)
@@ -154,12 +175,12 @@ long SoundSourceMp3::seek(long filepos)
         // Seek to beginning of file
 
         // Re-init buffer:
-        mad_stream_finish(&Stream);
-        mad_stream_init(&Stream);
-        mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-        mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+        mad_stream_finish(Stream);
+        mad_stream_init(Stream);
+        mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
+        mad_stream_buffer(Stream, (unsigned char *) inputbuf, inputbuf_len);
         mad_frame_init(Frame);
-        mad_synth_init(&Synth);
+        mad_synth_init(Synth);
         rest=-1;
         cur = m_qSeekList.at(0);
     }
@@ -188,12 +209,12 @@ long SoundSourceMp3::seek(long filepos)
             //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
-            mad_stream_finish(&Stream);
-            mad_stream_init(&Stream);
-            mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-            mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+            mad_stream_finish(Stream);
+            mad_stream_init(Stream);
+            mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
+            mad_stream_buffer(Stream, (unsigned char *) inputbuf, inputbuf_len);
             mad_frame_init(Frame);
-            mad_synth_init(&Synth);
+            mad_synth_init(Synth);
             rest = -1;
             cur = m_qSeekList.first();
         }
@@ -208,26 +229,26 @@ long SoundSourceMp3::seek(long filepos)
             cur = m_qSeekList.prev();
 
             // Start from the new frame
-            mad_stream_finish(&Stream);
-            mad_stream_init(&Stream);
-            mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
+            mad_stream_finish(Stream);
+            mad_stream_init(Stream);
+            mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
 //        qDebug() << "mp3 restore " << cur->m_pStreamPos;
-            mad_stream_buffer(&Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
+            mad_stream_buffer(Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
 
             // Mute'ing is done here to eliminate potential pops/clicks from skipping
             // Rob Leslie explains why here:
             // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
-            mad_synth_mute(&Synth);
+            mad_synth_mute(Synth);
             mad_frame_mute(Frame);
 
             // Decode the three frames before
-            mad_frame_decode(Frame,&Stream);
-            mad_frame_decode(Frame,&Stream);
-            mad_frame_decode(Frame,&Stream);
-            mad_frame_decode(Frame,&Stream);
+            mad_frame_decode(Frame,Stream);
+            mad_frame_decode(Frame,Stream);
+            mad_frame_decode(Frame,Stream);
+            mad_frame_decode(Frame,Stream);
 
             // this is also explained in the above mad-dev post
-            mad_synth_frame(&Synth, Frame);
+            mad_synth_frame(Synth, Frame);
 
             // Set current position
             rest = -1;
@@ -251,8 +272,8 @@ long SoundSourceMp3::seek(long filepos)
    //        qDebug() << "Seek to " << filepos << " " << inputbuf_len << " " << newpos;
 
         // Go to an approximate position:
-        mad_stream_buffer(&Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
-        mad_synth_mute(&Synth);
+        mad_stream_buffer(Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
+        mad_synth_mute(Synth);
         mad_frame_mute(Frame);
 
         // Decode a few (possible wrong) buffers:
@@ -260,13 +281,13 @@ long SoundSourceMp3::seek(long filepos)
         int succesfull = 0;
         while ((no<10) && (succesfull<2))
         {
-            if (!mad_frame_decode(Frame, &Stream))
+            if (!mad_frame_decode(Frame, Stream))
             succesfull ++;
             no ++;
         }
 
         // Discard the first synth:
-        mad_synth_frame(&Synth, Frame);
+        mad_synth_frame(Synth, Frame);
 
         // Remaining samples in buffer are useless
         rest = -1;
@@ -274,7 +295,7 @@ long SoundSourceMp3::seek(long filepos)
         // Reset seek frame list
         m_qSeekList.clear();
         MadSeekFrameType *p = new MadSeekFrameType;
-        p->m_pStreamPos = (unsigned char*)Stream.this_frame;
+        p->m_pStreamPos = (unsigned char*)Stream->this_frame;
         p->pos = filepos;
         m_qSeekList.append(p);
         m_iSeekListMinPos = filepos;
@@ -293,8 +314,7 @@ inline long unsigned SoundSourceMp3::length()
 {
     enum mad_units units;
 
-    //qDebug() << "SRATE: " << SRATE;
-    switch (SRATE)
+    switch (m_iSampleRate)
     {
     case 8000:
         units = MAD_UNITS_8000_HZ;
@@ -325,9 +345,9 @@ inline long unsigned SoundSourceMp3::length()
         break;
     default:             //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
         units = MAD_UNITS_44100_HZ;
-        qDebug() << "Warning: MP3 with corrupt samplerate (" << SRATE << "), defaulting to 44100";
+        qDebug() << "Warning: MP3 with corrupt samplerate (" << m_iSampleRate << "), defaulting to 44100";
 
-        SRATE = 44100; //Prevents division by zero errors.
+        m_iSampleRate = 44100; //Prevents division by zero errors.
     }
 
     return (long unsigned) 2 *mad_timer_count(filelength, units);
@@ -343,27 +363,27 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted)
     int no;
 
     if(rest > 0)
-        Total_samples_decoded += 2*(Synth.pcm.length-rest);
+        Total_samples_decoded += 2*(Synth->pcm.length-rest);
 
     while (Total_samples_decoded < samples_wanted)
     {
-        if(mad_frame_decode(Frame,&Stream))
+        if(mad_frame_decode(Frame,Stream))
         {
-            if(MAD_RECOVERABLE(Stream.error))
+            if(MAD_RECOVERABLE(Stream->error))
             {
                 continue;
-            } else if(Stream.error==MAD_ERROR_BUFLEN) {
+            } else if(Stream->error==MAD_ERROR_BUFLEN) {
                 break;
             } else {
                 break;
             }
         }
-        mad_synth_frame(&Synth,Frame);
-        no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        mad_synth_frame(Synth,Frame);
+        no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         Total_samples_decoded += 2*no;
     }
 
-    if (Synth.pcm.length > no)
+    if (Synth->pcm.length > no)
 	rest = no;
     else
 	rest = -1;
@@ -392,17 +412,17 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     // from the previous read than the client requested.
     if (rest > 0)
     {
-        for (i=rest; i<Synth.pcm.length && Total_samples_decoded < samples_wanted; i++)
+        for (i=rest; i<Synth->pcm.length && Total_samples_decoded < samples_wanted; i++)
         {
             // Left channel
-            *(destination++) = madScale(Synth.pcm.samples[0][i]);
+            *(destination++) = madScale(Synth->pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
             * the right output channel is the same as the left one. */
             if (m_iChannels>1)
-                *(destination++) = madScale(Synth.pcm.samples[1][i]);
+                *(destination++) = madScale(Synth->pcm.samples[1][i]);
             else
-                *(destination++) = madScale(Synth.pcm.samples[0][i]);
+                *(destination++) = madScale(Synth->pcm.samples[0][i]);
 
             // This is safe because we have Q_ASSERTed that samples_wanted is even.
             Total_samples_decoded += 2;
@@ -410,7 +430,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
         }
 
         if(Total_samples_decoded >= samples_wanted) {
-            if(i < Synth.pcm.length)
+            if(i < Synth->pcm.length)
                 rest = i;
             else
                 rest = -1;
@@ -425,26 +445,26 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     while (Total_samples_decoded < samples_wanted)
     {
         // qDebug() << "no " << Total_samples_decoded;
-        if(mad_frame_decode(Frame,&Stream))
+        if(mad_frame_decode(Frame,Stream))
         {
-            if(MAD_RECOVERABLE(Stream.error))
+            if(MAD_RECOVERABLE(Stream->error))
             {
-                if(Stream.error == MAD_ERROR_LOSTSYNC) {
+                if(Stream->error == MAD_ERROR_LOSTSYNC) {
                     // Ignore LOSTSYNC due to ID3 tags
-                    int tagsize = id3_tag_query(Stream.this_frame, Stream.bufend - Stream.this_frame);
+                    int tagsize = id3_tag_query(Stream->this_frame, Stream->bufend - Stream->this_frame);
                     if(tagsize > 0) {
                         //qDebug() << "SSMP3::Read Skipping ID3 tag size: " << tagsize;
-                        mad_stream_skip(&Stream, tagsize);
+                        mad_stream_skip(Stream, tagsize);
                     }
                     continue;
                 }
-                //qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(&Stream) << ")";
+                //qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(Stream) << ")";
                 continue;
-            } else if(Stream.error==MAD_ERROR_BUFLEN) {
+            } else if(Stream->error==MAD_ERROR_BUFLEN) {
                 // qDebug() << "MAD: buflen ERR";
                 break;
             } else {
-                // qDebug() << "MAD: Unrecoverable frame level ERR (" << mad_stream_errorstr(&Stream) << ").";
+                // qDebug() << "MAD: Unrecoverable frame level ERR (" << mad_stream_errorstr(Stream) << ").";
                 break;
             }
         }
@@ -454,7 +474,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
         /* Once decoded the frame is synthesized to PCM samples. No ERRs
          * are reported by mad_synth_frame();
          */
-        mad_synth_frame(&Synth,Frame);
+        mad_synth_frame(Synth,Frame);
 
         // Number of channels in frame
         //ch = MAD_NCHANNELS(&Frame->header);
@@ -466,19 +486,19 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
          */
 
 
-//         qDebug() << "synthlen " << Synth.pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
-        no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
+//         qDebug() << "synthlen " << Synth->pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
+        no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (i=0; i<no; i++)
         {
             // Left channel
-            *(destination++) = madScale(Synth.pcm.samples[0][i]);
+            *(destination++) = madScale(Synth->pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
             * the right output channel is the same as the left one. */
             if (m_iChannels==2)
-                *(destination++) = madScale(Synth.pcm.samples[1][i]);
+                *(destination++) = madScale(Synth->pcm.samples[1][i]);
             else
-                *(destination++) = madScale(Synth.pcm.samples[0][i]);
+                *(destination++) = madScale(Synth->pcm.samples[0][i]);
         }
         Total_samples_decoded += 2*no;
 
@@ -486,7 +506,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     }
 
     // If samples are still left in buffer, set rest to the index of the unused samples
-    if (Synth.pcm.length > no)
+    if (Synth->pcm.length > no)
         rest = no;
     else
         rest = -1;
@@ -495,16 +515,15 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     return Total_samples_decoded;
 }
 
-int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
+int SoundSourceMp3::parseHeader()
 {
-    QString location = Track->getLocation();
+    QString location = m_qFilename; 
 
     QFile sizetest( location );
     if (sizetest.size() == 0) {
-        return ERR;
     }
 
-    Track->setType("mp3");
+    this->setType("mp3");
 
     // mad-dev post in 2002-25-Jan on how to use libid3 by Rob Leslie
     // http://www.mars.org/mailman/public/mad-dev/2002-January/000439.html
@@ -519,32 +538,33 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             QString s;
             getField(tag,"TIT2",&s); // TIT2 : Title
             if (s != "")
-                Track->setTitle(s);
+                this->setTitle(s);
             s="";
             getField(tag,"TPE1",&s); // TPE1 : Artist
             if (s != "")
-                Track->setArtist(s);
+                this->setArtist(s);
             s="";
             getField(tag,"TALB",&s);
-            Track->setAlbum(s);
+            this->setAlbum(s);
             s="";
             getField(tag,"TDRC",&s);
-            Track->setYear(s);
+            this->setYear(s);
             s="";
             getField(tag,"TCON",&s);
-            Track->setGenre(s);
+            this->setGenre(s);
             s="";
             getField(tag,"TRCK",&s);
-            Track->setTrackNumber(s);
+            this->setTrackNumber(s);
             s="";
             getField(tag,"TBPM",&s); // TBPM: the bpm
             float bpm = 0;
             if (s.length()>1) bpm = str2bpm(s);
             if(bpm > 0) {
-                Track->setBpm(bpm);
-                Track->setBpmConfirm(true);
+                this->setBPM(bpm);
+                //Track->setBpmConfirm(true);
             }
-            Track->setHeaderParsed(true);
+            
+            //Track->setHeaderParsed(true);
 
             /*
                // On some tracks this segfaults. TLEN is very seldom used anyway...
@@ -578,11 +598,10 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
         return ERR;
     }
 
-    mad_stream Stream;
     mad_header Header;
 
-    mad_stream_init(&Stream);
-    mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
+    mad_stream_init(Stream);
+    mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
     mad_header_init(&Header);
 
     // Stats we record as we go
@@ -615,24 +634,24 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 
         // This preserves skiplen, so if we had a buffer error earlier
         // the skip will occur when we give it more data.
-        mad_stream_buffer(&Stream, (unsigned char *) inputbuf, readbytes);
+        mad_stream_buffer(Stream, (unsigned char *) inputbuf, readbytes);
 
-        while((Stream.bufend - Stream.this_frame) > 0) {
-            if(mad_header_decode(&Header,&Stream) == -1) {
-                if(!MAD_RECOVERABLE(Stream.error)) {
-                    if(Stream.error == MAD_ERROR_BUFLEN) {
+        while((Stream->bufend - Stream->this_frame) > 0) {
+            if(mad_header_decode(&Header,Stream) == -1) {
+                if(!MAD_RECOVERABLE(Stream->error)) {
+                    if(Stream->error == MAD_ERROR_BUFLEN) {
                         // We skipped too much, that's ok.
                         break;
                     }
                     // Something worse happened
-                    //qDebug() << "SSMP3::ParseHeaeder - MAD unrecoverable error: " << mad_stream_errorstr(&Stream);
+                    //qDebug() << "SSMP3::ParseHeaeder - MAD unrecoverable error: " << mad_stream_errorstr(Stream);
                     break;
-                } else if(Stream.error == MAD_ERROR_LOSTSYNC) {
+                } else if(Stream->error == MAD_ERROR_LOSTSYNC) {
                     // ignore LOSTSYNC due to ID3 tags
-                    int tagsize = id3_tag_query(Stream.this_frame, Stream.bufend - Stream.this_frame);
+                    int tagsize = id3_tag_query(Stream->this_frame, Stream->bufend - Stream->this_frame);
                     if (tagsize > 0) {
                         //qDebug() << "SSMP3::ParseHeader Skipping ID3 tag size: " << tagsize;
-                        mad_stream_skip(&Stream, tagsize);
+                        mad_stream_skip(Stream, tagsize);
                         continue;
                     }
                 }
@@ -641,7 +660,11 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             if (frames==0) {
                 bitrate = Header.bitrate;
                 dur = Header.duration;
-                bytesperframe = (Stream.next_frame - Stream.this_frame);
+                bytesperframe = (Stream->next_frame - Stream->this_frame);
+                //Set samplerate and channels here so length() calculation
+                //works.
+                this->setSampleRate(Header.samplerate);
+                this->setChannels(MAD_NCHANNELS(&Header));
             } else if (bitrate != Header.bitrate) {
                 constantbitrate = false;
             }
@@ -659,21 +682,22 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
         // the number of frames we think can fit in the file size.
 
         // duration per frame * file_length bytes / (bytes per frame) = duration
-        //mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
-        mad_timer_multiply(&dur, Track->getLength()/bytesperframe);
+        //mad_timer_multiply(&dur, Track->getLength()/((Stream->this_frame-Stream->buffer)/frames));
+        mad_timer_multiply(&dur, length()/bytesperframe);
         int duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
         //qDebug() << "SSMP3::ParseHeader - CBR bytes per frame" << bytesperframe << " Estimated duration " << duration;
-        Track->setDuration(duration);
-        Track->setBitrate(Header.bitrate/1000);
+        this->setDuration(duration);
+        this->setBitrate(Header.bitrate/1000);
     }
 
 
-    Track->setSampleRate(Header.samplerate);
-    Track->setChannels(MAD_NCHANNELS(&Header));
-
-    mad_stream_finish(&Stream);
-    delete [] inputbuf;
     file.close();
+    /**
+      This code is now called in the destructor since ParseHeader() isn't
+      static any more!
+    mad_stream_finish(Stream);
+    delete [] inputbuf;
+    **/
     return OK;
 
 }

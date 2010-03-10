@@ -3,4 +3,8 @@
 
 Import('build_dir')
 
-SConscript(File('soundsourcem4a/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
+plugins = [] 
+soundsourcem4a = SConscript(File('soundsourcem4a/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
+plugins.append(soundsourcem4a)
+
+Return("plugins")

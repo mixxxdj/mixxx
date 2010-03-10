@@ -43,8 +43,8 @@ build_dir = '%s_build' % platform
 Export('platform')
 Export('build_dir')
 
-SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
-SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0) 
+soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0)
+SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports='soundsource_plugins') 
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
 

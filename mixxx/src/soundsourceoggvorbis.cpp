@@ -45,29 +45,41 @@
    Class for reading Ogg Vorbis
  */
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) 
+SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 : SoundSource(qFilename)
 {
-    QByteArray qBAFilename = qFilename.toUtf8();
+    filelength = 0;
+}
+
+SoundSourceOggVorbis::~SoundSourceOggVorbis()
+{
+    if (filelength > 0){
+        ov_clear(&vf);
+    }
+}
+
+int SoundSourceOggVorbis::open()
+{
+    QByteArray qBAFilename = m_qFilename.toUtf8();
 
 #ifdef __WINDOWS__
     if(ov_fopen(qBAFilename.data(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
-        return;
+        return ERR;
     }
 #else 
     FILE *vorbisfile =  fopen(qBAFilename.data(), "r");
 
     if (!vorbisfile) {
-        qDebug() << "oggvorbis: cannot open" << qFilename;
-        return;
+        qDebug() << "oggvorbis: cannot open" << m_qFilename;
+        return ERR;
     }
 
     if(ov_open(vorbisfile, &vf, NULL, 0) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
-        return;
+        return ERR;
     }
 #endif
 
@@ -75,13 +87,13 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
     vorbis_info * vi = ov_info(&vf, -1);
 
     channels = vi->channels;
-    SRATE = vi->rate;
+    m_iSampleRate = vi->rate;
 
     if(channels > 2){
         qDebug() << "oggvorbis: No support for more than 2 channels!";
         ov_clear(&vf);
         filelength = 0;
-        return;
+        return ERR;
     }
 
     // ov_pcm_total returns the total number of frames in the ogg file. The
@@ -101,15 +113,10 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
           //The file is not seekable. Not sure if any action is needed.
       }
     }
-}
 
-SoundSourceOggVorbis::~SoundSourceOggVorbis()
-{
-    if (filelength > 0){
-        ov_clear(&vf);
-    }
-}
+    return OK;
 
+}
 
 /*
    seek to <filepos>
@@ -216,12 +223,11 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 /*
    Parse the the file to get metadata
  */
-int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
+int SoundSourceOggVorbis::parseHeader()
 {
-    QString filename = Track->getLocation();
+    QString filename = this->getFilename();
     QByteArray qBAFilename = filename.toUtf8();
     vorbis_comment *comment = NULL;
-    OggVorbis_File vf;
 
 #ifdef __WINDOWS__
     if (ov_fopen(qBAFilename.data(), &vf) < 0) {
@@ -242,8 +248,6 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     }
 #endif
 
-
-
     comment = ov_comment(&vf, -1);
     if (comment == NULL) {
         qDebug() << "oggvorbis: fatal error reading file.";
@@ -262,47 +266,45 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     
     
     if(title_p)
-      Track->setTitle(title_p);
+      this->setTitle(title_p);
     if(artist_p)
-      Track->setArtist(artist_p);
+      this->setArtist(artist_p);
     if(album_p)
-      Track->setAlbum(album_p);
+      this->setAlbum(album_p);
     if(year_p)
-      Track->setYear(year_p);
+      this->setYear(year_p);
     if(genre_p)
-      Track->setGenre(genre_p);
+      this->setGenre(genre_p);
     if(track_p)
-      Track->setTrackNumber(track_p);
+      this->setTrackNumber(track_p);
     if (bpm_p) {
         float bpm = str2bpm(bpm_p);
         if(bpm > 0.0f) {
-            Track->setBpm(bpm);
-            Track->setBpmConfirm(true);
+            this->setBPM(bpm);
+            //Track->setBpmConfirm(true);
         }
     }
-    Track->setHeaderParsed(true);
+    //this->setHeaderParsed(true); 
 
-    Track->setType("ogg");
+    this->setType("ogg");
     int duration = (int)ov_time_total(&vf, -1);
     if (duration == OV_EINVAL)
         return ERR;
-    Track->setDuration(duration);
-    Track->setBitrate(ov_bitrate(&vf, -1)/1000);
+    this->setDuration(duration);
+    this->setBitrate(ov_bitrate(&vf, -1)/1000);
 
     vorbis_info *vi=ov_info(&vf,-1);
     if (vi)
     {
-        Track->setSampleRate(vi->rate);
-        Track->setChannels(vi->channels);
+        this->setSampleRate(vi->rate);
+        this->setChannels(vi->channels);
     }
     else
     {
         qDebug() << "oggvorbis: fatal error reading file.";
-        ov_clear(&vf);
         return ERR;
     }
     
-    ov_clear(&vf);
     return OK;
 }
 
@@ -313,4 +315,11 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 inline long unsigned SoundSourceOggVorbis::length()
 {
     return filelength;
+}
+
+QList<QString> SoundSourceOggVorbis::supportedFileExtensions()
+{
+    QList<QString> list;
+    list.push_back("ogg");
+    return list;
 }

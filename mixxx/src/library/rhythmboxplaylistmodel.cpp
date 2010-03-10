@@ -26,7 +26,6 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
 
 RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) :
         TrackModel(QSqlDatabase::database("QSQLITE"),

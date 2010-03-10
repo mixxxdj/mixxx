@@ -33,6 +33,7 @@
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
+#include "soundsourceproxy.h"
 
 #include "player.h"
 #include "wtracktableview.h"
@@ -43,7 +44,6 @@
 
 #include "soundmanager.h"
 #include "defs_urls.h"
-#include "defs_audiofiles.h"
 #include "recording/defs_recording.h"
 
 #include "midi/mididevicemanager.h"
@@ -156,6 +156,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
+
+    //Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 
     // Init buffers/readers
     buffer1 = new EngineBuffer("[Channel1]", config);
@@ -858,7 +861,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
     if (!(s == QString::null)) {
         // TODO(XXX) Lookup track in the Library and load that.
         TrackInfoObject * pTrack = new TrackInfoObject(s);
@@ -882,7 +885,7 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
     if (!(s == QString::null)) {
         // TODO(XXX) Lookup track in the Library and load that.
         TrackInfoObject * pTrack = new TrackInfoObject(s);
