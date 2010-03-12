@@ -647,6 +647,7 @@ if platform == 'osx':
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtNetwork.framework/Headers/',
 				'/Library/Frameworks/QtSql.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 
@@ -1452,7 +1453,7 @@ if platform in ('linux', 'bsd'):
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
-if platform == 'osx':
+if platform == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
 	ARCH="macintel" #XXX should get this from scons or the system somehow?
@@ -1463,6 +1464,11 @@ if platform == 'osx':
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                       [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
 	#Left out libqmng and libqtiff to save space.
+
+	#Concatenate the SoundSource plugins to our list of plugins
+    #(converting from SCons File nodes to strings)
+	for x in soundsource_plugins:
+		plugins.append(x.get_abspath())
 
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
@@ -1476,7 +1482,7 @@ if platform == 'osx':
 		 STRIP=True,
 		 #STRIP=(type == 'RELEASE')
 		 )
-	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
