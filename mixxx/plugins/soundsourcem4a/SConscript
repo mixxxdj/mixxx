@@ -121,7 +121,7 @@ if platform in ('linux', 'bsd'):
 	#Whoever hacked this in, it breaks scons for people who've set PKG_CONFIG_PATH in their shell. - Albert
  	#os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 elif platform == 'osx':
-	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['#build/', '#..//build/osx/'], ENV = os.environ)
+	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['#build/', '#build/osx/'], ENV = os.environ)
 elif 'win' in platform:
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['#build/'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
