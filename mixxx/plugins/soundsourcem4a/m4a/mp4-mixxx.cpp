@@ -50,7 +50,7 @@
     #include <unistd.h>
 #endif
 
-#ifdef MSVC
+#ifdef _MSC_VER
     #define S_ISDIR(mode) (mode & _S_IFDIR)
     #define strcasecmp stricmp
     #define strncasecmp strnicmp

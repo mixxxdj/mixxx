@@ -150,12 +150,17 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
                               //Did you export it properly in your plugin?
             getSupportedFileExtensionsFunc getFileExts = (getSupportedFileExtensionsFunc)plugin->resolve("supportedFileExtensions");
             Q_ASSERT(getFileExts);
-            QList<QString> supportedFileExtensions = getFileExts();
-            for (int i = 0; i < supportedFileExtensions.count(); i++)
+            char** supportedFileExtensions = getFileExts();
+            int i = 0;
+            while (supportedFileExtensions[i] != NULL)
             {
-                m_extensionsSupportedByPlugins.insert(supportedFileExtensions[i], getter);
+                m_extensionsSupportedByPlugins.insert(QString(supportedFileExtensions[i]), getter);
+                free(supportedFileExtensions[i]);
+                i++;
             }
-            //So now we have a list of file extensions (eg. "m4a", "mp4", etc)            //that map onto the getter function for this plugin (eg. the 
+            free(supportedFileExtensions);
+            //So now we have a list of file extensions (eg. "m4a", "mp4", etc)
+            //that map onto the getter function for this plugin (eg. the 
             //function that returns a SoundSourceM4A object) 
         }
     }

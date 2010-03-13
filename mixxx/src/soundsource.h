@@ -31,7 +31,7 @@ class TrackInfoObject;
 /** Getter function to be declared by all SoundSource plugins */
 class SoundSource;
 typedef SoundSource* (*getSoundSourceFunc)(QString filename);
-typedef QList<QString> (*getSupportedFileExtensionsFunc)();
+typedef char** (*getSupportedFileExtensionsFunc)();
 
 
 /*

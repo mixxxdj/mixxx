@@ -223,7 +223,7 @@ if platform == 'win32':
 
 if 'win' in platform:
 	env.Append(CPPPATH='../../lib/ladspa') #If you add more directories, separate them with a semicolon (;)
-	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
+	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib'])     #'/entry:mainCRTStartup']) #Don't want mainCRTStartup for the M4A DLL
 	env.Append(LIBS='advapi32') # needed for PortMIDI
 #'/subsystem:windows',
 
@@ -316,8 +316,6 @@ if platform == 'linux':
 
 		env.EnableQt4Modules([
 		'QtCore',
-#		'Qt3Support',
-#		'QtXml'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
@@ -363,7 +361,7 @@ if platform in ('linux', 'bsd'): #a define for code that works on unix only can 
 
 if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtCore')
-	
+
 if 'win' in platform:
 	env.Append(LIBS = 'QtCore4');
 	
@@ -593,8 +591,9 @@ print "================\n"
 #Save the options to cache
 vars.Save(cachefile, env)
 
-#Tell SCons to build Mixxx
+#Tell SCons to build the SoundSourceM4A plugin
 #=========================
+SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
 if 'win' in platform:
 	ssm4a_bin = env.SharedLibrary('soundsourcem4a', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:

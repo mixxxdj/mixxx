@@ -711,6 +711,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtXml')
 	env.Append(LIBS = 'QtGui')
 	env.Append(LIBS = 'QtCore')
+	env.Append(LIBS = 'QtNetwork')
 	env.Append(LIBS = 'QtOpenGL')
 	env.Append(LIBS = 'QtScript')
 	env.Append(LIBS = 'sndfile') #? we shouldn't have to do this...
@@ -723,6 +724,7 @@ if 'win' in platform:
 	env.Append(LIBS = 'QtSql4');
 	env.Append(LIBS = 'QtGui4');
 	env.Append(LIBS = 'QtCore4');
+	env.Append(LIBS = 'QtNetwork4');
 	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
 	env.Append(LIBS = 'ogg_static')
@@ -741,6 +743,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
 			    '$QTDIR/include/QtXml',
+			    '$QTDIR/include/QtNetwork',
 			    '$QTDIR/include/QtSql',
 			    '$QTDIR/include/QtOpenGL',
 			    '$QTDIR/include/Qt'])
@@ -1497,6 +1500,7 @@ if 'win' in platform:
 	promotracks = env.Install("#dist/promo/", promotracks_files)
 	#icon = env.Install("#dist", icon_files)
 	dlls = env.Install("#dist/", dll_files)
+	soundsource_plugins = env.Install("#dist/", soundsource_plugin_files)
 	binary = env.Install("#dist/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
@@ -1508,6 +1512,7 @@ if 'win' in platform:
 	env.Alias('mixxx', promotracks)
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)
+	env.Alias('mixxx', soundsource_plugins)
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 

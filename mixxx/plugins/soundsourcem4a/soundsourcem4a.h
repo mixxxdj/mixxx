@@ -55,7 +55,7 @@ class SoundSourceM4A : public SoundSource {
         input_plugin_data ipd;
 };
 
-extern "C" MY_EXPORT QString getMixxxVersion()
+extern "C" MY_EXPORT const char* getMixxxVersion()
 {
     return VERSION;
 }
@@ -65,9 +65,19 @@ extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
     return new SoundSourceM4A(filename);
 }
 
-extern "C" MY_EXPORT QList<QString> supportedFileExtensions() 
+extern "C" MY_EXPORT char** supportedFileExtensions() 
 {
-    return SoundSourceM4A::supportedFileExtensions();
+    QList<QString> exts = SoundSourceM4A::supportedFileExtensions();
+    //Convert to C string array.
+    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));  
+    for (int i = 0; i < exts.count(); i++)
+    {
+        QByteArray qba = exts[i].toUtf8();
+        c_exts[i] = strdup(qba.constData());
+    }
+    c_exts[exts.count()] = NULL; //NULL terminate the list
+
+    return c_exts; //It's up to the caller to free this array
 }
 
 #endif
