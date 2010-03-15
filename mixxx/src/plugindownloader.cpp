@@ -15,7 +15,7 @@ PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
     
     QString pluginDir;
 #ifdef __WINDOWS__
-    pluginDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    pluginDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";
 #endif
 
 #ifdef __APPLE__
@@ -28,7 +28,7 @@ PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
 #endif
 
 #ifdef __LINUX__
-    pluginDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    pluginDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/";
 #endif
     qDebug() << "PluginDownloader: Plugin directory is" << pluginDir;
     
@@ -56,6 +56,11 @@ PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
 
 #ifdef __LINUX__
 
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/ubuntu-i386/mixxx-m4a_1.8.0-ubuntu-i386.deb"),
+                            pluginDir + "mixxx-m4a_1.8.0-ubuntu-i386.deb");
+    //Make a dummy entry so we detect when the deb package is installed
+    m_mp4PluginFiles.insert(QUrl("DUMMY"),
+                            "/usr/lib/libsoundsourcem4a.so");
 #endif
 
 }
@@ -71,7 +76,7 @@ bool PluginDownloader::checkForM4APlugin()
 
     QList<QString> pluginFiles = m_mp4PluginFiles.values();
 
-    //Check to make sure each plugin file exists
+    //Check to make sure all the plugin files exist
     for (int i = 0; i < pluginFiles.count(); i++)
     {
         ret = ret && QFile::exists(pluginFiles[i]);
@@ -88,7 +93,8 @@ bool PluginDownloader::downloadM4APlugin()
     while (it.hasNext())
     {
         it.next();
-        m_downloadQueue.enqueue(qMakePair(it.key(), it.value()));
+        if (it.key() != QUrl("DUMMY"))
+            m_downloadQueue.enqueue(qMakePair(it.key(), it.value()));
     }
     downloadFromQueue();
 
@@ -177,6 +183,16 @@ void PluginDownloader::downloadFinished()
 
     if (m_downloadQueue.count() > 0) {
         downloadFromQueue();
+    }
+    else
+    {
+#ifdef __LINUX__
+        if (filenameWithoutTmp.endsWith(".deb"))
+        {
+            //Launch the gdebi graphical Debian package installer...
+            QProcess::startDetached("gdebi-gtk " + filenameWithoutTmp);
+        }
+#endif
     }
 }
 
