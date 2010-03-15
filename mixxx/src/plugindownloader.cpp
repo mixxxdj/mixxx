@@ -3,54 +3,106 @@
 #include "defs_version.h"
 #include "plugindownloader.h"
 
+#define TEMP_EXTENSION ".tmp"
+
 PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
 {
     qDebug() << "PluginDownloader constructed";
-/*
-    if (!checkForM4APlugin())
-    {
-        //TODO: Show M4A Plugin download dialog
-        
-        downloadM4APlugin();
-    }
-    */
+    
+    m_pNetwork = new QNetworkAccessManager();
+    connect(m_pNetwork, SIGNAL(finished(QNetworkReply*)),
+         this, SLOT(finishedSlot(QNetworkReply*)));
+    
+    QString pluginDir;
+#ifdef __WINDOWS__
+    pluginDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+
+#ifdef __APPLE__
+    QString frameworksDir;
+    pluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
+    pluginDir.remove("MacOS");
+    frameworksDir = pluginDir;
+    pluginDir.append("PlugIns/"); //blah/Mixxx.app/Contents/PlugIns
+    frameworksDir.append("Frameworks/"); //blah/Mixxx.app/Contents/Frameworks
+#endif
+
+#ifdef __LINUX__
+    pluginDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#endif
+    qDebug() << "PluginDownloader: Plugin directory is" << pluginDir;
+    
+    //Make sure the directory exists...
+    QDir dir;
+    dir.mkpath(pluginDir);
+
+#ifdef __WINDOWS__
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/win32/mp4v2.dll"),
+                           pluginDir + "mp4v2.dll");
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/win32/faad2.dll"),
+                           pluginDir + "faad2.dll");
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/win32/libsoundsourcem4a.dll"),
+                           pluginDir + "libsoundsourcem4a.dll");
+#endif
+
+#ifdef __APPLE__
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/osx/mp4v2.dylib"),
+                           frameworksDir + "mp4v2.dylib");
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/osx/faad2.dylib"),
+                           frameworksDir + "faad2.dylib");
+    m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/osx/libsoundsourcem4a.dylib"),
+                           pluginDir + "libsoundsourcem4a.dylib");
+#endif
+
+#ifdef __LINUX__
+
+#endif
+
 }
 
 PluginDownloader::~PluginDownloader()
 {
-
+    delete m_pNetwork;
 }
 
 bool PluginDownloader::checkForM4APlugin()
 {
-#ifdef __WINDOWS__
-    m_pluginDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-    m_mp4libPath = m_pluginDir + "/mp4v2.dll";
-#endif
+    bool ret = true;
 
-#ifdef __MACOSX__
-    m_pluginDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-    m_mp4libPath = m_pluginDir + "/mixxx/plugins/mp4v2.dylib";
-#endif
+    QList<QString> pluginFiles = m_mp4PluginFiles.values();
 
-#ifdef __LINUX__
-    m_pluginDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    m_mp4libPath = m_pluginDir + "/.mixxx/plugins/libmp4v2.so";
-#endif
-    qDebug() << "PluginDownloader: Checking for plugins in" << m_mp4libPath;
+    //Check to make sure each plugin file exists
+    for (int i = 0; i < pluginFiles.count(); i++)
+    {
+        ret = ret && QFile::exists(pluginFiles[i]);
+    }
     
-    return QFile::exists(m_mp4libPath);
+    return ret;
 }
 
 bool PluginDownloader::downloadM4APlugin()
 {
     qDebug() << "PluginDownloader::downloadM4APlugin()";
-    
-    QDir dir;
-    dir.mkpath(m_pluginDir);
-    m_tempMp4libPath = m_mp4libPath + ".tmp";
 
-    m_pDownloadedFile = new QFile(m_tempMp4libPath);
+    QMapIterator<QUrl, QString> it(m_mp4PluginFiles);
+    while (it.hasNext())
+    {
+        it.next();
+        m_downloadQueue.enqueue(qMakePair(it.key(), it.value()));
+    }
+    downloadFromQueue();
+
+    return true;
+}
+
+
+bool PluginDownloader::downloadFromQueue()
+{
+    QPair<QUrl, QString> download = m_downloadQueue.dequeue();
+    QUrl downloadUrl = download.first;
+    QString filename = download.second;
+
+    m_pDownloadedFile = new QFile(filename + TEMP_EXTENSION);
     if (!m_pDownloadedFile->open(QIODevice::WriteOnly))
     {
         //TODO: Error
@@ -59,10 +111,7 @@ bool PluginDownloader::downloadM4APlugin()
     }
    
     qDebug() << "PluginDownloader: setting up download stuff";
-    m_pNetwork = new QNetworkAccessManager();
-    connect(m_pNetwork, SIGNAL(finished(QNetworkReply*)),
-         this, SLOT(finishedSlot(QNetworkReply*)));
-    m_pRequest = new QNetworkRequest(QUrl("http://downloads.mixxx.org/beats/Peer%20Control%20Demo%202.ogg"));
+    m_pRequest = new QNetworkRequest(downloadUrl);
 
     //Set up user agent for great justice
     QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName()).arg(VERSION);
@@ -77,7 +126,7 @@ bool PluginDownloader::downloadM4APlugin()
             this, SLOT(slotProgress(qint64, qint64)));
     connect(m_pReply, SIGNAL(finished()),
             this, SLOT(downloadFinished()));    
-    
+
     return true;
 }
 
@@ -100,7 +149,7 @@ void PluginDownloader::slotError(QNetworkReply::NetworkError error)
     qDebug() << "PluginDownloader: Network error while trying to download a plugin.";
     
     //Delete partial file
-    QFile::remove(m_tempMp4libPath);
+    m_pDownloadedFile->remove();
 }
 
 void PluginDownloader::slotProgress( qint64 bytesReceived, qint64 bytesTotal )
@@ -111,9 +160,24 @@ void PluginDownloader::slotProgress( qint64 bytesReceived, qint64 bytesTotal )
 void PluginDownloader::downloadFinished()
 {
     qDebug() << "PluginDownloader: Download finished!";
+    //Finish up with the reply and close the file handle
     m_pReply->deleteLater();
     m_pDownloadedFile->close();
-    QFile::rename(m_tempMp4libPath, m_mp4libPath);
+
+
+    //Chop off the .tmp from the filename 
+    QFileInfo info(*m_pDownloadedFile);
+    QString filenameWithoutTmp = info.absoluteFilePath();
+    filenameWithoutTmp.chop(QString(TEMP_EXTENSION).length());
+    m_pDownloadedFile->rename(filenameWithoutTmp);
+    delete m_pDownloadedFile;
+    m_pDownloadedFile = NULL;
+    delete m_pRequest;
+    m_pRequest = NULL;
+
+    if (m_downloadQueue.count() > 0) {
+        downloadFromQueue();
+    }
 }
 
 void PluginDownloader::finishedSlot(QNetworkReply* reply)
