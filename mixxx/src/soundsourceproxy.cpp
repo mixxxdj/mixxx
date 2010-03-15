@@ -65,8 +65,9 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 
 void SoundSourceProxy::loadPlugins()
 {
-   /** TODO: Scan for and initialize all plugins in a static function here,
-             and call it from mixxx.cpp */
+   /** TODO: Scan for and initialize all plugins */
+
+   //Initialize the M4A plugin
    getPlugin(PLUGIN_M4A);
 }
 
@@ -86,8 +87,6 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
     } else if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
 	    return new SoundSourceOggVorbis(qFilename);
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
-    	//QLibrary* plugin = getPlugin(PLUGIN_M4A);
-        //getSoundSourceFunc getter = (getSoundSourceFunc)plugin->resolve("getSoundSource");
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
         if (getter)
         {
@@ -112,20 +111,6 @@ SoundSourceProxy::~SoundSourceProxy()
 {
     delete m_pSoundSource;
 }
-/*
-void SoundSourceProxy::initPlugin(QString lib_filename, QString track_filename) {
-    //typedef QString (*getMixxxVersionFunc)();
-    
-    QLibrary* plugin = getPlugin(lib_filename);
-    
-    getSoundSourceFunc getter = (getSoundSourceFunc)plugin->resolve("getSoundSource");
-    //getMixxxVersionFunc getMixxxVersion = (getMixxxVersionFunc)plugin->resolve("getMixxxVersion");
-    if (getter)
-    {
-        m_pSoundSource = getter(track_filename);
-    }
-}
-*/
 
 QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 {
@@ -171,7 +156,7 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 int SoundSourceProxy::open()
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->open();
 }
@@ -202,7 +187,7 @@ long unsigned SoundSourceProxy::length()
 
 int SoundSourceProxy::parseHeader()
 {
-    //TODO: Reorganize code so that the static ParseHeader isn't needed?
+    //TODO: Reorganize code so that the static ParseHeader isn't needed, and use this function instead?
     return 0;
 }
 
@@ -216,7 +201,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 
     if (sndsrc->parseHeader() == OK) {
         //Dump the metadata from the soundsource into the TIO
-        qDebug() << "Album:" << sndsrc->getAlbum();
+        //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
         p->setArtist(sndsrc->getArtist());
         p->setTitle(sndsrc->getTitle());
         p->setAlbum(sndsrc->getAlbum());
@@ -242,9 +227,6 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 
 QList<QString> SoundSourceProxy::supportedFileExtensions()
 {
-    //TODO: Fill me in...
-    qDebug() << "STUB: SSP::supportedFileExtensions()" << __FILE__ <<__LINE__;
-
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
@@ -293,44 +275,6 @@ QString SoundSourceProxy::supportedFileExtensionsRegex()
     
     return supportedFileExtRegex;
 }
-
-/*
-int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
-{
-    typedef int (*ParseHeaderFunction)(TrackInfoObject*);
-    
-    QString qFilename = p->getFilename();
-#ifdef __FFMPEGFILE__
-    return SoundSourceFFmpeg::ParseHeader(p);
-#endif
-    if (qFilename.toLower().endsWith(".mp3"))
-	return SoundSourceMp3::ParseHeader(p);
-    else if (qFilename.toLower().endsWith(".ogg"))
-	return SoundSourceOggVorbis::ParseHeader(p);
-
-    else if (qFilename.toLower().endsWith(".m4a") ||
-	     qFilename.toLower().endsWith(".mp4"))
-    {
-    	QLibrary* plugin = getPlugin(PLUGIN_M4A);
-    	ParseHeaderFunction parseFn = (ParseHeaderFunction)plugin->resolve("getParseHeader");
-    	if (parseFn)
-        {
-            return parseFn(p);
-        }
-    }
-
-#ifdef __SNDFILE__
-    else if (qFilename.toLower().endsWith(".wav") ||
-	     qFilename.toLower().endsWith(".aif") ||
-	     qFilename.toLower().endsWith(".aiff") ||
-	     qFilename.toLower().endsWith(".flac"))
-	return SoundSourceSndFile::ParseHeader(p);
-#endif
-
-    return ERR;
-}
-*/
-
 
 unsigned int SoundSourceProxy::getSampleRate()
 {

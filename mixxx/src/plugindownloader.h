@@ -1,6 +1,7 @@
 #include <QtCore>
 #include <QtNetwork>
 #include <QNetworkAccessManager>
+#include <QQueue>
 
 class PluginDownloader : public QObject
 {
@@ -9,6 +10,7 @@ class PluginDownloader : public QObject
         PluginDownloader(QObject* parent);
         ~PluginDownloader();
         
+        QString getPluginDir();
         bool checkForM4APlugin();
         bool downloadM4APlugin();
        
@@ -19,12 +21,14 @@ class PluginDownloader : public QObject
         void downloadFinished();
         void finishedSlot(QNetworkReply* reply);
     private:
+        bool downloadFromQueue();
         
         QNetworkAccessManager* m_pNetwork;
+        QQueue<QPair<QUrl, QString> > m_downloadQueue;
         QFile* m_pDownloadedFile;
-        QString m_pluginDir;
-        QString m_mp4libPath;
-        QString m_tempMp4libPath;
+        //QString m_mp4libPath;
+        QMap<QUrl, QString> m_mp4PluginFiles;
         QNetworkReply* m_pReply;
         QNetworkRequest* m_pRequest;
 };
+
