@@ -57,14 +57,15 @@ PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
 #ifdef __LINUX__
 
     //64-bit Ubuntu
-    if (QDir::exists("/usr/lib64"))
+    QDir lib64Check("/usr/lib64"); //No better way to check if 64-bit without running uname -r (gets complicated)
+    if (lib64Check.count() > 50) //If there's a lot of files in this directory... you're probably on 64-bit.
     {
-        m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/ubuntu-amd64/mixxx-m4a_1.8.0-ubuntu-amd64.deb"),
+        m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/1.8.0/ubuntu-amd64/mixxx-m4a_1.8.0-ubuntu-amd64.deb"),
                                 pluginDir + "mixxx-m4a_1.8.0-ubuntu-amd64.deb");
     }
-    else
+    else //32-bit Ubuntu
     {
-        m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/ubuntu-i386/mixxx-m4a_1.8.0-ubuntu-i386.deb"),
+        m_mp4PluginFiles.insert(QUrl("http://downloads.mixxx.org/plugins/1.8.0/ubuntu-i386/mixxx-m4a_1.8.0-ubuntu-i386.deb"),
                                 pluginDir + "mixxx-m4a_1.8.0-ubuntu-i386.deb");
     }
 

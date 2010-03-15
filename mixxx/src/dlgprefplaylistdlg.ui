@@ -107,7 +107,10 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>MP3, Ogg Vorbis, FLAC Playback:</string>
+         <string>MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
