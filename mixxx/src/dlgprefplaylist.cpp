@@ -55,6 +55,34 @@ DlgPrefPlaylist::~DlgPrefPlaylist()
 void DlgPrefPlaylist::slotM4ACheck()
 {
     qDebug() << "slotM4ACheck";
+
+#ifdef __LINUX__
+    QFile version("/proc/version");
+    bool isUbuntu = true;
+    if (version.open(QIODevice::ReadOnly))
+    {
+        QByteArray rawLine = version.readAll();
+        QString versionString(rawLine);
+        if (versionString.contains("Ubuntu", Qt::CaseInsensitive))
+        {
+            isUbuntu = true;
+        }
+    }
+    else {
+        isUbuntu = false;
+    }
+
+    if (!isUbuntu)
+    {
+        QMessageBox::information(this, tr("M4A Playback Plugin"),
+                                tr("The M4A playback plugin is currently"
+                                "unavailable for your Linux distribution."
+                                "Please download and compile Mixxx from "
+                                "source to enable M4A playback."));
+    }
+
+#endif
+
     if (!m_pPluginDownloader->checkForM4APlugin())
     {
         m_pPluginDownloader->downloadM4APlugin();
