@@ -8,6 +8,8 @@
 #include <QList>
 #include <QModelIndex>
 #include <QVariant>
+#include <QTimer>
+#include <QModelIndex>
 
 class LibraryFeature;
 
@@ -53,11 +55,17 @@ class SidebarModel : public QAbstractItemModel {
     void slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
     void slotRowsInserted(const QModelIndex& parent, int start, int end);
     void slotRowsRemoved(const QModelIndex& parent, int start, int end);
+    void slotAutoExpandTimerTimeout();
+
+signals:
+    void expandIndex(QModelIndex);
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
+    QTimer m_autoExpandTimer; /** Used for timing the hover on tree items for the auto expand functionality */
+    QModelIndex m_hoveredIndex; /** The index that is hovered on while dragging. Used for the auto expand feature */
 };
 
 #endif /* SIDEBARMODEL_H */
