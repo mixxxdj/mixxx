@@ -110,6 +110,10 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
 
+    // used for auto expand
+    connect(m_pSidebarModel, SIGNAL(expandIndex(QModelIndex)),
+            pSidebarWidget, SLOT(expand(QModelIndex)));
+
     QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();

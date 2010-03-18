@@ -5,6 +5,8 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 
+const int AUTO_EXPAND_TIME = 500;
+
 SidebarModel::SidebarModel(QObject* parent)
     : m_iDefaultSelectedIndex(0),
       QAbstractItemModel(parent) {
@@ -29,6 +31,11 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
             this, SLOT(slotRowsInserted(const QModelIndex&, int, int)));
     connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
             this, SLOT(slotRowsRemoved(const QModelIndex&, int, int)));
+
+    m_autoExpandTimer.setInterval(AUTO_EXPAND_TIME);
+    m_autoExpandTimer.stop();
+
+    connect( &m_autoExpandTimer, SIGNAL(timeout()), this, SLOT(slotAutoExpandTimerTimeout()) );
 }
 
 QModelIndex SidebarModel::getDefaultSelection() {
@@ -203,8 +210,11 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
+            m_hoveredIndex = index;
+            m_autoExpandTimer.start();
             return m_sFeatures[index.row()]->dragMoveAccept(url);
         } else {
+            m_autoExpandTimer.stop();
             QAbstractItemModel* childModel = (QAbstractItemModel*)index.internalPointer();
             QModelIndex childIndex = childModel->index(index.row(), index.column());
             for (int i = 0; i < m_sFeatures.size(); ++i) {
@@ -260,4 +270,9 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     //qDebug() << "slotRowsRemoved" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
+}
+
+void SidebarModel::slotAutoExpandTimerTimeout()
+{
+    emit expandIndex(m_hoveredIndex);
 }
