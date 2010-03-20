@@ -35,11 +35,11 @@
 #include "mathstuff.h"
 #include "enginebuffercue.h"
 
-// Static default values for rate buttons
-double EngineBuffer::m_dTemp = 0.01;
-double EngineBuffer::m_dTempSmall = 0.001;
-double EngineBuffer::m_dPerm = 0.01;
-double EngineBuffer::m_dPermSmall = 0.001;
+// Static default values for rate buttons (percents, not fractions)
+double EngineBuffer::m_dTemp = 4.00; //(eg. 4.00%)
+double EngineBuffer::m_dTempSmall = 1.00;
+double EngineBuffer::m_dPerm = 0.50; 
+double EngineBuffer::m_dPermSmall = 0.05;
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
