@@ -10,8 +10,8 @@ PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
     qDebug() << "PluginDownloader constructed";
     
     m_pNetwork = new QNetworkAccessManager();
-    connect(m_pNetwork, SIGNAL(finished(QNetworkReply*)),
-         this, SLOT(finishedSlot(QNetworkReply*)));
+    //connect(m_pNetwork, SIGNAL(finished(QNetworkReply*)),
+    //     this, SLOT(finishedSlot(QNetworkReply*)));
     
     QString pluginDir;
 #ifdef __WINDOWS__
@@ -79,6 +79,11 @@ PluginDownloader::PluginDownloader(QObject* parent) : QObject(parent)
 PluginDownloader::~PluginDownloader()
 {
     delete m_pNetwork;
+    
+    delete m_pDownloadedFile;
+    m_pDownloadedFile = NULL;
+    delete m_pRequest;
+    m_pRequest = NULL;
 }
 
 bool PluginDownloader::checkForM4APlugin()
@@ -141,8 +146,10 @@ bool PluginDownloader::downloadFromQueue()
          this, SLOT(slotError(QNetworkReply::NetworkError)));   
     connect(m_pReply, SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(slotProgress(qint64, qint64)));
+    connect(m_pReply, SIGNAL(downloadProgress(qint64, qint64)),
+            this, SIGNAL(downloadProgress(qint64, qint64)));
     connect(m_pReply, SIGNAL(finished()),
-            this, SLOT(downloadFinished()));    
+            this, SLOT(slotDownloadFinished()));    
 
     return true;
 }
@@ -167,20 +174,22 @@ void PluginDownloader::slotError(QNetworkReply::NetworkError error)
     
     //Delete partial file
     m_pDownloadedFile->remove();
+
+    emit(downloadError());
 }
 
 void PluginDownloader::slotProgress( qint64 bytesReceived, qint64 bytesTotal )
 {
     qDebug() << bytesReceived << "/" << bytesTotal;
+    emit(downloadProgress(bytesReceived, bytesTotal));
 }
 
-void PluginDownloader::downloadFinished()
+void PluginDownloader::slotDownloadFinished()
 {
     qDebug() << "PluginDownloader: Download finished!";
     //Finish up with the reply and close the file handle
     m_pReply->deleteLater();
     m_pDownloadedFile->close();
-
 
     //Chop off the .tmp from the filename 
     QFileInfo info(*m_pDownloadedFile);
@@ -204,9 +213,12 @@ void PluginDownloader::downloadFinished()
             QProcess::startDetached("gdebi-gtk " + filenameWithoutTmp);
         }
 #endif
+        //Emit this signal when all the files have been downloaded.
+        emit(downloadFinished());
     }
 }
 
+/*
 void PluginDownloader::finishedSlot(QNetworkReply* reply)
 {
     if (reply->error() == QNetworkReply::NoError)
@@ -215,4 +227,4 @@ void PluginDownloader::finishedSlot(QNetworkReply* reply)
     }
     else
         qDebug() << "PluginDownloader: NAM error :-/";
-}
+}*/

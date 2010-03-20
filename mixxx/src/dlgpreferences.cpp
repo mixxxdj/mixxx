@@ -187,7 +187,7 @@ void DlgPreferences::createIcons()
 
     m_pPlaylistButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/library.png"));
-    m_pPlaylistButton->setText(0, tr("Library and Playlists"));
+    m_pPlaylistButton->setText(0, tr("Library"));
     m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
