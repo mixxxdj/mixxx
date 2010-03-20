@@ -18,8 +18,13 @@ class PluginDownloader : public QObject
         void slotReadyRead();
         void slotError(QNetworkReply::NetworkError error);
         void slotProgress( qint64 bytesReceived, qint64 bytesTotal );
+        void slotDownloadFinished();
+        //void finishedSlot(QNetworkReply* reply);
+    signals:
+        void downloadProgress(qint64, qint64);
         void downloadFinished();
-        void finishedSlot(QNetworkReply* reply);
+        void downloadError();
+
     private:
         bool downloadFromQueue();
         

@@ -27,12 +27,16 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     slotUpdate();
 
     m_pPluginDownloader = new PluginDownloader(this);
-    //If the M4A plugin is present on disk, check the checkbox.
-    if (m_pPluginDownloader->checkForM4APlugin()) {
-        pushButtonM4A->setChecked(true);
-        pushButtonM4A->setEnabled(false);
-        pushButtonM4A->setText("Installed");
-    }
+
+    //Disable the M4A button if the plugin is present on disk.
+    setupM4AButton();
+
+    //Disable M4A Button after download completes successfully.
+    connect(m_pPluginDownloader, SIGNAL(downloadFinished()),
+            this, SLOT(slotM4ADownloadFinished())); 
+    
+    connect(m_pPluginDownloader, SIGNAL(downloadProgress(qint64, qint64)),
+            this, SLOT(slotM4ADownloadProgress(qint64, qint64))); 
 
     // Connection
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
@@ -50,6 +54,30 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
 {
+}
+
+void DlgPrefPlaylist::slotM4ADownloadProgress(qint64 bytesReceived,
+                                              qint64 bytesTotal)
+{
+    pushButtonM4A->setText(QString("%1\%").arg(100*(float)bytesReceived/bytesTotal, 0, 'd', 1));
+}
+void DlgPrefPlaylist::slotM4ADownloadFinished()
+{
+    //Disable the button after the download is finished.
+    //We force it to be disabled because on Linux, gdebi-gtk
+    //needs to be finished running before we know whether or not
+    //the plugin is actually installed. :(
+    setupM4AButton(true);
+}
+
+void DlgPrefPlaylist::setupM4AButton(bool forceInstalled)
+{
+    //If the M4A plugin is present on disk, disable the button
+    if (m_pPluginDownloader->checkForM4APlugin() || forceInstalled) {
+        pushButtonM4A->setChecked(true);
+        pushButtonM4A->setEnabled(false);
+        pushButtonM4A->setText(tr("Installed"));
+    }
 }
 
 void DlgPrefPlaylist::slotM4ACheck()
