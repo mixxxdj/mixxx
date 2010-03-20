@@ -43,6 +43,8 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
     if(buffer == NULL)
         return;
 
+    float* baseBuffer = buffer->data();
+
     int numBufferSamples = buffer->size();
     int iCurPos = 0;
     if(dPlayPos >= 0) {
@@ -73,11 +75,11 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         // Start at curPos minus half the waveform viewer
         int thisIndex = iCurPos+2*(i-halfw);
         if(thisIndex >= 0 && (thisIndex+1) < numBufferSamples) {
-            float sampl = (*buffer)[thisIndex];
-            float sampr = (*buffer)[thisIndex+1];
-            m_lines[i] = QLineF(i,-sampr,i,sampl);
+            float sampl = baseBuffer[thisIndex];
+            float sampr = baseBuffer[thisIndex+1];
+            m_lines[i].setLine(i,-sampr,i,sampl);
         } else {
-            m_lines[i] = QLineF(0,0,0,0);
+            m_lines[i].setLine(0,0,0,0);
         }
     }
 

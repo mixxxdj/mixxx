@@ -63,6 +63,10 @@ void ITunesFeature::activate() {
         for (int i = 0; i < m_pITunesPlaylistModel->numPlaylists(); ++i) {
             list << m_pITunesPlaylistModel->playlistTitle(i);
         }
+
+        //Sort the playlists since in iTunes they are sorted, too.
+        list.sort();
+
         m_childModel.setStringList(list);
     }
 
