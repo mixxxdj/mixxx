@@ -785,7 +785,8 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
 /* -------- ------------------------------------------------------
    Purpose: Creates & starts a timer that runs some script code
                 on timeout
-   Input:   Number of milliseconds, script function to call
+   Input:   Number of milliseconds, script function to call,
+                whether it should fire just once
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
 int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot) {
@@ -801,6 +802,8 @@ int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot)
         qDebug() << "Timer request for" << interval << "ms is too short. Setting to the minimum of 20ms.";
         interval=20;
     }
+    // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
+    // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
     int timerId = startTimer(interval);
     QPair<QString, bool> timerTarget;
     timerTarget.first = scriptCode;
