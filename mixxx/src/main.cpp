@@ -177,7 +177,11 @@ void MessageHandler( QtMsgType type, const char * input )
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
         //QMessageBox::warning(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(0,input);
+        //dialogHelper->requestErrorDialog(0,input);
+        //I will break your legs if you re-enable the above lines of code.
+        //You shouldn't be using qWarning for reporting user-facing errors.
+        //Implement your own error message box...
+        // - Albert (March 11, 2010)
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );

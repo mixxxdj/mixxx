@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.41             */
+/*      Stanton SCS.3d MIDI controller script v1.42             */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.8.x                                 */
@@ -664,6 +664,15 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     StantonSCS3d.connectSurfaceSignals(channel,true);  // Disconnect previous ones
     StantonSCS3d.softButtonsColor(channel,0x02);  // Make the soft buttons blue
     switch (currentMode) {    // Special recovery from certain modes
+        case "vinyl":
+        case "vinyl2":
+            // So we don't get stuck at some strange speed when switching from a scratching mode
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0);
+            if (StantonSCS3d.scratch["wasPlaying"]) {   // to avoid getting stuck stopped
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
+                StantonSCS3d.scratch["wasPlaying"] = false;
+            }
+            break;
         case "loop2":
         case "loop3":
         case "trig":
@@ -846,7 +855,11 @@ StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
     StantonSCS3d.modifier["deck"]=0;   // Clear button modifier flag
     StantonSCS3d.connectSurfaceSignals(channel,true);   // Disconnect surface signals & turn off surface LEDs
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = StantonSCS3d.state["deckPrev"];
-    
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0); // To avoid getting stuck at a weird speed
+    if (StantonSCS3d.scratch["wasPlaying"]) {   // to avoid the deck stopping
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
+        StantonSCS3d.scratch["wasPlaying"] = false;
+    }
     var newMode;
     // In default multiple-deck mode, 
     //      If the button's been held down for longer than the specified time, stay on the current deck.
