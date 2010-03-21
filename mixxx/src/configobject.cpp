@@ -327,6 +327,7 @@ QString ConfigObject<ValueType>::getConfigPath()
 	  qConfigPath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
+    /*
     // Set the path relative to the bundle directory
     CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
     CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
@@ -342,6 +343,12 @@ QString ConfigObject<ValueType>::getConfigPath()
         qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
     }
     qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
+    */
+    QString mixxxPath = QCoreApplication::applicationDirPath();
+    if (mixxxPath.endsWith("osx_build"))   //Development configuration
+        qConfigPath = mixxxPath + "/../res";
+    else //Release configuraton
+	    qConfigPath = mixxxPath + "/../Resources";
 #endif
     }
     // If the directory does not end with a "/", add one
