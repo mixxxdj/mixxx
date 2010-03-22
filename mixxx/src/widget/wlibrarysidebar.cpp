@@ -29,7 +29,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
 /** Drag enter event, happens when a dragged item enters the track sources view*/
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 {
-    qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
+    //qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         event->acceptProposedAction();
@@ -160,4 +160,9 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event)
     }
     else
         QTreeView::keyPressEvent(event);
+}
+
+void WLibrarySidebar::toggleExpansion( QModelIndex index )
+{
+    setExpanded(index, !isExpanded(index));
 }
