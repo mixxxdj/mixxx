@@ -1,4 +1,4 @@
-  	<!--23 March 2010 17:01:56 CET-->  
+  	<!--23 March 2010 16:50:23 CET-->  
   	<!--   
   	Phoney v0.81beta Developer Preview, Skin for Mixxx 1.8.x
     www.mixxx.org
@@ -66,12 +66,12 @@
 	**********************************************
 	-->
 	<TableView>
-		<Pos>11,431</Pos>		
-		<Size>1642,508</Size>
-		<BgColor>#F7F7F7</BgColor>
-		<FgColor>#454C53</FgColor>
-		<BgColorRowEven>#F7F7F7</BgColorRowEven>
-		<BgColorRowUneven>#F7F7F7</BgColorRowUneven>
+		<Pos>10,430</Pos>		
+		<Size>1643,509</Size>
+		<BgColor>#333333</BgColor>
+		<FgColor>#F6F6F6</FgColor>
+		<BgColorRowEven>#333333</BgColorRowEven>
+		<BgColorRowUneven>#333333</BgColorRowUneven>
 	</TableView>
 	
 	<!--
@@ -92,7 +92,7 @@
 		<Channel>1</Channel>
 		<Pos>935,91</Pos>
 		<Size>719,118</Size>
-		<BgColor>#F7F7F7</BgColor>
+		<BgColor>#333333</BgColor>
 		<HfcColor>#3250FF</HfcColor>
 		<SignalColor>#0099FF</SignalColor>
 		<BeatColor>#454C53</BeatColor>
@@ -165,7 +165,7 @@
 		<Channel>2</Channel>
 		<Pos>935,213</Pos>
 		<Size>719,116</Size>
-		<BgColor>#F7F7F7</BgColor>
+		<BgColor>#333333</BgColor>
 		<HfcColor>#3250FF</HfcColor>
 		<SignalColor>#CC6600</SignalColor>
 		<BeatColor>#454C53</BeatColor>
@@ -244,7 +244,7 @@
 		<Channel>1</Channel>
 		<Pos>1296,52</Pos>
 		<Size>358,35</Size>
-		<BgColor>#F7F7F7</BgColor>
+		<BgColor>#333333</BgColor>
 		<SignalColor>#0099FF</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
@@ -257,7 +257,7 @@
 		<Channel>2</Channel>
 		<Pos>1296,331</Pos>
 		<Size>358,35</Size>
-		<BgColor>#F7F7F7</BgColor>	
+		<BgColor>#333333</BgColor>	
 		<SignalColor>#CC6600</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
