@@ -1,6 +1,6 @@
-  	<!--19 March 2010 19:40:55 CET-->  
+  	<!--23 March 2010 17:01:56 CET-->  
   	<!--   
-  	Phoney v0.80beta Developer Preview, Skin for Mixxx 1.8.x
+  	Phoney v0.81beta Developer Preview, Skin for Mixxx 1.8.x
     www.mixxx.org
     Copyright (C) 2010 jus ; jus/justmail/de
   
@@ -26,7 +26,8 @@
 
   	<!--
   	CHANGELOG
-  	   
+  	v0.81b	(23/03/2010)
+  	+ Hotcues preview the Cue when the player is stopped  	     	   
   	v0.80b	(19/03/2010)
 	Initial Developer Preview for Mixxx 1.8.x
   	--> 
@@ -55,7 +56,6 @@
 	**********************************************
 	-->	
 	<Background>
-		<!--<Path>background1680x1050.png</Path>-->
 		<Path>background1600x1200.png</Path>
 		<BgColor>#000000</BgColor>
 	</Background>
@@ -67,7 +67,6 @@
 	-->
 	<TableView>
 		<Pos>11,431</Pos>		
-		<!--<Size>1562,508</Size>-->
 		<Size>1562,658</Size>
 		<BgColor>#F7F7F7</BgColor>
 		<FgColor>#454C53</FgColor>
@@ -246,7 +245,7 @@
 		<Pos>1256,52</Pos>
 		<Size>318,35</Size>
 		<BgColor>#F7F7F7</BgColor>
-		<SignalColor>#0099FF</SignalColor>;
+		<SignalColor>#0099FF</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
@@ -259,7 +258,7 @@
 		<Pos>1256,331</Pos>
 		<Size>318,35</Size>
 		<BgColor>#F7F7F7</BgColor>	
-		<SignalColor>#CC6600</SignalColor>;
+		<SignalColor>#CC6600</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
@@ -280,8 +279,10 @@
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>400</PeakHoldTime>
+		<!--
 		<PeakFallTime>80</PeakFallTime>
   		<PeakFallStep>5</PeakFallStep>
+  		-->
 		<Connection>
 			<ConfigKey>[Channel1],VuMeter</ConfigKey>
 		</Connection>
@@ -296,7 +297,8 @@
 		<PeakHoldTime>400</PeakHoldTime>
 		<!--  
 		<PeakFallTime>80</PeakFallTime>
-  		<PeakFallStep>5</PeakFallStep> -->
+  		<PeakFallStep>5</PeakFallStep>
+		-->
 		<Connection>
 			<ConfigKey>[Channel2],VuMeter</ConfigKey>
 		</Connection>
@@ -376,17 +378,7 @@
 			<ConfigKey>[Master],PeakIndicator</ConfigKey>
 		</Connection>
 	</StatusLight>
-<!--
-	<StatusLight>
-		<Tooltip>Peak Indicator</Tooltip>
-		<PathStatusLight>btn_clipping_master2_over.png</PathStatusLight>
-		<PathBack>btn_clipping_master2.png</PathBack>
-		<Pos>239,165</Pos>
-		<Connection>
-			<ConfigKey>[Master],PeakIndicator</ConfigKey>
-		</Connection>
-	</StatusLight>
--->	
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -728,6 +720,11 @@
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
+            <ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
             <ConfigKey>[Channel1],hotcue_1_gotoandstop</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
@@ -761,6 +758,11 @@
         <Connection>
             <ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+            <ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
@@ -800,6 +802,11 @@
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
+            <ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
             <ConfigKey>[Channel1],hotcue_3_gotoandstop</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
@@ -833,6 +840,11 @@
         <Connection>
             <ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+            <ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
@@ -873,6 +885,11 @@
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
+            <ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
             <ConfigKey>[Channel2],hotcue_1_gotoandstop</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
@@ -888,7 +905,7 @@
         </State>
         <Pos>970,387</Pos>
         <Connection>
-            <ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
+            <ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>LeftButton</ButtonState>
         </Connection>
@@ -909,6 +926,11 @@
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
+            <ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
             <ConfigKey>[Channel2],hotcue_2_gotoandstop</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
@@ -924,7 +946,7 @@
         </State>
         <Pos>1025,387</Pos>
         <Connection>
-            <ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
+            <ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>LeftButton</ButtonState>
         </Connection>
@@ -945,6 +967,11 @@
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
+            <ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
             <ConfigKey>[Channel2],hotcue_3_gotoandstop</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
@@ -960,7 +987,7 @@
         </State>
         <Pos>1080,387</Pos>
         <Connection>
-            <ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+            <ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>LeftButton</ButtonState>
         </Connection>
@@ -981,6 +1008,11 @@
             <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
+            <ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
             <ConfigKey>[Channel2],hotcue_4_gotoandstop</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
@@ -996,7 +1028,7 @@
         </State>
         <Pos>1135,387</Pos>
         <Connection>
-            <ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+            <ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>LeftButton</ButtonState>
         </Connection>
@@ -1814,7 +1846,7 @@
 	-->
 	<Knob>
 		<Tooltip>Master volume control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>154,203</Pos>
 		<Connection>
@@ -1823,7 +1855,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Master balance control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>291,203</Pos>
 		<Connection>
@@ -1838,7 +1870,7 @@
 	-->	
 	<Knob>
 		<Tooltip>Flanger delay control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>32,308</Pos>
 		<Connection>
@@ -1847,7 +1879,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Flanger depth control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>32,203</Pos>
 		<Connection>
@@ -1856,7 +1888,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Flanger period control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>32,79</Pos>
 		<Connection>
@@ -1871,7 +1903,7 @@
 	-->
 	<Knob>
 		<Tooltip>Headphone volume control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>409,141</Pos>
 		<Connection>
@@ -1880,7 +1912,7 @@
 	</Knob>	
 	<Knob>
 		<Tooltip>Headphone mix control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>409,246</Pos>
 		<Connection>
@@ -1895,7 +1927,7 @@
 	-->
 	<Knob>
 		<Tooltip>Gain control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>125,79</Pos>
 		<Connection>
@@ -1904,7 +1936,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Treble filter control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>190,79</Pos>
 		<Connection>
@@ -1913,7 +1945,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Mid filter control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>255,79</Pos>
 		<Connection>
@@ -1922,7 +1954,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Bass filter control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>320,79</Pos>
 		<Connection>
@@ -1932,7 +1964,7 @@
 		
 	<Knob>
 		<Tooltip>Gain control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>125,308</Pos>
 		<Connection>
@@ -1941,7 +1973,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Treble filter control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>190,308</Pos>
 		<Connection>
@@ -1950,7 +1982,7 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Mid filter control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>255,308</Pos>
 		<Connection>
@@ -1959,10 +1991,11 @@
 	</Knob>
 	<Knob>
 		<Tooltip>Bass filter control</Tooltip>
-		<NumberStates>40</NumberStates>
+		<NumberStates>41</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>320,308</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
 		</Connection>
+	</Knob>
 </skin>
