@@ -128,8 +128,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
 
     // Update combo box
-    ComboBoxVisuals->addItem("Waveform");
-    ComboBoxVisuals->addItem("Simple");
+    ComboBoxVisuals->addItem("On");
+    ComboBoxVisuals->addItem("Off");
     ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
 
     connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
