@@ -60,12 +60,12 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
     // Clear the m_connectedControls hash so we stop responding
     // to signals.
     m_connectedControls.clear();
-    
+
     // Disconnect the function call signal
     disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
                                                             char, MidiStatusByte, QString)),
                                 this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
-                
+
     // Stop all timers
     stopAllTimers();
 
@@ -80,7 +80,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
                 qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
         }
     }
-        
+
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -140,24 +140,24 @@ void MidiScriptEngine::initializeScriptEngine() {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
-    
+
     // Set the Midi Debug flag
     if (m_pMidiDevice)
         m_midiDebug = m_pMidiDevice->midiDebugging();
-    
+
     qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
-    
+
     ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-    
+
     QString scriptPath = config->getConfigPath().append("midi/");
     delete config;
-    
+
     QListIterator<QString> it(scriptFileNames);
     m_scriptEngineLock.lock();
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
         safeEvaluate(scriptPath+curScriptFileName);
-        
+
         if(m_scriptErrors.contains(curScriptFileName)) {
             qDebug() << "Errors occured while loading " << curScriptFileName;
         }
@@ -175,7 +175,7 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
     m_scriptEngineLock.lock();
-    
+
     QListIterator<QString> prefixIt(scriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
         QString initName = prefixIt.next();
@@ -199,7 +199,7 @@ void MidiScriptEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) 
 void MidiScriptEngine::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("MidiScriptEngine %1").arg(++id));
-    
+
     // Prevent the script engine from strangling other parts of Mixxx
     QThread::currentThread()->setPriority(QThread::LowPriority);
 
@@ -277,9 +277,9 @@ bool MidiScriptEngine::safeExecute(QString function) {
 
     if(m_pEngine == NULL)
         return false;
-    
+
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
-    
+
     if (checkException())
         return false;
 
@@ -324,7 +324,7 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
         .arg(result.errorLineNumber())
         .arg(result.errorColumnNumber())
         .arg(scriptCode);
-        
+
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
             qDebug() << "MidiScriptEngine:" << error;
@@ -336,10 +336,10 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
     }
 
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode);
-    
+
     if (checkException())
         return false;
-    
+
     // If it's not a function, we're done.
     if (!scriptFunction.isFunction())
         return true;
@@ -348,7 +348,7 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
     scriptFunction.call(QScriptValue());
     if (checkException())
         return false;
-    
+
     return true;
 }
 
@@ -493,7 +493,7 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
 
         if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
             QStringList field = line.split(" ");
-            if (m_midiDebug) qDebug() << "MidiScriptEngine: Found function:" << field[0] 
+            if (m_midiDebug) qDebug() << "MidiScriptEngine: Found function:" << field[0]
                                       << "at line" << position;
             m_scriptFunctions.append(field[0]);
         }
@@ -622,7 +622,7 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     if(m_pEngine == NULL) {
         return false;
     }
-    
+
     QScriptValue slot = m_pEngine->evaluate(function);
 
     if(!checkException() && slot.isFunction()) {
@@ -699,7 +699,7 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
     if(m_pEngine == NULL) {
         return false;
     }
-    
+
     qDebug() << "MidiScriptEngine: Loading" << filename;
 
     // Read in the script file
@@ -735,7 +735,7 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
                         .arg(result.errorColumnNumber())
                         .arg(filename)
                         .arg(result.errorMessage());
-                        
+
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
             qDebug() << "MidiScriptEngine:" << error;
@@ -797,7 +797,7 @@ int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot)
     if(lock) {
         m_scriptEngineLock.unlock();
     }
-    
+
     if (interval<20) {
         qDebug() << "Timer request for" << interval << "ms is too short. Setting to the minimum of 20ms.";
         interval=20;
@@ -828,13 +828,13 @@ void MidiScriptEngine::stopTimer(int timerId) {
     bool lock = m_scriptEngineLock.tryLock();
     Q_ASSERT(!lock);
     if(lock) m_scriptEngineLock.unlock();
-    
+
     if (!m_timers.contains(timerId)) {
         qDebug() << "Killing timer" << timerId << ": That timer does not exist!";
         return;
     }
     if (m_midiDebug) qDebug() << "Killing timer:" << timerId;
-    
+
     killTimer(timerId);
     m_timers.remove(timerId);
 }
@@ -850,7 +850,7 @@ void MidiScriptEngine::stopAllTimers() {
     bool lock = m_scriptEngineLock.tryLock();
     Q_ASSERT(!lock);
     if(lock) m_scriptEngineLock.unlock();
-    
+
     QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
     while (i.hasNext()) {
         i.next();
@@ -865,12 +865,13 @@ void MidiScriptEngine::stopAllTimers() {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
-    
+
+    m_scriptEngineLock.lock();
     if (!m_timers.contains(timerId)) {
         qDebug() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
     }
-    m_scriptEngineLock.lock();
+
     QPair<QString, bool> timerTarget = m_timers[timerId];
     if (timerTarget.second) stopTimer(timerId);
 
