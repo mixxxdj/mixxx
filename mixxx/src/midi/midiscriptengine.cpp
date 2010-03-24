@@ -869,6 +869,7 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     m_scriptEngineLock.lock();
     if (!m_timers.contains(timerId)) {
         qDebug() << "Timer" << timerId << "fired but there's no function mapped to it!";
+        m_scriptEngineLock.unlock();
         return;
     }
 
