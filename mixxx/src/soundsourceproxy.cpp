@@ -59,22 +59,22 @@ void SoundSourceProxy::initialize(QString qFilename) {
     m_pSoundSource = new SoundSourceFFmpeg(qFilename);
     return;
 #endif
-
-    if (qFilename.toLower().endsWith(".mp3"))
-	m_pSoundSource = new SoundSourceMp3(qFilename);
-    else if (qFilename.toLower().endsWith(".ogg"))
-	m_pSoundSource = new SoundSourceOggVorbis(qFilename);
+    QString filename = qFilename.toLower();
+    if (filename.endsWith(".mp3"))
+        m_pSoundSource = new SoundSourceMp3(qFilename);
+    else if (filename.endsWith(".ogg"))
+        m_pSoundSource = new SoundSourceOggVorbis(qFilename);
 #ifdef __M4A__
-    else if (qFilename.toLower().endsWith(".m4a") ||
-	     qFilename.toLower().endsWith(".mp4"))
+    else if (filename.endsWith(".m4a") ||
+	     filename.endsWith(".mp4"))
 	m_pSoundSource = new SoundSourceM4A(qFilename);
 #endif
 #ifdef __SNDFILE__
-    else if (qFilename.toLower().endsWith(".wav") ||
-	     qFilename.toLower().endsWith(".aif") ||
-	     qFilename.toLower().endsWith(".aiff") ||
-	     qFilename.toLower().endsWith(".flac"))
-	m_pSoundSource = new SoundSourceSndFile(qFilename);
+    else if (filename.endsWith(".wav") ||
+             filename.endsWith(".aif") ||
+             filename.endsWith(".aiff") ||
+             filename.endsWith(".flac"))
+        m_pSoundSource = new SoundSourceSndFile(qFilename);
 #endif
 }
 
@@ -86,7 +86,7 @@ SoundSourceProxy::~SoundSourceProxy()
 long SoundSourceProxy::seek(long l)
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->seek(l);
 }
@@ -94,7 +94,7 @@ long SoundSourceProxy::seek(long l)
 unsigned SoundSourceProxy::read(unsigned long size, const SAMPLE * p)
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->read(size, p);
 }
@@ -102,7 +102,7 @@ unsigned SoundSourceProxy::read(unsigned long size, const SAMPLE * p)
 long unsigned SoundSourceProxy::length()
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->length();
 }
@@ -118,21 +118,22 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 #ifdef __FFMPEGFILE__
     return SoundSourceFFmpeg::ParseHeader(p);
 #endif
-    if (qFilename.toLower().endsWith(".mp3"))
-	return SoundSourceMp3::ParseHeader(p);
-    else if (qFilename.toLower().endsWith(".ogg"))
-	return SoundSourceOggVorbis::ParseHeader(p);
+    QString filename = qFilename.toLower();
+    if (filename.endsWith(".mp3"))
+        return SoundSourceMp3::ParseHeader(p);
+    else if (filename.endsWith(".ogg"))
+        return SoundSourceOggVorbis::ParseHeader(p);
 #ifdef __M4A__
-    else if (qFilename.toLower().endsWith(".m4a") ||
-	     qFilename.toLower().endsWith(".mp4"))
+    else if (filename.endsWith(".m4a") ||
+	     filename.endsWith(".mp4"))
 	return SoundSourceM4A::ParseHeader(p);
 #endif
 #ifdef __SNDFILE__
-    else if (qFilename.toLower().endsWith(".wav") ||
-	     qFilename.toLower().endsWith(".aif") ||
-	     qFilename.toLower().endsWith(".aiff") ||
-	     qFilename.toLower().endsWith(".flac"))
-	return SoundSourceSndFile::ParseHeader(p);
+    else if (filename.endsWith(".wav") ||
+             filename.endsWith(".aif") ||
+             filename.endsWith(".aiff") ||
+             filename.endsWith(".flac"))
+        return SoundSourceSndFile::ParseHeader(p);
 #endif
 
     return ERR;
@@ -142,7 +143,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 unsigned int SoundSourceProxy::getSrate()
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->getSrate();
 }
@@ -150,7 +151,7 @@ unsigned int SoundSourceProxy::getSrate()
 Q3ValueList<long> * SoundSourceProxy::getCuePoints()
 {
     if (!m_pSoundSource) {
-	return NULL;
+        return NULL;
     }
     return m_pSoundSource->getCuePoints();
 }
@@ -158,7 +159,7 @@ Q3ValueList<long> * SoundSourceProxy::getCuePoints()
 QString SoundSourceProxy::getFilename()
 {
     if (!m_pSoundSource) {
-	return "";
+        return "";
     }
     return m_pSoundSource->getFilename();
 }

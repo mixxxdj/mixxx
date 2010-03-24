@@ -23,6 +23,11 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
 
     m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig,
                                                             ConfigKey(), ConfigKey());
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackInfoObject*)),
+            this, SIGNAL(loadTrack(TrackInfoObject*)));
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
@@ -260,4 +265,9 @@ void DlgPrepare::showRecentSongs()
 void DlgPrepare::showAllSongs()
 {
     m_pPrepareLibraryTableModel->showAllSongs();
+}
+
+void DlgPrepare::installEventFilter(QObject* pFilter) {
+    QWidget::installEventFilter(pFilter);
+    m_pPrepareLibraryTableView->installEventFilter(pFilter);
 }

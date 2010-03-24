@@ -32,7 +32,8 @@ public:
     QAbstractItemModel* getChildModel();
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
   signals:
     void showPage(const QUrl& page);
 

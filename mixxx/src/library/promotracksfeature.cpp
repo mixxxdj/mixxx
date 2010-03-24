@@ -25,6 +25,7 @@
 #include "defs_version.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
 
 const QString PromoTracksFeature::m_sPromoTracksViewName = tr("Featured Artists");
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
@@ -43,13 +44,13 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
     m_sPromoLocalHTMLLocation = LOCAL_HTML_LOCATION;
     m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/autoload.dat";
 
-    //Load the extra.dat file so we can peek at some extra information, such 
+    //Load the extra.dat file so we can peek at some extra information, such
     //as which songs to auto-load into Mixxx's players.
     QFile file(m_sPromoAutoloadLocation);
     if (file.open(QIODevice::ReadOnly))
     {
         QTextStream extra(&file);
-        
+
         qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
         while (!extra.atEnd())
         {
@@ -84,7 +85,8 @@ QList<TrackInfoObject*> PromoTracksFeature::getTracksToAutoLoad()
 }
 
 void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget) {
+                                    WLibrary* libraryWidget,
+                                    MixxxKeyboard* keyboard) {
 
     m_pPromoTracksView = new PromoTracksWebView(libraryWidget, m_pConfig->getConfigPath(), m_sPromoLocalHTMLLocation, m_sPromoRemoteHTMLLocation);
 
@@ -102,7 +104,7 @@ QAbstractItemModel* PromoTracksFeature::getChildModel() {
 void PromoTracksFeature::activate() {
     //qDebug() << "PromoTracksFeature::activate()";
     //emit(showTrackModel(m_pPromoTracksTableModelProxy));
-    
+
     /*
     if (m_pPromoTracksView->page()->bytesReceived() == 0) {
         qDebug() << "PROMO: Loading local page";

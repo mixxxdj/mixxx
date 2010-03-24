@@ -9,6 +9,7 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
+#include "mixxxkeyboard.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -54,7 +55,8 @@ QIcon PlaylistFeature::getIcon() {
 
 
 void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                 WLibrary* libraryWidget) {
+                                 WLibrary* libraryWidget,
+                                 MixxxKeyboard* keyboard) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));

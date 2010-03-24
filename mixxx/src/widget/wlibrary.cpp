@@ -8,9 +8,8 @@
 #include "library/libraryview.h"
 #include "mixxxkeyboard.h"
 
-WLibrary::WLibrary(QWidget* parent, MixxxKeyboard* pKeyboard)
+WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
-          m_pKeyboard(pKeyboard),
           m_mutex(QMutex::Recursive) {
 }
 
@@ -23,7 +22,6 @@ bool WLibrary::registerView(QString name, QWidget* view) {
     if (m_viewMap.contains(name)) {
         return false;
     }
-    view->installEventFilter(m_pKeyboard);
     addWidget(view);
     m_viewMap[name] = view;
     return true;
