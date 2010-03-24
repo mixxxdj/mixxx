@@ -351,6 +351,10 @@ int main(int argc, char * argv[])
     
     delete mixxx;
     
+	qDebug() << "Mixxx shutdown complete.";
+
+	// Don't make any more output after this
+	//	or mixxx.log will get clobbered!
     if(Logfile.isOpen())
 	Logfile.close();
     
