@@ -13,7 +13,7 @@ class BrowseTableModel : public QDirModel, public TrackModel
 		QString getTrackLocation(const QModelIndex& index) const;
 		void search(const QString& searchText);
 		void removeTrack(const QModelIndex& index);
-		void addTrack(const QModelIndex& index, QString location);
+		bool addTrack(const QModelIndex& index, QString location);
 	private:
 };
 

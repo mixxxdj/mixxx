@@ -71,14 +71,13 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
         // It's normal for this to fail.
-        //qDebug() << query.executedQuery() << query.lastError();
+        qDebug() << query.executedQuery() << query.lastError();
     }
 
     //Print out any SQL error, if there was one.
-    /*
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
-    }*/
+    }
 
     setTable(playlistTableName);
 
@@ -117,13 +116,15 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 }
 
 
-void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
+bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {
-    //Note: The model index is ignored when adding to the library track collection.
-    //      The position in the library is determined by whatever it's being sorted by,
-    //      and there's no arbitrary "unsorted" view.
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+
+    //Handle weird cases like a drag-and-drop to an invalid index
+    if (position <= 0) {
+        position = rowCount() + 1;
+    }
 
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
@@ -135,10 +136,13 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     // Do nothing if the location still isn't in the database.
     if (trackId == -1)
-        return;
+        return false;
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
+
     select(); //Repopulate the data model.
+
+    return true;
 }
 
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const

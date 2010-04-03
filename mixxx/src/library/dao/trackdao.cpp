@@ -30,7 +30,7 @@ int TrackDAO::getTrackId(QString location)
     //qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location WHERE track_locations.location=:location");
+    query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location = track_locations.id WHERE track_locations.location=:locatio");
     query.bindValue(":location", location);
 
     if (!query.exec()) {

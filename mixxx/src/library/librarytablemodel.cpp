@@ -64,13 +64,17 @@ LibraryTableModel::~LibraryTableModel()
 
 }
 
-void LibraryTableModel::addTrack(const QModelIndex& index, QString location)
+bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 {
 	//Note: The model index is ignored when adding to the library track collection.
 	//      The position in the library is determined by whatever it's being sorted by,
 	//      and there's no arbitrary "unsorted" view.
-	m_trackDao.addTrack(location);
+	int trackId = m_trackDao.addTrack(location);
 	select(); //Repopulate the data model.
+    if (trackId >= 0)
+        return true;
+    else
+        return false;
 }
 
 TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
