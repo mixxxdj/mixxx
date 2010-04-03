@@ -145,9 +145,10 @@ int ITunesPlaylistModel::columnCount(const QModelIndex& parent) const
     return ITunesPlaylistModel::NUM_COLUMNS;
 }
 
-void ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
+bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
     //Should do nothing... hmmm
+    return false;
 }
 
 /** Removes a track from the library track collection. */
