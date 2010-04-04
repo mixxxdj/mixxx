@@ -217,7 +217,7 @@ void DlgPrepare::analyze()
 void DlgPrepare::trackAnalysisFinished(TrackInfoObject* tio)
 {
     qDebug() << "Analysis finished!";
-    m_pTrackCollection->getTrackDAO().updateTrackInDatabase(tio);
+    m_pTrackCollection->getTrackDAO().saveTrack(tio);
     delete tio;
 
     //If the analyser has already been deleted by the time we get this signal
