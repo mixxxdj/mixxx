@@ -220,10 +220,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 	//it's data (eg. waveform summary) is saved back to the database.
 	connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(updateTrackInDatabase(TrackInfoObject*)));
+            SLOT(saveTrack(TrackInfoObject*)));
 	connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(updateTrackInDatabase(TrackInfoObject*)));
+            SLOT(saveTrack(TrackInfoObject*)));
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
     				   m_pLibrary);
@@ -776,7 +776,6 @@ void MixxxApp::slotiPodToggle(bool toggle) {
 
 //     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a VERY long delay in loading from the iPod
 //       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
-//       TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
 
        QString fullFilePath = iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
        QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/'));
@@ -876,10 +875,8 @@ void MixxxApp::slotFileLoadSongPlayer1()
     }
 
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer1->slotLoadTrack(pTrack);
+    if (!s.isNull()) {
+        slotLoadPlayer2(s);
     }
 }
 
@@ -900,10 +897,8 @@ void MixxxApp::slotFileLoadSongPlayer2()
     }
 
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer2->slotLoadTrack(pTrack);
+    if (!s.isNull()) {
+        slotLoadPlayer2(s);
     }
 }
 

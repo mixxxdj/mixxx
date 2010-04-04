@@ -9,7 +9,7 @@
 #include "library/dao/cratedao.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(pParent, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),
@@ -94,7 +94,7 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Date Added"));
 }
 
-void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
     bool success = false;
     if (iTrackId >= 0) {
@@ -104,10 +104,12 @@ void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     if (success) {
         select();
+        return true;
     } else {
         // TODO(XXX) feedback
         qDebug() << "CrateTableModel::addTrack could not add track"
                  << location << "to crate" << m_iCrateId;
+        return false;
     }
 }
 
@@ -220,7 +222,7 @@ QVariant CrateTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value = BaseSqlTableModel::data(item, role);
 
     if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {

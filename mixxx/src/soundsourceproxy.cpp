@@ -1,4 +1,3 @@
-/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 /***************************************************************************
                           soundsourceproxy.cpp  -  description
                              -------------------
@@ -15,6 +14,8 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
+
+#include <QtDebug>
 
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
@@ -47,9 +48,9 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 
     // Set the track duration in seconds
     if(getSrate())
-	pTrack->setDuration(length()/(2*getSrate()));
+        pTrack->setDuration(length()/(2*getSrate()));
     else
-	pTrack->setDuration(0);
+        pTrack->setDuration(0);
 }
 
 void SoundSourceProxy::initialize(QString qFilename) {
@@ -106,9 +107,14 @@ long unsigned SoundSourceProxy::length()
     return m_pSoundSource->length();
 }
 
-int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
+int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
+    if (p == NULL)
+	return ERR;
+
     QString qFilename = p->getFilename();
+    qDebug() << "ParseHeader(" << qFilename << ")";
+
 #ifdef __FFMPEGFILE__
     return SoundSourceFFmpeg::ParseHeader(p);
 #endif

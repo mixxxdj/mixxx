@@ -40,7 +40,8 @@ void BrowseTableModel::removeTrack(const QModelIndex& index)
 	//TODO
 }
 
-void BrowseTableModel::addTrack(const QModelIndex& index, QString location)
+bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
 {
 	//TODO
+    return false;
 }
