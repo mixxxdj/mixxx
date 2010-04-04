@@ -20,12 +20,15 @@
 #include <QtCore>
 #include <QtGui>
 
+#define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
+
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
 {
     config = _config;
     setupUi(this);
     slotUpdate();
 
+    /*
     m_pPluginDownloader = new PluginDownloader(this);
 
     //Disable the M4A button if the plugin is present on disk.
@@ -37,11 +40,13 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     
     connect(m_pPluginDownloader, SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(slotM4ADownloadProgress(qint64, qint64))); 
+    */
 
     // Connection
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
     connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
-    connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
+    //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
+    connect(pushButtonExtraPlugins, SIGNAL(clicked()), this, SLOT(slotExtraPlugins()));
 
 #ifdef __IPOD__
     // iPod related stuff
@@ -56,10 +61,16 @@ DlgPrefPlaylist::~DlgPrefPlaylist()
 {
 }
 
+void DlgPrefPlaylist::slotExtraPlugins()
+{
+    QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
+}
+
+/*
 void DlgPrefPlaylist::slotM4ADownloadProgress(qint64 bytesReceived,
                                               qint64 bytesTotal)
 {
-    pushButtonM4A->setText(QString("%1\%").arg(100*(float)bytesReceived/bytesTotal, 0, 'd', 1));
+    pushButtonM4A->setText(QString("%1\%").arg(100*(float)bytesReceived/bytesTotal, 0, 'g', 1));
 }
 void DlgPrefPlaylist::slotM4ADownloadFinished()
 {
@@ -115,7 +126,7 @@ void DlgPrefPlaylist::slotM4ACheck()
     {
         m_pPluginDownloader->downloadM4APlugin();
     }
-}
+}*/
 
 void DlgPrefPlaylist::slotUpdate()
 {
@@ -206,10 +217,6 @@ void DlgPrefPlaylist::slotApply()
 
         // Save preferences
         config->Save();
-
-        qDebug() << "FIXME: Probably want to clear the TrackCollection and library playlist when you" <<
-                     "change library paths... (" << __FILE__ ", around line" << __LINE__;
-                     
 
         // Emit apply signal
         emit(apply());
