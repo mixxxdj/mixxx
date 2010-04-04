@@ -375,7 +375,6 @@ sources = Split("""
 
                 peaklist.cpp
                 rotary.cpp
-                plugindownloader.cpp
                 wtracktableview.cpp
                 widget/wtracktableviewheader.cpp
                 widget/wlibrarysidebar.cpp
@@ -1421,7 +1420,7 @@ if platform in ('linux', 'bsd'):
 		binary = env.Install(unix_bin_path, binary_files)
 		resource = env.Install(unix_share_path + "/mixxx", resource_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
-		soundsource_plugins = env.Install(unix_lib_path + "/", soundsource_plugin_files)
+		soundsource_plugins = env.Install(unix_lib_path + "/mixxx/plugins/soundsource", soundsource_plugin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
 		ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
@@ -1500,7 +1499,7 @@ if 'win' in platform:
 	promotracks = env.Install("#dist/promo/", promotracks_files)
 	#icon = env.Install("#dist", icon_files)
 	dlls = env.Install("#dist/", dll_files)
-	soundsource_plugins = env.Install("#dist/", soundsource_plugin_files)
+	soundsource_plugins = env.Install("#dist/plugins/soundsource/", soundsource_plugin_files)
 	binary = env.Install("#dist/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows

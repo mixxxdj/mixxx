@@ -60,6 +60,11 @@ extern "C" MY_EXPORT const char* getMixxxVersion()
     return VERSION;
 }
 
+extern "C" MY_EXPORT int getSoundSourceAPIVersion()
+{
+    return MIXXX_SOUNDSOURCE_API_VERSION;
+}
+
 extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
 {
     return new SoundSourceM4A(filename);
@@ -74,6 +79,7 @@ extern "C" MY_EXPORT char** supportedFileExtensions()
     {
         QByteArray qba = exts[i].toUtf8();
         c_exts[i] = strdup(qba.constData());
+        qDebug() << c_exts[i];
     }
     c_exts[exts.count()] = NULL; //NULL terminate the list
 

@@ -31,9 +31,9 @@
 #include <QMutexLocker>
 #include <QMutex>
 #include <QDebug>
+#include <QDir>
+#include <QDesktopServices>
 
-//M4A Plugin filename
-#define PLUGIN_M4A "libsoundsourcem4a"
 
 //Static memory allocation
 QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
@@ -65,10 +65,33 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 
 void SoundSourceProxy::loadPlugins()
 {
-   /** TODO: Scan for and initialize all plugins */
+    /** Scan for and initialize all plugins */
+    
+    QList<QDir> pluginDirs;
+#ifdef __LINUX__
+    pluginDirs.append(QDir("/usr/local/lib/mixxx/plugins/soundsource/"));
+    pluginDirs.append(QDir("/usr/lib/mixxx/plugins/soundsource/"));
+    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
+#elif __WINDOWS__
+    pluginDirs.append(QDir(QCoreApplication::applicationDirPath + "/plugins/soundsource/"));
+#elif __MACOSX__
+    QString bundlePluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
+    bundlePluginDir.remove("MacOS");
+    //blah/Mixxx.app/Contents/PlugIns/soundsource
+    bundlePluginDir.append("PlugIns/soundsource"); 
+    pluginDirs.append(QDir(bundlePluginDir));
+#endif
 
-   //Initialize the M4A plugin
-   getPlugin(PLUGIN_M4A);
+    QDir dir;
+    foreach(dir, pluginDirs)
+    {
+        QStringList files = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+        QString file;
+        foreach (file, files)
+        {
+            getPlugin(dir.filePath(file));
+        }
+    }
 }
 
 SoundSource* SoundSourceProxy::initialize(QString qFilename) {
@@ -128,6 +151,17 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
             //Add the plugin to our list of loaded QLibraries/plugins
             m_plugins.insert(lib_filename, plugin);
 
+            //Plugin API version check
+            getSoundSourceAPIVersionFunc getver = (getSoundSourceAPIVersionFunc)plugin->resolve("getSoundSourceAPIVersion");
+            int pluginAPIVersion = getver();
+            if (pluginAPIVersion != MIXXX_SOUNDSOURCE_API_VERSION)
+            {
+                //Plugin is using an older/incompatible version of the
+                //plugin API!
+                qDebug() << "Plugin" << lib_filename << "is incompatible with your version of Mixxx!";
+                return NULL;
+            }
+
             //Map the file extensions this plugin supports onto a function
             //pointer to the "getter" function that gets a SoundSourceBlah.
             getSoundSourceFunc getter = (getSoundSourceFunc)plugin->resolve("getSoundSource");
@@ -139,6 +173,7 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
             int i = 0;
             while (supportedFileExtensions[i] != NULL)
             {
+                qDebug() << "Plugin supports:" << supportedFileExtensions[i];
                 m_extensionsSupportedByPlugins.insert(QString(supportedFileExtensions[i]), getter);
                 free(supportedFileExtensions[i]);
                 i++;

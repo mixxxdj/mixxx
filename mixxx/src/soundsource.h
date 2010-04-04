@@ -21,17 +21,17 @@
 #include "defs.h"
 #include <QString>
 
-class TrackInfoObject;
-
-/**
-  *@author Tue and Ken Haste Andersen
+#define MIXXX_SOUNDSOURCE_API_VERSION 1
+/** @note SoundSource API Version history:
+           1 - Mixxx 1.8.0 Beta 2
+           ...
   */
-
 
 /** Getter function to be declared by all SoundSource plugins */
 class SoundSource;
 typedef SoundSource* (*getSoundSourceFunc)(QString filename);
 typedef char** (*getSupportedFileExtensionsFunc)();
+typedef int (*getSoundSourceAPIVersionFunc)();
 
 
 /*
