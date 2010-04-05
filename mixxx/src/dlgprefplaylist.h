@@ -22,7 +22,6 @@
 #include "configobject.h"
 
 class QWidget;
-class PluginDownloader;
 /**
   *@author Tue & Ken Haste Andersen
   */
