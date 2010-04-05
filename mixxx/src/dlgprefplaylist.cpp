@@ -16,7 +16,7 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
-#include "plugindownloader.h"
+//#include "plugindownloader.h"
 #include <QtCore>
 #include <QtGui>
 

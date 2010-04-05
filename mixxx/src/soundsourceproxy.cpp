@@ -33,6 +33,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QDesktopServices>
+#include <QCoreApplication>
 
 
 //Static memory allocation
@@ -68,24 +69,28 @@ void SoundSourceProxy::loadPlugins()
     /** Scan for and initialize all plugins */
     
     QList<QDir> pluginDirs;
+    QStringList nameFilters;
 #ifdef __LINUX__
     pluginDirs.append(QDir("/usr/local/lib/mixxx/plugins/soundsource/"));
     pluginDirs.append(QDir("/usr/lib/mixxx/plugins/soundsource/"));
     pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
 #elif __WINDOWS__
     pluginDirs.append(QDir(QCoreApplication::applicationDirPath + "/plugins/soundsource/"));
-#elif __MACOSX__
+#elif __APPLE__
     QString bundlePluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
     bundlePluginDir.remove("MacOS");
     //blah/Mixxx.app/Contents/PlugIns/soundsource
-    bundlePluginDir.append("PlugIns/soundsource"); 
+    //bundlePluginDir.append("PlugIns/soundsource");  //Our SCons bundle target doesn't handle plugin subdirectories :(
+    bundlePluginDir.append("PlugIns/"); 
     pluginDirs.append(QDir(bundlePluginDir));
+    pluginDirs.append(QDir("/Library/Application Support/Mixxx/Plugins/soundsource/"));
+    nameFilters << "libsoundsource*";
 #endif
 
     QDir dir;
     foreach(dir, pluginDirs)
     {
-        QStringList files = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+        QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
         QString file;
         foreach (file, files)
         {
