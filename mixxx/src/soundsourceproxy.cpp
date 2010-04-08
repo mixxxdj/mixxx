@@ -75,7 +75,7 @@ void SoundSourceProxy::loadPlugins()
     pluginDirs.append(QDir("/usr/lib/mixxx/plugins/soundsource/"));
     pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
 #elif __WINDOWS__
-    pluginDirs.append(QDir(QCoreApplication::applicationDirPath + "/plugins/soundsource/"));
+    pluginDirs.append(QDir(QCoreApplication::applicationDirPath() + "/plugins/soundsource/"));
 #elif __APPLE__
     QString bundlePluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
     bundlePluginDir.remove("MacOS");
