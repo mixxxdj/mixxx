@@ -327,11 +327,15 @@ int main(int argc, char * argv[])
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
-     dir.cdUp();
-     dir.cd("PlugIns");
-     //For some reason we need to do setLibraryPaths() and not addLibraryPath().
-     //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
-     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     //Set the search path for Qt plugins to be in the bundle's PlugIns directory,
+     //but only if we think the mixxx binary is in a bundle.
+     if (dir.path().contains("Mixxx.app")) {
+        dir.cdUp();
+        dir.cd("PlugIns");
+        //For some reason we need to do setLibraryPaths() and not addLibraryPath().
+        //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
+        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     }
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);
