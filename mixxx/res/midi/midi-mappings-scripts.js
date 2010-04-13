@@ -250,7 +250,7 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
 
 // The actual alpha-beta filter
 scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
-    // ------------- Thanks to Radiomark (of Xwax) for the info for below ------------------------
+    // ------------- Thanks to Mark Hills of Xwax (http://www.xwax.co.uk) for the info for below ------------------------
     
     // ideal position = (initial_p + (y - x) / 128 * 1.8)
     var ideal_p = scratch.variables["initialTrackPos"] + (controlValue - scratch.variables["initialControlValue"]) / 128 * revtime;

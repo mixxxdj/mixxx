@@ -11,7 +11,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.library"),
-          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
 
     setTable("library");
@@ -64,13 +64,17 @@ LibraryTableModel::~LibraryTableModel()
 
 }
 
-void LibraryTableModel::addTrack(const QModelIndex& index, QString location)
+bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 {
 	//Note: The model index is ignored when adding to the library track collection.
 	//      The position in the library is determined by whatever it's being sorted by,
 	//      and there's no arbitrary "unsorted" view.
-	m_trackDao.addTrack(location);
+	int trackId = m_trackDao.addTrack(location);
 	select(); //Repopulate the data model.
+    if (trackId >= 0)
+        return true;
+    else
+        return false;
 }
 
 TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
@@ -136,6 +140,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
+        (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
         return true;
     }
@@ -150,7 +155,7 @@ QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value = BaseSqlTableModel::data(item, role);
 
     if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {

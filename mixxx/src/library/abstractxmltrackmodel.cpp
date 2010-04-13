@@ -101,9 +101,10 @@ int AbstractXmlTrackModel::columnCount(const QModelIndex& parent) const
     return m_ColumnNames.size();
 }
 
-void AbstractXmlTrackModel::addTrack(const QModelIndex& index, QString location)
+bool AbstractXmlTrackModel::addTrack(const QModelIndex& index, QString location)
 {
     //Should do nothing... hmmm
+    return false;
 }
 
 /** Removes a track from the library track collection. */
