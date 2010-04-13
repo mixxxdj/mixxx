@@ -255,7 +255,21 @@ int SoundDevicePortAudio::close()
 {
     if (m_pStream)
     {
-        PaError err = Pa_StopStream(m_pStream);
+        //Make sure the stream is not stopped before we try stopping it.
+        PaError err = Pa_IsStreamStopped(m_pStream);
+        if (err == 1) //1 means the stream is stopped. 0 means active.
+        {
+            qDebug() << "PortAudio: Stream already stopped, but no error.";
+            return 1;
+        }
+        if (err < 0) //Real PaErrors are always negative.
+        {
+            qDebug() << "PortAudio: Stream already stopped:" << Pa_GetErrorText(err) << getInternalName();
+            return 1;
+        }
+
+        //Stop the stream.
+        err = Pa_StopStream(m_pStream);
         //PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream seems to wait
                                                    //until all the buffers have been flushed, which can take a
                                                    //few (annoying) seconds when you're doing soundcard input.

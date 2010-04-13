@@ -17,11 +17,11 @@
 #include <math.h>  // for isnan() everywhere else
 #endif
 
-// Static default values for rate buttons
-double RateControl::m_dTemp = 0.01;
-double RateControl::m_dTempSmall = 0.001;
-double RateControl::m_dPerm = 0.01;
-double RateControl::m_dPermSmall = 0.001;
+// Static default values for rate buttons (percents)
+double RateControl::m_dTemp = 4.00; //(eg. 4.00%)
+double RateControl::m_dTempSmall = 1.00;
+double RateControl::m_dPerm = 0.50;
+double RateControl::m_dPermSmall = 0.05;
 
 int RateControl::m_iRateRampSensitivity = 250;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
