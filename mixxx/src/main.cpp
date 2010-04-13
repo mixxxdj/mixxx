@@ -33,6 +33,8 @@
 #include "qsplashscreen.h"
 #include "errordialog.h"
 #include "defs_audiofiles.h"
+#include "defs_version.h"
+#include "messageboxhandler.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -70,7 +72,8 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *dialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
+ErrorDialog *errorDialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
+MessageBoxHandler* g_pMessageBoxHelper; // Global so everything can access it
 
 void qInitImages_mixxx();
 
@@ -161,7 +164,7 @@ void MessageHandler( QtMsgType type, const char * input )
 #endif
     }
       
-    Q3TextStream Log( &Logfile );	
+    Q3TextStream Log( &Logfile );    
     
     switch ( type ) {
     case QtDebugMsg:
@@ -177,7 +180,7 @@ void MessageHandler( QtMsgType type, const char * input )
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
         //QMessageBox::warning(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(0,input);
+        //errorDialogHelper->requestErrorDialog(0,input);
         //I will break your legs if you re-enable the above lines of code.
         //You shouldn't be using qWarning for reporting user-facing errors.
         //Implement your own error message box...
@@ -186,15 +189,17 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
+        Logfile.flush();    // Ensure the error is written to the log before exiting
          //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-//         exit(-1);
+        errorDialogHelper->requestErrorDialog(1,input);
+//         exit(-1);    // Done in ErrorDialog
         break; //NOTREACHED(?)
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
+        Logfile.flush();    // Ensure the error is written to the log before aborting
         //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
+        errorDialogHelper->requestErrorDialog(1,input);
         abort();
         break; //NOTREACHED
     }
@@ -208,14 +213,15 @@ int main(int argc, char * argv[])
 
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
-	
+    
 
 #ifdef __WINDOWS__
   #ifdef DEBUGCONSOLE
     InitDebugConsole();
   #endif
 #endif
-   dialogHelper = new ErrorDialog(); 
+    g_pMessageBoxHelper = new MessageBoxHandler();   // connects signal
+    errorDialogHelper = new ErrorDialog();
 
     qInstallMsgHandler( MessageHandler );
 
@@ -251,7 +257,9 @@ int main(int argc, char * argv[])
     for (int i=0; i<argc; ++i)
     {
         if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            printf("Mixxx digital DJ software - command line options");
+            printf("Mixxx digital DJ software v");
+            printf(VERSION);
+            printf(" - Command line options");
             printf("\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
@@ -345,7 +353,7 @@ int main(int argc, char * argv[])
     
     int result = -1;
 
-    if (!dialogHelper->checkError()) {
+    if (!errorDialogHelper->checkError()) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
     
@@ -355,12 +363,12 @@ int main(int argc, char * argv[])
     
     delete mixxx;
     
-	qDebug() << "Mixxx shutdown complete.";
+    qDebug() << "Mixxx shutdown complete with code" << result;
 
-	// Don't make any more output after this
-	//	or mixxx.log will get clobbered!
+    // Don't make any more output after this
+    //    or mixxx.log will get clobbered!
     if(Logfile.isOpen())
-	Logfile.close();
+    Logfile.close();
     
     //delete plugin_paths;
     return result;
