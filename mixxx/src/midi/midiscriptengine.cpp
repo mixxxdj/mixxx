@@ -20,6 +20,8 @@
 #include "controlobjectthread.h"
 #include "mididevice.h"
 #include "midiscriptengine.h"
+#include "messageboxhandler.h"
+
 // #include <QScriptSyntaxCheckResult>
 
 #ifdef _MSC_VER
@@ -327,10 +329,10 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
-            qDebug() << "MidiScriptEngine:" << error;
-            qWarning() << "There was an error in a MIDI script."
-                          "\nA control you just used is not working properly and you may experience erratic behavior."
-                          "\nCheck the console or mixxx.log file for details.";
+            qWarning() << "MidiScriptEngine:" << error;
+//             QMessageBox::warning(0, "MIDI script error", "There was an error in a MIDI script.\
+                \nA control you just used is not working properly and you may experience erratic behavior.\
+                \nCheck the console or mixxx.log file for details.");
         }
         return false;
     }
@@ -444,13 +446,13 @@ bool MidiScriptEngine::checkException() {
                         << "\nBacktrace:\n"
                         << backtrace;
         else {
-            qDebug() << "MidiScriptEngine WARNING: uncaught exception:"
+            qWarning() << "MidiScriptEngine: uncaught exception:"
                          << errorMessage
                          << "in" << filename << "at line"
                          << line;
-            qWarning() << "There was a problem with a MIDI script."
-                          "\nA control you just used is not working properly and you may experience erratic behavior."
-                          "\nCheck the console or mixxx.log file for details.";
+//             QMessageBox::warning(0, "MIDI script error", "There was an error in a MIDI script.\
+                         \nA control you just used is not working properly and you may experience erratic behavior.\
+                         \nCheck the console or mixxx.log file for details.");
         }
         return true;
     }
@@ -564,7 +566,7 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
     }
 
     if(isnan(newValue)) {
-        qDebug() << "Warning: script setting [" << group << "," << name
+        qWarning() << "MidiScriptEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
         return;
     }
@@ -738,10 +740,16 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
-            qDebug() << "MidiScriptEngine:" << error;
-            qWarning() << "There was an error in the MIDI script file" << filename
-                       << "\nThe functionality provided by this script file will be disabled."
-                          "\nCheck the console or mixxx.log file for details.";
+            qWarning() << "MidiScriptEngine:" << error;
+            QMessageBox& msgBox = g_pMessageBoxHelper->newOne();
+//             msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setWindowTitle("MIDI script file error");
+            msgBox.setText(QString("There was an error in the MIDI script file %1.").arg(filename));
+            msgBox.setInformativeText("\nThe functionality provided by this script file will be disabled.\
+            \nSee the console or mixxx.log file for details.");
+            msgBox.setDetailedText(error);
+//             g_pMessageBoxHelper->display(msgBox,true);
+            g_pMessageBoxHelper->cleanup(msgBox);
         }
         return false;
     }
