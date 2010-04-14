@@ -178,6 +178,10 @@ void MessageHandler( QtMsgType type, const char * input )
         Log << "Warning: " << s << "\n";
         //QMessageBox::warning(0, "Mixxx", input);
         //dialogHelper->requestErrorDialog(0,input);
+        //I will break your legs if you re-enable the above lines of code.
+        //You shouldn't be using qWarning for reporting user-facing errors.
+        //Implement your own error message box...
+        // - Albert (March 11, 2010)
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
@@ -323,11 +327,15 @@ int main(int argc, char * argv[])
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
-     dir.cdUp();
-     dir.cd("PlugIns");
-     //For some reason we need to do setLibraryPaths() and not addLibraryPath().
-     //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
-     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     //Set the search path for Qt plugins to be in the bundle's PlugIns directory,
+     //but only if we think the mixxx binary is in a bundle.
+     if (dir.path().contains("Mixxx.app")) {
+        dir.cdUp();
+        dir.cd("PlugIns");
+        //For some reason we need to do setLibraryPaths() and not addLibraryPath().
+        //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
+        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     }
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);
@@ -347,6 +355,10 @@ int main(int argc, char * argv[])
     
     delete mixxx;
     
+	qDebug() << "Mixxx shutdown complete.";
+
+	// Don't make any more output after this
+	//	or mixxx.log will get clobbered!
     if(Logfile.isOpen())
 	Logfile.close();
     

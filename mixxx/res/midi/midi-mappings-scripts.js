@@ -58,7 +58,7 @@ script.debug = function (channel, control, value, status) {
 // Used to control a generic Mixxx control setting (low..high) from an absolute control (0..127)
 script.absoluteSlider = function (group, key, value, low, high) {
     if (value==127) engine.setValue(group, key, high);
-    else engine.setValue(group, key, ((high-low)/127)*value);
+    else engine.setValue(group, key, (((high - low) / 127) * value) + low);
 }
 
 // Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control (0..127)
@@ -247,7 +247,7 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
 
 // The actual alpha-beta filter
 scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
-    // ------------- Thanks to Radiomark (of Xwax) for the info for below ------------------------
+    // ------------- Thanks to Mark Hills of Xwax (http://www.xwax.co.uk) for the info for below ------------------------
     
     // ideal position = (initial_p + (y - x) / 128 * 1.8)
     var ideal_p = scratch.variables["initialTrackPos"] + (controlValue - scratch.variables["initialControlValue"]) / 128 * revtime;

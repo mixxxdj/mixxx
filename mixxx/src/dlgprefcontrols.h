@@ -52,7 +52,7 @@ public slots:
     void slotSetPositionDisplay(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
-    void slotSetRateRamp(int);
+    void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotApply();
 private:

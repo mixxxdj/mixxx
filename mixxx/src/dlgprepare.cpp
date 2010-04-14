@@ -217,8 +217,10 @@ void DlgPrepare::analyze()
 void DlgPrepare::trackAnalysisFinished(TrackInfoObject* tio)
 {
     qDebug() << "Analysis finished!";
-    m_pTrackCollection->getTrackDAO().updateTrackInDatabase(tio);
-    delete tio;
+    m_pTrackCollection->getTrackDAO().saveTrack(tio);
+    qDebug() << "FIXME: Free the TIO when we're using autopointers";
+    //XXX: Delete the TIO once we're using auto-pointers !
+    //delete tio;
 
     //If the analyser has already been deleted by the time we get this signal
     //or there are no tracks in it when we do get the signal, then say we're done.

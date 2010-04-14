@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.4              */
+/*      Stanton SCS.3d MIDI controller script v1.42             */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.8.x                                 */
@@ -655,12 +655,6 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     }
     // So if we've reached this point, modeName != currentMode, i.e. we're about to change modes
     
-    // Force the Gain LEDs to update when switching from Deck mode
-    if (currentMode=="deck") {
-        StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]="none";
-        StantonSCS3d.gainLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","volume"));  // Restore Gain LEDs
-    }
-    
     if (StantonSCS3d.debug) print("StantonSCS3d: Switching to "+modeName.toUpperCase()+" mode on deck "+StantonSCS3d.deck);
     switch (modeName.charAt(modeName.length-1)) {   // Set the button to its new color
         case "2": midi.sendShortMsg(byte1,control,0x03); break;   // Make button purple
@@ -670,6 +664,15 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     StantonSCS3d.connectSurfaceSignals(channel,true);  // Disconnect previous ones
     StantonSCS3d.softButtonsColor(channel,0x02);  // Make the soft buttons blue
     switch (currentMode) {    // Special recovery from certain modes
+        case "vinyl":
+        case "vinyl2":
+            // So we don't get stuck at some strange speed when switching from a scratching mode
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0);
+            if (StantonSCS3d.scratch["wasPlaying"]) {   // to avoid getting stuck stopped
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
+                StantonSCS3d.scratch["wasPlaying"] = false;
+            }
+            break;
         case "loop2":
         case "loop3":
         case "trig":
@@ -684,6 +687,9 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
                     midi.sendShortMsg(byte1,i,0x40); // Set center slider to black
             break;
         case "deck":
+			StantonSCS3d.state["forceGain"]=true;
+			StantonSCS3d.gainLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","volume"));  // Restore Gain LEDs
+			StantonSCS3d.state["forceGain"]=false;
             StantonSCS3d.connectDeckSignals(channel,false,"common");    // Connect static common signals
             break;
     }
@@ -702,7 +708,9 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
                 if (index != "2" && index != "3") index = "1";
                 
                 var redButtonLEDs = [0x48, 0x4a, 0x4c, 0x4e, 0x4f, 0x51, 0x53, 0x55, 0x56, 0x58, 0x5A, 0x5C];
-                if ((currentMode.substring(0,4) != "trig" && currentMode.substring(0,4) != "loop") || StantonSCS3d.state["changedDeck"]) {
+                if ( (currentMode.substring(0,4) != "trig"
+					   && (currentMode == "loop" || currentMode.substring(0,4) != "loop"))
+					 || StantonSCS3d.state["changedDeck"]) {
                     StantonSCS3d.state["changedDeck"] = false;
                     for (i=0; i<redButtonLEDs.length; i++)
                         midi.sendShortMsg(byte1,redButtonLEDs[i],0x41); // Set them to red dim
@@ -728,7 +736,7 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
         case "deck":
             StantonSCS3d.connectDeckSignals(channel,true,"common");    // Disconnect static common signals
             midi.sendShortMsg(byte1,0x3D,0x00);  // Pitch LED black
-            midi.sendShortMsg(byte1,0x3E,0x00);            
+            midi.sendShortMsg(byte1,0x3E,0x00);
             break;
     }
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = modeName;
@@ -847,7 +855,11 @@ StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
     StantonSCS3d.modifier["deck"]=0;   // Clear button modifier flag
     StantonSCS3d.connectSurfaceSignals(channel,true);   // Disconnect surface signals & turn off surface LEDs
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = StantonSCS3d.state["deckPrev"];
-    
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0); // To avoid getting stuck at a weird speed
+    if (StantonSCS3d.scratch["wasPlaying"]) {   // to avoid the deck stopping
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
+        StantonSCS3d.scratch["wasPlaying"] = false;
+    }
     var newMode;
     // In default multiple-deck mode, 
     //      If the button's been held down for longer than the specified time, stay on the current deck.
@@ -1590,7 +1602,7 @@ StantonSCS3d.pitchLEDs = function (value) {
 StantonSCS3d.gainLEDs = function (value) {
     // Skip if displaying something else
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
-    if (currentMode=="deck" || StantonSCS3d.modifier[currentMode]==1) return;
+    if ((currentMode=="deck" && !StantonSCS3d.state["forceGain"]) || StantonSCS3d.modifier[currentMode]==1) return;
     
     var LEDs = 0;
     if (value>0.01) LEDs++;
