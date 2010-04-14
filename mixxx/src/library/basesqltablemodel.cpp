@@ -3,11 +3,18 @@
 
 #include <QtDebug>
 
+#include "trackinfoobject.h"
+#include "library/trackcollection.h"
 #include "library/basesqltablemodel.h"
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
+                                     TrackCollection* pTrackCollection,
                                      QSqlDatabase db) :
-        QSqlRelationalTableModel(parent, db) {
+        QSqlRelationalTableModel(parent, db),
+        m_pTrackCollection(pTrackCollection),
+        m_trackDAO(m_pTrackCollection->getTrackDAO()) {
+    connect(&m_trackDAO, SIGNAL(trackChanged(int)),
+            this, SLOT(trackChanged(int)));
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -16,6 +23,8 @@ BaseSqlTableModel::~BaseSqlTableModel() {
 bool BaseSqlTableModel::select() {
     qDebug() << "select()";
     bool result = QSqlRelationalTableModel::select();
+    m_rowToTrackId.clear();
+    m_trackIdToRow.clear();
 
     if (result) {
         // We need to fetch as much data as is available or else the database will
@@ -23,9 +32,78 @@ bool BaseSqlTableModel::select() {
         while (canFetchMore()) {
             fetchMore();
         }
+
+        // TODO(XXX) let child specify this
+        int idColumn = record().indexOf("id");
+        qDebug() << "idColumn" << idColumn;
+        for (int row = 0; row < rowCount(); ++row) {
+            QModelIndex ind = index(row, idColumn);
+            int trackId = QSqlRelationalTableModel::data(ind).toInt();
+            m_rowToTrackId[row] = trackId;
+            m_trackIdToRow[trackId] = row;
+        }
     }
 
     return result;
+}
+
+QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid())
+        return QVariant();
+
+
+    int row = index.row();
+    int col = index.column();
+
+    Q_ASSERT(m_rowToTrackId.contains(row));
+    if (!m_rowToTrackId.contains(row)) {
+        return QSqlRelationalTableModel::data(index, role);
+    }
+
+    int trackId = m_rowToTrackId[row];
+
+    if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
+        qDebug() << "Returning override for track" << trackId;
+        TrackInfoObject* pTrack = m_trackDAO.getTrack(trackId);
+
+        // TODO(XXX) Qt properties could really help here.
+        if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
+            return QVariant(pTrack->getArtist());
+        } else if (fieldIndex(LIBRARYTABLE_TITLE) == col) {
+            return QVariant(pTrack->getTitle());
+        } else if (fieldIndex(LIBRARYTABLE_ALBUM) == col) {
+            return QVariant(pTrack->getAlbum());
+        } else if (fieldIndex(LIBRARYTABLE_YEAR) == col) {
+            return QVariant(pTrack->getYear());
+        } else if (fieldIndex(LIBRARYTABLE_GENRE) == col) {
+            return QVariant(pTrack->getGenre());
+        } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == col) {
+            return QVariant(pTrack->getTrackNumber());
+        } else if (fieldIndex(LIBRARYTABLE_LOCATION) == col) {
+            return QVariant(pTrack->getLocation());
+        } else if (fieldIndex(LIBRARYTABLE_COMMENT) == col) {
+            return QVariant(pTrack->getComment());
+        } else if (fieldIndex(LIBRARYTABLE_DURATION) == col) {
+            return QVariant(pTrack->getDuration());
+        } else if (fieldIndex(LIBRARYTABLE_BITRATE) == col) {
+            return QVariant(pTrack->getBitrate());
+        } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
+            return QVariant(pTrack->getBpm());
+        }
+    }
+    return QSqlRelationalTableModel::data(index, role);
+}
+
+void BaseSqlTableModel::trackChanged(int trackId) {
+    m_trackOverrides.insert(trackId);
+    qDebug() << "trackChanged" << trackId;
+    if (m_trackIdToRow.contains(trackId)) {
+        int row = m_trackIdToRow[trackId];
+        qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
+        QModelIndex left = index(row, 0);
+        QModelIndex right = index(row, columnCount());
+        emit(dataChanged(left, right));
+    }
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName) {

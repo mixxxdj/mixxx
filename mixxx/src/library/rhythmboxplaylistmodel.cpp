@@ -199,9 +199,10 @@ int RhythmboxPlaylistModel::columnCount(const QModelIndex& parent) const
     return RhythmboxPlaylistModel::NUM_COLUMNS;
 }
 
-void RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
+bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
     //Should do nothing... hmmm
+    return false;
 }
 
 /** Removes a track from the library track collection. */

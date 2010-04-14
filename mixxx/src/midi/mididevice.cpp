@@ -210,11 +210,10 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         //to the device. (sendShortMessage() would try to lock m_mutex...)
         locker.unlock();
 
-        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, 
-                                                            control, value, status, 
-                                                            mixxxControl.getControlObjectGroup())) {
-            qDebug() << "MidiDevice: Invalid script function" << configKey.item;
-        }
+        // This needs to be a signal because the MIDI Script Engine thread must execute
+        //  script functions, not this MidiDevice one
+        emit(callMidiScriptFunction(configKey.item, channel, control, value, status, 
+                                mixxxControl.getControlObjectGroup()));
         return;
     }
 #endif

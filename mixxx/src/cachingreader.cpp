@@ -278,6 +278,12 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     m_pCurrentSoundSource->seek(sample_position);
     int samples_read = m_pCurrentSoundSource->read(samples_to_read,
                                                    m_pSample);
+    
+    //If we've run out of music, the SoundSource can return 0 samples.
+    //Remember that SoundSourc->getLength() (which is m_iTrackNumSamples)
+    //can lie to us about the length of the song!
+    if (samples_read <= 0)
+        return false;
 
     // TODO(XXX) This loop can't be done with a memcpy, but could be done with
     // SSE.
@@ -360,6 +366,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 
         int samples_to_read = math_max(0, math_min(samples_remaining,
                                                    chunk_remaining_samples));
+
         // samples_to_read should be non-negative and even
         Q_ASSERT(samples_to_read >= 0);
         Q_ASSERT(samples_to_read % 2 == 0);

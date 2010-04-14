@@ -157,6 +157,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 
         //This must have been the first run... right? :)
         m_bFirstRun = true;
+        return config;
     }
     
     // Allows for incremental upgrades incase someone upgrades from a few versions prior
