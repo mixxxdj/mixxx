@@ -343,7 +343,6 @@ sources = Split("""
                 mixxx.cpp
                 mixxxview.cpp
                 errordialog.cpp
-                messageboxhandler.cpp
                 upgrade.cpp
 
                 soundsource.cpp

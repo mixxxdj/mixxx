@@ -34,7 +34,6 @@
 #include "errordialog.h"
 #include "defs_audiofiles.h"
 #include "defs_version.h"
-#include "messageboxhandler.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -72,72 +71,11 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *errorDialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
-MessageBoxHandler* g_pMessageBoxHelper; // Global so everything can access it
+ErrorDialog *g_pDialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
 
 void qInitImages_mixxx();
 
-void MessageOutput( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-
-    switch ( type ) {
-    case QtDebugMsg:
-#ifdef __WINDOWS__
-        if (strstr(msg, "doneCurrent")) {
-            break;
-        }
-#endif
-        fprintf( stderr, "Debug: %s\n", msg );
-        break;
-    case QtWarningMsg:
-        fprintf( stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-}
-
 QFile Logfile; // global logfile variable
-
-
-void MessageToLogfile( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-    
-    Q3TextStream Log( &Logfile );
-    switch ( type ) {
-    case QtDebugMsg:
-        Log << "Debug: " << msg << "\n";
-        break;
-    case QtWarningMsg:
-        Log << "Warning: " << msg << "\n";
-        //a->lock(); //this doesn't do anything in Qt4
-        QMessageBox::warning(0, "Mixxx", msg);
-        //a->unlock();
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-    Logfile.flush();
-}
-
 
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
@@ -179,28 +117,25 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtWarningMsg:
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
+        // Don't use qWarning for reporting user-facing errors.
         //QMessageBox::warning(0, "Mixxx", input);
-        //errorDialogHelper->requestErrorDialog(0,input);
-        //I will break your legs if you re-enable the above lines of code.
-        //You shouldn't be using qWarning for reporting user-facing errors.
-        //Implement your own error message box...
-        // - Albert (March 11, 2010)
+        //g_pDialogHelper->requestErrorDialog(3,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
         Logfile.flush();    // Ensure the error is written to the log before exiting
          //QMessageBox::critical(0, "Mixxx", input);
-        errorDialogHelper->requestErrorDialog(1,input);
+        g_pDialogHelper->requestErrorDialog(DLG_CRITICAL,input);
 //         exit(-1);    // Done in ErrorDialog
-        break; //NOTREACHED(?)
+        break; //NOTREACHED
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
         Logfile.flush();    // Ensure the error is written to the log before aborting
         //QMessageBox::critical(0, "Mixxx", input);
-        errorDialogHelper->requestErrorDialog(1,input);
-        abort();
+        g_pDialogHelper->requestErrorDialog(DLG_FATAL,input);
+//         abort();    // Done in ErrorDialog
         break; //NOTREACHED
     }
     Logfile.flush();
@@ -220,8 +155,7 @@ int main(int argc, char * argv[])
     InitDebugConsole();
   #endif
 #endif
-    g_pMessageBoxHelper = new MessageBoxHandler();   // connects signal
-    errorDialogHelper = new ErrorDialog();
+    g_pDialogHelper = new ErrorDialog();
 
     qInstallMsgHandler( MessageHandler );
 
@@ -353,7 +287,7 @@ int main(int argc, char * argv[])
     
     int result = -1;
 
-    if (!errorDialogHelper->checkError()) {
+    if (!g_pDialogHelper->checkError()) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
     

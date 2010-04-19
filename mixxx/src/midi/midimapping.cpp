@@ -30,14 +30,15 @@
 #include "mididevicedummy.h"
 #include "midiledhandler.h"
 #include "configobject.h"
+#include "errordialog.h"
 
 #define REQUIRED_SCRIPT_FILE "midi-mappings-scripts.js"
 #define XML_SCHEMA_VERSION "1"
 #define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-m_deviceName.indexOf(" ")-1).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
 
-static QString toHex(QString numberStr) {
-    return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
-}
+// static QString toHex(QString numberStr) {
+//     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+// }
 
 MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
         : QObject(),
@@ -75,9 +76,12 @@ void MidiMapping::startupScriptEngine() {
 
     if(m_pScriptEngine) return;
 
-    //XXX Deadly hack attack:
+    //XXX FIXME: Deadly hack attack:
     if (m_pOutputMidiDevice == NULL) {
         m_pOutputMidiDevice = new MidiDeviceDummy(this); //Just make some dummy device :(
+        /* Why can't this be the same as the input MIDI device? Most of the time,
+            the script engine thinks of it as the input device. Scripting is useful
+            even if the MIDI device has no outputs - Sean 4/19/10   */
     }
     //XXX Memory leak :(
 
@@ -110,6 +114,9 @@ void MidiMapping::startupScriptEngine() {
             m_pScriptEngine, SLOT(execute(QString)));
     connect(this, SIGNAL(callMidiScriptFunction(QString, QString)),
             m_pScriptEngine, SLOT(execute(QString, QString)));
+            
+    // Allow the MidiScriptEngine to tell us if it needs to reset the controller (on errors)
+    connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
 }
 
 void MidiMapping::loadScriptCode() {
@@ -598,13 +605,43 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
             if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
                 scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
 
-                QString statusText = QString(midiMessage.getMidiStatusByte());
-                qWarning() << "Error: Function" << mixxxControl.getControlObjectValue()
-                           << "was not found in loaded scripts."
-                           << "The MIDI Message with status byte"
-                           << statusText << midiMessage.getMidiNo()
-                           << "will not be bound. Please check the"
-                           << "mapping and script files.";
+                QString status = QString("%1").arg(midiMessage.getMidiStatusByte(), 0, 16).toUpper();
+                status = "0x"+status;
+                QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
+                byte2 = "0x"+byte2;
+            
+                // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
+                if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
+            
+                QString errorLog = QString("MIDI script function \"%1\" not found. "
+                                    "(Mapped to MIDI message %2 %3)")
+                                    .arg(mixxxControl.getControlObjectValue())
+                                    .arg(status)
+                                    .arg(byte2);
+                
+                if (m_pOutputMidiDevice != NULL 
+                    && m_pOutputMidiDevice->midiDebugging()) {
+                        qCritical() << errorLog;
+                }
+                else {
+                    qWarning() << errorLog;
+                    DialogProperties* props = new DialogProperties();
+                    props->setType(DLG_WARNING);
+                    props->setTitle(tr("MIDI script function not found"));
+                    props->text = QString(tr("The MIDI script function '%1' was not "
+                                    "found in loaded scripts."))
+                                    .arg(mixxxControl.getControlObjectValue());
+                    props->infoText = QString(tr("The MIDI message %1 %2 will not be bound."
+                                    "\n(Click Show Details for hints.)"))
+                                    .arg(status)
+                                    .arg(byte2);
+                    props->details = QString(tr("Check to see that the function "
+                                    "name is spelled correctly in the mapping "
+                                    "file (.xml) and script file (.js)"));
+                    
+                    g_pDialogHelper->requestErrorDialog(props);
+                    // ErrorDialog handles deleting props object
+                }
             } else {
 #endif
                 //Add to the input mapping.
@@ -1108,6 +1145,14 @@ void MidiMapping::restartScriptEngine()
     startupScriptEngine();
 }
 #endif
+
+// Reset the MIDI controller
+void MidiMapping::reset() {
+#ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
+    restartScriptEngine();
+    applyPreset();
+#endif
+}
 
 void MidiMapping::slotScriptEngineReady() {
 #ifdef __MIDISCRIPT__	// Can't ifdef slots in the .h file, so we just do the body.
