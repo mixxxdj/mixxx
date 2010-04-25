@@ -134,7 +134,9 @@ function scratch() {}
 // See full details here: http://mixxx.org/wiki/doku.php/midi_scripting#available_common_functions
 
 // ----------   Variables    ----------
-scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0, "initialControlValue":0, "scratch":0.0, "prevControlValue":0, "wrapCount":0 };
+scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0,
+                      "initialControlValue":0, "scratch":0.0,
+                      "prevControlValue":0, "wrapCount":0 };
 
 // ----------   Functions   ----------
 
@@ -153,13 +155,10 @@ scratch.enable = function (currentDeck) {
     
     scratch.variables["time"] = new Date()/1000;   // Current time in seconds
     
-    // Stop the deck motion. This means we have to pause it if playing
+    // If the deck is playing, slow it to a stop
     if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
-        scratch.variables["play"]=true;
         // TODO: ramp down
-//         engine.setValue("[Channel"+currentDeck+"]","play",0);   // pause playback
     }
-    else scratch.variables["play"]=false;
     
 //     print("MIDI Script: Scratch initial: time=" + scratch.variables["time"] + "s, track=" + scratch.variables["trackPos"] + "s");
     return;
@@ -173,6 +172,10 @@ scratch.enable = function (currentDeck) {
    Output:  -
    -------- ------------------------------------------------------ */
 scratch.disable = function (currentDeck) {
+    // If the deck is playing, ramp it up to the play speed
+    if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
+        //TODO: ramp up
+    }
     // Reset the triggers
     scratch.variables["trackPos"] = 0.0;
     scratch.variables["initialTrackPos"] = -1.0;
@@ -182,12 +185,9 @@ scratch.disable = function (currentDeck) {
     scratch.variables["time"] = 0.0;
     scratch.variables["scratch"] = 0.0;
 //     print("MIDI Script: Scratch values CLEARED");
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 0);  // disable scratching
-    engine.setValue("[Channel"+currentDeck+"]","scratch",0);
-    if (scratch.variables["play"]) {
-        //TODO: ramp up
-        engine.setValue("[Channel"+currentDeck+"]","play",1); // resume playback
-    }
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);  // disable scratching
+    engine.setValue("[Channel"+currentDeck+"]","scratch2",0);
+    engine.setValue("[Channel"+currentDeck+"]","scratch",0);    // Deprecated
 }
 
 /* -------- ------------------------------------------------------
@@ -207,8 +207,8 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = sliderValue;
         scratch.variables["scratch"] = 1;
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 1);
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 1);
+        engine.setValue("[Channel"+currentDeck+"]","scratch2", 1);
+        engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
 //         print("Initial slider="+scratch.variables["initialControlValue"]);
     }
     return scratch.filter(currentDeck, sliderValue, revtime, alpha, beta);
@@ -231,8 +231,8 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
         scratch.variables["scratch"] = 1;
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 1);
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 1);
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 1);
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
 //         print("Initial wheel="+scratch.variables["initialControlValue"]);
     }
         
