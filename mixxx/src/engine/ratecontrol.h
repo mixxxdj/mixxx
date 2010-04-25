@@ -94,6 +94,7 @@ private:
 
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
+    ControlTTRotary* m_pOldScratch;
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
     Rotary* m_pJogFilter;

@@ -666,8 +666,8 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
         case "vinyl":
         case "vinyl2":
             // So we don't get stuck at some strange speed when switching from a scratching mode
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 0);
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0);
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
             break;
         case "loop2":
         case "loop3":
@@ -852,8 +852,8 @@ StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
     StantonSCS3d.connectSurfaceSignals(channel,true);   // Disconnect surface signals & turn off surface LEDs
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = StantonSCS3d.state["deckPrev"];
     // To avoid getting stuck at a weird speed
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 0);
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0);
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
     var newMode;
     // In default multiple-deck mode, 
     //      If the button's been held down for longer than the specified time, stay on the current deck.
@@ -959,7 +959,7 @@ StantonSCS3d.S4relative = function (channel, control, value) {
         var multiplier = StantonSCS3d.scratching["sensitivity"]/2;
 //              if (StantonSCS3d.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
         multiplier = multiplier * 0.5;  // Reduce sensitivity of the slider since it's lower res
-        engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue * multiplier)).toFixed(2));
+        engine.setValue(group,"scratch2", (engine.getValue(group,"scratch2") + (jogValue * multiplier)).toFixed(2));
     }
 }
 
@@ -990,12 +990,12 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
             var byte1 = 0xB0 + channel;
             midi.sendShortMsg(byte1,0x01,add); //S4 LEDs
             if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=1) midi.sendShortMsg(byte1,0x0C,add); //S3 LEDs
-            if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=2)midi.sendShortMsg(byte1,0x0E,add); //S5 LEDs
+            if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=2) midi.sendShortMsg(byte1,0x0E,add); //S5 LEDs
             
             if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") {    // this is only for the alpha-beta filter implementation
                 // Call global scratch slider function
                 var newScratchValue = scratch.slider(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",newScratchValue);
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",newScratchValue);
             }
             break;
         case "loop2":
@@ -1078,9 +1078,9 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
                 if (StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck);
                 else {
                     StantonSCS3d.scratch["touching"] = true;
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 1);
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
                     if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1) {
-                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",(1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch")));  // So it ramps down when you touch
+                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",(1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch2")));  // So it ramps down when you touch
                     }
                 }
                 break;
@@ -1141,9 +1141,11 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
                 if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck);
                 else {
                     StantonSCS3d.scratch["touching"] = true;
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 1);
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
                     if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1) {
-                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",(1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch")));  // So it ramps down when you touch
+                        // So it ramps down when you touch
+                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",
+                                        (1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch2")));
                     }
                 }
                 break;
@@ -1313,7 +1315,7 @@ StantonSCS3d.C1relative = function (channel, control, value, status) {
             
             var multiplier = StantonSCS3d.scratching["sensitivity"];
 //              if (StantonSCS3d.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
-            engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue * multiplier)).toFixed(2));
+            engine.setValue(group,"scratch2", (engine.getValue(group,"scratch2") + (jogValue * multiplier)).toFixed(2));
             break;
         case "vinyl3":
             if ((value-64)>0) {
@@ -1333,7 +1335,7 @@ StantonSCS3d.C1absolute = function (channel, control, value, status) {
 //             // Slower response for jog wheel
 //             var newValue = scratch.wheel(StantonSCS3d.deck, value, 1.8, StantonSCS3d.scratch["alpha"], 1.0);
 //             print("StantonSCS3d: newValue="+newValue);
-//             engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",newValue);
+//             engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",newValue);
             break;
         case "vinyl2": 
             if (StantonSCS3d.vinyl2ScratchMethod != "a-b") break;   // this is only for the alpha-beta filter implementation
@@ -1343,7 +1345,7 @@ StantonSCS3d.C1absolute = function (channel, control, value, status) {
             // Call global scratch wheel function
             var newScratchValue = scratch.wheel(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
                 
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch",newScratchValue);
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",newScratchValue);
             break;
         default:
             // Light the LEDs
@@ -1705,34 +1707,38 @@ StantonSCS3d.circleLEDs = function (value) {
 StantonSCS3d.wheelDecay = function (value) {
 
     if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="vinyl2") {    // Only in Vinyl2 mode
-        var scratch = engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch");
-        var jogDecayRate = StantonSCS3d.scratching["slippage"] * 1.1;
+        var scratch = engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch2");
+        var jogDecayRate = StantonSCS3d.scratching["slippage"] * 1.1;   // 0.2
         
-        if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": " + scratch + ", Jog decay rate="+jogDecayRate);
+//         if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": " + scratch + ", Jog decay rate="+jogDecayRate);
         
         // If it was playing, ramp back to playback speed
         if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1 && !StantonSCS3d.scratch["touching"]) {
             var rate = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate") * engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange");
             var convergeTo = 1+rate;
-            //jogDecayRate = StantonSCS3d.scratching["slippage"] * 0.2;
             if (scratch != convergeTo) { // Thanks to jusics on IRC for help with this part
-                if (Math.abs(scratch-convergeTo) > jogDecayRate*0.001) {  
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", (convergeTo + (scratch-convergeTo) * jogDecayRate).toFixed(5));
-                    //engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", (scratch + (convergeTo - scratch) / jogDecayRate).toFixed(5));
+                if (Math.abs(scratch-convergeTo) > jogDecayRate*0.001) {
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 
+                                    (convergeTo + (scratch-convergeTo) * jogDecayRate).toFixed(5));
+                    //engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", (scratch + (convergeTo - scratch) / jogDecayRate).toFixed(5));
                 } else {
-                    // Once "scratch" has gotten close enough to the play speed, just resume normal playback
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0);
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 0);
+                    // Once "scratch2" has gotten close enough to the play speed, just resume normal playback
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
                 }
             }
-        } else
-        if (scratch != 0) { // For regular scratching when stopped or if playing (and ramp down...touch functions set scratch=1 and play=0)
-            if (Math.abs(scratch) > jogDecayRate*0.001) {  
-                  engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", (scratch * jogDecayRate).toFixed(4));
-               } else {
-                  engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch", 0);
-                  if (!StantonSCS3d.scratch["touching"]) engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch_enable", 0);
-               }
+        }
+        else if (scratch != 0) {
+            // For regular scratching when stopped or if playing and ramp down
+            if (Math.abs(scratch) > jogDecayRate*0.001) {
+                var value=(scratch * jogDecayRate).toFixed(5);
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", value);
+                if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": " + value + ", Jog decay rate="+jogDecayRate);
+            } else {
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
+                if (!StantonSCS3d.scratch["touching"]) engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
+                if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": 0, Jog decay rate="+jogDecayRate);
+            }
         }
     }
 }
