@@ -6,7 +6,7 @@
    <Name>11pm (Dark Mixxx)</Name>
    <Filters>
     <Invert/>
-	<HueInv/>
+    <HueInv/>
     <Add>
      <Amount>50</Amount>
     </Add>
@@ -23,40 +23,40 @@
    <Filters>
    </Filters>
   </Scheme>
-	 <Scheme>
-		 <Name>8pm (Summer Sunset Mixxx)</Name>
-		 <Filters>
-			 <HSVTweak>
-				 <SMin>100</SMin>
-				 <VFact>0.7</VFact>
-				 <HFact>0.3</HFact>
-			 </HSVTweak>
+     <Scheme>
+         <Name>8pm (Summer Sunset Mixxx)</Name>
+         <Filters>
+             <HSVTweak>
+                 <SMin>100</SMin>
+                 <VFact>0.7</VFact>
+                 <HFact>0.3</HFact>
+             </HSVTweak>
 
-			 <HSVTweak>
-				 <SMax>50</SMax>
-				 <HFact>0</HFact>
-				 <HConst>50</HConst>
-				 <SConst>120</SConst>
-				 <VConst>-10</VConst>
-			 </HSVTweak>
+             <HSVTweak>
+                 <SMax>50</SMax>
+                 <HFact>0</HFact>
+                 <HConst>50</HConst>
+                 <SConst>120</SConst>
+                 <VConst>-10</VConst>
+             </HSVTweak>
 
-		 </Filters>
-	 </Scheme>
-	 <Scheme>
-		 <Name>3am (Still Awake Mixxx)</Name>
-		 <Filters>
-			 <Invert/>
-			 <Add>
-				 <Amount>50</Amount>
-			 </Add>
-			 <ScaleWhite>
-				 <Amount>1.5</Amount>
-			 </ScaleWhite>
-			 <Add>
-				 <Amount>-50</Amount>
-			 </Add>
-		 </Filters>
-	 </Scheme>
+         </Filters>
+     </Scheme>
+     <Scheme>
+         <Name>3am (Still Awake Mixxx)</Name>
+         <Filters>
+             <Invert/>
+             <Add>
+                 <Amount>50</Amount>
+             </Add>
+             <ScaleWhite>
+                 <Amount>1.5</Amount>
+             </ScaleWhite>
+             <Add>
+                 <Amount>-50</Amount>
+             </Add>
+         </Filters>
+     </Scheme>
  </Schemes>
 
  <Background>
@@ -1154,31 +1154,31 @@
  </XSliderComposed>
 
  <Overview>
-	 <Tooltip>Overview display of waveform</Tooltip>
-	 <Channel>1</Channel>
-	 <Pos>112,177</Pos>
-	 <Size>201,13</Size>
-	 <BgColor>#fafafa</BgColor>
-	 <SignalColor>#00ff00</SignalColor>
-	 <MarkerColor>#0000ff</MarkerColor>
-	 <Connection>
-		 <ConfigKey>[Channel1],playposition</ConfigKey>
-		 <EmitOnDownPress>false</EmitOnDownPress>
-	 </Connection>
+     <Tooltip>Overview display of waveform</Tooltip>
+     <Channel>1</Channel>
+     <Pos>112,177</Pos>
+     <Size>201,13</Size>
+     <BgColor>#fafafa</BgColor>
+     <SignalColor>#00ff00</SignalColor>
+     <MarkerColor>#0000ff</MarkerColor>
+     <Connection>
+         <ConfigKey>[Channel1],playposition</ConfigKey>
+         <EmitOnDownPress>false</EmitOnDownPress>
+     </Connection>
  </Overview>
 
  <Overview>
-	 <Tooltip>Overview display of waveform</Tooltip>
-	 <Channel>2</Channel>
-	 <Pos>487,177</Pos>
-	 <Size>201,13</Size>
-	 <BgColor>#fafafa</BgColor>
-	 <SignalColor>#00ff00</SignalColor>
-	 <MarkerColor>#ff0000</MarkerColor>
-	 <Connection>
-		 <ConfigKey>[Channel2],playposition</ConfigKey>
-		 <EmitOnDownPress>false</EmitOnDownPress>
-	 </Connection>
+     <Tooltip>Overview display of waveform</Tooltip>
+     <Channel>2</Channel>
+     <Pos>487,177</Pos>
+     <Size>201,13</Size>
+     <BgColor>#fafafa</BgColor>
+     <SignalColor>#00ff00</SignalColor>
+     <MarkerColor>#ff0000</MarkerColor>
+     <Connection>
+         <ConfigKey>[Channel2],playposition</ConfigKey>
+         <EmitOnDownPress>false</EmitOnDownPress>
+     </Connection>
  </Overview>
 
  <ComboBox>
