@@ -33,7 +33,7 @@ function msecondstominutes(msecs)
     msecs = Math.round(msecs * 100 / 1000);
     if (msecs==100) msecs=99;
     
-    print("secs="+secs+", msecs="+msecs);
+//     print("secs="+secs+", msecs="+msecs);
 
     return (m < 10 ? "0" + m : m) 
         + ":"
@@ -43,8 +43,10 @@ function msecondstominutes(msecs)
 }
 
 function script() {}
-script.debug = function (channel, control, value, status) {
-    print("Script.Debug --- channel: " + channel.toString(16) + " control: " + control.toString(16) + " value: " + value.toString(16) + " status: " + status.toString(16));
+script.debug = function (channel, control, value, status, group) {
+    print("Script.Debug --- channel: " + channel.toString(16) + 
+          " control: " + control.toString(16) + " value: " + value.toString(16) + 
+          " status: " + status.toString(16) + " group: " + group);
 }
 
 // Used to control a generic Mixxx control setting (low..high) from an absolute control (0..127)
@@ -64,7 +66,9 @@ script.absoluteNonLin = function (value, low, mid, high) {
 script.absoluteEQ = function (group, key, value) {
     if (value<=64) engine.setValue(group, key, value/64);
     else engine.setValue(group, key, 1+(value-63)/(21+1/3));
-    print ("MIDI Script: script.absoluteEQ is deprecated. Use script.absoluteNonLin(value,0,1,4) instead and set the MixxxControl to its return value.");
+    print ("MIDI Script: script.absoluteEQ is deprecated. " + 
+           "Use script.absoluteNonLin(value,0,1,4) instead and set the " + 
+           "MixxxControl to its return value.");
 }
 
 /* -------- ------------------------------------------------------
@@ -148,12 +152,13 @@ scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0,
    Input:   Currently-controlled Mixxx deck
    Output:  -
    -------- ------------------------------------------------------ */
-scratch.enable = function (currentDeck) {
+scratch.enable = function (currentDeck,newBehavior) {
     // Store scratch info at the point it was touched
     // Current position in seconds:
     scratch.variables["initialTrackPos"] = scratch.variables["trackPos"] = engine.getValue("[Channel"+currentDeck+"]","visual_playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     
     scratch.variables["time"] = new Date()/1000;   // Current time in seconds
+    if (newBehavior) engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
     
     // If the deck is playing, slow it to a stop
     if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
@@ -185,7 +190,7 @@ scratch.disable = function (currentDeck) {
     scratch.variables["time"] = 0.0;
     scratch.variables["scratch"] = 0.0;
 //     print("MIDI Script: Scratch values CLEARED");
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);  // disable scratching
+    engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 0);  // disable scratching
     engine.setValue("[Channel"+currentDeck+"]","scratch2",0);
     engine.setValue("[Channel"+currentDeck+"]","scratch",0);    // Deprecated
 }
@@ -206,9 +211,11 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // If the slider start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = sliderValue;
-        scratch.variables["scratch"] = 1;
-        engine.setValue("[Channel"+currentDeck+"]","scratch2", 1);
-        engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
+        if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
+            scratch.variables["scratch"] = 1;
+            engine.setValue("[Channel"+currentDeck+"]","scratch2", 1);
+        }
+//         engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
 //         print("Initial slider="+scratch.variables["initialControlValue"]);
     }
     return scratch.filter(currentDeck, sliderValue, revtime, alpha, beta);
@@ -230,9 +237,11 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     // If the wheel start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
-        scratch.variables["scratch"] = 1;
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 1);
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
+        if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
+            scratch.variables["scratch"] = 1;
+            engine.setValue("[Channel"+currentDeck+"]","scratch2", 1);
+        }
+//         engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
 //         print("Initial wheel="+scratch.variables["initialControlValue"]);
     }
         
