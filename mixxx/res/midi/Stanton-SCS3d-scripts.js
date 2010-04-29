@@ -1075,7 +1075,7 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
         switch (currentMode) {
 //             case "vinyl":
             case "vinyl2":
-                if (StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck);
+                if (StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck, true);
                 else {
                     StantonSCS3d.scratch["touching"] = true;
                     engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
@@ -1138,7 +1138,7 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
         switch (currentMode) {
             case "vinyl":   // Store scratch info the point it was touched
             case "vinyl2":
-                if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck);
+                if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck, true);
                 else {
                     StantonSCS3d.scratch["touching"] = true;
                     engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
