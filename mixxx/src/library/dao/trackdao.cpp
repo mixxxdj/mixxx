@@ -533,9 +533,9 @@ void TrackDAO::markTrackLocationsAsDeleted(QString directory)
     we can salvage your existing metadata that you have in your DB (like cue points, etc.). */
 void TrackDAO::detectMovedFiles()
 {
-    //qDebug() << "markUnverifiedTracksAsDeleted()";
-    m_database.transaction();
-
+    //This function should not start a transaction on it's own!
+    //When it's called from libraryscanner.cpp, there already is a transaction
+    //started!
 
     QSqlQuery query(m_database);
     QSqlQuery query2(m_database);
@@ -598,5 +598,4 @@ void TrackDAO::detectMovedFiles()
         }
     }
 
-    m_database.commit();
 }
