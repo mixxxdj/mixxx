@@ -116,7 +116,13 @@ RateControl::RateControl(const char* _group,
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
     // cleared when we read
-    m_pScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));
+    m_pScratch = new ControlTTRotary(ConfigKey(_group, "scratch2"));
+    m_pOldScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));  // Deprecated
+    
+    // Scratch enable toggle
+    m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratchToggle->set(0);
+    m_pScratchToggle->setToggleButton(true);
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
@@ -156,6 +162,7 @@ RateControl::~RateControl() {
 
     delete m_pWheel;
     delete m_pScratch;
+    delete m_pOldScratch;
     delete m_pJog;
     delete m_pJogFilter;
 }
@@ -309,20 +316,6 @@ double RateControl::getRawRate() {
         m_pRateDir->get();
 }
 
-double RateControl::getScratchFactor() {
-    double scratchFactor = m_pScratch->get();
-    if(!isnan(scratchFactor) && scratchFactor != 0.0f) {
-        if (scratchFactor < 0.) {
-            scratchFactor = scratchFactor - 1.0f;
-        } else if (scratchFactor > 0.) {
-            scratchFactor = scratchFactor + 1.0f;
-        }
-    } else {
-        scratchFactor = 1.0f;
-    }
-    return scratchFactor;
-}
-
 double RateControl::getWheelFactor() {
     // Calculate wheel (experimental formula)
     return 40 * m_pWheel->get();
@@ -350,17 +343,27 @@ double RateControl::getJogFactor() {
 double RateControl::calculateRate(double baserate, bool paused) {
     double rate = 0.0;
     double wheelFactor = getWheelFactor();
-    double scratchFactor = getScratchFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
+    bool scratchEnable = m_pScratchToggle->get() != 0;
+    double scratchFactor = m_pScratch->get();
+    double oldScratchFactor = m_pOldScratch->get(); // Deprecated
+    // Don't trust values from m_pScratch
+    if(isnan(scratchFactor)) {
+        scratchFactor = 0.0;
+    }
+    if(isnan(oldScratchFactor)) {
+        oldScratchFactor = 0.0;
+    }
 
     if (searching) {
         // If searching is in progress, it overrides the playback rate.
         rate = m_pRateSearch->get();
     } else if (paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
-        // Scratch is centered around 1.0, so subtract 1.0
-        rate = scratchFactor - 1.0f + jogFactor + wheelFactor/10.;
+        // New scratch behavior overrides old
+        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor/10.;
+        else rate = oldScratchFactor + jogFactor + wheelFactor/10.; // Just remove oldScratchFactor in future
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
@@ -372,7 +375,18 @@ double RateControl::calculateRate(double baserate, bool paused) {
 
         rate = 1. + getRawRate() + getTempRate();
         rate += wheelFactor/10.;
-        rate *= scratchFactor;
+
+        // New scratch behavior - overrides playback speed (and old behavior)
+        if (scratchEnable) rate *= scratchFactor;
+        // Deprecated old scratch behavior
+        else {
+            if (oldScratchFactor < 0.) {
+                rate *= (oldScratchFactor-1.);                
+            } else if (oldScratchFactor > 0.) {
+                rate *= (oldScratchFactor+1.);
+            }
+        }
+        
         rate += jogFactor;
 
         // If we are reversing, flip the rate.
