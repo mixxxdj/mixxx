@@ -577,7 +577,7 @@ void MixxxApp::initActions()
     optionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
 
     optionsFullScreen = new QAction(tr("&Full Screen"), this);
-    optionsFullScreen->setShortcut(tr("Esc"));
+    optionsFullScreen->setShortcut(tr("F11"));
     optionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     //QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     //    connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
