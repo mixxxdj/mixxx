@@ -31,7 +31,7 @@
 #include "mixxx.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
-#include "errordialog.h"
+#include "errordialoghandler.h"
 #include "defs_audiofiles.h"
 #include "defs_version.h"
 
@@ -71,7 +71,7 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *g_pDialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
+ErrorDialogHandler* ErrorDialogHandler::s_pInstance = 0;    // Resolves "undefined reference" linker errors
 
 void qInitImages_mixxx();
 
@@ -102,7 +102,9 @@ void MessageHandler( QtMsgType type, const char * input )
 #endif
     }
       
-    Q3TextStream Log( &Logfile );    
+    Q3TextStream Log( &Logfile );
+    
+    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();    
     
     switch ( type ) {
     case QtDebugMsg:
@@ -118,24 +120,21 @@ void MessageHandler( QtMsgType type, const char * input )
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
         // Don't use qWarning for reporting user-facing errors.
-        //QMessageBox::warning(0, "Mixxx", input);
-        //g_pDialogHelper->requestErrorDialog(3,input);
+        //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
         Logfile.flush();    // Ensure the error is written to the log before exiting
-         //QMessageBox::critical(0, "Mixxx", input);
-        g_pDialogHelper->requestErrorDialog(DLG_CRITICAL,input);
-//         exit(-1);    // Done in ErrorDialog
+        dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
+//         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
         Logfile.flush();    // Ensure the error is written to the log before aborting
-        //QMessageBox::critical(0, "Mixxx", input);
-        g_pDialogHelper->requestErrorDialog(DLG_FATAL,input);
-//         abort();    // Done in ErrorDialog
+        dialogHandler->requestErrorDialog(DLG_FATAL,input);
+//         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
     Logfile.flush();
@@ -155,14 +154,13 @@ int main(int argc, char * argv[])
     InitDebugConsole();
   #endif
 #endif
-    g_pDialogHelper = new ErrorDialog();
-
     qInstallMsgHandler( MessageHandler );
-
+    
+    // Other things depend on this name to enforce thread exclusivity,
+    //  so if you change it here, change it also in:
+    //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
-
-
 
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
@@ -287,7 +285,7 @@ int main(int argc, char * argv[])
     
     int result = -1;
 
-    if (!g_pDialogHelper->checkError()) {
+    if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
     

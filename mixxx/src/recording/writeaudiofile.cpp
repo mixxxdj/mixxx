@@ -90,7 +90,7 @@ void WriteAudioFile::open()
         }
     }
     else
-        qDebug() << "Warning: Tried to open WriteAudioFile before recording control was set to RECORD_ON";
+        qWarning() << "Tried to open WriteAudioFile before recording control was set to RECORD_ON";
 }
 
 void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)

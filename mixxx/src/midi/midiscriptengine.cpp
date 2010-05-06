@@ -20,7 +20,7 @@
 #include "controlobjectthread.h"
 #include "mididevice.h"
 #include "midiscriptengine.h"
-#include "errordialog.h"
+#include "errordialoghandler.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -467,32 +467,30 @@ Output:  -
 -------- ------------------------------------------------------ */
 void MidiScriptEngine::scriptErrorDialog(QString detailedError) {
     qWarning() << "MidiScriptEngine:" << detailedError;
-    DialogProperties* props = new DialogProperties();
+    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("MIDI script error"));
-    props->text = tr("A MIDI control you just used is not working properly.");
-    props->infoText = tr("<html>(The MIDI script code needs to be fixed.)"
+    props->setText(tr("A MIDI control you just used is not working properly."));
+    props->setInfoText(tr("<html>(The MIDI script code needs to be fixed.)"
         "<br>For now, you can:<ul><li>Ignore this error for this session but you may experience erratic behavior</li>"
-        "<li>Try to recover by resetting your controller</li></ul></html>");
-    props->details = detailedError;
-    props->key = detailedError; // To prevent multiple windows for the same error
+        "<li>Try to recover by resetting your controller</li></ul></html>"));
+    props->setDetails(detailedError);
+    props->setKey(detailedError);   // To prevent multiple windows for the same error
     
     // Allow user to suppress further notifications about this particular error
-    props->buttons.append(QMessageBox::Ignore);
+    props->addButton(QMessageBox::Ignore);
     
-    props->buttons.append(QMessageBox::Retry);
-    props->buttons.append(QMessageBox::Close);
-    props->defaultButton = QMessageBox::Close;
-    props->escapeButton = QMessageBox::Close;
-    props->modal = false;
+    props->addButton(QMessageBox::Retry);
+    props->addButton(QMessageBox::Close);
+    props->setDefaultButton(QMessageBox::Close);
+    props->setEscapeButton(QMessageBox::Close);
+    props->setModal(false);
     
-    if (g_pDialogHelper->requestErrorDialog(props)) {
+    if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
         // Enable custom handling of the dialog buttons
-        connect(g_pDialogHelper, SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
+        connect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
                 this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
     }
-    
-    // ErrorDialog handles deleting props
 }
 
 /* -------- ------------------------------------------------------
@@ -503,7 +501,7 @@ Output:  -
 void MidiScriptEngine::errorDialogButton(QString key, QMessageBox::StandardButton button) {
     
     // Something was clicked, so disable this signal now
-    disconnect(g_pDialogHelper, SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
+    disconnect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
         this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
             
     if (button == QMessageBox::Retry) emit(resetController());
@@ -764,14 +762,13 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
         if (m_midiDebug) qCritical() << errorLog;
         else {
             qWarning() << errorLog;
-            DialogProperties* props = new DialogProperties();
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
             props->setType(DLG_WARNING);
             props->setTitle("MIDI script file problem");
-            props->text = QString("There was a problem opening the MIDI script file %1.").arg(filename);
-            props->infoText = input.errorString();
+            props->setText(QString("There was a problem opening the MIDI script file %1.").arg(filename));
+            props->setInfoText(input.errorString());
             
-            g_pDialogHelper->requestErrorDialog(props);
-            // ErrorDialog handles deleting props object
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
             return false;
         }
     }
@@ -803,15 +800,14 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
             qWarning() << "MidiScriptEngine:" << error;
-            DialogProperties* props = new DialogProperties();
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
             props->setType(DLG_WARNING);
             props->setTitle("MIDI script file error");
-            props->text = QString("There was an error in the MIDI script file %1.").arg(filename);
-            props->infoText = "The functionality provided by this script file will be disabled.";
-            props->details = error;
+            props->setText(QString("There was an error in the MIDI script file %1.").arg(filename));
+            props->setInfoText("The functionality provided by this script file will be disabled.");
+            props->setDetails(error);
             
-            g_pDialogHelper->requestErrorDialog(props);
-            // ErrorDialog handles deleting props object
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
         }
         return false;
     }

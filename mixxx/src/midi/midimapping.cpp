@@ -30,7 +30,7 @@
 #include "mididevicedummy.h"
 #include "midiledhandler.h"
 #include "configobject.h"
-#include "errordialog.h"
+#include "errordialoghandler.h"
 
 #define REQUIRED_SCRIPT_FILE "midi-mappings-scripts.js"
 #define XML_SCHEMA_VERSION "1"
@@ -625,22 +625,25 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                 }
                 else {
                     qWarning() << errorLog;
-                    DialogProperties* props = new DialogProperties();
+                    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
                     props->setType(DLG_WARNING);
                     props->setTitle(tr("MIDI script function not found"));
-                    props->text = QString(tr("The MIDI script function '%1' was not "
+                    props->setText(QString(tr("The MIDI script function '%1' was not "
                                     "found in loaded scripts."))
-                                    .arg(mixxxControl.getControlObjectValue());
-                    props->infoText = QString(tr("The MIDI message %1 %2 will not be bound."
+                                    .arg(mixxxControl.getControlObjectValue()));
+                    props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
                                     "\n(Click Show Details for hints.)"))
                                     .arg(status)
-                                    .arg(byte2);
-                    props->details = QString(tr("Check to see that the function "
-                                    "name is spelled correctly in the mapping "
-                                    "file (.xml) and script file (.js)"));
+                                    .arg(byte2));
+                    QString detailsText = QString(tr("* Check to see that the "
+                        "function name is spelled correctly in the mapping "
+                        "file (.xml) and script file (.js)\n"));
+                    detailsText += QString(tr("* Check to see that the script "
+                        "file name (.js) is spelled correctly in the mapping "
+                        "file (.xml)"));
+                    props->setDetails(detailsText);
                     
-                    g_pDialogHelper->requestErrorDialog(props);
-                    // ErrorDialog handles deleting props object
+                    ErrorDialogHandler::instance()->requestErrorDialog(props);
                 }
             } else {
 #endif
@@ -973,7 +976,7 @@ MidiOutputMappingTableModel* MidiMapping::getMidiOutputMappingTableModel()
 /*MixxxControl* MidiMapping::getInputMixxxControl(MidiMessage command)
 {
     if (!m_inputMapping.contains(command)) {
-        qDebug() << "Warning: unbound MIDI command";
+        qWarning() << "Unbound MIDI command";
         qDebug() << "Midi Status:" << command.getMidiStatusByte();
         qDebug() << "Midi No:" << command.getMidiNo();
         qDebug() << "Midi Channel:" << command.getMidiChannel();
