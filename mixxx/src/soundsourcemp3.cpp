@@ -318,7 +318,7 @@ inline long unsigned SoundSourceMp3::length()
         break;
     default:             //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
         units = MAD_UNITS_44100_HZ;
-        qDebug() << "Warning: MP3 with corrupt samplerate (" << SRATE << "), defaulting to 44100";
+        qWarning() << "MP3 with corrupt samplerate (" << SRATE << "), defaulting to 44100";
 
         SRATE = 44100; //Prevents division by zero errors.
     }
