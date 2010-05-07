@@ -173,6 +173,8 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //but it is already locked because it is being modified by the GUI thread.
     //(This happens when you hit apply in the preferences and then quickly push
     // a button on your controller.)
+    // This also avoids a race when the device is sending data while it's being
+    //  initialized (more of a problem with scripted devices.)
     if (m_bReceiveInhibit)
         return;
 
