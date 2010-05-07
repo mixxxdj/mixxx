@@ -151,8 +151,10 @@ int MidiDeviceManager::setupDevices()
         qDebug() << "Opening Device:" << name;
 
         cur->open();
+        // Prevents a deadlock if the device is sending data when it's initialized
+        cur->setReceiveInhibit(true);
         mapping->applyPreset();
-        
+        cur->setReceiveInhibit(false);
     }
     
     return 0;

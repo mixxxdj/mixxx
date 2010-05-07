@@ -66,7 +66,6 @@ public slots:
 private:
     double getJogFactor();
     double getWheelFactor();
-    double getScratchFactor();
     
     /** Set rate change of the temporary pitch rate */
     void setRateTemp(double v);
@@ -95,6 +94,8 @@ private:
 
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
+    ControlTTRotary* m_pOldScratch;
+    ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
     Rotary* m_pJogFilter;
 

@@ -40,6 +40,10 @@ TrackCollection::~TrackCollection()
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
 
+    Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
+    //The above is an ASSERT because there should never be an outstanding 
+    //transaction when this code is called. If there is, it means we probably
+    //aren't committing a transaction somewhere that should be.
     m_db.close();
     qDebug() << "TrackCollection destroyed";
 }
