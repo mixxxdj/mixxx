@@ -43,8 +43,12 @@ LibraryScanner::~LibraryScanner()
     //                the m_trackDao that lives inside this class. It should use
     //                the DAOs that live in m_pTrackCollection.
 
-    if (isRunning())
+    if (isRunning()) {
+        //Cancel any running library scan...
+        m_pCollection->slotCancelLibraryScan();
+
         wait(); //Wait for thread to finish
+    }
 
     //Do housekeeping on the LibraryHashes table.
     m_pCollection->getDatabase().transaction();
@@ -74,14 +78,18 @@ LibraryScanner::~LibraryScanner()
      	qDebug() << query.lastError();
     }
 
-    m_pCollection->getDatabase().commit();
-
     QString dir;
     foreach(dir, deletedDirs) {
         m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
     }
-
+    
+    m_pCollection->getDatabase().commit();
+    
     //Close our database connection
+    Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
+    //The above is an ASSERT because there should never be an outstanding 
+    //transaction when this code is called. If there is, it means we probably
+    //aren't committing a transaction somewhere that should be.
     m_database.close();
 
     qDebug() << "LibraryScanner destroyed";
@@ -93,16 +101,18 @@ void LibraryScanner::run()
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
-    m_database.setHostName("localhost");
-    m_database.setDatabaseName(MIXXX_DB_PATH);
-    m_database.setUserName("mixxx");
-    m_database.setPassword("mixxx");
+    if (!m_database.isValid()) { //Only init the db on first scan. 
+        m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
+        m_database.setHostName("localhost");
+        m_database.setDatabaseName(MIXXX_DB_PATH);
+        m_database.setUserName("mixxx");
+        m_database.setPassword("mixxx");
 
-    //Open the database connection in this thread.
-    if (!m_database.open()) {
-        qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
-        return;
+        //Open the database connection in this thread.
+        if (!m_database.open()) {
+            qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
+            return;
+        }
     }
 
     m_libraryHashDao.setDatabase(m_database);
@@ -138,15 +148,19 @@ void LibraryScanner::run()
 
     qDebug() << "Recursively scanning library.";
     //Start scanning the library.
-    m_database.transaction();
+    //THIS SHOULD NOT BE IN A TRANSACTION! Each addTrack() call from inside 
+    //recursiveScan() handles it's own transactions.
     bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath);
-
 
     if (!bScanFinishedCleanly) {
         qDebug() << "Recursive scan interrupted.";
     } else {
         qDebug() << "Recursive scan finished cleanly.";
     }
+
+    //Start a transaction for all the library hashing (moved file detection)
+    //stuff.
+    m_database.transaction();
 
     //At the end of a scan, mark all tracks that weren't "verified" as "deleted"
     //(as long as the scan wasn't cancelled half way through. This condition is
