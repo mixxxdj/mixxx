@@ -133,7 +133,9 @@ int MidiDeviceHss1394::open()
 }
 
 int MidiDeviceHss1394::close()
-{    
+{   
+    setReceiveInhibit(true);    // Prevent deadlock
+
     if (!m_bIsOpen) {
         qDebug() << "HSS1394 device" << m_strDeviceName << "already closed";
         return -1;
