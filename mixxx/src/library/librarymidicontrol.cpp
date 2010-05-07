@@ -144,14 +144,20 @@ void LibraryMIDIControl::slotSelectTrackKnob(double v)
     while(i != 0)
     {
         if(i > 0)
-        {
+        {   // i is positive, so we want to move the highlight down
             QApplication::postEvent(destWidget,
-                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Up,
+                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Down,
+                                              Qt::NoModifier, QString(), true));
+            QApplication::postEvent(destWidget,
+                                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Down,
                                               Qt::NoModifier, QString(), true));
             i--;
         }
         else
-        {
+        {   // i is negative, so we want to move the highlight up
+            QApplication::postEvent(destWidget,
+                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Up,
+                                              Qt::NoModifier, QString(), true));
             QApplication::postEvent(destWidget,
                                 new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Up,
                                               Qt::NoModifier, QString(), true));
