@@ -2,9 +2,9 @@
                           midiscriptengine.cpp  -  description
                           -------------------
     begin                : Fri Dec 12 2008
-    copyright            : (C) 2008 by Sean M. Pappalardo
+    copyright            : (C) 2008-2010 by Sean M. Pappalardo
                                        "Holy crap, I wrote new code!"
-    email                : pegasus@renegadetech.com
+    email                : spappalardo@mixxx.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -34,9 +34,29 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_pEngine(NULL),
     m_pMidiDevice(midiDevice)
 {
+    // Pre-allocate arrays for average number of virtual decks
+    int decks = 16;
+    m_intervalAccumulator.resize(decks);
+    m_dx.resize(decks);
+    m_rampTo.resize(decks);
+    m_ramp.resize(decks);
+    m_pitchFilter.resize(decks);
+    
+    // Initialize arrays used for testing and pointers
+    for (int i=0; i < decks; i++) {
+        m_dx[i]=NULL;
+        m_pitchFilter[i]=new PitchFilter(); // allocate RAM at startup
+        m_ramp[i] = false;
+    }
 }
 
 MidiScriptEngine::~MidiScriptEngine() {
+    // Clean up
+    int decks = 16; // Must match value above
+    for (int i=0; i < decks; i++) {
+        delete m_pitchFilter[i];
+        m_pitchFilter[i] = NULL;
+    }
 
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
@@ -888,7 +908,7 @@ void MidiScriptEngine::stopTimer(int timerId) {
     if(lock) m_scriptEngineLock.unlock();
 
     if (!m_timers.contains(timerId)) {
-        qDebug() << "Killing timer" << timerId << ": That timer does not exist!";
+        qWarning() << "Killing timer" << timerId << ": That timer does not exist!";
         return;
     }
     if (m_midiDebug) qDebug() << "Killing timer:" << timerId;
@@ -925,6 +945,14 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
 
     m_scriptEngineLock.lock();
+    
+    // See if this is a scratching timer
+    if (m_scratchTimers.contains(timerId)) {
+        m_scriptEngineLock.unlock();
+        scratchProcess(timerId);
+        return;
+    }
+
     if (!m_timers.contains(timerId)) {
         qDebug() << "Timer" << timerId << "fired but there's no function mapped to it!";
         m_scriptEngineLock.unlock();
@@ -936,4 +964,162 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
 
     internalExecute(timerTarget.first);
     m_scriptEngineLock.unlock();
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Enables scratching for relative controls
+    Input:   Virtual deck to scratch,
+             Number of intervals per revolution of the controller wheel,
+             RPM for the track at normal speed (usually 33+1/3),
+             (optional) alpha value for the filter,
+             (optional) beta value for the filter
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta) {
+    
+    // If we're already scratching this deck, override that with this request
+    if (m_dx[deck]) {
+//         qDebug() << "Already scratching deck" << deck << ". Overriding.";
+        int timerId = m_scratchTimers.key(deck);
+        killTimer(timerId);
+        m_scratchTimers.remove(timerId);
+    }
+    
+    // Controller resolution in intervals per second at normal speed (rev/min * ints/rev * mins/sec)
+    float intervalsPerSecond = (rpm * intervalsPerRev)/60;
+    
+    m_dx[deck] = 1/intervalsPerSecond/4;
+    m_intervalAccumulator[deck] = 0;
+    m_ramp[deck] = false;
+    
+    QString group = QString("[Channel%1]").arg(deck);
+    
+    // Ramp
+    float initVelocity = 0.0;   // Default to stopped
+    
+    // See if the deck is already being scratched
+    ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+    if (cot != NULL && cot->get() == 1) {
+        // If so, set the filter's initial velocity to the scratch speed
+        cot = getControlObjectThread(group, "scratch2");
+        if (cot != NULL) initVelocity=cot->get();
+    }
+    else {
+        // See if deck is playing
+        cot = getControlObjectThread(group, "play");
+        if (cot != NULL && cot->get() == 1) {
+            // If so, set the filter's initial velocity to the playback speed
+            float rate;
+            cot = getControlObjectThread(group, "rate");
+            if (cot != NULL) rate = cot->get();
+            cot = getControlObjectThread(group, "rateRange");
+            if (cot != NULL) rate = rate * cot->get();
+            initVelocity = rate < 1 ? 1+rate : rate;
+        }
+    }
+    
+    // Initialize pitch filter (0.001s = 1ms)
+    //  (We're assuming the OS actually gives us a 1ms timer below)
+    if (alpha && beta) m_pitchFilter[deck]->init(0.001, initVelocity, alpha, beta);
+    else m_pitchFilter[deck]->init(0.001, initVelocity); // Use filter's defaults if not specified
+    
+    int timerId = startTimer(1);    // 1ms is shortest possible, OS dependent
+    // Associate this virtual deck with this timer for later processing
+    m_scratchTimers[timerId] = deck;
+    
+    // Set scratch2_enable
+    cot = getControlObjectThread(group, "scratch2_enable");
+    if(cot != NULL) cot->slotSet(1);
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Accumulates "ticks" of the controller wheel
+    Input:   Virtual deck to scratch, interval value (usually +1 or -1)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::scratchTick(int deck, int interval) {
+    m_intervalAccumulator[deck] += interval;
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Applies the accumulated movement to the track speed
+    Input:   ID of timer for this deck
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::scratchProcess(int timerId) {
+    
+    int deck = m_scratchTimers[timerId];
+    PitchFilter* filter = m_pitchFilter[deck];
+    QString group = QString("[Channel%1]").arg(deck);
+    
+    if (!filter) {
+        qWarning() << "Scratch filter pointer is null on deck" << deck;
+        return;
+    }
+    
+    // Give the filter a data point
+    if (m_ramp[deck]) { // If we're ramping to end scratching, feed fixed data
+        // TODO: prevent oscillation around the target speed
+        //  Ideally, tell the filter to center around that speed so we don't have
+        //  to do this
+        if (m_rampTo[deck] < filter->currentPitch()) filter->observation(0);
+        else if (m_rampTo[deck] > filter->currentPitch()) filter->observation(m_dx[deck]/2);
+    }
+    //  This will (and should) be 0 if no net ticks have been accumulated (i.e. the wheel is stopped)
+    else filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
+    
+    // Actually do the scratching
+    ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
+    if(cot != NULL) cot->slotSet(filter->currentPitch());
+    
+    // Reset accumulator
+    m_intervalAccumulator[deck] = 0;
+    
+    // If we're ramping and the current pitch is really close to the rampTo value,
+    //  end scratching
+    
+//     if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
+
+    if (m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= m_dx[deck]*2) {
+        
+        m_ramp[deck] = false;   // Not ramping no mo'
+        
+        // Clear scratch2_enable
+        cot = getControlObjectThread(group, "scratch2_enable");
+        if(cot != NULL) cot->slotSet(0);
+        
+        // Remove timer
+        killTimer(timerId);
+        m_scratchTimers.remove(timerId);
+
+        m_dx[deck] = NULL;
+    }
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Stops scratching the specified virtual deck
+    Input:   Virtual deck to stop scratching
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::scratchDisable(int deck) {
+
+    QString group = QString("[Channel%1]").arg(deck);
+    
+    // See if deck is playing
+    ControlObjectThread *cot = getControlObjectThread(group, "play");
+    if (cot != NULL && cot->get() == 1) {
+        // If so, set the target velocity to the playback speed
+        float rate;
+        cot = getControlObjectThread(group, "rate");
+        if (cot != NULL) rate = cot->get();
+        cot = getControlObjectThread(group, "rateRange");
+        if (cot != NULL) rate = rate * cot->get();
+        m_rampTo[deck] = rate < 1 ? 1+rate : rate;
+    }
+    else m_rampTo[deck]=0.0;
+    
+    // TODO: Can we set the filter to center on a speed other than 0?
+    //  The above method doesn't work well.
+    
+    m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
