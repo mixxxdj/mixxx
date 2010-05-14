@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.42             */
+/*      Stanton SCS.3d MIDI controller script v1.50             */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.8.x                                 */
@@ -10,7 +10,7 @@ function StantonSCS3d() {}
 // ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/stanton_scs.3d_mixxx_user_guide  for details
 StantonSCS3d.pitchRanges = [ 0.08, 0.12, 0.5, 1.0 ];    // Pitch ranges for LED off, blue, purple, red
-StantonSCS3d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
+StantonSCS3d.fastDeckChange = true;    // Skip the flashy lights if true, for juggling
 StantonSCS3d.spinningPlatter = true;    // Spinning platter LEDs
 StantonSCS3d.spinningPlatterOnlyVinyl = false;  // Only show the spinning platter LEDs in vinyl mode
 StantonSCS3d.spinningLights = 1;        // The number of spinning platter lights, 1 or 2
@@ -22,13 +22,8 @@ StantonSCS3d.singleDeck = false;        // When using more than one controller, 
                                         //  Toggle with DECK + SYNC.
 StantonSCS3d.deckChangeWait = 1000;     // Time in milliseconds to hold the DECK button down to avoid changing decks (multi deck mode)
 
-// These values are heavily latency-dependent. They're preset for 10ms and will need tuning for other latencies. (For 2ms, try 0.885, 0.15, and 1.5.)
-StantonSCS3d.scratching = {     "slippage":0.7,             // Slipperiness of the virtual slipmat when scratching with the circle (higher=slower response, 0<n<1)
-                                "sensitivity":0.2 };        // How much the audio moves for a given circle arc (higher=faster response, 0<n<1)
-
 // ----------   Other global variables    ----------
 StantonSCS3d.debug = false;  // Enable/disable debugging messages to the console
-StantonSCS3d.vinyl2ScratchMethod = "pp"; // "a-b" or "pp"
 
 StantonSCS3d.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS3d.channel = 0;   // MIDI channel to set the device to and use
@@ -39,14 +34,13 @@ StantonSCS3d.mode_store = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // S
 StantonSCS3d.deck = 1;  // Currently active virtual deck
 StantonSCS3d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS3d.state = { "pitchAbs":0, "jog":0, "changedDeck":false, "deckPrev":"vinyl"}; // Temporary state variables
+StantonSCS3d.timer = [-1];  // Temporary storage of timer IDs
 StantonSCS3d.modeSurface = { "deck":"S3+S5", "fx":"S3+S5", "eq":"S3+S5", 
                              "loop":"S3+S5", "loop2":"Buttons", "loop3":"Buttons",
                              "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons",
                              "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
 StantonSCS3d.surface = { "C1":0x00, "S5":0x01, "S3":0x02, "S3+S5":0x03, "Buttons":0x04 };
 StantonSCS3d.sysex = [0xF0, 0x00, 0x01, 0x60];  // Preamble for all SysEx messages for this device
-// Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-StantonSCS3d.scratch = { "revtime":4.0, "alpha":0.1, "beta":1.0, "touching":false };
 StantonSCS3d.trackDuration = [0,0]; // Duration of the song on each deck (used for vinyl LEDs)
 StantonSCS3d.lastLight = [-1,-1]; // Last circle LED values
 StantonSCS3d.lastLoop = 0;  // Last-used loop LED
@@ -128,8 +122,8 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
     StantonSCS3d.deck = 2;  // Set active deck to right (#2) so the below will switch to #1.
     if (StantonSCS3d.singleDeck)    // Force timer to expire so the deck change happens
         StantonSCS3d.modifier["deckTime"] = new Date() - StantonSCS3d.deckChangeWait;
-    StantonSCS3d.DeckButtonOrig(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "", 0x90+StantonSCS3d.channel);
-    StantonSCS3d.DeckButtonOrig(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "", 0x80+StantonSCS3d.channel);
+    StantonSCS3d.DeckChangeP1(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "null", 0x90+StantonSCS3d.channel);
+    StantonSCS3d.DeckChangeP1(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "null", 0x80+StantonSCS3d.channel);
     
     // Connect the playposition functions permanently since they disrupt playback if connected on the fly
     if (StantonSCS3d.spinningPlatter) {
@@ -361,8 +355,8 @@ StantonSCS3d.playButton = function (channel, control, value, status) {
         // If in single-deck mode and in DECK mode and Deck is held when this is pressed, change decks
         var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
         if (StantonSCS3d.singleDeck && currentMode == "deck" && StantonSCS3d.modifier["deck"]==1) {
-            StantonSCS3d.DeckButtonOrig(channel, StantonSCS3d.buttons["deck"], "", 0x90+channel);
-            StantonSCS3d.DeckButtonOrig(channel, StantonSCS3d.buttons["deck"], "", 0x80+channel);
+            StantonSCS3d.DeckChangeP1(channel, StantonSCS3d.buttons["deck"], "null", 0x90+channel);
+            StantonSCS3d.DeckChangeP1(channel, StantonSCS3d.buttons["deck"], "null", 0x80+channel);
             return
         }
         StantonSCS3d.modifier["play"]=1;
@@ -405,7 +399,7 @@ StantonSCS3d.syncButton = function (channel, control, value, status) {
                 if (StantonSCS3d.mode_store["[Channel1]"]=="deck") StantonSCS3d.mode_store["[Channel1]"] = "vinyl";
                 if (StantonSCS3d.mode_store["[Channel2]"]=="deck") StantonSCS3d.mode_store["[Channel2]"] = "vinyl";
                 // Do deck change to acknowledge
-                StantonSCS3d.DeckButtonOrig(channel, StantonSCS3d.buttons["deck"], "", 0x90+channel);
+                StantonSCS3d.DeckChangeP1(channel, StantonSCS3d.buttons["deck"], "null", 0x90+channel);
             }
             else {
                 if (StantonSCS3d.debug) print("StantonSCS3d: Switching to single-deck control mode");
@@ -666,8 +660,7 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
         case "vinyl":
         case "vinyl2":
             // So we don't get stuck at some strange speed when switching from a scratching mode
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
+            engine.scratchDisable(StantonSCS3d.deck);
             break;
         case "loop2":
         case "loop3":
@@ -705,8 +698,8 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
                 
                 var redButtonLEDs = [0x48, 0x4a, 0x4c, 0x4e, 0x4f, 0x51, 0x53, 0x55, 0x56, 0x58, 0x5A, 0x5C];
                 if ( (currentMode.substring(0,4) != "trig"
-					   && (currentMode == "loop" || currentMode.substring(0,4) != "loop"))
-					 || StantonSCS3d.state["changedDeck"]) {
+                      && (currentMode == "loop" || currentMode.substring(0,4) != "loop"))
+                      || StantonSCS3d.state["changedDeck"]) {
                     StantonSCS3d.state["changedDeck"] = false;
                     for (i=0; i<redButtonLEDs.length; i++)
                         midi.sendShortMsg(byte1,redButtonLEDs[i],0x41); // Set them to red dim
@@ -723,12 +716,6 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
                         }
                 }
             break;
-        case "vinyl":
-        case "vinyl2":
-            // Force the circle LEDs to light
-            StantonSCS3d.lastLight[StantonSCS3d.deck]=-1;
-            StantonSCS3d.circleLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","visual_playposition"));
-            break;
         case "deck":
             StantonSCS3d.connectDeckSignals(channel,true,"common");    // Disconnect static common signals
             midi.sendShortMsg(byte1,0x3D,0x00);  // Pitch LED black
@@ -737,6 +724,9 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     }
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = modeName;
     StantonSCS3d.connectSurfaceSignals(channel);  // Connect new ones
+    // Force the circle LEDs to light if applicable
+    StantonSCS3d.lastLight[StantonSCS3d.deck]=-1;
+    StantonSCS3d.circleLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","visual_playposition"));
 }
 
 StantonSCS3d.FX = function (channel, control, value, status) {
@@ -816,19 +806,38 @@ StantonSCS3d.Vinyl = function (channel, control, value, status) {
 
 StantonSCS3d.DeckButton = function (channel, control, value, status) {
     if (StantonSCS3d.singleDeck) StantonSCS3d.modeButton(channel, control, status, "deck");
-    else StantonSCS3d.DeckButtonOrig(channel, control, value, status);
+    else StantonSCS3d.DeckChangeP1(channel, control, value, status);
 }
 
-StantonSCS3d.lightDelay = function () {
-    // TODO: Make this a timer for v1.8
-    var date = new Date();
-    var curDate = null;
+StantonSCS3d.deckChangeFlash = function (channel, value, targetSide) {
+    var led = {"left":0x71,"right":0x72};
+    var byte1 = 0x90 + channel;
     
-    do { curDate = new Date(); }
-    while(curDate-date < 60);
+    StantonSCS3d.state["flashes"]++;
+    
+    if (StantonSCS3d.state["flashes"] % 2 == 0) {
+        midi.sendShortMsg(byte1,led[targetSide],0x01);  // Deck light on
+        StantonSCS3d.circleLEDsColor(channel,0x01,targetSide);  // Light half-circle
+    }
+    else {
+        midi.sendShortMsg(byte1,led[targetSide],0x00);  // Deck light off
+        StantonSCS3d.circleLEDsColor(channel,0x00,targetSide);  // Extinguish half-circle
+    }
+    
+    if (StantonSCS3d.state["flashes"]>=5) {
+        engine.stopTimer(StantonSCS3d.timer[0]);
+        StantonSCS3d.timer[0] = -1;
+        
+        // Finish the deck change
+        midi.sendShortMsg(byte1,led[targetSide],0x01);  // Deck light on
+        
+        StantonSCS3d.connectDeckSignals(channel);    // Connect static signals
+        StantonSCS3d.connectDeckSignals(channel,false,"common");    // Connect static common signals
+        StantonSCS3d.DeckChangeP2(channel, value);  // Call part 2
+    }
 }
 
-StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
+StantonSCS3d.DeckChangeP1 = function (channel, control, value, status) {
     var byte1 = 0x90 + channel;
     if ((status & 0xF0) == 0x90) {  // If button down
         StantonSCS3d.modeButtonsColor(channel,0x02);  // Make all mode buttons blue
@@ -846,14 +855,17 @@ StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
         midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x01, StantonSCS3d.surface["S3+S5"], 0xF7]),7);
         StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "deck";
         StantonSCS3d.connectSurfaceSignals(channel);  // Connect new ones
+        // Force the circle LEDs to light if applicable
+        StantonSCS3d.lastLight[StantonSCS3d.deck]=-1;
+        StantonSCS3d.circleLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","visual_playposition"));
         return;
     }
+    // If button up
     StantonSCS3d.modifier["deck"]=0;   // Clear button modifier flag
     StantonSCS3d.connectSurfaceSignals(channel,true);   // Disconnect surface signals & turn off surface LEDs
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = StantonSCS3d.state["deckPrev"];
     // To avoid getting stuck at a weird speed
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
-    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
+    engine.scratchDisable(StantonSCS3d.deck);
     var newMode;
     // In default multiple-deck mode, 
     //      If the button's been held down for longer than the specified time, stay on the current deck.
@@ -872,55 +884,44 @@ StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
             StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"].substring(0,4) == "loop")
                 for (i=0x48; i<=0x5c; i++) midi.sendShortMsg(byte1,i,0x40); // Set surface LEDs to black
         if (StantonSCS3d.deck == 1) {
-            if (StantonSCS3d.debug) print("StantonSCS3d: Switching to deck 2");
             StantonSCS3d.deck++;
+            if (StantonSCS3d.debug) print("StantonSCS3d: Switching to deck "+StantonSCS3d.deck);
             midi.sendShortMsg(byte1,StantonSCS3d.buttons["deck"],0x03); // Deck button purple
-            midi.sendShortMsg(byte1,0x71,0x00);  // Deck A light off
-            if (!StantonSCS3d.fastDeckChange) { // Make flashy lights to signal a deck change
-                // TODO: Use a timer instead
-                StantonSCS3d.circleLEDsColor(channel,0x00,"right");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x72,0x01);  // Deck B light on
-                StantonSCS3d.circleLEDsColor(channel,0x01,"right");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x72,0x00);  // Deck B light off
-                StantonSCS3d.circleLEDsColor(channel,0x00,"right");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x72,0x01);  // Deck B light on
-                StantonSCS3d.circleLEDsColor(channel,0x01,"right");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x72,0x00);  // Deck B light off
-                StantonSCS3d.circleLEDsColor(channel,0x00,"right");
-                StantonSCS3d.lightDelay();
+            midi.sendShortMsg(byte1,0x71,0x00); // Deck A light off
+            // Make flashy lights to signal a deck change
+            if (!StantonSCS3d.fastDeckChange) {
+                // If in the middle of flashing lights from a previous change, abort that one
+                if (StantonSCS3d.timer[0] != -1) engine.stopTimer(StantonSCS3d.timer[0]);
+                StantonSCS3d.state["flashes"] = 0;  // initialize number of flashes
+                StantonSCS3d.timer[0] = engine.beginTimer(60,"StantonSCS3d.deckChangeFlash("+channel+","+value+",\"right\")");
+                return;
             }
-                midi.sendShortMsg(byte1,0x72,0x01);  // Deck B light on
+            // If fast deck change
+            midi.sendShortMsg(byte1,0x72,0x01);  // Deck B light on
         }
         else {
-            if (StantonSCS3d.debug) print("StantonSCS3d: Switching to deck 1");
             StantonSCS3d.deck--;
+            if (StantonSCS3d.debug) print("StantonSCS3d: Switching to deck "+StantonSCS3d.deck);
             midi.sendShortMsg(byte1,StantonSCS3d.buttons["deck"],0x02); // Deck button blue
             midi.sendShortMsg(byte1,0x72,0x00);  // Deck B light off
             if (!StantonSCS3d.fastDeckChange) {
-                StantonSCS3d.circleLEDsColor(channel,0x00,"left");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x71,0x01);  // Deck A light on
-                StantonSCS3d.circleLEDsColor(channel,0x01,"left");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x71,0x00);  // Deck A light off
-                StantonSCS3d.circleLEDsColor(channel,0x00,"left");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x71,0x01);  // Deck A light on
-                StantonSCS3d.circleLEDsColor(channel,0x01,"left");
-                StantonSCS3d.lightDelay();
-                midi.sendShortMsg(byte1,0x71,0x00);  // Deck A light off
-                StantonSCS3d.circleLEDsColor(channel,0x00,"left");
-                StantonSCS3d.lightDelay();
+                if (StantonSCS3d.timer[0] != -1) engine.stopTimer(StantonSCS3d.timer[0]);
+                StantonSCS3d.state["flashes"] = 0;  // initialize number of flashes
+                StantonSCS3d.timer[0] = engine.beginTimer(60,"StantonSCS3d.deckChangeFlash("+channel+","+value+",\"left\")");
+                return;
             }
+            // If fast deck change
             midi.sendShortMsg(byte1,0x71,0x01);  // Deck A light on
         }
+        // These are done in deckChangeFlash() when it's finished.
+        //  They're here too if fastDeckChange is enabled
         StantonSCS3d.connectDeckSignals(channel);    // Connect static signals
         StantonSCS3d.connectDeckSignals(channel,false,"common");    // Connect static common signals
     }
+    StantonSCS3d.DeckChangeP2(channel, value); // Go to part 2.
+}
+
+StantonSCS3d.DeckChangeP2 = function (channel, value) {
     if (!StantonSCS3d.globalMode) newMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "none"; // Forces a mode change when a function is called
     StantonSCS3d.modifier["time"] = 0.0;    // Reset the mode-modifier time
@@ -951,15 +952,9 @@ StantonSCS3d.DeckButtonOrig = function (channel, control, value, status) {
 StantonSCS3d.S4relative = function (channel, control, value) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (currentMode=="deck") return;   // Skip if in DECK mode
-    if (currentMode=="vinyl2" && StantonSCS3d.vinyl2ScratchMethod=="pp") {
-        var group = "[Channel"+StantonSCS3d.deck+"]";
-        var jogValue = (value-64);
-        if (engine.getValue(group,"reverse")==1) jogValue= -(jogValue);
-
-        var multiplier = StantonSCS3d.scratching["sensitivity"]/2;
-//              if (StantonSCS3d.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
-        multiplier = multiplier * 0.5;  // Reduce sensitivity of the slider since it's lower res
-        engine.setValue(group,"scratch2", (engine.getValue(group,"scratch2") + (jogValue * multiplier)).toFixed(2));
+    if (currentMode=="vinyl" || currentMode=="vinyl2") {
+        var newValue = (value-64);
+        engine.scratchTick(StantonSCS3d.deck,newValue);
     }
 }
 
@@ -982,21 +977,14 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
     switch (currentMode) {
         case "fx": script.absoluteSlider("[Flanger]","lfoDelay",value,50,10000); break;
         case "eq": engine.setValue("[Channel"+StantonSCS3d.deck+"]","filterMid",script.absoluteNonLin(value,0,1,4)); break;
-        case "vinyl":   // Scratching
+        case "vinyl":
         case "vinyl2":
             // Set slider lights
-            //var add = StantonSCS3d.Peak7(value,0,127);
             var add = (value/15)|0;
             var byte1 = 0xB0 + channel;
             midi.sendShortMsg(byte1,0x01,add); //S4 LEDs
             if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=1) midi.sendShortMsg(byte1,0x0C,add); //S3 LEDs
             if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=2) midi.sendShortMsg(byte1,0x0E,add); //S5 LEDs
-            
-            if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") {    // this is only for the alpha-beta filter implementation
-                // Call global scratch slider function
-                var newScratchValue = scratch.slider(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",newScratchValue);
-            }
             break;
         case "loop2":
         case "loop3":
@@ -1073,27 +1061,16 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if ((status & 0xF0) == 0x90) {    // If button down
         switch (currentMode) {
-//             case "vinyl":
             case "vinyl2":
-                if (StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck, true);
-                else {
-                    StantonSCS3d.scratch["touching"] = true;
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
-                    if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1) {
-                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",(1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch2")));  // So it ramps down when you touch
-                    }
-                }
+                engine.scratchEnable(StantonSCS3d.deck, 128, 16, 1.0/16, (1.0/16)/32);
                 break;
         }
     }
     else {  // If button up
         switch (currentMode) {
-            case "vinyl": break;
+            case "vinyl": break;    // Leave C1 (platter) lights as they are
             case "vinyl2":
-                if (StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.disable(StantonSCS3d.deck);
-                else {
-                    StantonSCS3d.scratch["touching"] = false;
-                }
+                engine.scratchDisable(StantonSCS3d.deck);
                 break;
             default: midi.sendShortMsg(byte1,0x62,0x00); // Turn off C1 lights
                 break;
@@ -1136,18 +1113,9 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
     }
     if ((status & 0xF0) == 0x90) {    // If button down
         switch (currentMode) {
-            case "vinyl":   // Store scratch info the point it was touched
+            case "vinyl":  
             case "vinyl2":
-                if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.enable(StantonSCS3d.deck, true);
-                else {
-                    StantonSCS3d.scratch["touching"] = true;
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 1);
-                    if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1) {
-                        // So it ramps down when you touch
-                        engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",
-                                        (1+engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch2")));
-                    }
-                }
+                engine.scratchEnable(StantonSCS3d.deck, 128, 33+1/3, 1.0/8, (1.0/8)/32);
                 break;
             case "vinyl3":  // Load the song
                 // If the deck is playing and the cross-fader is not completely toward the other deck...
@@ -1172,12 +1140,9 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
     }
     // If button up
     switch (currentMode) {
-        case "vinyl":   // Reset the triggers
+        case "vinyl":   
         case "vinyl2":
-            if (currentMode=="vinyl" || StantonSCS3d.vinyl2ScratchMethod == "a-b") scratch.disable(StantonSCS3d.deck);
-            else {
-                StantonSCS3d.scratch["touching"] = false;
-            }
+            engine.scratchDisable(StantonSCS3d.deck);
             var byte1a = 0xB0 + channel;
             midi.sendShortMsg(byte1a,0x01,0x00); //S4 LEDs off
             if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=1) midi.sendShortMsg(byte1a,0x0C,0x00); //S3 LEDs off
@@ -1304,18 +1269,11 @@ StantonSCS3d.C1relative = function (channel, control, value, status) {
     switch (currentMode) {
         case "vinyl":
             var newValue=(value-64);
-//             print("C1="+value+", jog="+newValue);
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","jog",newValue);
             break;
         case "vinyl2":
-            if (StantonSCS3d.vinyl2ScratchMethod != "pp") break;   // This is only for the "playposition" method implementation
-            var group = "[Channel"+StantonSCS3d.deck+"]";
-            var jogValue = (value-64);
-            if (engine.getValue(group,"play")==1 && engine.getValue(group,"reverse")==1) jogValue= -(jogValue);
-            
-            var multiplier = StantonSCS3d.scratching["sensitivity"];
-//              if (StantonSCS3d.debug) print("do scratching VALUE:" + value + " jogValue: " + jogValue );
-            engine.setValue(group,"scratch2", (engine.getValue(group,"scratch2") + (jogValue * multiplier)).toFixed(2));
+            var newValue=(value-64);
+            engine.scratchTick(StantonSCS3d.deck,newValue);
             break;
         case "vinyl3":
             if ((value-64)>0) {
@@ -1332,20 +1290,7 @@ StantonSCS3d.C1absolute = function (channel, control, value, status) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     switch (currentMode) {
         case "vinyl":
-//             // Slower response for jog wheel
-//             var newValue = scratch.wheel(StantonSCS3d.deck, value, 1.8, StantonSCS3d.scratch["alpha"], 1.0);
-//             print("StantonSCS3d: newValue="+newValue);
-//             engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",newValue);
-            break;
-        case "vinyl2": 
-            if (StantonSCS3d.vinyl2ScratchMethod != "a-b") break;   // this is only for the alpha-beta filter implementation
-            // ignore if the cross-fader is being adjusted
-//             if (currentMode=="deck" && ((value>52 && value<76) || (value>119 || value<10))) return;
-            
-            // Call global scratch wheel function
-            var newScratchValue = scratch.wheel(StantonSCS3d.deck, value, StantonSCS3d.scratch["revtime"], StantonSCS3d.scratch["alpha"], StantonSCS3d.scratch["beta"]);
-                
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2",newScratchValue);
+        case "vinyl2":  // leave lights alone...circleLEDs handles them for vinyl modes
             break;
         default:
             // Light the LEDs
@@ -1673,7 +1618,6 @@ StantonSCS3d.durationChange2 = function (value) {
 }
 
 StantonSCS3d.circleLEDs = function (value) {
-    if (StantonSCS3d.vinyl2ScratchMethod != "a-b") StantonSCS3d.wheelDecay(value); // Take care of scratching
 
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (StantonSCS3d.spinningPlatterOnlyVinyl) {    // Skip if not in vinyl mode
@@ -1686,7 +1630,7 @@ StantonSCS3d.circleLEDs = function (value) {
     // Revolution time of the imaginary record in seconds
     var revtime = 1.8;  // 1.8s at 33 1/3 RPM
 //     var revtime = StantonSCS3d.scratch["revtime"];
-    if (StantonSCS3d.spinningLights==2) revtime = StantonSCS3d.scratch["revtime"]/2;    // Use this for two lights
+    if (StantonSCS3d.spinningLights==2) revtime = revtime/2;    // Use this for two lights
     var currentTrackPos = value * StantonSCS3d.trackDuration[StantonSCS3d.deck];
     
     var revolutions = currentTrackPos/revtime;
@@ -1703,47 +1647,3 @@ StantonSCS3d.circleLEDs = function (value) {
     midi.sendShortMsg(byte1,0x5d+light,0x01);
     if (StantonSCS3d.spinningLights==2) midi.sendShortMsg(byte1,0x65+light,0x01);   // Add this for two lights
 }
-
-StantonSCS3d.wheelDecay = function (value) {
-
-    if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="vinyl2") {    // Only in Vinyl2 mode
-        var scratch = engine.getValue("[Channel"+StantonSCS3d.deck+"]","scratch2");
-        var jogDecayRate = StantonSCS3d.scratching["slippage"] * 1.1;   // 0.2
-        
-//         if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": " + scratch + ", Jog decay rate="+jogDecayRate);
-        
-        // If it was playing, ramp back to playback speed
-        if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1 && !StantonSCS3d.scratch["touching"]) {
-            var rate = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate") * engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange");
-            var convergeTo = 1+rate;
-            if (scratch != convergeTo) { // Thanks to jusics on IRC for help with this part
-                if (Math.abs(scratch-convergeTo) > jogDecayRate*0.001) {
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 
-                                    (convergeTo + (scratch-convergeTo) * jogDecayRate).toFixed(5));
-                    //engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", (scratch + (convergeTo - scratch) / jogDecayRate).toFixed(5));
-                } else {
-                    // Once "scratch2" has gotten close enough to the play speed, just resume normal playback
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
-                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
-                }
-            }
-        }
-        else if (scratch != 0) {
-            // For regular scratching when stopped or if playing and ramp down
-            if (Math.abs(scratch) > jogDecayRate*0.001) {
-                var value=(scratch * jogDecayRate).toFixed(5);
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", value);
-                if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": " + value + ", Jog decay rate="+jogDecayRate);
-            } else {
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2", 0);
-                if (!StantonSCS3d.scratch["touching"]) engine.setValue("[Channel"+StantonSCS3d.deck+"]","scratch2_enable", 0);
-                if (StantonSCS3d.debug) print("Scratch deck"+StantonSCS3d.deck+": 0, Jog decay rate="+jogDecayRate);
-            }
-        }
-    }
-}
-
-/*TODO:
-- Make .lightDelay a timer
-- Use timer-enhanced scratch.* a-b functions
-*/
