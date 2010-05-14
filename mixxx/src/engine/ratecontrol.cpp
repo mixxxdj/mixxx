@@ -368,9 +368,9 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // The buffer is playing, so calculate the buffer rate.
 
         // There are four rate effects we apply: wheel, scratch, jog and temp.
-        // Wheel: a linear additive effect
+        // Wheel: a linear additive effect (no spring-back)
         // Scratch: a rate multiplier
-        // Jog: a linear additive effect whose value is filtered
+        // Jog: a linear additive effect whose value is filtered (springs back)
         // Temp: pitch bend
 
         rate = 1. + getRawRate() + getTempRate();
@@ -387,7 +387,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
             }
         }
         
-        rate += jogFactor;
+        // FIXME: This divisor needs to adjust for latency. (For 10ms, divide by 10.)
+        rate += jogFactor/10;
 
         // If we are reversing, flip the rate.
         if (m_pReverseButton->get()) {
