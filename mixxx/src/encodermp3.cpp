@@ -29,8 +29,14 @@
 // Constructor
 EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    if (engine) pEngine = engine;
+    pEngine = engine;
     metaDataTitle = metaDataArtist = "";
+    m_pMetaData = NULL;
+    m_bufferIn[0] = NULL;
+    m_bufferIn[1] = NULL;
+    m_bufferOut = NULL;
+    m_bufferOutSize = 0;
+    m_lameFlags = NULL;
     m_pConfig = _config;
 }
 
