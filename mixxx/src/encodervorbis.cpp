@@ -173,7 +173,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
     float **buffer;
     int i;
 
-    if (metaDataHasChanged())
+    if (metaDataHasChanged() && m_pMetaData != NULL)
         updateMetaData(m_pMetaData);
 
     buffer = vorbis_analysis_buffer(&vdsp, size);
