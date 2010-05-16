@@ -44,9 +44,10 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 // Constructor
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    if (engine)
-        pEngine = engine;
+    pEngine = engine;
     metaDataTitle = metaDataArtist = NULL;
+    m_pMetaData = NULL;
+    
     m_pConfig = _config;
 }
 
