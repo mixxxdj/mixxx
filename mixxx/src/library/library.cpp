@@ -60,7 +60,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(m_pPlaylistFeature);
     addFeature(new CrateFeature(this, m_pTrackCollection));
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
-    addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
+    //addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)

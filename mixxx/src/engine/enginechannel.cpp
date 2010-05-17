@@ -55,7 +55,7 @@ ControlPushButton * EngineChannel::getPFL()
 void EngineChannel::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     pregain->process(pIn, pOut, iBufferSize);
-    filter->process(pOut, pOut, iBufferSize);
+    //filter->process(pOut, pOut, iBufferSize);
     clipping->process(pOut, pOut, iBufferSize);
 }
 
