@@ -90,7 +90,8 @@ LibraryScanner::~LibraryScanner()
     //The above is an ASSERT because there should never be an outstanding 
     //transaction when this code is called. If there is, it means we probably
     //aren't committing a transaction somewhere that should be.
-    m_database.close();
+    if (m_database.isOpen())
+        m_database.close();
 
     qDebug() << "LibraryScanner destroyed";
 }
@@ -101,7 +102,7 @@ void LibraryScanner::run()
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
-    if (!m_database.isValid()) { //Only init the db on first scan. 
+    if (!m_database.isOpen()) {
         m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
         m_database.setHostName("localhost");
         m_database.setDatabaseName(MIXXX_DB_PATH);
@@ -118,10 +119,12 @@ void LibraryScanner::run()
     m_libraryHashDao.setDatabase(m_database);
     m_cueDao.setDatabase(m_database);
     m_trackDao.setDatabase(m_database);
+    m_playlistDao.setDatabase(m_database);
 
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
     m_trackDao.initialize();
+    m_playlistDao.initialize();
 
     m_pCollection->resetLibaryCancellation();
 
@@ -189,6 +192,12 @@ void LibraryScanner::run()
 
     //m_pProgress->slotStopTiming();
 
+    Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
+    //The above is an ASSERT because there should never be an outstanding 
+    //transaction when this code is called. If there is, it means we probably
+    //aren't committing a transaction somewhere that should be.
+    m_database.close();
+    
     emit(scanFinished());
 }
 
