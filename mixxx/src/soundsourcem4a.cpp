@@ -15,6 +15,7 @@
  ***************************************************************************/
 
 #include <neaacdec.h>
+#include <mp4v2/mp4v2.h>
 
 #ifdef __WINDOWS__
 #include <io.h>
@@ -39,11 +40,11 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
     memset(&ipd, 0, sizeof(ipd));
 
     // Copy QString to char[] buffer for mp4_open to read from later
-    int bytes = qFileName.length() + 1;
-    ipd.filename = new char[bytes];
+    QByteArray qbaFileName = qFileName.toUtf8();
+    unsigned int fileNameSize = qbaFileName.size() + 1; // for null byte
+    ipd.filename = new char[fileNameSize];
     ipd.remote = false; // File is not an stream
-    strncpy(ipd.filename, qFileName, bytes);
-    ipd.filename[bytes-1] = '\0';
+    strncpy(ipd.filename, qbaFileName.data(), fileNameSize);
 
     int mp4_open_status = mp4_open(&ipd);
     if (mp4_open_status != 0) {
@@ -159,48 +160,29 @@ inline long unsigned SoundSourceM4A::length(){
 
 int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
     QString mp4FileName = Track->getLocation();
-    MP4FileHandle mp4file = MP4Read(mp4FileName);
+    QByteArray qbaFileName = mp4FileName.toUtf8();
+    MP4FileHandle mp4file = MP4Read(qbaFileName.data());
+    const MP4Tags *mp4tags = MP4TagsAlloc();
 
     if (mp4file == MP4_INVALID_FILE_HANDLE) {
         qDebug() << "SSM4A::ParseHeader : " << mp4FileName
                  << "could not be opened using the MP4 decoder.";
         return ERR;
     }
-
+    
+    MP4TagsFetch(mp4tags, mp4file);
     Track->setType("m4a");
-    char* value = NULL;
-    if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
-        Track->setTitle(value);
-        MP4Free(value);
-        value = NULL;
-    }
+    
+    if (mp4tags->name)
+        Track->setTitle(QString::fromUtf8(mp4tags->name));
+    if (mp4tags->artist)
+        Track->setArtist(QString::fromUtf8(mp4tags->artist));
+    if (mp4tags->comments)
+        Track->setComment(QString::fromUtf8(mp4tags->comments));
 
-    if (MP4GetMetadataArtist(mp4file, &value) && value != NULL) {
-        Track->setArtist(value);
-        MP4Free(value);
-        value = NULL;
-    }
-
-    if (MP4GetMetadataComment(mp4file, &value) && value != NULL) {
-        Track->setComment(value);
-        MP4Free(value);
-        value = NULL;
-    }
-
-#ifndef _MSC_VER
-    u_int16_t bpm = 0;
-#else
-    // MSVC doesn't know what a u_int16_t is, so we have to tell it
-    unsigned short bpm = 0;
-#endif
-    if (MP4GetMetadataTempo(mp4file, &bpm)) {
-        if(bpm > 0) {
-#ifdef _MSC_VER
-            Q_ASSERT(sizeof(bpm)==2);   // Just making sure we're in bounds
-#endif
-            Track->setBpm(bpm);
-            Track->setBpmConfirm(true);
-        }
+    if (mp4tags->tempo > 0) {
+        Track->setBpm(*mp4tags->tempo);
+        Track->setBpmConfirm(true);
     }
 
     // We are only interested in first track for the initial dev iteration
@@ -220,6 +202,7 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
     int bits_per_second = MP4GetTrackBitRate(mp4file, track_id);
     Track->setBitrate(bits_per_second/1000);
 
+    MP4TagsFree(mp4tags);
     MP4Close(mp4file);
     Track->setHeaderParsed(true);
     // FIXME: hard-coded to 2 channels - real value is not available until
