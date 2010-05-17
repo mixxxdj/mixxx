@@ -1256,13 +1256,13 @@ if int(flags_asmlib):
 	build_flags += 'asmlib '
 	if platform == 'linux':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		if architecture[0] == '64bit':
+		if architecture[0] == '64bit' and not int(force32):
 			env.Append(LIBS = '":alibelf64o.a"')
 		else:
 			env.Append(LIBS = '":alibelf32o.a"')
 	elif platform == 'osx':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		if architecture[0] == '64bit':
+		if architecture[0] == '64bit' and not int(force32):
 			env.Append(LIBS = '":alibmac64o.a"')
 		else:
 			env.Append(LIBS = '":alibmac32o.a"')
@@ -1315,6 +1315,7 @@ flags_force32 = getFlags(env, 'force32', 0)
 if int(flags_force32):
 	env.Append(CCFLAGS = '-m32')
 	env.Append(CXXFLAGS = '-m32')
+	env.Append(LINKFLAGS = '-m32')
 	print "Force 32-bit GCC compile... enabled"
 else:
 	print "Force 32-bit GCC compile... disabled"
