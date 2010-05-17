@@ -121,7 +121,8 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
