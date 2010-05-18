@@ -179,8 +179,16 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
         Track->setArtist(QString::fromUtf8(mp4tags->artist));
     if (mp4tags->comments)
         Track->setComment(QString::fromUtf8(mp4tags->comments));
+    if (mp4tags->album)
+        Track->setAlbum(QString::fromUtf8(mp4tags->album));
+    if (mp4tags->releaseDate)
+        Track->setYear(QString::fromUtf8(mp4tags->releaseDate));
+    if (mp4tags->genre)
+        Track->setGenre(QString::fromUtf8(mp4tags->genre));
+    if (mp4tags->track && mp4tags->track->index > 0)
+        Track->setTrackNumber(QString::number(mp4tags->track->index));
 
-    if (mp4tags->tempo > 0) {
+    if (mp4tags->tempo && *mp4tags->tempo > 0) {
         Track->setBpm(*mp4tags->tempo);
         Track->setBpmConfirm(true);
     }
