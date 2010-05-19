@@ -15,7 +15,12 @@
  ***************************************************************************/
 
 #include <neaacdec.h>
-#include <mp4v2/mp4v2.h>
+
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
 
 #ifdef __WINDOWS__
 #include <io.h>
@@ -162,7 +167,6 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
     QString mp4FileName = Track->getLocation();
     QByteArray qbaFileName = mp4FileName.toUtf8();
     MP4FileHandle mp4file = MP4Read(qbaFileName.data());
-    const MP4Tags *mp4tags = MP4TagsAlloc();
 
     if (mp4file == MP4_INVALID_FILE_HANDLE) {
         qDebug() << "SSM4A::ParseHeader : " << mp4FileName
@@ -170,27 +174,72 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
         return ERR;
     }
     
-    MP4TagsFetch(mp4tags, mp4file);
     Track->setType("m4a");
     
-    if (mp4tags->name)
-        Track->setTitle(QString::fromUtf8(mp4tags->name));
-    if (mp4tags->artist)
-        Track->setArtist(QString::fromUtf8(mp4tags->artist));
-    if (mp4tags->comments)
-        Track->setComment(QString::fromUtf8(mp4tags->comments));
-    if (mp4tags->album)
-        Track->setAlbum(QString::fromUtf8(mp4tags->album));
-    if (mp4tags->releaseDate)
-        Track->setYear(QString::fromUtf8(mp4tags->releaseDate));
-    if (mp4tags->genre)
-        Track->setGenre(QString::fromUtf8(mp4tags->genre));
-    if (mp4tags->track && mp4tags->track->index > 0)
-        Track->setTrackNumber(QString::number(mp4tags->track->index));
+    char *value = NULL;
+    if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
+        Track->setTitle(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
 
-    if (mp4tags->tempo && *mp4tags->tempo > 0) {
-        Track->setBpm(*mp4tags->tempo);
-        Track->setBpmConfirm(true);
+    if (MP4GetMetadataArtist(mp4file, &value) && value != NULL) {
+        Track->setArtist(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+
+    if (MP4GetMetadataComment(mp4file, &value) && value != NULL) {
+        Track->setComment(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
+    if (MP4GetMetadataAlbum(mp4file, &value) && value != NULL) {
+        Track->setAlbum(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
+    if (MP4GetMetadataYear(mp4file, &value) && value != NULL) {
+        Track->setYear(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
+    if (MP4GetMetadataGenre(mp4file, &value) && value != NULL) {
+        Track->setGenre(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
+#ifndef _MSC_VER
+    u_int16_t bpm = 0;
+    u_int16_t track = 0;
+    u_int16_t numTracks = 0; // don't actually use this but MP4GetMetadataTrack
+                             // barfs if you give it null
+#else
+    // MSVC doesn't know what a u_int16_t is, so we have to tell it
+    unsigned short bpm = 0;
+    unsigned short track = 0;
+    unsigned short numTracks = 0;
+#endif
+    if (MP4GetMetadataTempo(mp4file, &bpm)) {
+        if(bpm > 0) {
+#ifdef _MSC_VER
+            Q_ASSERT(sizeof(bpm)==2);   // Just making sure we're in bounds
+#endif
+            Track->setBpm(bpm);
+            Track->setBpmConfirm(true);
+        }
+    }
+    if (MP4GetMetadataTrack(mp4file, &track, &numTracks)) {
+        if(track > 0) {
+#ifdef _MSC_VER
+            Q_ASSERT(sizeof(track)==2);   // Just making sure we're in bounds
+#endif
+            Track->setTrackNumber(QString::number(track));
+        }
     }
 
     // We are only interested in first track for the initial dev iteration
@@ -210,7 +259,6 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
     int bits_per_second = MP4GetTrackBitRate(mp4file, track_id);
     Track->setBitrate(bits_per_second/1000);
 
-    MP4TagsFree(mp4tags);
     MP4Close(mp4file);
     Track->setHeaderParsed(true);
     // FIXME: hard-coded to 2 channels - real value is not available until
