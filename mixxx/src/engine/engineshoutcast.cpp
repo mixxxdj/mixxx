@@ -167,6 +167,10 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baStreamPublic = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toLatin1();
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
     QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
+	
+	custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
+	baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title"));
+	baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist"));
 
     int format;
     int len;
@@ -512,15 +516,17 @@ void EngineShoutcast::updateMetaData()
         return;
 
     QByteArray baSong = "";
-    if (m_pMetaData != NULL) {
-        // convert QStrings to char*s
-        QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
-        QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-		
-        baSong = baArtist + " - " + baTitle;
-
-    }
-
+	if(!custom_metadata){
+		if (m_pMetaData != NULL) {
+		    // convert QStrings to char*s
+		    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
+		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
+		    baSong = baArtist + " - " + baTitle;
+		}
+	}
+	else{
+		 baSong = baCustom_artist + " - " + baCustom_title;
+	}
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     shout_set_metadata(m_pShout, m_pShoutMetaData);
 }
