@@ -76,6 +76,9 @@ private:
     ControlObjectThread* m_pVolume2;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
+	bool custom_metadata;
+	QByteArray baCustom_artist;
+	QByteArray baCustom_title;
 };
 
 #endif
