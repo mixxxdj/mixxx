@@ -197,8 +197,15 @@ void EncoderVorbis::updateMetaData(TrackInfoObject *trackInfoObj)
     metaDataArtist = baArtist.data();
     metaDataTitle = baTitle.data();
 
-    flushStream();
-    initStream();
+	vorbis_comment_clear(&vcomment);
+	vorbis_comment_init(&vcomment);
+    vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx/libvorbis");
+    if (metaDataArtist != NULL)
+         vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
+    if (metaDataTitle != NULL)
+         vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
+    //flushStream();
+    //initStream();
 }
 
 void EncoderVorbis::initStream()
