@@ -163,7 +163,7 @@ int EncoderMp3::initEncoder(int bitrate)
     lame_set_num_channels(m_lameFlags, 2);
     lame_set_in_samplerate(m_lameFlags, samplerate);
     lame_set_out_samplerate(m_lameFlags, samplerate);
-    lame_set_brate(m_lameFlags, 128);
+    lame_set_brate(m_lameFlags, bitrate);
     lame_set_mode(m_lameFlags, STEREO);
     lame_set_quality(m_lameFlags, 2);
     lame_set_bWriteVbrTag(m_lameFlags, 0);
