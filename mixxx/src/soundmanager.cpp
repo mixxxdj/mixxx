@@ -381,8 +381,8 @@ int SoundManager::setupDevices()
 
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
-    //m_VinylControl[0] = new VinylControlProxy(m_pConfig, "[Channel1]");
-    //m_VinylControl[1] = new VinylControlProxy(m_pConfig, "[Channel2]");
+    m_VinylControl[0] = new VinylControlProxy(m_pConfig, "[Channel1]");
+    m_VinylControl[1] = new VinylControlProxy(m_pConfig, "[Channel2]");
 #endif
 
     while (deviceIt.hasNext())
