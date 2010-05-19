@@ -2,6 +2,7 @@
 #include <QMessageBox>
 
 #include "player.h"
+#include "playerinfo.h"
 
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
@@ -105,7 +106,9 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
     //			(ie. I think we should use auto-pointers for TrackInfoObjects...)
 
     m_pLoadedTrack = track;
-
+	//Update the PlayerInfo class that is used in EngineShoutcast.cpp to replace the metadata of a stream
+	PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(),m_pLoadedTrack);
+	
     // Listen for updates to the file's BPM
     connect(m_pLoadedTrack, SIGNAL(bpmUpdated(double)),
             m_pBPM, SLOT(slotSet(double)));
@@ -133,6 +136,8 @@ void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
     m_pLoadedTrack = NULL;
+	//Update the PlayerInfo class that is used in EngineShoutcast.cpp to replace the metadata of a stream
+	PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(),m_pLoadedTrack);
 }
 
 void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)

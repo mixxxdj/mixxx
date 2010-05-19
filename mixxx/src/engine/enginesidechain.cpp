@@ -56,7 +56,7 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 
     rec = new EngineRecord(m_pConfig);
 
-    start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
+   	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
 }
 
 EngineSideChain::~EngineSideChain()

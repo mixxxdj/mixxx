@@ -201,6 +201,22 @@ void EngineShoutcast::updateFromPreferences()
         qDebug() << "Error setting user:" << shout_get_error(m_pShout);
         return;
     }
+	if (shout_set_name(m_pShout, baStreamName.data()) != SHOUTERR_SUCCESS) {
+        qDebug() << "Error setting stream name:" << shout_get_error(m_pShout);
+        return;
+    }
+	if (shout_set_description(m_pShout, baStreamDesc.data()) != SHOUTERR_SUCCESS) {
+        qDebug() << "Error setting stream description:" << shout_get_error(m_pShout);
+        return;
+    }
+	if (shout_set_genre(m_pShout, baStreamGenre.data()) != SHOUTERR_SUCCESS) {
+        qDebug() << "Error setting stream description:" << shout_get_error(m_pShout);
+        return;
+    }
+	if (shout_set_url(m_pShout, baStreamWebsite.data()) != SHOUTERR_SUCCESS) {
+        qDebug() << "Error setting stream url:" << shout_get_error(m_pShout);
+        return;
+    }
 
 
     if ( !qstrcmp(baFormat.data(), "MP3")) {
@@ -437,7 +453,7 @@ bool EngineShoutcast::metaDataHasChanged()
 {
     QMutexLocker locker(&m_shoutMutex);
     int tracks;
-    TrackInfoObject *newMetaData;
+    TrackInfoObject *newMetaData = NULL;
     bool changed = false;
 
 
@@ -451,7 +467,6 @@ bool EngineShoutcast::metaDataHasChanged()
 
     tracks = getActiveTracks();
 
-
     switch (tracks)
     {
     case 0:
@@ -460,7 +475,6 @@ bool EngineShoutcast::metaDataHasChanged()
         break;
     case 1:
         // track 1 is active
-
         newMetaData = PlayerInfo::Instance().getTrackInfo(1);
         if (newMetaData != m_pMetaData)
         {
@@ -469,9 +483,9 @@ bool EngineShoutcast::metaDataHasChanged()
         }
         break;
     case 2:
-        // track 2 is active
-        newMetaData = PlayerInfo::Instance().getTrackInfo(2);
-        if (newMetaData != m_pMetaData)
+        // track 2 is active   
+		newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+		if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
             changed = true;
@@ -502,7 +516,9 @@ void EngineShoutcast::updateMetaData()
         // convert QStrings to char*s
         QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
         QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
+		
         baSong = baArtist + " - " + baTitle;
+
     }
 
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
