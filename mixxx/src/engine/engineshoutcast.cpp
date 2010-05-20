@@ -59,10 +59,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
     m_pVolume2 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
 
-    QByteArray baBitrate = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
-    QByteArray baFormat = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
-    int len;
-
     // Initialize libshout
     shout_init();
 
@@ -75,50 +71,9 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         qDebug() << "Cound not allocate shout_metadata_t";
         return;
     }
-
-    //Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
-    updateFromPreferences();
-
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         qDebug() << "Error setting non-blocking mode:" << shout_get_error(m_pShout);
         return;
-    }
-
-    qDebug("********START SERVERCONNECT*******");
-    if ( !serverConnect())
-        return;
-    qDebug("********SERVERCONNECTED********");
-
-
-    if (( len = baBitrate.indexOf(' ')) != -1) {
-        baBitrate.resize(len);
-    }
-
-    // Initialize encoder
-    if ( ! qstrcmp(baFormat, "MP3")) {
-#ifdef __SHOUTCAST_LAME__
-        encoder = new EncoderMp3(m_pConfig, this);
-#else
-        qDebug() << "*** Missing MP3 Encoder Support";
-        return;
-#endif // __SHOUTCAST_LAME__
-    }
-    else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
-#ifdef __SHOUTCAST_VORBIS__
-        encoder = new EncoderVorbis(m_pConfig, this);
-#else
-        qDebug() << "*** Missing OGG Vorbis Encoder Support";
-        return;
-#endif // __SHOUTCAST_VORBIS__
-    }
-    else {
-        qDebug() << "**** Unknown Encoder Format";
-        return;
-    }
-
-
-    if (encoder->initEncoder(baBitrate.toInt()) < 0) {
-        qDebug() << "**** Vorbis init failed";
     }
 }
 
@@ -128,7 +83,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 EngineShoutcast::~EngineShoutcast()
 {
     QMutexLocker locker(&m_shoutMutex);
-    delete encoder;
+    if (encoder) delete encoder;
+	
     delete m_pUpdateShoutcastFromPrefs;
     delete m_pCrossfader;
     delete m_pVolume1;
@@ -142,7 +98,29 @@ EngineShoutcast::~EngineShoutcast()
     }
     shout_shutdown();
 }
+bool EngineShoutcast::serverDisconnect()
+{
+    QMutexLocker locker(&m_shoutMutex);
+    if (encoder){ 
+		delete encoder;
+		encoder = NULL;
+	}
 
+    if (m_pShout) {
+        shout_close(m_pShout);
+		return true;
+    }
+	return false; //if no connection has been established, nothing can be disconnected
+}
+bool EngineShoutcast::isConnected()
+{
+	if (m_pShout) {
+		m_iShoutStatus = shout_get_connected(m_pShout);
+    	if (m_iShoutStatus == SHOUTERR_CONNECTED) 
+    		return true;
+	}
+	return false;
+}
 /*
  * Update EngineShoutcast values from the preferences.
  */
@@ -269,6 +247,35 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
+    // Initialize encoder 	
+	if(encoder) delete encoder;		//delete encoder if it has been initalized (with maybe) different bitrate
+    if ( ! qstrcmp(baFormat, "MP3")) {
+#ifdef __SHOUTCAST_LAME__
+		
+        encoder = new EncoderMp3(m_pConfig, this);
+#else
+        qDebug() << "*** Missing MP3 Encoder Support";
+        return;
+#endif // __SHOUTCAST_LAME__
+    }
+    else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
+#ifdef __SHOUTCAST_VORBIS__
+        encoder = new EncoderVorbis(m_pConfig, this);
+#else
+        qDebug() << "*** Missing OGG Vorbis Encoder Support";
+        return;
+#endif // __SHOUTCAST_VORBIS__
+    }
+    else {
+        qDebug() << "**** Unknown Encoder Format";
+        return;
+    }
+
+
+    if (encoder->initEncoder(baBitrate.toInt()) < 0) {
+        qDebug() << "**** Vorbis init failed";
+    }
+
 }
 
 /*
@@ -308,6 +315,7 @@ bool EngineShoutcast::serverConnect()
         qDebug() << "Shoutcast aborted connect after" << iMaxTries << "tries.";
         if (m_pShout)
             shout_close(m_pShout);
+		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -385,6 +393,7 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
 void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
     QMutexLocker locker(&m_shoutMutex);
+	
 
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
         return;
