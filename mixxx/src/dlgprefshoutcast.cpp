@@ -129,11 +129,12 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
 DlgPrefShoutcast::~DlgPrefShoutcast()
 {
-
+	
 }
 
 void DlgPrefShoutcast::slotUpdate()
 {
+	enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 }
 
 void DlgPrefShoutcast::slotApply()

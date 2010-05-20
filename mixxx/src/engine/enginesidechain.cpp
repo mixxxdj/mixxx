@@ -48,10 +48,9 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 
 #ifdef __SHOUTCAST__
     // Shoutcast
-    shoutcast = NULL;
-//    shoutcast = new EngineShoutcast(m_pConfig);
     ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
     m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
+	shoutcast = new EngineShoutcast(m_pConfig);
 #endif
 
     rec = new EngineRecord(m_pConfig);
@@ -197,21 +196,27 @@ void EngineSideChain::run()
         //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
 
         bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
-        bool shoutcastEnabled = (shoutcast != NULL);
+        
 
-        if (prefEnabled != shoutcastEnabled) {
-            if (prefEnabled) {
-                shoutcast = new EngineShoutcast(m_pConfig);
-            } else {
-                delete shoutcast;
-                shoutcast = NULL;
-            }
-        }
-        if (shoutcast) {
-            if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f)
-                shoutcast->updateFromPreferences();
-            shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-        }
+        
+        if (prefEnabled) {
+			if(!shoutcast->isConnected()){
+				//Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
+				shoutcast->updateFromPreferences();
+				shoutcast->serverConnect();	
+			}
+			else{
+				shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
+				if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f){
+					/*
+					 * You cannot change bitrate, hostname, etc while connected to a stream
+					 */
+					shoutcast->serverDisconnect(); 
+				    shoutcast->updateFromPreferences();
+					shoutcast->serverConnect();   
+				}
+			}
+       	} 
 #endif
 
         rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);

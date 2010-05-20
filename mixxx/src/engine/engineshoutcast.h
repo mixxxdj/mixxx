@@ -44,7 +44,9 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     void writePage(unsigned char *header, unsigned char *body,
                    int headerLen, int bodyLen);
-
+	bool serverConnect();
+	bool serverDisconnect();
+	bool isConnected();
     void shutdown() {
         m_bQuit = true;
     }
@@ -56,7 +58,6 @@ public slots:
 //    void writePage(unsigned char *header, unsigned char *body,
 //                   int headerLen, int bodyLen, int count);
 private:
-    bool serverConnect();
     int getActiveTracks();
     bool metaDataHasChanged();
     void updateMetaData();
