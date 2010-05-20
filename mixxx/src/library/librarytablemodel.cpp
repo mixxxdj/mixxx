@@ -21,7 +21,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //column maps into the row of the track_locations table that has the id
     //equal to our location col. It then grabs the "location" col from that row
     //and shows it...
-    setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
+    //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
     //Set the column heading labels, rename them for translations and have
     //proper capitalization

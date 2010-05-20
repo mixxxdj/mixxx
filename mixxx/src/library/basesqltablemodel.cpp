@@ -10,7 +10,7 @@
 BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QSqlDatabase db) :
-        QSqlRelationalTableModel(parent, db),
+        QSqlTableModel(parent, db),
         m_pTrackCollection(pTrackCollection),
         m_trackDAO(m_pTrackCollection->getTrackDAO()) {
     connect(&m_trackDAO, SIGNAL(trackChanged(int)),
@@ -22,7 +22,7 @@ BaseSqlTableModel::~BaseSqlTableModel() {
 
 bool BaseSqlTableModel::select() {
     qDebug() << "select()";
-    bool result = QSqlRelationalTableModel::select();
+    bool result = QSqlTableModel::select();
     m_rowToTrackId.clear();
     m_trackIdToRow.clear();
 
@@ -38,7 +38,7 @@ bool BaseSqlTableModel::select() {
         qDebug() << "idColumn" << idColumn;
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex ind = index(row, idColumn);
-            int trackId = QSqlRelationalTableModel::data(ind).toInt();
+            int trackId = QSqlTableModel::data(ind).toInt();
             m_rowToTrackId[row] = trackId;
             m_trackIdToRow[trackId] = row;
         }
@@ -56,7 +56,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 
     Q_ASSERT(m_rowToTrackId.contains(row));
     if (!m_rowToTrackId.contains(row)) {
-        return QSqlRelationalTableModel::data(index, role);
+        return QSqlTableModel::data(index, role);
     }
 
     int trackId = m_rowToTrackId[row];
@@ -90,7 +90,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             return QVariant(pTrack->getBpm());
         }
     }
-    return QSqlRelationalTableModel::data(index, role);
+    return QSqlTableModel::data(index, role);
 }
 
 void BaseSqlTableModel::trackChanged(int trackId) { 
@@ -107,13 +107,13 @@ void BaseSqlTableModel::trackChanged(int trackId) {
 
 void BaseSqlTableModel::setTable(const QString& tableName) {
     m_qTableName = tableName;
-    QSqlRelationalTableModel::setTable(tableName);
+    QSqlTableModel::setTable(tableName);
 }
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     m_iSortColumn = column;
     m_eSortOrder = order;
-    QSqlRelationalTableModel::setSort(column, order);
+    QSqlTableModel::setSort(column, order);
 }
 
 QString BaseSqlTableModel::orderByClause() const {
