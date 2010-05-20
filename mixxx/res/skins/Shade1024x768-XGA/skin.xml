@@ -1,6 +1,6 @@
-  	<!--18 February 2010 20:29:14 CET-->  
+  	<!--20 May 2010 16:43:45 CEST-->  
   	<!--   
-  	Shade v0.81beta Developer Preview, Skin for Mixxx 1.8.x
+  	Shade, Skin for Mixxx 1.8.x
     www.mixxx.org
     Copyright (C) 2010 jus ; jus/justmail/de
   
@@ -26,11 +26,19 @@
 
   	<!--
   	CHANGELOG
+
+  	v0.82b	(20/05/2010)
+  	# reduced height, application window now fits Linux/Gnome too,
+  	  this means less space for library widget :-(
+  	# Gfx cleanup
+  	- removed "Preview" watermark  	
+
   	v0.81b	(18/02/2010)
   	+ Hotcues preview the Cue when the player is stopped  	   
+
   	v0.80b	(11/02/2010)
 	Initial Developer Preview for Mixxx 1.8.x
-  	-->  
+  	--> 
 
 <!DOCTYPE skin>           
 <skin>
@@ -49,7 +57,7 @@
 	General- Skin Colour Scheme (Option not used by this skin)
 	**********************************************
 	-->
-	
+
 	<!--
 	**********************************************	
 	General- Main background picture
@@ -66,8 +74,8 @@
 	**********************************************
 	-->
 	<TableView>
-		<Pos>11,268</Pos>
-		<Size>986,439</Size>
+		<Pos>11,267</Pos>
+		<Size>986,390</Size>
 		<BgColor>#191F24</BgColor>
 		<FgColor>#FFFFFF</FgColor>
 		<BgColorRowEven>#191F24</BgColorRowEven>
@@ -136,7 +144,8 @@
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>    
+  		</Mark> 
+   
   		<Mark>
     		<Control>loop_start_position</Control>
     		<Text>LOOP IN</Text>	
@@ -209,8 +218,8 @@
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>  		
-  		
+  		</Mark> 
+ 				
   		<Mark>
     		<Control>loop_start_position</Control>
     		<Text>LOOP IN</Text>	
@@ -245,7 +254,7 @@
 		<Pos>11,174</Pos>
 		<Size>269,33</Size>
 		<BgColor>#8D98A3</BgColor>
-		<SignalColor>#212930</SignalColor>;
+		<SignalColor>#212930</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
@@ -258,7 +267,7 @@
 		<Pos>682,174</Pos>
 		<Size>269,33</Size>
 		<BgColor>#8D98A3</BgColor>	
-		<SignalColor>#212930</SignalColor>;
+		<SignalColor>#212930</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
@@ -904,6 +913,7 @@
             <ButtonState>RightButton</ButtonState>
         </Connection>
     </PushButton>
+
     
     <!--
 	**********************************************
