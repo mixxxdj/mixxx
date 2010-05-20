@@ -1062,7 +1062,7 @@ StantonSCS3d.C1touch = function (channel, control, value, status) {
     if ((status & 0xF0) == 0x90) {    // If button down
         switch (currentMode) {
             case "vinyl2":
-                engine.scratchEnable(StantonSCS3d.deck, 128, 16, 1.0/16, (1.0/16)/32);
+                engine.scratchEnable(StantonSCS3d.deck, 128, 45, 1.0/16, (1.0/16)/32);
                 break;
         }
     }
@@ -1115,7 +1115,7 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
         switch (currentMode) {
             case "vinyl":  
             case "vinyl2":
-                engine.scratchEnable(StantonSCS3d.deck, 128, 33+1/3, 1.0/8, (1.0/8)/32);
+                engine.scratchEnable(StantonSCS3d.deck, 512, 33+1/3, 1.0/8, (1.0/8)/32);
                 break;
             case "vinyl3":  // Load the song
                 // If the deck is playing and the cross-fader is not completely toward the other deck...
