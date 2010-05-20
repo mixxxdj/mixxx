@@ -58,6 +58,7 @@ private:
     vorbis_dsp_state vdsp;    /* central working space for packet-to-PCM */
     vorbis_info vinfo;        /* stores all static vorbis bitstream settings */
     vorbis_comment vcomment;  /* stores all user comments */
+	bool header_write;
 
     EngineAbstractRecord *pEngine;
     TrackInfoObject *m_pMetaData;
