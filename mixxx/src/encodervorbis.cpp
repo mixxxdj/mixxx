@@ -172,9 +172,27 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 {
     float **buffer;
     int i;
-
+	/* 
+		 * Vorbis streams begin with three headers; the initial header (with
+	   	 * most of the codec setup parameters) which is mandated by the Ogg
+	   	 * bitstream spec.  The second header holds any comment fields.  The
+	   	 * third header holds the bitstream codebook.  We merely need to
+	   	 * make the headers, then pass them to libvorbis one at a time;
+	   	 * libvorbis handles the additional Ogg bitstream constraints 
+		 */
     if (metaDataHasChanged() && m_pMetaData != NULL)
         updateMetaData(m_pMetaData);
+	
+		//Write header only once after stream has been initalized
+        int result;
+		if(header_write){
+		    while (1) {
+		        result = ogg_stream_flush(&oggs, &oggpage);
+		        if (result==0) break;
+		              pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+		    }
+			header_write = false;
+		}
 
     buffer = vorbis_analysis_buffer(&vdsp, size);
 
@@ -234,14 +252,11 @@ void EncoderVorbis::initStream()
         ogg_stream_packetin(&oggs, &headerInit);
         ogg_stream_packetin(&oggs, &headerComment);
         ogg_stream_packetin(&oggs, &headerCode);
-
-        // start audio data on new page
-        int result;
-        while (1) {
-            result = ogg_stream_flush(&oggs, &oggpage);
-            if (result==0) break;
-                  pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-        }
+		
+		//The encoder is now inialized
+		// Encode method will start streaming by sending the header first
+		header_write = true;
+        
 }
 
 // TODO: reinit encoder when samplerate or quality is updated

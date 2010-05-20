@@ -217,7 +217,6 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-
     if ((len = baBitrate.indexOf(' ')) != -1) {
         baBitrate.resize(len);
     }
