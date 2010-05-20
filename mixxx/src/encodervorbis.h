@@ -33,14 +33,12 @@ class EncoderVorbis : public Encoder {
 public:
     EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
     ~EncoderVorbis();
-    int initEncoder();
-    int initEncoder(float quality);
     int initEncoder(int bitrate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
-
+	void encodeBuffer(const CSAMPLE *samples, const int size);
+	void updateMetaData(char* artist, char* title);
 
 private slots:
-    void updateMetaData(TrackInfoObject *trackInfoObj);
+    
 
 private:
     int getSerial();

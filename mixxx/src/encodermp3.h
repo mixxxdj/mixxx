@@ -32,10 +32,10 @@ class EncoderMp3 : public Encoder {
 public:
     EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
     ~EncoderMp3();
-    int initEncoder();
-    int initEncoder(float quality);
     int initEncoder(int bitrate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
+	void updateMetaData(char* artist, char* title){};
+
 
 private:
     void flushStream();

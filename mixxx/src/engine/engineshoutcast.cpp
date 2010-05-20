@@ -469,7 +469,7 @@ bool EngineShoutcast::metaDataHasChanged()
     bool changed = false;
 
 
-    if ( m_pMetaDataLife < 32 ) {
+    if ( m_pMetaDataLife < 16 ) {
         m_pMetaDataLife++;
         return false;
     }
@@ -530,10 +530,13 @@ void EngineShoutcast::updateMetaData()
 		    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
 		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
 		    baSong = baArtist + " - " + baTitle;
+			//For OGG streams, tell it to the encoder
+			encoder->updateMetaData(baArtist.data(), baTitle.data());	
 		}
 	}
 	else{
 		 baSong = baCustom_artist + " - " + baCustom_title;
+		 encoder->updateMetaData(baCustom_artist.data(), baCustom_title.data());
 	}
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     shout_set_metadata(m_pShout, m_pShoutMetaData);
