@@ -202,17 +202,12 @@ void EngineSideChain::run()
         if (prefEnabled) {
 			if(!shoutcast->isConnected()){
 				//Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
-				qDebug() << "SideCHAIN Before updatePref";					
 				shoutcast->updateFromPreferences();
-				qDebug() << "ater  updatePref";
 				shoutcast->serverConnect();	
-				qDebug() << "SServer connected";
-				
 			}
 			//send to soutcast
-			qDebug() << "Process";
 			shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-	
+
 			if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f){
 				/*
 				 * You cannot change bitrate, hostname, etc while connected to a stream

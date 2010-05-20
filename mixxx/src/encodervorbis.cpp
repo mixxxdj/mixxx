@@ -84,70 +84,6 @@ qDebug() << "RETURNING SERIAL " << serial;
     return serial;
 }
 
-// TODO: optimize this function a bit
-bool EncoderVorbis::metaDataHasChanged()
-{
-    bool changed = false;
-
-    // get active tracks
-    int track = 0;
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.) track+=1;
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.) track+=2;
-
-    switch (track)
-    {
-    case 0:
-        // no tracks are playing
-        break;
-    case 1:
-        // track 1 is playing
-        {
-        TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(1);
-        if (newMetaData != m_pMetaData)
-        {
-            m_pMetaData = newMetaData;
-            changed = true;
-        }
-        }
-        break;
-    case 2:
-        // track 2 is playing
-        {
-        TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(2);
-        if (newMetaData != m_pMetaData)
-        {
-            m_pMetaData = newMetaData;
-            changed = true;
-        }
-        }
-        break;
-    case 3:
-        // select most active track based on crossfader position
-        ControlObjectThreadMain* m_pCrossfader = new ControlObjectThreadMain(
-                                                     ControlObject::getControl(ConfigKey(
-                                                     "[Master]","crossfader")));
-        if (m_pCrossfader->get() <= 0)
-        {
-            TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(1);
-            if (newMetaData != m_pMetaData)
-            {
-                m_pMetaData = newMetaData;
-                changed = true;
-            }
-        } else {
-            TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(2);
-            if (newMetaData != m_pMetaData)
-            {
-                m_pMetaData = newMetaData;
-                changed = true;
-            }
-        }
-        delete m_pCrossfader;
-        break;
-    }
-    return changed;
-}
-
 void EncoderVorbis::sendPackages()
 {
     while (vorbis_analysis_blockout(&vdsp, &vblock) == 1) {
@@ -172,7 +108,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 {
     float **buffer;
     int i;
-	/* 
+		/* 
 		 * Vorbis streams begin with three headers; the initial header (with
 	   	 * most of the codec setup parameters) which is mandated by the Ogg
 	   	 * bitstream spec.  The second header holds any comment fields.  The
@@ -180,8 +116,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 	   	 * make the headers, then pass them to libvorbis one at a time;
 	   	 * libvorbis handles the additional Ogg bitstream constraints 
 		 */
-    if (metaDataHasChanged() && m_pMetaData != NULL)
-        updateMetaData(m_pMetaData);
+
 	
 		//Write header only once after stream has been initalized
         int result;
@@ -206,14 +141,11 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
     vorbis_analysis_wrote(&vdsp, i);
     sendPackages();
 }
-
-void EncoderVorbis::updateMetaData(TrackInfoObject *trackInfoObj)
+//called from engineshoutcast.cpp in method updateMetaData
+void EncoderVorbis::updateMetaData(char* artist, char* title)
 {
-    // convert QStrings to char*s
-    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
-    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-    metaDataArtist = baArtist.data();
-    metaDataTitle = baTitle.data();
+	metaDataTitle = title;
+    metaDataArtist = artist;
 
 	vorbis_comment_clear(&vcomment);
 	vorbis_comment_init(&vcomment);
@@ -222,8 +154,6 @@ void EncoderVorbis::updateMetaData(TrackInfoObject *trackInfoObj)
          vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
     if (metaDataTitle != NULL)
          vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
-    //flushStream();
-    //initStream();
 }
 
 void EncoderVorbis::initStream()
@@ -258,26 +188,6 @@ void EncoderVorbis::initStream()
 		header_write = true;
         
 }
-
-// TODO: reinit encoder when samplerate or quality is updated
-
-int EncoderVorbis::initEncoder(float quality)
-{
-    int ret;
-    vorbis_info_init(&vinfo);
-    
-    // initialize VBR quality based mode
-    unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
-    ret = vorbis_encode_init_vbr(&vinfo, 2, samplerate, quality);
-    
-    if (ret == 0) {
-        initStream();
-    } else {
-        ret = -1;
-    };
-    return ret;
-}
-
 int EncoderVorbis::initEncoder(int bitrate)
 {
     int ret;
@@ -293,9 +203,4 @@ int EncoderVorbis::initEncoder(int bitrate)
         ret = -1;
     };
     return ret;
-}
-
-int EncoderVorbis::initEncoder()
-{
-    return this->initEncoder((float)0.4);
 }

@@ -34,10 +34,10 @@ class Encoder : public QObject {
 public:
     Encoder();
     ~Encoder();
-    virtual int initEncoder() = 0;
-    virtual int initEncoder(float quality) = 0;
     virtual int initEncoder(int bitrate) = 0;
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
+	virtual void updateMetaData(char* artist, char* title) = 0;
+	
 };
 
 #endif // ENCODER_H
