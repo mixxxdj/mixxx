@@ -210,7 +210,7 @@ vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
 vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 vars.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 vars.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
-vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
+vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
 vars.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
 vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
@@ -931,19 +931,15 @@ if int(flags_shoutcast):
 
 	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp """ )
 	build_flags += 'shoutcast '
+	sources += Split(""" encodermp3.cpp """)	# encodermp3.cpp loads shoutcast library (dll, so,mylib) dynamically if possilbe
+	shoutmp3 = 1
+	sources += Split("""  encodervorbis.cpp """)	#OGG is free, thus we link it during compiling
+	shoutogg = 1
 
-
-	if conf.CheckLibWithHeader('mp3lame', 'lame/lame.h', 'C'):
-		env.Append(CPPDEFINES = '__SHOUTCAST_LAME__')
-		sources += Split(""" encodermp3.cpp """)
-		shoutmp3 = 1
-
-	if conf.CheckLib('vorbisenc'):
-		env.Append(CPPDEFINES = '__SHOUTCAST_VORBIS__')
-		sources += Split("""  encodervorbis.cpp """)
-		shoutogg = 1
-
-
+	if not conf.CheckLib('vorbisenc'):	#Make sure Vorbis libraries are installed
+		print "libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag."
+		Exit(1)
+		
 	if shoutmp3 and shoutogg:
 		print "Shoutcast support (OGG/MP3)... enabled"
 	elif shoutmp3:
