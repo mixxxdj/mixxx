@@ -328,11 +328,28 @@ QString ConfigObject<ValueType>::getConfigPath()
     qConfigPath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
+    /*
     // Set the path relative to the bundle directory
     CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
     CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-    qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
+    char utf8path[256];
+    //Attempt to decode obtain the macPath string as UTF-8
+    if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
+    {
+        qConfigPath.fromUtf8(utf8path);
+    }
+    else {
+        //Fallback on the "system encoding"... (this is just our old code, which probably doesn't make any sense
+         //since it plays roullette with the type of text encoding)
+        qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
+    }
     qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
+    */
+    QString mixxxPath = QCoreApplication::applicationDirPath();
+    if (mixxxPath.endsWith("osx_build"))   //Development configuration
+        qConfigPath = mixxxPath + "/../res";
+    else //Release configuraton
+	    qConfigPath = mixxxPath + "/../Resources";
 #endif
     }
 	if (qConfigPath.length() == 0) qCritical() << "qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??";
