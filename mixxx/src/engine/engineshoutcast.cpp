@@ -19,12 +19,9 @@
 #include "configobject.h"
 #include "dlgprefshoutcast.h"
 
-#ifdef __SHOUTCAST_VORBIS__
+
 #include "encodervorbis.h"
-#endif // __SHOUTCAST_VORBIS__
-#ifdef __SHOUTCAST_LAME__
 #include "encodermp3.h"
-#endif // __SHOUTCAST_LAME__
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
@@ -249,30 +246,18 @@ void EngineShoutcast::updateFromPreferences()
     // Initialize encoder 	
 	if(encoder) delete encoder;		//delete encoder if it has been initalized (with maybe) different bitrate
     if ( ! qstrcmp(baFormat, "MP3")) {
-#ifdef __SHOUTCAST_LAME__
-		
         encoder = new EncoderMp3(m_pConfig, this);
-#else
-        qDebug() << "*** Missing MP3 Encoder Support";
-        return;
-#endif // __SHOUTCAST_LAME__
+
     }
     else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
-#ifdef __SHOUTCAST_VORBIS__
         encoder = new EncoderVorbis(m_pConfig, this);
-#else
-        qDebug() << "*** Missing OGG Vorbis Encoder Support";
-        return;
-#endif // __SHOUTCAST_VORBIS__
     }
     else {
         qDebug() << "**** Unknown Encoder Format";
         return;
     }
-
-
     if (encoder->initEncoder(baBitrate.toInt()) < 0) {
-        qDebug() << "**** Vorbis init failed";
+        qDebug() << "**** Encoder init failed";
     }
 
 }
@@ -507,8 +492,6 @@ bool EngineShoutcast::metaDataHasChanged()
         // both tracks are active, just stick with it for now
         break;
     }
-
-
     return changed;
 }
 

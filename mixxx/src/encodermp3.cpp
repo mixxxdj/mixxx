@@ -38,6 +38,19 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
     m_bufferOutSize = 0;
     m_lameFlags = NULL;
     m_pConfig = _config;
+	lame_init =  0;
+	lame_set_num_channels = 0;
+	lame_set_in_samplerate =  0;
+	lame_set_out_samplerate = 0;
+	lame_close = 0;
+	lame_set_brate = 0;
+	lame_set_mode = 0;
+	lame_set_quality = 0;
+	lame_set_bWriteVbrTag = 0;
+	lame_encode_buffer_float = 0;
+	lame_init_params = 0;
+	lame_encode_flush_nogap = 0;
+		
 	/*
 	 * @ Author: Tobias Rafreider
 	 * Nobody has initialized the field before my code review.
@@ -54,17 +67,109 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
      *
     */
 	m_bufferInSize = 0; 
+
+	/*
+	 * Load shared library
+	 */
+	QString libname = "";
+#ifdef __LINUX__
+	libname = "/usr/lib/libmp3lame.so";
+#elif __WINDOWS__
+	libname = "lame_enc.dll";
+#elif __APPLE__
+	libname ="lame_enc.dll"; //TODO
+#endif
+
+	m_library = new QLibrary(libname);
+
+	if(!m_library->load()){
+		qDebug() << "Cannot load or foud liblame " << libname;
+		return;
+	}
+	
+	typedef const char* (*get_lame_version__)(void);
+	get_lame_version__ get_lame_version = (get_lame_version__)m_library->resolve("get_lame_version");
+	
+	
+	//initalize function pointers
+	lame_init =  (lame_init__)m_library->resolve("lame_init");
+	//qDebug() << "lame_init  " << &lame_init ;
+	lame_set_num_channels =(lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
+	//qDebug() << "lame_set_num_channels  " << &lame_set_num_channels ;
+	lame_set_in_samplerate = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
+	//qDebug() << "lame_set_in_samplerate  " << &lame_set_in_samplerate ;
+	lame_set_out_samplerate = (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
+	//qDebug() << "lame_set_out_samplerate  " << &lame_set_out_samplerate ;
+	lame_close = (lame_close__)m_library->resolve("lame_close");
+	//qDebug() << "lame_close" << &lame_close;
+	lame_set_brate = (lame_set_brate__)m_library->resolve("lame_set_brate");
+	//qDebug() << "lame_set_brate" << &lame_set_brate;
+	lame_set_mode = (lame_set_mode__)m_library->resolve("lame_set_mode");
+	//qDebug() << "lame_set_mode" << &lame_set_mode;
+	lame_set_quality = (lame_set_quality__)m_library->resolve("lame_set_quality");
+	//qDebug() << "lame_set_quality" << &lame_set_quality;
+	lame_set_bWriteVbrTag = (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
+	//qDebug() << "lame_set_bWriteVbrTag " << &lame_set_bWriteVbrTag ;
+	lame_encode_buffer_float = (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
+	//qDebug() << "lame_encode_buffer_float " << &lame_encode_buffer_float ;
+	lame_init_params = (lame_init_params__)m_library->resolve("lame_init_params");
+	//qDebug() << "lame_init_params " << &lame_init_params;
+	lame_encode_flush_nogap = (lame_encode_flush_nogap__)m_library->resolve("lame_encode_flush_nogap");
+	//qDebug() << "lame_encode_flush_nogap " << &lame_encode_flush_nogap;
+
+	//Check if all function pointer are not NULL
+
+	if(	!lame_init ||
+		!lame_set_num_channels ||
+		!lame_set_in_samplerate ||
+		!lame_set_out_samplerate ||
+		!lame_close ||
+		!lame_set_brate ||
+		!lame_set_mode ||
+		!lame_set_quality ||
+		!lame_set_bWriteVbrTag ||
+		!lame_encode_buffer_float ||
+		!lame_init_params ||
+		!lame_encode_flush_nogap ||
+		!get_lame_version
+	)
+	{
+		qDebug() << "Error loading liblame";
+		m_library->unload();
+		m_library = NULL;
+		return;
+	}	
+		
+	qDebug() << "Loaded liblame version " << get_lame_version();	
 }
 
 // Destructor
 EncoderMp3::~EncoderMp3()
 {
-    flushStream();
-    lame_close(m_lameFlags);
+	if(m_library->isLoaded()){
+    	flushStream();
+    	lame_close(m_lameFlags);
+		m_library->unload(); //unload dll, so, ...
+		m_library = NULL;
+	}
 	//free requested buffers
 	if(m_bufferIn[0] != NULL) delete m_bufferIn[0];
     if(m_bufferIn[1] != NULL) delete m_bufferIn[1];
 	if(m_bufferOut != NULL) delete m_bufferOut;
+	
+	lame_init =  0;
+	lame_set_num_channels = 0;
+	lame_set_in_samplerate =  0;
+	lame_set_out_samplerate = 0;
+	lame_close = 0;
+	lame_set_brate = 0;
+	lame_set_mode = 0;
+	lame_set_quality = 0;
+	lame_set_bWriteVbrTag = 0;
+	lame_encode_buffer_float = 0;
+	lame_init_params = 0;
+	lame_encode_flush_nogap = 0;
+	
 }
 
 /*
@@ -90,6 +195,7 @@ int EncoderMp3::bufferOutGrow(int size)
 
 int EncoderMp3::bufferInGrow(int size)
 {
+	
     if ( m_bufferInSize >= size )
         return 0;
     
@@ -104,19 +210,21 @@ int EncoderMp3::bufferInGrow(int size)
 
 void EncoderMp3::flushStream()
 {
-    int rc;
-    
-    
+	if(!m_library->isLoaded())
+		return;
+    int rc = 0;
+ 
     rc = lame_encode_flush_nogap(m_lameFlags, m_bufferOut, m_bufferOutSize);
     pEngine->writePage(NULL, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
 {
-    int outsize;
-    int rc;
-    int i;
-    
+	if(!m_library->isLoaded())
+		return;
+    int outsize = 0;
+    int rc = 0;
+    int i = 0;
     
     outsize = (int)((1.25 * size + 7200) + 1);
     bufferOutGrow(outsize);
@@ -145,16 +253,17 @@ void EncoderMp3::initStream()
     
     m_bufferIn[0] = (float *)malloc(m_bufferOutSize * sizeof(float));
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
-    
     return;
 }
 
 int EncoderMp3::initEncoder(int bitrate)
 {
+	if(!m_library->isLoaded())
+		return -1;
     unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
     
-    
     m_lameFlags = lame_init();
+	
     if ( m_lameFlags == NULL ) {
         qDebug() << "Unable to initialize MP3";
         return -1;
@@ -167,8 +276,7 @@ int EncoderMp3::initEncoder(int bitrate)
     lame_set_mode(m_lameFlags, STEREO);
     lame_set_quality(m_lameFlags, 2);
     lame_set_bWriteVbrTag(m_lameFlags, 0);
-    
-    
+   
     if (( lame_init_params(m_lameFlags)) < 0) {
         qDebug() << "Unable to initialize MP3 parameters";
         return -1;
