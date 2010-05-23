@@ -22,15 +22,12 @@
 BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_fileSystemModel(this),
+          m_browseModel(this),
           m_proxyModel(this),
           m_pTrackCollection(pTrackCollection) {
-    m_fileSystemModel.setReadOnly(true);
-    m_fileSystemModel.setFilter(QDir::AllDirs | QDir::AllEntries);
-    m_proxyModel.setSourceModel(&m_fileSystemModel);
+    m_proxyModel.setSourceModel(&m_browseModel);
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
-    //m_fileSystemModel.setSorting(QDir::DirsFirst | Qir::IgnoreCase);
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -90,8 +87,8 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     pBrowseView->setModel(&m_proxyModel);
 
     QString startPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
-    m_fileSystemModel.setRootPath(startPath);
-    QModelIndex startIndex = m_fileSystemModel.index(startPath);
+    m_browseModel.setRootPath(startPath);
+    QModelIndex startIndex = m_browseModel.index(startPath);
     QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
     emit(setRootIndex(proxyIndex));
 
@@ -114,14 +111,14 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 void BrowseFeature::onFileActivate(const QModelIndex& index) {
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
-    QString path = m_fileSystemModel.filePath(sourceIndex);
+    QString path = m_browseModel.filePath(sourceIndex);
     QFileInfo info(path);
     QString absPath = info.absoluteFilePath();
     qDebug() << "activate()" << path;
 
-    if (m_fileSystemModel.isDir(sourceIndex)) {
-        m_fileSystemModel.setRootPath(absPath);
-        QModelIndex absIndex = m_fileSystemModel.index(absPath);
+    if (m_browseModel.isDir(sourceIndex)) {
+        m_browseModel.setRootPath(absPath);
+        QModelIndex absIndex = m_browseModel.index(absPath);
         QModelIndex absIndexProxy = m_proxyModel.mapFromSource(absIndex);
         emit(setRootIndex(absIndexProxy));
     } else {
@@ -139,11 +136,11 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
 
 void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
-    QString path = m_fileSystemModel.filePath(sourceIndex);
+    QString path = m_browseModel.filePath(sourceIndex);
     QFileInfo info(path);
     QString absPath = info.absoluteFilePath();
 
-    if (!m_fileSystemModel.isDir(sourceIndex)) {
+    if (!m_browseModel.isDir(sourceIndex)) {
         TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
         TrackInfoObject* track = trackDao.getTrack(trackDao.getTrackId(absPath));
 
