@@ -338,6 +338,14 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #ifdef __C_METRICS__
 	cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE, "Mixxx constructor complete.");
 #endif
+
+    // Refresh the GUI (workaround for Qt 4.6 display bug)
+    QString QtVersion = qVersion();
+    if (QtVersion>="4.6.0") {
+        qDebug() << "Qt v4.6.0 or higher detected. Using rebootMixxxView() workaround."
+                 << "\n    (See bug https://bugs.launchpad.net/mixxx/+bug/521509)";
+        rebootMixxxView();
+    }
 }
 
 MixxxApp::~MixxxApp()
