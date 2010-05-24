@@ -26,12 +26,17 @@
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilename)
 {
     info = new SF_INFO;
+    info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
     filelength = 0;
     QByteArray qbaFilename = qFilename.toUtf8();
     fh = sf_open( qbaFilename.data(), SFM_READ, info );
-    if (fh == 0 || !sf_format_check(info))
-    {
-        qDebug() << "libsndfile: Error opening file" << qFilename;
+    if (fh == NULL) {   // sf_format_check is only for writes                      
+        qWarning() << "libsndfile: Error opening file" << qFilename << sf_strerror(fh);
+        return;                                                                        
+    }                                                                                  
+    
+    if (sf_error(fh)>0) {                                                              
+        qWarning() << "libsndfile: Error opening file" << qFilename << sf_strerror(fh);
         return;
     }
 
@@ -125,14 +130,19 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
 int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
 {
     SF_INFO info;
+    info.format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
     QString location = Track->getLocation();
     QByteArray qbaLocation = location.toUtf8();
     SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, &info);
     //const char* err = sf_strerror(0);
-    if (fh == 0 || !sf_format_check(&info))	{ //both are necessary for a valid file
-        qDebug() << "sndfile::ParseHeader : libsndfile: ERR opening file.";
-		if (fh)
-			sf_close(fh);	//could be a valid handle but invalid sf_format
+    if (fh == NULL) {   // sf_format_check is only for writes                          
+        qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);     
+        return ERR;                                                                    
+    }                                                                                  
+    
+    if (sf_error(fh)>0) {                                                              
+        qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);
+        if (fh) sf_close(fh);
         return ERR;
     }
 
@@ -156,7 +166,7 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
         Track->setYear(string);
     
     sf_close( fh );
-	Track->setHeaderParsed(true);
+    Track->setHeaderParsed(true);
     return OK;
 }
 
