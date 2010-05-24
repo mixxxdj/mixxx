@@ -772,7 +772,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     //Create the tab widget to store the various panes in
                     //(library, effects, etc.)
-                    m_pTabWidget = new QStackedWidget(this);
+                    m_pTabWidget = new QTabWidget(this);
 
                     // Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget(this);
@@ -786,11 +786,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
 #ifdef __LADSPA__
-//                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
 #endif
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
-                    //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
+                    m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
 
                     //Set up the search box widget
                     if (m_pLineEditSearch == 0) {
@@ -836,6 +836,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //Add the library widget to the splitter.
                     m_pSplitter->addWidget(m_pLibraryWidget);
 
+
                     // TODO(rryan) can we make this more elegant?
                     QList<int> splitterSizes;
                     splitterSizes.push_back(50);
@@ -854,12 +855,12 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     // 1.7.0 release.
 
                     // Add the library page to the tab widget.
-                    //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
-                    m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
+                    m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
+                    //m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
 
                     // Add the effects page to the tab widget.
-                    //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
-                    m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
+                    m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
+                    //m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
                 }
 
                 //Move the tab widget into position and size it properly.

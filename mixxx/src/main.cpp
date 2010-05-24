@@ -225,7 +225,7 @@ int main(int argc, char * argv[])
 
 
 #ifdef __LADSPA__
-    //LADSPALoader ladspaloader;
+    LADSPALoader ladspaloader;
 #endif
 
     QTranslator tor( 0 );
@@ -285,44 +285,6 @@ int main(int argc, char * argv[])
             args.qlMusicFiles += argv[i];
     }
     
-    
-    // set up the plugin paths...
-    /*
-    qDebug() << "Setting up plugin paths...";
-    plugin_paths = QStringList();
-    QString ladspaPath = QString(getenv("LADSPA_PATH"));
-
-    if (!ladspaPath.isEmpty())
-    {
-        // get the list of directories containing LADSPA plugins
-#ifdef __WINDOWS__
-        //paths.ladspaPath.split(';');
-#else  //this doesn't work, I think we need to iterate over the splitting to do it properly
-        //paths = ladspaPath.split(':');
-#endif
-    }
-    else
-    {
-        // add default path if LADSPA_PATH is not set
-#ifdef __LINUX__
-        plugin_paths.push_back ("/usr/lib/ladspa/");
-        plugin_paths.push_back ("/usr/lib64/ladspa/");
-#elif __APPLE__
-      QDir dir(a->applicationDirPath());
-     dir.cdUp();
-     dir.cd("PlugIns");
-         plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
-         plugin_paths.push_back (dir.absolutePath()); //ladspa_plugins directory in Mixxx.app bundle //XXX work in QApplication::appdir()
-#elif __WINDOWS__
-        // not tested yet but should work:
-        QString programFiles = QString(getenv("ProgramFiles"));
-         plugin_paths.push_back (programFiles+"\\LADSPA Plugins");
-         plugin_paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
-#endif
-    }
-    qDebug() << "...done.";
-    */
-
     
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
