@@ -33,6 +33,7 @@
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
+#include "soundsourceproxy.h"
 
 #include "player.h"
 #include "wtracktableview.h"
@@ -43,7 +44,6 @@
 
 #include "soundmanager.h"
 #include "defs_urls.h"
-#include "defs_audiofiles.h"
 #include "recording/defs_recording.h"
 
 #include "midi/mididevicemanager.h"
@@ -882,9 +882,11 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
-    if (!s.isNull()) {
-        slotLoadPlayer2(s);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+    if (!(s == QString::null)) {
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer1->slotLoadTrack(pTrack);
     }
 }
 
@@ -904,9 +906,11 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
-    if (!s.isNull()) {
-        slotLoadPlayer2(s);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+    if (!(s == QString::null)) {
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer2->slotLoadTrack(pTrack);
     }
 }
 

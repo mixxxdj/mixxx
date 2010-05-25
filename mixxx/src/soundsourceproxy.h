@@ -18,15 +18,16 @@
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
+#include <QMutex>
 #include "soundsource.h"
-//Added by qt3to4:
-#include <Q3ValueList>
 
+class QLibrary;
 class TrackInfoObject;
 
 /**
   *@author Tue Haste Andersen
   */
+
 
 /*
   Base class for sound sources.
@@ -37,19 +38,29 @@ public:
     SoundSourceProxy(QString qFilename);
     SoundSourceProxy(TrackInfoObject *pTrack);
     ~SoundSourceProxy();
+    static void loadPlugins();
+    int open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
+    int parseHeader();
     static int ParseHeader(TrackInfoObject *p);
-    unsigned int getSrate();
-    Q3ValueList<long> *getCuePoints();
+    unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();
+    static QList<QString> supportedFileExtensions();
+    static QString supportedFileExtensionsString();
+    static QString supportedFileExtensionsRegex();
 
 private:
-    void initialize(QString qFilename);
+    static SoundSource* initialize(QString qFilename);
+    //void initPlugin(QString lib_filename, QString track_filename);
+    static QLibrary* getPlugin(QString lib_filename);
 
     SoundSource *m_pSoundSource;
+    static QMap<QString, QLibrary*> m_plugins;
+    static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
+    static QMutex m_extensionsMutex;
 };
 
 #endif
