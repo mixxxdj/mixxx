@@ -34,7 +34,6 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
 
 
 AbstractXmlTrackModel::AbstractXmlTrackModel(QString settingsNamespace)

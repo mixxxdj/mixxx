@@ -216,7 +216,6 @@ vars.Add('asmlib','(EXPERIMENTAL) Set to 1 to enable linking against Agner Fog\'
 vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
 vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
 vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-vars.Add('m4a','Set to 1 to enable support for M4A audio (Apple non-drm''d music format)', 0)
 vars.Add('qdebug', 'Set to 1 to enable verbose console debug output.', 1)
 vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
 vars.Add('flac', 'Set to 1 to enable FLAC support (lossless open-source music format)', 0)
@@ -553,36 +552,6 @@ if not conf.CheckLib('ogg'):
 	print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
 	Exit(1)
 
-#hack: check for these here, before conf.Finish happens
-have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'])) or conf.CheckLib('mp4')
-
-# We have to check for libfaad version 2.6 or 2.7. In libfaad
-# version 2.7, the type for the samplerate is unsigned long*,
-# while in 2.6 the type is uint32_t*. We can use the optional
-# call parameter to CheckLibWithHeader to build a test file to
-# check which one this faad.h supports.
-if not 'win' in platform:	# This check doesn't work correctly on Windows
-							# And we build it manually anyway, so we know it's v2.7
-	have_faad_26 = (not conf.CheckLibWithHeader(
-					'libfaad', 'faad.h', 'c++',
-					call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);'))
-else:
-	have_faad_26 = 0
-
-if not have_faad_26:	# This is here to prevent linking faad twice (only do one CheckLib)
-	have_faad = conf.CheckLib(['faad', 'libfaad'])
-else:
-	have_faad = have_faad_26
-
-have_m4a = have_mp4 and have_faad
-flags_m4a = getFlags(env, 'm4a', 0)
-if int(flags_m4a) and not have_m4a:
-        if not have_mp4:
-                print 'Did not find libmp4v2 or the libmp4v2 development headers, exiting!'
-        if not have_faad:
-                print 'Did not find libfaad or the libfaad development headers, exiting!'
-        Exit(1)
 
 have_flac = False
 if int(getFlags(env, 'flac', 0)):
@@ -689,6 +658,7 @@ if platform == 'osx':
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtNetwork.framework/Headers/',
 				'/Library/Frameworks/QtSql.framework/Headers/',
 				'/Library/Frameworks/QtWebKit.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
@@ -753,6 +723,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtXml')
 	env.Append(LIBS = 'QtGui')
 	env.Append(LIBS = 'QtCore')
+	env.Append(LIBS = 'QtNetwork')
 	env.Append(LIBS = 'QtOpenGL')
 	env.Append(LIBS = 'QtWebKit')
 	env.Append(LIBS = 'QtScript')
@@ -785,6 +756,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 			    '$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
 			    '$QTDIR/include/QtXml',
+			    '$QTDIR/include/QtNetwork',
 			    '$QTDIR/include/QtSql',
 			    '$QTDIR/include/QtOpenGL',
 			    '$QTDIR/include/QtWebKit',
@@ -1043,33 +1015,6 @@ if int(flags_tonal):
 			tonal/ConstantQFolder.cxx""")
 else:
 	print "Tonal analysis... disabled"
-
-
-flags_m4a = getFlags(env, 'm4a', 0)
-if int(flags_m4a):
-	print "Apple M4A audio file support...",
-	if have_m4a:
-		print "enabled"
-
-		# If the compile did not work, then enable the M4AHACK define.
-		if have_faad_26:
-			env.Append(CPPDEFINES = '__M4AHACK__')
-			print "libfaad 2.6 compatibility mode... enabled"
-
-		if have_mp4v2_h:
-			env.Append(CPPDEFINES = '__MP4V2__')
-
-	#	env.ParseConfig('pkg-config libmp4v2-dev --silence-errors --cflags --libs') # no pkg-config data for libmp4v2-dev
-	#	FIXME: should do conf.CheckCHeader('mp4.h') or something...
-		env.Append(CPPDEFINES = '__M4A__')
-		build_flags += 'm4a '
-		sources += Split("""soundsourcem4a.cpp""");  # MP4/M4A Support
-		env.Append(LIBS = 'libmp4v2')
-		env.Append(LIBS = 'libfaad')
-	else:
-		print "not found (did you install libmp4v2 and libfaad?)"
-else:
-	print "Apple M4A audio file support... disabled"
 
 if int(getFlags(env, 'flac', 0)):
 	print "libFLAC support ...",
@@ -1441,6 +1386,10 @@ binary_files = mixxx_bin;
 # Mixxx essential resource files
 resource_files = Glob('#res/schema.xml')
 
+#Soundsource plugins
+Import('soundsource_plugins') #Grab these from the SConstruct above us
+soundsource_plugin_files = soundsource_plugins
+
 #Skins
 skin_files = Glob('#res/skins/*')
 
@@ -1499,13 +1448,16 @@ if platform in ('linux', 'bsd'):
 		if install_root != flags_prefix:
 			unix_share_path = install_root + "/share"
 			unix_bin_path   = install_root + "/bin"
+			unix_lib_path   = install_root + "/lib"
 		else:
 			unix_share_path = flags_prefix + "/share"
 			unix_bin_path   = flags_prefix + "/bin"
+			unix_lib_path   = flags_prefix + "/lib"
 
 		binary = env.Install(unix_bin_path, binary_files)
-                resource = env.Install(unix_share_path + "/mixxx", resource_files)
+		resource = env.Install(unix_share_path + "/mixxx", resource_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
+		soundsource_plugins = env.Install(unix_lib_path + "/mixxx/plugins/soundsource", soundsource_plugin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
 		ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
@@ -1516,8 +1468,9 @@ if platform in ('linux', 'bsd'):
 
 		#Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
-                env.Alias('install', resource)
+		env.Alias('install', resource)
 		env.Alias('install', skins)
+		env.Alias('install', soundsource_plugins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
 		env.Alias('install', ladspapresets)
@@ -1539,7 +1492,7 @@ if platform in ('linux', 'bsd'):
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
-if platform == 'osx':
+if platform == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
 	ARCH="macintel" #XXX should get this from scons or the system somehow?
@@ -1550,6 +1503,11 @@ if platform == 'osx':
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                       [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
 	#Left out libqmng and libqtiff to save space.
+
+	#Concatenate the SoundSource plugins to our list of plugins
+    #(converting from SCons File nodes to strings)
+	for x in soundsource_plugins:
+		plugins.append(x.get_abspath())
 
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
@@ -1563,14 +1521,14 @@ if platform == 'osx':
 		 STRIP=True,
 		 #STRIP=(type == 'RELEASE')
 		 )
-	env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
 if 'win' in platform:
 	skins = env.Install("#dist/skins", skin_files)
-        resource = env.Install("#dist/", resource_files)
+	resource = env.Install("#dist/", resource_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
 	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
 	ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
@@ -1578,17 +1536,19 @@ if 'win' in platform:
 	promotracks = env.Install("#dist/promo/", promotracks_files)
 	#icon = env.Install("#dist", icon_files)
 	dlls = env.Install("#dist/", dll_files)
+	soundsource_plugins = env.Install("#dist/plugins/soundsource/", soundsource_plugin_files)
 	binary = env.Install("#dist/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
-        env.Alias('mixxx', resource)
+	env.Alias('mixxx', resource)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
 	env.Alias('mixxx', ladspapresets)
 	env.Alias('mixxx', promotracks)
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)
+	env.Alias('mixxx', soundsource_plugins)
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
