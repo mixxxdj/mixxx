@@ -18,31 +18,49 @@
 #ifndef SOUNDSOURCEFLAC_H
 #define SOUNDSOURCEFLAC_H
 
+#include <QFile>
 #include <QString>
-#include <Qt3Support>
 #include <FLAC/stream_decoder.h>
 
 #include "defs.h"
+#include "soundsource.h"
 
 class TrackInfoObject;
 
 class SoundSourceFLAC : public SoundSource {
 public:
-    SoundSourceFLAC(QString fileName);
+    SoundSourceFLAC(QString filename);
     ~SoundSourceFLAC();
     long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
+    unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
-    static int ParseHeader(TrackInfoObject*);
+    static int ParseHeader(TrackInfoObject *track);
     // callback methods
-    void decodeCallback(const FLAC__Frame *frame, const FLAC__int32)
+    FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
+    FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
+    FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64 *offset);
+    FLAC__StreamDecoderLengthStatus flacLength(FLAC__uint64 *length);
+    FLAC__bool flacEOF();
+    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame *frame, const FLAC__int32 *const buffer[]);
+    void flacMetadata(const FLAC__StreamMetadata *metadata);
+    void flacError(FLAC__StreamDecoderErrorStatus status);
 private:
     QFile m_file;
     FLAC__StreamDecoder *m_decoder;
-    unsigned int SRATE;
+    FLAC__StreamMetadata_StreamInfo *m_streamInfo;
     unsigned int m_channels; // number of channels
     unsigned int m_samples; // total number of samples
-    unsigned int m_bps; // bits per sample (not beats per second!)
+    unsigned int m_bps; // bits per sample
+    // misc bits about the flac format:
+    // flac encodes from and decodes to LPCM in blocks, each block is made up of subblocks (one for each chan)
+    // flac stores in 'frames', each of which has a header and a certain number of subframes (one for each channel)
+    unsigned int m_minBlocksize; // in time samples (audio samples = time samples * number of channels)
+    unsigned int m_maxBlocksize;
+    unsigned int m_minFramesize;
+    unsigned int m_maxFramesize;
+    FLAC__int16 *m_flacBuffer; // buffer for the write callback to write a single frame's worth of samples to,
+                               // interleaved as LR LR LR ... (for stereo) or LI LI LI ... (for mono)
+    unsigned int m_samplesRead;
 };
 
 // callbacks for libFLAC
