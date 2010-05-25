@@ -13,7 +13,6 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
 
 ITunesPlaylistModel::ITunesPlaylistModel(ITunesTrackModel *pTrackModel) :
         TrackModel(QSqlDatabase::database("QSQLITE"), "mixxx.db.model.itunes_playlist"),

@@ -27,12 +27,11 @@
 #include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
-#include "portaudio.h"
 #include "mixxx.h"
+#include "soundsourceproxy.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
 #include "errordialog.h"
-#include "defs_audiofiles.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -222,6 +221,8 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
+    //Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 
 
 #ifdef __LADSPA__
@@ -246,7 +247,7 @@ int main(int argc, char * argv[])
     args.bStartInFullscreen = false; //Initialize vars
     
     // Only match supported file types since command line options are also parsed elsewhere
-    QRegExp fileRx(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive);
+    QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
     for (int i=0; i<argc; ++i)
     {
@@ -256,7 +257,7 @@ int main(int argc, char * argv[])
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
-            printf(MIXXX_SUPPORTED_AUDIO_FILETYPES);
+            printf(SoundSourceProxy::supportedFileExtensionsString());
             printf("\n\n");
             printf("\
                             Each file you specify will be loaded into the\n\
