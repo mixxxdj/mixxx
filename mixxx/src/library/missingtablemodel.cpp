@@ -10,7 +10,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.missing"),
-          BaseSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
           m_currentSearch("") {
@@ -93,11 +93,9 @@ MissingTableModel::MissingTableModel(QObject* parent,
 MissingTableModel::~MissingTableModel() {
 }
 
-void MissingTableModel::addTrack(const QModelIndex& index, QString location)
+bool MissingTableModel::addTrack(const QModelIndex& index, QString location)
 {
-    //Note: The model index is ignored when adding to the library track collection.
-    //      The position in the library is determined by whatever it's being sorted by,
-    //      and there's no arbitrary "unsorted" view.
+    return false;
 }
 
 TrackInfoObject* MissingTableModel::getTrack(const QModelIndex& index) const
@@ -143,7 +141,8 @@ void MissingTableModel::slotSearch(const QString& searchText) {
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
@@ -206,7 +205,7 @@ QVariant MissingTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value = BaseSqlTableModel::data(item, role);
 
     if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {

@@ -27,6 +27,7 @@
 #include <shout/shout.h>
 
 #include <QObject>
+#include <QMutex>
 
 #include "encoder.h"
 
@@ -74,6 +75,7 @@ private:
     ControlObjectThread* m_pVolume1;
     ControlObjectThread* m_pVolume2;
     volatile bool m_bQuit;
+    QMutex m_shoutMutex;
 };
 
 #endif

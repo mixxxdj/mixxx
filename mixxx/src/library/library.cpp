@@ -18,36 +18,56 @@
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
+#include "library/promotracksfeature.h"
 
 #include "wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
+#include "mixxxkeyboard.h"
 #include "librarymidicontrol.h"
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig)
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun)
     : m_pConfig(pConfig) {
     m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
     m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
+
+    //Show the promo tracks view on first run, otherwise show the library
+    if (firstRun) {
+        qDebug() << "First Run, switching to PROMO view!";
+        m_pSidebarModel->setDefaultSelection(1);
+        //Note the promo tracks item has index=1... hardcoded hack. :/
+    }
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
+    if(PromoTracksFeature::isSupported(m_pConfig)) {
+        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
+                                                       m_pTrackCollection);
+        addFeature(m_pPromoTracksFeature);
+    }
+    else
+        m_pPromoTracksFeature = NULL;
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
     addFeature(new CrateFeature(this, m_pTrackCollection));
+    addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
+    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
+    //messagebox popup when you select them. (This forces you to reach for your
+    //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported())
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
         addFeature(new ITunesFeature(this));
-    addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
-    addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
 }
 
 Library::~Library() {
@@ -68,9 +88,11 @@ Library::~Library() {
 }
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
-                         WLibrary* pLibraryWidget) {
+                         WLibrary* pLibraryWidget,
+                         MixxxKeyboard* pKeyboard) {
     WTrackTableView* pTrackTableView =
         new WTrackTableView(pLibraryWidget, m_pConfig);
+    pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackInfoObject*)),
@@ -91,17 +113,18 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
 
+    QListIterator<LibraryFeature*> feature_it(m_features);
+    while(feature_it.hasNext()) {
+        LibraryFeature* feature = feature_it.next();
+        feature->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
+    }
+
     // Enable the default selection
     pSidebarWidget->selectionModel()
         ->select(m_pSidebarModel->getDefaultSelection(),
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
 
-    QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pSidebarWidget, pLibraryWidget);
-    }
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -154,4 +177,12 @@ void Library::slotRefreshLibraryModels()
 void Library::slotCreatePlaylist()
 {
     m_pPlaylistFeature->slotCreatePlaylist();
+}
+
+QList<TrackInfoObject*> Library::getTracksToAutoLoad()
+{
+    if (m_pPromoTracksFeature)
+        return m_pPromoTracksFeature->getTracksToAutoLoad();
+    else
+        return QList<TrackInfoObject*>();
 }

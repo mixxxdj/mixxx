@@ -144,9 +144,10 @@ int SoundSourceSndFile::parseHeader()
     QByteArray qbaLocation = location.toUtf8();
     SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, info);
     //const char* err = sf_strerror(0);
-    if (fh == 0 || !sf_format_check(info))
-    {
-        qDebug() << "libsndfile: ERR opening file.";
+    if (fh == 0 || !sf_format_check(info))	{ //both are necessary for a valid file
+        qDebug() << "sndfile::parseHeader : libsndfile: ERR opening file.";
+		if (fh)
+			sf_close(fh);	//could be a valid handle but invalid sf_format
         return ERR;
     }
 

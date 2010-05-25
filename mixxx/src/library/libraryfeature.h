@@ -17,6 +17,7 @@ class TrackModel;
 class TrackInfoObject;
 class WLibrarySidebar;
 class WLibrary;
+class MixxxKeyboard;
 
 class LibraryFeature : public QObject {
   Q_OBJECT
@@ -33,7 +34,8 @@ class LibraryFeature : public QObject {
 
     // Reimplement this to register custom views with the library widget.
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
-                            WLibrary* libraryWidget) {
+                            WLibrary* libraryWidget,
+                            MixxxKeyboard* keyboard) {
     }
     virtual QAbstractItemModel* getChildModel() = 0;
 

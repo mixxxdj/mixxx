@@ -31,7 +31,8 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
 
     QAbstractItemModel* getChildModel();
 

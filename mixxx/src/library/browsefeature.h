@@ -6,10 +6,10 @@
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
-#include <QFileSystemModel>
 
 #include "configobject.h"
 #include "library/browsefilter.h"
+#include "library/browsetablemodel.h"
 #include "library/libraryfeature.h"
 
 class TrackCollection;
@@ -31,7 +31,8 @@ class BrowseFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
-                            WLibrary* libraryWidget);
+                            WLibrary* libraryWidget,
+                            MixxxKeyboard* keyboard);
     QAbstractItemModel* getChildModel();
 
   public slots:
@@ -51,7 +52,7 @@ class BrowseFeature : public LibraryFeature {
     void setRootIndex(const QModelIndex&);
   private:
     ConfigObject<ConfigValue>* m_pConfig;
-    QFileSystemModel m_fileSystemModel;
+    BrowseTableModel m_browseModel;
     BrowseFilter m_proxyModel;
     TrackCollection* m_pTrackCollection;
     QStringListModel m_childModel;
