@@ -16,6 +16,12 @@
 
 #include <neaacdec.h>
 
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
 #ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>
@@ -70,6 +76,7 @@ int SoundSourceM4A::initializeDecoder()
     // The file was loading and failing erratically because
     // ipd.remote was an in an uninitialized state, it needed to be
     // set to false.
+
     int mp4_open_status = mp4_open(&ipd);
     if (mp4_open_status != 0) {
         qDebug() << "SSM4A::initializeDecoder failed"
@@ -183,14 +190,15 @@ int SoundSourceM4A::parseHeader(){
 
     this->setType("m4a");
     char* value = NULL;
+    
     if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
-        this->setTitle(value);
+        this->setTitle(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
 
     if (MP4GetMetadataArtist(mp4file, &value) && value != NULL) {
-        this->setArtist(value);
+        this->setArtist(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
@@ -202,28 +210,33 @@ int SoundSourceM4A::parseHeader(){
     }
 
     if (MP4GetMetadataComment(mp4file, &value) && value != NULL) {
-        this->setComment(value);
+        this->setComment(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
     
     if (MP4GetMetadataYear(mp4file, &value) && value != NULL) {
-        this->setYear(value);
+        this->setYear(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
     
     if (MP4GetMetadataGenre(mp4file, &value) && value != NULL) {
-        this->setGenre(value);
+        this->setGenre(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
-
+    
 #ifndef _MSC_VER
     u_int16_t bpm = 0;
+    u_int16_t track = 0;
+    u_int16_t numTracks = 0; // don't actually use this but MP4GetMetadataTrack
+                             // barfs if you give it null
 #else
     // MSVC doesn't know what a u_int16_t is, so we have to tell it
     unsigned short bpm = 0;
+    unsigned short track = 0;
+    unsigned short numTracks = 0;
 #endif
     if (MP4GetMetadataTempo(mp4file, &bpm)) {
         if(bpm > 0) {
@@ -232,6 +245,14 @@ int SoundSourceM4A::parseHeader(){
 #endif
             this->setBPM(bpm);
             //Track->setBpmConfirm(true);
+        }
+    }
+    if (MP4GetMetadataTrack(mp4file, &track, &numTracks)) {
+        if(track > 0) {
+#ifdef _MSC_VER
+            Q_ASSERT(sizeof(track)==2);   // Just making sure we're in bounds
+#endif
+            this->setTrackNumber(QString::number(track));
         }
     }
 

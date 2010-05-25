@@ -23,6 +23,11 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
 
     m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig,
                                                             ConfigKey(), ConfigKey());
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackInfoObject*)),
+            this, SIGNAL(loadTrack(TrackInfoObject*)));
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
@@ -212,8 +217,10 @@ void DlgPrepare::analyze()
 void DlgPrepare::trackAnalysisFinished(TrackInfoObject* tio)
 {
     qDebug() << "Analysis finished!";
-    m_pTrackCollection->getTrackDAO().updateTrackInDatabase(tio);
-    delete tio;
+    m_pTrackCollection->getTrackDAO().saveTrack(tio);
+    qDebug() << "FIXME: Free the TIO when we're using autopointers";
+    //XXX: Delete the TIO once we're using auto-pointers !
+    //delete tio;
 
     //If the analyser has already been deleted by the time we get this signal
     //or there are no tracks in it when we do get the signal, then say we're done.
@@ -260,4 +267,9 @@ void DlgPrepare::showRecentSongs()
 void DlgPrepare::showAllSongs()
 {
     m_pPrepareLibraryTableModel->showAllSongs();
+}
+
+void DlgPrepare::installEventFilter(QObject* pFilter) {
+    QWidget::installEventFilter(pFilter);
+    m_pPrepareLibraryTableView->installEventFilter(pFilter);
 }

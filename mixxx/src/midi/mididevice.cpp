@@ -173,6 +173,8 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //but it is already locked because it is being modified by the GUI thread.
     //(This happens when you hit apply in the preferences and then quickly push
     // a button on your controller.)
+    // This also avoids deadlocks when the device is sending data while it's being
+    //  initialized or shut down (more of a problem with scripted devices.)
     if (m_bReceiveInhibit)
         return;
 
@@ -210,11 +212,10 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         //to the device. (sendShortMessage() would try to lock m_mutex...)
         locker.unlock();
 
-        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, channel, 
-                                                            control, value, status, 
-                                                            mixxxControl.getControlObjectGroup())) {
-            qDebug() << "MidiDevice: Invalid script function" << configKey.item;
-        }
+        // This needs to be a signal because the MIDI Script Engine thread must execute
+        //  script functions, not this MidiDevice one
+        emit(callMidiScriptFunction(configKey.item, channel, control, value, status, 
+                                mixxxControl.getControlObjectGroup()));
         return;
     }
 #endif

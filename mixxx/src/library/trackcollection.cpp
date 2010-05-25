@@ -37,6 +37,13 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection()
 {
+    // Save all tracks that haven't been saved yet.
+    m_trackDao.saveDirtyTracks();
+
+    Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
+    //The above is an ASSERT because there should never be an outstanding 
+    //transaction when this code is called. If there is, it means we probably
+    //aren't committing a transaction somewhere that should be.
     m_db.close();
     qDebug() << "TrackCollection destroyed";
 }
@@ -53,7 +60,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 1;
+    int requiredSchemaVersion = 3;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
@@ -137,6 +144,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             emit(progressLoading(file.fileName()));
             //qDebug() << "Loading" << file.fileName();
 
+            // TODO(XXX) addTrack repeats the work of using QFileInfo
             trackDao.addTrack(file.absoluteFilePath());
 
         } else {

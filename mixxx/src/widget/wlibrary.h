@@ -10,10 +10,12 @@
 #include <QStackedWidget>
 #include <QString>
 
+class MixxxKeyboard;
+
 class WLibrary : public QStackedWidget {
     Q_OBJECT
 public:
-    WLibrary(QWidget* parent = NULL);
+    WLibrary(QWidget* parent);
     virtual ~WLibrary();
 
     // registerView is used to add a view to the LibraryWidget which the widget

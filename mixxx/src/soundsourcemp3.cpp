@@ -18,7 +18,8 @@
 #include <QtDebug>
 
 
-SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
+SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename),
+                                                    m_file(qFilename)
 {
     inputbuf = NULL;
     Stream = new mad_stream;
@@ -34,10 +35,11 @@ SoundSourceMp3::~SoundSourceMp3()
     mad_stream_finish(Stream);
     mad_frame_finish(Frame);
     mad_synth_finish(Synth);
-    delete [] inputbuf;
-
-    //free(Synth);
-    //free(Stream);
+    m_file.unmap(inputbuf);
+    m_file.close();
+    
+    //Don't delete because we're using mmapped i/o now.... right?
+    //delete [] inputbuf;
 
     m_qSeekList.clear();
 }
@@ -51,30 +53,20 @@ QList<QString> SoundSourceMp3::supportedFileExtensions()
 
 int SoundSourceMp3::open()
 {
-    QFile file( m_qFilename );
-    if (!file.open(QIODevice::ReadOnly)) {
+    m_file.setFileName(m_qFilename);
+    if (!m_file.open(QIODevice::ReadOnly)) {
         //qDebug() << "MAD: Open failed:" << m_qFilename;
         return ERR;
     }
 
-    // Read the whole file into inputbuf:
-    inputbuf_len = file.size();
-    inputbuf = new char[inputbuf_len];
-    unsigned int tmp = file.read(inputbuf, inputbuf_len);
-    if (tmp != inputbuf_len) {
-        // qDebug() << "MAD: ERR reading mp3-file: "
-        //          << m_qFilename
-        //          << "\nRead only "
-        //          << tmp
-        //          << "bytes, but wanted"
-        //          << inputbuf_len
-        //          << "bytes";
-    }
+    // Get a pointer to the file using memory mapped IO
+    inputbuf_len = m_file.size();
+    inputbuf = m_file.map(0, inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(Stream);
     mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
-    mad_stream_buffer(Stream, (unsigned char *) inputbuf, inputbuf_len);
+    mad_stream_buffer(Stream, inputbuf, inputbuf_len);
 
     /*
        Decode all the headers, and fill in stats:
@@ -528,11 +520,12 @@ int SoundSourceMp3::parseHeader()
     // mad-dev post in 2002-25-Jan on how to use libid3 by Rob Leslie
     // http://www.mars.org/mailman/public/mad-dev/2002-January/000439.html
     id3_file * fh = id3_file_open(qstrdup(location.toLocal8Bit()), ID3_FILE_MODE_READONLY);
-    if (fh!=0)
-    {
+    if (!fh) {
+		qDebug() << "SSMP3::ParseHeader : error opening ID3 tags";
+		//return ERR; //the file can still be valid without ID3 tags...
+	} else {
         id3_tag * tag = id3_file_tag(fh);
-        if (tag!=0)
-        {
+        if (tag!=0) {
             // Frame names can be found here:
             // http://www.id3.org/id3v2.4.0-frames.txt
             QString s;
@@ -546,7 +539,6 @@ int SoundSourceMp3::parseHeader()
             s="";
             getField(tag,"TALB",&s);
             this->setAlbum(s);
-            s="";
             getField(tag,"TDRC",&s);
             this->setYear(s);
             s="";
@@ -563,7 +555,6 @@ int SoundSourceMp3::parseHeader()
                 this->setBPM(bpm);
                 //Track->setBpmConfirm(true);
             }
-            
             //Track->setHeaderParsed(true);
 
             /*
@@ -577,6 +568,7 @@ int SoundSourceMp3::parseHeader()
         // this closes 'tag' for us
         id3_file_close(fh);
     }
+
 
     // Get file length. This has to be done by one of these options:
     // 1) looking for the tag named TLEN (above),
@@ -597,6 +589,11 @@ int SoundSourceMp3::parseHeader()
         qDebug() << "SSMP3::ParseHeader Open failed:" << location;
         return ERR;
     }
+    inputbuf = new unsigned char[READLENGTH]; 
+    /*
+    inputbuf_len = file.size();
+    inputbuf = file.map(0, inputbuf_len);
+    */
 
     mad_header Header;
 
@@ -612,25 +609,25 @@ int SoundSourceMp3::parseHeader()
     unsigned int frames = 0;
 
     // Number of bytes to read at a time to determine duration
-    const unsigned int READLENGTH = 5000;
-    char *inputbuf = new char[READLENGTH];
+
+
     const unsigned int DESIRED_FRAMES = 10;
     while(frames < DESIRED_FRAMES) {
-
-        unsigned int readbytes = file.read(inputbuf, READLENGTH);
+        
+        unsigned int readbytes = file.read((char*)inputbuf, READLENGTH);
+        
         if(readbytes != READLENGTH) {
             //qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
             if(readbytes == -1) {
                 // fatal error, no bytes were read
                 qDebug() << "MAD: fatal error reading mp3 file";
-                delete [] inputbuf; // don't leak memory!
                 return ERR;
             } else if(readbytes == 0) {
                 // EOF, just break out of the loop
                 break;
             }
             // otherwise we just have less data to work with, keep going!
-        }
+        } 
 
         // This preserves skiplen, so if we had a buffer error earlier
         // the skip will occur when we give it more data.
@@ -691,7 +688,13 @@ int SoundSourceMp3::parseHeader()
     }
 
 
-    file.close();
+    this->setSampleRate(Header.samplerate);
+    this->setChannels(MAD_NCHANNELS(&Header));
+
+    mad_stream_finish(Stream);
+    delete [] inputbuf;
+    //file.unmap(inputbuf);
+    //file.close();
     /**
       This code is now called in the destructor since ParseHeader() isn't
       static any more!
@@ -721,7 +724,7 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
             }
             else
                 framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-            
+
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
             if (strlen>0) {
                 str->setUtf16((ushort *)framestr,strlen);

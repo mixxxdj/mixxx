@@ -64,7 +64,7 @@ def getMixxxVersion():
 def CheckFFMPEG(conf, sources):
 	flags_ffmpeg = ARGUMENTS.get('ffmpeg', 0)
 	if int(flags_ffmpeg):
-		if platform == 'linux':
+		if platform == 'linux' or 'osx':
 			#Check for libavcodec, libavformat
 			#I just randomly picked version numbers lower than mine for this - Albert
 			if not conf.CheckForPKG('libavcodec', '51.20.0'):
@@ -207,7 +207,7 @@ vars.Add('prefix', 'Set to your install prefix', '/usr/local')
 vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
-vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 1)
+vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 vars.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 vars.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
@@ -221,12 +221,12 @@ vars.Add('test', 'Set to 1 to build Mixxx test fixtures.', 0)
 if not 'win' in platform:
 	vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
 	vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
-	vars.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
+	vars.Add('profiling', '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux) or Saturn (OS X)', 0)
 	vars.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
 else:
 	if platform == 'win64':
 		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
-	vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)\n  3 to use SSE code\n  4 to use SSE2 code.', 1)
+	vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
 	vars.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 	vars.Add('msvcdebug', 'Set to 1 to link against MS libraries with debugging info (implies debug=1)', 0)
 #env = Environment(options = opts)
@@ -424,6 +424,8 @@ sources = Split("""
                 library/dao/settingsdao.cpp
                 library/librarymidicontrol.cpp
                 library/schemamanager.cpp
+                library/promotracksfeature.cpp
+                library/promotrackswebview.cpp
 
                 xmlparse.cpp
                 parser.cpp
@@ -442,6 +444,7 @@ sources = Split("""
                 waveform/waveformrenderer.cpp
 		waveform/waveformrenderbackground.cpp
 		waveform/waveformrendersignal.cpp
+                waveform/waveformrendersignaltiles.cpp
 		waveform/waveformrendersignalpixmap.cpp
 		waveform/waveformrendermark.cpp
                 waveform/waveformrendermarkrange.cpp
@@ -551,11 +554,11 @@ if not conf.CheckLib('ogg'):
 
 ## Check for OpenGL (it's messy to do it for all three platforms)
 ## XXX this should *NOT* have hardcoded paths like this
-if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and not conf.CheckCHeader('GL/gl.h'):
+if not conf.CheckLib('GL') and not conf.CheckCHeader('GL/gl.h') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'):
 	print 'Did not find OpenGL development files, exiting!'
 	Exit(1)
 
-if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
+if not conf.CheckLib('GLU') and not conf.CheckCHeader('GL/glu.h') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
 	print 'Did not find GLU development files, exiting!'
 	Exit(1)
 
@@ -563,18 +566,13 @@ if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHe
 CheckFFMPEG(conf, sources)
 
 #Check for PortTime
-if not conf.CheckHeader(['porttime.h']):
-	print "Did not find PortTime development header, exiting!"
+if not conf.CheckLib(['porttime', 'libporttime']) and not conf.CheckHeader(['porttime.h']):
+	print "Did not find PortTime or its development headers, exiting!"
 	Exit(1)
 
-if not platform == 'osx':   # OSX doesn't need PortTime for some reason
-	if not conf.CheckLib(['porttime', 'libporttime']):
-		print "Did not find PortTime or it\'s development headers, exiting!"
-		Exit(1)
-
 #Check for PortMIDI & PortTime
-if not conf.CheckLib(['portmidi', 'libportmidi']):
- 	print "Did not find PortMidi or it\'s development headers, exiting!"
+if not conf.CheckLib(['portmidi', 'libportmidi']) and not conf.CheckHeader(['portmidi.h']):
+ 	print "Did not find PortMidi or its development headers, exiting!"
  	Exit(1)
 
 
@@ -621,7 +619,8 @@ if platform == 'linux':
 		'QtSvg',
 		'QtSql',
 		'QtScript',
-		'QtXmlPatterns'
+		'QtXmlPatterns',
+		'QtWebKit'
 		#'QtUiTools',
 		#'QtDesigner',
 		#'QtWebKit',
@@ -640,7 +639,7 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
 				'/Library/Frameworks/Qt3Support.framework/Headers/',
@@ -648,6 +647,7 @@ if platform == 'osx':
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtNetwork.framework/Headers/',
 				'/Library/Frameworks/QtSql.framework/Headers/',
+				'/Library/Frameworks/QtWebKit.framework/Headers/',
 				'/Library/Frameworks/QtScript.framework/Headers/'])
 
 	#Non-standard libpaths for fink and darwin ports
@@ -712,6 +712,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'QtCore')
 	env.Append(LIBS = 'QtNetwork')
 	env.Append(LIBS = 'QtOpenGL')
+	env.Append(LIBS = 'QtWebKit')
 	env.Append(LIBS = 'QtScript')
 	env.Append(LIBS = 'sndfile') #? we shouldn't have to do this...
 	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
@@ -723,7 +724,7 @@ if 'win' in platform:
 	env.Append(LIBS = 'QtSql4');
 	env.Append(LIBS = 'QtGui4');
 	env.Append(LIBS = 'QtCore4');
-	env.Append(LIBS = 'QtNetwork4');
+	env.Append(LIBS = 'QtWebKit4');
 	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
 	env.Append(LIBS = 'ogg_static')
@@ -745,6 +746,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 			    '$QTDIR/include/QtNetwork',
 			    '$QTDIR/include/QtSql',
 			    '$QTDIR/include/QtOpenGL',
+			    '$QTDIR/include/QtWebKit',
 			    '$QTDIR/include/Qt'])
 
 if 'win' in platform:
@@ -903,7 +905,7 @@ if int(flags_shoutcast):
 	build_flags += 'shoutcast '
 
 
-	if conf.CheckLib('mp3lame'):
+	if conf.CheckLibWithHeader('mp3lame', 'lame/lame.h', 'C'):
 		env.Append(CPPDEFINES = '__SHOUTCAST_LAME__')
 		sources += Split(""" encodermp3.cpp """)
 		shoutmp3 = 1
@@ -929,7 +931,7 @@ else:
 	print "Shoutcast support... disabled"
 
 #LADSPA
-flags_ladspa = getFlags(env, 'ladspa', 0) # 1; #Forcing ladspa on always now #= getFlags(env, 'ladspa', 0)
+flags_ladspa = getFlags(env, 'ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CPPPATH=['#lib/ladspa']) #If you add more directories, separate them with a semicolon (;)
 	env.Append(CPPDEFINES = '__LADSPA__')
@@ -1086,15 +1088,25 @@ else:
 	print "MIDI Scripting... disabled"
 
 # Profiling and Optimization
-if not 'win' in platform:
-	flags_gprof = getFlags(env, 'gprof', 0)
-	if int(flags_gprof):
+if platform == 'linux':
+	flags_profiling = getFlags(env, 'profiling', 0)
+	if int(flags_profiling):
 		env.Append(CCFLAGS = '-pg')
 		env.Append(LINKFLAGS = '-pg')
-		print "gprof profiling support... enabled"
-		build_flags += 'gprof '
+		print "gprof (Linux) profiling support... enabled"
+		build_flags += 'profiling '
 	else:
-		print "gprof profiling support... disabled"
+		print "gprof (Linux) profiling support... disabled"
+
+if platform == 'osx':
+	flags_profiling = getFlags(env, 'profiling', 0)
+	if int(flags_profiling):
+		env.Append(CCFLAGS = '-finstrument-functions')
+		env.Append(LINKFLAGS = '-lSaturn')
+		print "Saturn (OS X) profiling support... enabled"
+		build_flags += 'profiling '
+	else:
+		print "profiling profiling support... disabled"
 
 flags_tuned = getFlags(env, 'tuned', 0)
 if int(flags_tuned):
@@ -1142,7 +1154,7 @@ if int(flags_optimize):
 			elif flags_optimize >= '2':
 				print "  Maximum optimizations (/Ox)"
 				env.Append(CXXFLAGS = '/Ox')
-			if not platform == 'win64':
+			if not platform == 'win64': # SSE and SSE2 are core instructions on AMD64
 				if flags_optimize == '3':
 					print "  SSE instructions enabled"
 					env.Append(CXXFLAGS = '/arch:SSE')
@@ -1189,13 +1201,13 @@ if int(flags_asmlib):
 	build_flags += 'asmlib '
 	if platform == 'linux':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		if architecture[0] == '64bit':
+		if architecture[0] == '64bit' and not int(force32):
 			env.Append(LIBS = '":alibelf64o.a"')
 		else:
 			env.Append(LIBS = '":alibelf32o.a"')
 	elif platform == 'osx':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		if architecture[0] == '64bit':
+		if architecture[0] == '64bit' and not int(force32):
 			env.Append(LIBS = '":alibmac64o.a"')
 		else:
 			env.Append(LIBS = '":alibmac32o.a"')
@@ -1217,8 +1229,8 @@ if (not 'win' in platform and int(flags_optimize) > 1) or ('win' in platform and
     sources += Split("""#lib/""" + soundtouch_path + """/mmx_optimized.cpp #lib/""" + soundtouch_path + """/sse_optimized.cpp""")
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
-# Enable SoundTouch Windows 3dNow optimizations if we're on AMD
-if 'win' in platform and not 'makerelease' in COMMAND_LINE_TARGETS and 'AMD' in machine:
+# Enable SoundTouch Windows 3dNow optimizations (decides at runtime if they're useful)
+if 'win' in platform:
     sources += Split("""#lib/""" + soundtouch_path + """/3dnow_win.cpp""")
 
 #Debugging output
@@ -1248,6 +1260,7 @@ flags_force32 = getFlags(env, 'force32', 0)
 if int(flags_force32):
 	env.Append(CCFLAGS = '-m32')
 	env.Append(CXXFLAGS = '-m32')
+	env.Append(LINKFLAGS = '-m32')
 	print "Force 32-bit GCC compile... enabled"
 else:
 	print "Force 32-bit GCC compile... disabled"
@@ -1364,7 +1377,7 @@ midimappings_files = Glob('#res/midi/*')
 keyboardmappings_files = Glob('#res/keyboard/*')
 
 #Promo tracks
-promotracks_files = Glob('#promo/*')
+promotracks_files = Glob('#res/promo/*')
 
 #LADSPA shizzle
 ladspapresets_files = Glob('#res/ladspa_presets/*')
@@ -1389,7 +1402,8 @@ if platform == 'win64':
 else:
 	dll_files = Glob('#/../mixxx-win32lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll""")
+dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
+$QTDIR/bin/phonon4.dll""")
 
 if int(flags_script):
 	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
@@ -1577,7 +1591,7 @@ def BuildRelease(target, source, env):
 			_winreg.CloseKey(hklm)
 
 			# Call the NSIS build
-			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s Mixxx.nsi' % {'path':nsis_location, \
+			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % {'path':nsis_location, \
 'version':env['MIXXX_VERSION'], '64bit':buildwin64}
 			type(command) == str
 			print "Using command:" + command
@@ -1672,9 +1686,9 @@ def BuildUbuntuPackage(target, source, env):
 		print "Aborted building installer"
 
 #Build the Ubuntu package if "makeubuntu" was passed as an argument
-versiondebbld = Builder(action = BuildUbuntuPackage, suffix = '.foo', src_suffix = '.bar')
+versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suffix = '.bar')
 env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
 
 if 'makeubuntu' in COMMAND_LINE_TARGETS:
-	makeubuntu = env.BuildUbuntuPackage('', binary_files)
+	makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
 	env.Alias('makeubuntu', makeubuntu)

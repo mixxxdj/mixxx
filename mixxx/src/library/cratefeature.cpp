@@ -12,6 +12,7 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
@@ -55,6 +56,11 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
     int trackId = m_pTrackCollection->getTrackDAO().getTrackId(url.toLocalFile());
 
+    //If the track wasn't found in the database, add it to the DB first.
+    if (trackId <= 0)
+    {
+        trackId = m_pTrackCollection->getTrackDAO().addTrack(url.toLocalFile());
+    }
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
 
@@ -73,7 +79,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                              WLibrary* libraryWidget) {
+                              WLibrary* libraryWidget,
+                              MixxxKeyboard* keyboard) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));

@@ -75,6 +75,11 @@ void WaveformRenderMarkRange::newTrack(TrackInfoObject* pTrack) {
     m_iMarkEndPoint = -1;
     m_bMarkEnabled = true;
     m_iNumSamples = 0;
+    m_iSampleRate = 0;
+    m_dSamplesPerDownsample = -1;
+
+    if (!m_pTrack)
+        return;
 
     // calculate beat info for this track:
 
