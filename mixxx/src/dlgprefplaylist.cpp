@@ -16,8 +16,11 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
+//#include "plugindownloader.h"
 #include <QtCore>
 #include <QtGui>
+
+#define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
 {
@@ -25,9 +28,25 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     setupUi(this);
     slotUpdate();
 
+    /*
+    m_pPluginDownloader = new PluginDownloader(this);
+
+    //Disable the M4A button if the plugin is present on disk.
+    setupM4AButton();
+
+    //Disable M4A Button after download completes successfully.
+    connect(m_pPluginDownloader, SIGNAL(downloadFinished()),
+            this, SLOT(slotM4ADownloadFinished())); 
+    
+    connect(m_pPluginDownloader, SIGNAL(downloadProgress(qint64, qint64)),
+            this, SLOT(slotM4ADownloadProgress(qint64, qint64))); 
+    */
+
     // Connection
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
     connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
+    //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
+    connect(pushButtonExtraPlugins, SIGNAL(clicked()), this, SLOT(slotExtraPlugins()));
 
 #ifdef __IPOD__
     // iPod related stuff
@@ -41,6 +60,73 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
 DlgPrefPlaylist::~DlgPrefPlaylist()
 {
 }
+
+void DlgPrefPlaylist::slotExtraPlugins()
+{
+    QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
+}
+
+/*
+void DlgPrefPlaylist::slotM4ADownloadProgress(qint64 bytesReceived,
+                                              qint64 bytesTotal)
+{
+    pushButtonM4A->setText(QString("%1\%").arg(100*(float)bytesReceived/bytesTotal, 0, 'g', 1));
+}
+void DlgPrefPlaylist::slotM4ADownloadFinished()
+{
+    //Disable the button after the download is finished.
+    //We force it to be disabled because on Linux, gdebi-gtk
+    //needs to be finished running before we know whether or not
+    //the plugin is actually installed. :(
+    setupM4AButton(true);
+}
+
+void DlgPrefPlaylist::setupM4AButton(bool forceInstalled)
+{
+    //If the M4A plugin is present on disk, disable the button
+    if (m_pPluginDownloader->checkForM4APlugin() || forceInstalled) {
+        pushButtonM4A->setChecked(true);
+        pushButtonM4A->setEnabled(false);
+        pushButtonM4A->setText(tr("Installed"));
+    }
+}
+
+void DlgPrefPlaylist::slotM4ACheck()
+{
+    qDebug() << "slotM4ACheck";
+
+#ifdef __LINUX__
+    QFile version("/proc/version");
+    bool isUbuntu = true;
+    if (version.open(QIODevice::ReadOnly))
+    {
+        QByteArray rawLine = version.readAll();
+        QString versionString(rawLine);
+        if (versionString.contains("Ubuntu", Qt::CaseInsensitive))
+        {
+            isUbuntu = true;
+        }
+    }
+    else {
+        isUbuntu = false;
+    }
+
+    if (!isUbuntu)
+    {
+        QMessageBox::information(this, tr("M4A Playback Plugin"),
+                                tr("The M4A playback plugin is currently"
+                                "unavailable for your Linux distribution."
+                                "Please download and compile Mixxx from "
+                                "source to enable M4A playback."));
+    }
+
+#endif
+
+    if (!m_pPluginDownloader->checkForM4APlugin())
+    {
+        m_pPluginDownloader->downloadM4APlugin();
+    }
+}*/
 
 void DlgPrefPlaylist::slotUpdate()
 {
@@ -131,10 +217,6 @@ void DlgPrefPlaylist::slotApply()
 
         // Save preferences
         config->Save();
-
-        qDebug() << "FIXME: Probably want to clear the TrackCollection and library playlist when you" <<
-                     "change library paths... (" << __FILE__ ", around line" << __LINE__;
-                     
 
         // Emit apply signal
         emit(apply());

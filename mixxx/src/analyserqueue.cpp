@@ -140,8 +140,9 @@ void AnalyserQueue::run() {
 
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
+        pSoundSource->open(); //Open the file for reading
         int iNumSamples = pSoundSource->length();
-        int iSampleRate = pSoundSource->getSrate();
+        int iSampleRate = pSoundSource->getSampleRate();
 
         if (iNumSamples == 0 || iSampleRate == 0) {
             qDebug() << "Skipping invalid file:" << next->getLocation();

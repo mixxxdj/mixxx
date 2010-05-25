@@ -71,12 +71,12 @@ EngineSideChain::~EngineSideChain()
     m_waitForFullBuffer.wakeAll();
     m_waitLock.unlock();
 
+    wait(); //Wait until the thread has finished.
+
 #ifdef __SHOUTCAST__
     if (shoutcast)
         shoutcast->shutdown();
 #endif
-
-    wait(); //Wait until the thread has finished.
 
     //Free up memory
     delete [] m_bufferFront;
