@@ -8,7 +8,6 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
 
 RhythmboxTrackModel::RhythmboxTrackModel()
         : AbstractXmlTrackModel("mixxx.db.model.rhythmbox") {
