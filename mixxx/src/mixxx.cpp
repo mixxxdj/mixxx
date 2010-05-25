@@ -315,11 +315,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
     connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
-<<<<<<< TREE
             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
-=======
-             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
->>>>>>> MERGE-SOURCE
 
     // Setup state of End of track controls from config database
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());

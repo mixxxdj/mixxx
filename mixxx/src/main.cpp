@@ -32,6 +32,7 @@
 #include "qpixmap.h"
 #include "qsplashscreen.h"
 #include "errordialog.h"
+#include "soundsourceproxy.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -253,18 +254,8 @@ int main(int argc, char * argv[])
     {
         if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
             printf("Mixxx digital DJ software - command line options");
-            printf("\n(These are case-sensitive.)\n\n\
-<<<<<<< TREE
-                   [FILE]                  Load the specified music file(s) at start-up.\n\
-                   Each must be one of the following file types:\n\
-                   ");
-            printf(MIXXX_SUPPORTED_AUDIO_FILETYPES);
-=======
-    [FILE]                  Load the specified music file(s) at start-up.\n\
-                            Each must be one of the following file types:\n\
-                            ");
+            printf("\n(These are case-sensitive.)\n\nLoad the specified music file(s) at start-up.\n\Each must be one of the following file types:\n\n");
             printf(SoundSourceProxy::supportedFileExtensionsString());
->>>>>>> MERGE-SOURCE
             printf("\n\n");
             printf("\
                    Each file you specify will be loaded into the\n\
