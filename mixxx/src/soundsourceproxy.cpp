@@ -30,6 +30,9 @@
 #ifdef __FFMPEGFILE__
 #include "soundsourceffmpeg.h"
 #endif
+#ifdef __LIBFLAC__
+#include "soundsourceflac.h"
+#endif
 
 //Added by qt3to4:
 #include <Q3ValueList>
@@ -68,6 +71,10 @@ void SoundSourceProxy::initialize(QString qFilename) {
     else if (filename.endsWith(".m4a") ||
 	     filename.endsWith(".mp4"))
 	m_pSoundSource = new SoundSourceM4A(qFilename);
+#endif
+#ifdef __LIBFLAC__
+    else if (filename.endsWith(".flac"))
+        m_pSoundSource = new SoundSourceFLAC(qFilename);
 #endif
 #ifdef __SNDFILE__
     else if (filename.endsWith(".wav") ||

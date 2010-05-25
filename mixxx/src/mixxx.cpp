@@ -1197,6 +1197,19 @@ void MixxxApp::rebootMixxxView() {
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
       setFixedSize(view->width(), view->height() + menuBar()->height());
     }
+
+    // these signals/slots need reconnected to the new m_pVisuals after reboot or the
+    // signals go to the wrong slots
+    if (view->m_pVisualCh1) {
+        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer1(QString)));
+        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
+            this, SLOT(slotLoadPlayer1(QString)));
+    }
+    if (view->m_pVisualCh2) {
+        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer2(QString)));
+        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
+            this, SLOT(slotLoadPlayer2(QString)));
+    }
 }
 
 QString MixxxApp::getSkinPath() {
