@@ -375,11 +375,11 @@ double RateControl::calculateRate(double baserate, bool paused) {
 
         rate = 1. + getRawRate() + getTempRate();
         rate += wheelFactor/10.;
-
+        
         // New scratch behavior - overrides playback speed (and old behavior)
-        if (scratchEnable) rate *= scratchFactor;
-        // Deprecated old scratch behavior
+        if (scratchEnable) rate = scratchFactor;
         else {
+            // Deprecated old scratch behavior
             if (oldScratchFactor < 0.) {
                 rate *= (oldScratchFactor-1.);                
             } else if (oldScratchFactor > 0.) {
@@ -390,12 +390,12 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // FIXME: This divisor needs to adjust for latency. (For 10ms, divide by 10.)
         rate += jogFactor/10;
 
-        // If we are reversing, flip the rate.
-        if (m_pReverseButton->get()) {
+        // If we are reversing (and not scratching,) flip the rate.
+        if (!scratchEnable && m_pReverseButton->get()) {
             rate = -rate;
         }
     }
-
+    
     // Scale the rate by the engine samplerate
     rate *= baserate;
 

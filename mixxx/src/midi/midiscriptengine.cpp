@@ -930,7 +930,7 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
     // Controller resolution in intervals per second at normal speed (rev/min * ints/rev * mins/sec)
     float intervalsPerSecond = (rpm * intervalsPerRev)/60;
     
-    m_dx[deck] = 1/intervalsPerSecond/4;
+    m_dx[deck] = 1/intervalsPerSecond;
     m_intervalAccumulator[deck] = 0;
     m_ramp[deck] = false;
     
@@ -956,7 +956,13 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
             if (cot != NULL) rate = cot->get();
             cot = getControlObjectThread(group, "rateRange");
             if (cot != NULL) rate = rate * cot->get();
-            initVelocity = rate < 1 ? 1+rate : rate;
+            // Add 1 since the deck is playing
+            rate++;
+            // See if we're in reverse play
+            cot = getControlObjectThread(group, "reverse");
+            if (cot != NULL && cot->get() == 1) rate = -rate;
+            
+            initVelocity = rate;
         }
     }
     
@@ -999,14 +1005,10 @@ void MidiScriptEngine::scratchProcess(int timerId) {
         return;
     }
     
-    // Give the filter a data point
-    if (m_ramp[deck]) { // If we're ramping to end scratching, feed fixed data
-        // TODO: prevent oscillation around the target speed
-        //  Ideally, tell the filter to center around that speed so we don't have
-        //  to do this
-        if (m_rampTo[deck] < filter->currentPitch()) filter->observation(0);
-        else if (m_rampTo[deck] > filter->currentPitch()) filter->observation(m_dx[deck]/2);
-    }
+    // Give the filter a data point:
+    
+    // If we're ramping to end scratching, feed fixed data
+    if (m_ramp[deck]) filter->observation(m_rampTo[deck]*0.001);
     //  This will (and should) be 0 if no net ticks have been accumulated (i.e. the wheel is stopped)
     else filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
     
@@ -1019,10 +1021,8 @@ void MidiScriptEngine::scratchProcess(int timerId) {
     
     // If we're ramping and the current pitch is really close to the rampTo value,
     //  end scratching
-    
 //     if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
-
-    if (m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= m_dx[deck]*2) {
+    if (m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= 0.00001) {
         
         m_ramp[deck] = false;   // Not ramping no mo'
         
@@ -1052,16 +1052,21 @@ void MidiScriptEngine::scratchDisable(int deck) {
     if (cot != NULL && cot->get() == 1) {
         // If so, set the target velocity to the playback speed
         float rate;
+        // Get the pitch slider value
         cot = getControlObjectThread(group, "rate");
         if (cot != NULL) rate = cot->get();
+        // Multiply by the pitch range
         cot = getControlObjectThread(group, "rateRange");
         if (cot != NULL) rate = rate * cot->get();
-        m_rampTo[deck] = rate < 1 ? 1+rate : rate;
+        // Add 1 since the deck is playing
+        rate++;
+        // See if we're in reverse play
+        cot = getControlObjectThread(group, "reverse");
+        if (cot != NULL && cot->get() == 1) rate = -rate;
+        
+        m_rampTo[deck] = rate;
     }
     else m_rampTo[deck]=0.0;
-    
-    // TODO: Can we set the filter to center on a speed other than 0?
-    //  The above method doesn't work well.
-    
+
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
