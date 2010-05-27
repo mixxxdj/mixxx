@@ -267,6 +267,10 @@ int main(int argc, char * argv[])
                             for its resource files such as MIDI mappings,\n\
                             overriding the default installation location.\n\
 \n\
+    --pluginPath PATH       Top-level directory where Mixxx shoud look\n\
+                            for sound source plugins in addition to default\n\
+                            locations.\n\
+\n\
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
