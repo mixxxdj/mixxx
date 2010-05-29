@@ -511,10 +511,6 @@ int SoundSourceMp3::parseHeader()
 {
     QString location = m_qFilename; 
 
-    QFile sizetest( location );
-    if (sizetest.size() == 0) {
-    }
-
     this->setType("mp3");
 
     // mad-dev post in 2002-25-Jan on how to use libid3 by Rob Leslie
@@ -680,7 +676,7 @@ int SoundSourceMp3::parseHeader()
 
         // duration per frame * file_length bytes / (bytes per frame) = duration
         //mad_timer_multiply(&dur, Track->getLength()/((Stream->this_frame-Stream->buffer)/frames));
-        mad_timer_multiply(&dur, length()/bytesperframe);
+        mad_timer_multiply(&dur, file.size()/bytesperframe);
         int duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
         //qDebug() << "SSMP3::ParseHeader - CBR bytes per frame" << bytesperframe << " Estimated duration " << duration;
         this->setDuration(duration);
@@ -693,6 +689,9 @@ int SoundSourceMp3::parseHeader()
 
     mad_stream_finish(Stream);
     delete [] inputbuf;
+    inputbuf = NULL;
+    file.close();
+
     //file.unmap(inputbuf);
     //file.close();
     /**
