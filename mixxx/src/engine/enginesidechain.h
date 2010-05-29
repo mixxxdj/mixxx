@@ -22,6 +22,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "../recording/defs_recording.h"
 
 #ifdef __SHOUTCAST__
 class EngineShoutcast;
@@ -60,6 +61,10 @@ class EngineSideChain : public QThread
         EngineShoutcast *shoutcast;
         ControlObject* m_pShoutcastNeedUpdateFromPrefs;
         ControlObjectThreadMain* m_pShoutcastNeedUpdateFromPrefsCOTM;
+		
+		ControlObjectThread* recReady;
+    	ControlObject* recReadyCO;
+		
 #endif
         EngineRecord* rec;
 

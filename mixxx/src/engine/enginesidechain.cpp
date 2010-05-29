@@ -44,7 +44,7 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
     m_bufferBack  = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
     m_buffer = m_bufferFront;
 
-    m_iBufferEnd = 0;
+    m_iBufferEnd = 0; 
 
 #ifdef __SHOUTCAST__
     // Shoutcast
@@ -52,8 +52,10 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
     m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
 	shoutcast = new EngineShoutcast(m_pConfig);
 #endif
-
-    rec = new EngineRecord(m_pConfig);
+	
+ 	recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
+    recReady = new ControlObjectThread(recReadyCO);
+    rec = NULL;
 
    	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
 }
@@ -84,7 +86,10 @@ EngineSideChain::~EngineSideChain()
 #ifdef __SHOUTCAST__
     delete shoutcast;
 #endif
-    delete rec;
+	delete recReadyCO;
+	delete recReady;
+	if(rec)
+    	delete rec;
 
     m_backBufferLock.unlock();
 }
@@ -219,9 +224,23 @@ void EngineSideChain::run()
 			
        	} 
 #endif
-
-        rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-
+		//delete the recorder object if recording is switched off by the user
+		if(recReady->get() == RECORD_OFF){
+			if(rec != NULL){
+				delete rec;
+				rec = NULL;
+			}
+		}
+		if(recReady->get() == RECORD_READY){
+			if(rec == NULL){
+				rec = new EngineRecord(m_pConfig);
+				qDebug("Setting Record flag to: ON");
+            	recReady->slotSet(RECORD_ON);
+			}	
+		}
+		if(recReady->get() == RECORD_ON){	
+        	rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
+		}
         //m_backBufferLock.unlock();
 
     }

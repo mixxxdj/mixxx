@@ -7,7 +7,7 @@
 #include "defs_recording.h"
 
 
-WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config)
+WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config, EngineAbstractRecord *engine)
 {
     ready = false;
     sf = NULL;
@@ -93,7 +93,7 @@ void WriteAudioFile::open()
         qDebug() << "Warning: Tried to open WriteAudioFile before recording control was set to RECORD_ON";
 }
 
-void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
+void WriteAudioFile::write(const CSAMPLE * pIn, const int iBufferSize)
 {
     Q_ASSERT(iBufferSize % 2 == 0);
     CSAMPLE *pSamples = (CSAMPLE*) pIn;

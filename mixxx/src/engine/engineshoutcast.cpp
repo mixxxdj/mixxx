@@ -20,8 +20,8 @@
 #include "dlgprefshoutcast.h"
 
 
-#include "encodervorbis.h"
-#include "encodermp3.h"
+#include "../recording/encodervorbis.h"
+#include "../recording/encodermp3.h"
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
@@ -382,8 +382,10 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
         return;
 
-    if (iBufferSize > 0 && encoder)
+    if (iBufferSize > 0 && encoder){
         encoder->encodeBuffer(pOut, iBufferSize);
+		encoder->sendPackages(); //calls EngineShoutcast::writePage()
+	}
 
     if (metaDataHasChanged())
         updateMetaData();
