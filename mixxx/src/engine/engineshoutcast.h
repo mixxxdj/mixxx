@@ -29,7 +29,7 @@
 #include <QObject>
 #include <QMutex>
 
-#include "encoder.h"
+#include "../recording/encoder.h"
 
 //class ControlLogpotmeter;
 //class ConfigKey;

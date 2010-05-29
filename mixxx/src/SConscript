@@ -461,8 +461,14 @@ sources = Split("""
                 soundmanager.cpp
                 sounddeviceportaudio.cpp
                 dlgprefrecord.cpp
+
                 recording/enginerecord.cpp
                 recording/writeaudiofile.cpp
+				recording/encoder.cpp
+				recording/encodervorbis.cpp
+                recording/encodermp3.cpp
+				
+				
                 playerinfo.cpp
 
                 segmentation.cpp
@@ -901,11 +907,10 @@ if int(flags_shoutcast):
 
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
 
-	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp encoder.cpp """ )
+	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp """ )
 	build_flags += 'shoutcast '
-	sources += Split(""" encodermp3.cpp """)	# encodermp3.cpp loads shoutcast library (dll, so,mylib) dynamically if possilbe
+	
 	shoutmp3 = 1
-	sources += Split("""  encodervorbis.cpp """)	#OGG is free, thus we link it during compiling
 	shoutogg = 1
 
 	if not conf.CheckLib('vorbisenc'):	#Make sure Vorbis libraries are installed
