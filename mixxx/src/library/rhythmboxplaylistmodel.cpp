@@ -26,7 +26,6 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
 
 RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) :
         TrackModel(QSqlDatabase::database("QSQLITE"),
@@ -199,9 +198,10 @@ int RhythmboxPlaylistModel::columnCount(const QModelIndex& parent) const
     return RhythmboxPlaylistModel::NUM_COLUMNS;
 }
 
-void RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
+bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
     //Should do nothing... hmmm
+    return false;
 }
 
 /** Removes a track from the library track collection. */

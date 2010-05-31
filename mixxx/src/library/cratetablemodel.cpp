@@ -9,7 +9,7 @@
 #include "library/dao/cratedao.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : QSqlTableModel(pParent, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1),
@@ -94,7 +94,7 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Date Added"));
 }
 
-void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
     bool success = false;
     if (iTrackId >= 0) {
@@ -104,10 +104,12 @@ void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     if (success) {
         select();
+        return true;
     } else {
         // TODO(XXX) feedback
         qDebug() << "CrateTableModel::addTrack could not add track"
                  << location << "to crate" << m_iCrateId;
+        return false;
     }
 }
 
@@ -156,19 +158,12 @@ void CrateTableModel::slotSearch(const QString& searchText) {
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
 
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString CrateTableModel::currentSearch() {
@@ -228,7 +223,7 @@ QVariant CrateTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value = BaseSqlTableModel::data(item, role);
 
     if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {

@@ -533,6 +533,11 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
 }
 
+void WaveformRenderer::slotUnloadTrack(TrackInfoObject* pTrack) {
+    // All RenderObject's must support newTrack() calls with NULL
+    slotNewTrack(NULL);
+}
+
 void WaveformRenderer::slotNewTrack(TrackInfoObject* pTrack) {
 
     m_pTrack = pTrack;

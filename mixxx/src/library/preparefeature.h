@@ -10,7 +10,6 @@
 #include "configobject.h"
 
 class LibraryTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
 class PrepareFeature : public LibraryFeature {
@@ -30,7 +29,8 @@ class PrepareFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
 
     QAbstractItemModel* getChildModel();
 

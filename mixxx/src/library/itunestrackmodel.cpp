@@ -2,6 +2,7 @@
 #include <QtGui>
 #include <QtSql>
 #include <QtDebug>
+#include <QSettings>
 #include <QRegExp>
 #include <QtXmlPatterns/QXmlQuery>
 
@@ -9,7 +10,7 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 
 ITunesTrackModel::ITunesTrackModel()
         : AbstractXmlTrackModel("mixxx.db.model.itunes") {
@@ -17,21 +18,23 @@ ITunesTrackModel::ITunesTrackModel()
     QString res, playlistRes;
     QDomDocument itunesdb;
 
-    QRegExp supportedFileRegex(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX,
+    QRegExp supportedFileRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
                                Qt::CaseInsensitive);
 
-    /*
-     * Try and open the ITunes DB. An API call which tells us where
-     * the file is would be nice.
-     */
-    QString itunesXmlPath;
-    itunesXmlPath = MIXXX_ITUNES_DB_LOCATION;
+    QString itunesXmlPath = getiTunesMusicPath();
 
     QFile db(itunesXmlPath);
-    if ( ! db.exists())
+    if (!db.exists())
         return;
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    // Workaround for Bug #501916. Read the file, convert it to UTF-8 and then
+    // load it.
+    QByteArray db_bytes_utf8 = QString(db.readAll()).toUtf8();
+    QBuffer buffer(&db_bytes_utf8);
+    if (!buffer.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     /*
@@ -40,7 +43,7 @@ ITunesTrackModel::ITunesTrackModel()
      *
      * TODO: filter /key='Track Type'/string='URL' (remote) files
      */
-    query.setFocus(&db);
+    query.setFocus(&buffer);
     query.setQuery("/plist[@version='1.0']/dict[key='Tracks']/dict/dict");
     if ( ! query.isValid())
         return;
@@ -136,6 +139,7 @@ ITunesTrackModel::ITunesTrackModel()
     addColumnName(ITunesTrackModel::COLUMN_TITLE, "Title");
     addColumnName(ITunesTrackModel::COLUMN_ALBUM, "Album");
     addColumnName(ITunesTrackModel::COLUMN_DATE, "Date");
+    addColumnName(ITunesTrackModel::COLUMN_BPM, "BPM");
     addColumnName(ITunesTrackModel::COLUMN_GENRE, "Genre");
     addColumnName(ITunesTrackModel::COLUMN_LOCATION, "Location");
     addColumnName(ITunesTrackModel::COLUMN_DURATION, "Duration");
@@ -203,10 +207,25 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
             return findValueByKey(songNode,"Album");
         case ITunesTrackModel::COLUMN_DATE:
             return findValueByKey(songNode,"Year");
+        case ITunesTrackModel::COLUMN_BPM:
+            return findValueByKey(songNode,"BPM");
         case ITunesTrackModel::COLUMN_GENRE:
             return findValueByKey(songNode,"Genre");
-        case ITunesTrackModel::COLUMN_LOCATION:
-            return findValueByKey(songNode,"Location");
+        case ITunesTrackModel::COLUMN_LOCATION: {
+            /*
+             * Strip the crappy file://localhost/ from the URL and
+             * format URL as in method ITunesTrackModel::parseTrackNode(QDomNode songNode)
+             */
+            QString strloc = findValueByKey(songNode,"Location");
+            QByteArray strlocbytes = strloc.toUtf8();
+            QString location = QUrl::fromEncoded(strlocbytes).toLocalFile();
+#if defined(__WINDOWS__)
+            return location.remove("//localhost/");
+#else
+            return location.remove("//localhost");
+#endif
+        }
+
         case ITunesTrackModel::COLUMN_DURATION:
             value = findValueByKey(songNode,"Total Time");
             if (qVariantCanConvert<int>(value)) {
@@ -233,22 +252,30 @@ bool ITunesTrackModel::isColumnInternal(int column) {
 
 TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
-    TrackInfoObject *pTrack = new TrackInfoObject();
+    QString strloc = findValueByKey(songNode,"Location");
+    QByteArray strlocbytes = strloc.toUtf8();
+    QUrl location = QUrl::fromEncoded(strlocbytes);
+
+    QString trackLocation;
+    //Strip the crappy localhost from the URL since Qt barfs on this :(
+#if defined(__WINDOWS__)
+    trackLocation = location.toLocalFile().remove("//localhost/");
+#else
+    trackLocation = location.toLocalFile().remove("//localhost");
+#endif
+    //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
+
+    TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(findValueByKey(songNode, "Artist"));
     pTrack->setTitle(findValueByKey(songNode, "Name"));
     pTrack->setAlbum(findValueByKey(songNode,"Album"));
     pTrack->setYear(findValueByKey(songNode,"Year"));
     pTrack->setGenre(findValueByKey(songNode,"Genre"));
+    pTrack->setBpm(findValueByKey(songNode,"BPM").toFloat());
+
     // ITunes stores time in total milliseconds
     pTrack->setDuration(findValueByKey(songNode,"Total Time").toInt() / 1000);
-
-    QString strloc = findValueByKey(songNode,"Location");
-    QByteArray strlocbytes = strloc.toUtf8();
-    QUrl location = QUrl::fromEncoded(strlocbytes);
-    //Strip the crappy localhost from the URL since Qt barfs on this :(
-    pTrack->setLocation(location.toLocalFile().remove("//localhost"));
-    //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
 
     return pTrack;
 }
@@ -258,4 +285,22 @@ TrackInfoObject* ITunesTrackModel::getTrackById(QString id) {
         return NULL;
     }
     return parseTrackNode(m_mTracksById[id]);
+}
+
+QString ITunesTrackModel::getiTunesMusicPath() {
+    QString musicFolder;
+#if defined(__APPLE__)
+		musicFolder = QDir::homePath() + "/Music/iTunes/iTunes Music Library.xml";
+#elif defined(__WINDOWS__)
+    QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
+		// if the value method fails it returns QTDir::homePath
+    musicFolder = settings.value("My Music", QDir::homePath()).toString();
+    musicFolder += "\\iTunes\\iTunes Music Library.xml";
+#elif defined(__LINUX__)
+		musicFolder =  QDir::homePath() + "/.itunes.xml";
+#else
+		musicFolder = "";
+#endif
+    qDebug() << "ITunesLibrary=[" << musicFolder << "]";
+    return musicFolder;
 }

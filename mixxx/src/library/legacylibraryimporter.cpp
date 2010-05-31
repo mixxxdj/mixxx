@@ -24,7 +24,7 @@ struct LegacyPlaylist
     QList<int> indexes;
 };
 
-LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao, 
+LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
                                              PlaylistDAO& playlistDao) : QObject(),
     m_trackDao(trackDao),
     m_playlistDao(playlistDao)
@@ -61,9 +61,9 @@ void LegacyLibraryImporter::import()
         {
             LegacyPlaylist legPlaylist;
             playlist = playlistList.at(i);
-            
+
             QString name = playlist.firstChildElement("Name").text();
-            
+
             legPlaylist.name = name;
 
             //Store the IDs in the hash table so we can map them to track locations later,
@@ -103,7 +103,7 @@ void LegacyLibraryImporter::import()
                 trackInfo17.setAlbum(trackInfoNew.getAlbum());
                 trackInfo17.setYear(trackInfoNew.getYear());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
-                m_trackDao.addTrack(&trackInfo17);
+                m_trackDao.saveTrack(&trackInfo17);
 
                 //Check if this track is used in a playlist anywhere. If it is, save the
                 //track location. (The "id" of a track in 1.8 is a database index, so it's totally
@@ -122,21 +122,21 @@ void LegacyLibraryImporter::import()
         {
             current = it.next();
             emit(progress("Upgrading Mixxx 1.7 Playlists: " + current.name));
-            
+
             //Create the playlist with the imported name.
             //qDebug() << "Importing playlist:" << current.name;
             m_playlistDao.createPlaylist(current.name, false);
             int playlistId = m_playlistDao.getPlaylistIdFromName(current.name);
-            
+
             //For each track ID in the XML...
             QList<int> trackIDs = current.indexes;
             for (int i = 0; i < trackIDs.size(); i++)
-            {   
+            {
                 QString trackLocation;
                 int id = trackIDs[i];
-                //qDebug() << "track ID:" << id; 
+                //qDebug() << "track ID:" << id;
 
-                //Try to resolve the (XML's) track ID to a track location. 
+                //Try to resolve the (XML's) track ID to a track location.
                 if (playlistHashTable.contains(id)) {
                     trackLocation = playlistHashTable[id];
                     //qDebug() << "Resolved to:" << trackLocation;

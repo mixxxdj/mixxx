@@ -101,6 +101,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     if (text().isEmpty()) {
         m_place = true;
         showPlaceholder();
+        emit(searchCleared());
     } else {
         m_place = false;
     }
@@ -145,7 +146,6 @@ void WSearchLineEdit::showPlaceholder() {
     QPalette palette = this->palette();
     palette.setColor(this->foregroundRole(), Qt::lightGray);
     setPalette(palette);
-    emit(searchCleared());
 }
 
 void WSearchLineEdit::updateCloseButton(const QString& text)

@@ -6,11 +6,11 @@
 
 #include "library/preparefeature.h"
 #include "library/librarytablemodel.h"
-#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
 
 const QString PrepareFeature::m_sPrepareViewName = QString("Prepare");
 
@@ -36,10 +36,17 @@ QIcon PrepareFeature::getIcon() {
 }
 
 void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                WLibrary* libraryWidget) {
+                                WLibrary* libraryWidget,
+                                MixxxKeyboard* keyboard) {
     DlgPrepare* pPrepareView = new DlgPrepare(libraryWidget,
                                               m_pConfig,
                                               m_pTrackCollection);
+    connect(pPrepareView, SIGNAL(loadTrack(TrackInfoObject*)),
+            this, SIGNAL(loadTrack(TrackInfoObject*)));
+    connect(pPrepareView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    pPrepareView->installEventFilter(keyboard);
+
     libraryWidget->registerView(m_sPrepareViewName, pPrepareView);
 }
 

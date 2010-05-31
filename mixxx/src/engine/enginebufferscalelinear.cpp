@@ -31,6 +31,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_fOldBaseRate = 1.0f;
     m_fPreviousL = 0.0f;
     m_fPreviousR = 0.0f;
+    m_scaleRemainder = 0.0f;
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
 }
@@ -71,6 +72,7 @@ void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
+    m_scaleRemainder = 0.0f;
 }
 
 
@@ -91,41 +93,64 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 {
 
     long unscaled_samples_needed;
-    float rate_add_new = 2.*m_dBaseRate;
-    float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
+    float rate_add_new = m_dBaseRate;
+    float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
 
+    if ( rate_add_diff )
+        m_scaleRemainder = 0.0f;
 
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
 
-    // Determine position in read_buffer to start from
+    // Determine position in read_buffer to start from. (This is always 0 with
+    // the new EngineBuffer implementation)
     new_playpos = playpos;
+
+    const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size);
+
+    // Guard against buf_size == 0
+    if (iRateLerpLength == 0)
+        return buffer;
 
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
 
-    for (int j = 0; j < RATE_LERP_LENGTH; j+=2)
+    for (int j = 0; j < iRateLerpLength; j+=2)
     {
-        rate_add = (rate_add_diff) / RATE_LERP_LENGTH * j + rate_add_old;
+        rate_add = (rate_add_diff) / iRateLerpLength * j + rate_add_old;
         samples += fabs(rate_add);
     }
 
     rate_add = rate_add_new;
     rate_add_abs = fabs(rate_add);
 
-    samples += (rate_add_abs * ((buf_size - RATE_LERP_LENGTH)/2));
-
-
+    samples += (rate_add_abs * ((buf_size - iRateLerpLength)/2));
     unscaled_samples_needed = ceil(samples);
-    if (!even(unscaled_samples_needed))
-        unscaled_samples_needed++;
 
-    Q_ASSERT(unscaled_samples_needed >= 0);
-    Q_ASSERT(unscaled_samples_needed != 0);
+
+    if ( samples != unscaled_samples_needed)
+        m_scaleRemainder += (double)unscaled_samples_needed - samples;
+
+    bool carry_remainder = FALSE;
+    if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
+    {
+        long rem = (long)floor(m_scaleRemainder);
+        carry_remainder = TRUE;
+
+        m_scaleRemainder -= rem;
+        unscaled_samples_needed -= rem;
+    }
+
+    // Multiply by 2 because it is predicting mono rates, while we want a stereo
+    // number of samples.
+    unscaled_samples_needed *= 2;
+
+    //Q_ASSERT(unscaled_samples_needed >= 0);
+    //Q_ASSERT(unscaled_samples_needed != 0);
 
     int buffer_size = 0;
     double buffer_index = 0;
@@ -134,11 +159,16 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     long prev_sample = 0;
     bool last_read_failed = false;
 
+    // Use new_playpos to count the new samples we touch.
+    new_playpos = 0;
+
     int i = 0;
+    int screwups = 0;
     while(i < buf_size)
     {
         prev_sample = current_sample;
-        current_sample = floor(buffer_index);
+
+        current_sample = floor(buffer_index) * 2;
         if (!even(current_sample))
             current_sample++;
 
@@ -154,6 +184,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
                 unscaled_samples_needed = 2;
+                screwups++;
             }
 
             int samples_to_read = math_min(kiLinearScaleReadAheadLength,
@@ -162,6 +193,12 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             buffer_size = m_pReadAheadManager
                                 ->getNextSamples(m_dBaseRate,buffer_int,
                                                  samples_to_read);
+
+            if (m_dBaseRate > 0)
+                new_playpos += buffer_size;
+            else if (m_dBaseRate < 0)
+                new_playpos -= buffer_size;
+
 
             if (buffer_size == 0 && last_read_failed) {
                 break;
@@ -174,11 +211,11 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             continue;
         }
 
-        //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
-        //prevvents the change from being discontinuous and helps improve sound
-        //quality.
-        if (i < RATE_LERP_LENGTH) {
-            rate_add = (rate_add_diff) / RATE_LERP_LENGTH * i + rate_add_old;
+        //Smooth any changes in the playback rate over iRateLerpLength
+        //samples. This prevents the change from being discontinuous and helps
+        //improve sound quality.
+        if (i < iRateLerpLength) {
+            rate_add = (rate_add_diff) / iRateLerpLength * i + rate_add_old;
         }
         else {
             rate_add = rate_add_new;
@@ -189,14 +226,19 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         //Perform linear interpolation
         buffer[i] = m_fPreviousL + frac * (buffer_int[current_sample] - m_fPreviousL);
         buffer[i+1] = m_fPreviousR + frac * (buffer_int[current_sample+1] - m_fPreviousR);
-        new_playpos += rate_add;
 
-        if (i < RATE_LERP_LENGTH)
+        if (i < iRateLerpLength)
             buffer_index += fabs(rate_add);
         else
             buffer_index += rate_add_abs;
 
         i+=2;
+    }
+
+    if ( carry_remainder )
+    {
+        m_fPreviousL = buffer_int[buffer_size-2];
+        m_fPreviousR = buffer_int[buffer_size-1];
     }
 
     // If we broke out of the loop, zero the remaining samples

@@ -1,12 +1,13 @@
 #include <QtDebug>
 #include <QUrl>
+#include <QApplication>
 
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 
 SidebarModel::SidebarModel(QObject* parent)
-    : QAbstractItemModel(parent) {
-
+    : m_iDefaultSelectedIndex(0),
+      QAbstractItemModel(parent) {
 }
 
 SidebarModel::~SidebarModel() {
@@ -33,12 +34,17 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
 QModelIndex SidebarModel::getDefaultSelection() {
     if (m_sFeatures.size() == 0)
         return QModelIndex();
-    return createIndex(0, 0, (void*)this);
+    return createIndex(m_iDefaultSelectedIndex, 0, (void*)this);
+}
+
+void SidebarModel::setDefaultSelection(unsigned int index)
+{
+    m_iDefaultSelectedIndex = index;
 }
 
 void SidebarModel::activateDefaultSelection() {
     if (m_sFeatures.size() > 0) {
-        m_sFeatures[0]->activate();
+        m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
 }
 
@@ -133,6 +139,14 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
 
 void SidebarModel::clicked(const QModelIndex& index) {
     qDebug() << "SidebarModel::clicked() index=" << index;
+
+
+    //We use clicked() for keyboard and mouse control, and the
+    //following code breaks that for us:
+    /*if (QApplication::mouseButtons() != Qt::LeftButton) {
+        return;
+    }*/
+
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
