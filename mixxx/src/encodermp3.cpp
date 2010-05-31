@@ -29,9 +29,31 @@
 // Constructor
 EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    if (engine) pEngine = engine;
+    pEngine = engine;
     metaDataTitle = metaDataArtist = "";
+    m_pMetaData = NULL;
+    m_bufferIn[0] = NULL;
+    m_bufferIn[1] = NULL;
+    m_bufferOut = NULL;
+    m_bufferOutSize = 0;
+    m_lameFlags = NULL;
     m_pConfig = _config;
+	/*
+	 * @ Author: Tobias Rafreider
+	 * Nobody has initialized the field before my code review.
+     * At runtime the Integer field was inialized by a large random value
+     * such that the following pointer fields were never initialized in the
+	 * methods 'bufferOutGrow()' and 'bufferInGrow()' --> Valgrind shows invalid writes :-)
+	 * 
+     * m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
+	 * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
+     * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
+	 *
+     * This has solved many segfaults when using and even closing shoutcast along with LAME. 
+	 * This bug was detected by using Valgrind memory analyser 
+     *
+    */
+	m_bufferInSize = 0; 
 }
 
 // Destructor
@@ -39,6 +61,10 @@ EncoderMp3::~EncoderMp3()
 {
     flushStream();
     lame_close(m_lameFlags);
+	//free requested buffers
+	if(m_bufferIn[0] != NULL) delete m_bufferIn[0];
+    if(m_bufferIn[1] != NULL) delete m_bufferIn[1];
+	if(m_bufferOut != NULL) delete m_bufferOut;
 }
 
 /*

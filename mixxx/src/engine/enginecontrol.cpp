@@ -21,7 +21,7 @@ double EngineControl::process(const double,
                                const double,
                                const double,
                                const int) {
-    return 0;
+    return kNoTrigger;
 }
 
 double EngineControl::nextTrigger(const double,

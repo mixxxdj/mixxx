@@ -278,6 +278,12 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     m_pCurrentSoundSource->seek(sample_position);
     int samples_read = m_pCurrentSoundSource->read(samples_to_read,
                                                    m_pSample);
+    
+    //If we've run out of music, the SoundSource can return 0 samples.
+    //Remember that SoundSourc->getLength() (which is m_iTrackNumSamples)
+    //can lie to us about the length of the song!
+    if (samples_read <= 0)
+        return false;
 
     // TODO(XXX) This loop can't be done with a memcpy, but could be done with
     // SSE.
@@ -305,8 +311,10 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     Q_ASSERT(num_samples >= 0);
 
     // If asked to read 0 samples, don't do anything. (this is a perfectly
-    // reasonable request that happens sometimes.
-    if (num_samples == 0) {
+    // reasonable request that happens sometimes. If no track is loaded, don't
+    // do anything.
+    if (num_samples == 0 ||
+        m_iTrackSampleRate == 0) {
         return 0;
     }
 
@@ -358,6 +366,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 
         int samples_to_read = math_max(0, math_min(samples_remaining,
                                                    chunk_remaining_samples));
+
         // samples_to_read should be non-negative and even
         Q_ASSERT(samples_to_read >= 0);
         Q_ASSERT(samples_to_read % 2 == 0);
@@ -528,19 +537,33 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
         delete m_pCurrentSoundSource;
         m_pCurrentSoundSource = NULL;
     }
+    m_iTrackSampleRate = 0;
+    m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
     QFileInfo fileInfo(filename);
 
     if (filename.isEmpty() || !fileInfo.exists()) {
         qDebug() << "Couldn't load track with filename: " << filename;
+        emit(trackLoadFailed(
+            pTrack,
+            QString("The file '%1' could not be found.").arg(filename)));
         return;
     }
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
+    m_pCurrentSoundSource->open(); //Open the song for reading
     m_pCurrentTrack = pTrack;
-    m_iTrackSampleRate = m_pCurrentSoundSource->getSrate();
+    m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
+
+    if (m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
+        qDebug() << "Track is invalid: " << filename;
+        emit(trackLoadFailed(
+            pTrack,
+            QString("The file '%1' could not be loaded.").arg(filename)));
+        return;
+    }
 
     // Clear the chunks to read list.
     m_chunksToRead.clear();

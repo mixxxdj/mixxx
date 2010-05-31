@@ -9,7 +9,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.playlist"),
-          QSqlTableModel(parent, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -67,14 +67,13 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
         // It's normal for this to fail.
-        //qDebug() << query.executedQuery() << query.lastError();
+        qDebug() << query.executedQuery() << query.lastError();
     }
 
     //Print out any SQL error, if there was one.
-    /*
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
-    }*/
+    }
 
     setTable(playlistTableName);
 
@@ -110,21 +109,18 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     slotSearch("");
 
     select(); //Populate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 
-void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
+bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {
-    //Note: The model index is ignored when adding to the library track collection.
-    //      The position in the library is determined by whatever it's being sorted by,
-    //      and there's no arbitrary "unsorted" view.
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+
+    //Handle weird cases like a drag-and-drop to an invalid index
+    if (position <= 0) {
+        position = rowCount() + 1;
+    }
 
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
@@ -136,15 +132,13 @@ void PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     // Do nothing if the location still isn't in the database.
     if (trackId == -1)
-        return;
+        return false;
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
+
     select(); //Repopulate the data model.
 
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
+    return true;
 }
 
 TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
@@ -169,11 +163,6 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -275,11 +264,6 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     }
 
     select();
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PlaylistTableModel::search(const QString& searchText) {
@@ -302,18 +286,11 @@ void PlaylistTableModel::slotSearch(const QString& searchText)
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 const QString PlaylistTableModel::currentSearch() {
@@ -373,7 +350,7 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value = BaseSqlTableModel::data(item, role);
 
     if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {

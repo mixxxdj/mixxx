@@ -4,6 +4,7 @@
 
 #include <QDialog>
 #include <QMutex>
+#include <QHash>
 #include <QList>
 
 #include "ui_dlgtrackinfo.h"
@@ -41,7 +42,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private:
     void clear();
 
-    QList<Cue*> m_cueList;
+    QHash<int, Cue*> m_cueMap;
     TrackInfoObject* m_pLoadedTrack;
     QMutex m_mutex;
 };

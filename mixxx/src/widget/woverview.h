@@ -50,6 +50,7 @@ class WOverview : public WWidget
   public slots:
     void setValue(double);
     void slotLoadNewWaveform(TrackInfoObject* pTrack);
+    void slotUnloadTrack(TrackInfoObject* pTrack);
   private slots:
     void cueChanged(double v);
     void loopStartChanged(double v);

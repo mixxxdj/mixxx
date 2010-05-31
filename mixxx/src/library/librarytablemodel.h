@@ -3,12 +3,14 @@
 
 #include <QtSql>
 #include <QtCore>
+
+#include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
 #include "library/dao/trackdao.h"
 
 class TrackCollection;
 
-class LibraryTableModel : public QSqlRelationalTableModel, public virtual TrackModel
+class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
@@ -21,7 +23,7 @@ class LibraryTableModel : public QSqlRelationalTableModel, public virtual TrackM
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
-    virtual void addTrack(const QModelIndex& index, QString location);
+    virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
     virtual QVariant data(const QModelIndex& item, int role) const;

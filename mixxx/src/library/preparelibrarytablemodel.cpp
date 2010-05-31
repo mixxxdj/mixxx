@@ -15,11 +15,6 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
     slotSearch("");
     select();
 
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
-
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 }
@@ -65,42 +60,23 @@ void PrepareLibraryTableModel::slotSearch(const QString& searchText)
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + baseFilter + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
-
-    // setFilter() calls select() implicitly, so we have to fetchMore to prevent
-    // locking the database.
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 void PrepareLibraryTableModel::showRecentSongs()
 {
    m_bShowRecentSongs = true;
    search(m_currentSearch);
-   select();
-
-   //XXX: Fetch the entire result set to allow the database to unlock. --
-   //Albert Nov 29/09
-   while (canFetchMore())
-       fetchMore();
 }
 
 void PrepareLibraryTableModel::showAllSongs()
 {
     m_bShowRecentSongs = false;
     search(m_currentSearch);
-    select();
-
-    //XXX: Fetch the entire result set to allow the database to unlock. --
-    //Albert Nov 29/09
-    while (canFetchMore())
-        fetchMore();
 }
 
 

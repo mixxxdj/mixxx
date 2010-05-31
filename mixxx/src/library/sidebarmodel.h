@@ -19,6 +19,7 @@ class SidebarModel : public QAbstractItemModel {
 
     void addLibraryFeature(LibraryFeature* feature);
     QModelIndex getDefaultSelection();
+    void setDefaultSelection(unsigned int index);
     void activateDefaultSelection();
 
     // Required for QAbstractItemModel
@@ -56,6 +57,7 @@ class SidebarModel : public QAbstractItemModel {
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     QList<LibraryFeature*> m_sFeatures;
+    unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 };
 
 #endif /* SIDEBARMODEL_H */

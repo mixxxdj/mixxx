@@ -17,6 +17,9 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
+; Assumes this script is locaed in <base>\mixxx\build\nsis
+!define BASE_BUILD_DIR "..\.."
+
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Mixxx.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 
@@ -54,7 +57,7 @@ BrandingText " "
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-;InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+;InstallDirRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" ""
 
 ;Interface Settings
 !define MUI_ABORTWARNING
@@ -62,11 +65,11 @@ BrandingText " "
 !define MUI_HEADERIMAGE
 ;!define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
-!define MUI_HEADERIMAGE_BITMAP "res\images\mixxx_install_logo.bmp"
-!define MUI_ICON "res\images\icon.ico"
+!define MUI_HEADERIMAGE_BITMAP "${BASE_BUILD_DIR}\res\images\mixxx_install_logo.bmp"
+!define MUI_ICON "${BASE_BUILD_DIR}\res\images\icon.ico"
 
 ; Pages
-!insertmacro MUI_PAGE_LICENSE "LICENSE"
+!insertmacro MUI_PAGE_LICENSE "${BASE_BUILD_DIR}\LICENSE"
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
@@ -103,50 +106,52 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR
   
   ; Put binary files there
-  File "dist\mixxx.exe"
-  File "dist\*.dll"
+  File "${BASE_BUILD_DIR}\dist\mixxx.exe"
+  File "${BASE_BUILD_DIR}\dist\*.dll"
+  
+  ; Put other files there
+  File "${BASE_BUILD_DIR}\dist\*.xml"
   
   ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
   ; and place the appropriate versions of the listed DLL files and their manifest files
-  ; into the mixxx-win[64]lib directory for packaging before making the installer
-  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest, Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
+  ; into the mixxx-win[64]lib-msvc directory for packaging before making the installer
+  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest,
+  ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   
   !ifdef x64    ; x64 versions
-    File ..\mixxx-win64lib\msvcr*.dll
-    File ..\mixxx-win64lib\msvcp*.dll
-    File /nonfatal ..\mixxx-win64lib\msvcm*.dll
-    File ..\mixxx-win64lib\Microsoft.VC*.CRT.manifest
+    File ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc\msvcr*.dll
+    File ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc\msvcp*.dll
+    File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc\msvcm*.dll
+    File ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc\Microsoft.VC*.CRT.manifest
   !else         ; x86 versions
-    File ..\mixxx-winlib\msvcr*.dll
-    File ..\mixxx-winlib\msvcp*.dll
-    File /nonfatal ..\mixxx-winlib\msvcm*.dll
-    File ..\mixxx-winlib\Microsoft.VC*.CRT.manifest
+    File ${BASE_BUILD_DIR}\..\mixxx-win32lib-msvc\msvcr*.dll
+    File ${BASE_BUILD_DIR}\..\mixxx-win32lib-msvc\msvcp*.dll
+    File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win32lib-msvc\msvcm*.dll
+    File ${BASE_BUILD_DIR}\..\mixxx-win32lib-msvc\Microsoft.VC*.CRT.manifest
   !endif
 
   ; And documentation, licence etc.
-  File "Mixxx-Manual.pdf"
-  File "LICENSE"
-  File "README"
-  File "COPYING"
+  File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
+  File "${BASE_BUILD_DIR}\LICENSE"
+  File "${BASE_BUILD_DIR}\README"
+  File "${BASE_BUILD_DIR}\COPYING"
 
   SetOutPath $INSTDIR\midi
-  File /r /x ".svn" /x ".bzr" dist\midi\*.*
+  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist\midi\*.*
 
-  ;Disabled for initial 1.6.0 release
-  ;SetOutPath $INSTDIR\promo
-  ;File "dist\promo\*"
+  SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
+  File /r "${BASE_BUILD_DIR}\dist\promo\${PRODUCT_VERSION}\*"
 
   SetOutPath $INSTDIR\keyboard
-  File "dist\keyboard\Standard.kbd.cfg"
-  File "dist\keyboard\Old.kbd.cfg"
+  File "${BASE_BUILD_DIR}\dist\keyboard\Standard.kbd.cfg"
+  File "${BASE_BUILD_DIR}\dist\keyboard\Old.kbd.cfg"
 
   SetOutPath "$INSTDIR\skins"
-  File /r /x ".svn" /x ".bzr" dist\skins\*.*
+  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist\skins\*.*
 
   ; Write the installation path into the registry
-  ;WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
   
   ; Write the uninstall keys for Windows
@@ -219,6 +224,7 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
+  Delete $INSTDIR\*.xml
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\uninst.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
@@ -240,7 +246,8 @@ Section "Uninstall"
   Delete $INSTDIR\skins\*.*
   Delete $INSTDIR\keyboard\*.*
   Delete $INSTDIR\midi\*.*
-  ;Delete $INSTDIR\promo\*.*
+  Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*
+  Delete $INSTDIR\promo\*.*
   RMDir "$INSTDIR\skins\outline"
   RMDir "$INSTDIR\skins\outlineNetbook"
   RMDir "$INSTDIR\skins\outlineClose"
@@ -254,7 +261,8 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins"
   RMDir "$INSTDIR\midi"
   RMDir "$INSTDIR\keyboard"
-  ;RMDir "$INSTDIR\promo"
+  RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
+  RMDir "$INSTDIR\promo"
 
 
   ; Remove shortcuts, if any

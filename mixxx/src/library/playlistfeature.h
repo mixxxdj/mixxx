@@ -13,7 +13,6 @@
 #include "library/dao/trackdao.h"
 
 class PlaylistTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
 class PlaylistFeature : public LibraryFeature {
@@ -33,7 +32,8 @@ public:
     QAbstractItemModel* getChildModel();
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
   signals:
     void showPage(const QUrl& page);
 
@@ -48,7 +48,6 @@ public slots:
 
  private:
     PlaylistTableModel* m_pPlaylistTableModel;
-    ProxyTrackModel* m_pPlaylistModelProxy;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
     QAction *m_pCreatePlaylistAction;

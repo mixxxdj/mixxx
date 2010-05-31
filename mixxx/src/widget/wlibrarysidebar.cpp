@@ -20,8 +20,10 @@ WLibrarySidebar::~WLibrarySidebar() {
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
 {
+    //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
     emit(rightClicked(event->globalPos(), clickedItem));
+    //}
 }
 
 /** Drag enter event, happens when a dragged item enters the track sources view*/
@@ -138,7 +140,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event)
         QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
-            emit(activated(index));
+            emit(pressed(index));
             //Expand or collapse the item as necessary.
             setExpanded(index, !isExpanded(index));
         }
@@ -153,7 +155,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event)
         //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
-            emit(activated(index));
+            emit(pressed(index));
         }
     }
     else

@@ -63,7 +63,23 @@ void DlgTrackInfo::cueActivate() {
 }
 
 void DlgTrackInfo::cueDelete() {
+    QList<QTableWidgetItem*> selected = cueTable->selectedItems();
+    QListIterator<QTableWidgetItem*> item_it(selected);
 
+    QSet<int> rowsToDelete;
+    while(item_it.hasNext()) {
+        QTableWidgetItem* item = item_it.next();
+        rowsToDelete.insert(item->row());
+    }
+
+    QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
+    qSort(rowsList);
+
+    QListIterator<int> it(rowsList);
+    it.toBack();
+    while (it.hasPrevious()) {
+        cueTable->removeRow(it.previous());
+    }
 }
 
 void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
@@ -93,32 +109,47 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
         }
     }
     it = QListIterator<Cue*>(listPoints);
-    cueTable->setRowCount(listPoints.size());
     cueTable->setSortingEnabled(false);
     int row = 0;
 
     while (it.hasNext()) {
         Cue* pCue = it.next();
-        m_cueList.push_back(pCue);
 
-        QString id = QString("%1").arg(pCue->getId());
-        QString hotcue = QString("%1").arg(pCue->getHotCue());
+        QString rowStr = QString("%1").arg(row);
+
+        int iHotcue = pCue->getHotCue();
+        QString hotcue = "";
+        if (iHotcue != -1) {
+            hotcue = QString("%1").arg(iHotcue);
+        }
 
         int position = pCue->getPosition();
-        double seconds;
+        double totalSeconds;
         if (position == -1)
-            seconds = -1;
+            continue;
         else {
-            seconds = position / sampleRate;
+            totalSeconds = float(position) / float(sampleRate) / 2.0;
         }
-        QString duration = QString("%1").arg(seconds);
+
+        int fraction = 100*(totalSeconds - floor(totalSeconds));
+        int seconds = int(totalSeconds) % 60;
+        int mins = int(totalSeconds) / 60;
+        //int hours = mins / 60; //Not going to worry about this for now. :)
+
+        //Construct a nicely formatted duration string now.
+        QString duration = QString("%1:%2.%3").arg(mins).arg(seconds, 2, 10, QChar('0')).arg(fraction, 2,10, QChar('0'));
+
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
-        cueTable->setItem(row, 0, new QTableWidgetItem(id));
+
+        m_cueMap[row] = pCue;
+        cueTable->insertRow(row);
+        cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
         cueTable->setItem(row, 3, new QTableWidgetItem(pCue->getLabel()));
+        row += 1;
     }
     cueTable->setSortingEnabled(true);
 }
@@ -131,16 +162,41 @@ void DlgTrackInfo::unloadTrack(TrackInfoObject* pTrack) {
     m_pLoadedTrack->setArtist(txtArtist->text());
     m_pLoadedTrack->setComment(txtComment->text());
 
+    QHash<int, Cue*> cueMap;
+
+
+
     for (int row = 0; row < cueTable->rowCount(); ++row) {
-        Cue* pCue = m_cueList[row];
-        QTableWidgetItem* idItem = cueTable->item(row, 0);
+
+        QTableWidgetItem* rowItem = cueTable->item(row, 0);
         QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
         QTableWidgetItem* labelItem = cueTable->item(row, 3);
-        int id = idItem->data(Qt::DisplayRole).toInt();
-        int hotcue = hotcueItem->data(Qt::DisplayRole).toInt();
+
+        if (!rowItem || !hotcueItem || !labelItem)
+            continue;
+
+        int oldRow = rowItem->data(Qt::DisplayRole).toInt();
+        Cue* pCue = m_cueMap.take(oldRow);
+
+        QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
+        if (vHotcue.canConvert<int>()) {
+            pCue->setHotCue(vHotcue.toInt());
+        } else {
+            pCue->setHotCue(-1);
+        }
+
         QString label = labelItem->data(Qt::DisplayRole).toString();
-        pCue->setHotCue(hotcue);
         pCue->setLabel(label);
+    }
+
+    QMutableHashIterator<int,Cue*> it(m_cueMap);
+    // Everything remaining in m_cueMap must have been deleted.
+    while (it.hasNext()) {
+        it.next();
+        Cue* pCue = it.value();
+        it.remove();
+        qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
+        m_pLoadedTrack->removeCue(pCue);
     }
 
     m_pLoadedTrack = NULL;
@@ -159,6 +215,6 @@ void DlgTrackInfo::clear() {
     txtFilepath->setText("");
     txtType->setText("");
 
-    m_cueList.clear();
+    m_cueMap.clear();
     cueTable->clearContents();
 }

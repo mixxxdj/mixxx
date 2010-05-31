@@ -102,11 +102,13 @@ public:
     void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
     static QList<QString> getSchemeList(QString qSkinPath);
-public slots:
-	void slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack);
-	void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
-	void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
-	void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
+  public slots:
+    void slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack);
+    void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
+    void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
+    void slotClearTrackTextCh1(TrackInfoObject* pTrack);
+    void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
+    void slotClearTrackTextCh2(TrackInfoObject* pTrack);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
