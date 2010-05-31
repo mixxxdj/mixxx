@@ -161,6 +161,8 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
         unloadTrack(m_pLoadedTrack);
 
     m_pLoadedTrack = pTrack;
+    connect(pTrack, SIGNAL(cuesUpdated()),
+            this, SLOT(trackCuesUpdated()));
 
     Cue* loadCue = NULL;
     Cue* otherCue = NULL;
@@ -188,7 +190,7 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
     } else {
-        m_pCuePoint->set(-1);
+        m_pCuePoint->set(0.0f);
     }
 
     int cueRecall = getConfig()->getValueString(
@@ -210,7 +212,7 @@ void CueControl::unloadTrack(TrackInfoObject* pTrack) {
     // Store the cue point in a load cue.
     double cuePoint = m_pCuePoint->get();
 
-    if (cuePoint != -1) {
+    if (cuePoint != -1 && cuePoint != 0.0f) {
         Cue* loadCue = NULL;
         const QList<Cue*>& cuePoints = pTrack->getCuePoints();
         QListIterator<Cue*> it(cuePoints);
@@ -243,6 +245,11 @@ void CueControl::trackCuesUpdated() {
     if (!m_pLoadedTrack)
         return;
 
+    // We don't know what changed so we have to detach everything and re-attach.
+    for (int i = 0; i < m_iNumHotCues; ++i) {
+        detachCue(i);
+    }
+
     const QList<Cue*>& cuePoints = m_pLoadedTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
     while (it.hasNext()) {
@@ -253,10 +260,7 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            if (m_hotcue[hotcue] != pCue) {
-                detachCue(hotcue);
-                attachCue(pCue, hotcue);
-            }
+            attachCue(pCue, hotcue);
         }
     }
 }
@@ -328,9 +332,6 @@ void CueControl::hotcueGotoAndStop(double v) {
 void CueControl::hotcueActivate(double v) {
     qDebug() << "CueControl::hotcueActivate" << v;
 
-    if (v != 1.0)
-        return;
-
     QMutexLocker lock(&m_mutex);
 
     if (!m_pLoadedTrack)
@@ -340,13 +341,25 @@ void CueControl::hotcueActivate(double v) {
     Cue* pCue = m_hotcue[hotcue];
 
     if (pCue) {
-        if (pCue->getPosition() == -1) {
-            hotcueSet(v);
+        if (v == 1.0f) {
+            if (pCue->getPosition() == -1) {
+                hotcueSet(v);
+            } else {
+                if (m_pPlayButton->get() == 1.0f) {
+                    hotcueGoto(v);
+                } else {
+                    hotcueActivatePreview(v);
+                }
+            }
         } else {
-            hotcueGoto(v);
+            if (pCue->getPosition() != -1) {
+                hotcueActivatePreview(v);
+            }
         }
     } else {
-        hotcueSet(v);
+        if (v == 1.0f) {
+            hotcueSet(v);
+        }
     }
 }
 
@@ -383,6 +396,12 @@ void CueControl::hotcueClear(double v) {
         return;
 
     int hotcue = senderHotcue(sender());
+
+    Cue* pCue = m_hotcue[hotcue];
+    if (pCue) {
+        pCue->setHotCue(-1);
+    }
+
     detachCue(hotcue);
 }
 

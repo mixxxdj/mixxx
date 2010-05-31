@@ -94,6 +94,11 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
 
+    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
+            m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
+            m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
+
     // Default values for visuals
     m_pTextCh1 = 0;
     m_pTextCh2 = 0;
@@ -111,7 +116,9 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
+#ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
+#endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
@@ -134,16 +141,24 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
  	 //Connect the players to the waveform overview widgets so they
  	 //update when a new track is loaded.
  	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-		m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+          m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+  connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
+          m_pOverviewCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
 	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-		m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+          m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+  connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
+          m_pOverviewCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
 
 	//Connect the players to some other widgets, so they get updated when a
 	//new track is loaded.
-	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)), this,
-			SLOT(slotUpdateTrackTextCh1(TrackInfoObject*)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)), this,
-			SLOT(slotUpdateTrackTextCh2(TrackInfoObject*)));
+	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+          this, SLOT(slotUpdateTrackTextCh1(TrackInfoObject*)));
+  connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
+          this, SLOT(slotClearTrackTextCh1(TrackInfoObject*)));
+	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+          this, SLOT(slotUpdateTrackTextCh2(TrackInfoObject*)));
+  connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
+          this, SLOT(slotClearTrackTextCh2(TrackInfoObject*)));
 
 	//Setup a connection that allows us to connect the TrackInfoObjects that
 	//get loaded into the players to the waveform overview widgets. We don't
@@ -599,7 +614,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTextCh1 = p;
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                     m_pTextCh2 = p;
-		else
+                else
                     m_qWidgetList.append(p);
 
                 // Set position
@@ -634,6 +649,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 //QPalette palette;
                 palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
                 p->setPalette(palette);
+
+                QString style = WWidget::selectNodeQString(node, "Style");
+                if (style != "") {
+                    p->setStyleSheet(style);
+                }
 
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
@@ -765,7 +785,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
-                    //m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+#ifdef __LADSPA__
+//                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
+#endif
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
@@ -792,7 +814,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pLibraryWidget = new WLibrary(m_pSplitter);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
-                    
+
                     m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
                     m_pLibrarySidebar->installEventFilter(m_pKeyboard);
 
@@ -806,7 +828,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     setupTrackSourceViewWidget(node);
 
                     m_pLibrary->bindWidget(m_pLibrarySidebar,
-                                        m_pLibraryWidget);
+                                           m_pLibraryWidget,
+                                           m_pKeyboard);
 
                     //Add the library sidebar to the splitter.
                     m_pSplitter->addWidget(m_pLibrarySidebarPage);
@@ -843,7 +866,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 setupTabWidget(node);
 
                 setupTrackSourceViewWidget(node);
-                
+
                 // Applies the node settings to every view registered in the
                 // Library widget.
                 m_pLibraryWidget->setup(node);
@@ -1028,5 +1051,17 @@ void MixxxView::slotUpdateTrackTextCh2(TrackInfoObject* pTrack)
 {
 	if (m_pTextCh2)
 		m_pTextCh2->setText(pTrack->getInfo());
+}
+
+void MixxxView::slotClearTrackTextCh1(TrackInfoObject* pTrack)
+{
+	if (m_pTextCh1)
+		m_pTextCh1->setText("");
+}
+
+void MixxxView::slotClearTrackTextCh2(TrackInfoObject* pTrack)
+{
+	if (m_pTextCh2)
+		m_pTextCh2->setText("");
 }
 

@@ -44,11 +44,14 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
 
 }
 
-float AnalyserBPM::correctBPM( float BPM, int min, int max) {
+float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
+    qDebug() << "BPM range is" << min << "to" << max;
     if ( BPM == 0 ) return BPM;
 
-    if( BPM*2 < max ) BPM *= 2;
-    while ( BPM > max ) BPM /= 2;
+    if (aboveRange == 0) {
+        if( BPM*2 < max ) BPM *= 2;
+        while ( BPM > max ) BPM /= 2;
+    }
     while ( BPM < min ) BPM *= 2;
 
     return BPM;
@@ -63,7 +66,7 @@ void AnalyserBPM::finalise(TrackInfoObject *tio) {
     float bpm = m_pDetector->getBpm();
     if(bpm != 0) {
         // Shift it by 2's until it is in the desired range
-        float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm);
+        float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm, m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt());
         
         tio->setBpm(newbpm);
         tio->setBpmConfirm();

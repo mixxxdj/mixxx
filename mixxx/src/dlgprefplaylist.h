@@ -38,18 +38,29 @@ public slots:
     void slotBrowseDir();
     /** Apply changes to widget */
     void slotApply();
-
     /** Dialog to browse for iPod mount point */
     void slotBrowseiPodMountPoint();
-
     /** Attempt to guess the iPod's mount point */
     void slotDetectiPodMountPoint();
+    /** Starts up the PluginDownloader if the plugin isn't present */
+    //void slotM4ACheck();
+    /** Set the label and enabled state on the M4A button 
+        depending on whether the M4A plugin is installed. */
+    //void setupM4AButton(bool forceInstalled=false);
+    /** Display UI indication of plugin download progress.*/
+    //void slotM4ADownloadProgress(qint64, qint64);
+    /** M4A plugin download is finished... */
+    //void slotM4ADownloadFinished();
+
+    void slotExtraPlugins();
 
 signals:
     void apply();
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    /** SoundSource Plugin Downloader */
+    //PluginDownloader* m_pPluginDownloader;
 };
 
 #endif

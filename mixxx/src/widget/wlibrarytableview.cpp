@@ -26,6 +26,9 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setShowGrid(false);
     setCornerButtonEnabled(false);
     setSortingEnabled(true);
+    //Work around a Qt bug that lets you make your columns so wide you
+    //can't reach the divider to make them small again.
+    setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     verticalHeader()->hide();
     verticalHeader()->setDefaultSectionSize(20);

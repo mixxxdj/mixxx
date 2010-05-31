@@ -26,7 +26,8 @@ class CrateFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
 
     QAbstractItemModel* getChildModel();
   signals:
@@ -47,7 +48,6 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pDeleteCrateAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;
-    ProxyTrackModel m_crateTableModelProxy;
     QModelIndex m_lastRightClickedIndex;
 };
 

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -37,6 +37,8 @@
 #include <id3tag.h>
 #include <q3ptrlist.h>
 
+#define READLENGTH 5000
+
 /** Struct used to store mad frames for seeking */
 typedef struct MadSeekFrameType {
     unsigned char *m_pStreamPos;
@@ -48,17 +50,19 @@ typedef struct MadSeekFrameType {
   *@author Tue and Ken Haste Andersen
   */
 class TrackInfoObject;
-  
+
 class SoundSourceMp3 : public SoundSource {
 public:
     SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
+    int open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     unsigned long discard(unsigned long size);
     /** Return the length of the file in samples. */
     inline long unsigned length();
-    static int ParseHeader( TrackInfoObject * );
+    int parseHeader();
+    static QList<QString> supportedFileExtensions();
     
 private:
     /** Returns the position of the frame which was found. The found frame is set to
@@ -70,18 +74,19 @@ private:
     /** Scale the mad sample to be in 16 bit range. */
     inline signed int madScale (mad_fixed_t sample);
 
-    FILE *file;
+    QFile m_file;
     int bitrate;
     int framecount;
     int currentframe;
     /** current play position. */
     mad_timer_t pos;
     mad_timer_t filelength;
-    mad_stream Stream;
+    mad_stream *Stream;
     mad_frame *Frame;
-    mad_synth Synth;
+    mad_synth *Synth;
     unsigned inputbuf_len;
-    char *inputbuf;
+    unsigned char *inputbuf;
+
     /** Start index in Synth buffer of samples left over from previous call to read */
     int rest;
     /** Number of channels in file */

@@ -10,7 +10,6 @@
 
 class LibraryTableModel;
 class MissingTableModel;
-class ProxyTrackModel;
 class TrackCollection;
 
 class MixxxLibraryFeature : public LibraryFeature {
@@ -39,8 +38,6 @@ public slots:
 private:
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
-    ProxyTrackModel* m_pLibraryTableModelProxy;
-    ProxyTrackModel* m_pMissingTableModelProxy;
     QStringListModel m_childModel;
 };
 

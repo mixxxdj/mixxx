@@ -12,16 +12,13 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
         : m_pTrackCollection(pTrackCollection),
           m_crateListTableModel(this, pTrackCollection->getDatabase()),
-          m_crateTableModel(this, pTrackCollection),
-          m_crateTableModelProxy(&m_crateTableModel, false) {
-
-    m_crateTableModelProxy.setSortCaseSensitivity(Qt::CaseInsensitive);
-
+          m_crateTableModel(this, pTrackCollection) {
     m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
@@ -59,6 +56,11 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
     int trackId = m_pTrackCollection->getTrackDAO().getTrackId(url.toLocalFile());
 
+    //If the track wasn't found in the database, add it to the DB first.
+    if (trackId <= 0)
+    {
+        trackId = m_pTrackCollection->getTrackDAO().addTrack(url.toLocalFile());
+    }
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
 
@@ -77,7 +79,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                              WLibrary* libraryWidget) {
+                              WLibrary* libraryWidget,
+                              MixxxKeyboard* keyboard) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));
@@ -99,7 +102,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     QString crateName = index.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
     m_crateTableModel.setCrate(crateId);
-    emit(showTrackModel(&m_crateTableModelProxy));
+    emit(showTrackModel(&m_crateTableModel));
 }
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
@@ -129,8 +132,14 @@ void CrateFeature::slotCreateCrate() {
     if (name == "")
         return;
     else {
-        if (m_pTrackCollection->getCrateDAO().createCrate(name)) {
+        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+        if (crateDao.createCrate(name)) {
             m_crateListTableModel.select();
+            // Switch to the new crate.
+            int crate_id = crateDao.getCrateIdByName(name);
+            m_crateTableModel.setCrate(crate_id);
+            emit(showTrackModel(&m_crateTableModel));
+            // TODO(XXX) set sidebar selection
             emit(featureUpdated());
         } else {
             qDebug() << "Error creating crate (may already exist) with name " << name;

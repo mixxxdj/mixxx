@@ -27,13 +27,18 @@ public:
     virtual QWidget* getWidgetForMIDIControl();
     public slots:
     void tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void selectAll(); 
+    void selectAll();
     void analyze();
     void trackAnalysisFinished(TrackInfoObject* tio);
     void trackAnalysisProgress(TrackInfoObject* tio, int progress);
     void showRecentSongs();
     void showAllSongs();
-private:
+    void installEventFilter(QObject* pFilter);
+  signals:
+    void loadTrack(TrackInfoObject* pTrack);
+    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+
+  private:
     void stopAnalysis();
 
     //Note m_pTrackTablePlaceholder is defined in the .ui file

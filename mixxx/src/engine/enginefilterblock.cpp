@@ -89,9 +89,9 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
-    delete m_pTemp3;
-    delete m_pTemp2;
-    delete m_pTemp1;
+    delete [] m_pTemp3;
+    delete [] m_pTemp2;
+    delete [] m_pTemp1;
     delete filterpotLow;
     delete filterKillLow;
     delete filterpotMid;
