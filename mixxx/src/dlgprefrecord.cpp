@@ -37,8 +37,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     comboBoxEncoding->addItem(ENCODING_FLAC);
 #endif
     comboBoxEncoding->addItem(ENCODING_AIFF);
+#ifdef __SHOUTCAST__
     comboBoxEncoding->addItem(ENCODING_MP3);
     comboBoxEncoding->addItem(ENCODING_OGG);
+#endif
 
 
     //Connections

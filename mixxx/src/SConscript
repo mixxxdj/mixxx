@@ -465,8 +465,7 @@ sources = Split("""
                 recording/enginerecord.cpp
                 recording/writeaudiofile.cpp
 				recording/encoder.cpp
-				recording/encodervorbis.cpp
-                recording/encodermp3.cpp
+
 				
 				
                 playerinfo.cpp
@@ -907,7 +906,7 @@ if int(flags_shoutcast):
 
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
 
-	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp """ )
+	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp recording/encodervorbis.cpp recording/encodermp3.cpp""" )
 	build_flags += 'shoutcast '
 	
 	shoutmp3 = 1

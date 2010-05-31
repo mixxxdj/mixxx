@@ -11,6 +11,7 @@ WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config, EngineAbstra
 {
     ready = false;
     sf = NULL;
+	pSamples = NULL;
     memset(&sfInfo, 0, sizeof(sfInfo));
     config = _config;
     ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
@@ -19,10 +20,11 @@ WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config, EngineAbstra
 WriteAudioFile::~WriteAudioFile()
 {
     delete ctrlRec;
-    close();
+    closeFile();
+	pSamples = NULL;
 }
 
-void WriteAudioFile::open()
+void WriteAudioFile::openFile()
 {
     //Note: libsndfile doesn't seem to like utf8 strings unfortunately :(
     QByteArray baPath = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
@@ -92,11 +94,14 @@ void WriteAudioFile::open()
     else
         qDebug() << "Warning: Tried to open WriteAudioFile before recording control was set to RECORD_ON";
 }
-
-void WriteAudioFile::write(const CSAMPLE * pIn, const int iBufferSize)
+void WriteAudioFile::encodeBuffer(const CSAMPLE *samples, const int size){
+	//There's nothing to encode	
+	iBufferSize = size;
+	Q_ASSERT(iBufferSize % 2 == 0);
+    pSamples = (CSAMPLE*) samples;
+}
+void WriteAudioFile::writeFile()
 {
-    Q_ASSERT(iBufferSize % 2 == 0);
-    CSAMPLE *pSamples = (CSAMPLE*) pIn;
     
     if(ctrlRec->get() == RECORD_ON)
     {
@@ -109,16 +114,16 @@ void WriteAudioFile::write(const CSAMPLE * pIn, const int iBufferSize)
         }
         else
         {
-            open();
+            openFile();
         }
     }
     else
     {
-        close();
+        closeFile();
     }
 }
 
-void WriteAudioFile::close()
+void WriteAudioFile::closeFile()
 {
     if(sf != NULL)
     {

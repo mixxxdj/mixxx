@@ -80,7 +80,13 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 EngineShoutcast::~EngineShoutcast()
 {
     QMutexLocker locker(&m_shoutMutex);
-    if (encoder) delete encoder;
+	
+    if (encoder){ 
+		encoder->flush();
+		encoder->sendPackages();	//send to shoutcast
+
+		delete encoder;
+	}
 	
     delete m_pUpdateShoutcastFromPrefs;
     delete m_pCrossfader;
@@ -99,6 +105,8 @@ bool EngineShoutcast::serverDisconnect()
 {
     QMutexLocker locker(&m_shoutMutex);
     if (encoder){ 
+		encoder->flush();
+		encoder->sendPackages();	//send to shoutcast
 		delete encoder;
 		encoder = NULL;
 	}
