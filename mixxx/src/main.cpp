@@ -31,7 +31,8 @@
 #include "soundsourceproxy.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
-#include "errordialog.h"
+#include "errordialoghandler.h"
+#include "defs_version.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -69,71 +70,11 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *dialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
+ErrorDialogHandler* ErrorDialogHandler::s_pInstance = 0;    // Resolves "undefined reference" linker errors
 
 void qInitImages_mixxx();
 
-void MessageOutput( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-
-    switch ( type ) {
-    case QtDebugMsg:
-#ifdef __WINDOWS__
-        if (strstr(msg, "doneCurrent")) {
-            break;
-        }
-#endif
-        fprintf( stderr, "Debug: %s\n", msg );
-        break;
-    case QtWarningMsg:
-        fprintf( stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-}
-
 QFile Logfile; // global logfile variable
-
-
-void MessageToLogfile( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-    
-    Q3TextStream Log( &Logfile );
-    switch ( type ) {
-    case QtDebugMsg:
-        Log << "Debug: " << msg << "\n";
-        break;
-    case QtWarningMsg:
-        Log << "Warning: " << msg << "\n";
-        //a->lock(); //this doesn't do anything in Qt4
-        QMessageBox::warning(0, "Mixxx", msg);
-        //a->unlock();
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-    Logfile.flush();
-}
-
 
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
@@ -160,7 +101,9 @@ void MessageHandler( QtMsgType type, const char * input )
 #endif
     }
       
-    Q3TextStream Log( &Logfile );	
+    Q3TextStream Log( &Logfile );
+    
+    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();    
     
     switch ( type ) {
     case QtDebugMsg:
@@ -175,26 +118,22 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtWarningMsg:
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
-        //QMessageBox::warning(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(0,input);
-        //I will break your legs if you re-enable the above lines of code.
-        //You shouldn't be using qWarning for reporting user-facing errors.
-        //Implement your own error message box...
-        // - Albert (March 11, 2010)
+        // Don't use qWarning for reporting user-facing errors.
+        //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-         //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-//         exit(-1);
-        break; //NOTREACHED(?)
+        Logfile.flush();    // Ensure the error is written to the log before exiting
+        dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
+//         exit(-1);    // Done in ErrorDialogHandler
+        break; //NOTREACHED
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-        //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-        abort();
+        Logfile.flush();    // Ensure the error is written to the log before aborting
+        dialogHandler->requestErrorDialog(DLG_FATAL,input);
+//         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
     Logfile.flush();
@@ -207,24 +146,23 @@ int main(int argc, char * argv[])
 
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
-	
+    
 
 #ifdef __WINDOWS__
   #ifdef DEBUGCONSOLE
     InitDebugConsole();
   #endif
 #endif
-   dialogHelper = new ErrorDialog(); 
-
     qInstallMsgHandler( MessageHandler );
-
+    
+    // Other things depend on this name to enforce thread exclusivity,
+    //  so if you change it here, change it also in:
+    //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
-
-
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
@@ -252,7 +190,9 @@ int main(int argc, char * argv[])
     for (int i=0; i<argc; ++i)
     {
         if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            printf("Mixxx digital DJ software - command line options");
+            printf("Mixxx digital DJ software v");
+            printf(VERSION);
+            printf(" - Command line options");
             printf("\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
@@ -350,7 +290,7 @@ int main(int argc, char * argv[])
     
     int result = -1;
 
-    if (!dialogHelper->checkError()) {
+    if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
     
@@ -360,12 +300,12 @@ int main(int argc, char * argv[])
     
     delete mixxx;
     
-	qDebug() << "Mixxx shutdown complete.";
+    qDebug() << "Mixxx shutdown complete with code" << result;
 
-	// Don't make any more output after this
-	//	or mixxx.log will get clobbered!
+    // Don't make any more output after this
+    //    or mixxx.log will get clobbered!
     if(Logfile.isOpen())
-	Logfile.close();
+    Logfile.close();
     
     //delete plugin_paths;
     return result;

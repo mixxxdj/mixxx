@@ -185,7 +185,6 @@ int SoundSourceSndFile::parseHeader()
     if (fh)
         sf_close(fh);
     
-    sf_close( fh );
     return OK;
 }
 
