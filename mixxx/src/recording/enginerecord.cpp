@@ -21,8 +21,10 @@
 #include "controlobjectthread.h"
 #include "controlobject.h"
 #include "dlgprefrecord.h"
-#include "encodervorbis.h"
-#include "encodermp3.h"
+#ifdef __SHOUTCAST__
+	#include "encodervorbis.h"
+	#include "encodermp3.h"
+#endif
 
 /***************************************************************************
 *									   *
@@ -42,75 +44,75 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 	//fOut->open(); 
 
 	m_Encoding = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding")).toLatin1();
+	//returns a number from 1 .. 10
 	m_OGGquality = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
 	m_MP3quality = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
 	
 	if(m_Encoding == ENCODING_MP3){
+	#ifdef __SHOUTCAST__
 		encoder = new EncoderMp3(config, this);
-		encoder->initEncoder(m_MP3quality.toInt());
+		encoder->initEncoder(convertToBitrate(m_MP3quality.toInt()));
+	#else
+		qDebug() << "MP3 recording requires Mixxx to build with shoutcast support";
+	#endif
+		
 	}
+	
 	if(m_Encoding == ENCODING_OGG){
+	#ifdef __SHOUTCAST__
 		encoder = new EncoderVorbis(config, this);
-		encoder->initEncoder(m_OGGquality.toInt());	
+		encoder->initEncoder(convertToBitrate(m_OGGquality.toInt()));
+	#else
+		qDebug() << "OGG recording requires Mixxx to build with shoutcast support";
+	#endif
 	
 	}
 	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
 		encoder = new WriteAudioFile(config, this);
 	}
-	if(encoder) encoder->open();
+	if(encoder) encoder->openFile();
 }
 
 	
 
 EngineRecord::~EngineRecord()
 {
-    delete fOut;
-    //delete recReady;
-    //delete recReadyCO;
-	if(encoder) 
+	
+	if(encoder) {
+		encoder->flush();
+		encoder->writeFile();	//write to file	
 		delete encoder;
+	}
 	
 }
-
+int EngineRecord::convertToBitrate(int quality){
+	switch(quality)
+        {
+            case 1: return 16;
+            case 2: return 24;
+            case 3: return 32;
+            case 4: return 64;
+            case 5: return 128;
+            case 6: return 160;
+            case 7: return 192;
+            case 8: return 224;
+            case 9: return 256;
+            case 10: return 320;
+			default: return 128;
+        }
+}
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-    //CSAMPLE *Out = (CSAMPLE*) pOut;
-
- /*
-    for (int i=0; i < iBufferSize; i+=2)
-    {
-        //if(pIn != pOut)
-        //    Out[i] = pIn[i];
-
-        if(recReady->get() == RECORD_READY && pIn[i] > THRESHOLD_REC)
-        {
-            //If we are waiting for a track to start before recording
-            //and the audio is high enough (a track is playing)
-            //then we can set the record flag to TRUE
-            qDebug("Setting Record flag to: ON");
-            recReady->slotSet(RECORD_ON);
-            //fOut->open(); //FIXME: This is not a good spot for this. - Albert
-        }
-    }
-	*/
-
+  
     //Write record buffer to file
-    if (m_Encoding != ENCODING_OGG && m_Encoding != ENCODING_MP3)
-        fOut->write(pIn, iBufferSize);
-	else{
-		encoder->encodeBuffer(pIn, iBufferSize); //encodeBuffer calls writePage
-		//encoder->write();
-	}
+	encoder->encodeBuffer(pIn, iBufferSize); 
+	encoder->writeFile(); //write to file
+	
 }
 void EngineRecord::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
-        // Send header if there is one
-        if ( headerLen > 0 ) {
-            //Write header
-			//fOut->write(header, headerLen);
-        }
-		//write body
-		//fOut->write(body, bodyLen);        
+     	//EngineRecord is not responsible for streaming to shoutcast
+		// --> Empty method
 }
 

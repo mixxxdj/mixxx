@@ -38,7 +38,7 @@ public:
 	void writePage(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
 
 private:
-    WriteAudioFile *fOut;
+	int convertToBitrate(int quality);
     ConfigObject<ConfigValue> *config;
     ControlObjectThread* recReady;
     ControlObject* recReadyCO;
