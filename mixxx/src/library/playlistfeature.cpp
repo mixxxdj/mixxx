@@ -9,7 +9,7 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
-#include "library/proxytrackmodel.h"
+#include "mixxxkeyboard.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -17,11 +17,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
           m_playlistTableModel(this, pTrackCollection->getDatabase()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
-
-
-    m_pPlaylistTableModel = new PlaylistTableModel(NULL, pTrackCollection);
-    m_pPlaylistModelProxy = new ProxyTrackModel(m_pPlaylistTableModel, false);
-    m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -59,7 +55,8 @@ QIcon PlaylistFeature::getIcon() {
 
 
 void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                 WLibrary* libraryWidget) {
+                                 WLibrary* libraryWidget,
+                                 MixxxKeyboard* keyboard) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));
@@ -78,7 +75,7 @@ void PlaylistFeature::activateChild(const QModelIndex& index) {
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     m_pPlaylistTableModel->setPlaylist(playlistId);
-    emit(showTrackModel(m_pPlaylistModelProxy));
+    emit(showTrackModel(m_pPlaylistTableModel));
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -115,7 +112,8 @@ void PlaylistFeature::slotCreatePlaylist() {
     //Switch the view to the new playlist.
     int playlistId = m_playlistDao.getPlaylistIdFromName(name);
     m_pPlaylistTableModel->setPlaylist(playlistId);
-    emit(showTrackModel(m_pPlaylistModelProxy));
+    // TODO(XXX) set sidebar selection
+    emit(showTrackModel(m_pPlaylistTableModel));
 }
 
 void PlaylistFeature::slotDeletePlaylist()

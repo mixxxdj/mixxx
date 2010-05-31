@@ -44,9 +44,10 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 // Constructor
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    if (engine)
-        pEngine = engine;
+    pEngine = engine;
     metaDataTitle = metaDataArtist = NULL;
+    m_pMetaData = NULL;
+    
     m_pConfig = _config;
 }
 
@@ -172,7 +173,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
     float **buffer;
     int i;
 
-    if (metaDataHasChanged())
+    if (metaDataHasChanged() && m_pMetaData != NULL)
         updateMetaData(m_pMetaData);
 
     buffer = vorbis_analysis_buffer(&vdsp, size);

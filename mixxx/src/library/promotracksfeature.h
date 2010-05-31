@@ -1,8 +1,21 @@
-// PromoTracksfeature.h
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+/***************************************************************************
+                          promotracksfeature.cpp
+                             -------------------
+    begin                : Jan 2010
+    copyright            : (C) 2010 Albert Santoni
+    email                : alberts@mixxx.org
+***************************************************************************/
 
-#ifndef PROMOTRACKSFEATURE_H 
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
+
+#ifndef PROMOTRACKSFEATURE_H
 #define PROMOTRACKSFEATURE_H
 
 #include <QStringListModel>
@@ -14,6 +27,8 @@
 class PlaylistTableModel;
 class ProxyTrackModel;
 class TrackCollection;
+class TrackInfoObject;
+class PromoTracksWebView;
 
 class PromoTracksFeature : public LibraryFeature {
     Q_OBJECT
@@ -22,7 +37,8 @@ class PromoTracksFeature : public LibraryFeature {
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~PromoTracksFeature();
-    static bool isSupported();
+    static bool isSupported(ConfigObject<ConfigValue>* config);
+    QList<TrackInfoObject*> getTracksToAutoLoad();
 
     QVariant title();
     QIcon getIcon();
@@ -33,7 +49,8 @@ class PromoTracksFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget);
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
 
     QAbstractItemModel* getChildModel();
 
@@ -46,8 +63,13 @@ public slots:
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
+    PromoTracksWebView* m_pPromoTracksView;
     const static QString m_sPromoTracksViewName;
+    static QString m_sPromoLocalHTMLLocation;
+    static QString m_sPromoRemoteHTMLLocation;
+    QString m_sPromoAutoloadLocation;
     QStringListModel m_childModel;
+    QList<TrackInfoObject*> m_tracksToAutoLoad;
 };
 
 

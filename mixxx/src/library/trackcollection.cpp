@@ -7,7 +7,7 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 #include "library/schemamanager.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
@@ -37,6 +37,13 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection()
 {
+    // Save all tracks that haven't been saved yet.
+    m_trackDao.saveDirtyTracks();
+
+    Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
+    //The above is an ASSERT because there should never be an outstanding 
+    //transaction when this code is called. If there is, it means we probably
+    //aren't committing a transaction somewhere that should be.
     m_db.close();
     qDebug() << "TrackCollection destroyed";
 }
@@ -53,7 +60,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 1;
+    int requiredSchemaVersion = 3;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
@@ -120,7 +127,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             return false;
         }
 
-        if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
+        if (file.fileName().count(QRegExp(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive))) {
             trackDao.markTrackLocationAsVerified(file.absoluteFilePath());
 
             //If the file already exists in the database, continue and go on to the next file.
@@ -137,12 +144,12 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             emit(progressLoading(file.fileName()));
             //qDebug() << "Loading" << file.fileName();
 
+            // TODO(XXX) addTrack repeats the work of using QFileInfo
             trackDao.addTrack(file.absoluteFilePath());
 
         } else {
             //qDebug() << "Skipping" << file.fileName() <<
             //    "because it did not match thesupported audio files filter:" <<
-            //    MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX;
         }
 
     }

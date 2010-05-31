@@ -27,8 +27,8 @@
 #include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
-#include "portaudio.h"
 #include "mixxx.h"
+#include "soundsourceproxy.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
 #include "errordialog.h"
@@ -175,20 +175,24 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtWarningMsg:
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
-//         QMessageBox::warning(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(0,input);
+        //QMessageBox::warning(0, "Mixxx", input);
+        //dialogHelper->requestErrorDialog(0,input);
+        //I will break your legs if you re-enable the above lines of code.
+        //You shouldn't be using qWarning for reporting user-facing errors.
+        //Implement your own error message box...
+        // - Albert (March 11, 2010)
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-//         QMessageBox::critical(0, "Mixxx", input);
+         //QMessageBox::critical(0, "Mixxx", input);
         dialogHelper->requestErrorDialog(1,input);
 //         exit(-1);
         break; //NOTREACHED(?)
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-//         QMessageBox::critical(0, "Mixxx", input);
+        //QMessageBox::critical(0, "Mixxx", input);
         dialogHelper->requestErrorDialog(1,input);
         abort();
         break; //NOTREACHED
@@ -217,6 +221,8 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
+    //Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 
 
 #ifdef __LADSPA__
@@ -239,21 +245,55 @@ int main(int argc, char * argv[])
     // Construct a list of strings based on the command line arguments
     struct CmdlineArgs args;
     args.bStartInFullscreen = false; //Initialize vars
+    
+    // Only match supported file types since command line options are also parsed elsewhere
+    QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
     for (int i=0; i<argc; ++i)
     {
-        if (argv[i]==QString("-f") || argv[i]==QString("--f"))
+        if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
+            printf("Mixxx digital DJ software - command line options");
+            printf("\n(These are case-sensitive.)\n\n\
+    [FILE]                  Load the specified music file(s) at start-up.\n\
+                            Each must be one of the following file types:\n\
+                            ");
+            printf(SoundSourceProxy::supportedFileExtensionsString());
+            printf("\n\n");
+            printf("\
+                            Each file you specify will be loaded into the\n\
+                            next virtual deck.\n\
+\n\
+    --resourcePath PATH     Top-level directory where Mixxx should look\n\
+                            for its resource files such as MIDI mappings,\n\
+                            overriding the default installation location.\n\
+\n\
+    --pluginPath PATH       Top-level directory where Mixxx shoud look\n\
+                            for sound source plugins in addition to default\n\
+                            locations.\n\
+\n\
+    --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
+                            messages it receives and script functions it loads\n\
+\n\
+    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
+\n\
+    -h, --help              Display this help message and exit");
+    
+            printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
+            return(0);
+        }
+        
+        if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
         {
             args.bStartInFullscreen = true;
         }
-        else
+        else if (fileRx.indexIn(argv[i]) != -1)
             args.qlMusicFiles += argv[i];
     }
     
     
     // set up the plugin paths...
-    qDebug() << "Setting up plugin paths...";
     /*
+    qDebug() << "Setting up plugin paths...";
     plugin_paths = QStringList();
     QString ladspaPath = QString(getenv("LADSPA_PATH"));
 
@@ -285,17 +325,22 @@ int main(int argc, char * argv[])
          plugin_paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
 #endif
     }
-    */
     qDebug() << "...done.";
+    */
+
     
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
-     dir.cdUp();
-     dir.cd("PlugIns");
-     //For some reason we need to do setLibraryPaths() and not addLibraryPath().
-     //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
-     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     //Set the search path for Qt plugins to be in the bundle's PlugIns directory,
+     //but only if we think the mixxx binary is in a bundle.
+     if (dir.path().contains("Mixxx.app")) {
+        dir.cdUp();
+        dir.cd("PlugIns");
+        //For some reason we need to do setLibraryPaths() and not addLibraryPath().
+        //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
+        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     }
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);
@@ -315,6 +360,10 @@ int main(int argc, char * argv[])
     
     delete mixxx;
     
+	qDebug() << "Mixxx shutdown complete.";
+
+	// Don't make any more output after this
+	//	or mixxx.log will get clobbered!
     if(Logfile.isOpen())
 	Logfile.close();
     

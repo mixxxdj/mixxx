@@ -1,3 +1,9 @@
+mixxx (1.8.0~beta1-0ubuntu1) karmic; urgency=low
+
+  * New upstream release 
+  
+ -- Albert Santoni <alberts@mixxx.org>  Tue,  2 February 2010 21:06:45 -0800
+
 mixxx (1.7.2-0ubuntu1) intrepid; urgency=low
 
   * New upstream release 

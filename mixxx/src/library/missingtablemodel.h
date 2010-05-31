@@ -4,12 +4,14 @@
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
+
 #include "trackmodel.h"
 #include "library/dao/trackdao.h"
+#include "library/basesqltablemodel.h"
 
 class TrackCollection;
 
-class MissingTableModel : public QSqlTableModel, public virtual TrackModel
+class MissingTableModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
@@ -21,7 +23,7 @@ class MissingTableModel : public QSqlTableModel, public virtual TrackModel
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
-    virtual void addTrack(const QModelIndex& index, QString location);
+    virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     virtual QVariant data(const QModelIndex& item, int role) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;

@@ -95,14 +95,16 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     //
     // Rate buttons configuration
     //
+    //NOTE: THESE DEFAULTS ARE A LIE! You'll need to hack the same values into the static variables
+    //      at the top of enginebuffer.cpp 
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(QString("4.0")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(QString("2.0")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(QString("1.0")));
+        m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(QString("0.50")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(QString("1.0")));
+        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(QString("0.05")));
 
     connect(spinBoxTempRateLeft, SIGNAL(valueChanged(double)), this, SLOT(slotSetRateTempLeft(double)));
     connect(spinBoxTempRateRight, SIGNAL(valueChanged(double)), this, SLOT(slotSetRateTempRight(double)));
@@ -114,6 +116,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     spinBoxPermRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).toDouble());
     spinBoxPermRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).toDouble());
 
+    SliderRateRampSensitivity->setEnabled(true);
+    SpinBoxRateRampSensitivity->setEnabled(true);
 
     //
     // Visuals
@@ -124,8 +128,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
 
     // Update combo box
-    ComboBoxVisuals->addItem("Waveform");
-    ComboBoxVisuals->addItem("Simple");
+    ComboBoxVisuals->addItem("On");
+    ComboBoxVisuals->addItem("Off");
     ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
 
     connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
@@ -244,8 +248,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     //
     
     // Set Ramp Rate On or Off
-    connect(CheckBoxRateRamp, SIGNAL(stateChanged(int)), this, SLOT(slotSetRateRamp(int)));
-    CheckBoxRateRamp->setChecked((bool)
+    connect(groupBoxRateRamp, SIGNAL(toggled(bool)), this, SLOT(slotSetRateRamp(bool)));
+    groupBoxRateRamp->setChecked((bool)
             m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
     );
     
@@ -254,7 +258,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     SliderRateRampSensitivity->setValue(
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
     );
-    
     
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
@@ -426,7 +429,7 @@ void DlgPrefControls::slotSetPositionDisplay(int)
 void DlgPrefControls::slotSetRateTempLeft(double v)
 {
     QString str;
-    str = str.setNum(v, 'f', 1);
+    str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(str));
     RateControl::setTemp(v);
 }
@@ -434,7 +437,7 @@ void DlgPrefControls::slotSetRateTempLeft(double v)
 void DlgPrefControls::slotSetRateTempRight(double v)
 {
     QString str;
-    str = str.setNum(v, 'f', 1);
+    str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(str));
     RateControl::setTempSmall(v);
 }
@@ -442,7 +445,7 @@ void DlgPrefControls::slotSetRateTempRight(double v)
 void DlgPrefControls::slotSetRatePermLeft(double v)
 {
     QString str;
-    str = str.setNum(v, 'f', 1);
+    str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(str));
     RateControl::setPerm(v);
 }
@@ -450,7 +453,7 @@ void DlgPrefControls::slotSetRatePermLeft(double v)
 void DlgPrefControls::slotSetRatePermRight(double v)
 {
     QString str;
-    str = str.setNum(v, 'f', 1);
+    str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(str));
     RateControl::setPermSmall(v);
 }
@@ -462,13 +465,13 @@ void DlgPrefControls::slotSetRateRampSensitivity(int sense)
     RateControl::setRateRampSensitivity(sense);
 }
 
-void DlgPrefControls::slotSetRateRamp(int mode)
+void DlgPrefControls::slotSetRateRamp(bool mode)
 {
     m_pConfig->set(ConfigKey("[Controls]", "RateRamp"), 
-                        ConfigValue(CheckBoxRateRamp->isChecked()));
+                        ConfigValue(groupBoxRateRamp->isChecked()));
     RateControl::setRateRamp(mode);
     
-    
+    /*
     if ( mode )
     {
         SliderRateRampSensitivity->setEnabled(TRUE);
@@ -478,7 +481,7 @@ void DlgPrefControls::slotSetRateRamp(int mode)
     {
         SliderRateRampSensitivity->setEnabled(FALSE);
         SpinBoxRateRampSensitivity->setEnabled(FALSE);
-    }
+    }*/
 }
 
 void DlgPrefControls::slotApply()
