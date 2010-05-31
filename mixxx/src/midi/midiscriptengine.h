@@ -19,6 +19,7 @@
 
 #include <QEvent>
 #include <QtScript>
+#include <QMessageBox>
 #include "configobject.h"
 #include "midimessage.h"
 #include "pitchfilter.h"
@@ -72,11 +73,15 @@ public slots:
     
 signals:
     void initialized();
+    void resetController();
 
 protected:
     void run();
     void timerEvent(QTimerEvent *event);
 
+private slots:
+    void errorDialogButton(QString key, QMessageBox::StandardButton button);
+    
 private:
     // Only call these with the scriptEngineLock
     bool safeEvaluate(QString filepath);
@@ -86,14 +91,14 @@ private:
     bool safeExecute(QString function, char channel, 
                      char control, char value, MidiStatusByte status, QString group);
     void initializeScriptEngine();
-
+    
+    void scriptErrorDialog(QString detailedError);
     void generateScriptFunctions(QString code);
     bool checkException();
     void stopAllTimers();
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
-    
-    
+        
     MidiDevice* m_pMidiDevice;
     bool m_midiDebug;
     QHash<ConfigKey, QString> m_connectedControls;
