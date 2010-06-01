@@ -56,7 +56,7 @@ void SampleUtil::sseApplyGain(_ALIGN_16 CSAMPLE* pBuffer,
     __m128 vSamples;
     __m128 vGain = _mm_set1_ps(gain);
     while (iNumSamples >= 4) {
-        vSamples = _mm_load_ps(pBuffer);
+        vSamples = _mm_loadu_ps(pBuffer);
         vSamples = _mm_mul_ps(vSamples, vGain);
         _mm_store_ps(pBuffer, vSamples);
 
@@ -102,7 +102,7 @@ void SampleUtil::sseApplyAlternatingGain(CSAMPLE* pBuffer,
     __m128 vSamples;
     __m128 vGain = _mm_set_ps(gain2, gain1, gain2, gain1);
     while (iNumSamples >= 4) {
-        vSamples = _mm_load_ps(pBuffer);
+        vSamples = _mm_loadu_ps(pBuffer);
         vSamples = _mm_mul_ps(vSamples, vGain);
         _mm_store_ps(pBuffer, vSamples);
 
@@ -145,9 +145,9 @@ void SampleUtil::sseAddWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     __m128 vDestSamples;
     __m128 vGain = _mm_set1_ps(gain);
     while (iNumSamples >= 4) {
-        vSrcSamples = _mm_load_ps(pSrc);
+        vSrcSamples = _mm_loadu_ps(pSrc);
         vSrcSamples = _mm_mul_ps(vSrcSamples, vGain);
-        vDestSamples = _mm_load_ps(pDest);
+        vDestSamples = _mm_loadu_ps(pDest);
         _mm_store_ps(pDest, _mm_add_ps(vDestSamples, vSrcSamples));
         iNumSamples -= 4;
         pDest += 4;
@@ -199,11 +199,11 @@ void SampleUtil::sseAdd2WithGain(CSAMPLE* pDest,
     __m128 vGain1 = _mm_set1_ps(gain1);
     __m128 vGain2 = _mm_set1_ps(gain2);
     while (iNumSamples >= 4) {
-        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc1Samples = _mm_loadu_ps(pSrc1);
         vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
-        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc2Samples = _mm_loadu_ps(pSrc2);
         vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
-        vDestSamples = _mm_load_ps(pDest);
+        vDestSamples = _mm_loadu_ps(pDest);
         vDestSamples = _mm_add_ps(vDestSamples, vSrc1Samples);
         vDestSamples = _mm_add_ps(vDestSamples, vSrc2Samples);
         _mm_store_ps(pDest, vDestSamples);
@@ -267,13 +267,13 @@ void SampleUtil::sseAdd3WithGain(CSAMPLE* pDest,
     __m128 vGain2 = _mm_set1_ps(gain2);
     __m128 vGain3 = _mm_set1_ps(gain3);
     while (iNumSamples >= 4) {
-        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc1Samples = _mm_loadu_ps(pSrc1);
         vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
-        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc2Samples = _mm_loadu_ps(pSrc2);
         vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
-        vSrc3Samples = _mm_load_ps(pSrc3);
+        vSrc3Samples = _mm_loadu_ps(pSrc3);
         vSrc3Samples = _mm_mul_ps(vSrc3Samples, vGain3);
-        vDestSamples = _mm_load_ps(pDest);
+        vDestSamples = _mm_loadu_ps(pDest);
         vDestSamples = _mm_add_ps(vDestSamples, vSrc1Samples);
         vDestSamples = _mm_add_ps(vDestSamples, vSrc2Samples);
         vDestSamples = _mm_add_ps(vDestSamples, vSrc3Samples);
@@ -336,7 +336,7 @@ void SampleUtil::sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     __m128 vSrcSamples;
     __m128 vGain = _mm_set1_ps(gain);
     while (iNumSamples >= 4) {
-        vSrcSamples = _mm_load_ps(pSrc);
+        vSrcSamples = _mm_loadu_ps(pSrc);
         vSrcSamples = _mm_mul_ps(vSrcSamples, vGain);
         _mm_store_ps(pDest, vSrcSamples);
         iNumSamples -= 4;
@@ -390,9 +390,9 @@ void SampleUtil::sseCopy2WithGain(CSAMPLE* pDest,
     __m128 vGain1 = _mm_set1_ps(gain1);
     __m128 vGain2 = _mm_set1_ps(gain2);
     while (iNumSamples >= 4) {
-        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc1Samples = _mm_loadu_ps(pSrc1);
         vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
-        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc2Samples = _mm_loadu_ps(pSrc2);
         vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
         _mm_store_ps(pDest, _mm_add_ps(vSrc1Samples, vSrc2Samples));
         iNumSamples -= 4;
@@ -456,11 +456,11 @@ void SampleUtil::sseCopy3WithGain(CSAMPLE* pDest,
     __m128 vGain2 = _mm_set1_ps(gain2);
     __m128 vGain3 = _mm_set1_ps(gain3);
     while (iNumSamples >= 4) {
-        vSrc1Samples = _mm_load_ps(pSrc1);
+        vSrc1Samples = _mm_loadu_ps(pSrc1);
         vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
-        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc2Samples = _mm_loadu_ps(pSrc2);
         vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
-        vSrc3Samples = _mm_load_ps(pSrc3);
+        vSrc3Samples = _mm_loadu_ps(pSrc3);
         vSrc3Samples = _mm_mul_ps(vSrc3Samples, vGain3);
 
         vSrc1Samples = _mm_add_ps(vSrc1Samples, vSrc2Samples);
@@ -561,7 +561,7 @@ void SampleUtil::sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
     const __m128 vSignMask = _mm_load_ps((float*)l_bitmask);
 
     while (iNumSamples >= 4) {
-        vSrcSamples = _mm_load_ps(pBuffer);
+        vSrcSamples = _mm_loadu_ps(pBuffer);
         vSrcSamples = _mm_and_ps(vSrcSamples, vSignMask);
         vSum = _mm_add_ps(vSum, vSrcSamples);
         iNumSamples -= 4;
@@ -615,7 +615,7 @@ bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
     __m128 vMax = _mm_set1_ps(fMax);
     __m128 vMin = _mm_set1_ps(fMin);
     while (iNumSamples >= 4) {
-        vSrcSamples = _mm_load_ps(pBuffer);
+        vSrcSamples = _mm_loadu_ps(pBuffer);
         vClamped = _mm_or_ps(vClamped, _mm_cmplt_ps(vSrcSamples, vMin));
         vClamped = _mm_or_ps(vClamped, _mm_cmpgt_ps(vSrcSamples, vMax));
         iNumSamples -= 4;
@@ -694,7 +694,7 @@ bool SampleUtil::sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
     __m128 vMax = _mm_set1_ps(fMax);
     __m128 vMin = _mm_set1_ps(fMin);
     while (iNumSamples >= 4) {
-        vSrcSamples = _mm_load_ps(pSrc);
+        vSrcSamples = _mm_loadu_ps(pSrc);
         vClamped = _mm_or_ps(vClamped, _mm_cmplt_ps(vSrcSamples, vMin));
         vClamped = _mm_or_ps(vClamped, _mm_cmpgt_ps(vSrcSamples, vMax));
         vSrcSamples = _mm_max_ps(vSrcSamples, vMin);
@@ -759,8 +759,8 @@ void SampleUtil::sseInterleaveBuffer(CSAMPLE* pDest,
     __m128 vLow;
     __m128 vHigh;
     while (iNumSamples >= 4) {
-        vSrc1Samples = _mm_load_ps(pSrc1);
-        vSrc2Samples = _mm_load_ps(pSrc2);
+        vSrc1Samples = _mm_loadu_ps(pSrc1);
+        vSrc2Samples = _mm_loadu_ps(pSrc2);
         // vSrc1Samples is l1,l2,l3,l4
         // vSrc2Samples is r1,r2,r3,r4
         vLow = _mm_unpacklo_ps(vSrc1Samples, vSrc2Samples);
@@ -808,8 +808,8 @@ void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
     __m128 vDst1Samples;
     __m128 vDst2Samples;
     while (iNumSamples >= 4) {
-        vSrc1Samples = _mm_load_ps(pSrc);
-        vSrc2Samples = _mm_load_ps(pSrc+4);
+        vSrc1Samples = _mm_loadu_ps(pSrc);
+        vSrc2Samples = _mm_loadu_ps(pSrc+4);
         // vSrc1Samples is l1,r1,l2,r2
         // vSrc2Samples is l3,r3,l4,r4
 
