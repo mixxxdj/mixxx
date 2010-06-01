@@ -60,10 +60,12 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 // ----------------------------------------------------
 // ---------- ErrorDialogHandler begins here ----------
 
+ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
+
 ErrorDialogHandler::ErrorDialogHandler() {
     m_pSignalMapper = new QSignalMapper(this);
     connect(m_pSignalMapper, SIGNAL(mapped(QString)), this, SLOT(boxClosed(QString)));
-    
+
     m_errorCondition=false;
     connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
             this, SLOT(errorDialog(ErrorDialogProperties*)));
@@ -103,7 +105,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     // Make sure the minimum items are set
     QString text = props->getText();
     Q_ASSERT(!text.isEmpty());
-    
+
     // Skip if a dialog with the same key is already displayed
     m_mutex.lock();
     bool keyExists = m_dialogKeys.contains(props->getKey());
@@ -114,46 +116,46 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
         delete dlgPropsTemp;
         return false;
     }
-    
+
     emit (showErrorDialog(props));
     return true;
 }
 
 void ErrorDialogHandler::errorDialog(ErrorDialogProperties* props) {
-    
+
     // Jest makin' sho' this is only run in the main (GUI) thread
     Q_ASSERT(QThread::currentThread()->objectName() == "Main");
-    
+
     QMessageBox* msgBox = new QMessageBox();
-    
+
     msgBox->setIcon(props->m_icon);
     msgBox->setWindowTitle(props->m_title);
     msgBox->setText(props->m_text);
     if (!props->m_infoText.isEmpty()) msgBox->setInformativeText(props->m_infoText);
     if (!props->m_details.isEmpty()) msgBox->setDetailedText(props->m_details);
-    
+
     QPushButton* buttonToSet;
     bool setDefault;
     while(!props->m_buttons.isEmpty()) {
         setDefault = false;
         if (props->m_buttons.first() == props->m_defaultButton) setDefault = true;
-        
+
         buttonToSet = msgBox->addButton(props->m_buttons.takeFirst());
-        
+
         if (setDefault) msgBox->setDefaultButton(buttonToSet);
     }
-    
+
     if (props->m_escapeButton) msgBox->setEscapeButton(msgBox->button(props->m_escapeButton));
-    
+
     msgBox->setModal(props->m_modal);
-    
+
     // This deletes the msgBox automatically, avoiding a memory leak
     msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
-    
+
     m_mutex.lock();
     m_dialogKeys.append(props->m_key);    // To avoid duplicate dialogs on the same error
     m_mutex.unlock();
-    
+
     // Signal mapper calls our slot with the key parameter so it knows which to remove from the list
     connect(msgBox, SIGNAL(finished(int)), m_pSignalMapper, SLOT(map()));
     m_pSignalMapper->setMapping(msgBox, props->m_key);
@@ -162,7 +164,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* props) {
     else msgBox->show();
 
     // If fatal, should we just abort here and not try to exit gracefully?
-    
+
     if (props->m_type>=DLG_CRITICAL) {  // If critical/fatal, gracefully exit application if possible
         m_errorCondition=true;
         if (QCoreApplication::instance()) {
@@ -174,7 +176,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* props) {
             else exit(-1);
         }
     }
-    
+
     ErrorDialogProperties* dlgPropsTemp = props;
     props = NULL;
     delete dlgPropsTemp;
@@ -185,16 +187,16 @@ void ErrorDialogHandler::boxClosed(QString key)
     QMessageBox* msgBox = (QMessageBox*)m_pSignalMapper->mapping(key);
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
-    
+
     emit stdButtonClicked(key, whichStdButton);
-    
+
     // If the user clicks "Ignore," we leave the key in the list so the same
     //  error is not displayed again for the duration of the session
     if (whichStdButton == QMessageBox::Ignore) {
         qWarning() << "Suppressing this" << msgBox->windowTitle() << "error box for the duration of the application.";
         return;
     }
-    
+
     m_mutex.lock();
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) qWarning() << "Error dialog key removal from list failed!";
