@@ -132,3 +132,9 @@ void WriteAudioFile::closeFile()
     }
     ready = false;
 }
+void WriteAudioFile::flush(){
+	//writeFile will do nothing afterwards
+	//do not remove this line otherwise segfaults will occcur if you finish WAV recording
+	iBufferSize = 0;	
+
+}

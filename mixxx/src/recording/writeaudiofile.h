@@ -37,7 +37,7 @@ public:
 	void updateMetaData(char* artist, char* title){};
 	//overloaded method for MP3 and OGG recording
 	void write(unsigned char *header, unsigned char *body,int headerLen, int bodyLen) {};
-	void flush(){};
+	void flush();
 	
 	//Call this method in conjunction with shoutcast streaming
 	void sendPackages(){};

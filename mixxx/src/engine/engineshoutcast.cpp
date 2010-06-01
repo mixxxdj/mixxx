@@ -26,6 +26,7 @@
 #include "playerinfo.h"
 #include "trackinfoobject.h"
 
+
 #include <QDebug>
 #include <QMutexLocker>
 #include <stdio.h> // currently used for writing to stdout
@@ -46,6 +47,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pVolume1(NULL),
           m_pVolume2(NULL),
           m_shoutMutex(QMutex::Recursive) {
+	// Handle error dialog buttons
+    qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
     m_pShout = 0;
     m_iShoutStatus = 0;
@@ -61,15 +64,18 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 
     if (!(m_pShout = shout_new())) {
         qDebug() << "Could not allocate shout_t";
+		errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
         return;
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
-        qDebug() << "Cound not allocate shout_metadata_t";
+        qDebug() << "Could not allocate shout_metadata_t";
+		errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
         return;
     }
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         qDebug() << "Error setting non-blocking mode:" << shout_get_error(m_pShout);
+		errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
         return;
     }
 }
@@ -265,13 +271,17 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
     if (encoder->initEncoder(baBitrate.toInt()) < 0) {
-        qDebug() << "**** Encoder init failed";
+        qDebug() << "**** Encoder init failed"; //e.g., if lame is not found 
+		delete encoder;
+		encoder = NULL;
+		//errorDialog(tr("Mixxx has encountered a problem "), tr("Encoder init failed"));
     }
 
 }
 
 /*
  * Reset the Server state and Connect to the Server.
+ *  
  */
 bool EngineShoutcast::serverConnect()
 {
@@ -285,6 +295,15 @@ bool EngineShoutcast::serverConnect()
     // on the first change
     m_pMetaDataLife = 31337;
 
+	/*Check if encoder is initalized
+	 * Encoder is initalized in updateFromPreferences which is called always before serverConnect()	
+	 * If encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
+	 * It does not make sense to connect 
+	 */
+	 if(encoder == NULL){
+		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+		return false;
+	}
     const int iMaxTries = 3;
     while (!m_bQuit && m_iShoutFailures < iMaxTries) {
         if (m_pShout)
@@ -308,6 +327,7 @@ bool EngineShoutcast::serverConnect()
         if (m_pShout)
             shout_close(m_pShout);
 		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+		errorDialog(tr("Shoutcast aborted connect after 3 tries"), "Please check your connection to the Internet and verify that your username and password are correct.");
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -326,6 +346,12 @@ bool EngineShoutcast::serverConnect()
         qDebug() << "***********Connected to Shoutcast server...";
         return true;
     }
+	//otherwise disable shoutcast in preferences
+	m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+	if(m_pShout){
+		qDebug() << "Shoutcast failed connect: " << shout_get_error(m_pShout);
+		errorDialog(tr("Mixxx could not connect to the server"), "Please check your connection to the Internet and verify that your username and password are correct.");
+	}
 
     return false;
 }
@@ -533,4 +559,40 @@ void EngineShoutcast::updateMetaData()
 	}
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     shout_set_metadata(m_pShout, m_pShoutMetaData);
+}
+/* -------- ------------------------------------------------------
+Purpose: Common error dialog creation code for run-time exceptions
+         Notify user when connected or disconnected and so on
+Input:   Detailed error string
+Output:  -
+-------- ------------------------------------------------------ */
+void EngineShoutcast::errorDialog(QString text, QString detailedError) {
+    qWarning() << "Shoutcast error: " << detailedError;
+    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+    props->setType(DLG_WARNING);
+    props->setTitle(tr("Livebroadcasting"));
+    props->setText(text);
+    props->setDetails(detailedError);
+    props->setKey(detailedError);   // To prevent multiple windows for the same error
+    props->setDefaultButton(QMessageBox::Close);
+    
+    props->setModal(false);
+    
+    if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
+        // Enable custom handling of the dialog buttons
+        connect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
+                this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
+    }
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Slot to handle custom button clicks in error dialogs
+Input:   Key of dialog, StandardButton that was clicked
+Output:  -
+-------- ------------------------------------------------------ */
+void EngineShoutcast::errorDialogButton(QString key, QMessageBox::StandardButton button) {
+    
+    // Something was clicked, so disable this signal now
+    disconnect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
+        this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 }

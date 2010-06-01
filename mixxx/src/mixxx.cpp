@@ -696,7 +696,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroMenu=new QMenu("&Macro");
 #endif
-
+	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
@@ -1319,4 +1319,20 @@ void MixxxApp::slotScanLibrary()
 void MixxxApp::slotEnableRescanLibraryAction()
 {
     libraryRescan->setEnabled(true);
+}
+void MixxxApp::slotOptionsMenuShow(){
+	ControlObjectThread* ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
+	
+	if(ctrlRec->get() == RECORD_OFF){
+		//uncheck Recording
+		optionsRecord->setChecked(false);
+	}
+
+#ifdef __SHOUTCAST__
+	 bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+
+	
+
+#endif
+
 }
