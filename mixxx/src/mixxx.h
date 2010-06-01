@@ -145,6 +145,8 @@ class MixxxApp : public QMainWindow
 	void slotEnableRescanLibraryAction();
 	/**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
 	void slotOptionsMenuShow();
+	/** toggles Livebroadcasting **/
+	void slotOptionsShoutcast(bool value);
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -228,6 +230,9 @@ class MixxxApp : public QMainWindow
     QAction *optionsRecord;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
+#ifdef __SHOUTCAST__
+	QAction *optionsShoutcast;
+#endif
 
     QAction *helpAboutApp;
     QAction *helpSupport;
