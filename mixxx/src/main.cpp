@@ -70,7 +70,6 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialogHandler* ErrorDialogHandler::s_pInstance = 0;    // Resolves "undefined reference" linker errors
 
 void qInitImages_mixxx();
 
@@ -88,23 +87,23 @@ void MessageHandler( QtMsgType type, const char * input )
     QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
     QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
     const char* s = ba.constData();
-    
-    
+
+
     if(!Logfile.isOpen())
     {
     Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
-     
+
 #ifdef QT3_SUPPORT
     Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
 #else
     Logfile.open(IO_WriteOnly | IO_Translate);
 #endif
     }
-      
+
     Q3TextStream Log( &Logfile );
-    
-    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();    
-    
+
+    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
+
     switch ( type ) {
     case QtDebugMsg:
 #ifdef __WINDOWS__  //wtf? -kousu 2/2009
@@ -146,7 +145,7 @@ int main(int argc, char * argv[])
 
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
-    
+
 
 #ifdef __WINDOWS__
   #ifdef DEBUGCONSOLE
@@ -154,7 +153,7 @@ int main(int argc, char * argv[])
   #endif
 #endif
     qInstallMsgHandler( MessageHandler );
-    
+
     // Other things depend on this name to enforce thread exclusivity,
     //  so if you change it here, change it also in:
     //      * ErrorDialogHandler::errorDialog()
@@ -183,7 +182,7 @@ int main(int argc, char * argv[])
     // Construct a list of strings based on the command line arguments
     struct CmdlineArgs args;
     args.bStartInFullscreen = false; //Initialize vars
-    
+
     // Only match supported file types since command line options are also parsed elsewhere
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
@@ -217,11 +216,11 @@ int main(int argc, char * argv[])
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
     -h, --help              Display this help message and exit");
-    
+
             printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
             return(0);
         }
-        
+
         if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
         {
             args.bStartInFullscreen = true;
@@ -229,8 +228,8 @@ int main(int argc, char * argv[])
         else if (fileRx.indexIn(argv[i]) != -1)
             args.qlMusicFiles += argv[i];
     }
-    
-    
+
+
     // set up the plugin paths...
     /*
     qDebug() << "Setting up plugin paths...";
@@ -268,7 +267,7 @@ int main(int argc, char * argv[])
     qDebug() << "...done.";
     */
 
-    
+
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
@@ -287,26 +286,26 @@ int main(int argc, char * argv[])
 
     //a->setMainWidget(mixxx);
     a -> connect( a, SIGNAL(lastWindowClosed()), a, SLOT(quit()) );
-    
+
     int result = -1;
 
     if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
-    
+
         qDebug() << "Running Mixxx";
         result = a->exec();
     }
-    
+
     delete mixxx;
-    
+
     qDebug() << "Mixxx shutdown complete with code" << result;
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
     if(Logfile.isOpen())
     Logfile.close();
-    
+
     //delete plugin_paths;
     return result;
 }
