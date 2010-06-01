@@ -47,11 +47,17 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 	//returns a number from 1 .. 10
 	m_OGGquality = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
 	m_MP3quality = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
-	
+
 	if(m_Encoding == ENCODING_MP3){
 	#ifdef __SHOUTCAST__
 		encoder = new EncoderMp3(config, this);
-		encoder->initEncoder(convertToBitrate(m_MP3quality.toInt()));
+		if(encoder->initEncoder(convertToBitrate(m_MP3quality.toInt())) < 0){
+			delete encoder;
+			encoder = NULL;
+			qDebug() << "MP3 recording is not supported. Lame could not be initialized";
+			qDebug() << "Set recording to off";
+			
+		}
 	#else
 		qDebug() << "MP3 recording requires Mixxx to build with shoutcast support";
 	#endif
@@ -61,7 +67,12 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 	if(m_Encoding == ENCODING_OGG){
 	#ifdef __SHOUTCAST__
 		encoder = new EncoderVorbis(config, this);
-		encoder->initEncoder(convertToBitrate(m_OGGquality.toInt()));
+		if(encoder->initEncoder(convertToBitrate(m_OGGquality.toInt())) < 0){
+			delete encoder;			
+			encoder = NULL;
+			qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
+			
+		}
 	#else
 		qDebug() << "OGG recording requires Mixxx to build with shoutcast support";
 	#endif
@@ -71,6 +82,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 		encoder = new WriteAudioFile(config, this);
 	}
 	if(encoder) encoder->openFile();
+
 }
 
 	
@@ -103,7 +115,7 @@ int EngineRecord::convertToBitrate(int quality){
 }
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-  
+  	if(!encoder) return;
     //Write record buffer to file
 	encoder->encodeBuffer(pIn, iBufferSize); 
 	encoder->writeFile(); //write to file
@@ -115,4 +127,6 @@ void EngineRecord::writePage(unsigned char *header, unsigned char *body,
      	//EngineRecord is not responsible for streaming to shoutcast
 		// --> Empty method
 }
-
+bool EngineRecord::isInitialized(){
+	return (encoder != NULL);
+}

@@ -143,6 +143,8 @@ class MixxxApp : public QMainWindow
 	void slotScanLibrary();
 	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
 	void slotEnableRescanLibraryAction();
+	/**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+	void slotOptionsMenuShow();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */

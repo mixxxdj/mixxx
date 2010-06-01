@@ -31,6 +31,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in defs_recording.h
 
+	
     //Fill up encoding list
     comboBoxEncoding->addItem(ENCODING_WAVE);
 #ifdef SF_FORMAT_FLAC
@@ -42,6 +43,14 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     comboBoxEncoding->addItem(ENCODING_OGG);
 #endif
 
+	int encodingIndex = comboBoxEncoding->findText(config->getValueString(ConfigKey("[Recording]","Encoding")));
+    if (encodingIndex >= 0)
+        comboBoxEncoding->setCurrentIndex(encodingIndex);
+    else //Invalid, so set default and save
+    {
+        comboBoxEncoding->setCurrentIndex(0);
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
+    }
 
     //Connections
     connect(PushButtonBrowse, SIGNAL(clicked()),        this,   SLOT(slotBrowseSave()));

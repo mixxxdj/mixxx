@@ -36,6 +36,7 @@ public:
     ~EngineRecord();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 	void writePage(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
+	bool isInitialized();
 
 private:
 	int convertToBitrate(int quality);

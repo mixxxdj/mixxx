@@ -23,6 +23,8 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include <QMessageBox>
+#include "errordialoghandler.h"
 
 #include <shout/shout.h>
 
@@ -80,6 +82,8 @@ private:
 	bool custom_metadata;
 	QByteArray baCustom_artist;
 	QByteArray baCustom_title;
+	void errorDialog(QString text, QString detailedError);
+	void errorDialogButton(QString key, QMessageBox::StandardButton button);
 };
 
 #endif

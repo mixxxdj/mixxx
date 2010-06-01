@@ -23,6 +23,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "../recording/defs_recording.h"
+#include "errordialoghandler.h"
 
 #ifdef __SHOUTCAST__
 class EngineShoutcast;
@@ -57,16 +58,16 @@ class EngineSideChain : public QThread
         QMutex m_waitLock;                      //Provides thread safety around the wait condition below.
         QWaitCondition m_waitForFullBuffer;     //Allows sleeping until we have a full buffer.
         QMutex m_stopLock;                      //Provides thread safety around bStopThread.
+
 #ifdef __SHOUTCAST__
         EngineShoutcast *shoutcast;
         ControlObject* m_pShoutcastNeedUpdateFromPrefs;
         ControlObjectThreadMain* m_pShoutcastNeedUpdateFromPrefsCOTM;
-		
-		ControlObjectThread* recReady;
-    	ControlObject* recReadyCO;
-		
+			
 #endif
         EngineRecord* rec;
+		ControlObjectThread* recReady;
+    	ControlObject* recReadyCO;
 
 };
 

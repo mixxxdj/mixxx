@@ -35,6 +35,7 @@
 
 #include "recording/enginerecord.h"
 
+
 EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 {
     m_pConfig = pConfig;
@@ -208,7 +209,16 @@ void EngineSideChain::run()
 			if(!shoutcast->isConnected()){
 				//Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
 				shoutcast->updateFromPreferences();
-				shoutcast->serverConnect();	
+				if(shoutcast->serverConnect()){	
+
+					ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+				    props->setType(DLG_INFO);
+				    props->setTitle("Livebroadcasting");
+				    props->setText("Mixxx has successfully connected to the shoutcast server");
+				    
+				    ErrorDialogHandler::instance()->requestErrorDialog(props);
+				}
+				
 			}
 			//send to soutcast
 			shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
@@ -220,9 +230,19 @@ void EngineSideChain::run()
 				shoutcast->serverDisconnect(); 
 				shoutcast->updateFromPreferences();
 				shoutcast->serverConnect();  
+			}	
+       	}
+		else{
+			if(shoutcast->isConnected()){
+				shoutcast->serverDisconnect(); 
+				ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+				props->setType(DLG_INFO);
+			 	props->setTitle("Livebroadcasting");
+				props->setText("Mixxx has successfully disconnected to the shoutcast server");
+				    
+				ErrorDialogHandler::instance()->requestErrorDialog(props);
 			}
-			
-       	} 
+		} 
 #endif
 		//delete the recorder object if recording is switched off by the user
 		if(recReady->get() == RECORD_OFF){
@@ -234,8 +254,14 @@ void EngineSideChain::run()
 		if(recReady->get() == RECORD_READY){
 			if(rec == NULL){
 				rec = new EngineRecord(m_pConfig);
-				qDebug("Setting Record flag to: ON");
-            	recReady->slotSet(RECORD_ON);
+				if(rec->isInitialized()){
+					qDebug("Setting record flag to: ON");
+            		recReady->slotSet(RECORD_ON);
+				}
+				else{ //Maybe the encoder could not be initialized
+					qDebug("Setting record flag to: OFF");
+            		recReady->slotSet(RECORD_OFF);
+				}
 			}	
 		}
 		if(recReady->get() == RECORD_ON){	
@@ -246,3 +272,5 @@ void EngineSideChain::run()
     }
 
 }
+
+
