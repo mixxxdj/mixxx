@@ -83,7 +83,6 @@ private:
 	QByteArray baCustom_artist;
 	QByteArray baCustom_title;
 	void errorDialog(QString text, QString detailedError);
-	void errorDialogButton(QString key, QMessageBox::StandardButton button);
 };
 
 #endif
