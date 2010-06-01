@@ -92,7 +92,7 @@ void WriteAudioFile::openFile()
         }
     }
     else
-        qDebug() << "Warning: Tried to open WriteAudioFile before recording control was set to RECORD_ON";
+        qWarning() << "Tried to open WriteAudioFile before recording control was set to RECORD_ON";
 }
 void WriteAudioFile::encodeBuffer(const CSAMPLE *samples, const int size){
 	//There's nothing to encode	
