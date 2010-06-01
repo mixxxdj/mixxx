@@ -578,21 +578,7 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     
     props->setModal(false);
     
-    if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
-        // Enable custom handling of the dialog buttons
-        connect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
-                this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
-    }
+    ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Slot to handle custom button clicks in error dialogs
-Input:   Key of dialog, StandardButton that was clicked
-Output:  -
--------- ------------------------------------------------------ */
-void EngineShoutcast::errorDialogButton(QString key, QMessageBox::StandardButton button) {
-    
-    // Something was clicked, so disable this signal now
-    disconnect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
-        this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
-}
+
