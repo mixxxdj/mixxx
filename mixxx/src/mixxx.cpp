@@ -602,6 +602,12 @@ void MixxxApp::initActions()
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
+#ifdef __SHOUTCAST__
+    optionsShoutcast = new QAction(tr("Enable Livebroadcasting"), this);
+    optionsShoutcast->setShortcut(tr("Ctrl+L"));
+    optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
+#endif
+
     optionsRecord = new QAction(tr("&Record Mix"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
     optionsRecord->setShortcutContext(Qt::ApplicationShortcut);
@@ -653,6 +659,20 @@ void MixxxApp::initActions()
     optionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
+#endif
+
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setCheckable(true);
+	bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+	if(broadcastEnabled)
+		optionsShoutcast->setChecked(true);
+	else
+		optionsShoutcast->setChecked(false);
+
+	optionsShoutcast->setStatusTip(tr("Activate Liveboradcasting"));
+    optionsShoutcast->setWhatsThis(tr("Stream your mixes to a shoutcast or icecast server"));
+    
+    connect(optionsShoutcast, SIGNAL(toggled(bool)), this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
     optionsRecord->setCheckable(true);
@@ -710,6 +730,9 @@ void MixxxApp::initMenuBar()
     optionsMenu->addAction(optionsVinylControl);
 #endif
     optionsMenu->addAction(optionsRecord);
+#ifdef __SHOUTCAST__
+    optionsMenu->addAction(optionsShoutcast);
+#endif
     optionsMenu->addAction(optionsFullScreen);
     optionsMenu->addSeparator();
     optionsMenu->addAction(optionsPreferences);
@@ -1329,10 +1352,22 @@ void MixxxApp::slotOptionsMenuShow(){
 	}
 
 #ifdef __SHOUTCAST__
-	 bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
-
+	bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+	if(broadcastEnabled)
+		optionsShoutcast->setChecked(true);
+	else
+		optionsShoutcast->setChecked(false);
 	
 
 #endif
+
+}
+
+void MixxxApp::slotOptionsShoutcast(bool value){
+#ifdef __SHOUTCAST__
+	optionsShoutcast->setChecked(value);
+	config->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue(value));
+#endif
+
 
 }
