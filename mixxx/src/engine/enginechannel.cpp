@@ -22,6 +22,7 @@
 #include "engineclipping.h"
 #include "enginepregain.h"
 #include "enginevolume.h"
+#include "engineflanger.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
@@ -32,6 +33,7 @@ EngineChannel::EngineChannel(const char* group,
         : m_pConfig(pConfig) {
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
+    m_pFlanger = new EngineFlanger(group);
     m_pClipping = new EngineClipping(group);
     m_pBuffer = new EngineBuffer(group, pConfig);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
@@ -46,6 +48,7 @@ EngineChannel::~EngineChannel() {
     delete m_pBuffer;
     delete m_pClipping;
     delete m_pFilter;
+    delete m_pFlanger;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVolume;
@@ -68,6 +71,7 @@ void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuf
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
     // TODO(XXX) LADSPA
+    m_pFlanger->process(pOut, pOut, iBufferSize);
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter

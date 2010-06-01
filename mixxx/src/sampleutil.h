@@ -39,6 +39,9 @@ class SampleUtil {
     // functions.
     static CSAMPLE* alloc(int size);
 
+    // Frees a 16-byte aligned buffer allocated by SampleUtil::alloc()
+    static void free(CSAMPLE* pBuffer);
+
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, int iNumSamples);
 

@@ -71,7 +71,6 @@ public:
 
     EngineVolume *volume, *head_volume;
     EngineClipping *clipping, *head_clipping;
-    EngineFlanger *flanger;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
 #endif
@@ -80,7 +79,6 @@ public:
 
     ControlPotmeter *crossfader, *head_mix,
         *m_pBalance, *xFaderCurve, *xFaderCalibration;
-    ControlPushButton *flanger1, *flanger2;
 };
 
 #endif

@@ -26,7 +26,6 @@
 #include "enginevolume.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
-#include "engineflanger.h"
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
@@ -39,9 +38,6 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
-
-    // Flanger
-    flanger = new EngineFlanger("[Flanger]");
 
 #ifdef __LADSPA__
     // LADSPA
@@ -80,15 +76,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Headphone Clipping
     head_clipping = new EngineClipping("");
 
-    flanger1 = flanger->getButtonCh1();
-    flanger2 = flanger->getButtonCh2();
-
-    Q_ASSERT(flanger1);
-    Q_ASSERT(flanger2);
-
     // Allocate buffers
-    m_pHead = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pMaster = new CSAMPLE[MAX_BUFFER_LEN];
+
+    m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     sidechain = new EngineSideChain(_config);
 
@@ -111,14 +102,14 @@ EngineMaster::~EngineMaster()
     delete head_clipping;
     delete sidechain;
 
-    delete [] m_pHead;
-    delete [] m_pMaster;
+    SampleUtil::free(m_pHead);
+    SampleUtil::free(m_pMaster);
 
     QMutableListIterator<CSAMPLE*> buffer_it(m_channelBuffers);
     while (buffer_it.hasNext()) {
         CSAMPLE* buffer = buffer_it.next();
         buffer_it.remove();
-        delete [] buffer;
+        SampleUtil::free(buffer);
     }
 
     QMutableListIterator<EngineChannel*> channel_it(m_channels);
@@ -152,7 +143,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
 
     // Prepare each channel for output
-    // TODO(XXX) per-channel flanger
 
     QListIterator<EngineChannel*> channel_iter(m_channels);
     QList<CSAMPLE*> pflChannels;
@@ -162,15 +152,21 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         EngineChannel* channel = channel_iter.next();
         CSAMPLE* buffer = m_channelBuffers[channel_number];
         channel->process(NULL, buffer, iBufferSize);
+
+        // If the channel is enabled for previewing in headphones, add it to a
+        // list of headphone channels.
         if (channel->isPFL()) {
             pflChannels.push_back(buffer);
         }
-        masterChannels.push_back(QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(buffer, channel->getOrientation()));
+
+        // Add the channel to the list of master output channels.
+        masterChannels.push_back(
+            QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(
+                buffer, channel->getOrientation()));
         channel_number++;
     }
 
     // Perform the master mix.
-    // TODO(XXX) support channel orientations
 
     // Crossfader and Transform buttons
     //set gain levels;
@@ -248,10 +244,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // LADPSA master effects
     ladspa->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
-
-    // Process the flanger on master if flanger is enabled on both channels
-    //if (flanger1->get()==1. && flanger2->get()==1.)
-    //    flanger->process(m_pMaster, m_pMaster, iBufferSize);
 
     // Clipping
     clipping->process(m_pMaster, m_pMaster, iBufferSize);
@@ -340,7 +332,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
-    m_channelBuffers.push_back(new CSAMPLE[MAX_BUFFER_LEN]);
+    m_channelBuffers.push_back(SampleUtil::alloc(MAX_BUFFER_LEN));
     m_channels.push_back(pChannel);
 }
 

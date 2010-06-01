@@ -20,6 +20,16 @@ bool SampleUtil::m_sOptimizationsOn = false;
 #endif
 
 // static
+CSAMPLE* SampleUtil::alloc(int size) {
+    // TODO(XXX) align the array
+    return new CSAMPLE[size];
+}
+
+void SampleUtil::free(CSAMPLE* pBuffer) {
+    delete [] pBuffer;
+}
+
+// static
 void SampleUtil::applyGain(CSAMPLE* pBuffer,
                            CSAMPLE gain, int iNumSamples) {
     if (gain == 1.0f)
@@ -302,7 +312,9 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     if (gain == 0.0f) {
         memset(pDest, 0, sizeof(pDest[0]) * iNumSamples);
         return;
-    }    if (m_sOptimizationsOn) {
+    }
+
+    if (m_sOptimizationsOn) {
         return sseCopyWithGain(pDest, pSrc, gain, iNumSamples);
     }
 
@@ -582,22 +594,20 @@ bool SampleUtil::isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
         return sseIsOutsideRange(fMax, fMin, pBuffer, iNumSamples);
     }
 
-    bool clamped = false;;
     for (int i = 0; i < iNumSamples; ++i) {
         CSAMPLE sample = pBuffer[i];
         if (sample > fMax) {
-            clamped = true;
+            return true;
         } else if (sample < fMin) {
-            clamped = true;
+            return true;
         }
     }
-    return clamped;
+    return false;
 }
 
 // static
 bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
                                    const CSAMPLE* pBuffer, int iNumSamples) {
-    bool outside = false;
 #ifdef __SSE__
     assert_aligned(pBuffer);
     __m128 vSrcSamples;
@@ -616,7 +626,7 @@ bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
     _mm_store_ps(clamp, vClamped);
     if (clamp[0] != 0 || clamp[1] != 0 ||
         clamp[2] != 0 || clamp[3] != 0) {
-        outside = true;
+        return true;
     }
     if (iNumSamples > 0) {
         qDebug() << "Not div by 4";
@@ -624,15 +634,15 @@ bool SampleUtil::sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
     while (iNumSamples > 0) {
         CSAMPLE sample = *pBuffer;
         if (sample > fMax) {
-            outside = true;
+            return true;
         } else if (sample < fMin) {
-            outside = true;
+            return true;
         }
         pBuffer++;
         iNumSamples--;
     }
 #endif
-    return outside;
+    return false;
 }
 
 // static
