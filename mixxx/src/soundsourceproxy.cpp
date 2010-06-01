@@ -57,12 +57,6 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 	  m_pSoundSource(NULL) {
 
     m_pSoundSource = initialize(pTrack->getLocation());
-
-    // Set the track duration in seconds
-    if(getSampleRate())
-	    pTrack->setDuration(length()/(2*getSampleRate()));
-    else
-	    pTrack->setDuration(0);
 }
 
 void SoundSourceProxy::loadPlugins()
