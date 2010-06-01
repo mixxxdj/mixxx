@@ -509,7 +509,13 @@ void SampleUtil::sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc,
     while (iNumSamples >= 4) {
         vSrcSamples = *((__m64*)pSrc); // ????
         vDestSamples = _mm_cvtpi16_ps(vSrcSamples);
+
+        // WTF _mm_cvtpi16_ps randomly shuffles the high 32-bits to the low
+        // 32-bits. We have to shuffle them back to normal order.
+        // 0,1,2,3 in produces 2,3,0,1
+        vDestSamples = _mm_shuffle_ps(vDestSamples, vDestSamples, _MM_SHUFFLE(1,0,3,2));
         _mm_store_ps(pDest, vDestSamples);
+
         iNumSamples -= 4;
         pDest += 4;
         pSrc += 4;
