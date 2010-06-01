@@ -45,6 +45,7 @@ public:
 
     bool isPFL();
     ChannelOrientation getOrientation();
+    const QString& getGroup();
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -52,6 +53,7 @@ public:
     EngineBuffer* getEngineBuffer();
 
 private:
+    const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pPFL;
     ControlObject* m_pOrientation;
@@ -59,6 +61,7 @@ private:
     EngineBuffer* m_pBuffer;
     EngineClipping* m_pClipping;
     EngineFilterBlock* m_pFilter;
+    EngineFlanger* m_pFlanger;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVolume* m_pVolume;

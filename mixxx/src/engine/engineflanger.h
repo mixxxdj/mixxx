@@ -17,24 +17,24 @@
 #ifndef ENGINEFLANGER_H
 #define ENGINEFLANGER_H
 
+#include <QMap>
+
 #include "engineobject.h"
 
 class ControlPotmeter;
 class ControlPushButton;
 
-const int max_delay = 5000;  
+const int max_delay = 5000;
 
-class EngineFlanger : public EngineObject 
+class EngineFlanger : public EngineObject
 {
 public:
     EngineFlanger(const char *group);
     ~EngineFlanger();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    ControlPushButton *getButtonCh1();
-    ControlPushButton *getButtonCh2();
 private:
-    ControlPotmeter *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
-    ControlPushButton *pushbuttonFlangerCh1, *pushbuttonFlangerCh2;
+    ControlObject *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
+    ControlPushButton* flangerEnable;
     CSAMPLE *delay_buffer;
     int  LFOamplitude;
     int average_delay_length;
