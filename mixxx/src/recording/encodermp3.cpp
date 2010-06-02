@@ -85,7 +85,6 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 	m_library = new QLibrary(libname);
 
 	if(!m_library->load()){
-		qDebug() << "Cannot load or foud liblame " << libname;
 		ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 		props->setType(DLG_WARNING);
 		props->setTitle("Encoder");
@@ -152,7 +151,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		!get_lame_version
 	)
 	{
-		qDebug() << "Error loading liblame";
+		qDebug() << "Error loading liblame: Function pointer may be NULL";
 		m_library->unload();
 		m_library = NULL;
 		return;
@@ -314,8 +313,13 @@ void EncoderMp3::openFile(){
     QByteArray baPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
 	mp3file.setFileName(baPath);
 
-	if (!mp3file.open(QIODevice::WriteOnly | QIODevice::Text))
-         qDebug() << "Cannot create file for audio recording";
+	if (!mp3file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+		props->setType(DLG_WARNING);
+		props->setTitle(tr("Recording"));
+		props->setText(tr("Could not create mp3 file for recording"));
+		ErrorDialogHandler::instance()->requestErrorDialog(props);
+	}
 
 
 }

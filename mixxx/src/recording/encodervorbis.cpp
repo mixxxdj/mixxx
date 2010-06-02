@@ -40,6 +40,7 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "controlobject.h"
 #include "playerinfo.h"
 #include "trackinfoobject.h"
+#include "errordialoghandler.h"
 
 // Constructor
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
@@ -207,8 +208,13 @@ void EncoderVorbis::openFile(){
 	QByteArray baPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
 	file.setFileName(baPath);
 
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-         qDebug() << "Cannot create file for audio recording";
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+		props->setType(DLG_WARNING);
+		props->setTitle(tr("Recording"));
+		props->setText(tr("Could not create ogg file for recording"));
+		ErrorDialogHandler::instance()->requestErrorDialog(props);
+	}
 }
 void EncoderVorbis::closeFile(){
 	if(file.handle() != -1)

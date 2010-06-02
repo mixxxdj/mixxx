@@ -63,19 +63,16 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     shout_init();
 
     if (!(m_pShout = shout_new())) {
-        qDebug() << "Could not allocate shout_t";
-		errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
+		errorDialog("Mixxx encountered a problem", "Could not allocate shout_t");
         return;
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
-        qDebug() << "Could not allocate shout_metadata_t";
-		errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
+		errorDialog("Mixxx encountered a problem", "Could not allocate shout_metadata_t");
         return;
     }
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting non-blocking mode:" << shout_get_error(m_pShout);
-		errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
+		errorDialog("Error setting non-blocking mode:", shout_get_error(m_pShout));
         return;
     }
 }
@@ -167,48 +164,48 @@ void EngineShoutcast::updateFromPreferences()
 
 
     if (shout_set_host(m_pShout, baHost.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting hostname:" << shout_get_error(m_pShout);
+		errorDialog("Error setting hostname!", shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting protocol:" << shout_get_error(m_pShout);
+		errorDialog("Error setting protocol!", shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_port(m_pShout, baPort.toUInt()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting port:" << shout_get_error(m_pShout);
+		errorDialog("Error setting port!", shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_password(m_pShout, baPassword.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting password:" << shout_get_error(m_pShout);
+		errorDialog("Error setting password!", shout_get_error(m_pShout));
         return;
     }
     if (shout_set_mount(m_pShout, baMountPoint.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting mount:" << shout_get_error(m_pShout);
+        errorDialog("Error setting mount!", shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_user(m_pShout, baLogin.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting user:" << shout_get_error(m_pShout);
+		errorDialog("Error setting username!", shout_get_error(m_pShout));
         return;
     }
 	if (shout_set_name(m_pShout, baStreamName.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting stream name:" << shout_get_error(m_pShout);
+		errorDialog("Error setting stream name!", shout_get_error(m_pShout));
         return;
     }
 	if (shout_set_description(m_pShout, baStreamDesc.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting stream description:" << shout_get_error(m_pShout);
+		errorDialog("Error setting stream description!", shout_get_error(m_pShout));
         return;
     }
 	if (shout_set_genre(m_pShout, baStreamGenre.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting stream description:" << shout_get_error(m_pShout);
+      	errorDialog("Error setting stream genre!", shout_get_error(m_pShout));
         return;
     }
 	if (shout_set_url(m_pShout, baStreamWebsite.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting stream url:" << shout_get_error(m_pShout);
-        return;
+       errorDialog("Error setting stream url!", shout_get_error(m_pShout));
+       return;
     }
 
 
@@ -224,7 +221,7 @@ void EngineShoutcast::updateFromPreferences()
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting format:" << shout_get_error(m_pShout);
+        errorDialog("Error setting soutcast format!", shout_get_error(m_pShout));
         return;
     }
 
@@ -233,7 +230,7 @@ void EngineShoutcast::updateFromPreferences()
     }
 
     if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.data()) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting bitrate:" << shout_get_error(m_pShout);
+        errorDialog("Error setting bitrate", shout_get_error(m_pShout));
         return;
     }
 
@@ -244,16 +241,17 @@ void EngineShoutcast::updateFromPreferences()
     } else if ( ! qstricmp(baServerType.data(), "Icecast 1")) {
         protocol = SHOUT_PROTOCOL_XAUDIOCAST;
     } else {
-        qDebug() << "Error: unknown server protocol:" << baServerType.data();
+		errorDialog("Error: unknown server protocol!", shout_get_error(m_pShout));
         return;
     }
 
     if (( protocol == SHOUT_PROTOCOL_ICY ) && ( format != SHOUT_FORMAT_MP3)) {
-        qDebug() << "Error: libshout only supports Shoutcast With MP3 format";
+		errorDialog("Error: libshout only supports Shoutcast with MP3 format!", shout_get_error(m_pShout));
+		return;
     }
 
-    if ( shout_set_protocol(m_pShout, protocol) != SHOUTERR_SUCCESS) {
-        qDebug() << "Error setting protocol: " << shout_get_error(m_pShout);
+    if (shout_set_protocol(m_pShout, protocol) != SHOUTERR_SUCCESS) {
+		errorDialog("Error setting protocol!", shout_get_error(m_pShout));
         return;
     }
 
@@ -271,10 +269,11 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
     if (encoder->initEncoder(baBitrate.toInt()) < 0) {
-        qDebug() << "**** Encoder init failed"; //e.g., if lame is not found 
+		//e.g., if lame is not found 
+		//init encoder itself will display a message box        
+		qDebug() << "**** Encoder init failed"; 
 		delete encoder;
 		encoder = NULL;
-		//errorDialog(tr("Mixxx has encountered a problem "), tr("Encoder init failed"));
     }
 
 }
@@ -323,11 +322,10 @@ bool EngineShoutcast::serverConnect()
         sleep(2);
     }
     if (m_iShoutFailures == iMaxTries) {
-        qDebug() << "Shoutcast aborted connect after" << iMaxTries << "tries.";
         if (m_pShout)
             shout_close(m_pShout);
 		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
-		errorDialog(tr("Shoutcast aborted connect after 3 tries"), "Please check your connection to the Internet and verify that your username and password are correct.");
+		errorDialog("Shoutcast aborted connect after 3 tries", "Please check your connection to the Internet and verify that your username and password are correct.");
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -349,8 +347,7 @@ bool EngineShoutcast::serverConnect()
 	//otherwise disable shoutcast in preferences
 	m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
 	if(m_pShout){
-		qDebug() << "Shoutcast failed connect: " << shout_get_error(m_pShout);
-		errorDialog(tr("Mixxx could not connect to the server"), "Please check your connection to the Internet and verify that your username and password are correct.");
+		errorDialog("Mixxx could not connect to the server", "Please check your connection to the Internet and verify that your username and password are correct.");
 	}
 
     return false;
@@ -570,10 +567,10 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     qWarning() << "Shoutcast error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
-    props->setTitle(tr("Livebroadcasting"));
-    props->setText(text);
-    props->setDetails(detailedError);
-    props->setKey(detailedError);   // To prevent multiple windows for the same error
+    props->setTitle(tr("Live broadcasting"));
+    props->setText(tr(text));
+    props->setDetails(tr(detailedError));
+    props->setKey(tr(detailedError));   // To prevent multiple windows for the same error
     props->setDefaultButton(QMessageBox::Close);
     
     props->setModal(false);
