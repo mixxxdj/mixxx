@@ -5,7 +5,7 @@
 
 #include "configobject.h"
 
-class EngineBuffer;
+class EngineMaster;
 class TrackInfoObject;
 class ControlObjectThreadMain;
 
@@ -13,19 +13,19 @@ class Player : public QObject
 {
 	Q_OBJECT
 	public:
-    Player(ConfigObject<ConfigValue> *pConfig, EngineBuffer* buffer,
-           QString channel);
+    Player(ConfigObject<ConfigValue> *pConfig, EngineMaster* pMixingEngine,
+           int playerNumber, const char* pGroup);
     ~Player();
 public slots:
     void slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackInfoObject* pTrackInfoObject);
     void slotLoadFailed(TrackInfoObject* pTrackInfoObject, QString reason);
 signals:
-    void newTrackLoaded(TrackInfoObject* m_pLoadedTrack);
-    void unloadingTrack(TrackInfoObject* m_pAboutToBeUnloaded);
+    void loadTrack(TrackInfoObject* pTrack);
+    void newTrackLoaded(TrackInfoObject* pLoadedTrack);
+    void unloadingTrack(TrackInfoObject* pAboutToBeUnloaded);
 private:
     ConfigObject<ConfigValue>* m_pConfig;
-    EngineBuffer* m_pEngineBuffer;
     QString m_strChannel;
 
     TrackInfoObject* m_pLoadedTrack;

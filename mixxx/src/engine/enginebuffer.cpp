@@ -402,7 +402,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
 
-            //XXX: Trying to force RAMAN to read from correct 
+            //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
             if ((rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
@@ -667,7 +667,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_pReader->hintAndMaybeWake(m_hintList);
 }
 
-void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+void EngineBuffer::slotLoadTrack(TrackInfoObject *pTrack) {
     pause.lock();
     m_pReader->newTrack(pTrack);
     m_pReader->wake();

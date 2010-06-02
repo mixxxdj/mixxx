@@ -78,11 +78,6 @@ public:
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
-    // Request that the EngineBuffer load a track. Since the process is
-    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
-    // has completed.
-    void loadTrack(TrackInfoObject* pTrack);
-
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);
 
@@ -105,6 +100,11 @@ public slots:
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
+
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
+    void slotLoadTrack(TrackInfoObject* pTrack);
 
 signals:
     void trackLoaded(TrackInfoObject *pTrack);

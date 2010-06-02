@@ -171,21 +171,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
 
-    EngineChannel* channel1 =
-            new EngineChannel("[Channel1]", config, EngineChannel::LEFT);
-    EngineChannel* channel2 =
-            new EngineChannel("[Channel2]", config, EngineChannel::RIGHT);
-    // EngineChannel* channel3 =
-    //         new EngineChannel("[Channel3]", config, EngineChannel::LEFT);
-    // EngineChannel* channel4 =
-    //         new EngineChannel("[Channel4]", config, EngineChannel::RIGHT);
-
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(config, "[Master]");
-    m_pEngine->addChannel(channel1);
-    m_pEngine->addChannel(channel2);
-    // m_pEngine->addChannel(channel3);
-    // m_pEngine->addChannel(channel4);
 
     // Initialize player device
 
@@ -220,8 +207,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pLibrary = new Library(this, config, bFirstRun);
 
     //Create the "players" (virtual playback decks)
-    m_pPlayer1 = new Player(config, channel1->getEngineBuffer(), "[Channel1]");
-    m_pPlayer2 = new Player(config, channel2->getEngineBuffer(), "[Channel2]");
+    m_pPlayer1 = new Player(config, m_pEngine, 1, "[Channel1]");
+    m_pPlayer2 = new Player(config, m_pEngine, 2, "[Channel2]");
 
     //Connect the player to the track collection so that when a track is unloaded,
     //it's data (eg. waveform summary) is saved back to the database.
@@ -438,10 +425,8 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
 
-    // Delete the players, they have a pointer to EngineBuffer*'s of the
-    // channels in Engine, so delete them first. The deletion of the players is
-    // commented because currently deleting a player with a loaded track causes
-    // a segfault.
+    // The deletion of the players is commented because currently deleting a
+    // player with a loaded track causes a segfault.
     //delete m_pPlayer1;
     //delete m_pPlayer2;
 
