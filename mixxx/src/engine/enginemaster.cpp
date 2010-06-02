@@ -147,12 +147,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Prepare each channel for output
 
-    QListIterator<EngineChannel*> channel_iter(m_channels);
     QList<CSAMPLE*> pflChannels;
     QList<QPair<CSAMPLE*, EngineChannel::ChannelOrientation> > masterChannels;
-    int channel_number = 0;
-    while (channel_iter.hasNext()) {
-        EngineChannel* channel = channel_iter.next();
+
+    for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
+        EngineChannel* channel = m_channels[channel_number];
         CSAMPLE* buffer = m_channelBuffers[channel_number];
         channel->process(NULL, buffer, iBufferSize);
 
@@ -166,7 +165,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         masterChannels.push_back(
             QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(
                 buffer, channel->getOrientation()));
-        channel_number++;
     }
 
     // Perform the master mix.
@@ -174,22 +172,24 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Crossfader and Transform buttons
     //set gain levels;
     float c1_gain, c2_gain;
-    // TODO(XXX) replace get()'s with valueChanged slots
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
                                 crossfader->get(), xFaderCurve->get(),
                                 xFaderCalibration->get());
 
     if (masterChannels.size() == 0) {
-        memset(m_pMaster, 0, sizeof(m_pMaster[0]) * iBufferSize);
+        SampleUtil::applyGain(m_pMaster, 0.0f, iBufferSize);
     } else if (masterChannels.size() == 1) {
         QPair<CSAMPLE*, EngineChannel::ChannelOrientation>& channel =
                 masterChannels[0];
         CSAMPLE* buffer = channel.first;
         EngineChannel::ChannelOrientation orientation = channel.second;
-        memcpy(m_pMaster, buffer, sizeof(m_pMaster[0]) * iBufferSize);
+
         // Apply gain
         double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
-        SampleUtil::applyGain(m_pMaster, gain, iBufferSize);
+
+        SampleUtil::copyWithGain(m_pMaster, buffer, gain, iBufferSize);
+
+        // memcpy(m_pMaster, buffer, sizeof(m_pMaster[0]) * iBufferSize);
         // if (gain != 1.0f) {
         //     for (int i = 0; i < iBufferSize; ++i) {
         //         m_pMaster[i] *= gain;
@@ -215,11 +215,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         //     m_pMaster[i] = gain1 * buffer1[i] + gain2 * buffer2[i];
         // }
     } else {
-        QListIterator<QPair<CSAMPLE*, EngineChannel::ChannelOrientation> > master_iter(masterChannels);
-        memset(m_pMaster, 0, sizeof(m_pMaster[0]) * iBufferSize);
-        while(master_iter.hasNext()) {
+        // Set m_pMaster to all 0s
+        SampleUtil::applyGain(m_pMaster, 0.0f, iBufferSize);
+
+        for (int i = 0; i < masterChannels.size(); ++i) {
             QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel =
-                    master_iter.next();
+                    masterChannels[i];
             CSAMPLE* buffer = channel.first;
             EngineChannel::ChannelOrientation orientation = channel.second;
             double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
@@ -295,7 +296,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (pflChannels.size() == 0) {
         // Do nothing
     } else if (pflChannels.size() == 1) {
-        // Apply gain TODO(XXX) SSE
+        // Apply gain
         CSAMPLE* buffer = pflChannels[0];
         SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
         // for (int i = 0; i < iBufferSize; ++i) {
@@ -312,9 +313,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         //     m_pHead[i] += buffer1[i]*chead_gain + buffer2[i]*chead_gain;
         // }
     } else {
-        QListIterator<CSAMPLE*> pfl_iter(pflChannels);
-        while(pfl_iter.hasNext()) {
-            CSAMPLE* buffer = pfl_iter.next();
+        for (int i = 0; i < pflChannels.size(); ++i) {
+            CSAMPLE* buffer = pflChannels[i];
             SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
         }
         // for (int i = 0; i < iBufferSize; ++i) {
