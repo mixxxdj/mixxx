@@ -438,11 +438,16 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
 
+    // Delete the players, they have a pointer to EngineBuffer*'s of the
+    // channels in Engine, so delete them first. The deletion of the players is
+    // commented because currently deleting a player with a loaded track causes
+    // a segfault.
+    //delete m_pPlayer1;
+    //delete m_pPlayer2;
+
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
 
-    //delete m_pPlayer1;
-    //delete m_pPlayer2;
     delete m_pAnalyserQueue;
 
 //    qDebug() << "delete prefDlg";

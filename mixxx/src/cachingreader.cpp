@@ -278,7 +278,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     m_pCurrentSoundSource->seek(sample_position);
     int samples_read = m_pCurrentSoundSource->read(samples_to_read,
                                                    m_pSample);
-    
+
     //If we've run out of music, the SoundSource can return 0 samples.
     //Remember that SoundSourc->getLength() (which is m_iTrackNumSamples)
     //can lie to us about the length of the song!
@@ -289,9 +289,6 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     // SSE.
     CSAMPLE* buffer = pChunk->data;
     SampleUtil::convert(buffer, m_pSample, samples_read);
-    // for (int i=0; i < samples_read; i++) {
-    //     buffer[i] = CSAMPLE(m_pSample[i]);
-    // }
 
     pChunk->chunk_number = chunk_number;
     pChunk->length = samples_read;
