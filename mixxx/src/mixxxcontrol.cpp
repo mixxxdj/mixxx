@@ -61,7 +61,7 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
         m_midiOption = MIDI_OPT_SCRIPT;
     else {
         m_midiOption = MIDI_OPT_NORMAL;
-        qDebug() << "Warning: Unknown midioption" << strMidiOption << "in" << __FILE__;
+        qWarning() << "Unknown midioption" << strMidiOption << "in" << __FILE__;
     }
     
     //Parse threshold stuff, only used for output.
@@ -140,7 +140,7 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
         strMidiOption = "script-binding";
     else {
         strMidiOption = "Unknown";
-        qDebug() << "Warning: Unknown midioption in" << __FILE__;
+        qWarning() << "Unknown midioption in" << __FILE__;
     }
 
     QDomElement singleOption = nodeMaker.createElement(strMidiOption);
