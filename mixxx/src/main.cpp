@@ -196,7 +196,10 @@ int main(int argc, char * argv[])
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
-            printf(SoundSourceProxy::supportedFileExtensionsString());
+            
+            QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+            QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
+            printf(fileExtensionsBA);
             printf("\n\n");
             printf("\
                             Each file you specify will be loaded into the\n\
