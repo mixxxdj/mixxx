@@ -61,7 +61,7 @@ private:
     void initStream();
     int bufferOutGrow(int size);
     int bufferInGrow(int size);
-	int rc; //size of encoded samples
+	int m_rc; //size of encoded samples
 
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
     //For lame
@@ -95,8 +95,8 @@ private:
         unsigned char*       mp3buf, /* pointer to encoded MP3 stream         */
         int                  size);  /* number of valid octets in this stream */
 	typedef int (*lame_encode_buffer_float__)(lame_global_flags*  gfp,        /* global context handle         */
-        const float     buffer_l [],       /* PCM data for left channel     */
-        const float     buffer_r [],       /* PCM data for right channel    */
+        const float     	buffer_l [],       /* PCM data for left channel     */
+        const float     	buffer_r [],       /* PCM data for right channel    */
         const int           nsamples,      /* number of samples per channel */
         unsigned char*      mp3buf,        /* pointer to encoded MP3 stream */
         const int           mp3buf_size );
@@ -121,12 +121,12 @@ private:
     float *m_bufferIn[2];
     int m_bufferInSize;
     
-    EngineAbstractRecord *pEngine;
+    EngineAbstractRecord *m_pEngine;
     TrackInfoObject *m_pMetaData;
-    char *metaDataTitle;
-    char *metaDataArtist;
+    char *m_metaDataTitle;
+    char *m_metaDataArtist;
 	QLibrary* m_library;
-	QFile mp3file;
+	QFile m_mp3file;
 };
 
 #endif
