@@ -77,7 +77,8 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_chordData() {
+        : m_chordData(),
+          m_qMutex(QMutex::Recursive) {
 
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
