@@ -41,17 +41,4 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     // SampleUtil deals with aliased buffers and gains of 1 or 0.
     SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
-
-    // if (fGain == 1.)
-    // {
-    //     if (pIn!=pOut)
-    //     {
-    //         for (int i=0; i<iBufferSize; ++i)
-    //             pOutput[i] = pIn[i];
-    //         //memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
-    //     }
-    //     return;
-    // }
-    // for (int i=0; i<iBufferSize; ++i)
-    //     pOutput[i] = pIn[i]*fGain;
 }

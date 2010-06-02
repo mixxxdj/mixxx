@@ -186,15 +186,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
         // Apply gain
         double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
-
         SampleUtil::copyWithGain(m_pMaster, buffer, gain, iBufferSize);
-
-        // memcpy(m_pMaster, buffer, sizeof(m_pMaster[0]) * iBufferSize);
-        // if (gain != 1.0f) {
-        //     for (int i = 0; i < iBufferSize; ++i) {
-        //         m_pMaster[i] *= gain;
-        //     }
-        // }
     } else if (masterChannels.size() == 2) {
         QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel1 =
                 masterChannels[0];
@@ -211,9 +203,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                                   buffer1, gain1,
                                   buffer2, gain2,
                                   iBufferSize);
-        // for (int i = 0; i < iBufferSize; ++i) {
-        //     m_pMaster[i] = gain1 * buffer1[i] + gain2 * buffer2[i];
-        // }
     } else {
         // Set m_pMaster to all 0s
         SampleUtil::applyGain(m_pMaster, 0.0f, iBufferSize);
@@ -226,19 +215,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
             SampleUtil::addWithGain(m_pMaster, buffer, gain, iBufferSize);
         }
-
-        // for (int i = 0; i < iBufferSize; ++i) {
-        //     master_iter.toFront();
-        //     while(master_iter.hasNext()) {
-        //         QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel =
-        //                 master_iter.next();
-        //         CSAMPLE* buffer = channel.first;
-        //         EngineChannel::ChannelOrientation orientation = channel.second;
-        //         double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
-        //         m_pMaster[i] += buffer[i] * gain;
-
-        //     }
-        // }
     }
 
     // Master volume
@@ -261,12 +237,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     else if (bal<0.)
         balright += bal;
 
-    //Perform balancing on main out
+    // Perform balancing on main out
     SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
-    // for (int i = 0; i < iBufferSize; i += 2) {
-    //     m_pMaster[i] = m_pMaster[i]*balleft;
-    //     m_pMaster[i+1] = m_pMaster[i+1]*balright;
-    // }
 
     // Update VU meter (it does not return anything). Needs to be here so that
     // master balance is reflected in the VU meter.
@@ -288,9 +260,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //          << ", master " << cmaster_gain;
 
     // Set headphone to master with appropriate gain
-    // for (int i = 0; i < iBufferSize; ++i) {
-    //     m_pHead[i] = m_pMaster[i]*cmaster_gain;
-    // }
     SampleUtil::copyWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
 
     if (pflChannels.size() == 0) {
@@ -299,9 +268,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         // Apply gain
         CSAMPLE* buffer = pflChannels[0];
         SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
-        // for (int i = 0; i < iBufferSize; ++i) {
-        //     m_pHead[i] += buffer[i]*chead_gain;
-        // }
     } else if (pflChannels.size() == 2) {
         CSAMPLE* buffer1 = pflChannels[0];
         CSAMPLE* buffer2 = pflChannels[1];
@@ -309,21 +275,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                                  buffer1, chead_gain,
                                  buffer2, chead_gain,
                                  iBufferSize);
-        // for (int i = 0; i < iBufferSize; ++i) {
-        //     m_pHead[i] += buffer1[i]*chead_gain + buffer2[i]*chead_gain;
-        // }
     } else {
         for (int i = 0; i < pflChannels.size(); ++i) {
             CSAMPLE* buffer = pflChannels[i];
             SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
         }
-        // for (int i = 0; i < iBufferSize; ++i) {
-        //     pfl_iter.toFront();
-        //     while(pfl_iter.hasNext()) {
-        //         CSAMPLE* buffer = pfl_iter.next();
-        //         m_pHead[i] += buffer[i];
-        //     }
-        // }
     }
 
     // Head volume and clipping
