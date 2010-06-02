@@ -123,9 +123,12 @@ EngineMaster::~EngineMaster()
 
 void EngineMaster::setPitchIndpTimeStretch(bool b)
 {
-    // TODO(XXX) re-enable
-    //buffer1->setPitchIndpTimeStretch(b);
-    //buffer2->setPitchIndpTimeStretch(b);
+    QListIterator<EngineChannel*> channel_iter(m_channels);
+
+    while (channel_iter.hasNext()) {
+        EngineChannel* pChannel = channel_iter.next();
+        pChannel->setPitchIndpTimeStretch(b);
+    }
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer()
