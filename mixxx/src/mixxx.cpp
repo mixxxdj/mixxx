@@ -603,7 +603,7 @@ void MixxxApp::initActions()
 #endif
 
 #ifdef __SHOUTCAST__
-    optionsShoutcast = new QAction(tr("Enable Livebroadcasting"), this);
+    optionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
     optionsShoutcast->setShortcut(tr("Ctrl+L"));
     optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
 #endif
