@@ -8,31 +8,44 @@
 #include "controlobject.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "playerinfo.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
 #include "mathstuff.h"
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
-               EngineBuffer* buffer,
-               QString channel)
+               EngineMaster* pMixingEngine,
+               int playerNumber, const char* pGroup)
     : m_pConfig(pConfig),
-      m_pEngineBuffer(buffer),
-      m_strChannel(channel),
+      m_strChannel(pGroup),
       m_pLoadedTrack(NULL) {
 
-    CueControl* pCueControl = new CueControl(channel, pConfig);
+    EngineChannel::ChannelOrientation orientation;
+    if (playerNumber % 2 == 1)
+        orientation = EngineChannel::LEFT;
+    else
+        orientation = EngineChannel::RIGHT;
+
+    EngineChannel* pChannel = new EngineChannel(pGroup, pConfig, orientation);
+    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
+    pMixingEngine->addChannel(pChannel);
+
+    CueControl* pCueControl = new CueControl(m_strChannel, pConfig);
     connect(this, SIGNAL(newTrackLoaded(TrackInfoObject*)),
             pCueControl, SLOT(loadTrack(TrackInfoObject*)));
     connect(this, SIGNAL(unloadingTrack(TrackInfoObject*)),
             pCueControl, SLOT(unloadTrack(TrackInfoObject*)));
-    m_pEngineBuffer->addControl(pCueControl);
+    pEngineBuffer->addControl(pCueControl);
 
-    //Tell the reader to notify us when it's done loading a track so we can
-    //finish doing stuff.
-    connect(m_pEngineBuffer, SIGNAL(trackLoaded(TrackInfoObject*)),
+    // Connect our signals and slots with the EngineBuffer's signals and
+    // slots. This will let us know when the reader is done loading a track, and
+    // let us request that the reader load a track.
+    connect(this, SIGNAL(loadTrack(TrackInfoObject*)),
+            pEngineBuffer, SLOT(slotLoadTrack(TrackInfoObject*)));
+    connect(pEngineBuffer, SIGNAL(trackLoaded(TrackInfoObject*)),
             this, SLOT(slotFinishLoading(TrackInfoObject*)));
-    connect(m_pEngineBuffer, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
+    connect(pEngineBuffer, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
             this, SLOT(slotLoadFailed(TrackInfoObject*, QString)));
 
     //Get cue point control object
@@ -111,7 +124,7 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
             m_pBPM, SLOT(slotSet(double)));
 
     //Request a new track from the reader
-    m_pEngineBuffer->loadTrack(track);
+    emit(loadTrack(track));
 }
 
 void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
