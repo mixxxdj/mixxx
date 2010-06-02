@@ -31,15 +31,18 @@
 // Constructor
 EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    pEngine = engine;
-    metaDataTitle = metaDataArtist = "";
+    m_pEngine = engine;
+    m_metaDataTitle = m_metaDataArtist = "";
     m_pMetaData = NULL;
     m_bufferIn[0] = NULL;
     m_bufferIn[1] = NULL;
     m_bufferOut = NULL;
     m_bufferOutSize = 0;
     m_lameFlags = NULL;
+	m_library = NULL;
     m_pConfig = _config;
+	m_rc = 0;
+	//These are the function pointers for lame	
 	lame_init =  0;
 	lame_set_num_channels = 0;
 	lame_set_in_samplerate =  0;
@@ -231,9 +234,9 @@ void EncoderMp3::flush()
 {
 	if(m_library == NULL || !m_library->isLoaded())
 		return;
-    rc = 0;
+    m_rc = 0;
  
-    rc = lame_encode_flush_nogap(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    m_rc = lame_encode_flush_nogap(m_lameFlags, m_bufferOut, m_bufferOutSize);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
@@ -241,7 +244,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
 	if(m_library == NULL || !m_library->isLoaded())
 		return;
     int outsize = 0;
-    rc = 0;
+    m_rc = 0;
     int i = 0;
     
     outsize = (int)((1.25 * size + 7200) + 1);
@@ -256,16 +259,17 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
         m_bufferIn[1][i] = samples[i*2+1];
     }
     
-    rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1], 
+    m_rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1], 
             size/2, m_bufferOut, m_bufferOutSize);
-    if ( rc < 0 )
+    if ( m_rc < 0 ){
+		m_rc = 0; //write and send packge send nothing, when called
         return;
- 
+ 	}
 }
 void EncoderMp3::sendPackages(){
 	if(m_library == NULL || !m_library->isLoaded())
 		return;
-	pEngine->writePage(NULL, m_bufferOut, 0, rc);
+	m_pEngine->writePage(NULL, m_bufferOut, 0, m_rc);
 }
 
 void EncoderMp3::initStream()
@@ -311,9 +315,9 @@ int EncoderMp3::initEncoder(int bitrate)
 //Creates a new MP3 file
 void EncoderMp3::openFile(){
     QByteArray baPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
-	mp3file.setFileName(baPath);
+	m_mp3file.setFileName(baPath);
 
-	if (!mp3file.open(QIODevice::WriteOnly | QIODevice::Text)){
+	if (!m_mp3file.open(QIODevice::WriteOnly | QIODevice::Text)){
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 		props->setType(DLG_WARNING);
 		props->setTitle(tr("Recording"));
@@ -324,15 +328,15 @@ void EncoderMp3::openFile(){
 
 }
 void EncoderMp3::closeFile(){
-	if(mp3file.handle() != -1)
-		mp3file.close();
+	if(m_mp3file.handle() != -1)
+		m_mp3file.close();
 }
 void EncoderMp3::writeFile(){
 	if(m_library == NULL || !m_library->isLoaded())
 		return;	
 	//file must be open
-	if(mp3file.handle() != -1){
-		mp3file.write((const char*)m_bufferOut, rc);
+	if(m_mp3file.handle() != -1){
+		m_mp3file.write((const char*)m_bufferOut, m_rc);
 	}
 }
 

@@ -62,21 +62,21 @@ private:
     bool metaDataHasChanged();
 
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
-    ogg_stream_state oggs;    /* take physical pages, weld into logical stream
+    ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream
                                  of packets */
-    ogg_page oggpage;         /* Ogg bitstream page: contains Vorbis packets */
-    ogg_packet oggpacket;     /* raw packet of data */
-    vorbis_block vblock;      /* local working space for packet-to-PCM */
-    vorbis_dsp_state vdsp;    /* central working space for packet-to-PCM */
-    vorbis_info vinfo;        /* stores all static vorbis bitstream settings */
-    vorbis_comment vcomment;  /* stores all user comments */
-	bool header_write;
+    ogg_page m_oggpage;         /* Ogg bitstream page: contains Vorbis packets */
+    ogg_packet m_oggpacket;     /* raw packet of data */
+    vorbis_block m_vblock;      /* local working space for packet-to-PCM */
+    vorbis_dsp_state m_vdsp;    /* central working space for packet-to-PCM */
+    vorbis_info m_vinfo;        /* stores all static vorbis bitstream settings */
+    vorbis_comment m_vcomment;  /* stores all user comments */
+	bool m_header_write;
 
-    EngineAbstractRecord *pEngine;
+    EngineAbstractRecord *m_pEngine;
     TrackInfoObject *m_pMetaData;
-    char *metaDataTitle;
-    char *metaDataArtist;
-	QFile file;
+    char *m_metaDataTitle;
+    char *m_metaDataArtist;
+	QFile m_file;
 };
 
 #endif

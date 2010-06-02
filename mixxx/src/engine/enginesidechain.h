@@ -60,14 +60,14 @@ class EngineSideChain : public QThread
         QMutex m_stopLock;                      //Provides thread safety around bStopThread.
 
 #ifdef __SHOUTCAST__
-        EngineShoutcast *shoutcast;
+        EngineShoutcast *m_shoutcast;
         ControlObject* m_pShoutcastNeedUpdateFromPrefs;
         ControlObjectThreadMain* m_pShoutcastNeedUpdateFromPrefsCOTM;
 			
 #endif
-        EngineRecord* rec;
-		ControlObjectThread* recReady;
-    	ControlObject* recReadyCO;
+        EngineRecord* m_rec;
+		ControlObjectThread* m_recReady;
+    	ControlObject* m_recReadyCO;
 
 };
 

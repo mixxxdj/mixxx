@@ -15,7 +15,7 @@
 ***************************************************************************/
 
 /* This class provides a way to do audio processing that does not need
- * to be executed in real-time. For example, shoutcast encoding/broadcasting
+ * to be executed in real-time. For example, m_shoutcast encoding/broadcasting
  * and recording encoding can be done here. This class uses double-buffering
  * to increase the amount of time the CPU has to do whatever work needs to
  * be done, and that work is executed in a separate thread. (Threading
@@ -51,12 +51,12 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
     // Shoutcast
     ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
     m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
-	shoutcast = new EngineShoutcast(m_pConfig);
+	m_shoutcast = new EngineShoutcast(m_pConfig);
 #endif
 	
- 	recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
-    recReady = new ControlObjectThread(recReadyCO);
-    rec = NULL;
+ 	m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
+    m_recReady = new ControlObjectThread(m_recReadyCO);
+    m_rec = NULL;
 
    	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
 }
@@ -76,8 +76,8 @@ EngineSideChain::~EngineSideChain()
     wait(); //Wait until the thread has finished.
 
 #ifdef __SHOUTCAST__
-    if (shoutcast)
-        shoutcast->shutdown();
+    if (m_shoutcast)
+        m_shoutcast->shutdown();
 #endif
 
     //Free up memory
@@ -85,12 +85,12 @@ EngineSideChain::~EngineSideChain()
     delete [] m_bufferBack;
 
 #ifdef __SHOUTCAST__
-    delete shoutcast;
+    delete m_shoutcast;
 #endif
-	delete recReadyCO;
-	delete recReady;
-	if(rec)
-    	delete rec;
+	delete m_recReadyCO;
+	delete m_recReady;
+	if(m_rec)
+    	delete m_rec;
 
     m_backBufferLock.unlock();
 }
@@ -206,66 +206,66 @@ void EngineSideChain::run()
 
         
         if (prefEnabled) {
-			if(!shoutcast->isConnected()){
-				//Initialize the m_pShout structure with the info from Mixxx's shoutcast preferences.
-				shoutcast->updateFromPreferences();
-				if(shoutcast->serverConnect()){	
+			if(!m_shoutcast->isConnected()){
+				//Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
+				m_shoutcast->updateFromPreferences();
+				if(m_shoutcast->serverConnect()){	
 
 					ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 				    props->setType(DLG_INFO);
 				    props->setTitle(tr("Live broadcasting"));
-				    props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
+				    props->setText(tr("Mixxx has successfully connected to the m_shoutcast server"));
 				    
 				    ErrorDialogHandler::instance()->requestErrorDialog(props);
 				}
 				
 			}
 			//send to soutcast
-			shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
+			m_shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
 
 			if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f){
 				/*
 				 * You cannot change bitrate, hostname, etc while connected to a stream
 				 */
-				shoutcast->serverDisconnect(); 
-				shoutcast->updateFromPreferences();
-				shoutcast->serverConnect();  
+				m_shoutcast->serverDisconnect(); 
+				m_shoutcast->updateFromPreferences();
+				m_shoutcast->serverConnect();  
 			}	
        	}
 		else{
-			if(shoutcast->isConnected()){
-				shoutcast->serverDisconnect(); 
+			if(m_shoutcast->isConnected()){
+				m_shoutcast->serverDisconnect(); 
 				ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 				props->setType(DLG_INFO);
 			 	props->setTitle(tr("Live broadcasting"));
-				props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
+				props->setText(tr("Mixxx has successfully disconnected to the m_shoutcast server"));
 				    
 				ErrorDialogHandler::instance()->requestErrorDialog(props);
 			}
 		} 
 #endif
 		//delete the recorder object if recording is switched off by the user
-		if(recReady->get() == RECORD_OFF){
-			if(rec != NULL){
-				delete rec;
-				rec = NULL;
+		if(m_recReady->get() == RECORD_OFF){
+			if(m_rec != NULL){
+				delete m_rec;
+				m_rec = NULL;
 			}
 		}
-		if(recReady->get() == RECORD_READY){
-			if(rec == NULL){
-				rec = new EngineRecord(m_pConfig);
-				if(rec->isInitialized()){
+		if(m_recReady->get() == RECORD_READY){
+			if(m_rec == NULL){
+				m_rec = new EngineRecord(m_pConfig);
+				if(m_rec->isInitialized()){
 					qDebug("Setting record flag to: ON");
-            		recReady->slotSet(RECORD_ON);
+            		m_recReady->slotSet(RECORD_ON);
 				}
 				else{ //Maybe the encoder could not be initialized
 					qDebug("Setting record flag to: OFF");
-            		recReady->slotSet(RECORD_OFF);
+            		m_recReady->slotSet(RECORD_OFF);
 				}
 			}	
 		}
-		if(recReady->get() == RECORD_ON){	
-        	rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
+		if(m_recReady->get() == RECORD_ON){	
+        	m_rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
 		}
         //m_backBufferLock.unlock();
 

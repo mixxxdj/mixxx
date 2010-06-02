@@ -45,8 +45,8 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 // Constructor
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
-    pEngine = engine;
-    metaDataTitle = metaDataArtist = NULL;
+    m_pEngine = engine;
+    m_metaDataTitle = m_metaDataArtist = NULL;
     m_pMetaData = NULL;
     
     m_pConfig = _config;
@@ -55,16 +55,16 @@ EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractR
 // Destructor  //call flush before any encoder gets deleted
 EncoderVorbis::~EncoderVorbis()
 {
-	ogg_stream_clear(&oggs);
-    vorbis_block_clear(&vblock);
-    vorbis_dsp_clear(&vdsp);
-    vorbis_comment_clear(&vcomment);
-	vorbis_info_clear(&vinfo);
+	ogg_stream_clear(&m_oggs);
+    vorbis_block_clear(&m_vblock);
+    vorbis_dsp_clear(&m_vdsp);
+    vorbis_comment_clear(&m_vcomment);
+	vorbis_info_clear(&m_vinfo);
 }
 //call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
 void EncoderVorbis::flush()
 {
-    vorbis_analysis_wrote(&vdsp, 0);
+    vorbis_analysis_wrote(&m_vdsp, 0);
 }
 
 /*
@@ -97,28 +97,28 @@ void EncoderVorbis::sendPackages()
 	
 	//Write header only once after stream has been initalized
     int result;
-	if(header_write){
+	if(m_header_write){
 	    while (1) {
-	        result = ogg_stream_flush(&oggs, &oggpage);
+	        result = ogg_stream_flush(&m_oggs, &m_oggpage);
 	        if (result==0) break;
-	              pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+	              m_pEngine->writePage(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
 	    }
-		header_write = false;
+		m_header_write = false;
 	}
 
-    while (vorbis_analysis_blockout(&vdsp, &vblock) == 1) {
-        vorbis_analysis(&vblock, 0);
-        vorbis_bitrate_addblock(&vblock);
-        while (vorbis_bitrate_flushpacket(&vdsp, &oggpacket)) {
+    while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
+        vorbis_analysis(&m_vblock, 0);
+        vorbis_bitrate_addblock(&m_vblock);
+        while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
             // weld packet into bitstream
-            ogg_stream_packetin(&oggs, &oggpacket);
+            ogg_stream_packetin(&m_oggs, &m_oggpacket);
             // write out pages
             int eos = 0;
             while (!eos) {
-                int result = ogg_stream_pageout(&oggs, &oggpage);
+                int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
                 if (result == 0) break;
-                pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-                if (ogg_page_eos(&oggpage)) eos = 1;
+                m_pEngine->writePage(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+                if (ogg_page_eos(&m_oggpage)) eos = 1;
             }
         }
     }
@@ -130,7 +130,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
     int i;
 		
 
-    buffer = vorbis_analysis_buffer(&vdsp, size);
+    buffer = vorbis_analysis_buffer(&m_vdsp, size);
 
     // Deinterleave samples
     for (i = 0; i < size/2; ++i)
@@ -139,63 +139,63 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
         buffer[1][i] = samples[i*2+1]/32768.f;
     }
 
-    vorbis_analysis_wrote(&vdsp, i);
+    vorbis_analysis_wrote(&m_vdsp, i);
 }
 //called from engineshoutcast.cpp in method updateMetaData
 void EncoderVorbis::updateMetaData(char* artist, char* title)
 {
-	metaDataTitle = title;
-    metaDataArtist = artist;
+	m_metaDataTitle = title;
+    m_metaDataArtist = artist;
 
-	vorbis_comment_clear(&vcomment);
-	vorbis_comment_init(&vcomment);
-    vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx/libvorbis");
-    if (metaDataArtist != NULL)
-         vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
-    if (metaDataTitle != NULL)
-         vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
+	vorbis_comment_clear(&m_vcomment);
+	vorbis_comment_init(&m_vcomment);
+    vorbis_comment_add_tag(&m_vcomment, "ENCODER", "mixxx/libvorbis");
+    if (m_metaDataArtist != NULL)
+         vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
+    if (m_metaDataTitle != NULL)
+         vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
 }
 
 void EncoderVorbis::initStream()
 {
         // set up analysis state and auxiliary encoding storage
-        vorbis_analysis_init(&vdsp, &vinfo);
-        vorbis_block_init(&vdsp, &vblock);
+        vorbis_analysis_init(&m_vdsp, &m_vinfo);
+        vorbis_block_init(&m_vdsp, &m_vblock);
 
         // set up packet-to-stream encoder; attach a random serial number
         srand(time(0));
-        ogg_stream_init(&oggs, getSerial());
+        ogg_stream_init(&m_oggs, getSerial());
 
         // add comment
-        vorbis_comment_init(&vcomment);
-        vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx/libvorbis");
-        if (metaDataArtist != NULL)
-            vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
-        if (metaDataTitle != NULL)
-            vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
+        vorbis_comment_init(&m_vcomment);
+        vorbis_comment_add_tag(&m_vcomment, "ENCODER", "mixxx/libvorbis");
+        if (m_metaDataArtist != NULL)
+            vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
+        if (m_metaDataTitle != NULL)
+            vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
 
         // set up the vorbis headers
         ogg_packet headerInit;
         ogg_packet headerComment;
         ogg_packet headerCode;
-        vorbis_analysis_headerout(&vdsp, &vcomment, &headerInit, &headerComment, &headerCode);
-        ogg_stream_packetin(&oggs, &headerInit);
-        ogg_stream_packetin(&oggs, &headerComment);
-        ogg_stream_packetin(&oggs, &headerCode);
+        vorbis_analysis_headerout(&m_vdsp, &m_vcomment, &headerInit, &headerComment, &headerCode);
+        ogg_stream_packetin(&m_oggs, &headerInit);
+        ogg_stream_packetin(&m_oggs, &headerComment);
+        ogg_stream_packetin(&m_oggs, &headerCode);
 		
 		//The encoder is now inialized
 		// Encode method will start streaming by sending the header first
-		header_write = true;
+		m_header_write = true;
         
 }
 int EncoderVorbis::initEncoder(int bitrate)
 {
     int ret;
-    vorbis_info_init(&vinfo);
+    vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
     unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
-    ret = vorbis_encode_init(&vinfo, 2, samplerate, -1, bitrate*1000, -1);
+    ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, bitrate*1000, -1);
 
     if (ret == 0) {
         initStream();
@@ -206,9 +206,9 @@ int EncoderVorbis::initEncoder(int bitrate)
 }
 void EncoderVorbis::openFile(){
 	QByteArray baPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
-	file.setFileName(baPath);
+	m_file.setFileName(baPath);
 
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+	if (!m_file.open(QIODevice::WriteOnly | QIODevice::Text)){
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 		props->setType(DLG_WARNING);
 		props->setTitle(tr("Recording"));
@@ -217,43 +217,43 @@ void EncoderVorbis::openFile(){
 	}
 }
 void EncoderVorbis::closeFile(){
-	if(file.handle() != -1)
-		file.close();
+	if(m_file.handle() != -1)
+		m_file.close();
 }
 void EncoderVorbis:: writeFile(){
 	//file must be open
-	if(file.handle() != -1){
+	if(m_file.handle() != -1){
 
 		//Write header only once after stream has been initalized
     	int result;
-		if(header_write){
+		if(m_header_write){
 	    	while (1) {
-	       		result = ogg_stream_flush(&oggs, &oggpage);
+	       		result = ogg_stream_flush(&m_oggs, &m_oggpage);
 	        	if (result==0) break;
-	            file.write((const char*)oggpage.header, oggpage.header_len);
-				file.write((const char*)oggpage.body, oggpage.body_len);
+	            m_file.write((const char*)m_oggpage.header, m_oggpage.header_len);
+				m_file.write((const char*)m_oggpage.body, m_oggpage.body_len);
 	   		 }
-		 	header_write = false;
+		 	m_header_write = false;
 		}
 
 
-		while (vorbis_analysis_blockout(&vdsp, &vblock) == 1) {
-        	vorbis_analysis(&vblock, 0);
-        	vorbis_bitrate_addblock(&vblock);
-       		while (vorbis_bitrate_flushpacket(&vdsp, &oggpacket)) {
+		while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
+        	vorbis_analysis(&m_vblock, 0);
+        	vorbis_bitrate_addblock(&m_vblock);
+       		while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
             	// weld packet into bitstream
-            	ogg_stream_packetin(&oggs, &oggpacket);
+            	ogg_stream_packetin(&m_oggs, &m_oggpacket);
            	 	// write out pages
            		int eos = 0;
             	while (!eos) {
-                	int result = ogg_stream_pageout(&oggs, &oggpage);
+                	int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
                		if (result == 0) break;
                 
-				 	if ( oggpage.header_len > 0 ) 
-						file.write((const char*)oggpage.header, oggpage.header_len);
+				 	if ( m_oggpage.header_len > 0 ) 
+						m_file.write((const char*)m_oggpage.header, m_oggpage.header_len);
 
-					file.write((const char*)oggpage.body, oggpage.body_len);
-                	if (ogg_page_eos(&oggpage)) eos = 1;
+					m_file.write((const char*)m_oggpage.body, m_oggpage.body_len);
+                	if (ogg_page_eos(&m_oggpage)) eos = 1;
 				}
             }
         }
