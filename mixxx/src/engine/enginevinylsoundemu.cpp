@@ -67,10 +67,5 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     // Apply whatever gain we calculated. SampleUtil takes care of aliased
     // buffers and gains of 1 or 0.
     SampleUtil::addWithGain(pOutput, pIn, m_fGainFactor, iBufferSize);
-
-    // for (int i=0; i < iBufferSize; i++)
-    // {
-    //     pOutput[i] = pOutput[i] * m_fGainFactor;
-    // }
 }
 

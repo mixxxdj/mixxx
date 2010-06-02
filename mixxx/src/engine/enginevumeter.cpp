@@ -55,13 +55,6 @@ void EngineVuMeter::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBuf
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    // Calculate the summed absolute volume
-    // for (int i=0; i<iBufferSize/2; ++i)
-    // {
-    //     m_fRMSvolumeSumL += fabsf(pIn[2*i]);
-    //     m_fRMSvolumeSumR += fabsf(pIn[2*i+1]);
-    // }
-
     m_iSamplesCalculated += iBufferSize/2;
 
     // Are we ready to update the VU meter?:
