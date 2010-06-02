@@ -20,7 +20,7 @@ class BrowseTableModel : public QFileSystemModel, public TrackModel
         virtual const QString currentSearch();
         virtual bool isColumnInternal(int);
         virtual void moveTrack(const QModelIndex&, const QModelIndex&);
-        virtual QItemDelegate* delegateForColumn(int);
+        virtual QItemDelegate* delegateForColumn(const int);
 	private:
 };
 
