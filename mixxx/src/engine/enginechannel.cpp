@@ -57,7 +57,6 @@ EngineChannel::~EngineChannel() {
 }
 
 bool EngineChannel::isPFL() {
-    // TODO(XXX) replace with auto-update from slot
     return m_pPFL->get() == 1.0;
 }
 
