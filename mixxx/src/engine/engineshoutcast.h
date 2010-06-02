@@ -70,18 +70,16 @@ private:
     long m_iShoutStatus;
     long m_iShoutFailures;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObject* recReady;
-    Encoder *encoder;
+    Encoder *m_encoder;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
-//    void (*writeFn)(unsigned char *, unsigned char *, int, int);
     ControlObjectThread* m_pCrossfader;
     ControlObjectThread* m_pVolume1;
     ControlObjectThread* m_pVolume2;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
-	bool custom_metadata;
-	QByteArray baCustom_artist;
-	QByteArray baCustom_title;
+	bool m_custom_metadata;
+	QByteArray m_baCustom_artist;
+	QByteArray m_baCustom_title;
 	void errorDialog(QString text, QString detailedError);
 };
 

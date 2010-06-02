@@ -40,16 +40,13 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pShout(NULL),
           m_pShoutMetaData(NULL),
           m_pConfig(_config),
-          recReady(NULL),
-          encoder(NULL),
+          m_encoder(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
           m_pCrossfader(NULL),
           m_pVolume1(NULL),
           m_pVolume2(NULL),
           m_shoutMutex(QMutex::Recursive) {
-	// Handle error dialog buttons
-    qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
-
+	
     m_pShout = 0;
     m_iShoutStatus = 0;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
@@ -84,11 +81,11 @@ EngineShoutcast::~EngineShoutcast()
 {
     QMutexLocker locker(&m_shoutMutex);
 	
-    if (encoder){ 
-		encoder->flush();
-		encoder->sendPackages();	//send to shoutcast
+    if (m_encoder){ 
+		m_encoder->flush();
+		m_encoder->sendPackages();	//send to shoutcast
 
-		delete encoder;
+		delete m_encoder;
 	}
 	
     delete m_pUpdateShoutcastFromPrefs;
@@ -107,11 +104,11 @@ EngineShoutcast::~EngineShoutcast()
 bool EngineShoutcast::serverDisconnect()
 {
     QMutexLocker locker(&m_shoutMutex);
-    if (encoder){ 
-		encoder->flush();
-		encoder->sendPackages();	//send to shoutcast
-		delete encoder;
-		encoder = NULL;
+    if (m_encoder){ 
+		m_encoder->flush();
+		m_encoder->sendPackages();	//send to shoutcast
+		delete m_encoder;
+		m_encoder = NULL;
 	}
 
     if (m_pShout) {
@@ -154,9 +151,9 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
     QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
 	
-	custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
-	baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title"));
-	baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist"));
+	m_custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
+	m_baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title"));
+	m_baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist"));
 
     int format;
     int len;
@@ -255,25 +252,25 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    // Initialize encoder 	
-	if(encoder) delete encoder;		//delete encoder if it has been initalized (with maybe) different bitrate
+    // Initialize m_encoder 	
+	if(m_encoder) delete m_encoder;		//delete m_encoder if it has been initalized (with maybe) different bitrate
     if ( ! qstrcmp(baFormat, "MP3")) {
-        encoder = new EncoderMp3(m_pConfig, this);
+        m_encoder = new EncoderMp3(m_pConfig, this);
 
     }
     else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
-        encoder = new EncoderVorbis(m_pConfig, this);
+        m_encoder = new EncoderVorbis(m_pConfig, this);
     }
     else {
         qDebug() << "**** Unknown Encoder Format";
         return;
     }
-    if (encoder->initEncoder(baBitrate.toInt()) < 0) {
+    if (m_encoder->initEncoder(baBitrate.toInt()) < 0) {
 		//e.g., if lame is not found 
-		//init encoder itself will display a message box        
+		//init m_encoder itself will display a message box        
 		qDebug() << "**** Encoder init failed"; 
-		delete encoder;
-		encoder = NULL;
+		delete m_encoder;
+		m_encoder = NULL;
     }
 
 }
@@ -294,12 +291,12 @@ bool EngineShoutcast::serverConnect()
     // on the first change
     m_pMetaDataLife = 31337;
 
-	/*Check if encoder is initalized
+	/*Check if m_encoder is initalized
 	 * Encoder is initalized in updateFromPreferences which is called always before serverConnect()	
-	 * If encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
+	 * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
 	 * It does not make sense to connect 
 	 */
-	 if(encoder == NULL){
+	 if(m_encoder == NULL){
 		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
 		return false;
 	}
@@ -413,9 +410,9 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
         return;
 
-    if (iBufferSize > 0 && encoder){
-        encoder->encodeBuffer(pOut, iBufferSize);
-		encoder->sendPackages(); //calls EngineShoutcast::writePage()
+    if (iBufferSize > 0 && m_encoder){
+        m_encoder->encodeBuffer(pOut, iBufferSize);
+		m_encoder->sendPackages(); //calls EngineShoutcast::writePage()
 	}
 
     if (metaDataHasChanged())
@@ -540,19 +537,19 @@ void EngineShoutcast::updateMetaData()
         return;
 
     QByteArray baSong = "";
-	if(!custom_metadata){
+	if(!m_custom_metadata){
 		if (m_pMetaData != NULL) {
 		    // convert QStrings to char*s
 		    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
 		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
 		    baSong = baArtist + " - " + baTitle;
-			//For OGG streams, tell it to the encoder
-			encoder->updateMetaData(baArtist.data(), baTitle.data());	
+			//For OGG streams, tell it to the m_encoder
+			m_encoder->updateMetaData(baArtist.data(), baTitle.data());	
 		}
 	}
 	else{
-		 baSong = baCustom_artist + " - " + baCustom_title;
-		 encoder->updateMetaData(baCustom_artist.data(), baCustom_title.data());
+		 baSong = m_baCustom_artist + " - " + m_baCustom_title;
+		 m_encoder->updateMetaData(m_baCustom_artist.data(), m_baCustom_title.data());
 	}
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     shout_set_metadata(m_pShout, m_pShoutMetaData);
