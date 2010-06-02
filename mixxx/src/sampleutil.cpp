@@ -14,7 +14,9 @@
 #include "sampleutil.h"
 
 #ifdef __SSE__
-bool SampleUtil::m_sOptimizationsOn = true;
+// Disable optimizations by default. They aren't ready for general use yet. Turn
+// this flag on if you feel brave.
+bool SampleUtil::m_sOptimizationsOn = false; // true;
 #else
 bool SampleUtil::m_sOptimizationsOn = false;
 #endif
