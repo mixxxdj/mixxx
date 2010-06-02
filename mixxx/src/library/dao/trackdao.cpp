@@ -1,8 +1,7 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <QSqlQuery>
-#include <QSqlError>
+#include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
 
@@ -454,6 +453,13 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
         m_database.rollback();
         return;
     }
+
+    if (query.numRowsAffected() == 0) {
+        qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
+        m_database.rollback();
+        return;
+    }
+
     //query.finish();
 
     qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
