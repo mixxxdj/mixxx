@@ -97,6 +97,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack
                 ControlObject::getControl(ConfigKey(pPlayer->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
             pPlayer->slotLoadTrack(pTrack, false);
+            break;
         }
         it++;
     }
