@@ -56,7 +56,7 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 	
  	m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
     m_recReady = new ControlObjectThread(m_recReadyCO);
-    m_rec = NULL;
+    m_rec = new EngineRecord(m_pConfig);
 
    	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
 }
@@ -244,31 +244,30 @@ void EngineSideChain::run()
 			}
 		} 
 #endif
-		//delete the recorder object if recording is switched off by the user
+	
+		//if recording is disabled			
 		if(m_recReady->get() == RECORD_OFF){
-			if(m_rec != NULL){
-				delete m_rec;
-				m_rec = NULL;
+			if(m_rec->fileOpen()){
+				m_rec->closeFile();	//close file and 
 			}
 		}
+		//if we are ready for recording, we open a new file
 		if(m_recReady->get() == RECORD_READY){
-			if(m_rec == NULL){
-				m_rec = new EngineRecord(m_pConfig);
-				if(m_rec->isInitialized()){
-					qDebug("Setting record flag to: ON");
-            		m_recReady->slotSet(RECORD_ON);
-				}
-				else{ //Maybe the encoder could not be initialized
-					qDebug("Setting record flag to: OFF");
-            		m_recReady->slotSet(RECORD_OFF);
-				}
+			m_rec->updateFromPreferences();	//update file location from pref
+			if(m_rec->openFile()){
+				qDebug("Setting record flag to: ON");
+            	m_recReady->slotSet(RECORD_ON);
+			}
+			else{ //Maybe the encoder could not be initialized
+				qDebug("Setting record flag to: OFF");
+            	m_recReady->slotSet(RECORD_OFF);
 			}	
 		}
 		if(m_recReady->get() == RECORD_ON){	
         	m_rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
 		}
         //m_backBufferLock.unlock();
-
+		
     }
 
 }

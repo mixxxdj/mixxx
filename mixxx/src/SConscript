@@ -463,7 +463,6 @@ sources = Split("""
                 dlgprefrecord.cpp
 
                 recording/enginerecord.cpp
-                recording/writeaudiofile.cpp
 				recording/encoder.cpp
 
 				

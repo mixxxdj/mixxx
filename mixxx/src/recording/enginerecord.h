@@ -21,8 +21,9 @@
 #include "../engine/engineabstractrecord.h"
 #include "configobject.h"
 #include "engine/engineobject.h"
-#include "writeaudiofile.h"
 #include "encoder.h"
+#include "errordialoghandler.h"
+#include <sndfile.h>
 
 #define THRESHOLD_REC 2. //high enough that its not triggered by white noise
 
@@ -35,18 +36,27 @@ public:
     EngineRecord(ConfigObject<ConfigValue> *_config);
     ~EngineRecord();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-	void writePage(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
-	bool isInitialized();
+	/** writes (un)compressed audio to file **/
+	void write(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
+	//creates or opens an audio file
+	bool openFile();
+	//closes the audio file    
+	void closeFile();
+	void updateFromPreferences();
+	bool fileOpen();
 
 private:
 	int convertToBitrate(int quality);
-    ConfigObject<ConfigValue> *config;
-    ControlObjectThread* recReady;
-    ControlObject* recReadyCO;
-	Encoder *encoder;
+    ConfigObject<ConfigValue> *m_config;
+	Encoder *m_encoder;
 	QByteArray m_OGGquality;
 	QByteArray m_MP3quality;
 	QByteArray m_Encoding;
+	QByteArray m_filename;
+	QFile m_file;
+	SNDFILE *m_sndfile;
+    SF_INFO m_sfInfo;
+
 
 };
 

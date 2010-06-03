@@ -62,6 +62,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     slotApply();
     recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
+	loadMetaData();
 }
 
 void DlgPrefRecord::slotBrowseSave()

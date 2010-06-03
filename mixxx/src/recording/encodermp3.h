@@ -43,26 +43,13 @@ public:
     void encodeBuffer(const CSAMPLE *samples, const int size);
 	void updateMetaData(char* artist, char* title){};
 	void flush();
-	//Call this method in conjunction with shoutcast streaming
-	void sendPackages();
-	
-	/*
-	 * If we record to hard disk drive
-	 */
 
-	//creates or opens an audio file
-	void openFile();
-	//writes encoded audio to file
-	void writeFile();
-	//closes the audio file    
-	void closeFile();
 private:
     
     void initStream();
     int bufferOutGrow(int size);
     int bufferInGrow(int size);
-	int m_rc; //size of encoded samples
-
+	
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
     //For lame
 	struct lame_global_struct;

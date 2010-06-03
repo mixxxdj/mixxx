@@ -83,7 +83,6 @@ EngineShoutcast::~EngineShoutcast()
 	
     if (m_encoder){ 
 		m_encoder->flush();
-		m_encoder->sendPackages();	//send to shoutcast
 
 		delete m_encoder;
 	}
@@ -106,7 +105,6 @@ bool EngineShoutcast::serverDisconnect()
     QMutexLocker locker(&m_shoutMutex);
     if (m_encoder){ 
 		m_encoder->flush();
-		m_encoder->sendPackages();	//send to shoutcast
 		delete m_encoder;
 		m_encoder = NULL;
 	}
@@ -253,7 +251,9 @@ void EngineShoutcast::updateFromPreferences()
     }
 
     // Initialize m_encoder 	
-	if(m_encoder) delete m_encoder;		//delete m_encoder if it has been initalized (with maybe) different bitrate
+	if(m_encoder) {
+		delete m_encoder;		//delete m_encoder if it has been initalized (with maybe) different bitrate
+	}
     if ( ! qstrcmp(baFormat, "MP3")) {
         m_encoder = new EncoderMp3(m_pConfig, this);
 
@@ -351,9 +351,9 @@ bool EngineShoutcast::serverConnect()
 }
 
 /*
- * Called by the Engine implementation to flush the stream to the server.
+ * Called by the encoder in method 'encodebuffer()' to flush the stream to the server.
  */
-void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
+void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
     QMutexLocker locker(&m_shoutMutex);
@@ -411,8 +411,7 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
         return;
 
     if (iBufferSize > 0 && m_encoder){
-        m_encoder->encodeBuffer(pOut, iBufferSize);
-		m_encoder->sendPackages(); //calls EngineShoutcast::writePage()
+        m_encoder->encodeBuffer(pOut, iBufferSize); //encode and send to shoutcast
 	}
 
     if (metaDataHasChanged())

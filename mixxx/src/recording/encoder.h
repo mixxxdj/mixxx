@@ -41,20 +41,7 @@ public:
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
 	virtual void updateMetaData(char* artist, char* title) = 0;
 	virtual void flush() = 0;
-	
-	//Call this method in conjunction with shoutcast streaming
-	virtual void sendPackages() =0;
-	/*
-	 * If we record to hard disk drive
-	 */
-
-	//creates or opens an audio file
-	virtual void openFile() = 0;
-	//writes not encoded contents to the audio file (for WAV)
-    virtual void writeFile() = 0;
-	//closes the audio file    
-	virtual void closeFile() = 0;
-	
+		
 };
 
 #endif // ENCODER_H
