@@ -94,6 +94,10 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
 
+    connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
+            m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
+    connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
+            m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
     connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
             m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
     connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
@@ -148,6 +152,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
           m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
   connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
           m_pOverviewCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
+
 
 	//Connect the players to some other widgets, so they get updated when a
 	//new track is loaded.

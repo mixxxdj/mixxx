@@ -268,15 +268,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
             m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
 
-    // Initialize track object:
-    // m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")),
-    //                      view,
-    //                      config,
-    //                      buffer1,
-    //                      buffer2,
-    //                      AnalyserQueue::createDefaultAnalyserQueue(config));
-
-    //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals
 
     if (view->m_pVisualCh1)
@@ -285,13 +276,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     if (view->m_pVisualCh2)
         connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
                 this, SLOT(slotLoadPlayer2(QString)));
-
-    if (view->m_pWaveformRendererCh1)
-        connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-                view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
-    if (view->m_pWaveformRendererCh2)
-          connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-                  view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
 
     connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
