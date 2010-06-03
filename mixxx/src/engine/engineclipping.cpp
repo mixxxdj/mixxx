@@ -18,9 +18,6 @@
 #include "controlpotmeter.h"
 #include "sampleutil.h"
 
-/*----------------------------------------------------------------
-   A pregaincontrol is ... a pregain.
-   ----------------------------------------------------------------*/
 EngineClipping::EngineClipping(const char * group)
 {
     //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
