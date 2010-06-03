@@ -190,3 +190,7 @@ void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
 
     emit(newTrackLoaded(m_pLoadedTrack));
 }
+
+QString Player::getGroup() {
+    return m_strChannel;
+}

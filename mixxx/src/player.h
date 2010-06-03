@@ -16,6 +16,7 @@ class Player : public QObject
     Player(ConfigObject<ConfigValue> *pConfig, EngineMaster* pMixingEngine,
            int playerNumber, const char* pGroup);
     ~Player();
+    QString getGroup();
 public slots:
     void slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackInfoObject* pTrackInfoObject);

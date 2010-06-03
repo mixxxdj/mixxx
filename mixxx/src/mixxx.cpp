@@ -38,6 +38,7 @@
 
 #include "analyserqueue.h"
 #include "player.h"
+#include "playermanager.h"
 #include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -195,20 +196,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     m_pLibrary = new Library(this, config, bFirstRun);
 
-    //Create the "players" (virtual playback decks)
-    m_pPlayer1 = new Player(config, m_pEngine, 1, "[Channel1]");
-    m_pPlayer2 = new Player(config, m_pEngine, 2, "[Channel2]");
+    // Create the player manager.
+    m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
 
-    //Connect the player to the track collection so that when a track is unloaded,
-    //it's data (eg. waveform summary) is saved back to the database.
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
-
-    view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
+    view=new MixxxView(frame, kbdconfig, qSkinPath, config,
+                       m_pPlayerManager,
                        m_pLibrary);
 
     //Scan the library directory.
@@ -261,27 +255,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
 
-    // Setup the analyser queue to automatically process new tracks loaded by either player
-    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(config);
-    connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
-    connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
-
-    // Set up drag and drop to player visuals
-
-    if (view->m_pVisualCh1)
-        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
-                this, SLOT(slotLoadPlayer1(QString)));
-    if (view->m_pVisualCh2)
-        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
-                this, SLOT(slotLoadPlayer2(QString)));
-
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
-    connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
-             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
-
     // Setup state of End of track controls from config database
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
@@ -316,19 +289,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //grabKeyboard();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player 1 and 2:
-    if (args.qlMusicFiles.count()>0)
-        this->slotLoadPlayer1((args.qlMusicFiles.at(0)));
-    if (args.qlMusicFiles.count()>1)
-        this->slotLoadPlayer2((args.qlMusicFiles.at(1)));
+    for (int i = 0; i < m_pPlayerManager->numPlayers() && i < args.qlMusicFiles.count(); ++i) {
+        m_pPlayerManager->slotLoadToPlayer(args.qlMusicFiles.at(i), i+1);
+    }
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun)
-    {
+    if (bFirstRun) {
         QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
-        if (tracksToAutoLoad.count() > 0)
-            m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
-        if (tracksToAutoLoad.count() > 1)
-            m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+        for (int i = 0; i < m_pPlayerManager->numPlayers() && i < tracksToAutoLoad.count(); i++) {
+            m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
+        }
     }
 
 #ifdef __SCRIPT__
@@ -398,15 +368,11 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
 
-    // The deletion of the players is commented because currently deleting a
-    // player with a loaded track causes a segfault.
-    //delete m_pPlayer1;
-    //delete m_pPlayer2;
+    qDebug() << "delete playerManager" << qTime.elapsed();
+    delete m_pPlayerManager;
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
-
-    delete m_pAnalyserQueue;
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
@@ -836,14 +802,16 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer1->slotLoadTrack(pTrack);
+    QString s =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 1"),
+                config->getValueString(ConfigKey("[Playlist]","Directory")),
+                QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+
+    if (s != QString::null) {
+        m_pPlayerManager->slotLoadToPlayer(s, 1);
     }
-
-
 }
 
 void MixxxApp::slotFileLoadSongPlayer2()
@@ -862,11 +830,15 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer2->slotLoadTrack(pTrack);
+    QString s =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 2"),
+                config->getValueString(ConfigKey("[Playlist]","Directory")),
+                QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+
+    if (s != QString::null) {
+        m_pPlayerManager->slotLoadToPlayer(s, 2);
     }
 }
 
@@ -1162,19 +1134,6 @@ void MixxxApp::rebootMixxxView() {
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
       setFixedSize(view->width(), view->height() + menuBar()->height());
     }
-
-    // these signals/slots need reconnected to the new m_pVisuals after reboot or the
-    // signals go to the wrong slots
-    if (view->m_pVisualCh1) {
-        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer1(QString)));
-        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
-            this, SLOT(slotLoadPlayer1(QString)));
-    }
-    if (view->m_pVisualCh2) {
-        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer2(QString)));
-        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
-            this, SLOT(slotLoadPlayer2(QString)));
-    }
 }
 
 QString MixxxApp::getSkinPath() {
@@ -1219,51 +1178,6 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         return QObject::eventFilter(obj, event);
     }
 
-}
-
-void MixxxApp::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
-    // TODO(XXX) In the future, when we support multiple decks, this method will
-    // be less of a hack.
-    if (player == 1) {
-        m_pPlayer1->slotLoadTrack(pTrack);
-    } else if (player == 2) {
-        m_pPlayer2->slotLoadTrack(pTrack);
-    }
-}
-void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
-{
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-        m_pPlayer1->slotLoadTrack(pTrack, false);
-    else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-        m_pPlayer2->slotLoadTrack(pTrack, false);
-}
-
-void MixxxApp::slotLoadPlayer1(QString location)
-{
-    // Try to get TrackInfoObject* from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
-    if (pTrack == NULL)
-    {
-        pTrack = new TrackInfoObject(location);
-    }
-    //Load the track into the Player.
-    m_pPlayer1->slotLoadTrack(pTrack);
-}
-
-void MixxxApp::slotLoadPlayer2(QString location)
-{
-    // Try to get TrackInfoObject* from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
-    if (pTrack == NULL)
-    {
-        pTrack = new TrackInfoObject(location);
-    }
-    //Load the track into the Player.
-    m_pPlayer2->slotLoadTrack(pTrack);
 }
 
 void MixxxApp::slotScanLibrary()

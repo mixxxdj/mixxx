@@ -156,10 +156,10 @@ void WGLWaveformViewer::dropEvent(QDropEvent * event)
         QString name = url.toLocalFile();
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "")
-            name = url.toString(); 
+            name = url.toString();
 
         event->accept();
-        emit(trackDropped(name));
+        emit(trackDropped(name, m_pGroup));
     } else {
         event->ignore();
     }
