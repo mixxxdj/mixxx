@@ -18,6 +18,7 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineMaster* pMixingEngine,
                int playerNumber, const char* pGroup)
     : m_pConfig(pConfig),
+      m_iPlayerNumber(playerNumber),
       m_strChannel(pGroup),
       m_pLoadedTrack(NULL) {
 
@@ -59,22 +60,36 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     //Playback position within the currently loaded track (in this player).
     m_pPlayPosition = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_strChannel, "playposition")));
-    //Duration of the current song
-    m_pDuration = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel, "duration")));
+
+    //Duration of the current song, we create this one because nothing else does.
+    m_pDuration = new ControlObject(ConfigKey(m_strChannel, "duration"));
+
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
+
+    // Setup state of End of track controls from config database
+    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
+    ControlObject::getControl(ConfigKey(m_strChannel,"TrackEndMode"))->queueFromThread(
+        m_pConfig->getValueString(ConfigKey("[Controls]",config_key)).toDouble());
 }
 
 Player::~Player()
 {
-    emit(unloadingTrack(m_pLoadedTrack));
+    // Save state of End of track controls in config database
+    int config_value = (int)ControlObject::getControl(ConfigKey(m_strChannel, "TrackEndMode"))->get();
+    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
+    m_pConfig->set(ConfigKey("[Controls]",config_key), ConfigValue(config_value));
+
+    if (m_pLoadedTrack) {
+        emit(unloadingTrack(m_pLoadedTrack));
+        m_pLoadedTrack = NULL;
+    }
+
     delete m_pCuePoint;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
     delete m_pPlayPosition;
-    delete m_pDuration;
     delete m_pBPM;
 }
 
@@ -141,7 +156,7 @@ void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
         // for all the widgets to unload the track and blank themselves.
         emit(unloadingTrack(m_pLoadedTrack));
     }
-    m_pDuration->slotSet(0);
+    m_pDuration->set(0);
     m_pBPM->slotSet(0);
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
@@ -163,7 +178,7 @@ void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
     delete pVisualResampleCO;
 
     //Update the BPM and duration values that are stored in ControlObjects
-    m_pDuration->slotSet(m_pLoadedTrack->getDuration());
+    m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
 
     // Update TrackInfoObject of the helper class //FIXME

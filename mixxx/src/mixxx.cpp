@@ -186,10 +186,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
 
-    // Needed for updating widgets with track duration info
-    new ControlObject(ConfigKey("[Channel1]","duration"));
-    new ControlObject(ConfigKey("[Channel2]","duration"));
-
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame;
     setCentralWidget(frame);
@@ -254,10 +250,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     {
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
-
-    // Setup state of End of track controls from config database
-    ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(config);
@@ -357,10 +349,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
     qDebug() << "soundmanager->close() done";
-
-    // Save state of End of track controls in config database
-    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
-    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;

@@ -8,6 +8,7 @@
 class EngineMaster;
 class TrackInfoObject;
 class ControlObjectThreadMain;
+class ControlObject;
 
 class Player : public QObject
 {
@@ -27,6 +28,7 @@ signals:
     void unloadingTrack(TrackInfoObject* pAboutToBeUnloaded);
 private:
     ConfigObject<ConfigValue>* m_pConfig;
+    int m_iPlayerNumber;
     QString m_strChannel;
 
     TrackInfoObject* m_pLoadedTrack;
@@ -35,7 +37,7 @@ private:
     ControlObjectThreadMain* m_pLoopInPoint;
     ControlObjectThreadMain* m_pLoopOutPoint;
     ControlObjectThreadMain* m_pPlayPosition;
-    ControlObjectThreadMain* m_pDuration;
+    ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
 };
 
