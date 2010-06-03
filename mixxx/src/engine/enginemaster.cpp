@@ -22,6 +22,7 @@
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
+#include "enginebuffer.h"
 #include "enginemaster.h"
 #include "enginevolume.h"
 #include "enginechannel.h"
@@ -296,6 +297,16 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     m_channelBuffers.push_back(SampleUtil::alloc(MAX_BUFFER_LEN));
     m_channels.push_back(pChannel);
+
+    // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
+    // the two EngineBuffers together so they can beat-sync off of each other.
+    // rryan 6/2010
+    if (m_channels.length() == 2) {
+        EngineBuffer *pBuffer1 = m_channels[0]->getEngineBuffer();
+        EngineBuffer *pBuffer2 = m_channels[1]->getEngineBuffer();
+        pBuffer1->setOtherEngineBuffer(pBuffer2);
+        pBuffer2->setOtherEngineBuffer(pBuffer1);
+    }
 }
 
 int EngineMaster::numChannels() {
