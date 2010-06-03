@@ -39,20 +39,6 @@ public:
 	void updateMetaData(char* artist, char* title);
 	void flush();
 
-	//Call this method in conjunction with shoutcast streaming
-	void sendPackages();
-	
-	/*
-	 * If we record to hard disk drive
-	 */
-
-	//creates or opens an audio file
-	void openFile();
-	//writes encoded audio to file
-	void writeFile();
-	//closes the audio file    
-	void closeFile();
-
 private slots:
     
 
@@ -60,6 +46,8 @@ private:
     int getSerial();
     void initStream();
     bool metaDataHasChanged();
+	//Call this method in conjunction with shoutcast streaming
+	void writePage();
 
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
     ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream

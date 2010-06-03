@@ -38,38 +38,49 @@
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
-    config = _config;
-	encoder = NULL;
-    //fOut = new WriteAudioFile(config);
-	//fOut->open(); 
+    m_config = _config;
+	m_encoder = NULL;
+	m_sndfile = NULL;
+}
 
-	m_Encoding = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding")).toLatin1();
+EngineRecord::~EngineRecord()
+{
+	closeFile();
+	
+}
+void EngineRecord::updateFromPreferences()
+{
+	m_Encoding = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding")).toLatin1();
 	//returns a number from 1 .. 10
-	m_OGGquality = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
-	m_MP3quality = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
+	m_OGGquality = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
+	m_MP3quality = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
+	m_filename = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
+
+
+	if(m_encoder){
+		delete m_encoder;	//delete m_encoder if it has been initalized (with maybe) different bitrate
+		m_encoder = NULL;
+	}
 
 	if(m_Encoding == ENCODING_MP3){
 	#ifdef __SHOUTCAST__
-		encoder = new EncoderMp3(config, this);
-		if(encoder->initEncoder(convertToBitrate(m_MP3quality.toInt())) < 0){
-			delete encoder;
-			encoder = NULL;
+		m_encoder = new EncoderMp3(m_config, this);
+		if(m_encoder->initEncoder(convertToBitrate(m_MP3quality.toInt())) < 0){
+			delete m_encoder;
+			m_encoder = NULL;
 			qDebug() << "MP3 recording is not supported. Lame could not be initialized";
-			qDebug() << "Set recording to off";
-			
 		}
 	#else
 		qDebug() << "MP3 recording requires Mixxx to build with shoutcast support";
 	#endif
 		
 	}
-	
 	if(m_Encoding == ENCODING_OGG){
 	#ifdef __SHOUTCAST__
-		encoder = new EncoderVorbis(config, this);
-		if(encoder->initEncoder(convertToBitrate(m_OGGquality.toInt())) < 0){
-			delete encoder;			
-			encoder = NULL;
+		m_encoder = new EncoderVorbis(m_config, this);
+		if(m_encoder->initEncoder(convertToBitrate(m_OGGquality.toInt())) < 0){
+			delete m_encoder;			
+			m_encoder = NULL;
 			qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
 			
 		}
@@ -78,23 +89,11 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 	#endif
 	
 	}
-	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
-		encoder = new WriteAudioFile(config, this);
-	}
-	if(encoder) encoder->openFile();
-
-}
-
-	
-
-EngineRecord::~EngineRecord()
-{
-	
-	if(encoder) {
-		encoder->flush();
-		encoder->writeFile();	//write to file	
-		delete encoder;
-	}
+	/* 
+	 * If we use WAVE OR AIFF
+	 * the encoder will be NULL at all times
+	 *
+	 */
 	
 }
 int EngineRecord::convertToBitrate(int quality){
@@ -115,18 +114,116 @@ int EngineRecord::convertToBitrate(int quality){
 }
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-  	if(!encoder) return;
-    //Write record buffer to file
-	encoder->encodeBuffer(pIn, iBufferSize); 
-	encoder->writeFile(); //write to file
+	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
+		if(m_sndfile != NULL)
+			sf_write_float(m_sndfile, pIn, iBufferSize);
+	}
+	else{
+		if(!m_encoder) return;
+    	//Compress audio. Encoder will call method 'write()' below to write a file stream
+		m_encoder->encodeBuffer(pIn, iBufferSize); 
+	}
+  	
+	
 	
 }
-void EngineRecord::writePage(unsigned char *header, unsigned char *body,
+/** encoder will call this method to write compressed audio **/
+void EngineRecord::write(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
-     	//EngineRecord is not responsible for streaming to shoutcast
-		// --> Empty method
+     	if(!fileOpen()){
+			return;
+		}
+		//Relevant for OGG
+		if(headerLen > 0){
+			m_file.write((const char*) header, headerLen);
+		}
+		//always write body
+		m_file.write((const char*) body, bodyLen);
+		
 }
-bool EngineRecord::isInitialized(){
-	return (encoder != NULL);
+bool EngineRecord::fileOpen(){
+	// Both encoder and file must be initalized
+
+	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
+		return (m_sndfile != NULL);
+	}
+	else{
+		return (m_file.handle() != -1);
+	}
 }
+//Creates a new MP3 file
+bool EngineRecord::openFile(){
+		
+	//Unfortunately, we cannot use QFile for writing WAV and AIFF audio
+	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
+		
+		//set sfInfo
+        m_sfInfo.samplerate = m_config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+        m_sfInfo.channels = 2;
+
+		if (m_Encoding == ENCODING_WAVE)
+            m_sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+        else
+            m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
+		
+		//creates a new WAVE or AIFF file and write header information
+		m_sndfile = sf_open(m_filename, SFM_WRITE, &m_sfInfo);
+		if(m_sndfile){
+			sf_command (m_sndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
+			//set meta data
+            int ret;
+            QByteArray baTitle = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
+            ret = sf_set_string(m_sndfile, SF_STR_TITLE, baTitle.data());
+            if(ret != 0)
+                qDebug("libsndfile: %s", sf_error_number(ret));
+            QByteArray baAuthor = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
+            ret = sf_set_string(m_sndfile, SF_STR_ARTIST, baAuthor.data());
+            if(ret != 0)
+                qDebug("libsndfile: %s", sf_error_number(ret));
+            QByteArray baComment = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
+            ret = sf_set_string(m_sndfile, SF_STR_COMMENT, baComment.data()); 
+            if(ret != 0)
+                qDebug("libsndfile: %s", sf_error_number(ret));
+
+		}
+	}
+	else
+	{
+		//we can use a QFile to write compressed audio
+		m_file.setFileName(m_filename);
+		m_file.open(QIODevice::WriteOnly | QIODevice::Text);
+		  
+	}
+	//check if file are really open
+	if(!fileOpen()){
+		ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+		props->setType(DLG_WARNING);
+		props->setTitle(tr("Recording"));
+		props->setText(tr("<html>Could not create audio file for recording!<p><br>Maybe you do not have enough free disk space or file permissions.</html>"));
+		ErrorDialogHandler::instance()->requestErrorDialog(props);
+		return false;
+	}
+	return true;
+
+}
+void EngineRecord::closeFile(){
+	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
+		if(m_sndfile != NULL){
+        	sf_close(m_sndfile);
+        	m_sndfile = NULL;
+    	}
+	}
+	else{
+		//close QFile and encoder, if open
+		if(m_file.handle() != -1){
+			if(m_encoder){
+				m_encoder->flush();
+				delete m_encoder;
+				m_encoder = NULL;
+			}
+			m_file.close();
+		}
+	}
+}
+

@@ -41,7 +41,6 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
     m_lameFlags = NULL;
 	m_library = NULL;
     m_pConfig = _config;
-	m_rc = 0;
 	//These are the function pointers for lame	
 	lame_init =  0;
 	lame_set_num_channels = 0;
@@ -170,6 +169,7 @@ EncoderMp3::~EncoderMp3()
     	flush();
     	lame_close(m_lameFlags);
 		m_library->unload(); //unload dll, so, ...
+		qDebug() << "Unloaded liblame ";
 		m_library = NULL;
 	}
 	//free requested buffers
@@ -189,8 +189,6 @@ EncoderMp3::~EncoderMp3()
 	lame_encode_buffer_float = 0;
 	lame_init_params = 0;
 	lame_encode_flush_nogap = 0;
-	//close mp3 file, if open	
-	closeFile();
 	
 }
 
@@ -234,9 +232,14 @@ void EncoderMp3::flush()
 {
 	if(m_library == NULL || !m_library->isLoaded())
 		return;
-    m_rc = 0;
+    int rc = 0;
  
-    m_rc = lame_encode_flush_nogap(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    rc = lame_encode_flush_nogap(m_lameFlags, m_bufferOut, m_bufferOutSize);
+	 if (rc < 0 ){
+        return;
+ 	}
+	//end encoded audio to shoutcast or file
+	m_pEngine->write(NULL, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
@@ -244,7 +247,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
 	if(m_library == NULL || !m_library->isLoaded())
 		return;
     int outsize = 0;
-    m_rc = 0;
+    int rc = 0;
     int i = 0;
     
     outsize = (int)((1.25 * size + 7200) + 1);
@@ -259,17 +262,13 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size)
         m_bufferIn[1][i] = samples[i*2+1];
     }
     
-    m_rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1], 
+    rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1], 
             size/2, m_bufferOut, m_bufferOutSize);
-    if ( m_rc < 0 ){
-		m_rc = 0; //write and send packge send nothing, when called
+    if (rc < 0 ){
         return;
  	}
-}
-void EncoderMp3::sendPackages(){
-	if(m_library == NULL || !m_library->isLoaded())
-		return;
-	m_pEngine->writePage(NULL, m_bufferOut, 0, m_rc);
+	//write encoded audio to shoutcast stream or file
+	m_pEngine->write(NULL, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::initStream()
@@ -312,31 +311,5 @@ int EncoderMp3::initEncoder(int bitrate)
     
     return 0;
 }
-//Creates a new MP3 file
-void EncoderMp3::openFile(){
-    QByteArray baPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
-	m_mp3file.setFileName(baPath);
 
-	if (!m_mp3file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-		props->setType(DLG_WARNING);
-		props->setTitle(tr("Recording"));
-		props->setText(tr("Could not create mp3 file for recording"));
-		ErrorDialogHandler::instance()->requestErrorDialog(props);
-	}
-
-
-}
-void EncoderMp3::closeFile(){
-	if(m_mp3file.handle() != -1)
-		m_mp3file.close();
-}
-void EncoderMp3::writeFile(){
-	if(m_library == NULL || !m_library->isLoaded())
-		return;	
-	//file must be open
-	if(m_mp3file.handle() != -1){
-		m_mp3file.write((const char*)m_bufferOut, m_rc);
-	}
-}
 

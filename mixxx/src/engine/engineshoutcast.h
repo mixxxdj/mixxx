@@ -44,7 +44,7 @@ public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
     ~EngineShoutcast();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void writePage(unsigned char *header, unsigned char *body,
+    void write(unsigned char *header, unsigned char *body,
                    int headerLen, int bodyLen);
 	bool serverConnect();
 	bool serverDisconnect();

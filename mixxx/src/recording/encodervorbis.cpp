@@ -65,6 +65,7 @@ EncoderVorbis::~EncoderVorbis()
 void EncoderVorbis::flush()
 {
     vorbis_analysis_wrote(&m_vdsp, 0);
+	writePage();
 }
 
 /*
@@ -82,7 +83,7 @@ qDebug() << "RETURNING SERIAL " << serial;
     return serial;
 }
 
-void EncoderVorbis::sendPackages()
+void EncoderVorbis::writePage()
 {
 
 	/* 
@@ -101,7 +102,7 @@ void EncoderVorbis::sendPackages()
 	    while (1) {
 	        result = ogg_stream_flush(&m_oggs, &m_oggpage);
 	        if (result==0) break;
-	              m_pEngine->writePage(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+	              m_pEngine->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
 	    }
 		m_header_write = false;
 	}
@@ -117,7 +118,7 @@ void EncoderVorbis::sendPackages()
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
                 if (result == 0) break;
-                m_pEngine->writePage(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+                m_pEngine->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
                 if (ogg_page_eos(&m_oggpage)) eos = 1;
             }
         }
@@ -138,8 +139,10 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
         buffer[0][i] = samples[i*2]/32768.f;
         buffer[1][i] = samples[i*2+1]/32768.f;
     }
-
+	/** encodes audio **/
     vorbis_analysis_wrote(&m_vdsp, i);
+	/** writes the OGG page and sends it to file or stream **/
+	writePage();
 }
 //called from engineshoutcast.cpp in method updateMetaData
 void EncoderVorbis::updateMetaData(char* artist, char* title)
@@ -204,58 +207,5 @@ int EncoderVorbis::initEncoder(int bitrate)
     };
     return ret;
 }
-void EncoderVorbis::openFile(){
-	QByteArray baPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
-	m_file.setFileName(baPath);
-
-	if (!m_file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-		props->setType(DLG_WARNING);
-		props->setTitle(tr("Recording"));
-		props->setText(tr("Could not create ogg file for recording"));
-		ErrorDialogHandler::instance()->requestErrorDialog(props);
-	}
-}
-void EncoderVorbis::closeFile(){
-	if(m_file.handle() != -1)
-		m_file.close();
-}
-void EncoderVorbis:: writeFile(){
-	//file must be open
-	if(m_file.handle() != -1){
-
-		//Write header only once after stream has been initalized
-    	int result;
-		if(m_header_write){
-	    	while (1) {
-	       		result = ogg_stream_flush(&m_oggs, &m_oggpage);
-	        	if (result==0) break;
-	            m_file.write((const char*)m_oggpage.header, m_oggpage.header_len);
-				m_file.write((const char*)m_oggpage.body, m_oggpage.body_len);
-	   		 }
-		 	m_header_write = false;
-		}
 
 
-		while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
-        	vorbis_analysis(&m_vblock, 0);
-        	vorbis_bitrate_addblock(&m_vblock);
-       		while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
-            	// weld packet into bitstream
-            	ogg_stream_packetin(&m_oggs, &m_oggpacket);
-           	 	// write out pages
-           		int eos = 0;
-            	while (!eos) {
-                	int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
-               		if (result == 0) break;
-                
-				 	if ( m_oggpage.header_len > 0 ) 
-						m_file.write((const char*)m_oggpage.header, m_oggpage.header_len);
-
-					m_file.write((const char*)m_oggpage.body, m_oggpage.body_len);
-                	if (ogg_page_eos(&m_oggpage)) eos = 1;
-				}
-            }
-        }
-    }
-}
