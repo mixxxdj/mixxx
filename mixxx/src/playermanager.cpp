@@ -27,6 +27,13 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
 
 PlayerManager::~PlayerManager() {
     delete m_pAnalyserQueue;
+
+    QMutableListIterator<Player*> it(m_players);
+    while (it.hasNext()) {
+        Player* pPlayer = it.next();
+        it.remove();
+        delete pPlayer;
+    }
 }
 
 int PlayerManager::numPlayers() {
