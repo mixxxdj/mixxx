@@ -21,6 +21,7 @@
 #include "recording/defs_recording.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "recording/encoder.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefRecordDlg()
 {
@@ -96,46 +97,12 @@ void DlgPrefRecord::slotSliderQuality()
 
 int DlgPrefRecord::getSliderQualityVal()
 {
-	/*    
-	QString encodingType = comboBoxEncoding->currentText();
-    
-	
-    if (encodingType == ENCODING_OGG)
-        return SliderQuality->value();
-    if (encodingType == ENCODING_MP3)
-        switch(SliderQuality->value())
-        {
-            case 1: return 16;
-            case 2: return 24;
-            case 3: return 32;
-            case 4: return 64;
-            case 5: return 128;
-            case 6: return 160;
-            case 7: return 192;
-            case 8: return 224;
-            case 9: return 256;
-            case 10: return 320;
-        }
-    }
-	*/
 	
 	/* Commented by Tobias Rafreider
 	 * We always use the bitrate to denote the quality since it is more common to the users
 	 */
-	switch(SliderQuality->value())
-        {
-            case 1: return 16;
-            case 2: return 24;
-            case 3: return 32;
-            case 4: return 64;
-            case 5: return 128;
-            case 6: return 160;
-            case 7: return 192;
-            case 8: return 224;
-            case 9: return 256;
-            case 10: return 320;
-        }
-    return 0;
+	return Encoder::convertToBitrate(SliderQuality->value());
+
 }
 
 void DlgPrefRecord::updateTextQuality()
