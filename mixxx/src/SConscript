@@ -459,6 +459,7 @@ sources = Split("""
 
                 trackinfoobject.cpp
                 player.cpp
+                playermanager.cpp
                 sounddevice.cpp
                 soundmanager.cpp
                 sounddeviceportaudio.cpp

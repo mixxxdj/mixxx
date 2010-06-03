@@ -60,6 +60,7 @@
 #endif
 
 class EngineMaster;
+class PlayerManager;
 class TrackInfoObject;
 class PlayerProxy;
 class BpmDetector;
@@ -127,15 +128,7 @@ class MixxxApp : public QMainWindow
 	QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-    // Load a track into the next available (non-playing) Player
-    void slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* track);
-    // Load a track into the specified player. Does nothing if an invalid player
-    // is specified. player is indexed from 1.
-    void slotLoadTrackToPlayer(TrackInfoObject* track, int player);
-    /** Load a track into Player 1 */
-    void slotLoadPlayer1(QString location);
-    /** Load a track into Player 2 */
-	void slotLoadPlayer2(QString location);
+
 	/** Scan or rescan the music library directory */
 	void slotScanLibrary();
 	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
@@ -161,9 +154,8 @@ class MixxxApp : public QMainWindow
     // The sound manager
     SoundManager *soundmanager;
 
-    Player *m_pPlayer1;
-    Player *m_pPlayer2;
-    AnalyserQueue* m_pAnalyserQueue;
+    PlayerManager* m_pPlayerManager;
+
     MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
