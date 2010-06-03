@@ -39,6 +39,16 @@
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
 
+    // Master sample rate
+    ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
+    sr->set(44100.);
+
+    // Latency control
+    new ControlObject(ConfigKey(group, "latency"));
+
+    // Master rate
+    new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
+
 #ifdef __LADSPA__
     // LADSPA
     ladspa = new EngineLADSPA();
@@ -46,13 +56,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
-
-    // Transform buttons
-
-    // TODO(XXX) These aren't used anymore. Created only for backwards
-    // compatibility.
-    new ControlPushButton(ConfigKey("[Channel1]", "transform"));
-    new ControlPushButton(ConfigKey("[Channel2]", "transform"));
 
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);

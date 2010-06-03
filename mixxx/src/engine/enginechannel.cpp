@@ -42,6 +42,10 @@ EngineChannel::EngineChannel(const char* group,
     m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"), true);
     m_pOrientation = new ControlObject(ConfigKey(group, "orientation"));
     m_pOrientation->set(defaultOrientation);
+
+    // Create the 'transform' control. It isn't used anymore, but is needed for
+    // backwards compatibility.
+    new ControlPushButton(ConfigKey(group, "transform"));
 }
 
 EngineChannel::~EngineChannel() {

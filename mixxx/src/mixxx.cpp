@@ -160,17 +160,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
 
-    // Sample rate used by Player object
-    ControlObject * sr = new ControlObject(ConfigKey("[Master]","samplerate"));
-    sr->set(44100.);
-
-    ControlObject * latency = new ControlObject(ConfigKey("[Master]","latency"));
-    /* avoid unused warning*/
-    latency = 0;
-
-    // Master rate
-    new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
-
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(config, "[Master]");
 
