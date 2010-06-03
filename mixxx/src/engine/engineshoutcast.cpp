@@ -544,12 +544,12 @@ void EngineShoutcast::updateMetaData()
 		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
 		    baSong = baArtist + " - " + baTitle;
 			//For OGG streams, tell it to the m_encoder
-			m_encoder->updateMetaData(baArtist.data(), baTitle.data());	
+			//m_encoder->updateMetaData(baArtist.data(), baTitle.data());	
 		}
 	}
 	else{
 		 baSong = m_baCustom_artist + " - " + m_baCustom_title;
-		 m_encoder->updateMetaData(m_baCustom_artist.data(), m_baCustom_title.data());
+		// m_encoder->updateMetaData(m_baCustom_artist.data(), m_baCustom_title.data());
 	}
     shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     shout_set_metadata(m_pShout, m_pShoutMetaData);

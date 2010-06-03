@@ -144,7 +144,11 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 	/** writes the OGG page and sends it to file or stream **/
 	writePage();
 }
-//called from engineshoutcast.cpp in method updateMetaData
+/* originally called from engineshoutcast.cpp in method updateMetaData
+ * this, however, causes pops during OGG streaming
+ * method is not called anymore
+ * @deprecated
+*/
 void EncoderVorbis::updateMetaData(char* artist, char* title)
 {
 	m_metaDataTitle = title;
