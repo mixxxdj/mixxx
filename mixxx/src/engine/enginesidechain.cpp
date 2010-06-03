@@ -214,7 +214,7 @@ void EngineSideChain::run()
 					ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 				    props->setType(DLG_INFO);
 				    props->setTitle(tr("Live broadcasting"));
-				    props->setText(tr("Mixxx has successfully connected to the m_shoutcast server"));
+				    props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
 				    
 				    ErrorDialogHandler::instance()->requestErrorDialog(props);
 				}
@@ -238,7 +238,7 @@ void EngineSideChain::run()
 				ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 				props->setType(DLG_INFO);
 			 	props->setTitle(tr("Live broadcasting"));
-				props->setText(tr("Mixxx has successfully disconnected to the m_shoutcast server"));
+				props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
 				    
 				ErrorDialogHandler::instance()->requestErrorDialog(props);
 			}

@@ -33,7 +33,7 @@ class Encoder : public QObject {
 
 public:
     Encoder();
-    ~Encoder();
+    virtual ~Encoder();
 	/*
 	 * General Encoder methods
 	 */
