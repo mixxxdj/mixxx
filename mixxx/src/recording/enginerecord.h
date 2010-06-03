@@ -46,7 +46,6 @@ public:
 	bool fileOpen();
 
 private:
-	int convertToBitrate(int quality);
     ConfigObject<ConfigValue> *m_config;
 	Encoder *m_encoder;
 	QByteArray m_OGGquality;

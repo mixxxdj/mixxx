@@ -65,7 +65,7 @@ void EngineRecord::updateFromPreferences()
 	if(m_Encoding == ENCODING_MP3){
 	#ifdef __SHOUTCAST__
 		m_encoder = new EncoderMp3(m_config, this);
-		if(m_encoder->initEncoder(convertToBitrate(m_MP3quality.toInt())) < 0){
+		if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt())) < 0){
 			delete m_encoder;
 			m_encoder = NULL;
 			qDebug() << "MP3 recording is not supported. Lame could not be initialized";
@@ -78,7 +78,7 @@ void EngineRecord::updateFromPreferences()
 	if(m_Encoding == ENCODING_OGG){
 	#ifdef __SHOUTCAST__
 		m_encoder = new EncoderVorbis(m_config, this);
-		if(m_encoder->initEncoder(convertToBitrate(m_OGGquality.toInt())) < 0){
+		if(m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt())) < 0){
 			delete m_encoder;			
 			m_encoder = NULL;
 			qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
@@ -96,22 +96,7 @@ void EngineRecord::updateFromPreferences()
 	 */
 	
 }
-int EngineRecord::convertToBitrate(int quality){
-	switch(quality)
-        {
-            case 1: return 16;
-            case 2: return 24;
-            case 3: return 32;
-            case 4: return 64;
-            case 5: return 128;
-            case 6: return 160;
-            case 7: return 192;
-            case 8: return 224;
-            case 9: return 256;
-            case 10: return 320;
-			default: return 128;
-        }
-}
+
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
 	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
