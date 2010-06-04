@@ -579,6 +579,8 @@ if not conf.CheckLib(['portmidi', 'libportmidi']) and not conf.CheckHeader(['por
  	print "Did not find PortMidi or its development headers, exiting!"
  	Exit(1)
 
+#check for libshout
+libshout_found = conf.CheckLib(['libshout','shout'])
 
 sources += Split("""midi/mididevice.cpp """);
 sources += Split("""midi/mididevicemanager.cpp """);
@@ -731,9 +733,9 @@ if 'win' in platform:
 	env.Append(LIBS = 'QtWebKit4');
 	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
-	env.Append(LIBS = 'ogg_static')
-	env.Append(LIBS = 'vorbis_static')
-	env.Append(LIBS = 'vorbisfile_static')
+	#env.Append(LIBS = 'ogg_static')
+	#env.Append(LIBS = 'vorbis_static')
+	#env.Append(LIBS = 'vorbisfile_static')
 	env.Append(LIBS = 'imm32')
 	env.Append(LIBS = 'wsock32')
 	env.Append(LIBS = 'delayimp')
@@ -896,25 +898,23 @@ flags_shoutcast = getFlags(env, 'shoutcast', 0)
 
 if int(flags_shoutcast):
 	shoutmp3 = 0
-	shoutogg = 0
-
-	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
-	if not conf.CheckLib('shout'):
+	shoutogg = 1
+	if not libshout_found:
 		print "libshout was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag."
 		Exit(1)
-
+	
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
-
+	if 'win' in platform:
+		env.Append(LIBS = 'pthreadVC2');
+		env.Append(LIBS = 'pthreadVCE2');
+		env.Append(LIBS = 'pthreadVSE2');
+	
 	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp recording/encodervorbis.cpp recording/encodermp3.cpp""" )
 	build_flags += 'shoutcast '
 	
 	shoutmp3 = 1
 	shoutogg = 1
-
-	if not conf.CheckLib('vorbisenc'):	#Make sure Vorbis libraries are installed
-		print "libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag."
-		Exit(1)
-		
+	#Vorbis libraries must be installed although shoutcast is disabled --> We don't need to check that here twice		
 	if shoutmp3 and shoutogg:
 		print "Shoutcast support (OGG/MP3)... enabled"
 	elif shoutmp3:
