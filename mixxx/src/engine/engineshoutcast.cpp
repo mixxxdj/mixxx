@@ -317,7 +317,7 @@ bool EngineShoutcast::serverConnect()
 
         m_iShoutFailures++;
         qDebug() << "Shoutcast failed connect. Failures:" << m_iShoutFailures;
-        sleep(2);
+        //sleep(2);
     }
     if (m_iShoutFailures == iMaxTries) {
         if (m_pShout)
@@ -335,7 +335,7 @@ bool EngineShoutcast::serverConnect()
 
     while (m_iShoutStatus == SHOUTERR_BUSY) {
         qDebug() << "Connection pending. Sleeping...";
-        sleep(1);
+        //sleep(1);
         m_iShoutStatus = shout_get_connected(m_pShout);
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
