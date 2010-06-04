@@ -121,10 +121,10 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 		}
 		//Relevant for OGG
 		if(headerLen > 0){
-			m_file.write((const char*) header, headerLen);
+			m_datastream.writeRawData((const char*) header, headerLen);
 		}
 		//always write body
-		m_file.write((const char*) body, bodyLen);
+		m_datastream.writeRawData((const char*) body, bodyLen);
 		
 }
 bool EngineRecord::fileOpen(){
@@ -177,7 +177,10 @@ bool EngineRecord::openFile(){
 	{
 		//we can use a QFile to write compressed audio
 		m_file.setFileName(m_filename);
-		m_file.open(QIODevice::WriteOnly | QIODevice::Text);
+		m_file.open(QIODevice::WriteOnly);
+		if(m_file.handle() != -1){
+			m_datastream.setDevice(&m_file);
+		}
 		  
 	}
 	//check if file are really open

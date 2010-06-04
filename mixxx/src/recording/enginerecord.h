@@ -24,6 +24,8 @@
 #include "encoder.h"
 #include "errordialoghandler.h"
 #include <sndfile.h>
+#include <QDataStream>
+#include <QFile>
 
 #define THRESHOLD_REC 2. //high enough that its not triggered by white noise
 
@@ -53,6 +55,7 @@ private:
 	QByteArray m_Encoding;
 	QByteArray m_filename;
 	QFile m_file;
+	QDataStream m_datastream;
 	SNDFILE *m_sndfile;
     SF_INFO m_sfInfo;
 
