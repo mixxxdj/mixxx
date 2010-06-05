@@ -77,7 +77,8 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_chordData() {
+        : m_chordData(),
+          m_qMutex(QMutex::Recursive) {
 
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
@@ -95,7 +96,12 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_bHeaderParsed = false;
-    m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
+
+    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
+    // ignore those. Tracks will get a new ID from the database.
+    //m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
+    m_iId = -1;
+
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 
     m_pVisualWave = 0;

@@ -2,8 +2,8 @@
                           midiscriptengine.h  -  description
                           -------------------
     begin                : Fri Dec 12 2008
-    copyright            : (C) 2008 by Sean M. Pappalardo
-    email                : pegasus@renegadetech.com
+    copyright            : (C) 2008-2010 by Sean M. Pappalardo
+    email                : spappalardo@mixxx.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -19,8 +19,10 @@
 
 #include <QEvent>
 #include <QtScript>
+#include <QMessageBox>
 #include "configobject.h"
 #include "midimessage.h"
+#include "pitchfilter.h"
 class MidiDevice;
 
 //Forward declaration(s)
@@ -50,6 +52,9 @@ public:
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE int beginTimer(int interval, QString scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
+    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
+    Q_INVOKABLE void scratchTick(int deck, int interval);
+    Q_INVOKABLE void scratchDisable(int deck);
 
 public slots:
     void slotValueChanged(double value);
@@ -68,11 +73,15 @@ public slots:
     
 signals:
     void initialized();
+    void resetController();
 
 protected:
     void run();
     void timerEvent(QTimerEvent *event);
 
+private slots:
+    void errorDialogButton(QString key, QMessageBox::StandardButton button);
+    
 private:
     // Only call these with the scriptEngineLock
     bool safeEvaluate(QString filepath);
@@ -82,14 +91,14 @@ private:
     bool safeExecute(QString function, char channel, 
                      char control, char value, MidiStatusByte status, QString group);
     void initializeScriptEngine();
-
+    
+    void scriptErrorDialog(QString detailedError);
     void generateScriptFunctions(QString code);
     bool checkException();
     void stopAllTimers();
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
-    
-    
+        
     MidiDevice* m_pMidiDevice;
     bool m_midiDebug;
     QHash<ConfigKey, QString> m_connectedControls;
@@ -98,7 +107,18 @@ private:
     QMap<QString,QStringList> m_scriptErrors;
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
-	QHash<int, QPair<QString, bool> > m_timers;
+    QHash<int, QPair<QString, bool> > m_timers;
+    
+    // Scratching functions & variables
+    void scratchProcess(int timerId);
+    
+    // 256 (default) available virtual decks is enough I would think.
+    //  If more are needed at run-time, these will move to the heap automatically
+    QVarLengthArray <int> m_intervalAccumulator;
+    QVarLengthArray <float> m_dx, m_rampTo;
+    QVarLengthArray <bool> m_ramp;
+    QVarLengthArray <PitchFilter*> m_pitchFilter;
+    QHash<int, int> m_scratchTimers;
 };
 
 #endif

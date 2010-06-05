@@ -143,7 +143,9 @@ int MidiDevicePortMidi::open()
 }
 
 int MidiDevicePortMidi::close()
-{    
+{   
+    setReceiveInhibit(true);    // Prevent deadlock
+    
     if (!m_bIsOpen) {
         qDebug() << "PortMIDI device" << m_strDeviceName << "already closed";
         return -1;

@@ -16,17 +16,19 @@
 
 #include <neaacdec.h>
 
+#ifdef __MP4V2__
+    #include <mp4v2/mp4v2.h>
+#else
+    #include <mp4.h>
+#endif
+
 #ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>
 #endif
 
 #include <QtDebug>
-
 #include "soundsourcem4a.h"
-
-#include "trackinfoobject.h"
-
 #include "m4a/mp4-mixxx.cpp"
 
 SoundSourceM4A::SoundSourceM4A(QString qFileName)
@@ -35,37 +37,7 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
     // Initialize variables to invalid values in case loading fails.
     mp4file = MP4_INVALID_FILE_HANDLE;
     filelength = 0;
-    channels = 0;
     memset(&ipd, 0, sizeof(ipd));
-
-    // Copy QString to char[] buffer for mp4_open to read from later
-    int bytes = qFileName.length() + 1;
-    ipd.filename = new char[bytes];
-    ipd.remote = false; // File is not an stream
-    strncpy(ipd.filename, qFileName, bytes);
-    ipd.filename[bytes-1] = '\0';
-
-    int mp4_open_status = mp4_open(&ipd);
-    if (mp4_open_status != 0) {
-        // The file was loading and failing erratically because
-        // ipd.remote was an in an uninitialized state, it needed to be
-        // set to false.
-        qDebug() << "SSM4A::constructor: failed to open MP4 file "
-                 << qFileName << " with status:" << mp4_open_status;
-        return;
-    }
-
-    // mp4_open succeeded -> populate variables
-    mp4_private* mp = (struct mp4_private*)ipd.private_ipd;
-    Q_ASSERT(mp);
-    mp4file = mp->mp4.handle;
-    filelength = mp4_total_samples(&ipd);
-    SRATE = mp->sample_rate;
-    channels = mp->channels;
-
-    qDebug() << "SSM4A: channels:" << channels
-             << "filelength:" << filelength
-             << "Sample Rate:" << SRATE;
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -80,6 +52,49 @@ SoundSourceM4A::~SoundSourceM4A() {
     }
 }
 
+int SoundSourceM4A::open()
+{
+    //Initialize the FAAD2 decoder...
+    initializeDecoder();
+
+    qDebug() << "SSM4A: channels:" << m_iChannels 
+             << "filelength:" << filelength
+             << "Sample Rate:" << m_iSampleRate;
+    return OK;
+}
+
+int SoundSourceM4A::initializeDecoder()
+{
+    // Copy QString to char[] buffer for mp4_open to read from later
+    QByteArray qbaFileName;
+    qbaFileName = m_qFilename.toUtf8();
+    int bytes = m_qFilename.length() + 1;
+    ipd.filename = new char[bytes];
+    strncpy(ipd.filename, qbaFileName.data(), bytes);
+    ipd.filename[bytes-1] = '\0';
+    ipd.remote = false; // File is not an stream
+    // The file was loading and failing erratically because
+    // ipd.remote was an in an uninitialized state, it needed to be
+    // set to false.
+
+    int mp4_open_status = mp4_open(&ipd);
+    if (mp4_open_status != 0) {
+        qDebug() << "SSM4A::initializeDecoder failed"
+                 << m_qFilename << " with status:" << mp4_open_status;
+        return ERR;
+    }
+
+    // mp4_open succeeded -> populate variables
+    mp4_private* mp = (struct mp4_private*)ipd.private_ipd;
+    Q_ASSERT(mp);
+    mp4file = mp->mp4.handle;
+    filelength = mp4_total_samples(&ipd);
+    m_iSampleRate = mp->sample_rate;
+    m_iChannels = mp->channels;
+
+    return OK;
+}
+
 long SoundSourceM4A::seek(long filepos){
     // Abort if file did not load.
     if (filelength == 0)
@@ -87,10 +102,10 @@ long SoundSourceM4A::seek(long filepos){
 
     qDebug() << "SSM4A::seek()" << filepos;
 
-    // qDebug() << "MP4SEEK: seek time:" << filepos / (channels * SRATE) ;
+    // qDebug() << "MP4SEEK: seek time:" << filepos / (m_iChannels * m_iSampleRate) ;
 
     int position = mp4_seek_sample(&ipd, filepos);
-    //int position = mp4_seek(&ipd, filepos / (channels * SRATE));
+    //int position = mp4_seek(&ipd, filepos / (m_iChannels * m_iSampleRate));
     return position;
 }
 
@@ -106,7 +121,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
     // sample is 16-bits = 2 bytes here, so we multiply size by channels to
     // get the number of bytes we want to decode.
 
-    int total_bytes_to_decode = size * channels;
+    int total_bytes_to_decode = size * m_iChannels;
     int total_bytes_decoded = 0;
     int num_bytes_req = 4096;
     char* buffer = (char*)destination;
@@ -129,7 +144,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
     // At this point *destination should be filled. If mono : double all samples
     // (L => R)
-    if (channels == 1) {
+    if (m_iChannels == 1) {
         for (int i = total_bytes_decoded/2-1; i >= 0; --i) {
             // as_buffer[i] is an audio sample (s16)
             //scroll through , copying L->R & expanding buffer
@@ -154,12 +169,18 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
 inline long unsigned SoundSourceM4A::length(){
     return filelength;
-    //return channels * mp4_duration(&ipd) * SRATE;
+    //return m_iChannels * mp4_duration(&ipd) * m_iSampleRate;
 }
 
-int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
-    QString mp4FileName = Track->getLocation();
-    MP4FileHandle mp4file = MP4Read(mp4FileName);
+int SoundSourceM4A::parseHeader(){
+
+    //Disclaimer: This code sucks because we're opening the file twice.
+    //            Once in the MP4Read(..) below, and once in the 
+    //            initializeDecoder() call at the bottom of this function.
+
+    QString mp4FileName = this->getFilename();
+    QByteArray qbaFileName = mp4FileName.toUtf8();
+    MP4FileHandle mp4file = MP4Read(qbaFileName.data());
 
     if (mp4file == MP4_INVALID_FILE_HANDLE) {
         qDebug() << "SSM4A::ParseHeader : " << mp4FileName
@@ -167,39 +188,71 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
         return ERR;
     }
 
-    Track->setType("m4a");
+    this->setType("m4a");
     char* value = NULL;
+    
     if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
-        Track->setTitle(value);
+        this->setTitle(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
 
     if (MP4GetMetadataArtist(mp4file, &value) && value != NULL) {
-        Track->setArtist(value);
+        this->setArtist(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
+    if (MP4GetMetadataAlbum(mp4file, &value) && value != NULL) {
+        this->setAlbum(value);
         MP4Free(value);
         value = NULL;
     }
 
     if (MP4GetMetadataComment(mp4file, &value) && value != NULL) {
-        Track->setComment(value);
+        this->setComment(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
-
+    
+    if (MP4GetMetadataYear(mp4file, &value) && value != NULL) {
+        this->setYear(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
+    if (MP4GetMetadataGenre(mp4file, &value) && value != NULL) {
+        this->setGenre(QString::fromUtf8(value));
+        MP4Free(value);
+        value = NULL;
+    }
+    
 #ifndef _MSC_VER
     u_int16_t bpm = 0;
+    u_int16_t track = 0;
+    u_int16_t numTracks = 0; // don't actually use this but MP4GetMetadataTrack
+                             // barfs if you give it null
 #else
     // MSVC doesn't know what a u_int16_t is, so we have to tell it
     unsigned short bpm = 0;
+    unsigned short track = 0;
+    unsigned short numTracks = 0;
 #endif
     if (MP4GetMetadataTempo(mp4file, &bpm)) {
         if(bpm > 0) {
 #ifdef _MSC_VER
             Q_ASSERT(sizeof(bpm)==2);   // Just making sure we're in bounds
 #endif
-            Track->setBpm(bpm);
-            Track->setBpmConfirm(true);
+            this->setBPM(bpm);
+            //Track->setBpmConfirm(true);
+        }
+    }
+    if (MP4GetMetadataTrack(mp4file, &track, &numTracks)) {
+        if(track > 0) {
+#ifdef _MSC_VER
+            Q_ASSERT(sizeof(track)==2);   // Just making sure we're in bounds
+#endif
+            this->setTrackNumber(QString::number(track));
         }
     }
 
@@ -215,16 +268,23 @@ int SoundSourceM4A::ParseHeader( TrackInfoObject * Track){
     int duration_seconds = MP4ConvertFromTrackDuration(mp4file, track_id,
                                                        duration_scale,
                                                        MP4_SECS_TIME_SCALE);
-    Track->setDuration(duration_seconds);
+    this->setDuration(duration_seconds);
 
     int bits_per_second = MP4GetTrackBitRate(mp4file, track_id);
-    Track->setBitrate(bits_per_second/1000);
+    this->setBitrate(bits_per_second/1000);
 
-    MP4Close(mp4file);
-    Track->setHeaderParsed(true);
-    // FIXME: hard-coded to 2 channels - real value is not available until
-    // faacDecInit2 is called
-    Track->setChannels(2);
+    //We have to initialize the decoder to figure out the sample rate
+    //and the number of channels in the track...
+    if (initializeDecoder() != OK)
+        return ERR;
 
     return OK;
+}
+
+QList<QString> SoundSourceM4A::supportedFileExtensions()
+{
+    QList<QString> list;
+    list.push_back("m4a");
+    list.push_back("mp4");
+    return list;
 }
