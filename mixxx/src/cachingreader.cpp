@@ -278,7 +278,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     m_pCurrentSoundSource->seek(sample_position);
     int samples_read = m_pCurrentSoundSource->read(samples_to_read,
                                                    m_pSample);
-    
+
     //If we've run out of music, the SoundSource can return 0 samples.
     //Remember that SoundSourc->getLength() (which is m_iTrackNumSamples)
     //can lie to us about the length of the song!
@@ -541,9 +541,8 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
-    QFileInfo fileInfo(filename);
 
-    if (filename.isEmpty() || !fileInfo.exists()) {
+    if (filename.isEmpty() || !pTrack->exists()) {
         qDebug() << "Couldn't load track with filename: " << filename;
         emit(trackLoadFailed(
             pTrack,

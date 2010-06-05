@@ -3,6 +3,7 @@
 #ifndef TRACKDAO_H
 #define TRACKDAO_H
 
+#include <QFileInfo>
 #include <QObject>
 #include <QSet>
 #include <QHash>
@@ -45,6 +46,7 @@ Q_OBJECT
     bool trackExistsInDatabase(QString location);
     QString getTrackLocation(int id);
     int addTrack(QString location);
+    int addTrack(QFileInfo& fileInfo);
     void removeTrack(int id);
     TrackInfoObject *getTrack(int id) const;
     bool isDirty(int trackId);
