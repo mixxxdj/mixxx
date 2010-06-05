@@ -81,7 +81,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 #elif __WINDOWS__
 	libname = "lame_enc.dll";
 #elif __APPLE__
-	libname ="lame_enc.dll"; //TODO
+	libname ="lame_enc.mylib"; //TODO
 #endif
 
 	m_library = new QLibrary(libname);

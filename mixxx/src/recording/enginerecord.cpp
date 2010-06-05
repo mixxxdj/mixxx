@@ -176,10 +176,15 @@ bool EngineRecord::openFile(){
 	else
 	{
 		//we can use a QFile to write compressed audio
-		m_file.setFileName(m_filename);
-		m_file.open(QIODevice::WriteOnly);
-		if(m_file.handle() != -1){
-			m_datastream.setDevice(&m_file);
+		if(m_encoder){
+			m_file.setFileName(m_filename);
+			m_file.open(QIODevice::WriteOnly);
+			if(m_file.handle() != -1){
+				m_datastream.setDevice(&m_file);
+			}
+		}
+		else{
+			return false;
 		}
 		  
 	}
