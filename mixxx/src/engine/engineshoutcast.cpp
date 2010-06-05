@@ -26,7 +26,11 @@
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
+#ifdef __WINDOWS__
+	#define sleep(x) Sleep(x)
+#endif
 
+#define TIMEOUT 20
 
 #include <QDebug>
 #include <QMutexLocker>
@@ -317,7 +321,7 @@ bool EngineShoutcast::serverConnect()
 
         m_iShoutFailures++;
         qDebug() << "Shoutcast failed connect. Failures:" << m_iShoutFailures;
-        //sleep(2);
+        sleep(2);
     }
     if (m_iShoutFailures == iMaxTries) {
         if (m_pShout)
@@ -332,11 +336,12 @@ bool EngineShoutcast::serverConnect()
     }
 
     m_iShoutFailures = 0;
-
-    while (m_iShoutStatus == SHOUTERR_BUSY) {
+	int timeout = 0;
+    while (m_iShoutStatus == SHOUTERR_BUSY && timeout < TIMEOUT) {
         qDebug() << "Connection pending. Sleeping...";
-        //sleep(1);
+        sleep(100);
         m_iShoutStatus = shout_get_connected(m_pShout);
+		++ timeout;
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to Shoutcast server...";
