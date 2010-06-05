@@ -14,14 +14,43 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
 
-    setTable("library");
+    QSqlQuery query(pTrackCollection->getDatabase());
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
+                  "SELECT " 
+                  "library." + LIBRARYTABLE_ID + "," +
+                  "library." + LIBRARYTABLE_ARTIST + "," +
+                  "library." + LIBRARYTABLE_TITLE + "," +
+                  "library." + LIBRARYTABLE_ALBUM + "," +
+                  "library." + LIBRARYTABLE_YEAR + "," +
+                  "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
+                  "library." + LIBRARYTABLE_BPM + "," +
+                  "track_locations.location," +
+                  "library." + LIBRARYTABLE_COMMENT + "," +
+                  "library." + LIBRARYTABLE_MIXXXDELETED + " " +
+                  "FROM library " + 
+                  "INNER JOIN track_locations " +
+                  "ON library.location = track_locations.id ");
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+    }
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+    }
+
+    //setTable("library");
+    setTable("library_view");
 
     //Set up a relation which maps our location column (which is a foreign key
     //into the track_locations) table. We tell Qt that our LIBRARYTABLE_LOCATION
     //column maps into the row of the track_locations table that has the id
     //equal to our location col. It then grabs the "location" col from that row
     //and shows it...
-    setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
+    //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
     //Set the column heading labels, rename them for translations and have
     //proper capitalization
@@ -121,7 +150,8 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);

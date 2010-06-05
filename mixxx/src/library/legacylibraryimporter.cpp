@@ -98,11 +98,22 @@ void LegacyLibraryImporter::import()
                 //genre and album tags (so the imported TIO doesn't have
                 //those fields).
                 emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
+
+                // Read the metadata we couldn't support in <1.8 from file.
                 TrackInfoObject trackInfoNew(trackInfo17.getLocation());
                 trackInfo17.setGenre(trackInfoNew.getGenre());
                 trackInfo17.setAlbum(trackInfoNew.getAlbum());
                 trackInfo17.setYear(trackInfoNew.getYear());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
+
+                // Import the track's saved cue point if it is non-zero.
+                float fCuePoint = trackInfo17.getCuePoint();
+                if (fCuePoint != 0.0f) {
+                    Cue* pCue = trackInfo17.addCue();
+                    pCue->setType(Cue::CUE);
+                    pCue->setPosition(fCuePoint);
+                }
+
                 m_trackDao.saveTrack(&trackInfo17);
 
                 //Check if this track is used in a playlist anywhere. If it is, save the

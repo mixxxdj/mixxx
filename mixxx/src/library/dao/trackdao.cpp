@@ -1,8 +1,7 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <QSqlQuery>
-#include <QSqlError>
+#include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
 
@@ -454,6 +453,13 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
         m_database.rollback();
         return;
     }
+
+    if (query.numRowsAffected() == 0) {
+        qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
+        m_database.rollback();
+        return;
+    }
+
     //query.finish();
 
     qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
@@ -533,9 +539,9 @@ void TrackDAO::markTrackLocationsAsDeleted(QString directory)
     we can salvage your existing metadata that you have in your DB (like cue points, etc.). */
 void TrackDAO::detectMovedFiles()
 {
-    //qDebug() << "markUnverifiedTracksAsDeleted()";
-    m_database.transaction();
-
+    //This function should not start a transaction on it's own!
+    //When it's called from libraryscanner.cpp, there already is a transaction
+    //started!
 
     QSqlQuery query(m_database);
     QSqlQuery query2(m_database);
@@ -598,5 +604,4 @@ void TrackDAO::detectMovedFiles()
         }
     }
 
-    m_database.commit();
 }

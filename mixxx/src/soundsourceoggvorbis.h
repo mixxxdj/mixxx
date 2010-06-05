@@ -29,10 +29,12 @@ class SoundSourceOggVorbis : public SoundSource {
  public:
   SoundSourceOggVorbis(QString qFilename);
   ~SoundSourceOggVorbis();
+  int open();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
-  static int ParseHeader( TrackInfoObject * );
+  int parseHeader();
+  static QList<QString> supportedFileExtensions();
  private:
   int channels;
   unsigned long filelength;
