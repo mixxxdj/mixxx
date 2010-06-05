@@ -27,6 +27,7 @@
 #include "playerinfo.h"
 #include "trackinfoobject.h"
 #ifdef __WINDOWS__
+	#include <windows.h>
 	#define sleep(x) Sleep(x)
 #endif
 
