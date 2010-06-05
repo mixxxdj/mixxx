@@ -581,6 +581,7 @@ if not conf.CheckLib(['portmidi', 'libportmidi']) and not conf.CheckHeader(['por
 
 #check for libshout
 libshout_found = conf.CheckLib(['libshout','shout'])
+vorbisenc = conf.CheckLib('vorbisenc')
 
 sources += Split("""midi/mididevice.cpp """);
 sources += Split("""midi/mididevicemanager.cpp """);
@@ -905,9 +906,14 @@ if int(flags_shoutcast):
 	
 	env.Append(CPPDEFINES = '__SHOUTCAST__')
 	if 'win' in platform:
-		env.Append(LIBS = 'pthreadVC2');
-		env.Append(LIBS = 'pthreadVCE2');
-		env.Append(LIBS = 'pthreadVSE2');
+		env.Append(LIBS = 'pthreadVC2')
+		env.Append(LIBS = 'pthreadVCE2')
+		env.Append(LIBS = 'pthreadVSE2')
+	else:
+		if not vorbisenc: 
+			#libvorbisenc does only exit on Linux and OSX
+			print "libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag."
+			Exit(1)
 	
 	sources += Split(""" dlgprefshoutcast.cpp engine/engineshoutcast.cpp recording/encodervorbis.cpp recording/encodermp3.cpp""" )
 	build_flags += 'shoutcast '
