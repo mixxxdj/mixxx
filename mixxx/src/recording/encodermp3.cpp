@@ -81,7 +81,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 #elif __WINDOWS__
 	libname = "lame_enc.dll";
 #elif __APPLE__
-	libname ="lame_enc.mylib"; //TODO
+	libname ="/usr/local/lib/libmp3lame.dylib";
 #endif
 
 	m_library = new QLibrary(libname);
@@ -98,7 +98,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>";
 		props->setText(key);
 	#elif __APPLE__
-		key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>";
+		key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>";
 		props->setText(key);
 #endif;
 	    props->setKey(key);
