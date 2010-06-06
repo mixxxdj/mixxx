@@ -191,7 +191,7 @@ void LibraryScanner::run()
         qDebug() << "Scan finished cleanly";
     }
     else {
-        //m_database.rollback();
+        m_database.rollback();
         qDebug() << "Scan cancelled";
     }
 
