@@ -32,7 +32,9 @@
 EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
     m_pEngine = engine;
-    m_metaDataTitle = m_metaDataArtist = "";
+    m_metaDataTitle = NULL;
+	m_metaDataArtist = NULL;
+	m_metaDataAlbum = NULL;
     m_pMetaData = NULL;
     m_bufferIn[0] = NULL;
     m_bufferIn[1] = NULL;
@@ -53,7 +55,12 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 	lame_set_bWriteVbrTag = 0;
 	lame_encode_buffer_float = 0;
 	lame_init_params = 0;
-	lame_encode_flush_nogap = 0;
+	lame_encode_flush = 0;
+
+	id3tag_init= 0;
+	id3tag_set_title = 0;
+	id3tag_set_artist = 0;
+	id3tag_set_album = 0;
 		
 	/*
 	 * @ Author: Tobias Rafreider
@@ -100,7 +107,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 	#elif __APPLE__
 		key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>";
 		props->setText(key);
-#endif;
+	#endif
 	    props->setKey(key);
 		ErrorDialogHandler::instance()->requestErrorDialog(props);
 		return;
@@ -111,31 +118,25 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 	
 	
 	//initalize function pointers
-	lame_init =  (lame_init__)m_library->resolve("lame_init");
-	//qDebug() << "lame_init  " << &lame_init ;
-	lame_set_num_channels =(lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
-	//qDebug() << "lame_set_num_channels  " << &lame_set_num_channels ;
-	lame_set_in_samplerate = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
-	//qDebug() << "lame_set_in_samplerate  " << &lame_set_in_samplerate ;
-	lame_set_out_samplerate = (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
-	//qDebug() << "lame_set_out_samplerate  " << &lame_set_out_samplerate ;
-	lame_close = (lame_close__)m_library->resolve("lame_close");
-	//qDebug() << "lame_close" << &lame_close;
-	lame_set_brate = (lame_set_brate__)m_library->resolve("lame_set_brate");
-	//qDebug() << "lame_set_brate" << &lame_set_brate;
-	lame_set_mode = (lame_set_mode__)m_library->resolve("lame_set_mode");
-	//qDebug() << "lame_set_mode" << &lame_set_mode;
-	lame_set_quality = (lame_set_quality__)m_library->resolve("lame_set_quality");
-	//qDebug() << "lame_set_quality" << &lame_set_quality;
-	lame_set_bWriteVbrTag = (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
-	//qDebug() << "lame_set_bWriteVbrTag " << &lame_set_bWriteVbrTag ;
-	lame_encode_buffer_float = (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
-	//qDebug() << "lame_encode_buffer_float " << &lame_encode_buffer_float ;
-	lame_init_params = (lame_init_params__)m_library->resolve("lame_init_params");
-	//qDebug() << "lame_init_params " << &lame_init_params;
-	lame_encode_flush_nogap = (lame_encode_flush_nogap__)m_library->resolve("lame_encode_flush_nogap");
-	//qDebug() << "lame_encode_flush_nogap " << &lame_encode_flush_nogap;
+	lame_init 					= (lame_init__)m_library->resolve("lame_init");
+	lame_set_num_channels 		= (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
+	lame_set_in_samplerate 		= (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
+	lame_set_out_samplerate		= (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
+	lame_close 					= (lame_close__)m_library->resolve("lame_close");
+	lame_set_brate				= (lame_set_brate__)m_library->resolve("lame_set_brate");
+	lame_set_mode 				= (lame_set_mode__)m_library->resolve("lame_set_mode");
+	lame_set_quality			= (lame_set_quality__)m_library->resolve("lame_set_quality");
+	lame_set_bWriteVbrTag		= (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
+	lame_encode_buffer_float 	= (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
+	lame_init_params 			= (lame_init_params__)m_library->resolve("lame_init_params");
+	lame_encode_flush 			= (lame_encode_flush__)m_library->resolve("lame_encode_flush");
+	
+	id3tag_init					= (id3tag_init__)m_library->resolve("id3tag_init");
+	id3tag_set_title	 		= (id3tag_set_title__)m_library->resolve("id3tag_set_title");
+	id3tag_set_artist	 		= (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
+	id3tag_set_album 	 		= (id3tag_set_album__)m_library->resolve("id3tag_set_album");
 
+	
 	//Check if all function pointer are not NULL
 
 	if(	!lame_init ||
@@ -149,8 +150,12 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		!lame_set_bWriteVbrTag ||
 		!lame_encode_buffer_float ||
 		!lame_init_params ||
-		!lame_encode_flush_nogap ||
-		!get_lame_version
+		!lame_encode_flush ||
+		!get_lame_version ||
+		!id3tag_init ||
+		!id3tag_set_title ||
+		!id3tag_set_artist ||
+		!id3tag_set_album 
 	)
 	{
 		qDebug() << "Error loading liblame: Function pointer may be NULL";
@@ -188,7 +193,12 @@ EncoderMp3::~EncoderMp3()
 	lame_set_bWriteVbrTag = 0;
 	lame_encode_buffer_float = 0;
 	lame_init_params = 0;
-	lame_encode_flush_nogap = 0;
+	lame_encode_flush = 0;
+
+	id3tag_init= 0;
+	id3tag_set_title = 0;
+	id3tag_set_artist = 0;
+	id3tag_set_album = 0;
 	
 }
 
@@ -233,8 +243,8 @@ void EncoderMp3::flush()
 	if(m_library == NULL || !m_library->isLoaded())
 		return;
     int rc = 0;
- 
-    rc = lame_encode_flush_nogap(m_lameFlags, m_bufferOut, m_bufferOutSize);
+ 	/**Flush also writes ID3 tags **/
+    rc = lame_encode_flush(m_lameFlags, m_bufferOut, m_bufferOutSize);
 	 if (rc < 0 ){
         return;
  	}
@@ -301,7 +311,17 @@ int EncoderMp3::initEncoder(int bitrate)
     lame_set_mode(m_lameFlags, STEREO);
     lame_set_quality(m_lameFlags, 2);
     lame_set_bWriteVbrTag(m_lameFlags, 0);
+	
+	//ID3 Tag if fiels are not NULL	
+	id3tag_init(m_lameFlags);
+	if(m_metaDataTitle)
+		id3tag_set_title(m_lameFlags, m_metaDataTitle);
+	if(m_metaDataArtist)
+		id3tag_set_artist(m_lameFlags, m_metaDataArtist);
+	if(m_metaDataAlbum)
+		id3tag_set_album(m_lameFlags,m_metaDataAlbum);
    
+
     if (( lame_init_params(m_lameFlags)) < 0) {
         qDebug() << "Unable to initialize MP3 parameters";
         return -1;
@@ -311,5 +331,13 @@ int EncoderMp3::initEncoder(int bitrate)
     
     return 0;
 }
+void EncoderMp3::updateMetaData(char* artist, char* title, char* album){
+	m_metaDataTitle = title;
+    m_metaDataArtist = artist;
+	m_metaDataAlbum = album;
+	
+	
 
+
+}
 

@@ -46,7 +46,9 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
     m_pEngine = engine;
-    m_metaDataTitle = m_metaDataArtist = NULL;
+    m_metaDataTitle = NULL;
+	m_metaDataArtist = NULL;
+	m_metaDataAlbum = NULL;
     m_pMetaData = NULL;
     
     m_pConfig = _config;
@@ -144,23 +146,17 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 	/** writes the OGG page and sends it to file or stream **/
 	writePage();
 }
-/* originally called from engineshoutcast.cpp in method updateMetaData
- * this, however, causes pops during OGG streaming
- * method is not called anymore
- * @deprecated
+/* Originally called from engineshoutcast.cpp to update metadata information 
+ * when streaming, however, this causes pops
+ * 
+ * Currently this method is used before init() once to save artist, title and album  
 */
-void EncoderVorbis::updateMetaData(char* artist, char* title)
+void EncoderVorbis::updateMetaData(char* artist, char* title, char* album)
 {
 	m_metaDataTitle = title;
     m_metaDataArtist = artist;
+	m_metaDataAlbum = album;
 
-	vorbis_comment_clear(&m_vcomment);
-	vorbis_comment_init(&m_vcomment);
-    vorbis_comment_add_tag(&m_vcomment, "ENCODER", "mixxx/libvorbis");
-    if (m_metaDataArtist != NULL)
-         vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
-    if (m_metaDataTitle != NULL)
-         vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
 }
 
 void EncoderVorbis::initStream()
@@ -180,6 +176,8 @@ void EncoderVorbis::initStream()
             vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
         if (m_metaDataTitle != NULL)
             vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
+		if (m_metaDataAlbum != NULL)
+            vorbis_comment_add_tag(&m_vcomment, "ALBUM", m_metaDataAlbum);
 
         // set up the vorbis headers
         ogg_packet headerInit;
