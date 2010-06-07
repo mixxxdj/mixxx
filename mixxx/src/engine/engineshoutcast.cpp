@@ -28,7 +28,8 @@
 #include "trackinfoobject.h"
 #ifdef __WINDOWS__
 	#include <windows.h>
-	#define sleep(x) Sleep(x)
+	//sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
+	#define sleep(x) Sleep(x*1000)
 #endif
 
 #define TIMEOUT 20
@@ -322,7 +323,7 @@ bool EngineShoutcast::serverConnect()
 
         m_iShoutFailures++;
         qDebug() << "Shoutcast failed connect. Failures:" << m_iShoutFailures;
-        sleep(2);
+        sleep(1);
     }
     if (m_iShoutFailures == iMaxTries) {
         if (m_pShout)
@@ -340,7 +341,7 @@ bool EngineShoutcast::serverConnect()
 	int timeout = 0;
     while (m_iShoutStatus == SHOUTERR_BUSY && timeout < TIMEOUT) {
         qDebug() << "Connection pending. Sleeping...";
-        sleep(100);
+        sleep(1);
         m_iShoutStatus = shout_get_connected(m_pShout);
 		++ timeout;
     }

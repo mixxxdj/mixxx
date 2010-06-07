@@ -40,8 +40,11 @@ public:
     EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
     ~EncoderMp3();
     int initEncoder(int bitrate);
+	/** encodes audio and calls engine->write to send it a file or over a network **/
     void encodeBuffer(const CSAMPLE *samples, const int size);
-	void updateMetaData(char* artist, char* title){};
+	/** only used for audio recording. Adds metadata to the encoded auio, i.e., the ID3 tag **/
+	void updateMetaData(char* artist, char* title, char* album);
+	/** called at the end when encoding is finished **/
 	void flush();
 
 private:
@@ -78,15 +81,17 @@ private:
 	typedef int (*lame_set_bWriteVbrTag__)(lame_global_flags *, int);
 	typedef int (*lame_init_params__)(lame_global_flags *);
 	typedef int (*lame_close__)(lame_global_flags *);
-	typedef int (*lame_encode_flush_nogap__)(lame_global_flags *  gfp,    /* global context handle                 */
-        unsigned char*       mp3buf, /* pointer to encoded MP3 stream         */
-        int                  size);  /* number of valid octets in this stream */
-	typedef int (*lame_encode_buffer_float__)(lame_global_flags*  gfp,        /* global context handle         */
-        const float     	buffer_l [],       /* PCM data for left channel     */
-        const float     	buffer_r [],       /* PCM data for right channel    */
-        const int           nsamples,      /* number of samples per channel */
-        unsigned char*      mp3buf,        /* pointer to encoded MP3 stream */
-        const int           mp3buf_size );
+	typedef int (*lame_encode_flush__)(
+						lame_global_flags *  gfp,				/* global context handle                 */
+						unsigned char*       mp3buf,			/* pointer to encoded MP3 stream         */
+						int                  size);				/* number of valid octets in this stream */
+	typedef int (*lame_encode_buffer_float__)(
+						lame_global_flags*  gfp,				/* global context handle         */
+						const float     	buffer_l [],		/* PCM data for left channel     */
+						const float     	buffer_r [],		/* PCM data for right channel    */
+						const int           nsamples,			/* number of samples per channel */
+						unsigned char*      mp3buf,				/* pointer to encoded MP3 stream */
+						const int           mp3buf_size );
 
 	lame_init__ 						lame_init;
 	lame_set_num_channels__ 			lame_set_num_channels;
@@ -98,10 +103,23 @@ private:
 	lame_set_bWriteVbrTag__				lame_set_bWriteVbrTag;
 	lame_init_params__					lame_init_params;
 	lame_close__						lame_close;
-	lame_encode_flush_nogap__			lame_encode_flush_nogap;
+	lame_encode_flush__					lame_encode_flush;
 	lame_encode_buffer_float__			lame_encode_buffer_float;
 
+	// Function pointers for ID3 Tags
+	typedef void (*id3tag_init__)(lame_global_flags *);
+	typedef void (*id3tag_set_title__)(lame_global_flags *, const char* title);
+	typedef void (*id3tag_set_artist__)(lame_global_flags *, const char* artist);
+	typedef void (*id3tag_set_album__)(lame_global_flags *, const char* album);
 
+	id3tag_init__						id3tag_init;
+	id3tag_set_title__					id3tag_set_title;
+	id3tag_set_artist__					id3tag_set_artist;
+	id3tag_set_album__					id3tag_set_album;
+	
+	char *m_metaDataTitle;
+    char *m_metaDataArtist;
+	char *m_metaDataAlbum;
 
     unsigned char *m_bufferOut;
     int m_bufferOutSize;
@@ -110,8 +128,6 @@ private:
     
     EngineAbstractRecord *m_pEngine;
     TrackInfoObject *m_pMetaData;
-    char *m_metaDataTitle;
-    char *m_metaDataArtist;
 	QLibrary* m_library;
 	QFile m_mp3file;
 };

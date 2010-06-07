@@ -63,7 +63,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     slotApply();
     recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
-	loadMetaData();
 }
 
 void DlgPrefRecord::slotBrowseSave()
@@ -142,7 +141,7 @@ void DlgPrefRecord::slotEncoding()
 void DlgPrefRecord::setMetaData()
 {
     config->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
-    config->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditTitle->text()));
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
     config->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
 }
 

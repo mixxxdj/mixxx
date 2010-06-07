@@ -54,6 +54,10 @@ private:
 	QByteArray m_MP3quality;
 	QByteArray m_Encoding;
 	QByteArray m_filename;
+	QByteArray m_baTitle;
+	QByteArray m_baAuthor;
+	QByteArray m_baAlbum;
+
 	QFile m_file;
 	QDataStream m_datastream;
 	SNDFILE *m_sndfile;

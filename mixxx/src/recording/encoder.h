@@ -39,7 +39,7 @@ public:
 	 */
     virtual int initEncoder(int bitrate) = 0;
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
-	virtual void updateMetaData(char* artist, char* title) = 0;
+	virtual void updateMetaData(char* artist, char* title, char* album) = 0;
 	virtual void flush() = 0;
 	/**converts an OGG quality measure from 1..10 to a bitrate **/
 	static int convertToBitrate(int quality);	

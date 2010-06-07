@@ -36,7 +36,7 @@ public:
     ~EncoderVorbis();
     int initEncoder(int bitrate);
 	void encodeBuffer(const CSAMPLE *samples, const int size);
-	void updateMetaData(char* artist, char* title);
+	void updateMetaData(char* artist, char* title, char* album);
 	void flush();
 
 private slots:
@@ -64,6 +64,7 @@ private:
     TrackInfoObject *m_pMetaData;
     char *m_metaDataTitle;
     char *m_metaDataArtist;
+	char *m_metaDataAlbum;
 	QFile m_file;
 };
 

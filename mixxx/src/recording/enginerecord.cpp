@@ -55,7 +55,9 @@ void EngineRecord::updateFromPreferences()
 	m_OGGquality = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
 	m_MP3quality = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
 	m_filename = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
-
+	m_baTitle = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
+	m_baAuthor = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
+	m_baAlbum = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
 
 	if(m_encoder){
 		delete m_encoder;	//delete m_encoder if it has been initalized (with maybe) different bitrate
@@ -65,6 +67,8 @@ void EngineRecord::updateFromPreferences()
 	if(m_Encoding == ENCODING_MP3){
 	#ifdef __SHOUTCAST__
 		m_encoder = new EncoderMp3(m_config, this);
+		m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
+
 		if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt())) < 0){
 			delete m_encoder;
 			m_encoder = NULL;
@@ -78,6 +82,8 @@ void EngineRecord::updateFromPreferences()
 	if(m_Encoding == ENCODING_OGG){
 	#ifdef __SHOUTCAST__
 		m_encoder = new EncoderVorbis(m_config, this);
+		m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
+
 		if(m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt())) < 0){
 			delete m_encoder;			
 			m_encoder = NULL;
@@ -158,16 +164,16 @@ bool EngineRecord::openFile(){
 			sf_command (m_sndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
 			//set meta data
             int ret;
-            QByteArray baTitle = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
-            ret = sf_set_string(m_sndfile, SF_STR_TITLE, baTitle.data());
+            
+            ret = sf_set_string(m_sndfile, SF_STR_TITLE, m_baTitle.data());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
-            QByteArray baAuthor = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
-            ret = sf_set_string(m_sndfile, SF_STR_ARTIST, baAuthor.data());
+            
+            ret = sf_set_string(m_sndfile, SF_STR_ARTIST, m_baAuthor.data());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
-            QByteArray baComment = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
-            ret = sf_set_string(m_sndfile, SF_STR_COMMENT, baComment.data()); 
+           
+            ret = sf_set_string(m_sndfile, SF_STR_COMMENT, m_baAlbum.data()); 
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
