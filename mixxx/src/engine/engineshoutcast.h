@@ -44,8 +44,10 @@ public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
     ~EngineShoutcast();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void write(unsigned char *header, unsigned char *body,
+	/**writes to shoutcast stream **/    
+	void write(unsigned char *header, unsigned char *body,
                    int headerLen, int bodyLen);
+	/** connects to server **/	
 	bool serverConnect();
 	bool serverDisconnect();
 	bool isConnected();
@@ -77,10 +79,15 @@ private:
     ControlObjectThread* m_pVolume2;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
+	/** static metadata according to prefereneces **/
 	bool m_custom_metadata;
 	QByteArray m_baCustom_artist;
 	QByteArray m_baCustom_title;
+	QByteArray m_baFormat;
+	/* Standard error dialog */
 	void errorDialog(QString text, QString detailedError);
+	/** we static metadata is used, we only need calling shout_set_metedata once */
+	bool m_firstCall;
 };
 
 #endif

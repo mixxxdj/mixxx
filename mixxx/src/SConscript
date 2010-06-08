@@ -734,7 +734,8 @@ if 'win' in platform:
 	env.Append(LIBS = 'QtWebKit4');
 	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
-	#env.Append(LIBS = 'ogg_static')
+	#Tobias Rafreider: libshout won't compile if you uncomment this
+	#env.Append(LIBS = 'ogg_static')   
 	#env.Append(LIBS = 'vorbis_static')
 	#env.Append(LIBS = 'vorbisfile_static')
 	env.Append(LIBS = 'imm32')
@@ -894,7 +895,7 @@ if int(flags_ipod):
 else:
 	print "iPod support... disabled"
 
-#Experimental Shoutcast
+#Shoutcast support
 flags_shoutcast = getFlags(env, 'shoutcast', 0)
 
 if int(flags_shoutcast):
@@ -911,7 +912,7 @@ if int(flags_shoutcast):
 		env.Append(LIBS = 'pthreadVSE2')
 	else:
 		if not vorbisenc: 
-			#libvorbisenc does only exit on Linux and OSX
+			#libvorbisenc does only exist on Linux and OSX, on Windows it is included in vorbisfile.dll
 			print "libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag."
 			Exit(1)
 	
@@ -920,7 +921,7 @@ if int(flags_shoutcast):
 	
 	shoutmp3 = 1
 	shoutogg = 1
-	#Vorbis libraries must be installed although shoutcast is disabled --> We don't need to check that here twice		
+	
 	if shoutmp3 and shoutogg:
 		print "Shoutcast support (OGG/MP3)... enabled"
 	elif shoutmp3:

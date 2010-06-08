@@ -62,7 +62,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pCrossfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
     m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
     m_pVolume2 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
-
+	m_firstCall = false;
     // Initialize libshout
     shout_init();
 
@@ -154,7 +154,8 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baStreamGenre = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre")).toLatin1();
     QByteArray baStreamPublic = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toLatin1();
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
-    QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
+    
+	m_baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
 	
 	m_custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
 	m_baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title"));
@@ -211,14 +212,14 @@ void EngineShoutcast::updateFromPreferences()
     }
 
 
-    if ( !qstrcmp(baFormat.data(), "MP3")) {
+    if ( !qstrcmp(m_baFormat.data(), "MP3")) {
         format = SHOUT_FORMAT_MP3;
     }
-    else if ( !qstrcmp(baFormat.data(), "Ogg Vorbis")) {
+    else if ( !qstrcmp(m_baFormat.data(), "Ogg Vorbis")) {
         format = SHOUT_FORMAT_OGG;
     }
     else {
-        qDebug() << "Error: unknown format:" << baFormat.data();
+        qDebug() << "Error: unknown format:" << m_baFormat.data();
         return;
     }
 
@@ -261,11 +262,11 @@ void EngineShoutcast::updateFromPreferences()
 	if(m_encoder) {
 		delete m_encoder;		//delete m_encoder if it has been initalized (with maybe) different bitrate
 	}
-    if ( ! qstrcmp(baFormat, "MP3")) {
+    if ( ! qstrcmp(m_baFormat, "MP3")) {
         m_encoder = new EncoderMp3(m_pConfig, this);
 
     }
-    else if ( ! qstrcmp(baFormat, "Ogg Vorbis")) {
+    else if ( ! qstrcmp(m_baFormat, "Ogg Vorbis")) {
         m_encoder = new EncoderVorbis(m_pConfig, this);
     }
     else {
@@ -297,6 +298,8 @@ bool EngineShoutcast::serverConnect()
     // set to a high number to automatically update the metadata
     // on the first change
     m_pMetaDataLife = 31337;
+	//If static metadata is available, we only need to send metadata one time
+	m_firstCall = false; 
 
 	/*Check if m_encoder is initalized
 	 * Encoder is initalized in updateFromPreferences which is called always before serverConnect()	
@@ -544,22 +547,42 @@ void EngineShoutcast::updateMetaData()
         return;
 
     QByteArray baSong = "";
-	if(!m_custom_metadata){
+	/**
+     * If track has changed and static metadata is disabled
+	 * Send new metadata to shoutcast!
+     * This works only for MP3 streams properly as stated in comments, see shout.h
+	 * WARNING: Changing OGG metadata dynamically by using shout_set_metadata
+	 * will cause stream interruptions to listeners
+	 * 
+	 * Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
+	 * This was done in EncoderVorbis previously and caused interruptions on track change as well 
+	 * which sounds awful to listeners.
+
+	 * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
+ 	 */
+	if(!m_custom_metadata && !qstrcmp(m_baFormat, "MP3")){
 		if (m_pMetaData != NULL) {
 		    // convert QStrings to char*s
 		    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
 		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
 		    baSong = baArtist + " - " + baTitle;
-			//For OGG streams, tell it to the m_encoder
-			//m_encoder->updateMetaData(baArtist.data(), baTitle.data());	
+			/** Update metadata */
+			shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
+    		shout_set_metadata(m_pShout, m_pShoutMetaData);
 		}
 	}
 	else{
-		 baSong = m_baCustom_artist + " - " + m_baCustom_title;
-		// m_encoder->updateMetaData(m_baCustom_artist.data(), m_baCustom_title.data());
+		/** If we use static metadata, we only need to call the following line once **/
+		if(!m_firstCall){
+			baSong = m_baCustom_artist + " - " + m_baCustom_title;
+			/** Update metadata */
+			shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
+    		shout_set_metadata(m_pShout, m_pShoutMetaData);
+			m_firstCall = true;
+		}
 	}
-    shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
-    shout_set_metadata(m_pShout, m_pShoutMetaData);
+	
+    
 }
 /* -------- ------------------------------------------------------
 Purpose: Common error dialog creation code for run-time exceptions
