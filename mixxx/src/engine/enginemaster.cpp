@@ -31,6 +31,9 @@
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
+#ifdef __FXUNITS__
+#include "engineeffectsunits.h"
+#endif
 #ifdef __VINYLCONTROL__
 #include "enginevinylcontrol.h"
 #endif
@@ -57,6 +60,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 #ifdef __LADSPA__
     // LADSPA
     ladspa = new EngineLADSPA();
+#endif
+
+#ifdef __FXUNITS__
+    fxunits = new EngineEffectsUnits();
 #endif
 
     // Crossfader
@@ -234,6 +241,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     vumeter2->process(m_pTemp2, m_pTemp2, iBufferSize);
     volume2->process(m_pTemp2, m_pTemp2, iBufferSize);
 
+#ifdef __FXUNITS__
+    fxunits->process(m_pTemp1, m_pTemp1, iBufferSize, 1);
+    fxunits->process(m_pTemp2, m_pTemp2, iBufferSize, 2);
+#endif
 
     // Crossfader and Transform buttons
 	/*

@@ -28,6 +28,9 @@ class EngineFlanger;
 #ifdef __LADSPA__
 class EngineLADSPA;
 #endif
+#ifdef __FXUNITS__
+class EngineEffectsUnits;
+#endif
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
@@ -63,6 +66,9 @@ private:
     EngineFlanger *flanger;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
+#endif
+#ifdef __FXUNITS__
+    EngineEffectsUnits *fxunits;
 #endif
     EngineVuMeter *vumeter;
     EngineVolume *volume1, *volume2;

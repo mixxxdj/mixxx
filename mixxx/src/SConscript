@@ -208,6 +208,7 @@ vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
 vars.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
+vars.Add('fxunits', 'Set to 1 to enable Effects Units support', 1)
 vars.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 vars.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
@@ -990,6 +991,19 @@ if int(flags_ladspa):
 	build_flags += 'ladspa '
 else:
 	print "LADSPA support... disabled"
+
+#FXUNITS
+flags_fxunits = getFlags(env, 'fxunits', 1)
+if int(flags_fxunits):
+	env.Append(CPPDEFINES = '__FXUNITS__')
+	# TODO - Add sources
+	sources += Split("""engine/engineeffectsunits.cpp""")
+    #                        ladspa/ladspaloader.cpp
+    #                       """)
+	print "FXUnits support... enabled"
+	build_flags += 'fxunits '
+else:
+	print "FXUnits support... disabled"
 
 #Vinyl Control
 flags_vinylcontrol = getFlags(env, 'vinylcontrol', 1)
