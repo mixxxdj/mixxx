@@ -617,4 +617,60 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
     return NULL; //FIXME: Return void instead?
 }
 
+/**
+ * Gives a string describing an AudioSource for user benefit.
+ * @param src The AudioSource to describe.
+ * @return A QString. Ideally will use tr() for i18n but the rest of mixxx
+ * doesn't at the moment so worry about that later. :)
+ */
 
+// static
+QString SoundManager::getStringFromSource(const AudioSource& src) const {
+    switch (src.type) {
+    case SOURCE_MASTER:
+        return QString()::fromAscii("Master")
+        break;
+    case SOURCE_HEADPHONES:
+        return QString()::fromAscii("Headphones");
+        break;
+    case SOURCE_DECK:
+        return QString()::fromAscii("Deck %1").arg(src.index + 1);
+        break;
+    case SOURCE_PASSTHROUGH:
+        return QString()::fromAscii("Passthrough %1").arg(src.index + 1);
+        break;
+    case SOURCE_MICROPHONE:
+        return QString()::fromAscii("Microphone %1").arg(src.index + 1);
+        break;
+    default:
+        qDebug() << "Got to end of src.type switch in "
+            "SoundManager::getStringFromSource";
+        break;
+    }
+}
+
+/**
+ * Gives a string describing an AudioReceiver for user benefit.
+ * @param src The AudioReceiver to describe.
+ * @return A QString. Ideally will use tr() for i18n but the rest of mixxx
+ * doesn't at the moment so worry about that later. :)
+ */
+
+// static
+QString SoundManager::getStringFromReceiver(const AudioReceiver& recv) const {
+   switch (recv.type) {
+   case RECEIVER_VINYLCONTROL:
+       return QString()::fromAscii("Vinyl Control %1").arg(recv.index + 1);
+       break;
+   case RECEIVER_MICROPHONE:
+       return QString()::fromAscii("Microphone %1").arg(recv.index + 1);
+       break;
+   case RECEIVER_PASSTHROUGH:
+       return QString()::fromAscii("Passthrough %1").arg(recv.index + 1);
+       break;
+   default:
+        qDebug() << "Got to end of recv.type switch in "
+            "SoundManager::getStringFromReceiver";
+       break;
+   } 
+}

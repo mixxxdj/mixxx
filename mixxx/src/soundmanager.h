@@ -36,31 +36,32 @@ class EngineMaster;
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
-#define MAX_AUDIOSOURCE_TYPES 4	//Keep this up to date with the enum below... I don't know how to do this automagically
 enum AudioSourceType { 
-    SOURCE_MASTER = 0,
-    SOURCE_HEADPHONES = 1,
-	SOURCE_PLAYER1 = 2,
-	SOURCE_PLAYER2 = 3
+    SOURCE_MASTER,
+    SOURCE_HEADPHONES,
+    SOURCE_DECK,
+    SOURCE_PASSTHROUGH,
+    SOURCE_MICROPHONE
 };
 
 typedef struct _AudioSource {
-	AudioSourceType type;
-	int channelBase;	//Base channel on the audio device
-	int channels;		//total channels (e.g. 2 for stereo)
+    AudioSourceType type;
+    unsigned int channelBase; //Base channel on the audio device
+    unsigned int channels;    //total channels (e.g. 2 for stereo)
+    unsigned int index;       //Index of indexed sources (eg. decks)
 } AudioSource;
 
-#define MAX_AUDIORECEIVER_TYPES 3	//Keep this up to date with the enum below... I don't know how to do this automagically
 enum AudioReceiverType {
-    RECEIVER_VINYLCONTROL_ONE = 0,
-    RECEIVER_VINYLCONTROL_TWO = 1,
-    RECEIVER_MICROPHONE = 2
+    RECEIVER_VINYLCONTROL,
+    RECEIVER_MICROPHONE,
+    RECEIVER_PASSTHROUGH
 };
 
 typedef struct _AudioReceiver {
-	AudioReceiverType type;
-	int channelBase;	//Base channel on the audio device
-	int channels;		//total channels (e.g. 2 for stereo)
+    AudioReceiverType type;
+    unsigned int channelBase; //Base channel on the audio device
+    unsigned int channels;    //total channels (e.g. 2 for stereo)
+    unsigned int index;       //Index of indexed receivers (eg. vinylctrl)
 } AudioReceiver;
 
 class SoundManager : public QObject
@@ -83,6 +84,8 @@ class SoundManager : public QObject
         CSAMPLE** requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
                             unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+        static QString getStringFromSource(const AudioSource& src) const;
+        static QString getStringFromReceiver(const AudioReceiver& recv) const;
     public slots:
         void sync();
     private:
@@ -91,12 +94,10 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<QString> m_samplerates;
         QString m_hostAPI;
-        //CSAMPLE *m_pMasterBuffer;
-        //CSAMPLE *m_pHeadphonesBuffer;
-        CSAMPLE *m_pStreamBuffers[MAX_AUDIOSOURCE_TYPES];
-        short *m_pReceiverBuffers[MAX_AUDIORECEIVER_TYPES]; /** Audio received from input */
+        QHash<AudioSource, CSAMPLE*> m_pStreamBuffers;
+        QHash<AudioReceiver, short*> m_pReceiverBuffers; /** Audio received from input */
 #ifdef __VINYLCONTROL__
-        VinylControlProxy *m_VinylControl[2];
+        QList<VinylControlProxy*> m_VinylControl;
 #endif        
         unsigned int iNumDevicesOpenedForOutput;
         unsigned int iNumDevicesOpenedForInput;
