@@ -28,14 +28,17 @@
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
 #include "engine/enginebuffer.h"
-#include "analyserqueue.h"
+#include "engine/enginemaster.h"
+#include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
 #include "soundsourceproxy.h"
 
+#include "analyserqueue.h"
 #include "player.h"
+#include "playermanager.h"
 #include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -74,13 +77,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     app = a;
 
     QString buildRevision, buildFlags;
-#ifdef BUILD_REV
-    buildRevision = BUILD_REV;
-#endif
+    #ifdef BUILD_REV
+      buildRevision = BUILD_REV;
+    #endif
 
-#ifdef BUILD_FLAGS
-    buildFlags = BUILD_FLAGS;
-#endif
+    #ifdef BUILD_FLAGS
+      buildFlags = BUILD_FLAGS;
+    #endif
 
     if (buildRevision.trimmed().length() > 0) {
         if (buildFlags.trimmed().length() > 0)
@@ -111,28 +114,28 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     QString metricsAgree = config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"));
 
     if (metricsAgree.isEmpty() || (metricsAgree != "yes" && metricsAgree != "no")) {
-        metricsAgree = "no";
-        int dlg = -1;
-        while (dlg != 0 && dlg != 1) {
-            dlg = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?", "Yes", "No", "Privacy Policy", 0, -1);
-            switch (dlg) {
-            case 0: metricsAgree = "yes";
-            case 1: break;
-            default: //show privacy policy
+      metricsAgree = "no";
+      int dlg = -1;
+      while (dlg != 0 && dlg != 1) {
+         dlg = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?", "Yes", "No", "Privacy Policy", 0, -1);
+       switch (dlg) {
+           case 0: metricsAgree = "yes";
+         case 1: break;
+           default: //show privacy policy
                 QMessageBox::information(this, "Mixxx: Privacy Policy", "Mixxx's development is driven by community feedback.  In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.\n\nThe hardware information will include:\n\t- CPU model and features\n\t- Total/Available Amount of RAM\n\t- Available disk space\n\t- OS version\n\nYour usage information will include:\n\t- Settings/Preferences\n\t- Internal errors\n\t- Internal debugging messages\n\t- Performance statistics (average latency, CPU usage)\n\nThis information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.\n");
-                break;
-            }
-        }
+                    break;
+       }
+      }
     }
     config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(metricsAgree));
 
     // If the user agrees...
     if(metricsAgree == "yes") {
-        // attempt to load the user ID from the config file
-        if ( config->getValueString(ConfigKey("[User Experience]", "UID")) == ""){
-            QString pUID = cm_generate_userid();
-            if(!pUID.isEmpty()) config->set(ConfigKey("[User Experience]", "UID"), ConfigValue(pUID));
-        }
+       // attempt to load the user ID from the config file
+       if ( config->getValueString(ConfigKey("[User Experience]", "UID")) == ""){
+         QString pUID = cm_generate_userid();
+         if(!pUID.isEmpty()) config->set(ConfigKey("[User Experience]", "UID"), ConfigValue(pUID));
+       }
     }
     // Initialize cmetrics
     cm_init(100,20, metricsAgree == "yes", MIXXCMETRICS_RELEASE_ID, config->getValueString(ConfigKey("[User Experience]", "UID")).ascii());
@@ -158,31 +161,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
 
-    // Sample rate used by Player object
-    ControlObject * sr = new ControlObject(ConfigKey("[Master]","samplerate"));
-    sr->set(44100.);
-
-    ControlObject * latency = new ControlObject(ConfigKey("[Master]","latency"));
-    /* avoid unused warning*/
-    latency = 0;
-
-    // Master rate
-    new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
-
-    // Init buffers/readers
-    buffer1 = new EngineBuffer("[Channel1]", config);
-    buffer2 = new EngineBuffer("[Channel2]", config);
-    buffer1->setOtherEngineBuffer(buffer2);
-    buffer2->setOtherEngineBuffer(buffer1);
-
-    // Starting channels:
-    channel1 = new EngineChannel("[Channel1]");
-    channel2 = new EngineChannel("[Channel2]");
-
     // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
+    m_pEngine = new EngineMaster(config, "[Master]");
 
-    soundmanager = new SoundManager(config, master);
+    // Initialize player device
+
+    soundmanager = new SoundManager(config, m_pEngine);
     soundmanager->queryDevices();
 
     // Find path of skin
@@ -202,30 +186,19 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
 
-    // Needed for updating widgets with track duration info
-    new ControlObject(ConfigKey("[Channel1]","duration"));
-    new ControlObject(ConfigKey("[Channel2]","duration"));
-
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame;
     setCentralWidget(frame);
 
     m_pLibrary = new Library(this, config, bFirstRun);
 
-    //Create the "players" (virtual playback decks)
-    m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
-    m_pPlayer2 = new Player(config, buffer2, "[Channel2]");
+    // Create the player manager.
+    m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
 
-    //Connect the player to the track collection so that when a track is unloaded,
-    //it's data (eg. waveform summary) is saved back to the database.
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
-
-    view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
+    view=new MixxxView(frame, kbdconfig, qSkinPath, config,
+                       m_pPlayerManager,
                        m_pLibrary);
 
     //Scan the library directory.
@@ -278,49 +251,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
 
-    // Setup the analyser queue to automatically process new tracks loaded by either player
-    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(config);
-    connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
-    connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
-
-
-
-    // Initialize track object:
-    // m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")),
-    //                      view,
-    //                      config,
-    //                      buffer1,
-    //                      buffer2,
-    //                      AnalyserQueue::createDefaultAnalyserQueue(config));
-
-    //WTreeItem::setTrack(m_pTrack);
-    // Set up drag and drop to player visuals
-
-    if (view->m_pVisualCh1)
-        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
-                this, SLOT(slotLoadPlayer1(QString)));
-    if (view->m_pVisualCh2)
-        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
-                this, SLOT(slotLoadPlayer2(QString)));
-
-    if (view->m_pWaveformRendererCh1)
-        connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-                view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
-    if (view->m_pWaveformRendererCh2)
-        connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-                view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
-
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
-    connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
-
-    // Setup state of End of track controls from config database
-    ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(config);
     //TODO: Try to open MIDI devices?
@@ -351,23 +281,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //grabKeyboard();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player 1 and 2:
-    if (args.qlMusicFiles.count()>0)
-        this->slotLoadPlayer1((args.qlMusicFiles.at(0)));
-    if (args.qlMusicFiles.count()>1)
-        this->slotLoadPlayer2((args.qlMusicFiles.at(1)));
-
-    // Initialize visualization of temporal effects
-    channel1->setEngineBuffer(buffer1);
-    channel2->setEngineBuffer(buffer2);
+    for (int i = 0; i < m_pPlayerManager->numPlayers() && i < args.qlMusicFiles.count(); ++i) {
+        m_pPlayerManager->slotLoadToPlayer(args.qlMusicFiles.at(i), i+1);
+    }
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun)
-    {
+    if (bFirstRun) {
         QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
-        if (tracksToAutoLoad.count() > 0)
-            m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
-        if (tracksToAutoLoad.count() > 1)
-            m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+        for (int i = 0; i < m_pPlayerManager->numPlayers() && i < tracksToAutoLoad.count(); i++) {
+            m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
+        }
     }
 
 #ifdef __SCRIPT__
@@ -407,8 +330,8 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Destroying MixxxApp";
 
-    // Moved this up to insulate macros you've worked hard on from being lost in
-    // a segfault that happens sometimes somewhere below here
+// Moved this up to insulate macros you've worked hard on from being lost in
+// a segfault that happens sometimes somewhere below here
 #ifdef __SCRIPT__
     scriptEng->saveMacros();
     delete scriptEng;
@@ -416,8 +339,8 @@ MixxxApp::~MixxxApp()
 
 #ifdef __IPOD__
     if (m_pTrack->m_qIPodPlaylist.getSongNum()) {
-        qDebug() << "Dispose of iPod track collection";
-        m_pTrack->m_qIPodPlaylist.clear();
+      qDebug() << "Dispose of iPod track collection";
+      m_pTrack->m_qIPodPlaylist.clear();
     }
 #endif
     qDebug() << "save config, " << qTime.elapsed();
@@ -427,33 +350,20 @@ MixxxApp::~MixxxApp()
     soundmanager->closeDevices();
     qDebug() << "soundmanager->close() done";
 
-    // Save state of End of track controls in config database
-    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
-    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
 
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
-    qDebug() << "delete master, " << qTime.elapsed();
-    delete master;
-    qDebug() << "delete channel1, " << qTime.elapsed();
-    delete channel1;
-    qDebug() << "delete channel2, " << qTime.elapsed();
-    delete channel2;
 
-    //delete m_pPlayer1;
-    //delete m_pPlayer2;
-    delete m_pAnalyserQueue;
+    qDebug() << "delete playerManager" << qTime.elapsed();
+    delete m_pPlayerManager;
 
-    qDebug() << "delete buffer1, " << qTime.elapsed();
-    delete buffer1;
-    qDebug() << "delete buffer2, " << qTime.elapsed();
-    delete buffer2;
+    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    delete m_pEngine;
 
-    //    qDebug() << "delete prefDlg";
-    //    delete m_pControlEngine;
+//    qDebug() << "delete prefDlg";
+//    delete m_pControlEngine;
 
     qDebug() << "delete view, " << qTime.elapsed();
     delete view;
@@ -471,8 +381,6 @@ MixxxApp::~MixxxApp()
     config->Save();
 
     delete prefDlg;
-
-    //   delete m_pBpmDetector;
 
     delete frame;
 
@@ -497,21 +405,21 @@ int MixxxApp::noSoundDlg(void)
                     "Another application is using the sound device or it is "+
                     "not plugged in."+
                     "<ul>"+
-                    "<li>"+
-                    "<b>Retry</b> after closing the other application "+
-                    "or reconnecting the sound device"+
-                    "</li>"+
-                    "<li>"+
-                    "<b>Reconfigure</b> Mixxx to use another sound device."+
-                    "</li>" +
-                    "<li>"+
-                    "Get <b>Help</b> from the Mixxx Wiki."+
-                    "</li>"+
-                    "<li>"+
-                    "<b>Exit</b> without saving your settings."+
-                    "</li>" +
+                        "<li>"+
+                            "<b>Retry</b> after closing the other application "+
+                            "or reconnecting the sound device"+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Reconfigure</b> Mixxx to use another sound device."+
+                        "</li>" +
+                        "<li>"+
+                            "Get <b>Help</b> from the Mixxx Wiki."+
+                        "</li>"+
+                        "<li>"+
+                            "<b>Exit</b> without saving your settings."+
+                        "</li>" +
                     "</ul></html>"
-                    );
+    );
 
     QPushButton *retryButton = msgBox.addButton(tr("Retry"), QMessageBox::ActionRole);
     QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
@@ -681,7 +589,7 @@ void MixxxApp::initActions()
 #ifdef __SCRIPT__
     macroStudio->setStatusTip(tr("Shows the macro studio window"));
     macroStudio->setWhatsThis(tr("Show Studio\n\nMakes the macro studio visible"));
-    connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
+     connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
 #endif
 }
 
@@ -755,86 +663,86 @@ void MixxxApp::initMenuBar()
 
 void MixxxApp::slotiPodToggle(bool toggle) {
 #ifdef __IPOD__
-    // iPod stuff
-    QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
-    bool iPodAvailable = !iPodMountPoint.isEmpty() &&
-                         QDir( iPodMountPoint + "/iPod_Control").exists();
-    bool iPodActivated = iPodAvailable && toggle;
+// iPod stuff
+  QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
+  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
+                       QDir( iPodMountPoint + "/iPod_Control").exists();
+  bool iPodActivated = iPodAvailable && toggle;
 
-    iPodToggle->setEnabled(iPodAvailable);
+  iPodToggle->setEnabled(iPodAvailable);
 
-    if (iPodAvailable && iPodActivated && view->m_pComboBox->findData(TABLE_MODE_IPOD) == -1 ) {
-        view->m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
-        // Activate IPod model
+  if (iPodAvailable && iPodActivated && view->m_pComboBox->findData(TABLE_MODE_IPOD) == -1 ) {
+    view->m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
+    // Activate IPod model
 
-        Itdb_iTunesDB *itdb;
-        itdb = itdb_parse (iPodMountPoint, NULL);
-        if (itdb == NULL) {
-            qDebug() << "Error reading iPod database\n";
-            return;
-        }
-        GList *it;
-        int count = 0;
-        m_pTrack->m_qIPodPlaylist.clear();
+    Itdb_iTunesDB *itdb;
+    itdb = itdb_parse (iPodMountPoint, NULL);
+    if (itdb == NULL) {
+      qDebug() << "Error reading iPod database\n";
+      return;
+    }
+    GList *it;
+    int count = 0;
+    m_pTrack->m_qIPodPlaylist.clear();
 
-        for (it = itdb->tracks; it != NULL; it = it->next) {
-            count++;
-            Itdb_Track *song;
-            song = (Itdb_Track *)it->data;
+    for (it = itdb->tracks; it != NULL; it = it->next) {
+       count++;
+       Itdb_Track *song;
+       song = (Itdb_Track *)it->data;
 
-            //     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a VERY long delay in loading from the iPod
-            //       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
+//     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a VERY long delay in loading from the iPod
+//       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
 
-            QString fullFilePath = iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
-            QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/'));
-            QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
-            QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
+       QString fullFilePath = iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
+       QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/'));
+       QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
+       QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
 
-            if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << fullFilePath; continue; }
-            if (song->unk220 && fileSuffix == "m4p") { qDebug() << "Protected media not supported." << song->title << fullFilePath; continue; }
+       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << fullFilePath; continue; }
+       if (song->unk220 && fileSuffix == "m4p") { qDebug() << "Protected media not supported." << song->title << fullFilePath; continue; }
 #ifndef __FFMPEGFILE__
-            if (fileSuffix == "m4a") { qDebug() << "m4a media support (via FFMPEG) is not compiled into this build of Mixxx. :( " << song->title << fullFilePath; continue; }
+       if (fileSuffix == "m4a") { qDebug() << "m4a media support (via FFMPEG) is not compiled into this build of Mixxx. :( " << song->title << fullFilePath; continue; }
 #endif // __FFMPEGFILE__
 
 
-            //       qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
+//       qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
 
-            TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName);
-            pTrack->setBpm(song->BPM);
-            pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
-            //       pTrack->setHeaderParsed(true);
-            pTrack->setComment(song->comment);
-            //       pTrack->setType(file.suffix());
-            pTrack->setType(fileSuffix);
-            pTrack->setBitrate(song->bitrate);
-            pTrack->setSampleRate(song->samplerate);
-            pTrack->setDuration(song->tracklen/1000);
-            pTrack->setTitle(song->title);
-            pTrack->setArtist(song->artist);
-            // song->rating // user rating
-            // song->volume and song->soundcheck -- track level normalization / gain info as determined by iTunes
-            m_pTrack->m_qIPodPlaylist.addTrack(pTrack);
-        }
-        itdb_free (itdb);
-
-        //qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum() << "of"<< count <<"songs on the iPod.";
-
-        view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-        //m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-        //m_pTrack->resizeColumnsForLibraryMode();
-
-        //FIXME: Commented out above due to library rework.
-
-    } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
-        view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
-        //m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
-        //FIXME: library reworking
-
-        view->m_pComboBox->removeItem( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-        // Empty iPod model m_qIPodPlaylist
-        //m_pTrack->m_qIPodPlaylist.clear();
-
+       TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName);
+       pTrack->setBpm(song->BPM);
+       pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
+//       pTrack->setHeaderParsed(true);
+       pTrack->setComment(song->comment);
+//       pTrack->setType(file.suffix());
+       pTrack->setType(fileSuffix);
+       pTrack->setBitrate(song->bitrate);
+       pTrack->setSampleRate(song->samplerate);
+       pTrack->setDuration(song->tracklen/1000);
+       pTrack->setTitle(song->title);
+       pTrack->setArtist(song->artist);
+       // song->rating // user rating
+       // song->volume and song->soundcheck -- track level normalization / gain info as determined by iTunes
+       m_pTrack->m_qIPodPlaylist.addTrack(pTrack);
     }
+    itdb_free (itdb);
+
+    //qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum() << "of"<< count <<"songs on the iPod.";
+
+    view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+    //m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+    //m_pTrack->resizeColumnsForLibraryMode();
+
+    //FIXME: Commented out above due to library rework.
+
+  } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
+    view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
+    //m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
+    //FIXME: library reworking
+
+    view->m_pComboBox->removeItem( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+    // Empty iPod model m_qIPodPlaylist
+    //m_pTrack->m_qIPodPlaylist.clear();
+
+  }
 #endif
 }
 
@@ -842,10 +750,10 @@ void MixxxApp::slotiPodToggle(bool toggle) {
 void MixxxApp::slotlibraryMenuAboutToShow(){
 
 #ifdef __IPOD__
-    QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
-    bool iPodAvailable = !iPodMountPoint.isEmpty() &&
-                         QDir( iPodMountPoint + "/iPod_Control").exists();
-    iPodToggle->setEnabled(iPodAvailable);
+  QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
+  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
+                       QDir( iPodMountPoint + "/iPod_Control").exists();
+  iPodToggle->setEnabled(iPodAvailable);
 
 #endif
 }
@@ -873,20 +781,24 @@ void MixxxApp::slotFileLoadSongPlayer1()
     if (play->get() == 1.)
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
-                                       tr("Player 1 is currently playing a song.\n"
+                                        tr("Player 1 is currently playing a song.\n"
                                           "Are you sure you want to load a new song?"),
-                                       QMessageBox::Yes | QMessageBox::No,
-                                       QMessageBox::No);
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
 
         if (ret != QMessageBox::Yes)
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer1->slotLoadTrack(pTrack);
+    QString s =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 1"),
+                config->getValueString(ConfigKey("[Playlist]","Directory")),
+                QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+
+    if (s != QString::null) {
+        m_pPlayerManager->slotLoadToPlayer(s, 1);
     }
 }
 
@@ -897,20 +809,24 @@ void MixxxApp::slotFileLoadSongPlayer2()
     if (play->get() == 1.)
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
-                                       tr("Player 2 is currently playing a song.\n"
+                                        tr("Player 2 is currently playing a song.\n"
                                           "Are you sure you want to load a new song?"),
-                                       QMessageBox::Yes | QMessageBox::No,
-                                       QMessageBox::No);
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
 
         if (ret != QMessageBox::Yes)
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer2->slotLoadTrack(pTrack);
+    QString s =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 2"),
+                config->getValueString(ConfigKey("[Playlist]","Directory")),
+                QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+
+    if (s != QString::null) {
+        m_pPlayerManager->slotLoadToPlayer(s, 2);
     }
 }
 
@@ -921,19 +837,19 @@ void MixxxApp::slotFileQuit()
 
 void MixxxApp::slotOptionsBeatMark(bool)
 {
-    // BEAT MARK STUFF
+// BEAT MARK STUFF
 }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
 
-    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
 #ifdef __LINUX__
-        winpos = pos();
-        // Can't set max to -1,-1 or 0,0 for unbounded?
-        setMaximumSize(32767,32767);
+         winpos = pos();
+         // Can't set max to -1,-1 or 0,0 for unbounded?
+         setMaximumSize(32767,32767);
 #endif
 
         showFullScreen();
@@ -964,7 +880,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 #ifdef __LINUX__
         if (size().width() != view->width() ||
             size().height() != view->height() + menuBar()->height()) {
-            setFixedSize(view->width(), view->height() + menuBar()->height());
+          setFixedSize(view->width(), view->height() + menuBar()->height());
         }
         move(winpos);
 #endif
@@ -990,10 +906,10 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
     if (device1 == "" && device2 == "" && (toggle==true))
     {
         QMessageBox::warning(this, tr("Mixxx"),
-                             tr("No input device(s) select.\n"
-                                "Please select your soundcard(s) in vinyl control preferences."),
-                             QMessageBox::Ok,
-                             QMessageBox::Ok);
+                                   tr("No input device(s) select.\n"
+                                      "Please select your soundcard(s) in vinyl control preferences."),
+                                   QMessageBox::Ok,
+                                   QMessageBox::Ok);
         prefDlg->show();
         prefDlg->showVinylControlPage();
         optionsVinylControl->setChecked(false);
@@ -1076,106 +992,106 @@ void MixxxApp::slotHelpAbout()
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
     QString credits =
-            QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
-                    "<p align=\"center\">"
-                    "Adam Davison<br>"
-                    "Albert Santoni<br>"
-                    "Garth Dahlstrom<br>"
-                    "RJ Ryan<br>"
-                    "Sean Pappalardo<br>"
-                    "Nick Guenther<br>"
-                    "Phillip Whelan<br>"
-                    "Zach Elko<br>"
-                    "Tom Care<br>"
-                    "Pawel Bartkiewicz<br>"
+    QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
+"<p align=\"center\">"
+"Adam Davison<br>"
+"Albert Santoni<br>"
+"Garth Dahlstrom<br>"
+"RJ Ryan<br>"
+"Sean Pappalardo<br>"
+"Nick Guenther<br>"
+"Phillip Whelan<br>"
+"Zach Elko<br>"
+"Tom Care<br>"
+"Pawel Bartkiewicz<br>"
 
-                    "</p>"
-                    "<p align=\"center\"><b>With contributions from:</b></p>"
-                    "<p align=\"center\">"
-                    "Mark Hills<br>"
-                    "Andre Roth<br>"
-                    "Robin Sheat<br>"
-                    "Michael Pujos<br>"
-                    "Mark Glines<br>"
-                    "Claudio Bantaloukas<br>"
-                    "Pavol Rusnak<br>"
-                    "Mathieu Rene<br>"
-                    "Miko Kiiski<br>"
-                    "Navaho Gunleg<br>"
-                    "Gavin Pryke<br>"
-                    "Brian Jackson<br>"
-                    "Owen Williams<br>"
-                    "James Evans<br>"
-                    "Martin Sakmar<br>"
-                    "Andreas Pflug<br>"
-                    "Bas van Schaik<br>"
-                    "Oliver St&ouml;neberg<br>"
-                    "C. Stewart<br>"
-                    "Tobias Rafreider<br>"
-                    "Bill Egert<br>"
-                    "Zach Shutters<br>"
-                    "Owen Williams<br>"
+"</p>"
+"<p align=\"center\"><b>With contributions from:</b></p>"
+"<p align=\"center\">"
+"Mark Hills<br>"
+"Andre Roth<br>"
+"Robin Sheat<br>"
+"Michael Pujos<br>"
+"Mark Glines<br>"
+"Claudio Bantaloukas<br>"
+"Pavol Rusnak<br>"
+"Mathieu Rene<br>"
+"Miko Kiiski<br>"
+"Navaho Gunleg<br>"
+"Gavin Pryke<br>"
+"Brian Jackson<br>"
+"Owen Williams<br>"
+"James Evans<br>"
+"Martin Sakmar<br>"
+"Andreas Pflug<br>"
+"Bas van Schaik<br>"
+"Oliver St&ouml;neberg<br>"
+"C. Stewart<br>"
+"Tobias Rafreider<br>"
+"Bill Egert<br>"
+"Zach Shutters<br>"
+"Owen Williams<br>"
 
-                    "</p>"
-                    "<p align=\"center\"><b>And special thanks to:</b></p>"
-                    "<p align=\"center\">"
-                    "Stanton<br>"
-                    "Hercules<br>"
-                    "Echo Digital Audio<br>"
-                    "Adam Bellinson<br>"
-                    "Alexandre Bancel<br>"
-                    "Melanie Thielker<br>"
-                    "Julien Rosener<br>"
-                    "Pau Arum&iacute;<br>"
-                    "David Garcia<br>"
-                    "Seb Ruiz<br>"
-                    "Joseph Mattiello<br>"
-                    "</p>"
+"</p>"
+"<p align=\"center\"><b>And special thanks to:</b></p>"
+"<p align=\"center\">"
+"Stanton<br>"
+"Hercules<br>"
+"Echo Digital Audio<br>"
+"Adam Bellinson<br>"
+"Alexandre Bancel<br>"
+"Melanie Thielker<br>"
+"Julien Rosener<br>"
+"Pau Arum&iacute;<br>"
+"David Garcia<br>"
+"Seb Ruiz<br>"
+"Joseph Mattiello<br>"
+"</p>"
 
-                    "<p align=\"center\"><b>Past Developers</b></p>"
-                    "<p align=\"center\">"
-                    "Tue Haste Andersen<br>"
-                    "Ken Haste Andersen<br>"
-                    "Cedric Gestes<br>"
-                    "John Sully<br>"
-                    "Torben Hohn<br>"
-                    "Peter Chang<br>"
-                    "Micah Lee<br>"
-                    "Ben Wheeler<br>"
-                    "Wesley Stessens<br>"
-                    "Nathan Prado<br>"
-                    "</p>"
+"<p align=\"center\"><b>Past Developers</b></p>"
+"<p align=\"center\">"
+"Tue Haste Andersen<br>"
+"Ken Haste Andersen<br>"
+"Cedric Gestes<br>"
+"John Sully<br>"
+"Torben Hohn<br>"
+"Peter Chang<br>"
+"Micah Lee<br>"
+"Ben Wheeler<br>"
+"Wesley Stessens<br>"
+"Nathan Prado<br>"
+"</p>"
 
-                    "<p align=\"center\"><b>Past Contributors</b></p>"
-                    "<p align=\"center\">"
-                    "Ludek Hor&#225;cek<br>"
-                    "Svein Magne Bang<br>"
-                    "Kristoffer Jensen<br>"
-                    "Ingo Kossyk<br>"
-                    "Mads Holm<br>"
-                    "Lukas Zapletal<br>"
-                    "Jeremie Zimmermann<br>"
-                    "Gianluca Romanin<br>"
-                    "Tim Jackson<br>"
-                    "J&aacute;n Jockusch<br>"
-                    "Stefan Langhammer<br>"
-                    "Frank Willascheck<br>"
-                    "Jeff Nelson<br>"
-                    "Kevin Schaper<br>"
-                    "Alex Markley<br>"
-                    "Oriol Puigb&oacute;<br>"
-                    "Ulrich Heske<br>"
-                    "James Hagerman<br>"
-                    "quil0m80<br>"
-                    "Martin Sakm&#225;r<br>"
-                    "Ilian Persson<br>"
-                    "Alex Barker<br>"
-                    "Dave Jarvis<br>"
-                    "Thomas Baag<br>"
-                    "Karlis Kalnins<br>"
-                    "Amias Channer<br>"
-                    "Sacha Berger<br>"
-                    "</p>").arg(VERSION);
+"<p align=\"center\"><b>Past Contributors</b></p>"
+"<p align=\"center\">"
+"Ludek Hor&#225;cek<br>"
+"Svein Magne Bang<br>"
+"Kristoffer Jensen<br>"
+"Ingo Kossyk<br>"
+"Mads Holm<br>"
+"Lukas Zapletal<br>"
+"Jeremie Zimmermann<br>"
+"Gianluca Romanin<br>"
+"Tim Jackson<br>"
+"J&aacute;n Jockusch<br>"
+"Stefan Langhammer<br>"
+"Frank Willascheck<br>"
+"Jeff Nelson<br>"
+"Kevin Schaper<br>"
+"Alex Markley<br>"
+"Oriol Puigb&oacute;<br>"
+"Ulrich Heske<br>"
+"James Hagerman<br>"
+"quil0m80<br>"
+"Martin Sakm&#225;r<br>"
+"Ilian Persson<br>"
+"Alex Barker<br>"
+"Dave Jarvis<br>"
+"Thomas Baag<br>"
+"Karlis Kalnins<br>"
+"Amias Channer<br>"
+"Sacha Berger<br>"
+"</p>").arg(VERSION);
 
 
     about->textBrowser->setHtml(credits);
@@ -1204,20 +1120,7 @@ void MixxxApp::rebootMixxxView() {
     qDebug() << "rebootgui DONE";
 
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
-        setFixedSize(view->width(), view->height() + menuBar()->height());
-    }
-
-    // these signals/slots need reconnected to the new m_pVisuals after reboot or the
-    // signals go to the wrong slots
-    if (view->m_pVisualCh1) {
-        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer1(QString)));
-        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
-            this, SLOT(slotLoadPlayer1(QString)));
-    }
-    if (view->m_pVisualCh2) {
-        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer2(QString)));
-        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
-            this, SLOT(slotLoadPlayer2(QString)));
+      setFixedSize(view->width(), view->height() + menuBar()->height());
     }
 }
 
@@ -1263,51 +1166,6 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         return QObject::eventFilter(obj, event);
     }
 
-}
-
-void MixxxApp::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
-    // TODO(XXX) In the future, when we support multiple decks, this method will
-    // be less of a hack.
-    if (player == 1) {
-        m_pPlayer1->slotLoadTrack(pTrack);
-    } else if (player == 2) {
-        m_pPlayer2->slotLoadTrack(pTrack);
-    }
-}
-void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
-{
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-        m_pPlayer1->slotLoadTrack(pTrack, false);
-    else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-        m_pPlayer2->slotLoadTrack(pTrack, false);
-}
-
-void MixxxApp::slotLoadPlayer1(QString location)
-{
-    // Try to get TrackInfoObject* from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
-    if (pTrack == NULL)
-    {
-        pTrack = new TrackInfoObject(location);
-    }
-    //Load the track into the Player.
-    m_pPlayer1->slotLoadTrack(pTrack);
-}
-
-void MixxxApp::slotLoadPlayer2(QString location)
-{
-    // Try to get TrackInfoObject* from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
-    if (pTrack == NULL)
-    {
-        pTrack = new TrackInfoObject(location);
-    }
-    //Load the track into the Player.
-    m_pPlayer2->slotLoadTrack(pTrack);
 }
 
 void MixxxApp::slotScanLibrary()

@@ -102,6 +102,9 @@ public slots:
     void beginMidiLearn(MixxxControl control);
     void cancelMidiLearn();
     void slotScriptEngineReady();
+    /** Restarts the script engine and re-applies the mapping
+        to effectively reset the controller */
+    void reset();
     
 signals:
     void inputMappingChanged();

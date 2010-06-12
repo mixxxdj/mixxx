@@ -35,10 +35,10 @@ public slots:
 signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
-    void trackDropped(QString filename);
+    void trackDropped(QString filename, QString group);
 
 protected:
-    
+
     void timerEvent(QTimerEvent *);
     void paintEvent(QPaintEvent* event);
 
@@ -51,7 +51,7 @@ private:
 
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
-    
+
     bool m_painting;
     QMutex m_paintMutex;
 
