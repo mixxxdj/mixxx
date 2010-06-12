@@ -164,6 +164,17 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer()
     return m_pHead;
 }
 
+const CSAMPLE* getDeckBuffer(unsigned int index) const {
+    switch (index) {
+    case 0:
+        return m_pTemp1;
+    case 1:
+        return m_pTemp2;
+    default:
+        qDebug() << "EngineMaster doesn't have deck buffer " << index << "!";
+    }
+}
+
 void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
