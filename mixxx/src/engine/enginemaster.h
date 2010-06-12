@@ -2,8 +2,8 @@
                           enginemaster.h  -  description
                              -------------------
     begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    copyright            : (C) 2002 by
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,7 +18,8 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
+#include "engine/enginechannel.h"
 
 class EngineBuffer;
 class EngineVolume;
@@ -35,48 +36,49 @@ class ControlObject;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
-// class EngineBufferMasterRate;
-
-/**
-  *@author Tue and Ken Haste Andersen
-  */
-
-class EngineMaster : public EngineObject
-{
+class EngineMaster : public EngineObject {
 public:
-    EngineMaster(ConfigObject<ConfigValue> *_config,
-                 EngineBuffer *buffer1, EngineBuffer *buffer2,
-                 EngineChannel *, EngineChannel *, const char *group);
-    ~EngineMaster();
-    /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
+    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
+    virtual ~EngineMaster();
+
+    // Reconfigures the EngineBufferScaleSRC objects with the sound quality
+    // written in the config database
     void setPitchIndpTimeStretch(bool b);
+
+    // Get access to the sample buffers. None of these are thread safe. Only to
+    // be called by SoundManager.
     const CSAMPLE* getMasterBuffer();
     const CSAMPLE* getHeadphoneBuffer();
-    void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
-private:
-	void xfadeGains(FLOAT_TYPE *gain1, FLOAT_TYPE *gain2, double xfadePosition, double transform, double calibration);
+    int numChannels();
+    const CSAMPLE* getChannelBuffer(int i);
 
-    EngineBuffer *buffer1, *buffer2;
-    EngineChannel *channel1, *channel2;
-    EngineVolume *volume, *head_volume; 
+    void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
+
+    // Add an EngineChannel to the mixing engine. This is not thread safe --
+    // only call it before the engine has started mixing.
+    void addChannel(EngineChannel* pChannel);
+
+    static double gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                              double leftGain,
+                              double centerGain,
+                              double rightGain);
+
+  private:
+    QList<EngineChannel*> m_channels;
+
+    CSAMPLE *m_pMaster, *m_pHead;
+    QList<CSAMPLE*> m_channelBuffers;
+
+    EngineVolume *volume, *head_volume;
     EngineClipping *clipping, *head_clipping;
-    EngineFlanger *flanger;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
 #endif
     EngineVuMeter *vumeter;
-    EngineVolume *volume1, *volume2;
-    EngineVuMeter *vumeter1, *vumeter2;
-    EngineVinylSoundEmu *vinylsound1, *vinylsound2;
     EngineSideChain *sidechain;
 
-//     EngineBufferMasterRate *m_pEngineBufferMasterRate;
-        
-//     ControlObject *m_pControlObjectHeadphoneMute;
-    ControlPotmeter *crossfader, *head_mix, *m_pBalance, *xFaderCurve, *xFaderCalibration;
-    ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2, *transform1, *transform2;
-    CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;
-    bool master1, master2;
+    ControlPotmeter *crossfader, *head_mix,
+        *m_pBalance, *xFaderCurve, *xFaderCalibration;
 };
 
 #endif

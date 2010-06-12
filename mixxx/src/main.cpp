@@ -28,11 +28,11 @@
 #include <stdio.h>
 #include <math.h>
 #include "mixxx.h"
-#include "portaudio.h"
+#include "soundsourceproxy.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
-#include "errordialog.h"
-#include "soundsourceproxy.h"
+#include "errordialoghandler.h"
+#include "defs_version.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -70,71 +70,10 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *dialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
 
 void qInitImages_mixxx();
 
-void MessageOutput( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-
-    switch ( type ) {
-    case QtDebugMsg:
-#ifdef __WINDOWS__
-        if (strstr(msg, "doneCurrent")) {
-            break;
-        }
-#endif
-        fprintf( stderr, "Debug: %s\n", msg );
-        break;
-    case QtWarningMsg:
-        fprintf( stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-}
-
 QFile Logfile; // global logfile variable
-
-
-void MessageToLogfile( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-
-    Q3TextStream Log( &Logfile );
-    switch ( type ) {
-    case QtDebugMsg:
-        Log << "Debug: " << msg << "\n";
-        break;
-    case QtWarningMsg:
-        Log << "Warning: " << msg << "\n";
-        //a->lock(); //this doesn't do anything in Qt4
-        QMessageBox::warning(0, "Mixxx", msg);
-        //a->unlock();
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-    Logfile.flush();
-}
-
 
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
@@ -152,16 +91,18 @@ void MessageHandler( QtMsgType type, const char * input )
 
     if(!Logfile.isOpen())
     {
-        Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
+    Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
 
 #ifdef QT3_SUPPORT
-        Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+    Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
 #else
-        Logfile.open(IO_WriteOnly | IO_Translate);
+    Logfile.open(IO_WriteOnly | IO_Translate);
 #endif
     }
 
     Q3TextStream Log( &Logfile );
+
+    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
 
     switch ( type ) {
     case QtDebugMsg:
@@ -176,26 +117,22 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtWarningMsg:
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
-        //QMessageBox::warning(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(0,input);
-        //I will break your legs if you re-enable the above lines of code.
-        //You shouldn't be using qWarning for reporting user-facing errors.
-        //Implement your own error message box...
-        // - Albert (March 11, 2010)
+        // Don't use qWarning for reporting user-facing errors.
+        //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-        //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-        //         exit(-1);
-        break; //NOTREACHED(?)
+        Logfile.flush();    // Ensure the error is written to the log before exiting
+        dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
+//         exit(-1);    // Done in ErrorDialogHandler
+        break; //NOTREACHED
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-        //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-        abort();
+        Logfile.flush();    // Ensure the error is written to the log before aborting
+        dialogHandler->requestErrorDialog(DLG_FATAL,input);
+//         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
     Logfile.flush();
@@ -207,25 +144,24 @@ int main(int argc, char * argv[])
     // Check if an instance of Mixxx is already running
 
 
-    //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
+//it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
 
 #ifdef __WINDOWS__
-#ifdef DEBUGCONSOLE
+  #ifdef DEBUGCONSOLE
     InitDebugConsole();
+  #endif
 #endif
-#endif
-    dialogHelper = new ErrorDialog();
-
     qInstallMsgHandler( MessageHandler );
 
+    // Other things depend on this name to enforce thread exclusivity,
+    //  so if you change it here, change it also in:
+    //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
-
-
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
@@ -238,10 +174,10 @@ int main(int argc, char * argv[])
     a->installTranslator( &tor );
 
     // Check if one of the command line arguments is "--no-visuals"
-    //    bool bVisuals = true;
-    //    for (int i=0; i<argc; ++i)
-    //        if(QString("--no-visuals")==argv[i])
-    //            bVisuals = false;
+//    bool bVisuals = true;
+//    for (int i=0; i<argc; ++i)
+//        if(QString("--no-visuals")==argv[i])
+//            bVisuals = false;
 
     // Construct a list of strings based on the command line arguments
     struct CmdlineArgs args;
@@ -253,24 +189,36 @@ int main(int argc, char * argv[])
     for (int i=0; i<argc; ++i)
     {
         if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            printf("Mixxx digital DJ software - command line options");
-            printf("\n(These are case-sensitive.)\n\nLoad the specified music file(s) at start-up.\n\Each must be one of the following file types:\n\n");
-            printf(SoundSourceProxy::supportedFileExtensionsString());
+            printf("Mixxx digital DJ software v");
+            printf(VERSION);
+            printf(" - Command line options");
+            printf("\n(These are case-sensitive.)\n\n\
+    [FILE]                  Load the specified music file(s) at start-up.\n\
+                            Each must be one of the following file types:\n\
+                            ");
+            
+            QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+            QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
+            printf(fileExtensionsBA);
             printf("\n\n");
             printf("\
-                   Each file you specify will be loaded into the\n\
-                   next virtual deck.\n\
-                   \n\
-                   --resourcePath PATH     Top-level directory where Mixxx should look\n\
-                   for its resource files such as MIDI mappings,\n\
-                   overriding the default installation location.\n\
-                   \n\
-                   --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
-                   messages it receives and script functions it loads\n\
-                   \n\
-                   -f, --fullScreen        Starts Mixxx in full-screen mode\n\
-                   \n\
-                   -h, --help              Display this help message and exit");
+                            Each file you specify will be loaded into the\n\
+                            next virtual deck.\n\
+\n\
+    --resourcePath PATH     Top-level directory where Mixxx should look\n\
+                            for its resource files such as MIDI mappings,\n\
+                            overriding the default installation location.\n\
+\n\
+    --pluginPath PATH       Top-level directory where Mixxx shoud look\n\
+                            for sound source plugins in addition to default\n\
+                            locations.\n\
+\n\
+    --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
+                            messages it receives and script functions it loads\n\
+\n\
+    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
+\n\
+    -h, --help              Display this help message and exit");
 
             printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
             return(0);
@@ -324,17 +272,17 @@ int main(int argc, char * argv[])
 
 
 #ifdef __APPLE__
-    qDebug() << "setting Qt's plugin seach path (on OS X)";
-    QDir dir(QApplication::applicationDirPath());
-    //Set the search path for Qt plugins to be in the bundle's PlugIns directory,
-    //but only if we think the mixxx binary is in a bundle.
-    if (dir.path().contains("Mixxx.app")) {
+     qDebug() << "setting Qt's plugin seach path (on OS X)";
+     QDir dir(QApplication::applicationDirPath());
+     //Set the search path for Qt plugins to be in the bundle's PlugIns directory,
+     //but only if we think the mixxx binary is in a bundle.
+     if (dir.path().contains("Mixxx.app")) {
         dir.cdUp();
         dir.cd("PlugIns");
         //For some reason we need to do setLibraryPaths() and not addLibraryPath().
         //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
         QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-    }
+     }
 #endif
 
     MixxxApp * mixxx=new MixxxApp(a, args);
@@ -344,7 +292,7 @@ int main(int argc, char * argv[])
 
     int result = -1;
 
-    if (!dialogHelper->checkError()) {
+    if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
 
@@ -354,12 +302,12 @@ int main(int argc, char * argv[])
 
     delete mixxx;
 
-    qDebug() << "Mixxx shutdown complete.";
+    qDebug() << "Mixxx shutdown complete with code" << result;
 
     // Don't make any more output after this
-    //	or mixxx.log will get clobbered!
+    //    or mixxx.log will get clobbered!
     if(Logfile.isOpen())
-        Logfile.close();
+    Logfile.close();
 
     //delete plugin_paths;
     return result;

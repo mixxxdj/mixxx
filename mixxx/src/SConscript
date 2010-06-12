@@ -312,6 +312,7 @@ sources = Split("""
                 engine/enginesidechain.cpp
                 engine/enginefilterbutterworth8.cpp
                 engine/enginexfader.cpp
+
                 engine/enginecontrol.cpp
                 engine/ratecontrol.cpp
                 engine/loopingcontrol.cpp
@@ -341,7 +342,7 @@ sources = Split("""
                 mixxxcontrol.cpp
                 mixxx.cpp
                 mixxxview.cpp
-                errordialog.cpp
+                errordialoghandler.cpp
                 upgrade.cpp
 
                 soundsource.cpp
@@ -368,6 +369,7 @@ sources = Split("""
 		widget/wpixmapstore.cpp
 				widget/hexspinbox.cpp
 
+                sampleutil.cpp
                 mathstuff.cpp
                 rtthread.cpp
                 windowkaiser.cpp
@@ -457,6 +459,7 @@ sources = Split("""
 
                 trackinfoobject.cpp
                 player.cpp
+                playermanager.cpp
                 sounddevice.cpp
                 soundmanager.cpp
                 sounddeviceportaudio.cpp

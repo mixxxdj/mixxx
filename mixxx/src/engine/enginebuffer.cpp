@@ -270,7 +270,6 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     pause.unlock();
 
     slotControlSeek(0.);
-
     m_pTrackSamples->set(iTrackNumSamples);
     emit(trackLoaded(pTrack));
 }
@@ -403,7 +402,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
 
-            //XXX: Trying to force RAMAN to read from correct 
+            //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
             if ((rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
@@ -575,6 +574,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
+    // Wake up the reader so that it processes our hints / loads new files
+    // (hopefully) before the next callback.
+    m_pReader->wake();
+
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -601,6 +604,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
+        // TODO(XXX) SSE
         while (i<iLen)
         {
             pOutput[i] = fStep*(iLen-(i+1));
@@ -608,6 +612,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         }
     }
 
+    // TODO(XXX) memset
     // Reset rest of buffer
     while (i<iBufferSize)
     {
@@ -662,7 +667,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_pReader->hintAndMaybeWake(m_hintList);
 }
 
-void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+void EngineBuffer::slotLoadTrack(TrackInfoObject *pTrack) {
     pause.lock();
     m_pReader->newTrack(pTrack);
     m_pReader->wake();

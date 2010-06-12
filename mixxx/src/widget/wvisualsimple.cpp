@@ -29,11 +29,14 @@
 
 #include "waveform/waveformrenderer.h"
 
-WVisualSimple::WVisualSimple(const char* group, QWidget * parent) : WWidget(parent)
+WVisualSimple::WVisualSimple(const char* group, QWidget * parent, WaveformRenderer* pWaveformRenderer)
+        : WWidget(parent),
+          m_group(group),
+          m_iValue(64),
+          m_pWaveformRenderer(pWaveformRenderer)
+
 {
-    m_pWaveformRenderer = new WaveformRenderer(group);
     setAcceptDrops(true);
-    m_iValue = 64;
 }
 
 WVisualSimple::~WVisualSimple()
@@ -55,7 +58,7 @@ void WVisualSimple::dropEvent(QDropEvent * event)
     QString name = url.toLocalFile();
 
     event->accept();
-    emit(trackDropped(name));
+    emit(trackDropped(name, m_group));
   } else
     event->ignore();
 }
@@ -64,7 +67,7 @@ void WVisualSimple::setup(QDomNode node)
 {
     // Setup position and connections
     WWidget::setup(node);
-    
+
     // Size
     QString size = selectNodeQString(node, "Size");
     int x = size.left(size.indexOf(",")).toInt();
@@ -73,7 +76,7 @@ void WVisualSimple::setup(QDomNode node)
 
     m_pWaveformRenderer->resize(x,y);
     m_pWaveformRenderer->setup(node);
-    
+
     // Set constants for line drawing
     m_qMarkerPos1.setX(x/2);
     m_qMarkerPos1.setY(0);
@@ -88,7 +91,7 @@ void WVisualSimple::setup(QDomNode node)
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
-    
+
     //the simple view seems to look fine even if we never set a background colour at all
     //but since the code used to do it, we'll continue to do it --kousu 2009/03
     QPalette palette = this->palette();

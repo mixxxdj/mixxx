@@ -14,10 +14,13 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
+
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "engineflanger.h"
 #include "mathstuff.h"
+#include "sampleutil.h"
 
 
 /*----------------------------------------------------------------
@@ -31,18 +34,30 @@
 EngineFlanger::EngineFlanger(const char * group)
 {
     // Init. buffers:
-    delay_buffer = new CSAMPLE[max_delay+1];
-    for (int i=0; i<max_delay+1; ++i)
-        delay_buffer[i] = 0.;
+    delay_buffer = SampleUtil::alloc(max_delay + 1);
+    SampleUtil::applyGain(delay_buffer, 0.0f, max_delay+1);
 
     // Init. potmeters
-    potmeterDepth = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
-    potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 10000.);
-    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 50000., 2000000.);
 
-    // Init. channel selects:
-    pushbuttonFlangerCh1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"), true);
-    pushbuttonFlangerCh2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"), true);
+    // rryan 6/2010 This is gross. The flanger was originally written as this
+    // hack that hard-coded the two channels, and while pulling it apart, I have
+    // to keep these global [Flanger]-group controls, except there is one
+    // EngineFlanger per deck, so create these controls if they don't exist,
+    // otherwise look them up.
+
+    potmeterDepth = ControlObject::getControl(ConfigKey("[Flanger]", "lfoDepth"));
+    potmeterDelay = ControlObject::getControl(ConfigKey("[Flanger]", "lfoDelay"));
+    potmeterLFOperiod = ControlObject::getControl(ConfigKey("[Flanger]", "lfoPeriod"));
+
+    if (potmeterDepth == NULL)
+        potmeterDepth = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
+    if (potmeterDelay == NULL)
+        potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 10000.);
+    if (potmeterLFOperiod == NULL)
+        potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 50000., 2000000.);
+
+    // Create an enable key on a per-deck basis.
+    flangerEnable = new ControlPushButton(ConfigKey(group, "flanger"), true);
 
     // Fixed values of controls:
     LFOamplitude = 240;
@@ -55,22 +70,14 @@ EngineFlanger::EngineFlanger(const char * group)
 
 EngineFlanger::~EngineFlanger()
 {
-    delete potmeterDepth;
-    delete potmeterDelay;
-    delete potmeterLFOperiod;
-    delete pushbuttonFlangerCh1;
-    delete pushbuttonFlangerCh2;
-    delete [] delay_buffer;
-}
+    // Don't delete the controls anymore since we don't know if we created them.
+    // delete potmeterDepth;
+    // delete potmeterDelay;
+    // delete potmeterLFOperiod;
 
-ControlPushButton * EngineFlanger::getButtonCh1()
-{
-    return pushbuttonFlangerCh1;
-}
+    delete flangerEnable;
 
-ControlPushButton * EngineFlanger::getButtonCh2()
-{
-    return pushbuttonFlangerCh2;
+    SampleUtil::free(delay_buffer);
 }
 
 void EngineFlanger::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
@@ -78,6 +85,11 @@ void EngineFlanger::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     CSAMPLE delayed_sample,prev,next;
     FLOAT_TYPE frac;
+
+    if (flangerEnable->get() == 0.0f) {
+        // SampleUtil handles shortcuts when aliased, and gains of 1.0, etc.
+        return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
+    }
 
     for (int i=0; i<iBufferSize; ++i)
     {
@@ -102,4 +114,3 @@ void EngineFlanger::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
         pOutput[i] = pIn[i] + potmeterDepth->get()*delayed_sample;
     }
 }
-

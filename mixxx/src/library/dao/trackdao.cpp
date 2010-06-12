@@ -1,8 +1,7 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <QSqlQuery>
-#include <QSqlError>
+#include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
 
@@ -79,6 +78,9 @@ bool TrackDAO::trackExistsInDatabase(QString location)
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
+    if (!pTrack) {
+        qWarning() << "TrackDAO::saveTrack() was given NULL track.";
+    }
     // If track's id is not -1, then update, otherwise add.
     int trackId = pTrack->getId();
     if (trackId != -1) {
@@ -454,6 +456,13 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
         m_database.rollback();
         return;
     }
+
+    if (query.numRowsAffected() == 0) {
+        qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
+        m_database.rollback();
+        return;
+    }
+
     //query.finish();
 
     qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";

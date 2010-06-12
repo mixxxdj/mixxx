@@ -19,7 +19,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "enginevinylsoundemu.h"
-
+#include "sampleutil.h"
 
 /** This class emulates the response of a vinyl record's audio to changes
  *   in speed. In practice, it quiets the audio during very slow playback.
@@ -64,11 +64,8 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
         m_fGainFactor = 1.0f;
     }
 
-    //Apply whatever gain we calculated.
-    for (int i=0; i < iBufferSize; i++)
-    {
-        pOutput[i] = pOutput[i] * m_fGainFactor;
-    }
-
+    // Apply whatever gain we calculated. SampleUtil takes care of aliased
+    // buffers and gains of 1 or 0.
+    SampleUtil::copyWithGain(pOutput, pIn, m_fGainFactor, iBufferSize);
 }
 
