@@ -22,8 +22,9 @@
 class ChannelGroup {
 public:
     ChannelGroup(unsigned int channelBase, unsigned int channels);
-    inline bool operator==(const ChannelGroup &other) const;
-    inline bool clashesWith(const ChannelGroup &other) const;
+    bool operator==(const ChannelGroup &other) const;
+    bool clashesWith(const ChannelGroup &other) const;
+    unsigned int getHash() const;
 private:
     unsigned int m_channelBase; // base (first) channel used on device 
     unsigned int m_channels; // number of channels used (s/b 2 in most cases)
@@ -62,7 +63,8 @@ public:
     AudioSource(AudioSourceType type, unsigned int channelBase,
                 unsigned int channels, unsigned int index = 0);
     bool operator==(const AudioSource& other) const;
-	QString getString() const;
+    QString getString() const;
+    unsigned int getHash() const;
 private:
     AudioSourceType m_type;
     unsigned int m_index; // index of indexed sources (ex. decks)
@@ -77,14 +79,15 @@ private:
 class AudioReceiver : public AudioPath {
 public:
     enum AudioReceiverType { 
-		VINYLCONTROL,
-		MICROPHONE,
-    	PASSTHROUGH
+        VINYLCONTROL,
+        MICROPHONE,
+        PASSTHROUGH
     };
     AudioReceiver(AudioReceiverType type, unsigned int channelBase,
                 unsigned int channels, unsigned int index = 0);
     bool operator==(const AudioReceiver& other) const;
-	QString getString() const;
+    QString getString() const;
+    unsigned int getHash() const;
 private:
     AudioReceiverType m_type;
     unsigned int m_index; // index of indexed sources (ex. decks)

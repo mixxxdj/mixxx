@@ -20,24 +20,33 @@ ChannelGroup::ChannelGroup(unsigned int channelBase, unsigned int channels)
   , m_channels(channels) {
 }
 
-inline bool ChannelGroup::operator==(const ChannelGroup &other) const {
+bool ChannelGroup::operator==(const ChannelGroup &other) const {
     return m_channelBase == other.m_channelBase
         && m_channels == other.m_channels;
 }
 
-inline bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
-    return m_channelBase == other.m_channelBase
-        && m_channels > 0
-        && other.m_channels > 0;
+bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
+    if (m_channels == 0 || other.m_channels == 0) {
+        return false; // can't clash if there are no channels in use
+    }
+    return (m_channelBase > other.m_channelBase
+        && m_channelBase <= other.m_channelBase + other.m_channels)
+        ||
+        (other.m_channelBase > m_channelBase
+        && other.m_channelBase <= m_channelBase + m_channels);
+}
+
+unsigned int ChannelGroup::getHash() const {
+    return ((m_channelBase & 0xFF) << 8) | (m_channels & 0xFF);
 }
 
 AudioPath::AudioPath(unsigned int channelBase, unsigned int channels)
   : m_channelGroup(channelBase, channels) {
 }
-inline bool AudioPath::channelsClash(const AudioPath& other) const {
+bool AudioPath::channelsClash(const AudioPath& other) const {
     return m_channelGroup.clashesWith(other.m_channelGroup);
 }
-inline ChannelGroup AudioPath::getChannelGroup() const {
+ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;
 }
 
@@ -57,7 +66,7 @@ AudioSource::AudioSource(AudioSourceType type, unsigned int channelBase,
     }
 }
 
-inline bool AudioSource::operator==(const AudioSource& other) const {
+bool AudioSource::operator==(const AudioSource& other) const {
     return m_type == other.m_type
         && m_index == other.m_index
         && m_channelGroup == other.m_channelGroup;
@@ -92,6 +101,16 @@ QString AudioSource::getString() const {
     }
 }
 
+unsigned int AudioSource::getHash() const {
+    return ((m_type & 0xFF) << 24)
+        | ((m_index & 0xFF) << 16)
+        | (m_channelGroup.getHash() << 8);
+}
+
+unsigned int qHash(AudioSource* src) {
+    return src->getHash();
+}
+
 AudioReceiver::AudioReceiver(AudioReceiverType type, unsigned int channelBase,
             unsigned int channels, unsigned int index /* = 0 */)
   : AudioPath(channelBase, channels)
@@ -108,7 +127,7 @@ AudioReceiver::AudioReceiver(AudioReceiverType type, unsigned int channelBase,
     }
 }
 
-inline bool AudioReceiver::operator==(const AudioReceiver& other) const {
+bool AudioReceiver::operator==(const AudioReceiver& other) const {
     return m_type == other.m_type
         && m_index == other.m_index
         && m_channelGroup == other.m_channelGroup;
@@ -135,4 +154,14 @@ QString AudioReceiver::getString() const {
             "AudioReceiver::getString";
        break;
    } 
+}
+
+unsigned int AudioReceiver::getHash() const {
+    return ((m_type & 0xFF) << 24)
+        | ((m_index & 0xFF) << 16)
+        | (m_channelGroup.getHash() << 8);
+
+}
+unsigned int qHash(AudioReceiver* recv) {
+    return recv->getHash();
 }
