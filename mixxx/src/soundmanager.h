@@ -21,6 +21,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "defs.h"
+#include "audiopath.h"
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolproxy.h"
 #endif
@@ -35,34 +36,6 @@ class EngineMaster;
 #define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
-
-enum AudioSourceType { 
-    SOURCE_MASTER,
-    SOURCE_HEADPHONES,
-    SOURCE_DECK,
-    SOURCE_PASSTHROUGH,
-    SOURCE_MICROPHONE
-};
-
-typedef struct _AudioSource {
-    AudioSourceType type;
-    unsigned int channelBase; //Base channel on the audio device
-    unsigned int channels;    //total channels (e.g. 2 for stereo)
-    unsigned int index;       //Index of indexed sources (eg. decks)
-} AudioSource;
-
-enum AudioReceiverType {
-    RECEIVER_VINYLCONTROL,
-    RECEIVER_MICROPHONE,
-    RECEIVER_PASSTHROUGH
-};
-
-typedef struct _AudioReceiver {
-    AudioReceiverType type;
-    unsigned int channelBase; //Base channel on the audio device
-    unsigned int channels;    //total channels (e.g. 2 for stereo)
-    unsigned int index;       //Index of indexed receivers (eg. vinylctrl)
-} AudioReceiver;
 
 class SoundManager : public QObject
 {
@@ -84,8 +57,6 @@ class SoundManager : public QObject
         CSAMPLE** requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
                             unsigned long iFramesPerBuffer, unsigned int iFrameSize);
-        static QString getStringFromSource(const AudioSource& src) const;
-        static QString getStringFromReceiver(const AudioReceiver& recv) const;
     public slots:
         void sync();
     private:
