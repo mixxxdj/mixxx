@@ -13,13 +13,7 @@
 #include "engine/cuecontrol.h"
 #include "mathstuff.h"
 
-Sampler::Sampler(ConfigObject<ConfigValue> *pConfig,
-                 EngineBuffer* buffer,
-                 QString channel)
-                     : m_pConfig(pConfig),
-                       m_pEngineBuffer(buffer),
-                       m_strChannel(channel),
-                       m_pLoadedTrack(NULL){
+Sampler::Sampler(ConfigObject<ConfigValue> *pConfig, EngineBuffer* buffer, QString channel) : m_pConfig(pConfig), m_pEngineBuffer(buffer), m_strChannel(channel), m_pLoadedTrack(NULL) {
     CueControl* pCueControl = new CueControl(channel, pConfig);
     connect(this, SIGNAL(newTrackLoaded(TrackInfoObject*)),
             pCueControl, SLOT(loadTrack(TrackInfoObject*)));
@@ -33,8 +27,7 @@ Sampler::Sampler(ConfigObject<ConfigValue> *pConfig,
             this, SLOT(slotLoadFailed(TrackInfoObject*, QString)));
 
     //Get cue point control object
-    m_pCuePoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel,"cue_point")));
+    m_pCuePoint = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel,"cue_point")));
     // Get loop point control objects
     m_pLoopInPoint = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_strChannel,"loop_start_position")));
