@@ -52,6 +52,7 @@ public:
     void setPitchIndpTimeStretch(bool b);
     const CSAMPLE* getMasterBuffer();
     const CSAMPLE* getHeadphoneBuffer();
+    const CSAMPLE* getDeckBuffer(unsigned int index) const;
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 private:
 	void xfadeGains(FLOAT_TYPE *gain1, FLOAT_TYPE *gain2, double xfadePosition, double transform, double calibration);
