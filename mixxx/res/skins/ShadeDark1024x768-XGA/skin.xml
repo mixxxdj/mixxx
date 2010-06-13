@@ -1,4 +1,4 @@
-  	<!--20 May 2010 16:25:36 CET-->  
+  	<!--13 June 2010 12:13:04 CEST-->  
   	<!--   
   	ShadeDark, Skin for Mixxx 1.8.x
     www.mixxx.org
@@ -26,6 +26,8 @@
 
   	<!--
   	CHANGELOG
+  	v0.83b	(13/06/2010)
+  	# corrected FX button positioning
 
   	v0.82b	(20/05/2010)
   	# reduced height, application window now fits Linux/Gnome too,
@@ -1559,7 +1561,7 @@
 			<Pressed>btn_fx1_over.png</Pressed>
 			<Unpressed>btn_fx1_over.png</Unpressed>
 		</State>
-		<Pos>403,62</Pos>
+		<Pos>396,62</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],flanger</ConfigKey>
 		</Connection>
