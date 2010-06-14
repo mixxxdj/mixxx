@@ -125,11 +125,13 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
+    m_pTabWidgetSamplerPage = 0;
 #ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
 #endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
+    m_pSamplerPageLayout = new QGridLayout();
     m_pSplitter = 0;
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
@@ -794,6 +796,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget(this);
+                    m_pTabWidgetSamplerPage = new QWidget(this);
 #ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
@@ -803,13 +806,15 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
+                    m_pSamplerPageLayout->setContentsMargins(0, 0, 0, 0);
 #ifdef __LADSPA__
 //                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
 #endif
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
-
+                    m_pTabWidgetSamplerPage->setLayout(m_pSamplerPageLayout);
+                    
                     //Set up the search box widget
                     if (m_pLineEditSearch == 0) {
                         QString path = pConfig->getConfigPath();
@@ -825,7 +830,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         m_pLineEditSearch->setFixedSize(x,y);
                         */
                     }
-
+                    
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
@@ -873,11 +878,13 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Add the library page to the tab widget.
                     //m_pTabWidget->addTab(m_pTabWidgetLibraryPage, tr("Library"));
+                    
                     m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
 
                     // Add the effects page to the tab widget.
                     //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
                     m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
+                    m_pTabWidget->addWidget(m_pTabWidgetSamplerPage);
                 }
 
                 //Move the tab widget into position and size it properly.
@@ -893,6 +900,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 m_pLineEditSearch->show();
                 m_pTabWidget->show();
+                //m_pTabWidget->setCurrentWidget(m_pTabWidgetSamplerPage);
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {

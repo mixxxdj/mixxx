@@ -145,7 +145,7 @@ void WTrackTableView::createActions()
 
     m_pPlayer2Act = new QAction(tr("Load in Player 2"),this);
     connect(m_pPlayer2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
-
+    
     m_pRemoveAct = new QAction(tr("Remove"),this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 

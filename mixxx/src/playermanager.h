@@ -23,7 +23,7 @@ class PlayerManager : public QObject {
     virtual ~PlayerManager();
 
     // Add a player to the PlayerManager
-    Player* addPlayer();
+    Player* addPlayer(int center);
 
     // Return the number of players
     int numPlayers();
