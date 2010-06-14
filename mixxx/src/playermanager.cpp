@@ -40,11 +40,19 @@ int PlayerManager::numPlayers() {
     return m_players.size();
 }
 
-Player* PlayerManager::addPlayer() {
+Player* PlayerManager::addPlayer(int center) {
+    Player* pPlayer;
     int number = numPlayers() + 1;
-    Player* pPlayer = new Player(m_pConfig, m_pEngine,
-                                 number,
-                                 QString("[Channel%1]").arg(number));
+    if(center = 0) {
+        pPlayer = new Player(m_pConfig, m_pEngine,
+                                     number, 0,
+                                     QString("[Channel%1]").arg(number));
+    } else {
+        pPlayer = new Player(m_pConfig, m_pEngine,
+                                     number, 1,
+                                     QString("[Channel%1]").arg(number));
+    }
+    
 
     // Connect the player to the library so that when a track is unloaded, it's
     // data (eg. waveform summary) is saved back to the database.

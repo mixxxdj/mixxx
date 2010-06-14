@@ -58,6 +58,7 @@ class TrackInfoObject;
 class QStandardItemModel;
 class Library;
 class WLibrary;
+class WSampler;
 class RhythmboxTrackModel;
 class RhythmboxPlaylistModel;
 
@@ -135,15 +136,20 @@ private:
     QWidget* m_pTabWidgetLibraryPage;
     /** The widget containing the effects/LADSPA page */
     QWidget* m_pTabWidgetEffectsPage;
+    
+    QWidget* m_pTabWidgetSamplerPage;
     /** The layout for the library page. Allows stuff to resize automatically */
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
+    QGridLayout* m_pSamplerPageLayout;
 
 	// The splitter widget that contains the library panes
 	QSplitter *m_pSplitter;
     // The library widget
     WLibrary* m_pLibraryWidget;
+    // The Sampler Widget
+    WSampler* m_pSamplerWidget;
     // The library manager
     Library* m_pLibrary;
     // The library sidebar
