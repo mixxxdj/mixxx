@@ -29,7 +29,7 @@
 #include "enginebufferscalereal.h"
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
-
+#include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "loopingcontrol.h"
@@ -166,7 +166,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
     setNewPlaypos(0.);
-    m_pReader->start();
 }
 
 EngineBuffer::~EngineBuffer()
@@ -403,7 +402,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
 
-            //XXX: Trying to force RAMAN to read from correct 
+            //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
             if ((rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
@@ -675,4 +674,8 @@ void EngineBuffer::addControl(EngineControl* pControl) {
             this, SLOT(slotControlSeek(double)));
     connect(pControl, SIGNAL(seekAbs(double)),
             this, SLOT(slotControlSeekAbs(double)));
+}
+
+void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
+    pWorkerScheduler->bindWorker(m_pReader);
 }
