@@ -47,7 +47,6 @@ CachingReader::CachingReader(const char* _group,
 
 CachingReader::~CachingReader() {
 
-    stop();
     m_readerMutex.lock();
     m_freeChunks.clear();
     m_allocatedChunks.clear();
@@ -278,7 +277,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     m_pCurrentSoundSource->seek(sample_position);
     int samples_read = m_pCurrentSoundSource->read(samples_to_read,
                                                    m_pSample);
-    
+
     //If we've run out of music, the SoundSource can return 0 samples.
     //Remember that SoundSourc->getLength() (which is m_iTrackNumSamples)
     //can lie to us about the length of the song!
@@ -479,55 +478,42 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
 }
 
 void CachingReader::run() {
-    //XXX copypasta (should factor this out somehow), -kousu 2/2009
-    unsigned static id = 0; //the id of this thread, for debugging purposes
-    QThread::currentThread()->setObjectName(QString("Reader %1").arg(++id));
+    // Notify the EngineWorkerScheduler that the work we scheduled is starting.
+    emit(workStarting());
 
     QList<Hint> hintList;
     TrackInfoObject* pLoadTrack = NULL;
-    while (!m_bQuit) {
 
-        m_readerMutex.lock();
-        m_readerWait.wait(&m_readerMutex);
+    m_readerMutex.lock();
 
-        // TODO make this better
-        if (m_bQuit) {
-            m_readerMutex.unlock();
-            break;
-        }
-
-        m_trackQueueMutex.lock();
-        pLoadTrack = NULL;
-        if (!m_trackQueue.isEmpty()) {
-            pLoadTrack = m_trackQueue.takeLast();
-            m_trackQueue.clear();
-        }
-        m_trackQueueMutex.unlock();
-
-        if (pLoadTrack != NULL) {
-            loadTrack(pLoadTrack);
-        }
-
-        // Read the requested chunks.
-        QSetIterator<int> iterator(m_chunksToRead);
-        while (iterator.hasNext()) {
-            int chunk = iterator.next();
-            getChunk(chunk);
-        }
-        m_chunksToRead.clear();
-
-        m_readerMutex.unlock();
+    m_trackQueueMutex.lock();
+    pLoadTrack = NULL;
+    if (!m_trackQueue.isEmpty()) {
+        pLoadTrack = m_trackQueue.takeLast();
+        m_trackQueue.clear();
     }
+    m_trackQueueMutex.unlock();
+
+    if (pLoadTrack != NULL) {
+        loadTrack(pLoadTrack);
+    }
+
+    // Read the requested chunks.
+    for (QSet<int>::iterator it = m_chunksToRead.begin();
+         it != m_chunksToRead.end(); it++) {
+        int chunk = *it;
+        getChunk(chunk);
+    }
+    m_chunksToRead.clear();
+
+    m_readerMutex.unlock();
+
+    // Notify the EngineWorkerScheduler that the work we did is done.
+    emit(workDone());
 }
 
 void CachingReader::wake() {
-    m_readerWait.wakeAll();
-}
-
-void CachingReader::stop() {
-    m_bQuit = true;
-    wake();
-    wait();
+    emit(workReady());
 }
 
 void CachingReader::loadTrack(TrackInfoObject *pTrack) {
