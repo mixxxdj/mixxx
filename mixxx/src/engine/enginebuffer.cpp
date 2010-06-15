@@ -29,7 +29,7 @@
 #include "enginebufferscalereal.h"
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
-
+#include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "loopingcontrol.h"
@@ -113,7 +113,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     visualPlaypos =
         new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
 
-    // m_pTrackEnd is used to signal when at end of file during playback
+    // m_pTrackEnd is used to signal when at end of file during
+    // playback. TODO(XXX) This should not even be a control object because it
+    // is an internal flag used only by the EngineBuffer.
     m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
 
     // TrackEndMode determines what to do at the end of a track
@@ -166,7 +168,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
     setNewPlaypos(0.);
-    m_pReader->start();
 }
 
 EngineBuffer::~EngineBuffer()
@@ -265,17 +266,23 @@ double EngineBuffer::getRate()
 void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
+    pause.lock();
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
+    m_pTrackSamples->set(iTrackNumSamples);
+    slotControlSeek(0.);
+
+    // Let the engine know that a track is loaded now.
+    m_pTrackEnd->set(0.0f);
+
     pause.unlock();
 
-    slotControlSeek(0.);
-    m_pTrackSamples->set(iTrackNumSamples);
     emit(trackLoaded(pTrack));
 }
 
 void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
                                        QString reason) {
+    pause.lock();
     file_srate_old = 0;
     file_length_old = 0;
     slotControlSeek(0.);
@@ -668,7 +675,11 @@ void EngineBuffer::hintReader(const double dRate,
 }
 
 void EngineBuffer::slotLoadTrack(TrackInfoObject *pTrack) {
-    pause.lock();
+    // Raise the track end flag so the EngineBuffer stops processing frames
+    m_pTrackEnd->set(1.0);
+
+    // Signal to the reader to load the track. The reader will respond with
+    // either trackLoaded or trackLoadFailed signals.
     m_pReader->newTrack(pTrack);
     m_pReader->wake();
 }
@@ -680,4 +691,8 @@ void EngineBuffer::addControl(EngineControl* pControl) {
             this, SLOT(slotControlSeek(double)));
     connect(pControl, SIGNAL(seekAbs(double)),
             this, SLOT(slotControlSeekAbs(double)));
+}
+
+void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
+    pWorkerScheduler->bindWorker(m_pReader);
 }

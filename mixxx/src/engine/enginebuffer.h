@@ -41,6 +41,7 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class TrackInfoObject;
+class EngineWorkerScheduler;
 
 struct Hint;
 
@@ -77,6 +78,8 @@ public:
     /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
+
+    void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);

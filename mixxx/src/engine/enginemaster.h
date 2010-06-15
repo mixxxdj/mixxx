@@ -21,6 +21,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 
+class EngineWorkerScheduler;
 class EngineBuffer;
 class EngineVolume;
 class EngineChannel;
@@ -68,6 +69,8 @@ public:
 
     CSAMPLE *m_pMaster, *m_pHead;
     QList<CSAMPLE*> m_channelBuffers;
+
+    EngineWorkerScheduler *m_pWorkerScheduler;
 
     EngineVolume *volume, *head_volume;
     EngineClipping *clipping, *head_clipping;
