@@ -31,7 +31,6 @@ CachingReader::CachingReader(const char* _group,
     m_pGroup(_group),
     m_pConfig(_config),
     m_pCurrentTrack(NULL),
-    m_pTrackEnd(NULL),
     m_pCurrentSoundSource(NULL),
     m_iTrackSampleRate(0),
     m_iTrackNumSamples(0),
@@ -40,8 +39,6 @@ CachingReader::CachingReader(const char* _group,
     m_pRawMemoryBuffer(NULL),
     m_iRawMemoryBufferLength(0),
     m_bQuit(false) {
-    m_pTrackEnd = new ControlObjectThread(
-        ControlObject::getControl(ConfigKey(_group,"TrackEnd")));
     initialize();
 }
 
@@ -57,9 +54,6 @@ CachingReader::~CachingReader() {
     delete [] m_pRawMemoryBuffer;
     m_pRawMemoryBuffer = NULL;
     m_iRawMemoryBufferLength = 0;
-
-    delete m_pTrackEnd;
-    m_pTrackEnd = NULL;
 
     m_readerMutex.unlock();
 }
@@ -556,13 +550,6 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
 
     // Emit that the track is loaded.
     emit(trackLoaded(pTrack, m_iTrackSampleRate, m_iTrackNumSamples));
-
-    // TODO(rryan) Without this, we get a nasty reader deadlock. The reader
-    // should not have to handle this. Somebody should listen to the signal
-    // above and set this.
-    if (m_pTrackEnd) {
-        m_pTrackEnd->slotSet(0.);
-    }
 }
 
 

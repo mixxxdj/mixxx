@@ -62,9 +62,7 @@ class CachingReader : public EngineWorker {
 
   public:
 
-    // Construct a CachingReader with the given group. The group is only
-    // necessary for legacy reasons. The CachingReader will clear the
-    // _group,'TrackEnd' control object when it is done loading a new track.
+    // Construct a CachingReader with the given group.
     CachingReader(const char* _group,
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
@@ -192,7 +190,6 @@ class CachingReader : public EngineWorker {
 
     // The current track loaded
     TrackInfoObject* m_pCurrentTrack;
-    ControlObjectThread* m_pTrackEnd;
     // The current sound source of the track loaded
     SoundSource* m_pCurrentSoundSource;
     int m_iTrackSampleRate;
