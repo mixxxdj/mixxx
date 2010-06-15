@@ -34,10 +34,6 @@
 #include "errordialog.h"
 #include "defs_audiofiles.h"
 
-#ifdef __LADSPA__
-#include <ladspa/ladspaloader.h>
-#endif
-
 #ifdef __WINDOWS__
 #ifdef DEBUGCONSOLE
 #include <io.h> // Debug Console
@@ -221,12 +217,6 @@ int main(int argc, char * argv[])
 
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
-
-
-
-#ifdef __LADSPA__
-    LADSPALoader ladspaloader;
-#endif
 
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
