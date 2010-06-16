@@ -251,6 +251,12 @@ void EngineBuffer::setNewPlaypos(double newpos)
     if (m_pScale)
         m_pScale->clear();
     m_pReadAheadManager->notifySeek(filepos_play);
+
+    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
+         it != m_engineControls.end(); it++) {
+        EngineControl *pControl = *it;
+        pControl->notifySeek(filepos_play);
+    }
 }
 
 const char * EngineBuffer::getGroup()
@@ -310,8 +316,9 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    // Give EngineControl's a chance to veto or correct the seek target.
 
+
+    // Give EngineControl's a chance to veto or correct the seek target.
 
     // Seek reader
     Hint seek_hint;
@@ -511,8 +518,19 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                         at_start = true;
                     }
                 }
+                // TODO(XXX) need to re-evaluate this later. If we
+                // setNewPlaypos, that clear()'s soundtouch, which might screw
+                // up the audio. This sort of jump is a normal event. Also, the
+                // EngineControl which caused this jump will get a notifySeek
+                // for the same jump which might be confusing. For 1.8.0
+                // purposes this works fine. If we do not notifySeek the RAMAN,
+                // the engine and RAMAN can get out of sync.
+
+                //setNewPlaypos(filepos_play);
+                m_pReadAheadManager->notifySeek(filepos_play);
             }
         }
+
 
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
