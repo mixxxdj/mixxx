@@ -242,8 +242,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     volume2->process(m_pTemp2, m_pTemp2, iBufferSize);
 
 #ifdef __FXUNITS__
-    fxunits->process(m_pTemp1, m_pTemp1, iBufferSize, 1);
-    fxunits->process(m_pTemp2, m_pTemp2, iBufferSize, 2);
+    fxunits->process(m_pTemp1, m_pTemp1, iBufferSize, "[Channel1]");
+    fxunits->process(m_pTemp2, m_pTemp2, iBufferSize, "[Channel2]");
 #endif
 
     // Crossfader and Transform buttons

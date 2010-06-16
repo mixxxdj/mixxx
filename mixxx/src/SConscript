@@ -997,9 +997,13 @@ flags_fxunits = getFlags(env, 'fxunits', 1)
 if int(flags_fxunits):
 	env.Append(CPPDEFINES = '__FXUNITS__')
 	# TODO - Add sources
-	sources += Split("""engine/engineeffectsunits.cpp""")
-    #                        ladspa/ladspaloader.cpp
-    #                       """)
+	sources += Split("""
+			engine/engineeffectsunits.cpp
+			effectsunitsview.cpp 
+			effectsunits/effectsunitscontroller.cpp 
+			effectsunits/effectsunitsplugin.cpp 
+			effectsunits/effectsunitsbackend.cpp 
+			""")
 	print "FXUnits support... enabled"
 	build_flags += 'fxunits '
 else:

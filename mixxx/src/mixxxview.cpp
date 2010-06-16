@@ -60,6 +60,9 @@
 #ifdef __LADSPA__
 #include "ladspaview.h"
 #endif
+#ifdef __FXUNITS__
+#include "effectsunitsview.h"
+#endif
 #include "defs_promo.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
@@ -118,6 +121,9 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pTabWidgetLibraryPage = 0;
 #ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
+#endif
+#ifdef __FXUNITS__
+    m_pTabWidgetEffectsUnitsPage = 0;
 #endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
@@ -783,6 +789,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidgetEffectsPage = new QWidget();
 #endif
 
+#ifdef __FXUNITS__
+                    m_pEffectsUnitsView = new EffectsUnitsView(this);
+                    m_pTabWidgetEffectsUnitsPage = m_pEffectsUnitsView;
+#endif
+
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
 #ifdef __LADSPA__
@@ -859,8 +870,12 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //m_pTabWidget->addWidget(m_pTabWidgetLibraryPage);
 
                     // Add the effects page to the tab widget.
-                    m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
+                    m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("LADSPA"));
                     //m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
+
+#ifdef __FXUNITS__
+                    m_pTabWidget->addTab(m_pTabWidgetEffectsUnitsPage, tr("Effects Units"));
+#endif
                 }
 
                 //Move the tab widget into position and size it properly.

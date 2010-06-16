@@ -60,6 +60,10 @@ class WLibrary;
 class RhythmboxTrackModel;
 class RhythmboxPlaylistModel;
 
+#ifdef __FXUNITS__
+class EffectsUnitsView;
+#endif
+
 /**
  * This class provides an incomplete base for your application view.
  */
@@ -134,6 +138,7 @@ private:
     QWidget* m_pTabWidgetLibraryPage;
     /** The widget containing the effects/LADSPA page */
     QWidget* m_pTabWidgetEffectsPage;
+    QWidget* m_pTabWidgetEffectsUnitsPage; /* GSOC '10 FXUnits) */
     /** The layout for the library page. Allows stuff to resize automatically */
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
@@ -155,6 +160,10 @@ private:
 
 #ifdef __LADSPA__
     LADSPAView* m_pLADSPAView;
+#endif
+
+#ifdef __FXUNITS__
+    EffectsUnitsView* m_pEffectsUnitsView;
 #endif
 };
 
