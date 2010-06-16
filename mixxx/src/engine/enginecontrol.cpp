@@ -64,3 +64,7 @@ ConfigObject<ConfigValue>* EngineControl::getConfig() {
 EngineBuffer* EngineControl::getOtherEngineBuffer() {
     return m_pOtherEngineBuffer;
 }
+
+void EngineControl::notifySeek(double dNewPlaypos) {
+
+}
