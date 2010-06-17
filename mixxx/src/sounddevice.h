@@ -19,6 +19,7 @@
 #define SOUNDDEVICE_H
 
 #include "soundmanager.h"
+#include "audiopath.h"
 
 //Forward declarations
 ///....
