@@ -50,7 +50,7 @@ bool BaseSqlTableModel::select() {
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid())
         return QVariant();
-    
+
     int row = index.row();
     int col = index.column();
 
@@ -93,7 +93,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     return QSqlTableModel::data(index, role);
 }
 
-void BaseSqlTableModel::trackChanged(int trackId) { 
+void BaseSqlTableModel::trackChanged(int trackId) {
     m_trackOverrides.insert(trackId);
     qDebug() << "trackChanged" << trackId;
     if (m_trackIdToRow.contains(trackId)) {

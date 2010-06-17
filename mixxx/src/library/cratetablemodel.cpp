@@ -12,8 +12,7 @@ CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollec
         : BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
-          m_iCrateId(-1),
-          m_currentSearch("") {
+          m_iCrateId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 }
@@ -148,6 +147,8 @@ void CrateTableModel::search(const QString& searchText) {
 }
 
 void CrateTableModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
 
     QString filter;
