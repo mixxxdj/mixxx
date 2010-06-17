@@ -37,6 +37,7 @@
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrary.h"
+#include "widget/wsampler.h"
 
 
 #include "widget/woverview.h"
@@ -125,14 +126,15 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
-    m_pTabWidgetSamplerPage = 0;
+    m_pSamplerPage = 0;
 #ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
 #endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
-    m_pSamplerPageLayout = new QGridLayout();
+    m_pSamplerLayout = new QGridLayout();
     m_pSplitter = 0;
+    m_pSamplerSplitter = 0;
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
 
@@ -796,7 +798,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Create the pages that go in the tab widget
                     m_pTabWidgetLibraryPage = new QWidget(this);
-                    m_pTabWidgetSamplerPage = new QWidget(this);
 #ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
@@ -806,14 +807,12 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     //Set the margins to be 0 for all the layouts.
                     m_pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
-                    m_pSamplerPageLayout->setContentsMargins(0, 0, 0, 0);
 #ifdef __LADSPA__
 //                     m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
 #endif
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
-                    m_pTabWidgetSamplerPage->setLayout(m_pSamplerPageLayout);
                     
                     //Set up the search box widget
                     if (m_pLineEditSearch == 0) {
@@ -884,7 +883,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     // Add the effects page to the tab widget.
                     //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
                     m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
-                    m_pTabWidget->addWidget(m_pTabWidgetSamplerPage);
                 }
 
                 //Move the tab widget into position and size it properly.
@@ -900,7 +898,31 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 m_pLineEditSearch->show();
                 m_pTabWidget->show();
-                //m_pTabWidget->setCurrentWidget(m_pTabWidgetSamplerPage);
+            }
+            else if (node.nodeName()=="SamplerView")
+            {
+                
+                
+                m_pSamplerPage = new QWidget(this);
+                m_pSamplerPage->resize(582,265);
+                m_pSamplerPage->move(100,300);
+                
+                m_pSamplerLayout->setContentsMargins(0, 0, 0, 0);
+                m_pSamplerPage->setLayout(m_pSamplerLayout);
+                
+                m_pSamplerSplitter = new QSplitter(m_pSamplerPage);
+                m_pSampler = new WSampler(m_pSamplerSplitter);
+                
+                QLabel * p = new QLabel(m_pSamplerSplitter);
+                p->setText("Hello World!");
+                m_pSamplerSplitter->addWidget(p);
+                
+                m_pSamplerSplitter->addWidget(m_pSampler);
+                m_pSamplerLayout->addWidget(m_pSamplerSplitter, 1, 0, 1,3,0);
+                
+                m_pSampler->setup(node);
+                
+                m_pSamplerPage->show();
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {

@@ -136,20 +136,19 @@ private:
     QWidget* m_pTabWidgetLibraryPage;
     /** The widget containing the effects/LADSPA page */
     QWidget* m_pTabWidgetEffectsPage;
-    
-    QWidget* m_pTabWidgetSamplerPage;
+    /** The widget containing the sampler page */
+    QWidget* m_pSamplerPage;
     /** The layout for the library page. Allows stuff to resize automatically */
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
-    QGridLayout* m_pSamplerPageLayout;
+    QGridLayout* m_pSamplerLayout;
 
 	// The splitter widget that contains the library panes
 	QSplitter *m_pSplitter;
+    QSplitter *m_pSamplerSplitter;
     // The library widget
     WLibrary* m_pLibraryWidget;
-    // The Sampler Widget
-    WSampler* m_pSamplerWidget;
     // The library manager
     Library* m_pLibrary;
     // The library sidebar
@@ -158,6 +157,8 @@ private:
     QWidget* m_pLibrarySidebarPage;
 
     PlayerManager* m_pPlayerManager;
+    
+    WSampler* m_pSampler;
 
 #ifdef __LADSPA__
     LADSPAView* m_pLADSPAView;
