@@ -138,6 +138,21 @@ int SoundSourceMp3::open()
 
     framecount = currentframe;
     currentframe = 0;
+
+    //Recalculate the duration by using the average frame size. Our first guess at 
+    //the duration of VBR MP3s in parseHeader() goes for speed over accuracy
+    //since it runs during a library scan. When we open() an MP3 for playback,
+    //we had to seek through the entire thing to build a seek table, so we've
+    //also counted the number of frames in it. We need that to better estimate
+    //the length of VBR MP3s.
+    if (this->getSampleRate() > 0 && m_iChannels > 0) //protect again divide by zero
+    {
+        qDebug() << "SSMP3::open() - Setting duration to:" << framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels;
+        this->setDuration(framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels);
+    }
+    
+    //TODO: Emit metadata updated signal?
+
 /*
     qDebug() << "length  = " << filelength.seconds << "d sec.";
     qDebug() << "frames  = " << framecount;
@@ -603,13 +618,13 @@ int SoundSourceMp3::parseHeader()
     unsigned long bytesperframe = 0;
     bool constantbitrate = true;
     unsigned int frames = 0;
+    unsigned long averageBitrate = 0;
+    unsigned long averageBytesPerFrame = 0;
 
-    // Number of bytes to read at a time to determine duration
-
-
+    // Number of frames to read to estimate the duration
     const unsigned int DESIRED_FRAMES = 10;
+
     while(frames < DESIRED_FRAMES) {
-        
         unsigned int readbytes = file.read((char*)inputbuf, READLENGTH);
         
         if(readbytes != READLENGTH) {
@@ -652,6 +667,7 @@ int SoundSourceMp3::parseHeader()
             }
             if (frames==0) {
                 bitrate = Header.bitrate;
+                averageBitrate += bitrate;
                 dur = Header.duration;
                 bytesperframe = (Stream->next_frame - Stream->this_frame);
                 //Set samplerate and channels here so length() calculation
@@ -659,16 +675,33 @@ int SoundSourceMp3::parseHeader()
                 this->setSampleRate(Header.samplerate);
                 this->setChannels(MAD_NCHANNELS(&Header));
             } else if (bitrate != Header.bitrate) {
+                bytesperframe = (Stream->next_frame - Stream->this_frame);
                 constantbitrate = false;
+                averageBitrate += bitrate;
+                averageBytesPerFrame += bytesperframe;
+                //Testing to see if we can get better averages by sampling
+                //frames throughout the song, rather than all at the start.
+                //(Answer: No. I think Stream->next_frame - Stream->this_frame
+                // is an incorrect way of getting the frame size (!). XXX
+                //mad_stream_skip(Stream, 1024*64); //Skip 64kb forwards in the file
             }
             frames++;
         }
-
+    }
+    
+    //Calculate the average bitrate over a bunch of frames so we can guess the duration of VBR MP3s better
+    if (frames > 0) { //divide by zero protection
+        averageBitrate = averageBitrate / frames;
+        averageBytesPerFrame = averageBytesPerFrame / frames;
     }
 
-    //qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
-    //qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
+    /*
+    qDebug() << "SSMP3::ParseHeader -" << this->getTitle();
+    qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
+    qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
+    */
 
+    int duration = 0;
     if (constantbitrate && frames>0) {
         // This means that duration is an approximation.
         // We take the duration of one frame and multiply it by
@@ -676,12 +709,25 @@ int SoundSourceMp3::parseHeader()
 
         // duration per frame * file_length bytes / (bytes per frame) = duration
         //mad_timer_multiply(&dur, Track->getLength()/((Stream->this_frame-Stream->buffer)/frames));
-        mad_timer_multiply(&dur, file.size()/bytesperframe);
+        if (bytesperframe > 0) //prevent div by zero
+            mad_timer_multiply(&dur, file.size()/bytesperframe);
         int duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
-        //qDebug() << "SSMP3::ParseHeader - CBR bytes per frame" << bytesperframe << " Estimated duration " << duration;
         this->setDuration(duration);
         this->setBitrate(Header.bitrate/1000);
-    }
+        //qDebug() << "SSMP3::ParseHeader - Song is CBR";
+     }
+     else //Calculate duration for VBR MP3s 
+     {
+         //Since this is sort of a crapshoot to begin with unless you want to
+         //get really fancy, we're going to just use our estimate at the
+         //average bytes per frame to estimate the duration.
+         if (averageBytesPerFrame > 0)  //no divide by zero for you!
+             mad_timer_multiply(&dur, file.size()/averageBytesPerFrame);
+         duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
+         this->setDuration(duration);
+         this->setBitrate(averageBitrate/1000);
+         //qDebug() << "SSMP3::ParseHeader - Song is VBR";
+     }
 
 
     this->setSampleRate(Header.samplerate);
