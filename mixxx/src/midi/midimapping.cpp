@@ -114,7 +114,7 @@ void MidiMapping::startupScriptEngine() {
             m_pScriptEngine, SLOT(execute(QString)));
     connect(this, SIGNAL(callMidiScriptFunction(QString, QString)),
             m_pScriptEngine, SLOT(execute(QString, QString)));
-            
+
     // Allow the MidiScriptEngine to tell us if it needs to reset the controller (on errors)
     connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
 }
@@ -140,7 +140,7 @@ void MidiMapping::initializeScripts() {
         // Wait until it's done
         m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
         m_scriptEngineInitializedMutex.unlock();
-    }    
+    }
 }
 
 void MidiMapping::shutdownScriptEngine() {
@@ -150,7 +150,7 @@ void MidiMapping::shutdownScriptEngine() {
         emit(shutdownMidiScriptEngine(m_scriptFunctionPrefixes));
         // ...and wait for it to finish
         m_pScriptEngine->wait();
-        
+
         MidiScriptEngine *engine = m_pScriptEngine;
         m_pScriptEngine = NULL;
         delete engine;
@@ -588,7 +588,10 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
 
         loadScriptCode();   // Actually load code from the list built above
 
-        QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
+        QStringList scriptFunctions;
+        if (m_pScriptEngine != NULL) {
+            scriptFunctions = m_pScriptEngine->getScriptFunctions();
+        }
 
 #endif
 
@@ -609,17 +612,17 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                 status = "0x"+status;
                 QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
                 byte2 = "0x"+byte2;
-            
+
                 // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
                 if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
-            
+
                 QString errorLog = QString("MIDI script function \"%1\" not found. "
                                     "(Mapped to MIDI message %2 %3)")
                                     .arg(mixxxControl.getControlObjectValue())
                                     .arg(status)
                                     .arg(byte2);
-                
-                if (m_pOutputMidiDevice != NULL 
+
+                if (m_pOutputMidiDevice != NULL
                     && m_pOutputMidiDevice->midiDebugging()) {
                         qCritical() << errorLog;
                 }
@@ -642,7 +645,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                         "file name (.js) is spelled correctly in the mapping "
                         "file (.xml)"));
                     props->setDetails(detailsText);
-                    
+
                     ErrorDialogHandler::instance()->requestErrorDialog(props);
                 }
             } else {
@@ -721,7 +724,10 @@ void MidiMapping::applyPreset() {
 #ifdef __MIDISCRIPT__
     // Since this can be called after re-enabling a device without reloading the XML preset,
     // the script engine must have its code loaded here as well
-    QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
+    QStringList scriptFunctions;
+    if (m_pScriptEngine != NULL) {
+        scriptFunctions = m_pScriptEngine->getScriptFunctions();
+    }
     if (scriptFunctions.isEmpty()) loadScriptCode();
 
     initializeScripts();
