@@ -107,7 +107,7 @@ unsigned int AudioSource::getHash() const {
         | (m_channelGroup.getHash() << 8);
 }
 
-unsigned int qHash(AudioSource* src) {
+unsigned int qHash(AudioSource *src) {
     return src->getHash();
 }
 
@@ -156,12 +156,17 @@ QString AudioReceiver::getString() const {
    } 
 }
 
+/**
+ * Packs the 4 int values in a receiver into one int (works under the
+ * assumptions that sizeof(int) is 4, as it likely is in most platforms mixxx
+ * is run on, 
+ */
 unsigned int AudioReceiver::getHash() const {
     return ((m_type & 0xFF) << 24)
         | ((m_index & 0xFF) << 16)
         | (m_channelGroup.getHash() << 8);
 
 }
-unsigned int qHash(AudioReceiver* recv) {
+unsigned int qHash(AudioReceiver *recv) {
     return recv->getHash();
 }
