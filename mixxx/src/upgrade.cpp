@@ -190,8 +190,10 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 
     if (configVersion == VERSION) qDebug() << "Configuration file is at the current version" << VERSION;
     else {
-        qDebug() << "Warning: Configuration file is at version" << configVersion << "and I don't know how to upgrade it to the current" << VERSION;
-        qDebug() << "   (That means a function to do this needs to be added to upgrade.cpp.)";
+        qWarning() << "Configuration file is at version" << configVersion
+                   << "and I don't know how to upgrade it to the current" << VERSION
+                   << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
+                   << "\n-> Leaving the configuration file version as-is.";
     }
 
     return config;

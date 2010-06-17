@@ -99,11 +99,6 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
     emit(startedLoading());
     QFileInfoList files;
 
-    //Mark all the tracks in the library that we think are in this directory as needing
-    //verification of their existance...
-    //(ie. we want to check they're still on your hard drive where we think they are)
-    trackDao.invalidateTrackLocations(directory);
-
     //Check to make sure the path exists.
     QDir dir(directory);
     if (dir.exists()) {
