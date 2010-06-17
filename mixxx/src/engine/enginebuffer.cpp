@@ -276,6 +276,7 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
+    playButton->set(0.0);
     slotControlSeek(0.);
 
     // Let the engine know that a track is loaded now.
@@ -291,6 +292,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
     pause.lock();
     file_srate_old = 0;
     file_length_old = 0;
+    playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     pause.unlock();
