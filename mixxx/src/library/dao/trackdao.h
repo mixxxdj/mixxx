@@ -51,7 +51,7 @@ Q_OBJECT
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
-    void invalidateTrackLocations(QString directory);
+    void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
     void detectMovedFiles();
