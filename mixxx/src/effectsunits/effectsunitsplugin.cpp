@@ -1,9 +1,3 @@
-/*
- * effectsunitsplugin.cpp
- *
- *  Created on: Jun 16, 2010
- *      Author: bruno
- */
 #include <QtCore>
 #include <QDebug>
 #include "effectsunitsplugin.h"

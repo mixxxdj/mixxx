@@ -11,11 +11,12 @@ public:
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, const QString Source);
 
 	void addPluginToSource(EffectsUnitsPlugin * Plugin, QString Source);
+	QList<EffectsUnitsPlugin *> * getPluginsBySource(QString Source);
 
 private:
 	static EngineEffectsUnits * m_pEngine;
-	QLinkedList<EffectsUnitsPlugin * > m_OnChannel1;
-	QLinkedList<EffectsUnitsPlugin * > m_OnChannel2;
+	QList<EffectsUnitsPlugin * > m_OnChannel1;
+	QList<EffectsUnitsPlugin * > m_OnChannel2;
 
 };
 

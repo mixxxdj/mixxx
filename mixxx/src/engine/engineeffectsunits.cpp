@@ -28,42 +28,28 @@ EngineEffectsUnits * EngineEffectsUnits::getEngine(){
 }
 
 void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize){
-	//qDebug() << "FXUNITS: EngineEffectsUnits: process";
+	qDebug() << "FXUNITS: EngineEffectsUnits: process, you're doing it wrong!";
 }
 
 void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, const QString Source){
-	if (Source == "[Channel1]"){
-
-		qDebug() << "FXUNITS: EngineEffectsUnits: processing effects for [Channel1]";
-		QLinkedList<EffectsUnitsPlugin *>::iterator p1 = m_OnChannel1.begin();
-		while (p1 != m_OnChannel1.end()){
-			(*p1)->process(pIn, pOut, iBufferSize);
-		    p1++;
-		}
-
-
-		} else if (Source == "[Channel2]"){
-
-			qDebug() << "FXUNITS: EngineEffectsUnits: processing effects for [Channel2]";
-			QLinkedList<EffectsUnitsPlugin *>::iterator p2 = m_OnChannel2.begin();
-			while (p2 != m_OnChannel2.end()){
-				(*p2)->process(pIn, pOut, iBufferSize);
-			    p2++;
-			}
-
-		} else {
-
-		}
+	QList<EffectsUnitsPlugin *> * pluginList = getPluginsBySource(Source);
+	int size = pluginList->size();
+	for (int i = 0; i < size; ++i) {
+		pluginList->at(i)->process(pIn, pOut, iBufferSize);
+	 }
 }
 
 void EngineEffectsUnits::addPluginToSource(EffectsUnitsPlugin * Plugin, QString Source){
+	QList<EffectsUnitsPlugin *> * pluginList = getPluginsBySource(Source);
+	pluginList->append(Plugin);
+}
+
+QList<EffectsUnitsPlugin *> * EngineEffectsUnits::getPluginsBySource(QString Source){
 	if (Source == "[Channel1]"){
-		m_OnChannel1.append(Plugin);
-		qDebug() << "FXUNITS: EngineEffectsUnits: Activating" << Plugin->getName() << "on [Channel1]";
+		return &m_OnChannel1;
 	} else if (Source == "[Channel2]"){
-		m_OnChannel2.append(Plugin);
-		qDebug() << "FXUNITS: EngineEffectsUnits: Activating" << Plugin->getName() << "on [Channel2]";
+		return &m_OnChannel2;
 	} else {
-		qDebug() << "FXUNITS: Unrecognized source";
+		return NULL;
 	}
 }

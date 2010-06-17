@@ -1,10 +1,3 @@
-/*
- * effectsunitscontroller.cpp
- *
- *  Created on: Jun 16, 2010
- *      Author: bruno
- */
-
 #include "effectsunitscontroller.h"
 
 EffectsUnitsController::EffectsUnitsController() {

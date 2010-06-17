@@ -1003,6 +1003,7 @@ if int(flags_fxunits):
 			effectsunits/effectsunitscontroller.cpp 
 			effectsunits/effectsunitsplugin.cpp 
 			effectsunits/effectsunitsbackend.cpp 
+			effectsunits/debugbackend.cpp 
 			""")
 	print "FXUnits support... enabled"
 	build_flags += 'fxunits '
