@@ -12,8 +12,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                      "mixxx.db.model.missing"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
-          m_trackDao(m_pTrackCollection->getTrackDAO()),
-          m_currentSearch("") {
+          m_trackDao(m_pTrackCollection->getTrackDAO()) {
 
     QSqlQuery query;
     //query.prepare("DROP VIEW " + playlistTableName);
@@ -83,6 +82,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
     setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
                   Qt::Horizontal, tr("Date Added"));
 
+    slotSearch("");
+
     select(); //Populate the data model.
 
     connect(this, SIGNAL(doSearch(const QString&)),
@@ -131,6 +132,8 @@ void MissingTableModel::search(const QString& searchText)
 }
 
 void MissingTableModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
 
     QString filter;

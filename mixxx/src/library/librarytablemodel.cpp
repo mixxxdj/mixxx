@@ -16,7 +16,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     QSqlQuery query(pTrackCollection->getDatabase());
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
-                  "SELECT " 
+                  "SELECT "
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
                   "library." + LIBRARYTABLE_TITLE + "," +
@@ -30,7 +30,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "track_locations.location," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " " +
-                  "FROM library " + 
+                  "FROM library " +
                   "INNER JOIN track_locations " +
                   "ON library.location = track_locations.id ");
     if (!query.exec()) {
@@ -140,6 +140,9 @@ void LibraryTableModel::search(const QString& searchText) {
 
 void LibraryTableModel::slotSearch(const QString& searchText) {
     // qDebug() << "slotSearch()" << searchText << QThread::currentThread();
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
+
     m_currentSearch = searchText;
 
     QString filter;

@@ -13,8 +13,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
-          m_iPlaylistId(-1),
-          m_currentSearch("") {
+          m_iPlaylistId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 }
@@ -276,6 +275,9 @@ void PlaylistTableModel::slotSearch(const QString& searchText)
 {
     //FIXME: Need to keep filtering by playlist_id too
     //SQL is "playlist_id = " + QString(m_iPlaylistId)
+
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
 
     QString filter;
