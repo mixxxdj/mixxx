@@ -50,7 +50,7 @@ void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
 
 }
 
-QItemDelegate* BrowseTableModel::delegateForColumn(int) {
+QItemDelegate* BrowseTableModel::delegateForColumn(const int) {
     return NULL;
 }
 

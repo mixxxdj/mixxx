@@ -34,6 +34,7 @@
 #include <QDir>
 #include <QDesktopServices>
 #include <QCoreApplication>
+#include <QApplication>
 
 
 //Static memory allocation
@@ -56,12 +57,6 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 	  m_pSoundSource(NULL) {
 
     m_pSoundSource = initialize(pTrack->getLocation());
-
-    // Set the track duration in seconds
-    if(getSampleRate())
-	    pTrack->setDuration(length()/(2*getSampleRate()));
-    else
-	    pTrack->setDuration(0);
 }
 
 void SoundSourceProxy::loadPlugins()
@@ -70,6 +65,13 @@ void SoundSourceProxy::loadPlugins()
     
     QList<QDir> pluginDirs;
     QStringList nameFilters;
+
+    QStringList clArgs = QApplication::arguments();
+    int pluginPath = clArgs.indexOf("--pluginPath");
+    if (pluginPath != -1 && pluginPath + 1 < clArgs.size()) {
+        qDebug() << "Adding plugin path from commandline arg:" << clArgs.at(pluginPath + 1);
+        pluginDirs.append(QDir(clArgs.at(pluginPath + 1)));
+    }
 #ifdef __LINUX__
     pluginDirs.append(QDir("/usr/local/lib/mixxx/plugins/soundsource/"));
     pluginDirs.append(QDir("/usr/lib/mixxx/plugins/soundsource/"));

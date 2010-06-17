@@ -72,6 +72,9 @@ class EngineControl : public QObject {
     void setCurrentSample(const double dCurrentSample);
     double getCurrentSample();
 
+    // Called whenever a seek occurs to allow the EngineControl to respond.
+    virtual void notifySeek(double dNewPlaypo);
+
   signals:
     void seek(double fractionalPosition);
     void seekAbs(double sample);
