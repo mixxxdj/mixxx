@@ -1202,4 +1202,7 @@
   <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
   <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
  </TableView>
+
+ <SamplerView>
+ </SamplerView>
   </skin>
