@@ -210,7 +210,8 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
     while (cueIt.hasNext()) {
         Cue* cue = cueIt.next();
         int cueId = cue->getId();
-        if (cueId == -1) {
+        bool newCue = cueId == -1;
+        if (newCue) {
             // New cue
             cue->setTrackId(trackId);
         } else {
@@ -218,8 +219,14 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
             list.append(QString("%1,").arg(cueId));
         }
         // Update or save cue
-        if (cue->isDirty())
+        if (cue->isDirty()) {
             saveCue(cue);
+
+            // Since this cue didn't have an id until now, add it to the list of
+            // cues not to delete.
+            if (newCue)
+                list.append(QString("%1,").arg(cue->getId()));
+        }
     }
     qDebug() << "Saving cues took " << time.elapsed() << "ms";
     time.start();
