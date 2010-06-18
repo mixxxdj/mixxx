@@ -103,11 +103,8 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     TrackInfoObject *pTrack = getTrack(index);
     if ( pTrack == NULL )
         return QVariant();
-    
-    // Show the full field in a tooltip
-    if (role == Qt::ToolTipRole) return index.sibling(index.row(), index.column()).data().toString();
 
-    else if (role == Qt::DisplayRole) {
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
         switch (index.column()) {
             case RhythmboxPlaylistModel::COLUMN_ARTIST:
                 return pTrack->getArtist();

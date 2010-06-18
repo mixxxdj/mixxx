@@ -93,10 +93,7 @@ QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
 
     QVariant value = AbstractXmlTrackModel::data(item, role);
 
-    // Show the full field in a tooltip
-    if (role == Qt::ToolTipRole) value = item.sibling(item.row(), item.column()).data().toString();
-    
-    else if (role == Qt::DisplayRole &&
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == COLUMN_DURATION) {
 
         if (qVariantCanConvert<int>(value)) {
