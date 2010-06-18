@@ -8,7 +8,8 @@
 #include "trackinfoobject.h"
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
-        QDialog(parent) {
+        QDialog(parent),
+        m_pLoadedTrack(NULL) {
 
     setupUi(this);
 
@@ -31,19 +32,18 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
 }
 
 DlgTrackInfo::~DlgTrackInfo() {
-    unloadTrack(m_pLoadedTrack);
+    unloadTrack(false);
     qDebug() << "~DlgTrackInfo()";
 }
 
 void DlgTrackInfo::apply() {
-    unloadTrack(m_pLoadedTrack);
+    unloadTrack(true);
     accept();
-    delete this;
 }
 
 void DlgTrackInfo::cancel() {
+    unloadTrack(false);
     reject();
-    delete this;
 }
 
 void DlgTrackInfo::trackUpdated() {
@@ -85,6 +85,9 @@ void DlgTrackInfo::cueDelete() {
 void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
     m_pLoadedTrack = pTrack;
     clear();
+
+    if (m_pLoadedTrack == NULL)
+        return;
 
     lblSong->setText(m_pLoadedTrack->getTitle());
 
@@ -154,49 +157,48 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
     cueTable->setSortingEnabled(true);
 }
 
-void DlgTrackInfo::unloadTrack(TrackInfoObject* pTrack) {
+void DlgTrackInfo::unloadTrack(bool save) {
     if (!m_pLoadedTrack)
         return;
 
-    m_pLoadedTrack->setTitle(txtTrackName->text());
-    m_pLoadedTrack->setArtist(txtArtist->text());
-    m_pLoadedTrack->setComment(txtComment->text());
+    if (save) {
+        m_pLoadedTrack->setTitle(txtTrackName->text());
+        m_pLoadedTrack->setArtist(txtArtist->text());
+        m_pLoadedTrack->setComment(txtComment->text());
 
-    QHash<int, Cue*> cueMap;
+        QHash<int, Cue*> cueMap;
+        for (int row = 0; row < cueTable->rowCount(); ++row) {
 
+            QTableWidgetItem* rowItem = cueTable->item(row, 0);
+            QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
+            QTableWidgetItem* labelItem = cueTable->item(row, 3);
 
+            if (!rowItem || !hotcueItem || !labelItem)
+                continue;
 
-    for (int row = 0; row < cueTable->rowCount(); ++row) {
+            int oldRow = rowItem->data(Qt::DisplayRole).toInt();
+            Cue* pCue = m_cueMap.take(oldRow);
 
-        QTableWidgetItem* rowItem = cueTable->item(row, 0);
-        QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-        QTableWidgetItem* labelItem = cueTable->item(row, 3);
+            QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
+            if (vHotcue.canConvert<int>()) {
+                pCue->setHotCue(vHotcue.toInt());
+            } else {
+                pCue->setHotCue(-1);
+            }
 
-        if (!rowItem || !hotcueItem || !labelItem)
-            continue;
-
-        int oldRow = rowItem->data(Qt::DisplayRole).toInt();
-        Cue* pCue = m_cueMap.take(oldRow);
-
-        QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert<int>()) {
-            pCue->setHotCue(vHotcue.toInt());
-        } else {
-            pCue->setHotCue(-1);
+            QString label = labelItem->data(Qt::DisplayRole).toString();
+            pCue->setLabel(label);
         }
 
-        QString label = labelItem->data(Qt::DisplayRole).toString();
-        pCue->setLabel(label);
-    }
-
-    QMutableHashIterator<int,Cue*> it(m_cueMap);
-    // Everything remaining in m_cueMap must have been deleted.
-    while (it.hasNext()) {
-        it.next();
-        Cue* pCue = it.value();
-        it.remove();
-        qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
-        m_pLoadedTrack->removeCue(pCue);
+        QMutableHashIterator<int,Cue*> it(m_cueMap);
+        // Everything remaining in m_cueMap must have been deleted.
+        while (it.hasNext()) {
+            it.next();
+            Cue* pCue = it.value();
+            it.remove();
+            qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
+            m_pLoadedTrack->removeCue(pCue);
+        }
     }
 
     m_pLoadedTrack = NULL;
@@ -217,4 +219,5 @@ void DlgTrackInfo::clear() {
 
     m_cueMap.clear();
     cueTable->clearContents();
+    cueTable->setRowCount(0);
 }

@@ -18,12 +18,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     DlgTrackInfo(QWidget* parent);
     virtual ~DlgTrackInfo();
 
-
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackInfoObject* pTrack);
-    void unloadTrack(TrackInfoObject* pTrack);
 
   signals:
     void next();
@@ -40,6 +38,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void cueDelete();
 
   private:
+    void unloadTrack(bool save);
     void clear();
 
     QHash<int, Cue*> m_cueMap;
