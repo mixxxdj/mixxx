@@ -701,7 +701,7 @@ int SoundSourceMp3::parseHeader()
     qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
     */
 
-    int duration = 0;
+    int duration = -1;   // This default will cause the library to display a '?'
     if (constantbitrate && frames>0) {
         // This means that duration is an approximation.
         // We take the duration of one frame and multiply it by
@@ -711,25 +711,32 @@ int SoundSourceMp3::parseHeader()
         //mad_timer_multiply(&dur, Track->getLength()/((Stream->this_frame-Stream->buffer)/frames));
         if (bytesperframe > 0) //prevent div by zero
             mad_timer_multiply(&dur, file.size()/bytesperframe);
-        int duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
-        this->setDuration(duration);
+        duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
         this->setBitrate(Header.bitrate/1000);
         //qDebug() << "SSMP3::ParseHeader - Song is CBR";
      }
      else //Calculate duration for VBR MP3s 
      {
+         // FIXME: We need a fast way to get reasonable VBR MP3 file duration estimates
+         
+         // In the meantime (and since the below method can be waaaay off)
+         // we'd rather show nothing until the track is loaded and the real
+         // duration can be calculated - Sean (June 2010)
+         
+         /*
          //Since this is sort of a crapshoot to begin with unless you want to
          //get really fancy, we're going to just use our estimate at the
          //average bytes per frame to estimate the duration.
          if (averageBytesPerFrame > 0)  //no divide by zero for you!
              mad_timer_multiply(&dur, file.size()/averageBytesPerFrame);
          duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
-         this->setDuration(duration);
+         */
+
          this->setBitrate(averageBitrate/1000);
          //qDebug() << "SSMP3::ParseHeader - Song is VBR";
      }
 
-
+    this->setDuration(duration);
     this->setSampleRate(Header.samplerate);
     this->setChannels(MAD_NCHANNELS(&Header));
 

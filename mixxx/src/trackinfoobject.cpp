@@ -22,7 +22,6 @@
 #include <QMutexLocker>
 #include <QString>
 #include <QtDebug>
-#include <QTime>
 
 #include "trackinfoobject.h"
 
@@ -32,6 +31,7 @@
 #include "xmlparse.h"
 #include "controlobject.h"
 
+#include "mixxxutils.cpp"
 
 TrackInfoObject::TrackInfoObject(const QString sLocation)
         : m_sLocation(sLocation),
@@ -230,20 +230,7 @@ QString TrackInfoObject::getDurationStr() const
     int iDuration = m_iDuration;
     lock.unlock();
 
-    // TODO(XXX) This whole thing should be pulled out into a generate MixxxUtil
-    // class. The library has similar code littered throughout it.
-
-    if (iDuration <=0) {
-        return QString("?");
-    } else {
-        QTime t = QTime().addSecs(iDuration);
-        if (t.hour() > 5)
-            return QString("??");
-        else if (t.hour() >= 1)
-            return t.toString("h:mm:ss");
-        else
-            return t.toString("m:ss");
-    }
+    return MixxxUtils::secondsToMinutes(iDuration);
 }
 
 void TrackInfoObject::setLocation(QString location)

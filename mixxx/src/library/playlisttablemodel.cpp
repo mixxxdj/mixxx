@@ -4,6 +4,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 
+#include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
@@ -353,20 +354,14 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
         return QVariant();
 
     QVariant value = BaseSqlTableModel::data(item, role);
+    
+    // Show the full field in a tooltip
+    if (role == Qt::ToolTipRole) value = item.sibling(item.row(), item.column()).data().toString();
 
-    if (role == Qt::DisplayRole &&
+    else if (role == Qt::DisplayRole &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
         if (qVariantCanConvert<int>(value)) {
-            // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-            //Let's reformat this song length into a human readable MM:SS format.
-            int totalSeconds = qVariantValue<int>(value);
-            int seconds = totalSeconds % 60;
-            int mins = totalSeconds / 60;
-            //int hours = mins / 60; //Not going to worry about this for now. :)
-
-            //Construct a nicely formatted duration string now.
-            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
         }
     }
     return value;

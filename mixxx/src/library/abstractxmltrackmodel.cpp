@@ -59,8 +59,11 @@ QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) con
         return QVariant();
 
     QDomNode songNode = m_trackNodes.at(index.row());
+    
+    // Show the full field in a tooltip
+    if (role == Qt::ToolTipRole) return index.sibling(index.row(), index.column()).data().toString();
 
-    if (role == Qt::DisplayRole) {
+    else if (role == Qt::DisplayRole) {
         if ( index.column() > m_ColumnNames.size())
             return QVariant();
 
