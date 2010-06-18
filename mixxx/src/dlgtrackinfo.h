@@ -37,6 +37,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void cueActivate();
     void cueDelete();
 
+    void slotBpmDouble();
+    void slotBpmHalve();
+    void slotBpmTap();
+
   private:
     void unloadTrack(bool save);
     void clear();

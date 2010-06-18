@@ -24,6 +24,13 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
     connect(btnCancel, SIGNAL(clicked()),
             this, SLOT(cancel()));
 
+    connect(bpmDouble, SIGNAL(clicked()),
+            this, SLOT(slotBpmDouble()));
+    connect(bpmHalve, SIGNAL(clicked()),
+            this, SLOT(slotBpmHalve()));
+    connect(bpmTap, SIGNAL(clicked()),
+            this, SLOT(slotBpmTap()));
+
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
     connect(btnCueDelete, SIGNAL(clicked()),
@@ -91,10 +98,17 @@ void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
 
     lblSong->setText(m_pLoadedTrack->getTitle());
 
+    // Editable fields
     txtTrackName->setText(m_pLoadedTrack->getTitle());
     txtArtist->setText(m_pLoadedTrack->getArtist());
+    txtAlbum->setText(m_pLoadedTrack->getAlbum());
+    txtGenre->setText(m_pLoadedTrack->getGenre());
+    txtYear->setText(m_pLoadedTrack->getYear());
+    txtTrackNumber->setText(m_pLoadedTrack->getTrackNumber());
     txtComment->setText(m_pLoadedTrack->getComment());
+    spinBpm->setValue(m_pLoadedTrack->getBpm());
 
+    // Non-editable fields
     txtDuration->setText(m_pLoadedTrack->getDurationStr());
     txtFilepath->setText(m_pLoadedTrack->getFilename());
     txtFilepath->setCursorPosition(0);
@@ -164,6 +178,11 @@ void DlgTrackInfo::unloadTrack(bool save) {
     if (save) {
         m_pLoadedTrack->setTitle(txtTrackName->text());
         m_pLoadedTrack->setArtist(txtArtist->text());
+        m_pLoadedTrack->setAlbum(txtAlbum->text());
+        m_pLoadedTrack->setGenre(txtGenre->text());
+        m_pLoadedTrack->setYear(txtYear->text());
+        m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
+        m_pLoadedTrack->setBpm(spinBpm->value());
         m_pLoadedTrack->setComment(txtComment->text());
 
         QHash<int, Cue*> cueMap;
@@ -211,7 +230,12 @@ void DlgTrackInfo::clear() {
 
     txtTrackName->setText("");
     txtArtist->setText("");
+    txtAlbum->setText("");
+    txtGenre->setText("");
+    txtYear->setText("");
+    txtTrackNumber->setText("");
     txtComment->setText("");
+    spinBpm->setValue(0.0);
 
     txtDuration->setText("");
     txtFilepath->setText("");
@@ -220,4 +244,16 @@ void DlgTrackInfo::clear() {
     m_cueMap.clear();
     cueTable->clearContents();
     cueTable->setRowCount(0);
+}
+
+void DlgTrackInfo::slotBpmDouble() {
+    spinBpm->setValue(spinBpm->value() * 2.0);
+}
+
+void DlgTrackInfo::slotBpmHalve() {
+    spinBpm->setValue(spinBpm->value() / 2.0);
+}
+
+void DlgTrackInfo::slotBpmTap() {
+
 }
