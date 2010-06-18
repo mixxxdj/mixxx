@@ -353,12 +353,14 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = BaseSqlTableModel::data(item, role);
-    
-    // Show the full field in a tooltip
-    if (role == Qt::ToolTipRole) value = item.sibling(item.row(), item.column()).data().toString();
+    QVariant value;
 
-    else if (role == Qt::DisplayRole &&
+    if (role == Qt::ToolTipRole)
+        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
+    else
+        value = BaseSqlTableModel::data(item, role);
+
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
         if (qVariantCanConvert<int>(value)) {
             value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));

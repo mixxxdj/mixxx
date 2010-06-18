@@ -58,10 +58,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     if (!m_rowToTrackId.contains(row)) {
         return QSqlTableModel::data(index, role);
     }
-    
-    // Show the full field in a tooltip
-    if (role == Qt::ToolTipRole) return index.sibling(row, col).data().toString();
-    
+
     int trackId = m_rowToTrackId[row];
 
     if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
