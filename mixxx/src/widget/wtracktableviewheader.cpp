@@ -77,6 +77,14 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
                 &m_signalMapper, SLOT(map()));
         m_menu.addAction(action);
     }
+
+    // Safety check against someone getting stuck with all columns hidden
+    // (produces an empty library table). Just re-show them all.
+    if (hiddenCount() == columns) {
+        for (int i = 0; i < columns; ++i) {
+            showSection(i);
+        }
+    }
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
@@ -126,8 +134,28 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
     if (action->isChecked()) {
         showSection(column);
     } else {
-        hideSection(column);
+        // If the user hides every column then the table will disappear. This
+        // guards against that. NB: hiddenCount reflects checked QAction's so
+        // size-hiddenCount will be zero the moment they uncheck the last
+        // section.
+        if (m_columnActions.size() - hiddenCount() > 0) {
+            hideSection(column);
+        } else {
+            // Otherwise, ignore the request and re-check this QAction.
+            action->setChecked(true);
+        }
     }
+}
+
+int WTrackTableViewHeader::hiddenCount() {
+    int count = 0;
+    for (QMap<int, QAction*>::iterator it = m_columnActions.begin();
+         it != m_columnActions.end(); it++) {
+        QAction* pAction = *it;
+        if (!pAction->isChecked())
+            count += 1;
+    }
+    return count;
 }
 
 TrackModel* WTrackTableViewHeader::getTrackModel() {
