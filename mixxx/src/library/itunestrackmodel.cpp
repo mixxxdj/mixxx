@@ -12,6 +12,8 @@
 #include "defs.h"
 #include "soundsourceproxy.h"
 
+#include "mixxxutils.cpp"
+
 ITunesTrackModel::ITunesTrackModel()
         : AbstractXmlTrackModel("mixxx.db.model.itunes") {
     QXmlQuery query;
@@ -229,16 +231,7 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
         case ITunesTrackModel::COLUMN_DURATION:
             value = findValueByKey(songNode,"Total Time");
             if (qVariantCanConvert<int>(value)) {
-                // TODO(XXX) Pull this out into a MixxxUtil or something.
-                //XXX: Code based on LibraryTableModel::data(...) but slightly different
-                //Let's reformat this song length into a human readable MM:SS format.
-                int totalMilliseconds = qVariantValue<int>(value);
-                int seconds = (totalMilliseconds % 60000) / 1000;
-                int mins = totalMilliseconds / 60000;
-                //int hours = mins / 60; //Not going to worry about this for now. :)
-
-                //Construct a nicely formatted duration string now.
-                value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+                value = MixxxUtils::millisecondsToMinutes(qVariantValue<int>(value));
             }
             return value;
         default:
