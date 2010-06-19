@@ -11,6 +11,7 @@
 #include "widget/wlibrarytableview.h"
 
 class TrackInfoObject;
+class DlgTrackInfo;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
@@ -37,11 +38,14 @@ public slots:
 private slots:
     void slotRemove();
     void slotShowTrackInfo();
+    void slotNextTrackInfo();
+    void slotPrevTrackInfo();
 signals:
     void loadTrack(TrackInfoObject* pTrack);
     void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
 
 private:
+    void showTrackInfo(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
@@ -54,6 +58,9 @@ private:
     ConfigObject<ConfigValue> * m_pConfig;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
+
+    DlgTrackInfo* pTrackInfo;
+    QModelIndex currentTrackInfoIndex;
 
     SearchThread m_searchThread;
 
