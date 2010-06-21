@@ -21,7 +21,7 @@
 #include <qpixmap.h>
 #include <q3dict.h>
 
-#include "imgsource.h"
+#include "skin/imgsource.h"
 
 /**
   *

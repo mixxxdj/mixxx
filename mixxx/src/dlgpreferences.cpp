@@ -37,6 +37,7 @@
 #include "mixxx.h"
 #include "midi/mididevicemanager.h"
 #include "midi/mididevice.h"
+#include "skin/skinloader.h"
 #include <QTabWidget>
 
 #include <QTabBar>
@@ -44,7 +45,7 @@
 #include <QtGui>
 #include <QEvent>
 
-DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
+DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader, MixxxView * view,
                                SoundManager * soundman,
                                MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
@@ -65,7 +66,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, config);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, view, mixxx, config);
+    wcontrols = new DlgPrefControls(this, view, mixxx, pSkinLoader, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);

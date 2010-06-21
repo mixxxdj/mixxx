@@ -46,6 +46,7 @@ class DlgPrefVinyl;
 class DlgPrefShoutcast;
 class PowerMate;
 class MidiDeviceManager;
+class SkinLoader;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -55,7 +56,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
 {
     Q_OBJECT
 public:
-    DlgPreferences(MixxxApp *mixxx, MixxxView *view, SoundManager *soundman,
+    DlgPreferences(MixxxApp *mixxx, SkinLoader* pSkinLoader, MixxxView *view, SoundManager *soundman,
                    MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();

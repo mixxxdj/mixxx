@@ -71,6 +71,8 @@ class LibraryScanner;
 class AnalyserQueue;
 class Library;
 class MidiDeviceManager;
+class MixxxKeyboard;
+class SkinLoader;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -122,7 +124,6 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-	QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
 
@@ -131,9 +132,13 @@ class MixxxApp : public QMainWindow
 	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
 	void slotEnableRescanLibraryAction();
 
+
+
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
+
+
 
   private:
     /** view is the main widget which represents your working area. The View
@@ -141,12 +146,16 @@ class MixxxApp : public QMainWindow
      * you can create your view according to your application's needs by
      * changing the view class.
      */
-    MixxxView *view;
+    MixxxView* m_pView;
     QFrame *frame;
 
     QApplication *app;
     // The mixing engine.
     EngineMaster *m_pEngine;
+
+  public: // HACKSMODE
+    SkinLoader* m_pSkinLoader;
+  private:
 
     // The sound manager
     SoundManager *soundmanager;
@@ -158,6 +167,7 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValue> *config;
     /** Pointer to active keyboard configuration */
     ConfigObject<ConfigValueKbd> *kbdconfig;
+    MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
     // The library management object

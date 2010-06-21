@@ -52,9 +52,9 @@
 #include "player.h"
 #include "playermanager.h"
 
-#include "imgloader.h"
-#include "imginvert.h"
-#include "imgcolor.h"
+#include "skin/imgloader.h"
+#include "skin/imginvert.h"
+#include "skin/imgcolor.h"
 #include "widget/wskincolor.h"
 #include "mixxx.h"
 #ifdef __LADSPA__
@@ -68,19 +68,19 @@
 #include "library/rhythmboxplaylistmodel.h"
 #include "library/browsetablemodel.h"
 
-MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
+MixxxView::MixxxView(QWidget* parent, MixxxKeyboard* pKeyboard,
                      QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
                      PlayerManager* pPlayerManager,
                      Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
+          m_pKeyboard(pKeyboard),
           m_pLibrary(pLibrary),
           m_pPlayerManager(pPlayerManager)
 
 {
     view = 0;
 
-    m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
 
     // Try to open the file pointed to by qSkinPath
