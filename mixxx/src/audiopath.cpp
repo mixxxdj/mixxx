@@ -20,6 +20,14 @@ ChannelGroup::ChannelGroup(unsigned int channelBase, unsigned int channels)
   , m_channels(channels) {
 }
 
+unsigned int ChannelGroup::getChannelBase() const {
+    return m_channelBase;
+}
+
+unsigned int ChannelGroup::getChannelCount() const {
+    return m_channels;
+}
+
 bool ChannelGroup::operator==(const ChannelGroup &other) const {
     return m_channelBase == other.m_channelBase
         && m_channels == other.m_channels;
