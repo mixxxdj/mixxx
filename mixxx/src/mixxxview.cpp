@@ -52,6 +52,8 @@
 #include "trackinfoobject.h"
 #include "player.h"
 #include "playermanager.h"
+#include "sampler.h"
+#include "samplermanager.h"
 
 #include "imgloader.h"
 #include "imginvert.h"
@@ -72,11 +74,13 @@
 MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
                      QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
                      PlayerManager* pPlayerManager,
+                     SamplerManager* pSamplerManager,
                      Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
-          m_pPlayerManager(pPlayerManager)
+          m_pPlayerManager(pPlayerManager),
+          m_pSamplerManager(pSamplerManager)
 
 {
     view = 0;
@@ -100,7 +104,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
     Player* pPlayer1 = m_pPlayerManager->getPlayer(1);
     Player* pPlayer2 = m_pPlayerManager->getPlayer(2);
-    Player* pSampler1 = m_pPlayerManager->getPlayer(3);
+    Sampler* pSampler1 = m_pSamplerManager->getSampler(1);
 
     connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
             m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));

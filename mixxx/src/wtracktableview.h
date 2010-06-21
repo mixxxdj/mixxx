@@ -41,6 +41,7 @@ private slots:
 signals:
     void loadTrack(TrackInfoObject* pTrack);
     void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrackToSampler(TrackInfoObject* pTrack, int sampler);
 
 private:
     void createActions();
@@ -69,9 +70,6 @@ private:
     QAction *m_pPlayer2Act;
     /**Send to Samplers Action**/
     QAction *m_pSampler1Act;
-    QAction *m_pSampler2Act;
-    QAction *m_pSampler3Act;
-    QAction *m_pSampler4Act;
     /**Remove from Table Action**/
     QAction *m_pRemoveAct;
     /**Shows track editor/BPM tap**/

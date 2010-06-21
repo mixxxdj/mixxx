@@ -99,6 +99,8 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             this, SLOT(slotLoadTrack(TrackInfoObject*)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
+    connect(pTrackTableView, SIGNAL(loadTrackToSampler(TrackInfoObject*, int)), this, SLOT(slotLoadTrackToSampler(TrackInfoObject*, int)));
+    
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -139,6 +141,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrack(TrackInfoObject*)));
     connect(feature, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
             this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
+    connect(feature, SIGNAL(loadTrackToSampler(TrackInfoObject*, int)),
+            this, SLOT(slotLoadTrackToSampler(TrackInfoObject*, int)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
 }
@@ -163,6 +167,10 @@ void Library::slotLoadTrack(TrackInfoObject* pTrack) {
 
 void Library::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
     emit(loadTrackToPlayer(pTrack, player));
+}
+
+void Library::slotLoadTrackToSampler(TrackInfoObject* pTrack, int sampler) {
+    emit(loadTrackToSampler(pTrack, sampler));
 }
 
 void Library::slotRestoreSearch(const QString& text) {

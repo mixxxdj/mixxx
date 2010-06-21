@@ -57,6 +57,7 @@ public slots:
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackInfoObject* pTrack);
     void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void slotLoadTrackToSampler(TrackInfoObject* pTrack, int sampler);
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
@@ -65,6 +66,7 @@ signals:
     void switchToView(const QString& view);
     void loadTrack(TrackInfoObject* tio);
     void loadTrackToPlayer(TrackInfoObject* tio, int n);
+    void loadTrackToSampler(TrackInfoObject* tio, int n);
     void restoreSearch(const QString&);
 
 private:
