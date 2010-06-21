@@ -13,6 +13,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef AUDIOPATH_H
+#define AUDIOPATH_H
+
 #include <QString>
 
 /**
@@ -62,6 +65,8 @@ public:
     };
     AudioSource(AudioSourceType type, unsigned int channelBase,
                 unsigned int channels, unsigned int index = 0);
+    AudioSourceType getType() const;
+    unsigned int getIndex() const;
     bool operator==(const AudioSource& other) const;
     QString getString() const;
     unsigned int getHash() const;
@@ -84,7 +89,9 @@ public:
         PASSTHROUGH
     };
     AudioReceiver(AudioReceiverType type, unsigned int channelBase,
-                unsigned int channels, unsigned int index = 0);
+                  unsigned int channels, unsigned int index = 0);
+    AudioReceiverType getType() const;
+    unsigned int getIndex() const;
     bool operator==(const AudioReceiver& other) const;
     QString getString() const;
     unsigned int getHash() const;
@@ -92,3 +99,9 @@ private:
     AudioReceiverType m_type;
     unsigned int m_index; // index of indexed sources (ex. decks)
 };
+
+// globals for QHash
+unsigned int qHash(AudioSource *src);
+unsigned int qHash(AudioReceiver *recv);
+
+#endif
