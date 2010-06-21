@@ -16,21 +16,22 @@
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineMaster* pMixingEngine,
-               int playerNumber, int center, const char* pGroup)
+               int playerNumber, const char* pGroup)
     : m_pConfig(pConfig),
       m_iPlayerNumber(playerNumber),
       m_strChannel(pGroup),
       m_pLoadedTrack(NULL) {
-
+    
     EngineChannel::ChannelOrientation orientation;
-    if(center == 1) {
-        orientation = EngineChannel::CENTER;
-    } else {
+    if (playerNumber<3) {
         if (playerNumber % 2 == 1)
-            orientation = EngineChannel::LEFT;
-        else
-            orientation = EngineChannel::RIGHT;
+        orientation = EngineChannel::LEFT;
+    else
+        orientation = EngineChannel::RIGHT; 
+    } else {
+        orientation = EngineChannel::CENTER;
     }
+    
 
     EngineChannel* pChannel = new EngineChannel(pGroup, pConfig, orientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();

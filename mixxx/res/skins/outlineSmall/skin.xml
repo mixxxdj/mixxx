@@ -1205,4 +1205,33 @@
 
  <SamplerView>
  </SamplerView>
-  </skin>
+
+ <PushButton>
+  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>play-off-Ch1.png</Pressed>
+   <Unpressed>play-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>play-on-Ch1.png</Pressed>
+   <Unpressed>play-on-Ch1.png</Unpressed>
+  </State>
+  <Pos>10, 600</Pos>
+  <Connection>
+   <ConfigKey>[Channel3],play</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel3],cue_set</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+ 
+ 
+
+</skin>

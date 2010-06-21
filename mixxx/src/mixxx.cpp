@@ -194,12 +194,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
-    m_pPlayerManager->addPlayer(0);
-    m_pPlayerManager->addPlayer(0);
-    m_pPlayerManager->addPlayer(1);
-    m_pPlayerManager->addPlayer(1);
-    m_pPlayerManager->addPlayer(1);
-    m_pPlayerManager->addPlayer(1);
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
     
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config,

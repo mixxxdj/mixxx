@@ -15,7 +15,7 @@ class Player : public QObject
 	Q_OBJECT
 	public:
     Player(ConfigObject<ConfigValue> *pConfig, EngineMaster* pMixingEngine,
-           int playerNumber, int center, const char* pGroup);
+           int playerNumber, const char* pGroup);
     ~Player();
     QString getGroup();
 public slots:

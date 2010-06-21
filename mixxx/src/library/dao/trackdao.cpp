@@ -476,19 +476,22 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
-
-void TrackDAO::invalidateTrackLocations(QString directory)
+/** Mark all the tracks whose paths begin with libraryPath as invalid.
+    That means we'll need to later check that those tracks actually 
+    (still) exist as part of the library scanning procedure. */
+void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath)
 {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "invalidateTrackLocations(" << directory << ")";
+    qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
+    libraryPath += "%"; //Add wildcard to SQL query to match subdirectories!
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET needs_verification=1 "
-                  "WHERE directory=:directory");
-    query.bindValue(":directory", directory);
+                  "WHERE directory LIKE :directory");
+    query.bindValue(":directory", libraryPath);
     if (!query.exec()) {
-        qDebug() << "Couldn't mark tracks in directory" << directory <<  "as needing verification." << query.lastError();
+        qDebug() << "Couldn't mark tracks in directory" << libraryPath <<  "as needing verification." << query.lastError();
     }
 }
 
@@ -510,7 +513,7 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
 
 void TrackDAO::markUnverifiedTracksAsDeleted()
 {
-    qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markUnverifiedTracksAsDeleted()";
 
     QSqlQuery query(m_database);
