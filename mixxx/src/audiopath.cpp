@@ -43,9 +43,11 @@ unsigned int ChannelGroup::getHash() const {
 AudioPath::AudioPath(unsigned int channelBase, unsigned int channels)
   : m_channelGroup(channelBase, channels) {
 }
+
 bool AudioPath::channelsClash(const AudioPath& other) const {
     return m_channelGroup.clashesWith(other.m_channelGroup);
 }
+
 ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;
 }
@@ -64,6 +66,14 @@ AudioSource::AudioSource(AudioSourceType type, unsigned int channelBase,
         m_index = 0;
         break;
     }
+}
+
+AudioSourceType AudioSource::getType() const {
+    return m_type;
+}
+
+unsigned int AudioSource::getIndex() const {
+    return m_index;
 }
 
 bool AudioSource::operator==(const AudioSource& other) const {
@@ -125,6 +135,14 @@ AudioReceiver::AudioReceiver(AudioReceiverType type, unsigned int channelBase,
         m_index = 0;
         break;
     }
+}
+
+AudioReceiverType AudioReceiver::getType() const {
+    return m_type;
+}
+
+unsigned int AudioReceiver::getIndex() const {
+    return m_index;
 }
 
 bool AudioReceiver::operator==(const AudioReceiver& other) const {
