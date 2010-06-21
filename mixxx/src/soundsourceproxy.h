@@ -58,6 +58,7 @@ private:
     static QLibrary* getPlugin(QString lib_filename);
 
     SoundSource *m_pSoundSource;
+    TrackInfoObject* m_pTrack;
     static QMap<QString, QLibrary*> m_plugins;
     static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;

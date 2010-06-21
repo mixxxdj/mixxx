@@ -47,6 +47,7 @@
 
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
+    m_engineLock(QMutex::Recursive),
     group(_group),
     m_pConfig(_config),
     m_pLoopingControl(NULL),
@@ -251,6 +252,15 @@ void EngineBuffer::setNewPlaypos(double newpos)
     if (m_pScale)
         m_pScale->clear();
     m_pReadAheadManager->notifySeek(filepos_play);
+
+    // Must hold the engineLock while using m_engineControls
+    m_engineLock.lock();
+    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
+         it != m_engineControls.end(); it++) {
+        EngineControl *pControl = *it;
+        pControl->notifySeek(filepos_play);
+    }
+    m_engineLock.unlock();
 }
 
 const char * EngineBuffer::getGroup()
@@ -270,6 +280,7 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
+    playButton->set(0.0);
     slotControlSeek(0.);
 
     // Let the engine know that a track is loaded now.
@@ -285,6 +296,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
     pause.lock();
     file_srate_old = 0;
     file_length_old = 0;
+    playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     pause.unlock();
@@ -311,7 +323,6 @@ void EngineBuffer::slotControlSeek(double change)
         new_playpos--;
 
     // Give EngineControl's a chance to veto or correct the seek target.
-
 
     // Seek reader
     Hint seek_hint;
@@ -485,6 +496,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         } // else (bCurBufferPaused)
 
+        m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
@@ -511,8 +523,20 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                         at_start = true;
                     }
                 }
+                // TODO(XXX) need to re-evaluate this later. If we
+                // setNewPlaypos, that clear()'s soundtouch, which might screw
+                // up the audio. This sort of jump is a normal event. Also, the
+                // EngineControl which caused this jump will get a notifySeek
+                // for the same jump which might be confusing. For 1.8.0
+                // purposes this works fine. If we do not notifySeek the RAMAN,
+                // the engine and RAMAN can get out of sync.
+
+                //setNewPlaypos(filepos_play);
+                m_pReadAheadManager->notifySeek(filepos_play);
             }
         }
+        m_engineLock.unlock();
+
 
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
@@ -661,8 +685,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
 void EngineBuffer::hintReader(const double dRate,
                               const int iSourceSamples) {
-    m_hintList.clear();
+    m_engineLock.lock();
 
+    m_hintList.clear();
     m_pReadAheadManager->hintReader(m_hintList, iSourceSamples);
 
     QListIterator<EngineControl*> it(m_engineControls);
@@ -670,8 +695,9 @@ void EngineBuffer::hintReader(const double dRate,
         EngineControl* pControl = it.next();
         pControl->hintReader(m_hintList);
     }
-
     m_pReader->hintAndMaybeWake(m_hintList);
+
+    m_engineLock.unlock();
 }
 
 void EngineBuffer::slotLoadTrack(TrackInfoObject *pTrack) {
@@ -686,7 +712,9 @@ void EngineBuffer::slotLoadTrack(TrackInfoObject *pTrack) {
 
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
+    m_engineLock.lock();
     m_engineControls.push_back(pControl);
+    m_engineLock.unlock();
     connect(pControl, SIGNAL(seek(double)),
             this, SLOT(slotControlSeek(double)));
     connect(pControl, SIGNAL(seekAbs(double)),

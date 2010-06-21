@@ -519,9 +519,8 @@ void CachingReader::loadTrack(TrackInfoObject *pTrack) {
     m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
-    QFileInfo fileInfo(filename);
 
-    if (filename.isEmpty() || !fileInfo.exists()) {
+    if (filename.isEmpty() || !pTrack->exists()) {
         qDebug() << "Couldn't load track with filename: " << filename;
         emit(trackLoadFailed(
             pTrack,
