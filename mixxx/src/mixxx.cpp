@@ -55,11 +55,6 @@
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
-#ifdef __IPOD__
-#include "wtracktableview.h"
-#include "gpod/itdb.h"
-#endif
-
 #ifdef __C_METRICS__
 #include <cmetrics.h>
 #include "defs_mixxxcmetrics.h"
@@ -337,12 +332,6 @@ MixxxApp::~MixxxApp()
     delete scriptEng;
 #endif
 
-#ifdef __IPOD__
-    if (m_pTrack->m_qIPodPlaylist.getSongNum()) {
-      qDebug() << "Dispose of iPod track collection";
-      m_pTrack->m_qIPodPlaylist.clear();
-    }
-#endif
     qDebug() << "save config, " << qTime.elapsed();
     config->Save();
 
@@ -482,14 +471,6 @@ void MixxxApp::initActions()
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
 
-#ifdef __IPOD__
-    iPodToggle = new QAction(tr("iPod &Active"), this);
-    iPodToggle->setShortcut(tr("Ctrl+A"));
-    iPodToggle->setShortcutContext(Qt::ApplicationShortcut);
-    iPodToggle->setCheckable(true);
-    connect(iPodToggle, SIGNAL(toggled(bool)), this, SLOT(slotiPodToggle(bool)));
-#endif
-
     optionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
 
     optionsFullScreen = new QAction(tr("&Full Screen"), this);
@@ -628,12 +609,6 @@ void MixxxApp::initMenuBar()
     libraryMenu->addAction(playlistsNew);
     //libraryMenu->addAction(playlistsImport);
 
-#ifdef __IPOD__
-    libraryMenu->addSeparator();
-    libraryMenu->addAction(iPodToggle);
-    connect(libraryMenu, SIGNAL(aboutToShow()), this, SLOT(slotlibraryMenuAboutToShow()));
-#endif
-
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
 
@@ -660,102 +635,7 @@ void MixxxApp::initMenuBar()
 
 }
 
-
-void MixxxApp::slotiPodToggle(bool toggle) {
-#ifdef __IPOD__
-// iPod stuff
-  QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
-  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
-                       QDir( iPodMountPoint + "/iPod_Control").exists();
-  bool iPodActivated = iPodAvailable && toggle;
-
-  iPodToggle->setEnabled(iPodAvailable);
-
-  if (iPodAvailable && iPodActivated && view->m_pComboBox->findData(TABLE_MODE_IPOD) == -1 ) {
-    view->m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
-    // Activate IPod model
-
-    Itdb_iTunesDB *itdb;
-    itdb = itdb_parse (iPodMountPoint, NULL);
-    if (itdb == NULL) {
-      qDebug() << "Error reading iPod database\n";
-      return;
-    }
-    GList *it;
-    int count = 0;
-    m_pTrack->m_qIPodPlaylist.clear();
-
-    for (it = itdb->tracks; it != NULL; it = it->next) {
-       count++;
-       Itdb_Track *song;
-       song = (Itdb_Track *)it->data;
-
-//     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a VERY long delay in loading from the iPod
-//       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
-
-       QString fullFilePath = iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
-       QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/'));
-       QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
-       QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
-
-       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << fullFilePath; continue; }
-       if (song->unk220 && fileSuffix == "m4p") { qDebug() << "Protected media not supported." << song->title << fullFilePath; continue; }
-#ifndef __FFMPEGFILE__
-       if (fileSuffix == "m4a") { qDebug() << "m4a media support (via FFMPEG) is not compiled into this build of Mixxx. :( " << song->title << fullFilePath; continue; }
-#endif // __FFMPEGFILE__
-
-
-//       qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
-
-       TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName);
-       pTrack->setBpm(song->BPM);
-       pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
-//       pTrack->setHeaderParsed(true);
-       pTrack->setComment(song->comment);
-//       pTrack->setType(file.suffix());
-       pTrack->setType(fileSuffix);
-       pTrack->setBitrate(song->bitrate);
-       pTrack->setSampleRate(song->samplerate);
-       pTrack->setDuration(song->tracklen/1000);
-       pTrack->setTitle(song->title);
-       pTrack->setArtist(song->artist);
-       // song->rating // user rating
-       // song->volume and song->soundcheck -- track level normalization / gain info as determined by iTunes
-       m_pTrack->m_qIPodPlaylist.addTrack(pTrack);
-    }
-    itdb_free (itdb);
-
-    //qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum() << "of"<< count <<"songs on the iPod.";
-
-    view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-    //m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-    //m_pTrack->resizeColumnsForLibraryMode();
-
-    //FIXME: Commented out above due to library rework.
-
-  } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
-    view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
-    //m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
-    //FIXME: library reworking
-
-    view->m_pComboBox->removeItem( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-    // Empty iPod model m_qIPodPlaylist
-    //m_pTrack->m_qIPodPlaylist.clear();
-
-  }
-#endif
-}
-
-
 void MixxxApp::slotlibraryMenuAboutToShow(){
-
-#ifdef __IPOD__
-  QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
-  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
-                       QDir( iPodMountPoint + "/iPod_Control").exists();
-  iPodToggle->setEnabled(iPodAvailable);
-
-#endif
 }
 
 bool MixxxApp::queryExit()

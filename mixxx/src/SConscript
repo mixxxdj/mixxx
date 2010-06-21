@@ -455,9 +455,9 @@ sources = Split("""
                 waveform/waveformrenderbeat.cpp
 
 
-                imginvert.cpp
-                imgloader.cpp
-                imgcolor.cpp
+                skin/imginvert.cpp
+                skin/imgloader.cpp
+                skin/imgcolor.cpp
 
                 trackinfoobject.cpp
                 player.cpp
