@@ -25,7 +25,6 @@
 #include <QList>
 
 #include "configobject.h"
-#include "imgsource.h"
 
 class ControlObject;
 class WSlider;
@@ -60,6 +59,7 @@ class Library;
 class WLibrary;
 class RhythmboxTrackModel;
 class RhythmboxPlaylistModel;
+class ImgSource;
 
 /**
  * This class provides an incomplete base for your application view.
@@ -69,7 +69,7 @@ class MixxxView : public QWidget
 {
     Q_OBJECT
 public:
-    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig,
+    MixxxView(QWidget *parent, MixxxKeyboard* pKeyboard,
               QString qSkinPath, ConfigObject<ConfigValue> *pConfig,
               PlayerManager* pPlayerManager,
               Library* pLibrary);

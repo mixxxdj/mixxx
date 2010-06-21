@@ -454,7 +454,7 @@ sources = Split("""
                 waveform/waveformrendermarkrange.cpp
                 waveform/waveformrenderbeat.cpp
 
-
+                skin/skinloader.cpp
                 skin/imginvert.cpp
                 skin/imgloader.cpp
                 skin/imgcolor.cpp

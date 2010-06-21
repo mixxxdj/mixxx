@@ -26,6 +26,7 @@ class QWidget;
 class ControlObjectThreadMain;
 class ControlPotmeter;
 class MixxxView;
+class SkinLoader;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -33,8 +34,9 @@ class MixxxView;
 
 class DlgPrefControls : public QWidget, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
-public: 
-    DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig);
+public:
+    DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx,
+                    SkinLoader* pSkinLoader, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
 public slots:
     void slotUpdate();
@@ -66,7 +68,8 @@ private:
     ControlObjectThreadMain *m_pControlCueDefault1, *m_pControlCueDefault2;
     /** Pointer to MixxxView */
     MixxxView *m_pView;
-	MixxxApp *m_mixxx;
+    MixxxApp *m_mixxx;
+    SkinLoader* m_pSkinLoader;
 };
 
 #endif

@@ -39,7 +39,6 @@
 #include "analyserqueue.h"
 #include "player.h"
 #include "playermanager.h"
-#include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
@@ -52,6 +51,10 @@
 #include "midi/mididevicemanager.h"
 #include "defs_version.h"
 #include "upgrade.h"
+
+#include "mixxxkeyboard.h"
+
+#include "skin/skinloader.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
@@ -156,6 +159,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
 
+    m_pKeyboard = new MixxxKeyboard(kbdconfig);
+
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(config, "[Master]");
 
@@ -163,9 +168,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     soundmanager = new SoundManager(config, m_pEngine);
     soundmanager->queryDevices();
-
-    // Find path of skin
-    QString qSkinPath = getSkinPath();
 
     // Get Music dir
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -192,9 +194,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pPlayerManager->addPlayer();
     m_pPlayerManager->addPlayer();
 
-    view=new MixxxView(frame, kbdconfig, qSkinPath, config,
-                       m_pPlayerManager,
-                       m_pLibrary);
+    m_pSkinLoader = new SkinLoader(config);
+
+    m_pView = m_pSkinLoader->loadDefaultSkin(frame,
+                                             m_pKeyboard,
+                                             m_pPlayerManager,
+                                             m_pLibrary);
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -211,7 +216,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     // TODO rryan : Move this to WaveformViewerFactory or something.
     /*
-    if (bVisualsWaveform && !view->activeWaveform())
+    if (bVisualsWaveform && !m_pView->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
         QMessageBox * mb = new QMessageBox(this);
@@ -254,7 +259,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, soundmanager,
+    prefDlg = new DlgPreferences(this, m_pSkinLoader, m_pView, soundmanager,
                                  m_pMidiDeviceManager, config);
     prefDlg->setHidden(true);
 
@@ -296,7 +301,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     initMenuBar();
 
     // Check direct rendering and warn user if they don't have it
-    view->checkDirectRendering();
+    m_pView->checkDirectRendering();
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
@@ -355,7 +360,7 @@ MixxxApp::~MixxxApp()
 //    delete m_pControlEngine;
 
     qDebug() << "delete view, " << qTime.elapsed();
-    delete view;
+    delete m_pView;
 
     qDebug() << "delete library scanner" <<  qTime.elapsed();
     delete m_pLibraryScanner;
@@ -747,20 +752,20 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         int deskw = width();
         int deskh = height();
 #endif
-        view->move((deskw - view->width())/2, (deskh - view->height())/2);
+        m_pView->move((deskw - m_pView->width())/2, (deskh - m_pView->height())/2);
         // FWI: End of fullscreen patch
     }
     else
     {
         // FWI: Begin of fullscreen patch
-        view->move(0,0);
+        m_pView->move(0,0);
         menuBar()->show();
         showNormal();
 
 #ifdef __LINUX__
-        if (size().width() != view->width() ||
-            size().height() != view->height() + menuBar()->height()) {
-          setFixedSize(view->width(), view->height() + menuBar()->height());
+        if (size().width() != m_pView->width() ||
+            size().height() != m_pView->height() + menuBar()->height()) {
+          setFixedSize(m_pView->width(), m_pView->height() + menuBar()->height());
         }
         move(winpos);
 #endif
@@ -990,42 +995,20 @@ void MixxxApp::slotHelpSupport()
 void MixxxApp::rebootMixxxView() {
     // Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
     // So we check and if the size hasn't changed we don't make the call
-    int oldh = view->height();
-    int oldw = view->width();
+    int oldh = m_pView->height();
+    int oldw = m_pView->width();
     qDebug() << "Now in Rebootmixxview...";
 
-    QString qSkinPath = getSkinPath();
+    // TODO(XXX) Make getSkinPath not public
+    QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    view->rebootGUI(frame, config, qSkinPath);
+    m_pView->rebootGUI(frame, config, qSkinPath);
 
     qDebug() << "rebootgui DONE";
 
-    if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
-      setFixedSize(view->width(), view->height() + menuBar()->height());
+    if (oldw != m_pView->width() || oldh != m_pView->height() + menuBar()->height()) {
+      setFixedSize(m_pView->width(), m_pView->height() + menuBar()->height());
     }
-}
-
-QString MixxxApp::getSkinPath() {
-    QString qConfigPath = config->getConfigPath();
-
-    QString qSkinPath(qConfigPath);
-    qSkinPath.append("skins/");
-    if (QDir(qSkinPath).exists())
-    {
-        // Is the skin listed in the config database there? If not, use default (outlineSmall) skin
-        if ((config->getValueString(ConfigKey("[Config]","Skin")).length()>0 && QDir(QString(qSkinPath).append(config->getValueString(ConfigKey("[Config]","Skin")))).exists()))
-            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
-        else
-        {
-            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineNetbook"));
-            config->Save();
-            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
-        }
-    }
-    else
-        qCritical() << "Skin directory does not exist:" << qSkinPath;
-
-    return qSkinPath;
 }
 
 /** Event filter to block certain events. For example, this function is used

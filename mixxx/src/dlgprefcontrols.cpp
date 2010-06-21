@@ -30,12 +30,16 @@
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
+#include "skin/skinloader.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
-{
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx,
+                                 SkinLoader* pSkinLoader,
+                                 ConfigObject<ConfigValue> * pConfig)
+        :  QWidget(parent), Ui::DlgPrefControlsDlg() {
     m_pView = pView;
     m_pConfig = pConfig;
     m_mixxx = mixxx;
+    m_pSkinLoader = pSkinLoader;
 
     setupUi(this);
 
@@ -96,7 +100,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Rate buttons configuration
     //
     //NOTE: THESE DEFAULTS ARE A LIE! You'll need to hack the same values into the static variables
-    //      at the top of enginebuffer.cpp 
+    //      at the top of enginebuffer.cpp
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(QString("4.0")));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).length() == 0)
@@ -142,14 +146,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     QString qSkinPath(pConfig->getValueString(ConfigKey("[Config]","Path")));
     QDir dir(qSkinPath.append("skins/"));
     dir.setFilter(QDir::Dirs);
-    
+
     //
     // Default Cue Behavior
     //
-    
+
     m_pControlCueDefault1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_mode")));
     m_pControlCueDefault2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_mode")));
-    
+
     // Set default value in config file and control objects, if not present
     QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"));
     if(cueDefault.length() == 0) {
@@ -160,12 +164,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
 
     m_pControlCueDefault1->slotSet(cueDefaultValue);
     m_pControlCueDefault2->slotSet(cueDefaultValue);
-    
+
     // Update combo box
     ComboBoxCueDefault->addItem("CDJ Mode");
     ComboBoxCueDefault->addItem("Simple");
     ComboBoxCueDefault->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).toInt());
-   
+
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     //Cue recall
@@ -232,7 +236,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     slotUpdateSchemes();
 
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
-    
+
     //
     // Tooltip configuration
     //
@@ -246,19 +250,19 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     //
     // Ramping Temporary Rate Change configuration
     //
-    
+
     // Set Ramp Rate On or Off
     connect(groupBoxRateRamp, SIGNAL(toggled(bool)), this, SLOT(slotSetRateRamp(bool)));
     groupBoxRateRamp->setChecked((bool)
             m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
     );
-    
+
     // Update Ramp Rate Sensitivity
     connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateRampSensitivity(int)));
     SliderRateRampSensitivity->setValue(
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
     );
-    
+
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdateSchemes();
@@ -272,7 +276,8 @@ DlgPrefControls::~DlgPrefControls()
 void DlgPrefControls::slotUpdateSchemes()
 {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
+    QList<QString> schlist = MixxxView::getSchemeList(
+        m_pSkinLoader->getConfiguredSkinPath());
 
     ComboBoxSchemeconf->clear();
 
@@ -284,7 +289,7 @@ void DlgPrefControls::slotUpdateSchemes()
         ComboBoxSchemeconf->setEnabled(true);
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
-            
+
             if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
             }
@@ -380,11 +385,11 @@ void DlgPrefControls::slotSetTooltips(int)
     //the eventFilter is. The value of the ConfigObject is cached at startup because it's too slow
     //to refresh it during each Tooltip event (I think), which is why we require a restart.
 
-    
+
     QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
     //textLabel->setText(
       tr("Mixxx must be restarted before the changes will take effect."));
-    
+
 
 //    if (ComboBoxTooltips->currentIndex()==0)
 //        QToolTip::setGloballyEnabled(true);
@@ -460,17 +465,17 @@ void DlgPrefControls::slotSetRatePermRight(double v)
 
 void DlgPrefControls::slotSetRateRampSensitivity(int sense)
 {
-    m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"), 
+    m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"),
                         ConfigValue(SliderRateRampSensitivity->value()));
     RateControl::setRateRampSensitivity(sense);
 }
 
 void DlgPrefControls::slotSetRateRamp(bool mode)
 {
-    m_pConfig->set(ConfigKey("[Controls]", "RateRamp"), 
+    m_pConfig->set(ConfigKey("[Controls]", "RateRamp"),
                         ConfigValue(groupBoxRateRamp->isChecked()));
     RateControl::setRateRamp(mode);
-    
+
     /*
     if ( mode )
     {
@@ -498,6 +503,6 @@ void DlgPrefControls::slotApply()
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
-    
+
 }
 
