@@ -39,6 +39,7 @@
 #include "analyserqueue.h"
 #include "player.h"
 #include "playermanager.h"
+#include "samplermanager.h"
 #include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -196,14 +197,17 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
     m_pPlayerManager->addPlayer();
     m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
+    
+    m_pSamplerManager = new SamplerManager(config, m_pEngine, m_pLibrary);
+    m_pSamplerManager->addSampler();
+    m_pSamplerManager->addSampler();
+    m_pSamplerManager->addSampler();
+    m_pSamplerManager->addSampler();
     
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config,
                        m_pPlayerManager,
+                       m_pSamplerManager,
                        m_pLibrary);
 
     //Scan the library directory.

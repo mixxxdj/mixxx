@@ -24,6 +24,7 @@ class WBrowseTableView : public virtual WLibraryTableView {
     virtual void keyPressEvent(QKeyEvent* event);
   signals:
     void loadToPlayer(const QModelIndex&, int);
+    void loadToSampler(const QModelIndex&, int);
     void search(const QString&);
     void searchStarting();
     void searchCleared();

@@ -463,6 +463,8 @@ sources = Split("""
                 trackinfoobject.cpp
                 player.cpp
                 playermanager.cpp
+				sampler.cpp
+				samplermanager.cpp
                 sounddevice.cpp
                 soundmanager.cpp
                 sounddeviceportaudio.cpp

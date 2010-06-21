@@ -50,6 +50,7 @@ class LibraryFeature : public QObject {
     void switchToView(const QString& view);
     void loadTrack(TrackInfoObject* pTrack);
     void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrackToSampler(TrackInfoObject* pTrack, int player);
     void restoreSearch(const QString&);
 };
 

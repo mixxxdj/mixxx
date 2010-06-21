@@ -54,6 +54,8 @@ class LADSPAView;
 class WaveformRenderer;
 class Player;
 class PlayerManager;
+class Sampler;
+class SamplerManager;
 class TrackInfoObject;
 class QStandardItemModel;
 class Library;
@@ -73,6 +75,7 @@ public:
     MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig,
               QString qSkinPath, ConfigObject<ConfigValue> *pConfig,
               PlayerManager* pPlayerManager,
+              SamplerManager* pSamplerManager,
               Library* pLibrary);
     ~MixxxView();
 
@@ -157,6 +160,8 @@ private:
     QWidget* m_pLibrarySidebarPage;
 
     PlayerManager* m_pPlayerManager;
+    
+    SamplerManager* m_pSamplerManager;
     
     WSampler* m_pSampler;
 

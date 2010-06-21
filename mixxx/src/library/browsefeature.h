@@ -43,6 +43,7 @@ class BrowseFeature : public LibraryFeature {
 
     // Called when a file in browse view is selected to be loaded into a player.
     void loadToPlayer(const QModelIndex& index, int player);
+    void loadToSampler(const QModelIndex& index, int sampler);
     // Called when a file in the browse view is activated.
     void onFileActivate(const QModelIndex& index);
     void searchStarting();

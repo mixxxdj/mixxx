@@ -55,9 +55,10 @@ void WBrowseTableView::slotLoadPlayer2() {
 }
 
 void WBrowseTableView::slotLoadSampler1() {
+    qDebug("Attempting to Load");
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
-        emit(loadToPlayer(selectedIndices.at(0), 3));
+        emit(loadToSampler(selectedIndices.at(0), 1));
     }
 }
 

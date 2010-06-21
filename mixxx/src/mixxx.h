@@ -61,6 +61,7 @@
 
 class EngineMaster;
 class PlayerManager;
+class SamplerManager;
 class TrackInfoObject;
 class PlayerProxy;
 class BpmDetector;
@@ -155,6 +156,7 @@ class MixxxApp : public QMainWindow
     SoundManager *soundmanager;
 
     PlayerManager* m_pPlayerManager;
+    SamplerManager* m_pSamplerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
