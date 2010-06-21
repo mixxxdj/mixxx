@@ -75,10 +75,13 @@ int SoundDevicePortAudio::open()
         QListIterator<AudioSource> srcIt(m_audioSources);
         while (srcIt.hasNext())
         {
-			AudioSource src = srcIt.next();
-			if((src.channelBase + src.channels) > m_outputParams.channelCount)
-				m_outputParams.channelCount = src.channelBase + src.channels;
-
+            AudioSource src = srcIt.next();
+            ChannelGroup channelGroup = src.getChannelGroup();
+            unsigned int highChannel = channelGroup.getChannelBase()
+                + channelGroup.getChannelCount();
+            if (m_outputParams.channelCount <= highChannel) {
+                m_outputParams.channelCount = highChannel;
+            }
         }
     }
 
@@ -93,9 +96,13 @@ int SoundDevicePortAudio::open()
         QListIterator<AudioReceiver> recvIt(m_audioReceivers);
         while (recvIt.hasNext())
         {
-			AudioReceiver recv = recvIt.next();
-			if((recv.channelBase + recv.channels) > m_inputParams.channelCount)
-				m_inputParams.channelCount = recv.channelBase + recv.channels;
+            AudioReceiver recv = recvIt.next();
+            ChannelGroup channelGroup = recv.getChannelGroup();
+            unsigned int highChannel = channelGroup.getChannelBase()
+                + channelGroup.getChannelCount();
+            if (m_inputParams.channelCount <= highChannel) {
+                m_inputParams.channelCount = highChannel;
+            }
         }
     }
 
@@ -347,10 +354,10 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 
     if (output && framesPerBuffer > 0)
     {
-		assert(iFrameSize > 0);
+        assert(iFrameSize > 0);
         CSAMPLE** outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
-	//qDebug() << framesPerBuffer;
+        //qDebug() << framesPerBuffer;
 
         //Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
@@ -359,23 +366,24 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 
         for (unsigned int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
-			//Interlace Audio data onto portaudio buffer
-			//We iterate through the source list to find out what goes in the buffer
-			//data is interlaced in the order of the list
-			QListIterator<AudioSource> devItr(m_audioSources);
-			int iChannel;
-			while(devItr.hasNext())
-			{
-				AudioSource src = devItr.next();
-				int iLocalFrameBase = (iFrameBase/iFrameSize) * src.channels;
-				for(iChannel = 0; iChannel < src.channels; iChannel++)	//this will make sure a sample from each channel is copied
-				{
-					output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-					//Input audio pass-through (useful for debugging)
+            //Interlace Audio data onto portaudio buffer
+            //We iterate through the source list to find out what goes in the buffer
+            //data is interlaced in the order of the list
+            QListIterator<AudioSource> devItr(m_audioSources);
+            int iChannel;
+            while (devItr.hasNext())
+            {
+                AudioSource src = devItr.next();
+                ChannelGroup srcChans = src.getChannelGroup();
+                int iLocalFrameBase = (iFrameBase/iFrameSize) * srcChans.getChannelCount();
+                for (iChannel = 0; iChannel < srcChans.getChannelCount(); iChannel++) //this will make sure a sample from each channel is copied
+                {
+                    output[iFrameBase + srcChans.getChannelBase() + iChannel] += outputAudio[src][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    //Input audio pass-through (useful for debugging)
                     //if (in)
-					//    output[iFrameBase + src.channelBase + iChannel] += in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			    }
-			}
+                    //    output[iFrameBase + src.channelBase + iChannel] += in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                }
+            }
         }
     }
 

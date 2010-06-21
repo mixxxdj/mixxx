@@ -25,6 +25,8 @@
 class ChannelGroup {
 public:
     ChannelGroup(unsigned int channelBase, unsigned int channels);
+    unsigned int getChannelBase() const;
+    unsigned int getChannelCount() const;
     bool operator==(const ChannelGroup &other) const;
     bool clashesWith(const ChannelGroup &other) const;
     unsigned int getHash() const;

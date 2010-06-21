@@ -72,16 +72,15 @@ void SoundDevice::setHostAPI(QString api)
 
 int SoundDevice::addSource(const AudioSource src)
 { 
-	//Check if the output channels are already used
-	QListIterator<AudioSource> itr(m_audioSources);
-	while(itr.hasNext())
-	{
-		AudioSource src_internal = itr.next();
-		AudioSource src_lower = (src_internal.channelBase < src.channelBase) ? src_internal : src;
-		AudioSource src_higher = (src_internal.channelBase < src.channelBase) ?  src : src_internal;
-		if((src_lower.channelBase + src_lower.channels) > src_higher.channelBase)
-			return MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL;
-	}
+    //Check if the output channels are already used
+    QListIterator<AudioSource> itr(m_audioSources);
+    while (itr.hasNext())
+    {
+        AudioSource src_internal = itr.next();
+        if (src.channelsClash(src_internal)) {
+            return MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL;
+        }
+    }
     m_audioSources.push_back(src);
     
     return 0;
@@ -97,14 +96,13 @@ int SoundDevice::addReceiver(const AudioReceiver recv)
 {
     //Check if the input channels are already used
     QListIterator<AudioReceiver> itr(m_audioReceivers);
-	while(itr.hasNext())
-	{
-		AudioReceiver recv_internal = itr.next();
-		AudioReceiver recv_lower  = (recv_internal.channelBase < recv.channelBase) ?  recv_internal : recv;
-		AudioReceiver recv_higher = (recv_internal.channelBase < recv.channelBase) ?  recv : recv_internal;
-		if((recv_lower.channelBase + recv_lower.channels) > recv_higher.channelBase)
-			return MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL;
-	}
+    while (itr.hasNext())
+    {
+        AudioReceiver recv_internal = itr.next();
+        if (recv.channelsClash(recv_internal)) {
+            return MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL;
+        }
+    }
     m_audioReceivers.push_back(recv);
     
     return 0;
