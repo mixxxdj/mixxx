@@ -140,9 +140,12 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
 void SidebarModel::clicked(const QModelIndex& index) {
     qDebug() << "SidebarModel::clicked() index=" << index;
 
-    if (QApplication::mouseButtons() != Qt::LeftButton) {
+
+    //We use clicked() for keyboard and mouse control, and the
+    //following code breaks that for us:
+    /*if (QApplication::mouseButtons() != Qt::LeftButton) {
         return;
-    }
+    }*/
 
     if (index.isValid()) {
         if (index.internalPointer() == this) {

@@ -2,8 +2,8 @@
                           enginemaster.h  -  description
                              -------------------
     begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    copyright            : (C) 2002 by
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,6 +20,7 @@
 
 #include "engineobject.h"
 
+class EngineWorkerScheduler;
 class EngineBuffer;
 class EngineVolume;
 class EngineChannel;
@@ -59,9 +60,11 @@ public:
 private:
 	void xfadeGains(FLOAT_TYPE *gain1, FLOAT_TYPE *gain2, double xfadePosition, double transform, double calibration);
 
+    EngineWorkerScheduler *m_pWorkerScheduler;
+
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
-    EngineVolume *volume, *head_volume; 
+    EngineVolume *volume, *head_volume;
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
 #ifdef __LADSPA__
@@ -77,7 +80,7 @@ private:
     EngineSideChain *sidechain;
 
 //     EngineBufferMasterRate *m_pEngineBufferMasterRate;
-        
+
 //     ControlObject *m_pControlObjectHeadphoneMute;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance, *xFaderCurve, *xFaderCalibration;
     ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2, *transform1, *transform2;

@@ -3,7 +3,10 @@
 #ifndef TRACKDAO_H
 #define TRACKDAO_H
 
+#include <QFileInfo>
 #include <QObject>
+#include <QSet>
+#include <QHash>
 #include <QSqlDatabase>
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
@@ -27,7 +30,8 @@ const QString LIBRARYTABLE_SAMPLERATE = "samplerate";
 const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
 const QString LIBRARYTABLE_CHANNELS = "channels";
 const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
-const QString LIBRARYTABLE_DATETIMEADDED= "datetime_added";
+const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
+const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 
 class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT
@@ -39,36 +43,62 @@ Q_OBJECT
 
     void initialize();
     int getTrackId(QString location);
-    QString getTrackLocation(int id);
     bool trackExistsInDatabase(QString location);
-    void addTrack(QString location);
-    void addTrack(TrackInfoObject * pTrack);
+    QString getTrackLocation(int id);
+    int addTrack(QString location);
+    int addTrack(QFileInfo& fileInfo);
     void removeTrack(int id);
     TrackInfoObject *getTrack(int id) const;
+    bool isDirty(int trackId);
+
+    // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
-    void invalidateTrackLocations(QString directory);
+    void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
     void detectMovedFiles();
+
+  signals:
+    void trackDirty(int trackId);
+    void trackClean(int trackId);
+    void trackChanged(int trackId);
+
   public slots:
-    void updateTrackInDatabase(TrackInfoObject* pTrack);
+    void saveTrack(TrackInfoObject* pTrack);
+
+    // TrackDAO provides a cache of TrackInfoObject's that have been requested
+    // via getTrack(). saveDirtyTracks() saves all cached tracks marked dirty
+    // to the database.
+    void saveDirtyTracks();
+
+  private slots:
+    void slotTrackDirty();
+    void slotTrackChanged();
+
   private:
+    void updateTrack(TrackInfoObject* pTrack);
+    void addTrack(TrackInfoObject * pTrack);
     TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
-    //Prevents evil copy constructors! (auto-generated ones by the compiler that don't compile)
+
+    // Prevents evil copy constructors! (auto-generated ones by the compiler
+    // that don't compile)
     TrackDAO(TrackDAO&);
     bool operator=(TrackDAO&);
-    /***NOTE: If you get a compile error complaining about these, it means you're copying
-              a track DAO, which is probably not what you meant to do. Did you declare:
-                 TrackDAO m_trackDAO;
-              instead of:
-                 TrackDAO &m_trackDAO;
-              Go back and check your code...
-         -- Albert Nov 1/2009
+    /**
+       NOTE: If you get a compile error complaining about these, it means you're
+             copying a track DAO, which is probably not what you meant to
+             do. Did you declare:
+               TrackDAO m_trackDAO;
+             instead of:
+               TrackDAO &m_trackDAO;
+             Go back and check your code...
+       -- Albert Nov 1/2009
      */
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
-
+    mutable QHash<int, TrackInfoObject*> m_tracks;
+    mutable QSet<int> m_dirtyTracks;
 };
 
 #endif //TRACKDAO_H
