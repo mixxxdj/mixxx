@@ -86,7 +86,7 @@ public:
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
-    WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
+    WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2, *m_pWaveformRendererCh3;
     /** Pointer to absolute file position widgets */
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
     /** Pointer to BPM display widgets */

@@ -96,9 +96,11 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
+    m_pWaveformRendererCh3 = new WaveformRenderer("[Channel3]");
 
     Player* pPlayer1 = m_pPlayerManager->getPlayer(1);
     Player* pPlayer2 = m_pPlayerManager->getPlayer(2);
+    Player* pSampler1 = m_pPlayerManager->getPlayer(3);
 
     connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
             m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
@@ -108,6 +110,11 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
             m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
     connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
             m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    
+    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
+            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackInfoObject *)));
+    connect(pSampler1, SIGNAL(unloadingTrack(TrackInfoObject *)),
+            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackInfoObject *)));
 
     // Default values for visuals
     m_pTextCh1 = 0;
@@ -505,8 +512,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 bg->setPixmap(*background);
                 bg->lower();
                 m_qWidgetList.append(bg);
-                this->setFixedSize(background->width(),background->height());
-		parent->setMinimumSize(background->width(), background->height());
+                this->setFixedSize(background->width(),background->height()+100);
+		parent->setMinimumSize(background->width(), background->height()+100);
                 this->move(0,0);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -612,9 +619,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 			((WWaveformViewer *)m_pVisualCh2)->setup(node);
 		    } else if (type == WAVEFORM_SIMPLE) {
 			((WVisualSimple*)m_pVisualCh2)->setup(node);
-		    }
-		}
             }
+		}
+    }
 
             /*############## PERSISTENT OBJECT ##############*/
             // persistent: m_pTextCh1, m_pTextCh2
@@ -904,18 +911,14 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 
                 
                 m_pSamplerPage = new QWidget(this);
-                m_pSamplerPage->resize(582,265);
-                m_pSamplerPage->move(100,300);
+                m_pSamplerPage->resize(800,120);
+                m_pSamplerPage->move(0,590);
                 
                 m_pSamplerLayout->setContentsMargins(0, 0, 0, 0);
                 m_pSamplerPage->setLayout(m_pSamplerLayout);
                 
                 m_pSamplerSplitter = new QSplitter(m_pSamplerPage);
                 m_pSampler = new WSampler(m_pSamplerSplitter);
-                
-                QLabel * p = new QLabel(m_pSamplerSplitter);
-                p->setText("Hello World!");
-                m_pSamplerSplitter->addWidget(p);
                 
                 m_pSamplerSplitter->addWidget(m_pSampler);
                 m_pSamplerLayout->addWidget(m_pSamplerSplitter, 1, 0, 1,3,0);

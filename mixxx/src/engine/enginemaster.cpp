@@ -24,6 +24,8 @@
 #include "controlpotmeter.h"
 #include "enginebuffer.h"
 #include "enginemaster.h"
+#include "engine/engineworkerscheduler.h"
+#include "enginebuffer.h"
 #include "enginevolume.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
@@ -39,6 +41,8 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
+
+    m_pWorkerScheduler = new EngineWorkerScheduler(this);
 
     // Master sample rate
     ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
@@ -292,11 +296,17 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
+
+    // We're close to the end of the callback. Schedule the workers. Hopefully
+    // the work thread doesn't get scheduled between now and then.
+    m_pWorkerScheduler->runWorkers();
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
+    
     m_channelBuffers.push_back(SampleUtil::alloc(MAX_BUFFER_LEN));
     m_channels.push_back(pChannel);
+    pChannel->getEngineBuffer()->bindWorkers(m_pWorkerScheduler);
 
     // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
     // the two EngineBuffers together so they can beat-sync off of each other.

@@ -34,6 +34,7 @@ public slots:
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotLoadPlayer1();
     void slotLoadPlayer2();
+    void slotLoadSampler1();
 private slots:
     void slotRemove();
     void slotShowTrackInfo();
@@ -66,6 +67,11 @@ private:
     QAction *m_pPlayer1Act;
     /**Send to Player 2 Action**/
     QAction *m_pPlayer2Act;
+    /**Send to Samplers Action**/
+    QAction *m_pSampler1Act;
+    QAction *m_pSampler2Act;
+    QAction *m_pSampler3Act;
+    QAction *m_pSampler4Act;
     /**Remove from Table Action**/
     QAction *m_pRemoveAct;
     /**Shows track editor/BPM tap**/

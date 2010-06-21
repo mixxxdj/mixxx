@@ -200,7 +200,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
         emit(valueChangedLeftDown((double)m_fValue));
     else if (e->button()==Qt::RightButton)
         emit(valueChangedRightDown((double)m_fValue));
-
+        
     update();
 }
 
