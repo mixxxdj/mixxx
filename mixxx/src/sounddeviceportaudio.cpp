@@ -355,7 +355,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     if (output && framesPerBuffer > 0)
     {
         assert(iFrameSize > 0);
-        QHash<AudioSource, CSAMPLE*> outputAudio
+        QHash<AudioSource, const CSAMPLE*> outputAudio
             = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
         //qDebug() << framesPerBuffer;
