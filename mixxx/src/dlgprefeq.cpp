@@ -19,7 +19,6 @@
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
 #include <qlineedit.h>
-#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>

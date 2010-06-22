@@ -28,9 +28,9 @@ QMutex ControlObject::m_sqCOHashMutex;
 QMutex ControlObject::m_sqQueueMutexMidi;
 QMutex ControlObject::m_sqQueueMutexThread;
 QMutex ControlObject::m_sqQueueMutexChanges;
-Q3PtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
-Q3PtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
-Q3PtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
+QQueue<QueueObjectMidi*> ControlObject::m_sqQueueMidi;
+QQueue<QueueObjectThread*> ControlObject::m_sqQueueThread;
+QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject() :
     m_bIgnoreNops(true) {
@@ -53,8 +53,10 @@ ControlObject::~ControlObject()
 
     ControlObjectThread * obj;
     m_qProxyListMutex.lock();
-    for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
+    QListIterator<ControlObjectThread*> it(m_qProxyList);
+    while (it.hasNext())
     {
+        obj = it.next();
         obj->slotParentDead();
     }
     m_qProxyListMutex.unlock();
@@ -79,16 +81,18 @@ ControlObject::~ControlObject()
 
     m_sqQueueMutexMidi.lock();
     QueueObjectMidi * mobj = NULL;
-    QueueObjectMidi * mhead = m_sqQueueMidi.head();
+    if (!m_sqQueueMidi.isEmpty()) {
+        QueueObjectMidi * mhead = m_sqQueueMidi.head();
 
-    while(mobj != mhead) {
-        mobj = m_sqQueueMidi.dequeue();
-        if (mobj == NULL) {
-            Q_ASSERT(false);
-        } else if (mobj->pControlObject != this) {
-            m_sqQueueMidi.enqueue(mobj);
-        } else {
-            delete mobj;
+        while(mobj != mhead) {
+            mobj = m_sqQueueMidi.dequeue();
+            if (mobj == NULL) {
+                Q_ASSERT(false);
+            } else if (mobj->pControlObject != this) {
+                m_sqQueueMidi.enqueue(mobj);
+            } else {
+                delete mobj;
+            }
         }
     }
     m_sqQueueMutexMidi.unlock();
@@ -150,7 +154,7 @@ void ControlObject::addProxy(ControlObjectThread * pControlObjectThread)
 
 void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
     m_qProxyListMutex.lock();
-    m_qProxyList.removeRef(pControlObjectThread);
+    m_qProxyList.removeAll(pControlObjectThread);
     m_qProxyListMutex.unlock();
 }
 
@@ -160,8 +164,10 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
     bool bUpdateSuccess = true;
     // qDebug() << "updateProxies: Group" << m_Key.group << "/ Item" << m_Key.item;
     m_qProxyListMutex.lock();
-    for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
+    QListIterator<ControlObjectThread*> it(m_qProxyList);
+    while (it.hasNext())
     {
+        obj = it.next();
         if (obj!=pProxyNoUpdate)
         {
             // qDebug() << "upd" << this->getKey().item;
