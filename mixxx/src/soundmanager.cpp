@@ -23,6 +23,7 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
+#include "audiopath.h"
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
@@ -402,10 +403,11 @@ int SoundManager::setupDevices()
 
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == device->getInternalName())
         {
-			AudioSource src;
-			src.channelBase = m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt();
-			src.channels = 2;	//TODO: Should we have a mono option?  Surround sound mixing might be cool...
-			src.type = SOURCE_MASTER;
+            AudioSource src(
+                AudioSource::MASTER,
+                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt(),
+                2 // stereo
+            );
 
             err = device->addSource(src);
             if (err != 0)
@@ -414,10 +416,11 @@ int SoundManager::setupDevices()
         }
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
         {
-            AudioSource src;
-			src.channelBase = m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt();
-			src.channels = 2;
-			src.type = SOURCE_HEADPHONES;
+            AudioSource src(
+                AudioSource::HEADPHONES,
+                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt(),
+                2 // stereo
+            );
 
 			err = device->addSource(src);
 			if (err != 0)
@@ -428,10 +431,12 @@ int SoundManager::setupDevices()
         //Connect the soundcard's inputs to the Engine.
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getInternalName())
         {
-            AudioReceiver recv;
-			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt();
-			recv.channels = 2;
-			recv.type = RECEIVER_VINYLCONTROL_ONE;
+            AudioReceiver recv(
+                AudioReceiver::VINYLCONTROL,
+                m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt(),
+                2, // stereo
+                0 // first vc deck
+            );
 
             err = device->addReceiver(recv);
             if (err != 0)
@@ -440,10 +445,12 @@ int SoundManager::setupDevices()
         }
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
         {
-            AudioReceiver recv;
-			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt();
-			recv.channels = 2;
-			recv.type = RECEIVER_VINYLCONTROL_TWO;
+            AudioReceiver recv(
+                AudioReceiver::VINYLCONTROL,
+                m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt(),
+                2, // stereo
+                1 // second vc deck
+            );
 
             err = device->addReceiver(recv);
             if (err != 0)

@@ -19,12 +19,13 @@
 #define SOUNDDEVICE_H
 
 #include "soundmanager.h"
-#include "audiopath.h"
 
 //Forward declarations
 ///....
 class SoundDevice;
 class SoundManager;
+class AudioSource;
+class AudioReceiver;
 
 #define MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL 0x0f00f00
 #define MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL  0x0100100
