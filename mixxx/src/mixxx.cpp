@@ -1115,6 +1115,7 @@ void MixxxApp::slotHelpAbout()
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
+"Bill Good<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
