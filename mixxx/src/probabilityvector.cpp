@@ -121,7 +121,7 @@ float ProbabilityVector::getCurrMaxInterval()
 void ProbabilityVector::downWrite(float fFactor)
 {
 #ifdef FILEOUTPUT
-    Q3TextStream streamhist(&texthist);
+    QTextStream streamhist(&texthist);
 #endif
 
     for (int i=0; i<m_iBins; ++i)

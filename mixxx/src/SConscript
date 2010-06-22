@@ -602,7 +602,6 @@ if platform == 'linux':
 		#Grabs the QT4 include paths
 		"""
 		env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
-		env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
 		env.ParseConfig('pkg-config QtSql --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
 		env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
@@ -616,7 +615,6 @@ if platform == 'linux':
 		'QtCore',
 		'QtGui',
 		'QtOpenGL',
-		'Qt3Support',
 		'QtXml',
 		'QtSvg',
 		'QtSql',
@@ -641,10 +639,9 @@ if platform == 'osx':
 	env.Append(LINKFLAGS='-framework OpenGL')
 
 	#QT4
-	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
+	env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
 	env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
 				'/Library/Frameworks/QtOpenGL.framework/Headers/',
-				'/Library/Frameworks/Qt3Support.framework/Headers/',
 				'/Library/Frameworks/QtGui.framework/Headers/',
 				'/Library/Frameworks/QtXml.framework/Headers/',
 				'/Library/Frameworks/QtNetwork.framework/Headers/',
@@ -708,7 +705,6 @@ env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 
 if platform in ('linux', 'bsd'):
-	env.Append(LIBS = 'Qt3Support')
 	env.Append(LIBS = 'QtXml')
 	env.Append(LIBS = 'QtGui')
 	env.Append(LIBS = 'QtCore')
@@ -720,7 +716,6 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
 
 if 'win' in platform:
-	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
 	env.Append(LIBS = 'QtXml4');
 	env.Append(LIBS = 'QtXmlPatterns4');
 	env.Append(LIBS = 'QtSql4');
@@ -741,8 +736,7 @@ if 'win' in platform:
 env.Append(CPPDEFINES = ['QT3_SUPPORT', 'QT3_SUPPORT_WARNINGS', 'QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
 if platform in ('linux','bsd') or 'win' in platform:
-	env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
-			    '$QTDIR/include/QtCore',
+	env.Append(CPPPATH=['$QTDIR/include/QtCore',
 			    '$QTDIR/include/QtGui',
 			    '$QTDIR/include/QtXml',
 			    '$QTDIR/include/QtNetwork',
@@ -1404,7 +1398,7 @@ if platform == 'win64':
 else:
 	dll_files = Glob('#/../mixxx-win32lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
+dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
 $QTDIR/bin/phonon4.dll""")
 
 if int(flags_script):

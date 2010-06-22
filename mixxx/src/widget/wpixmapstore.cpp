@@ -20,7 +20,7 @@
 #include <QPixmap>
 #include <QtDebug>
 
-Q3Dict<PixmapInfoType> WPixmapStore::dictionary(251);
+QHash<QString, PixmapInfoType*> WPixmapStore::dictionary;
 
 ImgSource * WPixmapStore::loader = 0;
 
@@ -73,19 +73,19 @@ QPixmap * WPixmapStore::getPixmapNoCache(const QString& fileName) {
 void WPixmapStore::deletePixmap(QPixmap * p)
 {
     // Search for pixmap in list
-    Q3DictIterator<PixmapInfoType> it(dictionary);
+    PixmapInfoType *info = NULL; 
+    QMutableHashIterator<QString, PixmapInfoType*> it(dictionary);
 
-    for( ; it.current(); ++it )
+    while (it.hasNext()) 
     {
-        PixmapInfoType * info = it.current();
-
+        info = it.next().value();
         if (p == info->pixmap)
         {
             info->instCount--;
             if (info->instCount<1)
             {
                 delete info->pixmap;
-                dictionary.remove(it.currentKey());
+                dictionary.remove(it.key());
                 delete info;
             }
 

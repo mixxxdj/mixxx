@@ -21,7 +21,6 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include <Q3ValueList>
 #include <QList>
 
 #include "configobject.h"
