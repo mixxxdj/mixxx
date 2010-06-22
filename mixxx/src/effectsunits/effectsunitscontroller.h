@@ -11,9 +11,14 @@ public:
 	EffectsUnitsController();
 	~EffectsUnitsController();
 
+	void activatePluginOnSource(QString PluginName, QString Source);
+	void loadAllPlugins();
+	EffectsUnitsPlugin * getPluginByName(QString PluginName);
+
 private:
 	EngineEffectsUnits * m_pEngine;
-	QList<EffectsUnitsBackend *> m_pBackendsList;
+	QList<EffectsUnitsBackend *> m_BackendsList;
+	QList<EffectsUnitsPlugin *> m_AllPlugins;
 };
 
 #endif
