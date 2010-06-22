@@ -15,9 +15,9 @@ public:
 	QString getName();
 
 private:
-	QString * m_Name;
-	int m_PluginID;
-	EffectsUnitsBackend * m_Backend;
+	QString * m_Name;					// Name of the Plugin
+	int m_PluginID;						// Plugin ID (for identification inside the Backend)
+	EffectsUnitsBackend * m_Backend;	// Backend pointer, we redirect process() to it
 };
 
 #endif

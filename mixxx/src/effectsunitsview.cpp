@@ -11,8 +11,6 @@ EffectsUnitsView::EffectsUnitsView(QWidget * parent) : QWidget(parent)
     EffectsUnitsController * fx = new EffectsUnitsController();
 
 
-
-
 }
 
 EffectsUnitsView::~EffectsUnitsView()

@@ -19,9 +19,9 @@ public:
 	QList<EffectsUnitsPlugin *> * getPluginsBySource(QString Source);
 
 private:
-	static EngineEffectsUnits * m_pEngine;
-	QList<EffectsUnitsPlugin * > * m_OnChannel1;
-	QList<EffectsUnitsPlugin * > * m_OnChannel2;
+	static EngineEffectsUnits * m_pEngine;			// We only want one engine running, here's the pointer to it.
+	QList<EffectsUnitsPlugin * > * m_OnChannel1;	// Processing queue
+	QList<EffectsUnitsPlugin * > * m_OnChannel2;	// for Channel1 e 2
 
 };
 

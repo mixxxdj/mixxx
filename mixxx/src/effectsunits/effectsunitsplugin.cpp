@@ -15,6 +15,11 @@ EffectsUnitsPlugin::~EffectsUnitsPlugin() {
 	// TODO Auto-generated destructor stub
 }
 
+/* EffectsUnitsPlugin::process
+ * We redirect the process call to the Backend because this
+ * can be backend specific. This way we only have the Backend
+ * abstraction and corresponding implementations for each fx Backend.
+ */
 void EffectsUnitsPlugin::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize){
 	m_Backend->process(pIn, pOut, iBufferSize, m_PluginID);
 }

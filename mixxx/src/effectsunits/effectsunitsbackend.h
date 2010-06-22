@@ -11,6 +11,12 @@
 class EffectsUnitsPlugin;
 class EngineEffectsUnits;
 
+/* EffectsUnitsBackend:
+ * loadPlugins() -> Load all plugins into m_BackendPlugins, assign id # for each one.
+ * process() -> A process call will be forwarded from plugin, along with plugin id #
+ * activatePlugin() -> This will be called before process(), along with plugin id #
+ */
+
 class EffectsUnitsBackend {
 public:
 	EffectsUnitsBackend();
@@ -25,9 +31,8 @@ public:
 	virtual void activatePlugin(int PluginID);
 
 protected:
-	QString * m_Name;
-	QList<EffectsUnitsPlugin *> m_BackendPlugins;
-	EngineEffectsUnits * m_Engine;
+	QString * m_Name;								// Name of the Backend (possibly useless since every backend will have its own class)
+	QList<EffectsUnitsPlugin *> m_BackendPlugins;	// List of available plugins on this Backend
 };
 
 

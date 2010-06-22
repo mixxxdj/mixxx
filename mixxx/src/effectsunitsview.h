@@ -14,9 +14,6 @@ class EffectsUnitsView : public QWidget
 public:
     EffectsUnitsView(QWidget *parent);
     ~EffectsUnitsView();
-    void slotControlNoob(double);
-
-    ControlPushButton * noobButton;
 };
 
 #endif
