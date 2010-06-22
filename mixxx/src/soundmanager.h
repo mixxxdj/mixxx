@@ -66,8 +66,8 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<QString> m_samplerates;
         QString m_hostAPI;
-        QHash<AudioSource, const CSAMPLE*> m_pStreamBuffers;
-        QHash<AudioReceiver, short*> m_pReceiverBuffers; /** Audio received from input */
+        QHash<AudioSource, const CSAMPLE*> m_sourceBuffers;
+        QHash<AudioReceiver, short*> m_receiverBuffers; /** Audio received from input */
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;
 #endif        
