@@ -188,6 +188,7 @@ int SoundManager::setHostAPI(QString api)
 
     return 0;
 }
+
 //FIXME: Unused
 QString SoundManager::getHostAPI()
 {
@@ -442,7 +443,9 @@ int SoundManager::setupDevices()
             err = device->addReceiver(recv);
             if (err != 0)
                 return err;
-            m_pReceiverBuffers[recv] = new short[MAX_BUFFER_LEN];
+            if (!m_pReceiverBuffers.contains(recv)) {
+                m_pReceiverBuffers[recv] = new short[MAX_BUFFER_LEN];
+            }
             bNeedToOpenDeviceForInput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
@@ -457,7 +460,9 @@ int SoundManager::setupDevices()
             err = device->addReceiver(recv);
             if (err != 0)
                 return err;
-            m_pReceiverBuffers[recv] = new short[MAX_BUFFER_LEN];
+            if (!m_pReceiverBuffers.contains(recv)) {
+                m_pReceiverBuffers[recv] = new short[MAX_BUFFER_LEN];
+            }
             bNeedToOpenDeviceForInput = 1;
         }
 
@@ -527,8 +532,6 @@ SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuf
 void SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
-    short **vinylControlBuffers = new short*[2]; // pointer to buffers containing vc audio for decks 1 and 2
-
 //    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE]
 
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
@@ -538,13 +541,27 @@ void SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
 
     //memset(vinylControlBuffer1, 0, iFramesPerBuffer * iFrameSize * sizeof(*vinylControlBuffer1));
 
+    // IMPORTANT -- Mixxx should ALWAYS be the owner of whatever input buffer we're using,
+    // otherwise we double-free (well, PortAudio frees and then we free) and everything
+    // goes to hell -- bkgood
+
     /** If the framesize is only 2, then we only have one pair of input channels
      *  That means we don't have to do any deinterlacing, and we can pass
      *  the audio on to its intended destination. */
+    // this special casing is probably not worth keeping around. It had a speed
+    // advantage before because it just assigned a pointer instead of copying data,
+    // but this meant we couldn't free all the receiver buffer pointers, because some
+    // of them might potentially be owned by portaudio. Not freeing them means we leak
+    // memory in certain cases -- bkgood
     if (iFrameSize == 2)
     {
-        vinylControlBuffers[0] = inputBuffer;
-        vinylControlBuffers[1] = inputBuffer;
+        QListIterator<AudioReceiver> recvItr(recvs);
+        while (recvItr.hasNext()) {
+            AudioReceiver recv = recvItr.next();
+            if (recv.getType() == AudioReceiver::VINYLCONTROL) {
+                m_pReceiverBuffers[recv] = inputBuffer;
+            }
+        }
     }
 
 /*
@@ -565,10 +582,7 @@ void SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
     }
 */
     else { //More than two channels of input (iFrameSize > 2)
-        AudioReceiver vc1, vc2; // XXX stupid dumb ugly hack -- bkgood
-
         //Do crazy deinterleaving of the audio into the correct m_pReceiverBuffers.
-
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
         for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
@@ -583,21 +597,6 @@ void SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
                 ChannelGroup chanGroup = recv.getChannelGroup();
 				int iLocalFrameBase = (iFrameBase/iFrameSize) * chanGroup.getChannelCount();
 
-                if (recv.getType() == AudioReceiver::VINYLCONTROL) { // more dumb ugly hack -- bkgood
-                    switch (recv.getIndex()) {
-                    case 0:
-                        vc1 = recv;
-                        break;
-                    case 1:
-                        vc2 = recv;
-                        break;
-                    default:
-                        // XXX i dunno lol -- bkgood
-                        qDebug() << "got vinyl control receiver with index I"
-                            << "don't know";
-                    }
-                }
-
 				for (iChannel = 0; iChannel < chanGroup.getChannelCount(); iChannel++) //this will make sure a sample from each channel is copied
 				{
 					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
@@ -605,23 +604,20 @@ void SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
                 }
 			}
         }
-        //Set the pointers to point to the de-interlaced input audio
-        vinylControlBuffers[0] = m_pReceiverBuffers[vc1];
-        vinylControlBuffers[1] = m_pReceiverBuffers[vc2];
     }
 
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
         QListIterator<AudioReceiver> devItr(recvs);
-        while(devItr.hasNext())
+        while (devItr.hasNext())
         {
             AudioReceiver recv = devItr.next();
             if (recv.getType() == AudioReceiver::VINYLCONTROL) {
                 unsigned int index = recv.getIndex();
                 Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood
-                if (m_VinylControl[index]) {
-                    m_VinylControl[index]->AnalyseSamples(vinylControlBuffers[index], iFramesPerBuffer);
+                if (m_VinylControl[index] && m_pReceiverBuffers.contains(recv)) {
+                    m_VinylControl[index]->AnalyseSamples(m_pReceiverBuffers[recv], iFramesPerBuffer);
                 }
             }
         }
