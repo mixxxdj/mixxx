@@ -1,5 +1,10 @@
+#ifndef ENGINEEFFECTSUNITS_H
+#define ENGINEEFFECTSUNITS_H
+
 #include "engineobject.h"
 #include "effectsunits/effectsunitsplugin.h"
+
+class EffectsUnitsPlugin;
 
 class EngineEffectsUnits : public EngineObject {
 public:
@@ -15,8 +20,9 @@ public:
 
 private:
 	static EngineEffectsUnits * m_pEngine;
-	QList<EffectsUnitsPlugin * > m_OnChannel1;
-	QList<EffectsUnitsPlugin * > m_OnChannel2;
+	QList<EffectsUnitsPlugin * > * m_OnChannel1;
+	QList<EffectsUnitsPlugin * > * m_OnChannel2;
 
 };
 
+#endif

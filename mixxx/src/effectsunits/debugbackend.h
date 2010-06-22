@@ -1,4 +1,9 @@
+#ifndef DEBUGBACKEND_H
+#define DEBUGBACKEND_H
+
 #include "effectsunitsbackend.h"
+
+class EffectsUnitsBackend;
 
 class DEBUGBackend: public EffectsUnitsBackend {
 public:
@@ -9,3 +14,5 @@ public:
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID);
 	void activatePlugin(int PluginID);
 };
+
+#endif

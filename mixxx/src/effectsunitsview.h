@@ -1,7 +1,11 @@
+#ifndef EFFECTSUNITSVIEW_H
+#define EFFECTSUNITSVIEW_H
+
 #include <QtCore>
 #include <QtGui>
 
 #include "configobject.h"
+#include "controlpushbutton.h"
 
 class EffectsUnitsView : public QWidget
 {
@@ -10,4 +14,9 @@ class EffectsUnitsView : public QWidget
 public:
     EffectsUnitsView(QWidget *parent);
     ~EffectsUnitsView();
+    void slotControlNoob(double);
+
+    ControlPushButton * noobButton;
 };
+
+#endif

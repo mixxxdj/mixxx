@@ -19,3 +19,7 @@ EffectsUnitsBackend * EffectsUnitsBackend::getBackend(){
 QList<EffectsUnitsPlugin *> * EffectsUnitsBackend::getPlugins(){
 	return (&m_BackendPlugins);
 }
+
+void EffectsUnitsBackend::loadPlugins(){}
+void EffectsUnitsBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID){ qDebug() << "FXUNITS: EffectsUnitsBackend, you're doing it wrong.";}
+void EffectsUnitsBackend::activatePlugin(int PluginID){}

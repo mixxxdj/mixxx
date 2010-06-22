@@ -1,4 +1,8 @@
+#ifndef EFFECTSUNITSPLUGIN_H
+#define EFFECTSUNITSPLUGIN_H
+
 #include "defs.h"
+#include "effectsunitsbackend.h"
 
 class EffectsUnitsBackend;
 
@@ -15,3 +19,5 @@ private:
 	int m_PluginID;
 	EffectsUnitsBackend * m_Backend;
 };
+
+#endif

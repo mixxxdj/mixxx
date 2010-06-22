@@ -16,7 +16,7 @@ EffectsUnitsPlugin::~EffectsUnitsPlugin() {
 }
 
 void EffectsUnitsPlugin::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize){
-	qDebug() << "FXUNITS: EffectsUnitsPlugins: processing: " << (*m_Name);
+	m_Backend->process(pIn, pOut, iBufferSize, m_PluginID);
 }
 
 QString EffectsUnitsPlugin::getName(){

@@ -1,7 +1,15 @@
 #include "effectsunitscontroller.h"
 
 EffectsUnitsController::EffectsUnitsController() {
-	// TODO Auto-generated constructor stub
+	m_pEngine = EngineEffectsUnits::getEngine();
+
+	EffectsUnitsBackend * debug = new DEBUGBackend();
+	EffectsUnitsBackend * ladspa = new LADSPABackend();
+
+	m_pBackendsList.append(debug);
+	m_pBackendsList.append(ladspa);
+
+	debug->loadPlugins();
 
 }
 
