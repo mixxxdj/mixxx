@@ -379,6 +379,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
                 int iLocalFrameBase = (iFrameBase/iFrameSize) * srcChans.getChannelCount();
                 for (iChannel = 0; iChannel < srcChans.getChannelCount(); iChannel++) //this will make sure a sample from each channel is copied
                 {
+                    // note that if QHash gets request for a value with a key it doesn't know, it
+                    // will return a default value (NULL is the likely choice here), but the old system
+                    // would've done something similar (it would have gone over the bounds of the array)
                     output[iFrameBase + srcChans.getChannelBase() + iChannel] += outputAudio[src][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
                     //Input audio pass-through (useful for debugging)
                     //if (in)
