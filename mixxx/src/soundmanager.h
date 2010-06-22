@@ -54,7 +54,7 @@ class SoundManager : public QObject
         QList<QString> getHostAPIList();
         int setHostAPI(QString api);
         QString getHostAPI();
-        QHash<AudioSource, CSAMPLE*>
+        QHash<AudioSource, const CSAMPLE*>
             requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         void pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
@@ -66,7 +66,7 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<QString> m_samplerates;
         QString m_hostAPI;
-        QHash<AudioSource, CSAMPLE*> m_pStreamBuffers;
+        QHash<AudioSource, const CSAMPLE*> m_pStreamBuffers;
         QHash<AudioReceiver, short*> m_pReceiverBuffers; /** Audio received from input */
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;

@@ -411,7 +411,7 @@ int SoundManager::setupDevices()
             err = device->addSource(src);
             if (err != 0)
                 return err;
-            m_pStreamBuffers[src] = const_cast<CSAMPLE*>(m_pMaster->getMasterBuffer());
+            m_pStreamBuffers[src] = m_pMaster->getMasterBuffer();
             bNeedToOpenDeviceForOutput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
@@ -425,7 +425,7 @@ int SoundManager::setupDevices()
 			err = device->addSource(src);
 			if (err != 0)
                 return err;
-            m_pStreamBuffers[src] = const_cast<CSAMPLE*>(m_pMaster->getHeadphoneBuffer());
+            m_pStreamBuffers[src] = m_pMaster->getHeadphoneBuffer();
             bNeedToOpenDeviceForOutput = 1;
         }
 
@@ -490,7 +490,7 @@ void SoundManager::sync()
 }
 
 //Requests a buffer in the proper format, if we're prepared to give one.
-QHash<AudioSource, CSAMPLE*>
+QHash<AudioSource, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer)
 {
     //qDebug() << "SoundManager::requestBuffer()";
