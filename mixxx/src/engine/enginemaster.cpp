@@ -171,7 +171,7 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer()
     return m_pHead;
 }
 
-const CSAMPLE* getDeckBuffer(unsigned int index) const {
+const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int index) const {
     switch (index) {
     case 0:
         return m_pTemp1;
@@ -179,6 +179,7 @@ const CSAMPLE* getDeckBuffer(unsigned int index) const {
         return m_pTemp2;
     default:
         qDebug() << "EngineMaster doesn't have deck buffer " << index << "!";
+        return NULL; // will likely lead to a segfault if not checked for :) -- bkgood
     }
 }
 

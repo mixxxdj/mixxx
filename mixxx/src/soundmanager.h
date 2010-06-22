@@ -54,9 +54,10 @@ class SoundManager : public QObject
         QList<QString> getHostAPIList();
         int setHostAPI(QString api);
         QString getHostAPI();
-        CSAMPLE** requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
-        CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
-                            unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+        QHash<AudioSource, CSAMPLE*>
+            requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
+        void pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
+                        unsigned long iFramesPerBuffer, unsigned int iFrameSize);
     public slots:
         void sync();
     private:

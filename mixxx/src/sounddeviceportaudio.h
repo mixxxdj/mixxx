@@ -21,7 +21,6 @@
 #include <portaudio.h>
 #include "sounddevice.h"
 
-//class SoundDevice;
 class SoundManager;
 
 /** Maximum frame size used with PortAudio. Used to determine no of buffers

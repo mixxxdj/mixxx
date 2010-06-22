@@ -25,8 +25,8 @@
 #include "sounddeviceportaudio.h"
 #include "audiopath.h"
 
-SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, SoundManager * sm, const PaDeviceInfo * deviceInfo,
-                                           unsigned int devIndex)
+SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, SoundManager * sm,
+                                           const PaDeviceInfo * deviceInfo, unsigned int devIndex)
         : SoundDevice(config, sm),
           m_bSetThreadPriority(false)
 {
@@ -77,7 +77,7 @@ int SoundDevicePortAudio::open()
         {
             AudioSource src = srcIt.next();
             ChannelGroup channelGroup = src.getChannelGroup();
-            unsigned int highChannel = channelGroup.getChannelBase()
+            int highChannel = channelGroup.getChannelBase()
                 + channelGroup.getChannelCount();
             if (m_outputParams.channelCount <= highChannel) {
                 m_outputParams.channelCount = highChannel;
@@ -98,7 +98,7 @@ int SoundDevicePortAudio::open()
         {
             AudioReceiver recv = recvIt.next();
             ChannelGroup channelGroup = recv.getChannelGroup();
-            unsigned int highChannel = channelGroup.getChannelBase()
+            int highChannel = channelGroup.getChannelBase()
                 + channelGroup.getChannelCount();
             if (m_inputParams.channelCount <= highChannel) {
                 m_inputParams.channelCount = highChannel;
@@ -355,7 +355,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     if (output && framesPerBuffer > 0)
     {
         assert(iFrameSize > 0);
-        CSAMPLE** outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
+        QHash<AudioSource, CSAMPLE*> outputAudio
+            = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
         //qDebug() << framesPerBuffer;
 

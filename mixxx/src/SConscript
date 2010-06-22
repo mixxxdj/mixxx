@@ -468,6 +468,7 @@ sources = Split("""
                 playerinfo.cpp
 
                 segmentation.cpp
+                audiopath.cpp
                 """)
 
 #Set up the library path on Windows:

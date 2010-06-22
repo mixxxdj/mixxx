@@ -13,6 +13,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QString>
+#include <QDebug>
 #include "audiopath.h"
 
 ChannelGroup::ChannelGroup(unsigned int channelBase, unsigned int channels)
@@ -60,7 +62,7 @@ ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;
 }
 
-AudioSource::AudioSource(AudioSourceType type, unsigned int channelBase,
+AudioSource::AudioSource(AudioSource::AudioSourceType type, unsigned int channelBase,
             unsigned int channels, unsigned int index /* = 0 */)
   : AudioPath(channelBase, channels)
   , m_type(type) {
@@ -76,7 +78,7 @@ AudioSource::AudioSource(AudioSourceType type, unsigned int channelBase,
     }
 }
 
-AudioSourceType AudioSource::getType() const {
+AudioSource::AudioSourceType AudioSource::getType() const {
     return m_type;
 }
 
@@ -98,23 +100,24 @@ bool AudioSource::operator==(const AudioSource& other) const {
 QString AudioSource::getString() const {
     switch (m_type) {
     case MASTER:
-        return QString()::fromAscii("Master")
+        return QString::fromAscii("Master");
         break;
     case HEADPHONES:
-        return QString()::fromAscii("Headphones");
+        return QString::fromAscii("Headphones");
         break;
     case DECK:
-        return QString()::fromAscii("Deck %1").arg(m_index + 1);
+        return QString::fromAscii("Deck %1").arg(m_index + 1);
         break;
     case PASSTHROUGH:
-        return QString()::fromAscii("Passthrough %1").arg(m_index + 1);
+        return QString::fromAscii("Passthrough %1").arg(m_index + 1);
         break;
     case MICROPHONE:
-        return QString()::fromAscii("Microphone %1").arg(m_index + 1);
+        return QString::fromAscii("Microphone %1").arg(m_index + 1);
         break;
     default:
         qDebug() << "Got to end of m_type switch in "
             "AudioSource::getString";
+        return QString("Unknown AudioSource type " + m_type);
         break;
     }
 }
@@ -125,11 +128,11 @@ unsigned int AudioSource::getHash() const {
         | (m_channelGroup.getHash() << 8);
 }
 
-unsigned int qHash(AudioSource *src) {
-    return src->getHash();
+unsigned int qHash(const AudioSource &src) {
+    return src.getHash();
 }
 
-AudioReceiver::AudioReceiver(AudioReceiverType type, unsigned int channelBase,
+AudioReceiver::AudioReceiver(AudioReceiver::AudioReceiverType type, unsigned int channelBase,
             unsigned int channels, unsigned int index /* = 0 */)
   : AudioPath(channelBase, channels)
   , m_type(type) {
@@ -145,7 +148,7 @@ AudioReceiver::AudioReceiver(AudioReceiverType type, unsigned int channelBase,
     }
 }
 
-AudioReceiverType AudioReceiver::getType() const {
+AudioReceiver::AudioReceiverType AudioReceiver::getType() const {
     return m_type;
 }
 
@@ -167,18 +170,19 @@ bool AudioReceiver::operator==(const AudioReceiver& other) const {
 QString AudioReceiver::getString() const {
    switch (m_type) {
    case VINYLCONTROL:
-       return QString()::fromAscii("Vinyl Control %1").arg(m_index + 1);
+       return QString::fromAscii("Vinyl Control %1").arg(m_index + 1);
        break;
    case MICROPHONE:
-       return QString()::fromAscii("Microphone %1").arg(m_index + 1);
+       return QString::fromAscii("Microphone %1").arg(m_index + 1);
        break;
    case PASSTHROUGH:
-       return QString()::fromAscii("Passthrough %1").arg(m_index + 1);
+       return QString::fromAscii("Passthrough %1").arg(m_index + 1);
        break;
    default:
         qDebug() << "Got to end of m_type switch in "
             "AudioReceiver::getString";
-       break;
+        return QString("Unknown AudioReceiver type " + m_type);
+        break;
    } 
 }
 
@@ -193,6 +197,7 @@ unsigned int AudioReceiver::getHash() const {
         | (m_channelGroup.getHash() << 8);
 
 }
-unsigned int qHash(AudioReceiver *recv) {
-    return recv->getHash();
+
+unsigned int qHash(const AudioReceiver &recv) {
+    return recv.getHash();
 }
