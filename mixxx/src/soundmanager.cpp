@@ -88,23 +88,8 @@ SoundManager::~SoundManager()
     clearDeviceList();
 
     Pa_Terminate();
-
-    foreach (AudioReceiver recv, m_receiverBuffers.keys()) {
-        short *buffer = m_receiverBuffers[recv];
-        if (buffer != NULL) {
-            delete [] buffer;
-            m_receiverBuffers[recv] = buffer = NULL;
-        }
-    }
-
-#ifdef __VINYLCONTROL__
-    while (!m_VinylControl.empty()) {
-        VinylControlProxy *vc = m_VinylControl.takeLast();
-        if (vc != NULL) {
-            delete vc;
-        }
-    }
-#endif
+    // vinyl control proxies and input buffers are freed in closeDevices, called
+    // by clearDeviceList -- bkgood
 }
 
 /** Returns a list of all the devices we've enumerated through PortAudio.
@@ -222,6 +207,15 @@ void SoundManager::closeDevices()
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
     //requestBufferMutex.unlock();
+
+    foreach (AudioReceiver recv, m_receiverBuffers.keys()) {
+        short *buffer = m_receiverBuffers[recv];
+        if (buffer != NULL) {
+            delete [] buffer;
+            m_receiverBuffers[recv] = buffer = NULL;
+        }
+    }
+    m_receiverBuffers.clear();
 
 #ifdef __VINYLCONTROL__
     while (!m_VinylControl.empty()) {
