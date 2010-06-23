@@ -209,6 +209,8 @@ void SoundManager::closeDevices()
     iNumDevicesHaveRequestedBuffer = 0;
     //requestBufferMutex.unlock();
 
+    m_sourceBuffers.clear(); // anti-cruft
+
     foreach (AudioReceiver recv, m_receiverBuffers.keys()) {
         short *buffer = m_receiverBuffers[recv];
         if (buffer != NULL) {
