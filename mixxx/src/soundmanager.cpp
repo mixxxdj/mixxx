@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <portaudio.h>
+#include <cstring> // for memcpy
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
@@ -553,7 +554,8 @@ void SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
         while (recvItr.hasNext()) {
             AudioReceiver recv = recvItr.next();
             if (recv.getType() == AudioReceiver::VINYLCONTROL) {
-                m_receiverBuffers[recv] = inputBuffer;
+                memcpy(m_receiverBuffers[recv], inputBuffer,
+                        sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
             }
         }
     }
