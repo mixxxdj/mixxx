@@ -17,7 +17,7 @@ EffectsUnitsController::EffectsUnitsController() {
 	loadAllPlugins();
 
 	//test:
-	//activatePluginOnSource("Debug::Delay", "[Channel1]");
+	activatePluginOnSource("djFlanger", "[Channel1]");
 	//activatePluginOnSource("LoFiC12", "[Channel1]");
 
 }

@@ -39,6 +39,8 @@ LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int
             {
                 m_OutputPort = port;
             }
+        } else {
+        	qDebug() << "LADSPA: Port" << "Range:" <<  descriptor->PortRangeHints[port].LowerBound << "~" <<  descriptor->PortRangeHints[port].UpperBound << "[" << LADSPA_IS_HINT_INTEGER(descriptor->PortRangeHints[port].HintDescriptor);
         }
     }
     qDebug() << "LADSPA: Input: " << m_InputPort << "u";
