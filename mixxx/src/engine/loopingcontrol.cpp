@@ -67,7 +67,7 @@ double LoopingControl::process(const double dRate,
 
     bool reverse = dRate < 0;
 
-    double retval = currentSample;
+    double retval = kNoTrigger;
     if(m_bLoopingEnabled &&
        m_iLoopStartSample != kNoTrigger &&
        m_iLoopEndSample != kNoTrigger) {
@@ -175,8 +175,7 @@ void LoopingControl::slotLoopOut(double val) {
 
         if (m_iLoopStartSample != -1 &&
             m_iLoopEndSample != -1) {
-            m_bLoopingEnabled = true;
-            m_pCOLoopEnabled->set(1.0f);
+            setLoopingEnabled(true);
         }
         //qDebug() << "set loop_out to " << m_iLoopStartSample;
     }
@@ -186,15 +185,13 @@ void LoopingControl::slotReloopExit(double val) {
     if (val == 1.0f) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
-            m_bLoopingEnabled = false;
-            m_pCOLoopEnabled->set(0.0f);
+            setLoopingEnabled(false);
             //qDebug() << "reloop_exit looping off";
         } else {
             // If we're not looping, jump to the loop-in point and start looping
             if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1 &&
                 m_iLoopStartSample <= m_iLoopEndSample) {
-                m_bLoopingEnabled = true;
-                m_pCOLoopEnabled->set(1.0f);
+                setLoopingEnabled(true);
             }
             //qDebug() << "reloop_exit looping on";
         }
@@ -207,8 +204,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
         newpos--;
     }
     if (pos == -1.0f) {
-        m_bLoopingEnabled = false;
-        m_pCOLoopEnabled->set(0.0f);
+        setLoopingEnabled(false);
     }
 
     m_iLoopStartSample = newpos;
@@ -217,6 +213,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
         m_iLoopEndSample < m_iLoopStartSample) {
         m_iLoopEndSample = -1;
         m_pCOLoopEndPosition->set(kNoTrigger);
+        setLoopingEnabled(false);
     }
 }
 
@@ -234,8 +231,22 @@ void LoopingControl::slotLoopEndPos(double pos) {
     }
 
     if (pos == -1.0f) {
-        m_bLoopingEnabled = false;
-        m_pCOLoopEnabled->set(0.0f);
+        setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
+}
+
+void LoopingControl::notifySeek(double dNewPlaypos) {
+    if (m_bLoopingEnabled) {
+        Q_ASSERT(m_iLoopStartSample != -1);
+        Q_ASSERT(m_iLoopEndSample != -1);
+        if (dNewPlaypos < m_iLoopStartSample || dNewPlaypos > m_iLoopEndSample) {
+            setLoopingEnabled(false);
+        }
+    }
+}
+
+void LoopingControl::setLoopingEnabled(bool enabled) {
+    m_bLoopingEnabled = enabled;
+    m_pCOLoopEnabled->set(enabled);
 }

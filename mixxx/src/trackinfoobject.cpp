@@ -22,7 +22,6 @@
 #include <QMutexLocker>
 #include <QString>
 #include <QtDebug>
-#include <QTime>
 
 #include "trackinfoobject.h"
 
@@ -32,12 +31,82 @@
 #include "xmlparse.h"
 #include "controlobject.h"
 
+#include "mixxxutils.cpp"
 
 TrackInfoObject::TrackInfoObject(const QString sLocation)
-        : m_sLocation(sLocation),
-          m_qMutex(QMutex::Recursive),
-          m_chordData() {
+        : m_qMutex(QMutex::Recursive) {
+    QFileInfo fileInfo(sLocation);
+    populateLocation(fileInfo);
+    initialize();
+}
+
+TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo)
+        : m_qMutex(QMutex::Recursive) {
+    populateLocation(fileInfo);
+    initialize();
+}
+
+TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
+        : m_qMutex(QMutex::Recursive) {
+    m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
+    m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
+
+    // We don't call initialize() here because it would end up calling parse()
+    // on the file. Plus those initializations weren't done before, so it might
+    // cause subtle bugs. This constructor is only used for legacy importing so
+    // I'm not going to do it. rryan 6/2010
+
+    // Check the status of the file on disk.
+    QFileInfo fileInfo(m_sLocation);
+    populateLocation(fileInfo);
+
+    m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
+    m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
+    m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
+    m_sComment = XmlParse::selectNodeQString(nodeHeader, "Comment");
+    m_iDuration = XmlParse::selectNodeQString(nodeHeader, "Duration").toInt();
+    m_iSampleRate = XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt();
+    m_iChannels = XmlParse::selectNodeQString(nodeHeader, "Channels").toInt();
+    m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
+    m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
+    m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
+    m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
+    m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
+    m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
+    m_bHeaderParsed = false;
+
+    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
+    // ignore those. Tracks will get a new ID from the database.
+    //m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
+    m_iId = -1;
+
+    m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
+
+    m_pVisualWave = 0;
+    m_dVisualResampleRate = 0;
+
+    //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
+
+    m_bIsValid = true;
+
+    installEventFilter(this);
+
     m_bDirty = false;
+    m_bLocationChanged = false;
+}
+
+void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
+    m_sFilename = fileInfo.fileName();
+    m_sLocation = fileInfo.absoluteFilePath();
+    m_sDirectory = fileInfo.absolutePath();
+    m_iLength = fileInfo.size();
+    m_bExists = fileInfo.exists();
+}
+
+void TrackInfoObject::initialize() {
+    m_bDirty = false;
+    m_bLocationChanged = false;
+
     m_sArtist = "";
     m_sTitle = "";
     m_sType= "";
@@ -56,61 +125,12 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
-
-    m_dVisualResampleRate = 0;
-    QFileInfo fileInfo(sLocation);
-    m_sFilename = fileInfo.fileName();
-
-    //qDebug() << "new TrackInfoObject....";
-
-    // Check that the file exists:
-    checkFileExists();
-
-    if (parse() == OK)
-        m_bIsValid = true;
-    else
-        m_bIsValid = false;
-
-    installEventFilter(this);
-
-    //qDebug() << "done constructing  TrackInfoObject....";
-}
-
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_chordData() {
-
-    m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
-    m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
-    m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
-    m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
-    m_sComment = XmlParse::selectNodeQString(nodeHeader, "Comment");
-    m_iDuration = XmlParse::selectNodeQString(nodeHeader, "Duration").toInt();
-    m_iSampleRate = XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt();
-    m_iChannels = XmlParse::selectNodeQString(nodeHeader, "Channels").toInt();
-    m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
-    m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
-    m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
-    m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
-    m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
-    m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
-    m_bHeaderParsed = false;
-    m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
-    m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
-
-    m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
 
-    //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
-
-    m_bIsValid = true;
-
-    // Check that the actual file exists:
-    checkFileExists();
+    // parse() parses the metadata from file. This is not a quick operation!
+    m_bIsValid = parse() == OK;
 
     installEventFilter(this);
-
-    m_bDirty = false;
 }
 
 TrackInfoObject::~TrackInfoObject() {
@@ -119,23 +139,6 @@ TrackInfoObject::~TrackInfoObject() {
 bool TrackInfoObject::isValid() const {
     QMutexLocker lock(&m_qMutex);
     return m_bIsValid;
-}
-
-bool TrackInfoObject::checkFileExists() {
-    QFile fileTrack(getLocation());
-    QMutexLocker lock(&m_qMutex);
-    if (fileTrack.exists())
-    {
-        m_bExists = true;
-        //qDebug() << "Track exists...";
-    }
-    else
-    {
-
-        m_bExists = false;
-        //qDebug() << "The track %s was not found" << getLocation();
-    }
-    return m_bExists;
 }
 
 /*
@@ -198,9 +201,6 @@ void TrackInfoObject::parseFilename()
         m_sTitle = m_sFilename.section('.',0,-2).trimmed();
     }
 
-    // Find the length:
-    m_iLength = QFileInfo(m_sLocation).size();
-
     // Add no comment
     m_sComment = QString("");
 
@@ -209,47 +209,28 @@ void TrackInfoObject::parseFilename()
     setDirty(true);
 }
 
-void TrackInfoObject::setLength(int bytes)
-{
-    QMutexLocker lock(&m_qMutex);
-    bool dirty = m_iLength != bytes;
-    m_iLength = bytes;
-    if (dirty)
-        setDirty(true);
-}
-
 QString TrackInfoObject::getDurationStr() const
 {
     QMutexLocker lock(&m_qMutex);
     int iDuration = m_iDuration;
     lock.unlock();
 
-    // TODO(XXX) This whole thing should be pulled out into a generate MixxxUtil
-    // class. The library has similar code littered throughout it.
-
-    if (iDuration <=0) {
-        return QString("?");
-    } else {
-        QTime t = QTime().addSecs(iDuration);
-        if (t.hour() > 5)
-            return QString("??");
-        else if (t.hour() >= 1)
-            return t.toString("h:mm:ss");
-        else
-            return t.toString("m:ss");
-    }
+    return MixxxUtils::secondsToMinutes(iDuration);
 }
 
 void TrackInfoObject::setLocation(QString location)
 {
     QMutexLocker lock(&m_qMutex);
     QFileInfo fileInfo(location);
+    // TODO(XXX) Can the file name change without m_sLocation changing?? The
+    // extra test seems pointless.
     QString fileName = fileInfo.fileName();
     bool dirty = m_sLocation != location || fileName != m_sFilename;
-    m_sLocation = location;
-    m_sFilename = fileInfo.fileName();
-    if (dirty)
+    populateLocation(fileInfo);
+    if (dirty) {
+        m_bLocationChanged = true;
         setDirty(true);
+    }
 }
 
 QString TrackInfoObject::getLocation() const
@@ -257,6 +238,25 @@ QString TrackInfoObject::getLocation() const
     QMutexLocker lock(&m_qMutex);
     return m_sLocation;
 }
+
+QString TrackInfoObject::getDirectory() const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_sDirectory;
+}
+
+QString TrackInfoObject::getFilename()  const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_sFilename;
+}
+
+bool TrackInfoObject::exists()  const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_bExists;
+}
+
 
 float TrackInfoObject::getBpm() const
 {
@@ -424,18 +424,6 @@ void TrackInfoObject::setTrackNumber(QString s)
     m_sTrackNumber = s;
     if (dirty)
         setDirty(true);
-}
-
-QString TrackInfoObject::getFilename()  const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_sFilename;
-}
-
-bool TrackInfoObject::exists()  const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_bExists;
 }
 
 int TrackInfoObject::getTimesPlayed()  const
@@ -720,4 +708,9 @@ void TrackInfoObject::setDirty(bool bDirty) {
 bool TrackInfoObject::isDirty() {
     QMutexLocker lock(&m_qMutex);
     return m_bDirty;
+}
+
+bool TrackInfoObject::locationChanged() {
+    QMutexLocker lock(&m_qMutex);
+    return m_bLocationChanged;
 }
