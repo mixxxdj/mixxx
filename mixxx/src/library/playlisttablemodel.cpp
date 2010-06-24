@@ -4,6 +4,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 
+#include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
@@ -13,8 +14,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
-          m_iPlaylistId(-1),
-          m_currentSearch("") {
+          m_iPlaylistId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 }
@@ -276,6 +276,9 @@ void PlaylistTableModel::slotSearch(const QString& searchText)
 {
     //FIXME: Need to keep filtering by playlist_id too
     //SQL is "playlist_id = " + QString(m_iPlaylistId)
+
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
 
     QString filter;
@@ -350,21 +353,17 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = BaseSqlTableModel::data(item, role);
+    QVariant value;
 
-    if (role == Qt::DisplayRole &&
+    if (role == Qt::ToolTipRole)
+        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
+    else
+        value = BaseSqlTableModel::data(item, role);
+
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
         if (qVariantCanConvert<int>(value)) {
-            // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-            //Let's reformat this song length into a human readable MM:SS format.
-            int totalSeconds = qVariantValue<int>(value);
-            int seconds = totalSeconds % 60;
-            int mins = totalSeconds / 60;
-            //int hours = mins / 60; //Not going to worry about this for now. :)
-
-            //Construct a nicely formatted duration string now.
-            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
         }
     }
     return value;

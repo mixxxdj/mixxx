@@ -1114,7 +1114,8 @@ void MixxxApp::slotHelpAbout()
 "Tobias Rafreider<br>"
 "Bill Egert<br>"
 "Zach Shutters<br>"
-"Owen Williams<br>"
+"Owen Bullock<br>"
+"Bill Good<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

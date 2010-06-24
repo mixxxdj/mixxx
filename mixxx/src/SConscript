@@ -290,6 +290,8 @@ sources = Split("""
                 dlgprepare.cpp
                 dlgautodj.cpp
 
+                engine/engineworker.cpp
+                engine/engineworkerscheduler.cpp
                 engine/enginebuffer.cpp
                 engine/enginebufferscale.cpp
 		engine/enginebufferscaledummy.cpp
@@ -341,7 +343,7 @@ sources = Split("""
                 mixxxcontrol.cpp
                 mixxx.cpp
                 mixxxview.cpp
-                errordialog.cpp
+                errordialoghandler.cpp
                 upgrade.cpp
 
                 soundsource.cpp
