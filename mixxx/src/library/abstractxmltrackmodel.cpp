@@ -34,7 +34,6 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
 
 
 AbstractXmlTrackModel::AbstractXmlTrackModel(QString settingsNamespace)
@@ -61,7 +60,8 @@ QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) con
 
     QDomNode songNode = m_trackNodes.at(index.row());
 
-    if (role == Qt::DisplayRole) {
+    // tooltips and the display role should be the same thing.
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
         if ( index.column() > m_ColumnNames.size())
             return QVariant();
 
@@ -101,9 +101,10 @@ int AbstractXmlTrackModel::columnCount(const QModelIndex& parent) const
     return m_ColumnNames.size();
 }
 
-void AbstractXmlTrackModel::addTrack(const QModelIndex& index, QString location)
+bool AbstractXmlTrackModel::addTrack(const QModelIndex& index, QString location)
 {
     //Should do nothing... hmmm
+    return false;
 }
 
 /** Removes a track from the library track collection. */

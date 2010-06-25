@@ -30,14 +30,15 @@
 #include "mididevicedummy.h"
 #include "midiledhandler.h"
 #include "configobject.h"
+#include "errordialoghandler.h"
 
 #define REQUIRED_SCRIPT_FILE "midi-mappings-scripts.js"
 #define XML_SCHEMA_VERSION "1"
 #define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-m_deviceName.indexOf(" ")-1).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
 
-static QString toHex(QString numberStr) {
-    return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
-}
+// static QString toHex(QString numberStr) {
+//     return "0x" + QString("0" + QString::number(numberStr.toUShort(), 16).toUpper()).right(2);
+// }
 
 MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
         : QObject(),
@@ -47,6 +48,8 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
         qDebug() << "Creating new MIDI presets directory" << BINDINGS_PATH;
         QDir().mkpath(BINDINGS_PATH);
     }
+    // So we can signal the MidiScriptEngine and pass a QList
+    qRegisterMetaType<QList<QString> >("QList<QString>");
 
     //Q_ASSERT(outputMidiDevice);
 
@@ -73,9 +76,12 @@ void MidiMapping::startupScriptEngine() {
 
     if(m_pScriptEngine) return;
 
-    //XXX Deadly hack attack:
+    //XXX FIXME: Deadly hack attack:
     if (m_pOutputMidiDevice == NULL) {
         m_pOutputMidiDevice = new MidiDeviceDummy(this); //Just make some dummy device :(
+        /* Why can't this be the same as the input MIDI device? Most of the time,
+            the script engine thinks of it as the input device. Scripting is useful
+            even if the MIDI device has no outputs - Sean 4/19/10   */
     }
     //XXX Memory leak :(
 
@@ -85,6 +91,7 @@ void MidiMapping::startupScriptEngine() {
 
     m_pScriptEngine->moveToThread(m_pScriptEngine);
 
+    // Let the script engine tell us when it's done with each task
     connect(m_pScriptEngine, SIGNAL(initialized()),
             this, SLOT(slotScriptEngineReady()),
             Qt::DirectConnection);
@@ -94,58 +101,56 @@ void MidiMapping::startupScriptEngine() {
     m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
     m_scriptEngineInitializedMutex.unlock();
 
+    // Allow this object to signal the MidiScriptEngine to load the list of script files
+    connect(this, SIGNAL(loadMidiScriptFiles(QList<QString>)), m_pScriptEngine, SLOT(loadScriptFiles(QList<QString>)));
+    // Allow this object to signal the MidiScriptEngine to run the initialization
+    //  functions in the loaded scripts
+    connect(this, SIGNAL(initMidiScripts(QList<QString>)), m_pScriptEngine, SLOT(initializeScripts(QList<QString>)));
+    // Allow this object to signal the MidiScriptEngine to run its shutdown routines
+    connect(this, SIGNAL(shutdownMidiScriptEngine(QList<QString>)), m_pScriptEngine, SLOT(gracefulShutdown(QList<QString>)));
+
+    // Allow this object to signal the MidiScriptEngine to call functions
+    connect(this, SIGNAL(callMidiScriptFunction(QString)),
+            m_pScriptEngine, SLOT(execute(QString)));
+    connect(this, SIGNAL(callMidiScriptFunction(QString, QString)),
+            m_pScriptEngine, SLOT(execute(QString, QString)));
+
+    // Allow the MidiScriptEngine to tell us if it needs to reset the controller (on errors)
+    connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
 }
 
 void MidiMapping::loadScriptCode() {
     QMutexLocker Locker(&m_mappingLock);
-
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-
-    qDebug() << "MidiMapping: Loading & evaluating all MIDI script code";
-
-    QListIterator<QString> it(m_pScriptFileNames);
-    while (it.hasNext()) {
-        QString curScriptFileName = it.next();
-        m_pScriptEngine->evaluate(config->getConfigPath().append("midi/").append(curScriptFileName));
-
-        if(m_pScriptEngine->hasErrors(curScriptFileName)) {
-            qDebug() << "Errors occured while loading " << curScriptFileName;
-        }
+    if(m_pScriptEngine) {
+        m_scriptEngineInitializedMutex.lock();
+        // Tell the script engine to run the init function in all loaded scripts
+        emit(loadMidiScriptFiles(m_scriptFileNames));
+        // Wait until it's done
+        m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+        m_scriptEngineInitializedMutex.unlock();
     }
 }
 
 void MidiMapping::initializeScripts() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
-        // Call each script's init function if it exists
-        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
-        while (prefixIt.hasNext()) {
-            QString initName = prefixIt.next();
-            if (initName!="") {
-                initName.append(".init");
-                qDebug() << "MidiMapping: Executing" << initName;
-                if (!m_pScriptEngine->execute(initName, m_deviceName))
-                    qWarning() << "MidiMapping: No" << initName << "function in script";
-            }
-        }
+        m_scriptEngineInitializedMutex.lock();
+        // Tell the script engine to run the init function in all loaded scripts
+        emit(initMidiScripts(m_scriptFunctionPrefixes));
+        // Wait until it's done
+        m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
+        m_scriptEngineInitializedMutex.unlock();
     }
 }
 
 void MidiMapping::shutdownScriptEngine() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
-        // Call each script's shutdown function if it exists
-        QListIterator<QString> prefixIt(m_pScriptFunctionPrefixes);
-        while (prefixIt.hasNext()) {
-            QString shutName = prefixIt.next();
-            if (shutName!="") {
-                shutName.append(".shutdown");
-                qDebug() << "MidiMapping: Executing" << shutName;
-                if (!m_pScriptEngine->execute(shutName))
-                    qWarning() << "MidiMapping: No" << shutName << "function in script";
-            }
-        }
-        qDebug() << "MidiMapping: Deleting MIDI script engine...";
+        // Tell the script engine to do its shutdown sequence
+        emit(shutdownMidiScriptEngine(m_scriptFunctionPrefixes));
+        // ...and wait for it to finish
+        m_pScriptEngine->wait();
+
         MidiScriptEngine *engine = m_pScriptEngine;
         m_pScriptEngine = NULL;
         delete engine;
@@ -484,8 +489,8 @@ void MidiMapping::clearOutputMidiMapping(int index, int count) {
    -------- ------------------------------------------------------ */
 void MidiMapping::addScriptFile(QString filename, QString functionprefix) {
     QMutexLocker Locker(&m_mappingLock);
-    m_pScriptFileNames.append(filename);
-    m_pScriptFunctionPrefixes.append(functionprefix);
+    m_scriptFileNames.append(filename);
+    m_scriptFunctionPrefixes.append(functionprefix);
 }
 #endif
 
@@ -539,8 +544,8 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
     m_mappingLock.lock();
 
 #ifdef __MIDISCRIPT__
-    m_pScriptFileNames.clear();
-    m_pScriptFunctionPrefixes.clear();
+    m_scriptFileNames.clear();
+    m_scriptFunctionPrefixes.clear();
 #endif
 
     // For each controller in the DOM
@@ -583,7 +588,10 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
 
         loadScriptCode();   // Actually load code from the list built above
 
-        QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
+        QStringList scriptFunctions;
+        if (m_pScriptEngine != NULL) {
+            scriptFunctions = m_pScriptEngine->getScriptFunctions();
+        }
 
 #endif
 
@@ -600,13 +608,46 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
             if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
                 scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
 
-                QString statusText = QString(midiMessage.getMidiStatusByte());
-                qWarning() << "Error: Function" << mixxxControl.getControlObjectValue()
-                           << "was not found in loaded scripts."
-                           << "The MIDI Message with status byte"
-                           << statusText << midiMessage.getMidiNo()
-                           << "will not be bound. Please check the"
-                           << "mapping and script files.";
+                QString status = QString("%1").arg(midiMessage.getMidiStatusByte(), 0, 16).toUpper();
+                status = "0x"+status;
+                QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
+                byte2 = "0x"+byte2;
+
+                // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
+                if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
+
+                QString errorLog = QString("MIDI script function \"%1\" not found. "
+                                    "(Mapped to MIDI message %2 %3)")
+                                    .arg(mixxxControl.getControlObjectValue())
+                                    .arg(status)
+                                    .arg(byte2);
+
+                if (m_pOutputMidiDevice != NULL
+                    && m_pOutputMidiDevice->midiDebugging()) {
+                        qCritical() << errorLog;
+                }
+                else {
+                    qWarning() << errorLog;
+                    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+                    props->setType(DLG_WARNING);
+                    props->setTitle(tr("MIDI script function not found"));
+                    props->setText(QString(tr("The MIDI script function '%1' was not "
+                                    "found in loaded scripts."))
+                                    .arg(mixxxControl.getControlObjectValue()));
+                    props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
+                                    "\n(Click Show Details for hints.)"))
+                                    .arg(status)
+                                    .arg(byte2));
+                    QString detailsText = QString(tr("* Check to see that the "
+                        "function name is spelled correctly in the mapping "
+                        "file (.xml) and script file (.js)\n"));
+                    detailsText += QString(tr("* Check to see that the script "
+                        "file name (.js) is spelled correctly in the mapping "
+                        "file (.xml)"));
+                    props->setDetails(detailsText);
+
+                    ErrorDialogHandler::instance()->requestErrorDialog(props);
+                }
             } else {
 #endif
                 //Add to the input mapping.
@@ -683,7 +724,10 @@ void MidiMapping::applyPreset() {
 #ifdef __MIDISCRIPT__
     // Since this can be called after re-enabling a device without reloading the XML preset,
     // the script engine must have its code loaded here as well
-    QStringList scriptFunctions = m_pScriptEngine->getScriptFunctions();
+    QStringList scriptFunctions;
+    if (m_pScriptEngine != NULL) {
+        scriptFunctions = m_pScriptEngine->getScriptFunctions();
+    }
     if (scriptFunctions.isEmpty()) loadScriptCode();
 
     initializeScripts();
@@ -753,15 +797,15 @@ void MidiMapping::clearPreset() {
     controller.appendChild(scriptFiles);
 
 
-    for (int i = 0; i < m_pScriptFileNames.count(); i++) {
-//         qDebug() << "MidiMapping: writing script block for" << m_pScriptFileNames[i];
-        QString filename = m_pScriptFileNames[i];
+    for (int i = 0; i < m_scriptFileNames.count(); i++) {
+//         qDebug() << "MidiMapping: writing script block for" << m_scriptFileNames[i];
+        QString filename = m_scriptFileNames[i];
 
 
         //Don't need to write anything for the required mapping file.
         if (filename != REQUIRED_SCRIPT_FILE) {
             qDebug() << "MidiMapping: writing script block for" << filename;
-            QString functionPrefix = m_pScriptFunctionPrefixes[i];
+            QString functionPrefix = m_scriptFunctionPrefixes[i];
             QDomElement scriptFile = doc.createElement("file");
 
 
@@ -938,7 +982,7 @@ MidiOutputMappingTableModel* MidiMapping::getMidiOutputMappingTableModel()
 /*MixxxControl* MidiMapping::getInputMixxxControl(MidiMessage command)
 {
     if (!m_inputMapping.contains(command)) {
-        qDebug() << "Warning: unbound MIDI command";
+        qWarning() << "Unbound MIDI command";
         qDebug() << "Midi Status:" << command.getMidiStatusByte();
         qDebug() << "Midi No:" << command.getMidiNo();
         qDebug() << "Midi Channel:" << command.getMidiChannel();
@@ -1110,6 +1154,14 @@ void MidiMapping::restartScriptEngine()
     startupScriptEngine();
 }
 #endif
+
+// Reset the MIDI controller
+void MidiMapping::reset() {
+#ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
+    restartScriptEngine();
+    applyPreset();
+#endif
+}
 
 void MidiMapping::slotScriptEngineReady() {
 #ifdef __MIDISCRIPT__	// Can't ifdef slots in the .h file, so we just do the body.

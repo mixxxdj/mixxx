@@ -20,8 +20,6 @@
 #include "soundsource.h"
 #include <stdio.h>
 #include <sndfile.h>
-//Added by qt3to4:
-#include <Q3ValueList>
 class TrackInfoObject;
 
 class SoundSourceSndFile : public SoundSource 
@@ -29,11 +27,12 @@ class SoundSourceSndFile : public SoundSource
 public:
     SoundSourceSndFile(QString qFilename);
     ~SoundSourceSndFile();
+    int open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
-    static int ParseHeader( TrackInfoObject * );
-    Q3ValueList<long> *getCuePoints();
+    int parseHeader();
+    static QList<QString> supportedFileExtensions();
 
 private:
     int channels;

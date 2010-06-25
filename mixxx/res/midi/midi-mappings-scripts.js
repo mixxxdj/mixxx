@@ -33,7 +33,7 @@ function msecondstominutes(msecs)
     msecs = Math.round(msecs * 100 / 1000);
     if (msecs==100) msecs=99;
     
-    print("secs="+secs+", msecs="+msecs);
+//     print("secs="+secs+", msecs="+msecs);
 
     return (m < 10 ? "0" + m : m) 
         + ":"
@@ -43,8 +43,10 @@ function msecondstominutes(msecs)
 }
 
 function script() {}
-script.debug = function (channel, control, value, status) {
-    print("Script.Debug --- channel: " + channel.toString(16) + " control: " + control.toString(16) + " value: " + value.toString(16) + " status: " + status.toString(16));
+script.debug = function (channel, control, value, status, group) {
+    print("Script.Debug --- channel: " + channel.toString(16) + 
+          " control: " + control.toString(16) + " value: " + value.toString(16) + 
+          " status: " + status.toString(16) + " group: " + group);
 }
 
 // Used to control a generic Mixxx control setting (low..high) from an absolute control (0..127)
@@ -64,7 +66,9 @@ script.absoluteNonLin = function (value, low, mid, high) {
 script.absoluteEQ = function (group, key, value) {
     if (value<=64) engine.setValue(group, key, value/64);
     else engine.setValue(group, key, 1+(value-63)/(21+1/3));
-    print ("MIDI Script: script.absoluteEQ is deprecated. Use script.absoluteNonLin(value,0,1,4) instead and set the MixxxControl to its return value.");
+    print ("MIDI Script: script.absoluteEQ is deprecated. " + 
+           "Use script.absoluteNonLin(value,0,1,4) instead and set the " + 
+           "MixxxControl to its return value.");
 }
 
 /* -------- ------------------------------------------------------
@@ -134,7 +138,9 @@ function scratch() {}
 // See full details here: http://mixxx.org/wiki/doku.php/midi_scripting#available_common_functions
 
 // ----------   Variables    ----------
-scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0, "initialControlValue":0, "scratch":0.0, "prevControlValue":0, "wrapCount":0 };
+scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0,
+                      "initialControlValue":0, "scratch":0.0,
+                      "prevControlValue":0, "wrapCount":0 };
 
 // ----------   Functions   ----------
 
@@ -146,19 +152,18 @@ scratch.variables = { "time":0.0, "trackPos":0.0, "initialTrackPos":-1.0, "initi
    Input:   Currently-controlled Mixxx deck
    Output:  -
    -------- ------------------------------------------------------ */
-scratch.enable = function (currentDeck) {
+scratch.enable = function (currentDeck,newBehavior) {
     // Store scratch info at the point it was touched
     // Current position in seconds:
-    scratch.variables["initialTrackPos"] = scratch.variables["trackPos"] = engine.getValue("[Channel"+currentDeck+"]","playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
+    scratch.variables["initialTrackPos"] = scratch.variables["trackPos"] = engine.getValue("[Channel"+currentDeck+"]","visual_playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     
     scratch.variables["time"] = new Date()/1000;   // Current time in seconds
+    if (newBehavior) engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
     
-    // Stop the deck motion. This means we have to pause it if playing
+    // If the deck is playing, slow it to a stop
     if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
-        scratch.variables["play"]=true;
-//         engine.setValue("[Channel"+currentDeck+"]","play",0);   // pause playback
+        // TODO: ramp down
     }
-    else scratch.variables["play"]=false;
     
 //     print("MIDI Script: Scratch initial: time=" + scratch.variables["time"] + "s, track=" + scratch.variables["trackPos"] + "s");
     return;
@@ -172,6 +177,10 @@ scratch.enable = function (currentDeck) {
    Output:  -
    -------- ------------------------------------------------------ */
 scratch.disable = function (currentDeck) {
+    // If the deck is playing, ramp it up to the play speed
+    if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
+        //TODO: ramp up
+    }
     // Reset the triggers
     scratch.variables["trackPos"] = 0.0;
     scratch.variables["initialTrackPos"] = -1.0;
@@ -181,8 +190,9 @@ scratch.disable = function (currentDeck) {
     scratch.variables["time"] = 0.0;
     scratch.variables["scratch"] = 0.0;
 //     print("MIDI Script: Scratch values CLEARED");
-    engine.setValue("[Channel"+currentDeck+"]","scratch",0.0); // disable scratching
-    if (scratch.variables["play"]) engine.setValue("[Channel"+currentDeck+"]","play",1); // resume playback
+    engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 0);  // disable scratching
+    engine.setValue("[Channel"+currentDeck+"]","scratch2",0);
+    engine.setValue("[Channel"+currentDeck+"]","scratch",0);    // Deprecated
 }
 
 /* -------- ------------------------------------------------------
@@ -201,8 +211,13 @@ scratch.slider = function (currentDeck, sliderValue, revtime, alpha, beta) {
     // If the slider start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = sliderValue;
-//         print("Initial slider="+scratch.variables["initialControlValue"]);
+        if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
+            scratch.variables["scratch"] = 1;
+            engine.setValue("[Channel"+currentDeck+"]","scratch2", 1);
         }
+//         engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
+//         print("Initial slider="+scratch.variables["initialControlValue"]);
+    }
     return scratch.filter(currentDeck, sliderValue, revtime, alpha, beta);
 }
 
@@ -222,8 +237,13 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
     // If the wheel start value hasn't been set yet, set it
     if (scratch.variables["initialControlValue"] == 0) {
         scratch.variables["initialControlValue"] = scratch.variables["prevControlValue"] = wheelValue;
-//         print("Initial wheel="+scratch.variables["initialControlValue"]);
+        if (engine.getValue("[Channel"+currentDeck+"]","play") > 0) {
+            scratch.variables["scratch"] = 1;
+            engine.setValue("[Channel"+currentDeck+"]","scratch2", 1);
         }
+//         engine.setValue("[Channel"+currentDeck+"]","scratch2_enable", 1);
+//         print("Initial wheel="+scratch.variables["initialControlValue"]);
+    }
         
     // Take wrap around into account
     if (wheelValue>=0 && wheelValue<10 && scratch.variables["prevControlValue"]>117 && scratch.variables["prevControlValue"]<=127) scratch.variables["wrapCount"]+=1;
@@ -239,12 +259,12 @@ scratch.wheel = function (currentDeck, wheelValue, revtime, alpha, beta) {
 
 // The actual alpha-beta filter
 scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
-    // ------------- Thanks to Radiomark (of Xwax) for the info for below ------------------------
+    // ------------- Thanks to Mark Hills of Xwax (http://www.xwax.co.uk) for the info for below ------------------------
     
     // ideal position = (initial_p + (y - x) / 128 * 1.8)
     var ideal_p = scratch.variables["initialTrackPos"] + (controlValue - scratch.variables["initialControlValue"]) / 128 * revtime;
     
-    var currentTrackPos = engine.getValue("[Channel"+currentDeck+"]","playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
+    var currentTrackPos = engine.getValue("[Channel"+currentDeck+"]","visual_playposition") * engine.getValue("[Channel"+currentDeck+"]","duration");
     var newTime = new Date()/1000;
     var dt = newTime - scratch.variables["time"];
     scratch.variables["time"] = newTime;
@@ -259,13 +279,13 @@ scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
     // scratch.variables["trackPos"] += rx * alpha;   // Don't need this result so why waste the CPU time?
     
     // v += rx * BETA / dt;
-    // scratch.variables["scratch"] += rx * (beta / dt);   // This doesn't work
+//     scratch.variables["scratch"] += rx * beta / dt;   // This doesn't work
     scratch.variables["scratch"] = rx * beta;
     
 //     print("MIDI Script: Ideal position="+ideal_p+", Predicted position="+predicted_p + ", New scratch val=" + scratch.variables["scratch"]);
     
 //     var newPos = scratch.variables["trackPos"]/engine.getValue("[Channel"+currentDeck+"]","duration");
-//     engine.setValue("[Channel"+currentDeck+"]","playposition",newPos);
+//     engine.setValue("[Channel"+currentDeck+"]","visual_playposition",newPos);
 //     engine.setValue("[Channel"+currentDeck+"]","scratch",scratch.variables["scratch"]);
 
     return scratch.variables["scratch"];

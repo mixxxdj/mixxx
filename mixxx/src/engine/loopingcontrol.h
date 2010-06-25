@@ -45,6 +45,8 @@ class LoopingControl : public EngineControl {
     // sample, if set.
     void hintReader(QList<Hint>& hintList);
 
+    void notifySeek(double dNewPlaypos);
+
   public slots:
     void slotLoopIn(double);
     void slotLoopOut(double);
@@ -53,6 +55,8 @@ class LoopingControl : public EngineControl {
     void slotLoopEndPos(double);
 
   private:
+    void setLoopingEnabled(bool enabled);
+
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;

@@ -45,6 +45,8 @@ void PrepareLibraryTableModel::search(const QString& searchText) {
 
 void PrepareLibraryTableModel::slotSearch(const QString& searchText)
 {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
     QString baseFilter;
     if (m_bShowRecentSongs)
@@ -60,7 +62,8 @@ void PrepareLibraryTableModel::slotSearch(const QString& searchText)
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + baseFilter + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
     setFilter(filter);
