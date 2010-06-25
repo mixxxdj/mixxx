@@ -102,7 +102,7 @@ public:
     /** Pointer to Search PushButton*/
     QPushButton *m_pPushButton;
     /** Pointer to overview displays */
-    WOverview *m_pOverviewCh1, *m_pOverviewCh2;
+    WOverview *m_pOverviewCh1, *m_pOverviewCh2, *m_pOverviewCh3;
 
     void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
@@ -110,6 +110,7 @@ public:
   public slots:
     void slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack);
     void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
+    void slotSetupTrackConnectionsCh3(TrackInfoObject* pTrack);
     void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
     void slotClearTrackTextCh1(TrackInfoObject* pTrack);
     void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);

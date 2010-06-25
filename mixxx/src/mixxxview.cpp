@@ -134,6 +134,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
+    m_pOverviewCh3 = 0;
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
@@ -172,6 +173,12 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
           m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
   connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
           m_pOverviewCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
+          
+    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+        m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    connect(pSampler1, SIGNAL(unloadingTrack(TrackInfoObject*)),
+              m_pOverviewCh3, SLOT(slotUnloadTrack(TrackInfoObject*)));
+          
 
 
 	//Connect the players to some other widgets, so they get updated when a
@@ -196,6 +203,8 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 		this, SLOT(slotSetupTrackConnectionsCh1(TrackInfoObject*)));
 	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
 		this, SLOT(slotSetupTrackConnectionsCh2(TrackInfoObject*)));
+    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+		this, SLOT(slotSetupTrackConnectionsCh3(TrackInfoObject*)));
 
 	// Connect search box signals to the library
 	connect(m_pLineEditSearch, SIGNAL(search(const QString&)),
@@ -231,6 +240,11 @@ MixxxView::~MixxxView()
 
     if(m_pWaveformRendererCh2) {
 	delete m_pWaveformRendererCh2;
+	m_pWaveformRendererCh2 = NULL;
+    }
+    
+    if(m_pWaveformRendererCh3) {
+	delete m_pWaveformRendererCh3;
 	m_pWaveformRendererCh2 = NULL;
     }
 }
@@ -770,6 +784,14 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     }
                     m_pOverviewCh2->setup(node);
 		    m_pOverviewCh2->show();
+                } else if (WWidget::selectNodeInt(node, "Channel")==3)
+                {
+                    if (m_pOverviewCh3 == 0) {
+                        m_pOverviewCh3 = new WOverview("[Channel3]", this);
+                        //m_qWidgetList.append(m_pOverviewCh2);
+                    }
+                    m_pOverviewCh3->setup(node);
+		    m_pOverviewCh3->show();
                 }
             }
 
@@ -1094,6 +1116,11 @@ void MixxxView::slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack)
 	connect(pTrack, SIGNAL(bpmUpdated(double)),
 		m_pNumberBpmCh2, SLOT(setValue(double)));
 
+}
+
+void MixxxView::slotSetupTrackConnectionsCh3(TrackInfoObject* pTrack) {
+    connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+		m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
 }
 
 void MixxxView::slotUpdateTrackTextCh1(TrackInfoObject* pTrack)

@@ -1207,7 +1207,7 @@
 	</SamplerView>
 
 	<PushButton>
-		<Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+		<Tooltip>Left Click: Play from beginning.</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1226,9 +1226,24 @@
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
-			<ConfigKey>[Channel3],cue_set</ConfigKey>
+			<ConfigKey>[Channel3],start</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
+			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
+	
+	<Overview>
+		<Tooltip>Overview display of waveform</Tooltip>
+		<Channel>3</Channel>
+		<Pos>10,650</Pos>
+		<Size>201,13</Size>
+		<BgColor>#fafafa</BgColor>
+		<SignalColor>#00ff00</SignalColor>
+		<MarkerColor>#0000ff</MarkerColor>
+		<Connection>
+			<ConfigKey>[Channel3],playposition</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</Overview>
+	
 </skin>
