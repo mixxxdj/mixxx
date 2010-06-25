@@ -25,7 +25,6 @@
 class ChannelGroup {
 public:
     ChannelGroup(unsigned int channelBase, unsigned int channels);
-    ChannelGroup() { };
     unsigned int getChannelBase() const;
     unsigned int getChannelCount() const;
     bool operator==(const ChannelGroup &other) const;
@@ -44,7 +43,6 @@ private:
 class AudioPath {
 public:
     AudioPath(unsigned int channelBase, unsigned int channels);
-    AudioPath() { };
     bool channelsClash(const AudioPath& other) const;
     ChannelGroup getChannelGroup() const;
 protected:
@@ -69,7 +67,6 @@ public:
     };
     AudioSource(AudioSourceType type, unsigned int channelBase,
                 unsigned int channels, unsigned int index = 0);
-    AudioSource() { };
     AudioSourceType getType() const;
     unsigned int getIndex() const;
     bool operator==(const AudioSource& other) const;
@@ -95,7 +92,6 @@ public:
     };
     AudioReceiver(AudioReceiverType type, unsigned int channelBase,
                   unsigned int channels, unsigned int index = 0);
-    AudioReceiver() { };
     AudioReceiverType getType() const;
     unsigned int getIndex() const;
     bool operator==(const AudioReceiver& other) const;
