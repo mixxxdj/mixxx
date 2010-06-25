@@ -21,6 +21,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_searchThread(this) {
 
     m_pMenu = new QMenu(this);
+    m_pSamplerMenu = new QMenu(this);
+    m_pSamplerMenu->setTitle("Load in Sampler");
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -45,6 +47,7 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlayQueueAct;
     delete m_pPlayer1Act;
     delete m_pPlayer2Act;
+    delete m_pSampler1Act;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
     //delete m_pRenamePlaylistAct;
@@ -139,6 +142,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 void WTrackTableView::createActions()
 {
     Q_ASSERT(m_pMenu);
+    Q_ASSERT(m_pSamplerMenu);
 
     m_pPlayer1Act = new QAction(tr("Load in Player 1"),this);
     connect(m_pPlayer1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
@@ -146,7 +150,7 @@ void WTrackTableView::createActions()
     m_pPlayer2Act = new QAction(tr("Load in Player 2"),this);
     connect(m_pPlayer2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
     
-    m_pSampler1Act = new QAction(tr("Load in Sampler 1"),this);
+    m_pSampler1Act = new QAction(tr("Sampler 1"),this);
     connect(m_pSampler1Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler1()));
     
     m_pRemoveAct = new QAction(tr("Remove"),this);
@@ -166,7 +170,8 @@ void WTrackTableView::createActions()
 
     m_pMenu->addAction(m_pPlayer1Act);
     m_pMenu->addAction(m_pPlayer2Act);
-    m_pMenu->addAction(m_pSampler1Act);
+    m_pMenu->addMenu(m_pSamplerMenu);
+    m_pSamplerMenu->addAction(m_pSampler1Act);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
     m_pMenu->addAction(m_pPropertiesAct);

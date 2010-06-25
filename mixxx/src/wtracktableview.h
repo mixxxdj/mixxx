@@ -62,6 +62,7 @@ private:
     //Used for right-click operations
     /** Right-click menu */
     QMenu *m_pMenu;
+    QMenu *m_pSamplerMenu;
     /**Send to Play Queue Action**/
     QAction *m_pPlayQueueAct;
     /**Send to Player 1 Action**/
@@ -70,6 +71,9 @@ private:
     QAction *m_pPlayer2Act;
     /**Send to Samplers Action**/
     QAction *m_pSampler1Act;
+    QAction *m_pSampler2Act;
+    QAction *m_pSampler3Act;
+    QAction *m_pSampler4Act;
     /**Remove from Table Action**/
     QAction *m_pRemoveAct;
     /**Shows track editor/BPM tap**/

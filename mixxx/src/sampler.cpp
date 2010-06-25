@@ -136,7 +136,6 @@ void Sampler::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 
     //Request a new track from the reader
     emit(loadTrack(track));
-    qDebug("Track Loaded in Sampler.");
 }
 
 void Sampler::slotLoadFailed(TrackInfoObject* track, QString reason) {
