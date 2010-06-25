@@ -41,6 +41,7 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class TrackInfoObject;
+class EngineWorkerScheduler;
 
 struct Hint;
 
@@ -78,6 +79,8 @@ public:
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
+    void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
+
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
@@ -92,6 +95,7 @@ public:
     double getBpm();
     /** Sets pointer to other engine buffer/channel */
     void setOtherEngineBuffer(EngineBuffer *);
+
     /** Reset buffer playpos and set file playpos. This must only be called
       * while holding the pause mutex */
     void setNewPlaypos(double);
@@ -126,6 +130,10 @@ private:
 
     void hintReader(const double rate,
                     const int iSourceSamples);
+
+    // Lock for modifying local engine variables that are not thread safe, such
+    // as m_engineControls and m_hintList
+    QMutex m_engineLock;
 
     /** Holds the name of the control group */
     const char* group;

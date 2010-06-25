@@ -7,7 +7,7 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 #include "library/schemamanager.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
@@ -16,7 +16,10 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_playlistDao(m_db),
           m_cueDao(m_db),
           m_trackDao(m_db, m_cueDao),
-          m_crateDao(m_db) {
+          m_crateDao(m_db),
+          m_supportedFileExtensionsRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
+                                         Qt::CaseInsensitive)
+{
 
     bCancelLibraryScan = 0;
     qDebug() << QSqlDatabase::drivers();
@@ -31,12 +34,20 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 
 
+
     //Check for tables and create them if missing
     if (!checkForTables()) exit(-1);
 }
 
 TrackCollection::~TrackCollection()
 {
+    // Save all tracks that haven't been saved yet.
+    m_trackDao.saveDirtyTracks();
+
+    Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
+    //The above is an ASSERT because there should never be an outstanding
+    //transaction when this code is called. If there is, it means we probably
+    //aren't committing a transaction somewhere that should be.
     m_db.close();
     qDebug() << "TrackCollection destroyed";
 }
@@ -53,7 +64,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 1;
+    int requiredSchemaVersion = 3;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
@@ -92,11 +103,6 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
     emit(startedLoading());
     QFileInfoList files;
 
-    //Mark all the tracks in the library that we think are in this directory as needing
-    //verification of their existance...
-    //(ie. we want to check they're still on your hard drive where we think they are)
-    trackDao.invalidateTrackLocations(directory);
-
     //Check to make sure the path exists.
     QDir dir(directory);
     if (dir.exists()) {
@@ -107,10 +113,11 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
     }
 
     //The directory exists, so get a list of the contents of the directory and go through it.
-    QListIterator<QFileInfo> it(files);
-    while (it.hasNext())
-    {
-        QFileInfo file = it.next(); //TODO: THIS IS SLOW!
+    QList<QFileInfo>::iterator it = files.begin();
+    while (it != files.end()) {
+        QFileInfo file = *it; //TODO: THIS IS SLOW!
+        it++;
+
         //If a flag was raised telling us to cancel the library scan then stop.
         m_libraryScanMutex.lock();
         bool cancel = bCancelLibraryScan;
@@ -120,31 +127,32 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
             return false;
         }
 
-        if (file.fileName().count(QRegExp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive))) {
-            trackDao.markTrackLocationAsVerified(file.absoluteFilePath());
+        QString absoluteFilePath = file.absoluteFilePath();
+        QString fileName = file.fileName();
 
-            //If the file already exists in the database, continue and go on to the next file.
-            if (trackDao.trackExistsInDatabase(file.absoluteFilePath()))
+        if (fileName.count(m_supportedFileExtensionsRegex)) {
+            trackDao.markTrackLocationAsVerified(absoluteFilePath);
+
+            // If the file already exists in the database, continue and go on to
+            // the next file.
+
+            // If the file doesn't already exist in the database, then add
+            // it. If it does exist in the database, then it is either in the
+            // user's library OR the user has "removed" the track via
+            // "Right-Click -> Remove". These tracks stay in the library, but
+            // their mixxx_deleted column is 1.
+            if (!trackDao.trackExistsInDatabase(absoluteFilePath))
             {
-                continue;
-                //Note that by checking if the track _exists_ in the DB, we also prevent Mixxx from
-                //re-adding tracks that have been "removed" from the library. (That's tracks
-                //where the mixxx_deleted column is 1. When you right-click and select
-                //"Remove..." in the library, it sets that flag on the track in the DB rather
-                //than actually deleting the row.)
+                //qDebug() << "Loading" << file.fileName();
+                emit(progressLoading(fileName));
+
+                // addTrack uses this QFileInfo instead of making a new one now.
+                trackDao.addTrack(file);
             }
-            //Load the song into a TrackInfoObject.
-            emit(progressLoading(file.fileName()));
-            //qDebug() << "Loading" << file.fileName();
-
-            trackDao.addTrack(file.absoluteFilePath());
-
         } else {
             //qDebug() << "Skipping" << file.fileName() <<
             //    "because it did not match thesupported audio files filter:" <<
-            //    MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX;
         }
-
     }
     emit(finishedLoading());
     return true;

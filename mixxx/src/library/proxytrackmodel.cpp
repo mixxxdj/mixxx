@@ -55,9 +55,9 @@ void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     m_pTrackModel->removeTrack(indexSource);
 }
 
-void ProxyTrackModel::addTrack(const QModelIndex& index, QString location) {
+bool ProxyTrackModel::addTrack(const QModelIndex& index, QString location) {
     QModelIndex indexSource = mapToSource(index);
-    m_pTrackModel->addTrack(indexSource, location);
+    return m_pTrackModel->addTrack(indexSource, location);
 }
 
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,

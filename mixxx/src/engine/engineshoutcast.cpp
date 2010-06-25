@@ -30,6 +30,7 @@
 #include "trackinfoobject.h"
 
 #include <QDebug>
+#include <QMutexLocker>
 #include <stdio.h> // currently used for writing to stdout
 
 
@@ -46,7 +47,9 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pUpdateShoutcastFromPrefs(NULL),
           m_pCrossfader(NULL),
           m_pVolume1(NULL),
-          m_pVolume2(NULL) {
+          m_pVolume2(NULL),
+          m_shoutMutex(QMutex::Recursive) {
+
     m_pShout = 0;
     m_iShoutStatus = 0;
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
@@ -124,6 +127,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
  */
 EngineShoutcast::~EngineShoutcast()
 {
+    QMutexLocker locker(&m_shoutMutex);
     delete encoder;
     delete m_pUpdateShoutcastFromPrefs;
     delete m_pCrossfader;
@@ -144,6 +148,7 @@ EngineShoutcast::~EngineShoutcast()
  */
 void EngineShoutcast::updateFromPreferences()
 {
+    QMutexLocker locker(&m_shoutMutex);
     qDebug() << "EngineShoutcast: updating from preferences";
 
     m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
@@ -251,6 +256,7 @@ void EngineShoutcast::updateFromPreferences()
  */
 bool EngineShoutcast::serverConnect()
 {
+    QMutexLocker locker(&m_shoutMutex);
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
@@ -310,6 +316,7 @@ bool EngineShoutcast::serverConnect()
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
+    QMutexLocker locker(&m_shoutMutex);
     int ret;
 
     if (!m_pShout)
@@ -357,6 +364,8 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
  */
 void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
+    QMutexLocker locker(&m_shoutMutex);
+
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
         return;
 
@@ -426,6 +435,7 @@ int EngineShoutcast::getActiveTracks()
  */
 bool EngineShoutcast::metaDataHasChanged()
 {
+    QMutexLocker locker(&m_shoutMutex);
     int tracks;
     TrackInfoObject *newMetaData;
     bool changed = false;
@@ -483,6 +493,7 @@ bool EngineShoutcast::metaDataHasChanged()
  */
 void EngineShoutcast::updateMetaData()
 {
+    QMutexLocker locker(&m_shoutMutex);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 

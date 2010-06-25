@@ -8,12 +8,13 @@
 #include "library/trackcollection.h"
 #include "library/dao/cratedao.h"
 
+#include "mixxxutils.cpp"
+
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(pParent, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
           TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
-          m_iCrateId(-1),
-          m_currentSearch("") {
+          m_iCrateId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 }
@@ -24,10 +25,6 @@ CrateTableModel::~CrateTableModel() {
 
 void CrateTableModel::setCrate(int crateId) {
     qDebug() << "CrateTableModel::setCrate()" << crateId;
-    // Skip switching crate if we are already on this playlist.
-    if (m_iCrateId == crateId) {
-        return;
-    }
     m_iCrateId = crateId;
 
     QString tableName = QString("crate_%1").arg(m_iCrateId);
@@ -98,7 +95,7 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Date Added"));
 }
 
-void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
     bool success = false;
     if (iTrackId >= 0) {
@@ -108,10 +105,12 @@ void CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     if (success) {
         select();
+        return true;
     } else {
         // TODO(XXX) feedback
         qDebug() << "CrateTableModel::addTrack could not add track"
                  << location << "to crate" << m_iCrateId;
+        return false;
     }
 }
 
@@ -150,6 +149,8 @@ void CrateTableModel::search(const QString& searchText) {
 }
 
 void CrateTableModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
 
     QString filter;
@@ -160,7 +161,8 @@ void CrateTableModel::slotSearch(const QString& searchText) {
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR "
+                "(artist LIKE " + escapedText + " OR " +
+                "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";
     }
 
@@ -224,21 +226,17 @@ QVariant CrateTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = QSqlTableModel::data(item, role);
+    QVariant value;
 
-    if (role == Qt::DisplayRole &&
+    if (role == Qt::ToolTipRole)
+        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
+    else
+        value = BaseSqlTableModel::data(item, role);
+
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
         if (qVariantCanConvert<int>(value)) {
-            // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-            //Let's reformat this song length into a human readable MM:SS format.
-            int totalSeconds = qVariantValue<int>(value);
-            int seconds = totalSeconds % 60;
-            int mins = totalSeconds / 60;
-            //int hours = mins / 60; //Not going to worry about this for now. :)
-
-            //Construct a nicely formatted duration string now.
-            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
         }
     }
     return value;

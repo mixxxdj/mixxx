@@ -38,11 +38,13 @@ else:
 
 print 'Binary format: ' + architecture[1]
 
-Export('platform')
-
 build_dir = '%s_build' % platform
 
-SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
+Export('platform')
+Export('build_dir')
+
+soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0)
+SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports='soundsource_plugins') 
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
 

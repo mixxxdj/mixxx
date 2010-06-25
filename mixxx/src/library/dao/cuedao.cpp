@@ -128,9 +128,6 @@ bool CueDAO::saveCue(Cue* cue) {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
     Q_ASSERT(cue);
     if (cue->getId() == -1) {
-        //Start the transaction
-        Q_ASSERT(m_database.transaction());
-
         // New cue
         QSqlQuery query(m_database);
         query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label) VALUES (:track_id, :type, :position, :length, :hotcue, :label)");
@@ -145,11 +142,9 @@ bool CueDAO::saveCue(Cue* cue) {
             int id = query.lastInsertId().toInt();
             cue->setId(id);
             cue->setDirty(false);
-            Q_ASSERT(m_database.commit());
             return true;
         }
         qDebug() << query.executedQuery() << query.lastError();
-        m_database.rollback();
     } else {
         // Update cue
         QSqlQuery query(m_database);
@@ -200,46 +195,54 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
+    QTime time;
+
     const QList<Cue*>& cueList = pTrack->getCuePoints();
-    const QList<Cue*>& oldCueList = getCuesForTrack(trackId);
 
     // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
     //          << "new size:" << cueList.size();
 
-    QListIterator<Cue*> oldCues(oldCueList);
-    QSet<int> oldIds;
+    QString list = "";
 
-    // Build set of old cue ids
-    while(oldCues.hasNext()) {
-        Cue* cue = oldCues.next();
-        oldIds.insert(cue->getId());
-    }
-
+    time.start();
     // For each id still in the TIO, save or delete it.
     QListIterator<Cue*> cueIt(cueList);
     while (cueIt.hasNext()) {
         Cue* cue = cueIt.next();
-        if (cue->getId() == -1) {
-            //qDebug() << "Saving new cue";
+        int cueId = cue->getId();
+        bool newCue = cueId == -1;
+        if (newCue) {
             // New cue
             cue->setTrackId(trackId);
-            saveCue(cue);
         } else {
-            oldIds.remove(cue->getId());
-            //qDebug() << "Updating cue" << cue->getId();
-            // Update cue
+            //idList.append(QString("%1").arg(cueId));
+            list.append(QString("%1,").arg(cueId));
+        }
+        // Update or save cue
+        if (cue->isDirty()) {
             saveCue(cue);
-        }
-    }
 
-    cueIt = QListIterator<Cue*>(oldCueList);
-    while (cueIt.hasNext()) {
-        Cue* cue = cueIt.next();
-        // If the cue's id is still in the oldIds set, then it was not a member
-        // of the new set of Cues, so the cue should be deleted.
-        if (oldIds.contains(cue->getId())) {
-            //qDebug() << "Deleting cue" << cue->getId();
-            deleteCue(cue);
+            // Since this cue didn't have an id until now, add it to the list of
+            // cues not to delete.
+            if (newCue)
+                list.append(QString("%1,").arg(cue->getId()));
         }
     }
+    qDebug() << "Saving cues took " << time.elapsed() << "ms";
+    time.start();
+
+    // Strip the last ,
+    if (list.count() > 0)
+        list.truncate(list.count()-1);
+
+    // Delete cues that are no longer on the track.
+    QSqlQuery query(m_database);
+    query.prepare(QString("DELETE FROM cues where track_id=:track_id and not id in (%1)").arg(list));
+    query.bindValue(":track_id", trackId);
+
+    if (!query.exec()) {
+        qDebug() << "Delete cues failed:" << query.lastError();
+        qDebug() << query.executedQuery();
+    }
+    qDebug() << "Deleting cues took " << time.elapsed() << "ms";
 }

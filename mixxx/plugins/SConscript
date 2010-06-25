@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+Import('build_dir')
+
+plugins = [] 
+soundsourcem4a = SConscript(File('soundsourcem4a/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
+plugins.extend(soundsourcem4a)
+
+Return("plugins")
