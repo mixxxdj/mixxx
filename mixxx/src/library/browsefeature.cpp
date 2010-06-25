@@ -129,7 +129,7 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
 
         // The track doesn't exist in the database.
         if (track == NULL) {
-            track = new TrackInfoObject(absPath);
+            track = new TrackInfoObject(info);
         }
 
         emit(loadTrack(track));
@@ -148,7 +148,7 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
 
         // The track doesn't exist in the database.
         if (track == NULL) {
-            track = new TrackInfoObject(absPath);
+            track = new TrackInfoObject(info);
         }
 
         emit(loadTrackToPlayer(track, player));
