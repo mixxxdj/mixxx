@@ -9,6 +9,8 @@
 #include "trackinfoobject.h"
 #include "defs.h"
 
+#include "mixxxutils.cpp"
+
 RhythmboxTrackModel::RhythmboxTrackModel()
         : AbstractXmlTrackModel("mixxx.db.model.rhythmbox") {
 
@@ -91,20 +93,11 @@ QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
 
     QVariant value = AbstractXmlTrackModel::data(item, role);
 
-    if (role == Qt::DisplayRole &&
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == COLUMN_DURATION) {
 
         if (qVariantCanConvert<int>(value)) {
-            // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-            //Let's reformat this song length into a human readable MM:SS format.
-            int totalSeconds = qVariantValue<int>(value);
-            int seconds = totalSeconds % 60;
-            int mins = totalSeconds / 60;
-            //int hours = mins / 60; //Not going to worry about this for now. :)
-
-            //Construct a nicely formatted duration string now.
-            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
         }
     }
     return value;

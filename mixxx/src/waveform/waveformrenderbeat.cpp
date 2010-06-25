@@ -38,12 +38,14 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
 
     m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
-    connect(m_pTrackSamples, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateTrackSamples(double)));
+    connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateTrackSamples(double)));
 }
 
 void WaveformRenderBeat::slotUpdateBpm(double v) {
     //qDebug() << "WaveformRenderBeat :: BPM = " << v;
     m_dBpm = v;
+    m_dBeatLength = -1;
 }
 
 void WaveformRenderBeat::slotUpdateBeatFirst(double v) {
@@ -108,7 +110,6 @@ void WaveformRenderBeat::setup(QDomNode node) {
 
 
 void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
-
     if(m_dBpm == -1 || m_dBpm == 0)
         return;
 

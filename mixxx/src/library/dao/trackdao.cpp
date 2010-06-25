@@ -133,11 +133,9 @@ void TrackDAO::saveDirtyTracks() {
     }
 }
 
-int TrackDAO::addTrack(QString location)
-{
-    QFileInfo file(location);
+int TrackDAO::addTrack(QFileInfo& fileInfo) {
     int trackId = -1;
-    TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
+    TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
     if (pTrack) {
         //Add the song to the database.
         addTrack(pTrack);
@@ -145,6 +143,12 @@ int TrackDAO::addTrack(QString location)
         delete pTrack;
     }
     return trackId;
+}
+
+int TrackDAO::addTrack(QString location)
+{
+    QFileInfo fileInfo(location);
+    return addTrack(fileInfo);
 }
 
 void TrackDAO::addTrack(TrackInfoObject * pTrack)
@@ -167,10 +171,10 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.prepare("INSERT INTO track_locations (location, directory, filename, filesize, fs_deleted, needs_verification) "
                   "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification)");
     query.bindValue(":location", pTrack->getLocation());
-    // TODO(XXX) QFileInfo stats the file!!!
-    query.bindValue(":directory", QFileInfo(pTrack->getLocation()).path());
+    query.bindValue(":directory", pTrack->getDirectory());
     query.bindValue(":filename", pTrack->getFilename());
     query.bindValue(":filesize", pTrack->getLength());
+    // Should this check pTrack->exists()?
     query.bindValue(":fs_deleted", 0);
     query.bindValue(":needs_verification", 0);
 
@@ -314,8 +318,6 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
 
     int locationId = -1;
     while (query.next()) {
-        track = new TrackInfoObject();
-
         int trackId = query.value(query.record().indexOf("id")).toInt();
 
         QString artist = query.value(query.record().indexOf("artist")).toString();
@@ -339,6 +341,12 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         QString location = query.value(query.record().indexOf("location")).toString();
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
 
+        track = new TrackInfoObject(location);
+
+        // TIO already stats the file to see if it exists, what its length is,
+        // etc. So don't bother setting it.
+        //track->setLength(filesize);
+
         track->setId(trackId);
         track->setArtist(artist);
         track->setTitle(title);
@@ -358,8 +366,7 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         delete wavesummaryhex;
         //track->setTimesPlayed //Doesn't exist wtfbbq
         track->setChannels(channels);
-        track->setLocation(location);
-        track->setLength(filesize);
+
         track->setHeaderParsed(header_parsed);
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
