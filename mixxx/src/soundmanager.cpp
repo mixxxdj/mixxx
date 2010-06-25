@@ -373,10 +373,6 @@ int SoundManager::setupDevices()
     QListIterator<SoundDevice *> deviceIt(m_devices);
     SoundDevice * device;
 
-    //Set sound scale method
-    if (m_pMaster)
-        m_pMaster->setPitchIndpTimeStretch(m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt());
-
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
