@@ -33,12 +33,11 @@ void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
  * On EngineMaster, we call process(in,out,buffer, SOURCE), with samples from this Source.
  */
 void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, const QString Source){
-	qDebug() << "FXUNITS: Processing plugins for Source:" << Source;
+	//qDebug() << "FXUNITS: Processing plugins for Source:" << Source;
 	QList<EffectsUnitsPlugin *> * pluginList = getPluginsBySource(Source);
 	int size = pluginList->size();
 	for (int i = 0; i < size; ++i) {
 		pluginList->at(i)->process(pIn, pOut, iBufferSize);
-		qDebug() << pluginList->at(i)->getName();
 	 }
 }
 
