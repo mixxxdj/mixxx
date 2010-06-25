@@ -79,24 +79,6 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatency()));
 
-    //Set up a button group for the pitch behaviour options
-    QButtonGroup pitchMode;
-    pitchMode.addButton(radioButtonVinylEmu);
-    pitchMode.addButton(radioButtonPitchIndp);
-
-    // Set default value for scale mode check box
-    int iPitchIndpTimeStretch = config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
-    if (iPitchIndpTimeStretch)
-    {
-        radioButtonPitchIndp->setChecked(true);
-        radioButtonVinylEmu->setChecked(false);
-    }
-    else
-    {
-        radioButtonPitchIndp->setChecked(false);
-        radioButtonVinylEmu->setChecked(true);
-    }
-
     // Apply changes whenever apply signal is emitted
     /*
        connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
@@ -300,12 +282,6 @@ void DlgPrefSound::slotApply()
         config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
     }
 #endif
-    
-    if (radioButtonPitchIndp->isChecked())
-        config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
-    else
-        config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));
-
     qDebug() << "request msec " << getSliderLatencyMsec(SliderLatency->value());
 
     // Close devices, and open using config data
