@@ -1,0 +1,225 @@
+/**************************************
+ * TITLE: Prosimii Print Stylesheet   *
+ * URI  : prosimii/prosimii-print.css *
+ * MODIF: 2003-Apr-30 19:15 +0800     *
+ **************************************/
+
+
+/* ##### Common Styles ##### */
+
+body {
+  color: black;
+  background-color: white;
+  font-family: "times new roman", times, roman, serif;
+  font-size: 12pt;
+  margin: 0;
+  padding: 0;
+}
+
+acronym, .titleTip {
+  font-style: italic;
+  border-bottom: none;
+}
+
+acronym:after, .titleTip:after {  /* Prints titles after the acronyms/titletips. Doesn't work in MSIE */
+  content: "(" attr(title) ")";
+  font-size: 90%;
+  font-style: normal;
+  padding-left: 1ex;
+}
+
+a {
+  color: black;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a[href]:after {  /* Prints the links' URIs after the links' texts. Doesn't work in MSIE */
+  content: "<" attr(href) ">";
+  font-size: 90%;
+  padding-left: 1ex;
+}
+
+ol {
+  margin: -0.25em 0 1em 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: square;
+  margin: -0.25em 0 1em 0;
+  padding: 0;
+}
+
+dl {
+  margin: 0 0 1em 0;
+  padding: 0;
+}
+
+ul li {
+  margin: 1ex 0 0 1.5em;
+  padding: 0;
+}
+
+ol li {
+  margin: 1ex 0 0 1.5em;
+  padding: 0;
+}
+
+dt {
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+}
+
+dd {
+  margin: 0 0 0 1.5em;
+  padding: 0;
+}
+
+.doNotPrint {
+  display: none;
+}
+
+
+/* ##### Header ##### */
+
+#header {
+}
+
+.superHeader {
+  display: none;
+}
+
+.midHeader {
+  color: black;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid black;
+}
+
+.headerTitle {
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-size: 200%;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
+.headerSubTitle {
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-size: 110%;
+  font-weight: normal;
+  font-style: italic;
+  margin: 0;
+  padding: 0 0 1ex 0;
+}
+
+.headerLinks {
+  display: none;
+}
+
+.subHeader {
+  display: none;
+}
+
+
+/* ##### Side Menu ##### */
+
+#side-bar {
+  display: none !important;
+}
+
+
+/* ##### Main Copy ##### */
+
+#main-copy {
+  text-align: justify;
+  margin: 0 !important;
+  padding: 0;
+}
+
+#main-copy h1 {
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-size: 120%;
+  margin: 2ex 0 1ex 0;
+  padding: 0;
+}
+
+#main-copy h2 {
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-weight: normal;
+  font-size: 100%;
+  margin: 0;
+  padding: 2ex 0 0.5ex 0;
+}
+
+#main-copy h1 + h2 {
+  padding-top: 0;
+}
+
+#main-copy p {
+  margin: 0 0 2ex 0;
+  padding: 0;
+}
+
+h2 a:after {
+  content: "" !important;
+}
+
+.newsDate {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+
+.newsDate:before {  /* Prints an '[' before the news item's date. Doesn't work in MSIE */
+  content: "[";
+  font-style: normal;
+}
+
+.newsDate:after {  /* Prints a ']' after the news item's date. Doesn't work in MSIE */
+  content: "]";
+  font-style: normal;
+}
+
+.newsSummary {
+  display: inline;
+  margin: 0 0 0 1ex !important;
+  padding: 0;
+}
+
+.more {
+  display: none;
+}
+
+.smallCaps {
+  font-variant: small-caps;
+}
+
+.quarter, .oneThird, .half, .twoThirds, .fullWidth {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ##### Footer ##### */
+
+#footer {
+  color: black;
+  background-color: transparent;
+  font-size: 100%;
+  text-align: center;
+  margin: 2em 0 0 0;
+  padding: 1ex 0 0 0;
+  border-top: 1px solid black;
+  display: block;
+}
+
+#footer a {
+  color: black;
+  background-color: transparent;
+  text-decoration: none;
+}

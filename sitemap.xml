@@ -1,0 +1,52 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!--  generator="Inspyder Sitemap Creator Trial 1.0.4"  -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+	<loc>http://www.mixxx.org/</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.7</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/index.php</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.7</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/screenshots.php</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.5</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/download.php</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.5</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/support.php</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.5</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/forums/index.php</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.5</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/contact.php</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.5</priority>
+</url>
+<url>
+	<loc>http://www.mixxx.org/Mixxx-Manual.pdf</loc>
+	<lastmod>2007-02-27</lastmod>
+	<changefreq>weekly</changefreq>
+	<priority>0.5</priority>
+</url>
+</urlset>

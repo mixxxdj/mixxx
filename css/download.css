@@ -1,0 +1,165 @@
+/*This is the CSS file containing the extra styles needed for the "Download" page. */
+
+#download div
+{
+	/*left: 10%;*/
+}
+
+#download h1
+{
+	left: 10%;
+}
+
+#download p {
+	text-align: left;
+	font-size: 0.7em; 
+	line-height: 1.1em;
+}
+
+#windows p {
+    font-size: 0.6em;
+    /*line-height: 0.0em; */
+    text-align: center;
+    vertical-align: bottom;
+}
+
+h4 {
+  font-size: 3.0em;
+  /*line-height: 1.25em;*/
+}
+
+#windows {
+  position: relative;
+  float: left;
+  color: #eeeeee;
+  width: 594px;
+  /*height: 100px;*/
+  background-color: #1d1d1d;
+  font-size: 1.5em;
+  text-align: center;
+  line-height: 1.0em;
+  padding: 0px;
+  padding-left: 10px;
+  padding-right:10px;
+  /*clear: left; */
+}
+
+#mac {
+  position: relative;
+  float: left;
+  /*left: 220px; */
+  color: #eeeeee;
+  background-color: #121212;  
+  width: 594px;
+  /*height: 100px;*/
+  font-size: 1.5em;
+  text-align: center;
+  line-height: 1.25em;
+  margin-top: 10px;
+  padding: 1ex 10px;
+  padding-left: 10px;
+  padding-right:10px;
+  clear: left;
+}
+
+#releasenotes {
+  //position: relative;
+  width: 594px;
+  font-size:1.1em;
+  background-color: #1d1d1d;
+  text-align: left;
+  line-height: 1.2em;
+  padding: 1ex 10px;
+  padding-left: 10px;
+  padding-right:10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  clear: left;
+}
+
+#linux {
+  float: left;
+  position: relative;
+  /*left: 430px;*/
+  color: #dddddd;
+  background-color: #101010;  
+  width: 594px;
+  /*height: 100px;*/
+  font-size:1.5em;
+  text-align: center;
+  line-height: 1.25em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 1ex 10px;
+  padding-left: 10px;
+  padding-right:10px;
+  clear: left;
+}
+
+#screenshotbox {
+  position: relative;
+  width: 200px;
+  height: 50px;
+  font-size:1.4em;
+  background-color: #1f1f1f;
+  text-align: left;
+  line-height: 1.4em;
+  /*padding: 1ex 10px; */
+  padding-left: 10px;
+  padding-right:10px;
+  margin-bottom: 10px;
+  float: right;
+  /*clear: left;*/
+}
+
+#sourcecode {
+  position: relative;
+  width: 594px;
+  font-size:1.4em;
+  background-color: #1d1d1d;
+  text-align: left;
+  line-height: 1.2em;
+  padding: 1ex 10px;
+  padding-left: 10px;
+  padding-right:10px;
+  clear: left;
+}
+
+#sourcecode ul
+{
+	padding: 0px;
+}
+
+#sourcecode li
+{
+	font-size: 0.7em;
+	line-height: 0.8em;
+}
+
+#donate {
+  position: relative;
+  width: 594px;
+  font-size:1.4em;
+  background-color: #1d1d1d;
+  text-align: left;
+  line-height: 1.2em;
+  /*padding: 1ex 10px; */
+  padding-left: 10px;
+  padding-right:10px;
+  margin-bottom: 10px;
+  clear: left;
+}
+
+#beta {
+  //position: relative;
+  width: 594px;
+  font-size:1.4em;
+  background-color: #1d1d1d;
+  text-align: left;
+  line-height: 1.2em;
+  padding: 1ex 10px;
+  padding-left: 10px;
+  padding-right:10px;
+  margin-bottom: 10px;
+  clear: left;
+}

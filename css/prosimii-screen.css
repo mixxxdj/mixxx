@@ -1,0 +1,494 @@
+/***************************************
+ * TITLE: Prosimii Screen Stylesheet   * 
+ * URI  : prosimii/prosimii-screen.css *
+ * MODIF: 2004-Apr-28 21:43 +0800      *
+ ***************************************/
+
+
+/* ##### Common Styles ##### */
+
+body {
+  background-color: #000000;
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 73%;  /* Enables font size scaling in MSIE */
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+html > body {
+  font-size: 9pt;
+}
+
+acronym, .titleTip {
+  border-bottom: 1px dotted rgb(61,92,122);
+  cursor: help;
+  margin: 0;
+  padding: 0 0 0.4px 0;
+}
+
+a {
+  color: #b0b0b0; /*rgb(61,92,122);*/
+  background-color: transparent;
+  text-decoration: underline;
+  margin: 0;
+  padding: 0 1px 2px 1px;
+}
+
+a:hover {
+  color: rgb(117,144,174);
+  text-decoration: none;
+}
+
+ol {
+  margin: 1em 0 1.5em 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: square;
+  margin: 1em 0 1.5em 0;
+  padding: 0;
+}
+
+dl {
+  margin: 1em 0 0.5em 0;
+  padding: 0;
+}
+
+ul li {
+  line-height: 1.5em;
+  margin: 1.25ex 0 0 1.5em;
+  padding: 0;
+}
+
+ol li {
+  line-height: 1.5em;
+  margin: 1.25ex 0 0 2em;
+  padding: 0;
+}
+
+dt {
+  font-weight: bold;
+  margin: 0;
+  padding: 0 0 1ex 0;
+}
+
+dd {
+  line-height: 1.75em;
+  margin: 0 0 1.5em 1.5em;
+  padding: 0;
+}
+
+.doNotDisplay {
+  display: none !important;
+}
+
+
+.smallCaps {
+  font-size: 117%;
+  font-variant: small-caps;
+}
+
+
+/* ##### Header ##### */
+
+.superHeader {
+  color: #a6a5a5;
+  background-color: #a6a5a5;
+  text-align: right;
+  margin: 0;
+  padding: 0.5ex 10px;
+}
+
+.superHeader span {
+  color: #a6a5a5;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.superHeader a {
+  color: rgb(195,196,210);
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0.25ex 0 0;
+}
+
+.superHeader a:hover {
+  color: rgb(193,102,90);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.midHeader {
+  color: #707070;
+  background-color: #000000;
+  margin: 0;
+  padding: 0.26ex 15px;
+}
+
+#header {
+  background-image:url('../images/header_mixxx_bg.png');
+  background-repeat: repeat-x;
+  margin: 0px;
+  padding: 0px;
+  height: 80px;
+}
+
+.headerTitle {
+  font-size: 300%;
+  margin: 0;
+  padding: 0;
+}
+
+.headerSubTitle {
+  font-size: 151%;
+  font-weight: normal;
+  margin: 0 0 1ex 0;
+  padding: 0;
+}
+
+.headerLinks {
+  text-align: right;
+  margin: 0;
+  padding: 0 0 2ex 0;
+  position: absolute;
+  right: 1.5em;
+  top: 3.5em;
+}
+
+.headerLinks a {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0 0.5ex 0;
+  display: block;
+}
+
+.headerLinks a:hover {
+  color: rgb(61,92,122);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.subHeader {
+  color: white;
+  /*background-color: #1e1e1e;  Solid colour from top of gradient */
+  /*background-color: #3b3b3c; Solid colour from bottom of gradient */
+  margin: 0;
+  padding: 2ex 32px;
+}
+
+.subHeaderCommunity {
+  color: white;
+  /*background-color: #1e1e1e;  Solid colour from top of gradient */
+  /*background-color: #3b3b3c;  Solid colour from bottom of gradient */
+  /*background-image:url('../images/navbarcommunity_bg.png');*/
+  /*background-repeat: repeat-x;*/
+  margin: 0;
+  padding: 1.2ex;
+  /*height: 20px; Trying to fix stripe alignment -- Albert */
+}
+
+.subHeaderCommunity a {
+  color: #cecece;
+  background-color: transparent;
+  font-size: 1.0em;
+  /*font-weight: bold; */
+  text-decoration: none;
+  margin: 0;
+  padding: 0ex 1.15ex 0px 12px;    
+}
+
+.subHeaderFloatLeft {
+  position: relative;
+  width: 290px;
+  background-image:url('../images/logo_mixxx_bg.png');
+  background-position: right;
+  float: left;
+  padding-left: 10px;
+  padding-right: 0
+  margin-left: 0;
+  padding-top: 0px;
+  margin-top: 0;
+  height: 80px;
+  /*clear: left; */
+}
+
+.subHeader a, .subHeader .highlight {
+  color: #cecece;
+  background-color: transparent;
+  font-size: 1.5em;
+  /*font-weight: bold; */
+  text-decoration: none;
+  margin: 0;
+  padding: 0ex 1.15ex 0 1.15ex;
+}
+
+.subHeader a:hover, .subHeader .highlight, .subHeaderCommunity a:hover {
+  color: #ffffff;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+
+/* ##### Main Copy ##### */
+
+#main-copy {
+  margin: 0;
+  padding: 2em 10px;
+  clear: left;
+}
+
+#main-copy h1 {
+  color: #cccccc;
+  background-color: transparent;
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-size: 200%;
+  margin: 0;
+  padding: 0;
+}
+
+#main-copy h2 {
+  color: #909090; /*rgb(61,92,122);*/
+  background-color: transparent;
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-weight: normal;
+  font-size: 151%;
+  margin: 0;
+  padding: 1ex 0 0 0;
+}
+
+#main-copy p {
+  color: #ffffff;
+  /*line-height: 1.4em;*/
+  margin: 1em 0 1.5em 0;
+  padding: 0;
+}
+
+.newsHeading {
+  color: #ffffff; /*rgb(61,92,122);*/
+  background-color: transparent;
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  font-size: 145%;
+  text-decoration: none;
+  margin: 0;
+  padding: 1ex 0 0 0;
+  display: block;
+}
+
+.newsHeading:hover {
+  color: rgb(117,144,174);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.newsDate {
+  font-style: italic;
+  margin: 0 !important;
+  padding: 0;
+}
+
+.newsSummary {
+  margin: 1.5ex 0 2.5ex 0.75ex !important;
+  padding: 0;
+}
+
+.more {
+  text-align: right;
+  margin: 0;
+  padding: 0.5em 0;
+}
+
+.more a {
+  color: rgb(61,92,122);
+  background-color: transparent;
+  font-size: 92%;
+  text-decoration: underline;
+  margin: 0;
+  padding: 0.25ex 0.75ex;
+}
+
+.more a:hover {
+  color: rgb(117,144,174);
+  text-decoration: none;
+}
+
+.rowOfBoxes {
+  clear: both;
+}
+
+.quarter, .oneThird, .half, .twoThirds, .fullWidth {
+  margin: 1em 0;
+  float: left;
+  border-left: 1px solid #3a3a3a;
+}
+
+.quarter {
+  width: 21%;
+  padding: 0 1.9%;
+}
+
+.oneThird {
+  width: 28%;
+  padding: 0 1.9%;
+}
+
+.half {
+  /*text-align: justify;*/
+  width: 46%;
+  padding: 0 1.9%;
+}
+
+.twoThirds {
+  text-align: justify;
+  width: 63%;
+  padding: 0 1.9%;
+}
+
+.fullWidth {
+  text-align: justify;
+  width: 96%;
+  padding: 0 1.9%;
+  border-left: none;
+}
+
+.filler {  /* use with an empty <p> element to add padding to the end of a text box */
+  border: 1px solid #3a3a3a;
+}
+ 
+.noBorderOnLeft {
+  border-left: none;
+}
+
+.dividingBorderAbove {
+  border-top: 1px solid #3a3a3a;
+}
+
+.downloadFloat { /* Floating download box on index page */
+  display: block;
+  /*width: 260px;*/
+  /*background-color: #202020; */
+  margin: 0 auto; /** Centres the box horizontally */
+  line-height: 0em;
+  /*border: 2px solid #aaaaaa;*/
+  /*
+  font-size: 1.7em;
+  text-align: center;
+  */
+  
+  padding: 1ex 10px;
+  margin-top: 30px;
+}
+.downloadFloat:hover {
+	background: #505050;
+	color: #FFFFFF;
+}
+
+.downloadFloat p {
+	text-align: center;
+    font-size: 1.7em;
+    color: #FFFFFF;
+    padding: 0px;
+
+}
+
+p.downloadSmall {
+    font-size: 0.8em;
+    color: #FFFFFF;
+}
+
+.splash_link {
+    font-size: 1.1em;
+}
+
+.splash {
+    margin:0 auto;
+    width: 300px;
+}
+
+.features_link {
+    font-size: 1.3em;
+}
+
+.features {
+    text-align: left;
+}
+.features h1 {
+    text-align: center;
+}
+
+.communityFloat { /* Floating community box on index page */
+  /*position: relative; */
+  /*float: middle;*/
+  display: block;
+  vertical-align: middle;
+  width: 260px;
+  height: 65px;
+  /*border: 2px solid #828282;  */
+  background-color: #0d0d0d;
+  /*font-size: 1.3em;*/
+  text-align: center;
+  line-height: 3em;
+  padding: 1ex 10px;
+  /*padding-left: 10px;
+  padding-right:0px;*/
+  margin: 0 auto;
+  margin-top: 30px;
+  /*margin-left: 5px;
+  margin-right: 10px;*/
+  padding-bottom: 30px;
+}
+
+.communityFloat p {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+.communityFloat a {
+    font-size: 1.0em;
+    text-decoration: none;
+    color: #cecece;
+}
+.communityFloat a:hover {
+    color: #ffffff;
+}
+
+/* More elegant alternatives to .noBorderOnLeft & .dividingBorderAbove
+ * that don't require the creation of new classes - but which are not
+ * supported by MSIE - are the following:
+ *
+ * .rowOfBoxes > div:first-child {
+ *   border-left: none;
+ * }
+ *
+ * .rowOfBoxes + .rowOfBoxes {
+ *   border-top: 1px solid rgb(204,204,204);
+ * }
+ */
+
+
+/* ##### Footer ##### */
+
+#footer {
+  color: #ffffff;
+  background-color: #1e1e1e;
+  font-size: 87%;
+  text-align: center;
+  line-height: 1.25em;
+  margin: 2em 0 0 0;
+  padding: 1ex 10px;
+  clear: left;
+}
+
+#footer a {
+  color: #3060ff;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+#footer a:hover {
+  text-decoration: none;
+}

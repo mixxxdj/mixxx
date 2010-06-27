@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>jQuery UI Dialog - Basic modal</title>
+	<link type="text/css" href="../../themes/base/ui.all.css" rel="stylesheet" />
+	<script type="text/javascript" src="../../jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="../../ui/ui.core.js"></script>
+	<script type="text/javascript" src="../../ui/ui.draggable.js"></script>
+	<script type="text/javascript" src="../../ui/ui.resizable.js"></script>
+	<script type="text/javascript" src="../../ui/ui.dialog.js"></script>
+	<script type="text/javascript" src="../../external/bgiframe/jquery.bgiframe.js"></script>
+	<link type="text/css" href="../demos.css" rel="stylesheet" />
+	<script type="text/javascript">
+	$(function() {
+		$("#dialog").dialog({
+			bgiframe: true,
+			height: 140,
+			modal: true
+		});
+	});
+	</script>
+</head>
+<body>
+
+
+<div class="demo">
+
+<div id="dialog" title="Basic modal dialog">
+	<p>Adding the modal overlay screen makes the dialog look more prominent because it dims out the page content.</p>
+</div>
+
+<!-- Sample page content to illustrate the layering of the dialog -->
+<div class="hiddenInViewSource" style="padding:20px;">
+	<p>Sed vel diam id libero <a href="http://example.com">rutrum convallis</a>. Donec aliquet leo vel magna. Phasellus rhoncus faucibus ante. Etiam bibendum, enim faucibus aliquet rhoncus, arcu felis ultricies neque, sit amet auctor elit eros a lectus.</p>
+	<form>
+		<input value="text input" /><br />
+		<input type="checkbox" />checkbox<br />
+		<input type="radio" />radio<br />
+		<select>
+			<option>select</option>
+		</select><br /><br />
+		<textarea>textarea</textarea><br />
+	</form>
+</div><!-- End sample page content -->
+
+</div><!-- End demo -->
+
+<div class="demo-description">
+
+<p>A modal dialog prevents the user from interacting with the rest of the page until it is closed.  To add a semi-transparent layer that dims out the page content behind the dialog, set the background color and opacity of the <code>overlay</code> option.</p>
+
+</div><!-- End demo-description -->
+
+</body>
+</html>
