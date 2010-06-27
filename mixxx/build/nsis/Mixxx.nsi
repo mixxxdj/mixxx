@@ -142,7 +142,7 @@ Section "Mixxx (required)" SecMixxx
   File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist\midi\*.*
 
   SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
-  File /r "${BASE_BUILD_DIR}\dist\promo\${PRODUCT_VERSION}\*"
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist\promo\${PRODUCT_VERSION}\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist\keyboard\Standard.kbd.cfg"
