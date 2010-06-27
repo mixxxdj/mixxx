@@ -18,6 +18,7 @@ class Sampler : public QObject
             int samplerNumber, const char* pGroup);
         ~Sampler();
         QString getGroup();
+        QString getLoadedTrackLocation();
     public slots:
         void slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos=false);
         void slotFinishLoading(TrackInfoObject* pTrackInfoObject);

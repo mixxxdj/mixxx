@@ -125,6 +125,10 @@ TrackInfoObject* SamplerManager::lookupTrack(QString location) {
     return pTrack;
 }
 
+QString SamplerManager::getTrackLocation(int sampler) {
+    return m_samplers[sampler-1]->getLoadedTrackLocation();
+}
+
 void SamplerManager::slotLoadToSampler(QString location, int sampler) {
     Sampler* pSampler = getSampler(sampler);
 

@@ -25,6 +25,8 @@ class SamplerManager : public QObject {
         
         Sampler* getSampler(int Sampler);
         Sampler* getSampler(QString group);
+        
+        QString getTrackLocation(int sampler);
 
     public slots:
         void slotLoadTrackToSampler(TrackInfoObject* pTrack, int sampler);
