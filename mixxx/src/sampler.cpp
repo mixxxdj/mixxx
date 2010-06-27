@@ -89,6 +89,13 @@ Sampler::~Sampler()
     delete m_pBPM;
 }
 
+QString Sampler::getLoadedTrackLocation() {
+    if(m_pLoadedTrack) {
+        return m_pLoadedTrack->getLocation();
+    }
+    return "";
+}
+
 void Sampler::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 {
     //Disconnect the old track's signals.
