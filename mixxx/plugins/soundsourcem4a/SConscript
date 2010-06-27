@@ -599,7 +599,10 @@ else:
 	ssm4a_bin = env.SharedLibrary('soundsourcem4a', sources)
 
 #Pass this soundsourcem4a library object file back to the SConscript above us.
-Return("ssm4a_bin")
+if int(flags_m4a):
+	Return("ssm4a_bin")
+else
+    Return("")
 
 """
 if platform in ('linux', 'bsd'):
