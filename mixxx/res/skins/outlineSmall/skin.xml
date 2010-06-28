@@ -1204,46 +1204,47 @@
 	</TableView>
 
 	<SamplerView>
+		<PushButton>
+			<Tooltip>Left Click: Play from beginning.</Tooltip>
+			<NumberStates>2</NumberStates>
+			<State>
+				<Number>0</Number>
+				<Pressed>play-off-Ch1.png</Pressed>
+				<Unpressed>play-off-Ch1.png</Unpressed>
+			</State>
+			<State>
+				<Number>1</Number>
+				<Pressed>play-on-Ch1.png</Pressed>
+				<Unpressed>play-on-Ch1.png</Unpressed>
+			</State>
+			<Pos>0, 0</Pos>
+			<Connection>
+				<ConfigKey>[Channel3],play</ConfigKey>
+				<EmitOnDownPress>true</EmitOnDownPress>
+				<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			<Connection>
+				<ConfigKey>[Channel3],start</ConfigKey>
+				<EmitOnDownPress>true</EmitOnDownPress>
+				<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+
+		<Overview>
+			<Tooltip>Overview display of waveform</Tooltip>
+			<Channel>3</Channel>
+			<Pos>0,60</Pos>
+			<Size>201,27</Size>
+			<BgColor>#fafafa</BgColor>
+			<SignalColor>#00ff00</SignalColor>
+			<MarkerColor>#0000ff</MarkerColor>
+			<Connection>
+				<ConfigKey>[Channel3],playposition</ConfigKey>
+				<EmitOnDownPress>false</EmitOnDownPress>
+			</Connection>
+		</Overview>
 	</SamplerView>
 
-	<PushButton>
-		<Tooltip>Left Click: Play from beginning.</Tooltip>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>play-off-Ch1.png</Pressed>
-			<Unpressed>play-off-Ch1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>play-on-Ch1.png</Pressed>
-			<Unpressed>play-on-Ch1.png</Unpressed>
-		</State>
-		<Pos>10, 600</Pos>
-		<Connection>
-			<ConfigKey>[Channel3],play</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel3],start</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-	</PushButton>
 	
-	<Overview>
-		<Tooltip>Overview display of waveform</Tooltip>
-		<Channel>3</Channel>
-		<Pos>10,650</Pos>
-		<Size>201,13</Size>
-		<BgColor>#fafafa</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<MarkerColor>#0000ff</MarkerColor>
-		<Connection>
-			<ConfigKey>[Channel3],playposition</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-		</Connection>
-	</Overview>
 	
 </skin>

@@ -138,7 +138,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
-    m_pSamplerPage = 0;
 #ifdef __LADSPA__
     m_pTabWidgetEffectsPage = 0;
 #endif
@@ -146,7 +145,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pEffectsPageLayout = new QGridLayout();
     m_pSamplerLayout = new QGridLayout();
     m_pSplitter = 0;
-    m_pSamplerSplitter = 0;
+    m_pSamplerWindow = 0;
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
 
@@ -530,8 +529,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 bg->setPixmap(*background);
                 bg->lower();
                 m_qWidgetList.append(bg);
-                this->setFixedSize(background->width(),background->height()+100);
-		parent->setMinimumSize(background->width(), background->height()+100);
+                this->setFixedSize(background->width(),background->height());
+		parent->setMinimumSize(background->width(), background->height());
                 this->move(0,0);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -784,14 +783,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     }
                     m_pOverviewCh2->setup(node);
 		    m_pOverviewCh2->show();
-                } else if (WWidget::selectNodeInt(node, "Channel")==3)
-                {
-                    if (m_pOverviewCh3 == 0) {
-                        m_pOverviewCh3 = new WOverview("[Channel3]", this);
-                        //m_qWidgetList.append(m_pOverviewCh2);
-                    }
-                    m_pOverviewCh3->setup(node);
-		    m_pOverviewCh3->show();
                 }
             }
 
@@ -934,24 +925,41 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="SamplerView")
             {
-                
-                
-                m_pSamplerPage = new QWidget(this);
-                m_pSamplerPage->resize(800,120);
-                m_pSamplerPage->move(0,590);
-                
+                m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
+                m_pSamplerWindow->resize(800,100);
+                m_pSamplerWidget = new QWidget(m_pSamplerWindow);
+                m_pSamplerLayout = new QGridLayout(m_pSamplerWidget);
                 m_pSamplerLayout->setContentsMargins(0, 0, 0, 0);
-                m_pSamplerPage->setLayout(m_pSamplerLayout);
+                m_pSamplerLayout->setSpacing(2);
+                m_pSamplerWidget->setLayout(m_pSamplerLayout);
                 
-                m_pSamplerSplitter = new QSplitter(m_pSamplerPage);
-                m_pSampler = new WSampler(m_pSamplerSplitter);
                 
-                m_pSamplerSplitter->addWidget(m_pSampler);
-                m_pSamplerLayout->addWidget(m_pSamplerSplitter, 1, 0, 1,3,0);
+                QDomNode samplerNode = node.firstChild();
+                while (!samplerNode.isNull())
+                {
+                    if (samplerNode.nodeName()=="PushButton")
+                    {
+                        WPushButton * p = new WPushButton(m_pSamplerWidget);
+                        p->setup(samplerNode);
+                        p->installEventFilter(m_pKeyboard);
+                        m_pSamplerLayout->addWidget(p);
+                        m_qWidgetList.append(p);
+                    } else if (samplerNode.nodeName()=="Overview")
+                    {
+                        if (WWidget::selectNodeInt(samplerNode, "Channel")==3)
+                        {
+                            if (m_pOverviewCh3 == 0)
+                                m_pOverviewCh3 = new WOverview("[Channel3]", m_pSamplerWidget);
+                            m_pOverviewCh3->setup(samplerNode);
+                            m_pSamplerLayout->addWidget(m_pOverviewCh3,0,2);
+            		        m_pOverviewCh3->show();
+                        }
+                    }
+                    samplerNode = samplerNode.nextSibling();
+                    
+                }
+                m_pSamplerWindow->show();
                 
-                m_pSampler->setup(node);
-                
-                m_pSamplerPage->show();
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {
@@ -996,8 +1004,10 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
     if (m_pOverviewCh2) m_pOverviewCh2->hide();
+    if (m_pOverviewCh3) m_pOverviewCh3->hide();
     if (m_pLineEditSearch) m_pLineEditSearch->hide();
     if (m_pTabWidget) m_pTabWidget->hide();
+    if (m_pSamplerWindow) m_pSamplerWindow->hide();
 
     //load the skin
     QDomElement docElem = openSkin(qSkinPath);
