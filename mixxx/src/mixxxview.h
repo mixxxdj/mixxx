@@ -103,6 +103,8 @@ public:
     QPushButton *m_pPushButton;
     /** Pointer to overview displays */
     WOverview *m_pOverviewCh1, *m_pOverviewCh2, *m_pOverviewCh3;
+    
+    QFrame* m_pSamplerWindow;
 
     void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
@@ -140,17 +142,13 @@ private:
     QWidget* m_pTabWidgetLibraryPage;
     /** The widget containing the effects/LADSPA page */
     QWidget* m_pTabWidgetEffectsPage;
-    /** The widget containing the sampler page */
-    QWidget* m_pSamplerPage;
     /** The layout for the library page. Allows stuff to resize automatically */
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
-    QGridLayout* m_pSamplerLayout;
 
 	// The splitter widget that contains the library panes
 	QSplitter *m_pSplitter;
-    QSplitter *m_pSamplerSplitter;
     // The library widget
     WLibrary* m_pLibraryWidget;
     // The library manager
@@ -164,6 +162,8 @@ private:
     
     SamplerManager* m_pSamplerManager;
     
+    QWidget* m_pSamplerWidget;
+    QGridLayout* m_pSamplerLayout;
     WSampler* m_pSampler;
 
 #ifdef __LADSPA__
