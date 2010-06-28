@@ -280,7 +280,6 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
-    playButton->set(0.0);
     slotControlSeek(0.);
 
     // Let the engine know that a track is loaded now.
@@ -697,6 +696,9 @@ void EngineBuffer::hintReader(const double dRate,
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEnd->set(1.0);
+    
+    //Stop playback
+    playButton->set(0.0);
 
     // Signal to the reader to load the track. The reader will respond with
     // either trackLoaded or trackLoadFailed signals.
