@@ -13,8 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QString>
-#include <QDebug>
+#include <QtCore>
 #include "audiopath.h"
 
 ChannelGroup::ChannelGroup(unsigned int channelBase, unsigned int channels)
@@ -51,151 +50,127 @@ unsigned int ChannelGroup::getHash() const {
 }
 
 AudioPath::AudioPath(unsigned int channelBase, unsigned int channels)
-  : m_channelGroup(channelBase, channels) {
+    : m_channelGroup(channelBase, channels) {
 }
 
-bool AudioPath::channelsClash(const AudioPath& other) const {
-    return m_channelGroup.clashesWith(other.m_channelGroup);
+AudioPath::AudioPathType AudioPath::getType() const {
+    return m_type;
 }
 
 ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;
 }
 
-AudioSource::AudioSource(AudioSource::AudioSourceType type, unsigned int channelBase,
-            unsigned int channels, unsigned int index /* = 0 */)
-  : AudioPath(channelBase, channels)
-  , m_type(type) {
-    switch (type) {
-    case DECK:
-    case PASSTHROUGH:
-    case MICROPHONE:
-        m_index = index;
-        break;
-    default:
-        m_index = 0;
-        break;
-    }
-}
-
-AudioSource::AudioSourceType AudioSource::getType() const {
-    return m_type;
-}
-
-unsigned int AudioSource::getIndex() const {
+unsigned int AudioPath::getIndex() const {
     return m_index;
 }
 
-bool AudioSource::operator==(const AudioSource& other) const {
+bool AudioPath::operator==(const AudioPath& other) const {
     return m_type == other.m_type
         && m_index == other.m_index
         && m_channelGroup == other.m_channelGroup;
 }
 
-/**
- * Gives a string describing the AudioSource for user benefit.
- * @returns A QString. Ideally will use tr() for i18n but the rest of mixxx
- *          doesn't at the moment so worry about that later. :)
- */
-QString AudioSource::getString() const {
-    switch (m_type) {
-    case MASTER:
-        return QString::fromAscii("Master");
-        break;
-    case HEADPHONES:
-        return QString::fromAscii("Headphones");
-        break;
-    case DECK:
-        return QString::fromAscii("Deck %1").arg(m_index + 1);
-        break;
-    case PASSTHROUGH:
-        return QString::fromAscii("Passthrough %1").arg(m_index + 1);
-        break;
-    case MICROPHONE:
-        return QString::fromAscii("Microphone %1").arg(m_index + 1);
-        break;
-    default:
-        qDebug() << "Got to end of m_type switch in "
-            "AudioSource::getString";
-        return QString("Unknown AudioSource type " + m_type);
-        break;
-    }
-}
-
-unsigned int AudioSource::getHash() const {
+unsigned int AudioPath::getHash() const {
     return ((m_type & 0xFF) << 24)
         | ((m_index & 0xFF) << 16)
         | (m_channelGroup.getHash() << 8);
 }
 
-unsigned int qHash(const AudioSource &src) {
-    return src.getHash();
+bool AudioPath::channelsClash(const AudioPath& other) const {
+    return m_channelGroup.clashesWith(other.m_channelGroup);
 }
 
-AudioReceiver::AudioReceiver(AudioReceiver::AudioReceiverType type, unsigned int channelBase,
-            unsigned int channels, unsigned int index /* = 0 */)
-  : AudioPath(channelBase, channels)
-  , m_type(type) {
+/**
+ * Gives a string describing the AudioPath for user benefit.
+ * @returns A QString. Ideally will use tr() for i18n but the rest of mixxx
+ *          doesn't at the moment so worry about that later. :)
+ */
+QString AudioPath::getString() const {
+    if (isIndexable(m_type)) {
+        return QString("%1 %2").arg(getStringFromType(m_type)).arg(m_index + 1);
+    }
+    return getStringFromType(m_type);
+}
+
+//static
+QString AudioPath::getStringFromType(AudioPathType type) {
     switch (type) {
+    case MASTER:
+        return QString::fromAscii("Master");
+    case HEADPHONES:
+        return QString::fromAscii("Headphones");
+    case DECK:
+        return QString::fromAscii("Deck");
+    case VINYLCONTROL:
+        return QString::fromAscii("Vinyl Control");
+    case MICROPHONE:
+        return QString::fromAscii("Microphone");
+    case PASSTHROUGH:
+        return QString::fromAscii("Passthrough");
+    }
+    return QString::fromAscii("Unknown path type %1").arg(type);
+}
+
+//static
+bool AudioPath::isIndexable(AudioPathType type) {
+    switch (type) {
+    case DECK:
     case VINYLCONTROL:
     case PASSTHROUGH:
     case MICROPHONE:
-        m_index = index;
-        break;
+        return true;
     default:
-        m_index = 0;
         break;
+    }
+    return false;
+}
+
+AudioSource::AudioSource(AudioPath::AudioPathType type, unsigned int channelBase,
+            unsigned int channels, unsigned int index /* = 0 */)
+    : AudioPath(channelBase, channels) {
+    if (getSupportedTypes().contains(type)) {
+        m_type = type;
+    }
+    if (isIndexable(type)) {
+        m_index = index;
+    } else {
+        index = 0;
     }
 }
 
-AudioReceiver::AudioReceiverType AudioReceiver::getType() const {
-    return m_type;
+//static
+QList<AudioPath::AudioPathType> AudioSource::getSupportedTypes() {
+    QList<AudioPath::AudioPathType> types;
+    types.append(MASTER);
+    types.append(HEADPHONES);
+    types.append(DECK);
+    return types;
 }
 
-unsigned int AudioReceiver::getIndex() const {
-    return m_index;
+AudioReceiver::AudioReceiver(AudioPath::AudioPathType type, unsigned int channelBase,
+            unsigned int channels, unsigned int index /* = 0 */)
+  : AudioPath(channelBase, channels) {
+    if (getSupportedTypes().contains(type)) {
+        m_type = type;
+    }
+    if (isIndexable(type)) {
+        m_index = index;
+    } else {
+        index = 0;
+    }
 }
 
-bool AudioReceiver::operator==(const AudioReceiver& other) const {
-    return m_type == other.m_type
-        && m_index == other.m_index
-        && m_channelGroup == other.m_channelGroup;
+//static
+QList<AudioPath::AudioPathType> AudioReceiver::getSupportedTypes() {
+    QList<AudioPath::AudioPathType> types;
+    types.append(VINYLCONTROL);
+    return types;
 }
 
-/**
- * Gives a string describing an AudioReceiver for user benefit.
- * @returns A QString. Ideally will use tr() for i18n but the rest of mixxx
- *          doesn't at the moment so worry about that later. :)
- */
-QString AudioReceiver::getString() const {
-   switch (m_type) {
-   case VINYLCONTROL:
-       return QString::fromAscii("Vinyl Control %1").arg(m_index + 1);
-       break;
-   case MICROPHONE:
-       return QString::fromAscii("Microphone %1").arg(m_index + 1);
-       break;
-   case PASSTHROUGH:
-       return QString::fromAscii("Passthrough %1").arg(m_index + 1);
-       break;
-   default:
-        qDebug() << "Got to end of m_type switch in "
-            "AudioReceiver::getString";
-        return QString("Unknown AudioReceiver type " + m_type);
-        break;
-   } 
-}
 
-/**
- * Packs the 4 int values in a receiver into one int (works under the
- * assumptions that sizeof(int) is 4, as it likely is in most platforms mixxx
- * is run on, 
- */
-unsigned int AudioReceiver::getHash() const {
-    return ((m_type & 0xFF) << 24)
-        | ((m_index & 0xFF) << 16)
-        | (m_channelGroup.getHash() << 8);
-
+unsigned int qHash(const AudioSource &src) {
+    return src.getHash();
 }
 
 unsigned int qHash(const AudioReceiver &recv) {

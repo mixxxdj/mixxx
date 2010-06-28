@@ -38,16 +38,32 @@ private:
 /**
  * @class AudioPath
  * @brief Describes a path for audio to take.
- * @warning Shouldn't be instantiated, use one of the subclasses.
+ * @warning Subclass me before using!
  */
 class AudioPath {
 public:
+    enum AudioPathType {
+        MASTER,
+        HEADPHONES,
+        DECK,
+        VINYLCONTROL,
+        MICROPHONE,
+        PASSTHROUGH
+    };
     AudioPath(unsigned int channelBase, unsigned int channels);
-    bool channelsClash(const AudioPath& other) const;
+    AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
+    unsigned int getIndex() const;
+    bool operator==(const AudioPath& other) const;
+    unsigned int getHash() const;
+    bool channelsClash(const AudioPath& other) const;
+    QString getString() const;
+    static QString getStringFromType(AudioPathType type);
+    static bool isIndexable(AudioPathType type);
 protected:
+    AudioPathType m_type;
     ChannelGroup m_channelGroup;
-private:
+    unsigned int m_index;
 };
 
 /**
@@ -58,23 +74,9 @@ private:
  */
 class AudioSource : public AudioPath {
 public:
-    enum AudioSourceType { 
-        MASTER,
-        HEADPHONES,
-        DECK,
-        PASSTHROUGH,
-        MICROPHONE
-    };
-    AudioSource(AudioSourceType type, unsigned int channelBase,
+    AudioSource(AudioPathType type, unsigned int channelBase,
                 unsigned int channels, unsigned int index = 0);
-    AudioSourceType getType() const;
-    unsigned int getIndex() const;
-    bool operator==(const AudioSource& other) const;
-    QString getString() const;
-    unsigned int getHash() const;
-private:
-    AudioSourceType m_type;
-    unsigned int m_index; // index of indexed sources (ex. decks)
+    static QList<AudioPathType> getSupportedTypes();
 };
 
 /**
@@ -85,21 +87,9 @@ private:
  */
 class AudioReceiver : public AudioPath {
 public:
-    enum AudioReceiverType { 
-        VINYLCONTROL,
-        MICROPHONE,
-        PASSTHROUGH
-    };
-    AudioReceiver(AudioReceiverType type, unsigned int channelBase,
+    AudioReceiver(AudioPathType type, unsigned int channelBase,
                   unsigned int channels, unsigned int index = 0);
-    AudioReceiverType getType() const;
-    unsigned int getIndex() const;
-    bool operator==(const AudioReceiver& other) const;
-    QString getString() const;
-    unsigned int getHash() const;
-private:
-    AudioReceiverType m_type;
-    unsigned int m_index; // index of indexed sources (ex. decks)
+    static QList<AudioPathType> getSupportedTypes();
 };
 
 // globals for QHash
