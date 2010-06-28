@@ -81,5 +81,6 @@ void LADSPAInstanceStereo::process(const CSAMPLE * pInLeft, const CSAMPLE * pInR
 
 void LADSPAInstanceStereo::connect(unsigned long port, LADSPA_Data * buffer)
 {
+	qDebug() << "FXUNITS: LADSPAInstanceStereo::connect" << *buffer;
     getDescriptor()->connect_port(m_Handle, port, buffer);
 }

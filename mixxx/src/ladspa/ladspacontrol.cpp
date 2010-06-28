@@ -33,6 +33,7 @@ void LADSPAControl::setValue(LADSPA_Data value)
 #ifdef __LADSPA_SIMPLE_CONTROL__
     m_Value = value;
 #else
+    m_Value = value;
     if (m_Value != value)
     {
         // value has changed
