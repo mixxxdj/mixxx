@@ -2,6 +2,11 @@
  * @file audiopath.h
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100611
+ * @note This file/these classes use uchar instead of uint because they are
+ *       passed around a lot in code which needs to be fast (portaudio
+ *       callback). Using uchars means an AudioPath should fit in 4 bytes of
+ *       memory and hopefully last longer in high-level cache -- hopefully.
+ *       None of these values should really be >255 anyway. -- bkgood
  */
 
 /***************************************************************************
@@ -20,19 +25,20 @@
 
 /**
  * @class ChannelGroup
- * @brief Describes a group of channels, typically a pair for stereo sound in Mixxx.
+ * @brief Describes a group of channels, typically a pair for stereo sound in
+ *        Mixxx.
  */
 class ChannelGroup {
 public:
-    ChannelGroup(unsigned int channelBase, unsigned int channels);
-    unsigned int getChannelBase() const;
-    unsigned int getChannelCount() const;
+    ChannelGroup(unsigned char channelBase, unsigned char channels);
+    unsigned char getChannelBase() const;
+    unsigned char getChannelCount() const;
     bool operator==(const ChannelGroup &other) const;
     bool clashesWith(const ChannelGroup &other) const;
     unsigned int getHash() const;
 private:
-    unsigned int m_channelBase; // base (first) channel used on device 
-    unsigned int m_channels; // number of channels used (s/b 2 in most cases)
+    unsigned char m_channelBase; // base (first) channel used on device 
+    unsigned char m_channels; // number of channels used (s/b 2 in most cases)
 };
 
 /**
@@ -43,27 +49,32 @@ private:
 class AudioPath {
 public:
     enum AudioPathType {
-        MASTER,
+        MASTER = 0, // guaranteed by the standard, make sure it happens
         HEADPHONES,
         DECK,
         VINYLCONTROL,
         MICROPHONE,
         PASSTHROUGH
     };
-    AudioPath(unsigned int channelBase, unsigned int channels);
+    AudioPath(unsigned char channelBase, unsigned char channels);
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
-    unsigned int getIndex() const;
+    unsigned char getIndex() const;
     bool operator==(const AudioPath& other) const;
     unsigned int getHash() const;
     bool channelsClash(const AudioPath& other) const;
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
     static bool isIndexable(AudioPathType type);
+    static AudioPathType getTypeFromInt(int typeInt);
+    static unsigned char channelsNeededForType(AudioPathType type);
 protected:
-    AudioPathType m_type;
+    void setType(AudioPathType type);
+    // if the number of constants in AudioPathType ever exceeds 256, change
+    // m_type to type AudioPathType, fix methods accordingly and then run away
+    unsigned char m_type;
     ChannelGroup m_channelGroup;
-    unsigned int m_index;
+    unsigned char m_index;
 };
 
 /**
@@ -74,8 +85,8 @@ protected:
  */
 class AudioSource : public AudioPath {
 public:
-    AudioSource(AudioPathType type, unsigned int channelBase,
-                unsigned int channels, unsigned int index = 0);
+    AudioSource(AudioPathType type, unsigned char channelBase,
+                unsigned char channels, unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
 };
 
@@ -87,8 +98,8 @@ public:
  */
 class AudioReceiver : public AudioPath {
 public:
-    AudioReceiver(AudioPathType type, unsigned int channelBase,
-                  unsigned int channels, unsigned int index = 0);
+    AudioReceiver(AudioPathType type, unsigned char channelBase,
+                  unsigned char channels, unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
 };
 

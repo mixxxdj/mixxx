@@ -16,16 +16,16 @@
 #include <QtCore>
 #include "audiopath.h"
 
-ChannelGroup::ChannelGroup(unsigned int channelBase, unsigned int channels)
+ChannelGroup::ChannelGroup(unsigned char channelBase, unsigned char channels)
   : m_channelBase(channelBase)
   , m_channels(channels) {
 }
 
-unsigned int ChannelGroup::getChannelBase() const {
+unsigned char ChannelGroup::getChannelBase() const {
     return m_channelBase;
 }
 
-unsigned int ChannelGroup::getChannelCount() const {
+unsigned char ChannelGroup::getChannelCount() const {
     return m_channels;
 }
 
@@ -49,19 +49,28 @@ unsigned int ChannelGroup::getHash() const {
     return ((m_channelBase & 0xFF) << 8) | (m_channels & 0xFF);
 }
 
-AudioPath::AudioPath(unsigned int channelBase, unsigned int channels)
+AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
     : m_channelGroup(channelBase, channels) {
 }
 
 AudioPath::AudioPathType AudioPath::getType() const {
-    return m_type;
+    // m_type is only stored in setType, which is safe, so this is safe
+    return AudioPath::AudioPathType(m_type);
+}
+
+// protected
+void AudioPath::setType(AudioPath::AudioPathType type) {
+    // this method is guaranteed safe as long as the caller gives
+    // a proper AudioPathType, i.e. it is as safe as it was when storing m_type
+    // as AudioPathType proper -- bkgood
+    m_type = (unsigned char) type;
 }
 
 ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;
 }
 
-unsigned int AudioPath::getIndex() const {
+unsigned char AudioPath::getIndex() const {
     return m_index;
 }
 
@@ -87,10 +96,11 @@ bool AudioPath::channelsClash(const AudioPath& other) const {
  *          doesn't at the moment so worry about that later. :)
  */
 QString AudioPath::getString() const {
-    if (isIndexable(m_type)) {
-        return QString("%1 %2").arg(getStringFromType(m_type)).arg(m_index + 1);
+    if (isIndexable(getType())) {
+        return QString("%1 %2")
+            .arg(getStringFromType(getType())).arg(m_index + 1);
     }
-    return getStringFromType(m_type);
+    return getStringFromType(getType());
 }
 
 //static
@@ -126,11 +136,43 @@ bool AudioPath::isIndexable(AudioPathType type) {
     return false;
 }
 
-AudioSource::AudioSource(AudioPath::AudioPathType type, unsigned int channelBase,
-            unsigned int channels, unsigned int index /* = 0 */)
+// static
+AudioPath::AudioPathType AudioPath::getTypeFromInt(int typeInt) {
+    switch (typeInt) {
+    case AudioPath::MASTER:
+        return AudioPath::MASTER;
+    case AudioPath::HEADPHONES:
+        return AudioPath::HEADPHONES;
+    case AudioPath::DECK:
+        return AudioPath::DECK;
+    case AudioPath::VINYLCONTROL:
+        return AudioPath::VINYLCONTROL;
+    case AudioPath::PASSTHROUGH:
+        return AudioPath::PASSTHROUGH;
+    case AudioPath::MICROPHONE:
+        return AudioPath::MICROPHONE;
+    }
+    // gcc will warn us here if we missed a type.
+    // if you're reading this and added a new type, check anyway -- bkgood
+}
+
+//static
+unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type)
+{
+    switch (type) {
+    case AudioPath::MICROPHONE:
+        return 1;
+    default:
+        return 2;
+    }
+}
+
+AudioSource::AudioSource(AudioPath::AudioPathType type,
+        unsigned char channelBase, unsigned char channels,
+        unsigned char index /* = 0 */)
     : AudioPath(channelBase, channels) {
     if (getSupportedTypes().contains(type)) {
-        m_type = type;
+        setType(type);
     }
     if (isIndexable(type)) {
         m_index = index;
@@ -148,11 +190,12 @@ QList<AudioPath::AudioPathType> AudioSource::getSupportedTypes() {
     return types;
 }
 
-AudioReceiver::AudioReceiver(AudioPath::AudioPathType type, unsigned int channelBase,
-            unsigned int channels, unsigned int index /* = 0 */)
+AudioReceiver::AudioReceiver(AudioPath::AudioPathType type,
+        unsigned char channelBase, unsigned char channels,
+        unsigned char index /* = 0 */)
   : AudioPath(channelBase, channels) {
     if (getSupportedTypes().contains(type)) {
-        m_type = type;
+        setType(type);
     }
     if (isIndexable(type)) {
         m_index = index;
