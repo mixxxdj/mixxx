@@ -83,3 +83,7 @@ const QString LADSPAPlugin::getLabel()
 {
   return QString(m_pDescriptor->Label);
 }
+
+const LADSPA_Descriptor * LADSPAPlugin::getDescriptor(){
+	return m_pDescriptor;
+}

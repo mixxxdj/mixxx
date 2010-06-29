@@ -89,7 +89,6 @@ LADSPALoader::LADSPALoader()
 				{
 	                m_PluginCount++;
 					m_Plugins.push_back(*plugin);
-					qDebug() << "FXUNITS: LADSPABackend (LADSPALoader): " << (*plugin)->getLabel();
 				}
 			} catch (QString& s) {
 				qDebug() << s;
@@ -103,7 +102,7 @@ LADSPALoader::~LADSPALoader()
     // TODO: unload & free everything
 }
 
-const LADSPAPlugin * LADSPALoader::getByIndex(uint index)
+LADSPAPlugin * LADSPALoader::getByIndex(uint index)
 {
     if (index < m_PluginCount)
     {

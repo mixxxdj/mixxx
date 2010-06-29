@@ -19,7 +19,7 @@ public:
     LADSPALoader();
     ~LADSPALoader();
         
-    const LADSPAPlugin * getByIndex(uint index);
+    LADSPAPlugin * getByIndex(uint index);
     LADSPAPlugin * getByLabel(QString label);
 
 private:

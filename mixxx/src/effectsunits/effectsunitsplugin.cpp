@@ -8,7 +8,7 @@ EffectsUnitsPlugin::EffectsUnitsPlugin(EffectsUnitsBackend * Backend, QString * 
 	m_Name = Name;
 	m_PluginID = PluginID;
 
-	qDebug() << "FXUNITS: EffectsUnitsPlugins: new plugin: " << (*m_Name) << (int) this;
+	//qDebug() << "FXUNITS: EffectsUnitsPlugins: new plugin: " << (*m_Name) << (int) this;
 }
 
 EffectsUnitsPlugin::~EffectsUnitsPlugin() {
@@ -27,3 +27,10 @@ void EffectsUnitsPlugin::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
 QString EffectsUnitsPlugin::getName(){
 	return (*m_Name);
 }
+
+void EffectsUnitsPlugin::addPort(EffectsUnitsPort * port){
+	m_Ports.push_back(port);
+}
+
+
+
