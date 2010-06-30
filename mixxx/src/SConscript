@@ -276,6 +276,7 @@ sources = Split("""
 
                 dlgpreferences.cpp
                 dlgprefsound.cpp
+                dlgprefnewsound.cpp
                 dlgprefmidibindings.cpp
                 dlgprefplaylist.cpp
                 dlgprefnomidi.cpp
@@ -289,6 +290,8 @@ sources = Split("""
                 dlgtrackinfo.cpp
                 dlgprepare.cpp
                 dlgautodj.cpp
+                dlgaudiopath.cpp
+                audiopathmodel.cpp
 
                 engine/engineworker.cpp
                 engine/engineworkerscheduler.cpp
@@ -768,6 +771,7 @@ else:
 #Uic these guys (they're moc'd automatically after this) - Generates the code for the QT UI forms
 env.Uic4('dlgpreferencesdlg.ui')
 env.Uic4('dlgprefsounddlg.ui')
+env.Uic4('dlgprefnewsounddlg.ui')
 env.Uic4('dlgprefmidibindingsdlg.ui')
 env.Uic4('dlgprefplaylistdlg.ui')
 env.Uic4('dlgprefnomididlg.ui')
@@ -784,6 +788,7 @@ env.Uic4('dlgmidilearning.ui')
 env.Uic4('dlgtrackinfo.ui')
 env.Uic4('dlgprepare.ui')
 env.Uic4('dlgautodj.ui')
+env.Uic4('dlgaudiopathdlg.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('#res/mixxx.qrc')
