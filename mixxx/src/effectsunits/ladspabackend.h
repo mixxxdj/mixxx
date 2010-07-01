@@ -19,10 +19,11 @@ public:
 
 private:
 
-	QList<LADSPAPlugin*> m_LADPSAPlugin;		// LADSPAPlugins to preserve instantiate process
+	QList<LADSPAPlugin*> m_LADSPAPlugin;		// LADSPAPlugins to preserve instantiate process
 	QList<LADSPAInstance*> m_LADSPAInstance;	// LADSPAInstance to process audio signals
 	LADSPALoader * m_LADSPALoader;				// LADSPALoader loads all plugins
 	QList<int> m_ActivatedPlugins;
+	QList<QList<LADSPAControl*> *> m_PluginLADSPAControl;
 
 //	LADSPAInstance * m_test;
 //

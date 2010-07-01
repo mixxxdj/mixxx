@@ -24,12 +24,20 @@ void EffectsUnitsPlugin::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
 	m_Backend->process(pIn, pOut, iBufferSize, m_PluginID);
 }
 
+void EffectsUnitsPlugin::activate(){
+	m_Backend->activatePlugin(m_PluginID);
+}
+
 QString EffectsUnitsPlugin::getName(){
 	return (*m_Name);
 }
 
 void EffectsUnitsPlugin::addPort(EffectsUnitsPort * port){
 	m_Ports.push_back(port);
+}
+
+QList<EffectsUnitsPort *> * EffectsUnitsPlugin::getPorts(){
+	return &m_Ports;
 }
 
 

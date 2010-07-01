@@ -25,3 +25,7 @@ void DEBUGBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 void DEBUGBackend::activatePlugin(int PluginID){
 	qDebug() << "FXUNITS: DEBUGBackend: Activating: " << PluginID;
 }
+
+void DEBUGBackend::deactivatePlugin(int PluginID){
+	qDebug() << "FXUNITS: DEBUGBackend: Deactivating: " << PluginID;
+}

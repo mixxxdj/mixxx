@@ -14,10 +14,12 @@ public:
 	~EffectsUnitsPlugin();
 
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+	void activate();
 
 	void addPort(EffectsUnitsPort *);
 
 	QString getName();
+	QList<EffectsUnitsPort *> * getPorts();
 
 private:
 	QString * m_Name;					// Name of the Plugin

@@ -55,6 +55,7 @@ void LADSPABackend::loadPlugins(){
 				port->isAudio = true;
 			} else {
 				port->isAudio = false;
+				port->isBound = false;
 				port->Max = ladspaplugin->getDescriptor()->PortRangeHints[j].UpperBound;
 				port->Min = ladspaplugin->getDescriptor()->PortRangeHints[j].LowerBound;
 				port->Def = port->Min;
@@ -65,8 +66,9 @@ void LADSPABackend::loadPlugins(){
 		}
 
 		m_BackendPlugins.push_back(plugin);
-		m_LADPSAPlugin.push_back(ladspaplugin);
+		m_LADSPAPlugin.push_back(ladspaplugin);
 		m_LADSPAInstance.push_back(NULL);
+		m_PluginLADSPAControl.push_back(NULL);
 
 		i++;
 
@@ -124,9 +126,48 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
 //	}
 }
 
+/* LADSPABackend::activatePlugin
+ * Given a correct PluginID of an unactivated plugin, this is what we're doing to do:
+ * Turn LADSPAPlugin into LADSPAInstance (which has process())
+ * Connect the ports of the instance to LADSPAControls, so we can tweak values
+ */
 void LADSPABackend::activatePlugin(int PluginID){
-	//TODO - Turn plugin into instance
+	if (m_LADSPAInstance.at(PluginID) == NULL && PluginID < PluginIDSequence){
 
+		/* Instantiates the plugin, so we can process it */
+		EffectsUnitsPlugin * fxplugin = m_BackendPlugins.at(PluginID);
+		LADSPAInstance * instance = m_LADSPAPlugin.at(PluginID)->instantiate(0);
+		m_LADSPAInstance.replace(PluginID, instance);
+
+		/* Handle plugins ports */
+		QList<EffectsUnitsPort *> * ports = fxplugin->getPorts();
+		QList<LADSPAControl *> * controls = new QList<LADSPAControl *>();
+		LADSPAControl * current;
+
+		int size = ports->size();
+		for (int i = 0; i < size; i++){
+			/* If its an audio port, it doesnt need a control */
+			if (ports->at(i)->isAudio){
+				controls->push_back(NULL);
+
+			/* Creates a new LADSPAControl, connects its buffer to the plugin, assign default value */
+			} else {
+				current = new LADSPAControl();
+				current->setValue(ports->at(i)->Def);
+				instance->connect(i, current->getBuffer());
+				controls->push_back(current);
+			}
+		}
+
+		/* Adds this plugin to the list of activated ones */
+		m_ActivatedPlugins.push_back(PluginID);
+
+		/* Adds the list of controls to be processed */
+		m_PluginLADSPAControl.replace(PluginID, controls);
+
+		qDebug() << "FXUNITS: LADSPABackend: Activating: " << fxplugin->getName();
+
+	}
 }
 
 void LADSPABackend::deactivatePlugin(int PluginID){

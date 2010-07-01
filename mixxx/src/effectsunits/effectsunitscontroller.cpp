@@ -17,7 +17,7 @@ EffectsUnitsController::EffectsUnitsController() {
 	loadAllPlugins();
 
 	//test:
-	activatePluginOnSource("djFlanger", "[Channel1]");
+	activatePluginOnSource("adjFlanger", "[Channel1]");
 	//activatePluginOnSource("LoFiC12", "[Channel1]");
 
 }
@@ -45,7 +45,11 @@ void EffectsUnitsController::loadAllPlugins(){
  * i.e. activatePluginOnSource("Delay", [Channel1])
  */
 void EffectsUnitsController::activatePluginOnSource(QString PluginName, QString Source){
-	m_pEngine->addPluginToSource(getPluginByName(PluginName), Source);
+	EffectsUnitsPlugin * current = getPluginByName(PluginName);
+	if (current != NULL){
+		current->activate();
+		m_pEngine->addPluginToSource(current, Source);
+	}
 }
 
 /* EffectsUnitsController::getPluginByName

@@ -8,11 +8,13 @@
 #ifndef EFFECTSUNITSPORT_H_
 #define EFFECTSUNITSPORT_H_
 
+#include "../controlobject.h"
+
 typedef struct _EffectsUnitsPort{
 		QString * Name;
-        double Min;
-        double Max;
-        double Def;
+        float Min;
+        float Max;
+        float Def;
         bool isAudio;
         bool isBound;
         ControlObject * bind;
