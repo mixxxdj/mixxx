@@ -1,5 +1,5 @@
 /**
- * \file SoundSourceFLAC.h
+ * \file sourdsourceflac.h
  * \class SoundSourceFLAC
  * \brief Decodes FLAC files using libFLAC for Mixxx.
  * \author Bill Good <bkgood at gmail dot com>
@@ -31,10 +31,12 @@ class SoundSourceFLAC : public SoundSource {
 public:
     SoundSourceFLAC(QString filename);
     ~SoundSourceFLAC();
-    long seek(long);
+    int open();
+    long seek(long filepos);
     unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
-    static int ParseHeader(TrackInfoObject *track);
+    int parseHeader();
+    static QList<QString> supportedFileExtensions();
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
@@ -60,7 +62,9 @@ private:
     unsigned int m_maxFramesize;
     FLAC__int16 *m_flacBuffer; // buffer for the write callback to write a single frame's worth of samples to,
                                // interleaved as LR LR LR ... (for stereo) or LI LI LI ... (for mono)
-    unsigned int m_samplesRead;
+    FLAC__int16 *m_leftoverBuffer;
+    unsigned int m_flacBufferLength;
+    unsigned int m_leftoverBufferLength;
 };
 
 // callbacks for libFLAC
