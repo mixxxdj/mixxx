@@ -60,7 +60,8 @@ QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) con
 
     QDomNode songNode = m_trackNodes.at(index.row());
 
-    if (role == Qt::DisplayRole) {
+    // tooltips and the display role should be the same thing.
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
         if ( index.column() > m_ColumnNames.size())
             return QVariant();
 

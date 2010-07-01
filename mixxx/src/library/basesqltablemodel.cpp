@@ -50,7 +50,7 @@ bool BaseSqlTableModel::select() {
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid())
         return QVariant();
-    
+
     int row = index.row();
     int col = index.column();
 
@@ -93,7 +93,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     return QSqlTableModel::data(index, role);
 }
 
-void BaseSqlTableModel::trackChanged(int trackId) { 
+void BaseSqlTableModel::trackChanged(int trackId) {
     m_trackOverrides.insert(trackId);
     qDebug() << "trackChanged" << trackId;
     if (m_trackIdToRow.contains(trackId)) {
@@ -134,7 +134,12 @@ QString BaseSqlTableModel::orderByClause() const {
     // If the field is a string, sort using its lowercase form so sort is
     // case-insensitive.
     QVariant::Type type = f.type();
-    if (type == QVariant::String) {
+
+    // TODO(XXX) Instead of special-casing tracknumber here, we should ask the
+    // child class to format the expression for sorting.
+    if (sort_field.contains("tracknumber")) {
+        sort_field = QString("cast(%1 as integer)").arg(sort_field);
+    } else if (type == QVariant::String) {
         sort_field = QString("lower(%1)").arg(sort_field);
     }
     s.append(sort_field);
