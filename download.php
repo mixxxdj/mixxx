@@ -145,12 +145,12 @@
 							<img src="images/beta.png" style="float: left; padding: 10px">
 							<p>The Mixxx 1.8.0 beta includes a brand new library, looping controls, support for multiple MIDI controllers, and more! <p>If you'd like to try out the latest features and are willing to <a href="https://bugs.launchpad.net/mixxx/">report any bugs</a> you find, try the latest <b>(unstable) beta release</b>:</p>
 <br>
-<ul><li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta1/mixxx-1.8.0-beta1-win32.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta1win32'); ">Mixxx 1.8.0-beta1 for Windows (32-bit)</a></li>
-<!-- <li><a href="http://downloads.mixxx.org/mixxx-1.7.0-beta1/mixxx-1.7.0~beta1-win64.exe" onClick="javascript: pageTracker._trackPageview('/downloads/170beta1win64'); ">Mixxx 1.8.0~beta1 for Windows 64-Bit</a><p>(Note: Will ONLY  work with 64-bit Windows)</p></li> -->
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta1/mixxx-1.8.0-beta1-ubuntu-i386.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta1ubuntu'); " >Mixxx 1.8.0-beta1 for Ubuntu 9.10+ (i386 deb)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta1/mixxx-1.8.0-beta1-ubuntu-amd64.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta1ubuntu'); " >Mixxx 1.8.0-beta1 for Ubuntu 9.10+ (amd64 deb)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta1/mixxx-1.8.0-beta1-osx-universal.dmg" onClick="javascript: pageTracker._trackPageview('/downloads/180beta1osx'); ">Mixxx 1.8.0-beta1 for Mac OS X 10.4+ (Universal)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta1/mixxx-1.8.0-beta1-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180beta1linuxsrc'); ">Mixxx 1.8.0-beta1 for Linux (source)</a></li>
+<ul><li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-win32.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2win32'); ">Mixxx 1.8.0-beta2 for Windows (32-bit)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-win64.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2win64'); ">Mixxx 1.8.0-beta2 for Windows (64-Bit)</a><p>(Note: Will ONLY work with 64-bit Windows)</p></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-ubuntu-i386.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2ubuntu'); " >Mixxx 1.8.0-beta2 for Ubuntu 9.10+ (i386 deb)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-ubuntu-amd64.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2ubuntu'); " >Mixxx 1.8.0-beta2 for Ubuntu 9.10+ (amd64 deb)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-osx-universal.dmg" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2osx'); ">Mixxx 1.8.0-beta2 for Mac OS X 10.4+ (Universal)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2linuxsrc'); ">Mixxx 1.8.0-beta2 for Linux (source)</a></li>
 </ul>
 </div>
 						<div id="donate">
