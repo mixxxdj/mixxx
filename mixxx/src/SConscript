@@ -1462,7 +1462,8 @@ if platform in ('linux', 'bsd'):
 		soundsource_plugins = env.Install(unix_lib_path + "/mixxx/plugins/soundsource", soundsource_plugin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
-		ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
+		if int(flags_ladspa):
+			ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
 		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
 		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
@@ -1475,7 +1476,8 @@ if platform in ('linux', 'bsd'):
 		env.Alias('install', soundsource_plugins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
-		env.Alias('install', ladspapresets)
+		if int(flags_ladspa):
+			env.Alias('install', ladspapresets)
 		env.Alias('install', docs)
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
@@ -1533,7 +1535,8 @@ if 'win' in platform:
 	resource = env.Install("#dist/", resource_files)
 	midimappings = env.Install("#dist/midi", midimappings_files)
 	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
-	ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
+	if int(flags_ladspa):
+		ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
 	docs = env.Install("#dist/doc/", docs_files)
 	promotracks = env.Install("#dist/promo/", promotracks_files)
 	#icon = env.Install("#dist", icon_files)
@@ -1546,7 +1549,8 @@ if 'win' in platform:
 	env.Alias('mixxx', resource)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
-	env.Alias('mixxx', ladspapresets)
+	if int(flags_ladspa):
+		env.Alias('mixxx', ladspapresets)
 	env.Alias('mixxx', promotracks)
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)

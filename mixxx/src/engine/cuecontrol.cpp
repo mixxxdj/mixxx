@@ -18,6 +18,7 @@ CueControl::CueControl(const char * _group,
                        ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),
         m_bPreviewing(false),
+        m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(NULL),
@@ -198,7 +199,12 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
     //If cue recall is ON in the prefs, then we're supposed to seek to the cue
     //point on song load. Note that cueRecall == 0 corresponds to "ON", not OFF.
     if (loadCue && cueRecall == 0) {
-        emit(seekAbs(loadCue->getPosition()));
+        double loadCuePoint = loadCue->getPosition();
+
+        // Need to unlock before emitting any signals to prevent deadlock.
+        lock.unlock();
+
+        emit(seekAbs(loadCuePoint));
     }
 }
 
@@ -302,6 +308,10 @@ void CueControl::hotcueGoto(double v) {
 
     int hotcue = senderHotcue(sender());
     Cue* pCue = m_hotcue[hotcue];
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
@@ -320,11 +330,16 @@ void CueControl::hotcueGotoAndStop(double v) {
 
     int hotcue = senderHotcue(sender());
     Cue* pCue = m_hotcue[hotcue];
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            emit(seekAbs(position));
             m_pPlayButton->set(0.0);
+
+            emit(seekAbs(position));
         }
     }
 }
@@ -339,6 +354,8 @@ void CueControl::hotcueActivate(double v) {
 
     int hotcue = senderHotcue(sender());
     Cue* pCue = m_hotcue[hotcue];
+
+    lock.unlock();
 
     if (pCue) {
         if (v == 1.0f) {
@@ -373,16 +390,24 @@ void CueControl::hotcueActivatePreview(double v) {
     if (v == 1.0) {
         if (pCue && pCue->getPosition() != -1) {
             int iPosition = pCue->getPosition();
-            emit(seekAbs(iPosition));
             m_pPlayButton->set(1.0);
-            m_bPreviewing = true;
+            m_bPreviewingHotcue = true;
+
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
+
+            emit(seekAbs(iPosition));
         }
     } else {
-        if (m_bPreviewing && pCue && pCue->getPosition() != -1) {
+        if (m_bPreviewingHotcue && pCue && pCue->getPosition() != -1) {
             int iPosition = pCue->getPosition();
-            emit(seekAbs(iPosition));
             m_pPlayButton->set(0.0);
-            m_bPreviewing = false;
+            m_bPreviewingHotcue = false;
+
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
+
+            emit(seekAbs(iPosition));
         }
     }
 }
@@ -463,7 +488,12 @@ void CueControl::cueGoto(double v)
         m_pPlayButton->set(1.0);
     } else {
         // Seek to cue point
-        emit(seekAbs(m_pCuePoint->get()));
+        double cuePoint = m_pCuePoint->get();
+
+        // Need to unlock before emitting any signals to prevent deadlock.
+        lock.unlock();
+
+        emit(seekAbs(cuePoint));
     }
 }
 
@@ -473,22 +503,33 @@ void CueControl::cueGotoAndStop(double v)
         return;
 
     QMutexLocker lock(&m_mutex);
-    emit(seekAbs(m_pCuePoint->get()));
     m_pPlayButton->set(0.0);
+    double cuePoint = m_pCuePoint->get();
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
+    emit(seekAbs(cuePoint));
 }
 
 void CueControl::cuePreview(double v)
 {
     QMutexLocker lock(&m_mutex);
+
     if (v == 1.0f) {
         m_pPlayButton->set(1.0);
-        emit(seekAbs(m_pCuePoint->get()));
         m_bPreviewing = true;
     } else if (v == 0.0f && m_bPreviewing) {
         m_pPlayButton->set(0.0);
-        emit(seekAbs(m_pCuePoint->get()));
         m_bPreviewing = false;
     }
+
+    double cuePoint = m_pCuePoint->get();
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
+    emit(seekAbs(cuePoint));
 }
 
 void CueControl::cueSimple(double v) {
@@ -499,10 +540,15 @@ void CueControl::cueSimple(double v) {
     // Simple cueing is if the player is not playing, set the cue point --
     // otherwise seek to the cue point.
     if (m_pPlayButton->get() == 0.0f) {
-        cueSet(v);
-    } else {
-        emit(seekAbs(m_pCuePoint->get()));
+        return cueSet(v);
     }
+
+    double cuePoint = m_pCuePoint->get();
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
+    emit(seekAbs(cuePoint));
 }
 
 void CueControl::cueCDJ(double v) {
@@ -515,28 +561,41 @@ void CueControl::cueCDJ(double v) {
 
     QMutexLocker lock(&m_mutex);
     bool playing = (m_pPlayButton->get() == 1.0);
+    double cuePoint = m_pCuePoint->get();
 
     if (v == 1.0f) {
         if (playing) {
             m_pPlayButton->set(0.0);
-            emit(seekAbs(m_pCuePoint->get()));
+
+            // Just in case.
+            m_bPreviewing = false;
+
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
+
+            emit(seekAbs(cuePoint));
         } else {
-            if (getCurrentSample() == m_pCuePoint->get()) {
+            if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
                 m_pPlayButton->set(1.0);
                 m_bPreviewing = true;
             } else {
                 cueSet(v);
+                // Just in case.
+                m_bPreviewing = false;
             }
         }
     } else if (m_bPreviewing) {
         m_pPlayButton->set(0.0);
-        emit(seekAbs(m_pCuePoint->get()));
         m_bPreviewing = false;
+
+        // Need to unlock before emitting any signals to prevent deadlock.
+        lock.unlock();
+
+        emit(seekAbs(cuePoint));
     }
 }
 
 void CueControl::cueDefault(double v) {
-    QMutexLocker lock(&m_mutex);
     // Decide which cue implementation to call based on the user preference
     if (m_pCueMode->get() == 0.0f) {
         cueCDJ(v);
