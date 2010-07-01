@@ -19,22 +19,25 @@ public:
 
 private:
 
-	QList<LADSPAPlugin*> m_LADSPAPlugin;		// LADSPAPlugins to preserve instantiate process
-	QList<LADSPAInstance*> m_LADSPAInstance;	// LADSPAInstance to process audio signals
-	LADSPALoader * m_LADSPALoader;				// LADSPALoader loads all plugins
-	QList<int> m_ActivatedPlugins;
+	/* LADSPAPlugins to preserve instantiate method */
+	QList<LADSPAPlugin*> m_LADSPAPlugin;
+
+	/* LADSPAInstance to process audio signals */
+	QList<LADSPAInstance*> m_LADSPAInstance;
+
+	/* LADSPALoader loads all plugins */
+	LADSPALoader * m_LADSPALoader;
+
+	/* List of LADSPAControls by Plugin, to use change parameter ports */
 	QList<QList<LADSPAControl*> *> m_PluginLADSPAControl;
 
-//	LADSPAInstance * m_test;
-//
-//
-//    LADSPAControl * zero;
-//    LADSPAControl * um;
-//    LADSPAControl * dois;
-//    LADSPAControl * tres;
-//
-//	CSAMPLE * m_pBufferLeft[2];
-//	CSAMPLE * m_pBufferRight[2];
+	/* process(in, out, buf) helpers: */
+	LADSPAInstance * m_beingProcessed;
+	QList<LADSPAControl *> * m_beingUpdated;
+	QList<EffectsUnitsPort *> * m_beingRead;
+	int m_monoBufferSize;
+	CSAMPLE * m_pBufferLeft[2];
+	CSAMPLE * m_pBufferRight[2];
 };
 
 #endif
