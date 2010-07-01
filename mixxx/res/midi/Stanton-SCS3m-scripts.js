@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3m MIDI controller script v1.02             */
+/*      Stanton SCS.3m MIDI controller script v1.03             */
 /*          Copyright (C) 2010, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.7.x                                 */
@@ -57,11 +57,17 @@ StantonSCS3m.init = function (id) {
 
     // Connect cross-fader LEDs & light them
     StantonSCS3m.doConnectSignal("[Master]","crossfader","StantonSCS3m.crossfaderLEDs");
-    
+
     // Connect master signals
+    // Hack: Have to register a down press first to get LEDs to light correctly
+    StantonSCS3m.Master(StantonSCS3m.channel, 0x0E, 0, 0x90+StantonSCS3m.channel);
     StantonSCS3m.Master(StantonSCS3m.channel, 0x0E, 0, 0x80+StantonSCS3m.channel);
 
     // Force change to EQ mode on both sides
+    // Hack: Have to force FX mode first to get LEDs to light correctly
+    StantonSCS3m.FXL(StantonSCS3m.channel, 0x0C, 0, 0x80+StantonSCS3m.channel);
+    StantonSCS3m.FXR(StantonSCS3m.channel, 0x0D, 0, 0x80+StantonSCS3m.channel);
+    // ----
     StantonSCS3m.EQL(StantonSCS3m.channel, 0x0C, 0, 0x80+StantonSCS3m.channel);
     StantonSCS3m.EQR(StantonSCS3m.channel, 0x0D, 0, 0x80+StantonSCS3m.channel);
 
@@ -462,6 +468,8 @@ StantonSCS3m.modeButton = function (channel, control, status, modeName, side) {
         return;
     }
     
+    // If button up
+    
     // If the deck change button for the side in question is held down,
     //  do special functions
     if (StantonSCS3m.modifier["Deck"+side]) {
@@ -857,4 +865,8 @@ StantonSCS3m.Peak = function (numberLights, value, low, high) {
 Possibly add:
 - (Deck + Play = Reverse?)
 - Reset Master & head vols?
+
+TODO:
+- Rework slider mode changes to use presets or timers
+- non-script lights appear to be broken - https://bugs.launchpad.net/mixxx/+bug/586891
 */
