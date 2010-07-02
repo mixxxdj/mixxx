@@ -143,7 +143,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 #endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
-    m_pSamplerLayout = new QGridLayout();
     m_pSplitter = 0;
     m_pSamplerWindow = 0;
     m_pLibrarySidebar = 0;
@@ -927,33 +926,35 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             {
                 m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
                 m_pSamplerWindow->resize(800,100);
-                m_pSamplerWidget = new QWidget(m_pSamplerWindow);
-                m_pSamplerLayout = new QGridLayout(m_pSamplerWidget);
-                m_pSamplerLayout->setContentsMargins(0, 0, 0, 0);
-                m_pSamplerLayout->setSpacing(2);
-                m_pSamplerWidget->setLayout(m_pSamplerLayout);
-                
                 
                 QDomNode samplerNode = node.firstChild();
                 while (!samplerNode.isNull())
                 {
                     if (samplerNode.nodeName()=="PushButton")
                     {
-                        WPushButton * p = new WPushButton(m_pSamplerWidget);
+                        WPushButton * p = new WPushButton(m_pSamplerWindow);
                         p->setup(samplerNode);
                         p->installEventFilter(m_pKeyboard);
-                        m_pSamplerLayout->addWidget(p);
+                        p->setParent(m_pSamplerWindow);
                         m_qWidgetList.append(p);
                     } else if (samplerNode.nodeName()=="Overview")
                     {
                         if (WWidget::selectNodeInt(samplerNode, "Channel")==3)
                         {
                             if (m_pOverviewCh3 == 0)
-                                m_pOverviewCh3 = new WOverview("[Channel3]", m_pSamplerWidget);
+                                m_pOverviewCh3 = new WOverview("[Channel3]", m_pSamplerWindow);
                             m_pOverviewCh3->setup(samplerNode);
-                            m_pSamplerLayout->addWidget(m_pOverviewCh3,0,2);
+                            m_pOverviewCh3->setParent(m_pSamplerWindow);
             		        m_pOverviewCh3->show();
                         }
+                    } else if (samplerNode.nodeName()=="Knob")
+                    {
+                        WKnob * p = new WKnob(this);
+                        p->setup(samplerNode);
+                        p->setParent(m_pSamplerWindow);
+                        p->installEventFilter(m_pKeyboard);
+                        m_qWidgetList.append(p);
+                        currentControl = qobject_cast<WAbstractControl*>(p);
                     }
                     samplerNode = samplerNode.nextSibling();
                     

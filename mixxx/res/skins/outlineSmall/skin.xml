@@ -1209,13 +1209,13 @@
 			<NumberStates>2</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>play-off-Ch1.png</Pressed>
-				<Unpressed>play-off-Ch1.png</Unpressed>
+				<Pressed>play-off-Ch2.png</Pressed>
+				<Unpressed>play-off-Ch2.png</Unpressed>
 			</State>
 			<State>
 				<Number>1</Number>
-				<Pressed>play-on-Ch1.png</Pressed>
-				<Unpressed>play-on-Ch1.png</Unpressed>
+				<Pressed>play-on-Ch2.png</Pressed>
+				<Unpressed>play-on-Ch2.png</Unpressed>
 			</State>
 			<Pos>0, 0</Pos>
 			<Connection>
@@ -1233,7 +1233,7 @@
 		<Overview>
 			<Tooltip>Overview display of waveform</Tooltip>
 			<Channel>3</Channel>
-			<Pos>0,60</Pos>
+			<Pos>47,0</Pos>
 			<Size>201,27</Size>
 			<BgColor>#fafafa</BgColor>
 			<SignalColor>#00ff00</SignalColor>
@@ -1243,6 +1243,16 @@
 				<EmitOnDownPress>false</EmitOnDownPress>
 			</Connection>
 		</Overview>
+		
+		<Knob>
+			<Tooltip>Sampler 1 Gain</Tooltip>
+			<NumberStates>41</NumberStates>
+			<Path>knobr%1.png</Path>
+			<Pos>250,0</Pos>
+			<Connection>
+				<ConfigKey>[Channel3],pregain</ConfigKey>
+			</Connection>
+		</Knob>
 	</SamplerView>
 
 	

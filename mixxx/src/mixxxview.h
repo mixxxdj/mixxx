@@ -162,8 +162,6 @@ private:
     
     SamplerManager* m_pSamplerManager;
     
-    QWidget* m_pSamplerWidget;
-    QGridLayout* m_pSamplerLayout;
     WSampler* m_pSampler;
 
 #ifdef __LADSPA__
