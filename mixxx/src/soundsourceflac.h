@@ -54,16 +54,18 @@ private:
     unsigned int m_samples; // total number of samples
     unsigned int m_bps; // bits per sample
     // misc bits about the flac format:
-    // flac encodes from and decodes to LPCM in blocks, each block is made up of subblocks (one for each chan)
-    // flac stores in 'frames', each of which has a header and a certain number of subframes (one for each channel)
-    unsigned int m_minBlocksize; // in time samples (audio samples = time samples * number of channels)
+    // flac encodes from and decodes to LPCM in blocks, each block is made up of
+    // subblocks (one for each chan)
+    // flac stores in 'frames', each of which has a header and a certain number
+    // of subframes (one for each channel)
+    unsigned int m_minBlocksize; // in time samples (audio samples = time samples * chanCount)
     unsigned int m_maxBlocksize;
     unsigned int m_minFramesize;
     unsigned int m_maxFramesize;
-    FLAC__int16 *m_flacBuffer; // buffer for the write callback to write a single frame's worth of samples to,
-                               // interleaved as LR LR LR ... (for stereo) or LI LI LI ... (for mono)
-    FLAC__int16 *m_leftoverBuffer;
+    FLAC__int16 *m_flacBuffer; // buffer for the write callback to write a single frame's samples
     unsigned int m_flacBufferLength;
+    FLAC__int16 *m_leftoverBuffer; // buffer to place any samples which haven't been used
+                                   // at the end of a read call
     unsigned int m_leftoverBufferLength;
 };
 
