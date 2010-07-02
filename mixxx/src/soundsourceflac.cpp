@@ -13,6 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstring> // memcpy
 #include <QtDebug>
 
 #include "soundsourceflac.h"
@@ -25,19 +26,18 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
     , m_samples(0)
     , m_bps(0)
     , m_flacBuffer(NULL)
+    , m_flacBufferLength(0)
     , m_leftoverBuffer(NULL)
-    , m_flacBufferLength(0) {
-    qDebug() << "SSFLAC::ctor";
+    , m_leftoverBufferLength(0) {
 }
 
 SoundSourceFLAC::~SoundSourceFLAC() {
-    qDebug() << "SSFLAC::dtor";
     if (m_flacBuffer != NULL) {
-        delete m_flacBuffer;
+        delete [] m_flacBuffer;
         m_flacBuffer = NULL;
     }
     if (m_leftoverBuffer != NULL) {
-        delete m_leftoverBuffer;
+        delete [] m_leftoverBuffer;
         m_leftoverBuffer = NULL;
     }
     if (m_decoder) {
@@ -50,10 +50,9 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 // soundsource overrides
 int SoundSourceFLAC::open() {
     m_file.open(QIODevice::ReadOnly);
-    qDebug() << "file at end? " << m_file.atEnd();
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == NULL) {
-        qDebug() << "decoder allocation failed!";
+        qDebug() << "SSFLAC: decoder allocation failed!";
         return ERR;
     }
     FLAC__StreamDecoderInitStatus initStatus;
@@ -62,15 +61,15 @@ int SoundSourceFLAC::open() {
         FLAC_eof_cb, FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb,
         (void*) this);
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-        qDebug() << "decoder init failed!";
+        qDebug() << "SSFLAC: decoder init failed!";
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder);
         m_decoder = NULL;
         return ERR;
     }
     if (!FLAC__stream_decoder_process_until_end_of_metadata(m_decoder)) {
-        qDebug() << "process to end of meta failed!";
-        qDebug() << "decoder state: " << FLAC__stream_decoder_get_state(m_decoder);
+        qDebug() << "SSFLAC: process to end of meta failed!";
+        qDebug() << "SSFLAC: decoder state: " << FLAC__stream_decoder_get_state(m_decoder);
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder);
         m_decoder = NULL;
@@ -85,66 +84,71 @@ int SoundSourceFLAC::open() {
     }
     m_flacBuffer = new FLAC__int16[m_maxBlocksize * m_channels];
     m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * m_channels];
-    qDebug() << "Total samples: " << m_samples;
-    qDebug() << "Sampling rate: " << m_iSampleRate << " Hz";
-    qDebug() << "Channels: " << m_channels;
-    qDebug() << "BPS: " << m_bps;
+    qDebug() << "SSFLAC: Total samples: " << m_samples;
+    qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
+    qDebug() << "SSFLAC: Channels: " << m_channels;
+    qDebug() << "SSFLAC: BPS: " << m_bps;
     return OK;
 }
 
 long SoundSourceFLAC::seek(long filepos) {
-    qDebug() << "SSFLAC::seek";
     if (!m_decoder) return 0;
     FLAC__bool seekResult;
-    seekResult = FLAC__stream_decoder_seek_absolute(m_decoder, filepos);
+    // important division here, filepos is in audio samples (i.e. shorts)
+    // but libflac expects a number in time samples. I _think_ this should
+    // be hard-coded at two because /2 is the assumption the caller makes
+    // -- bkgood
+    seekResult = FLAC__stream_decoder_seek_absolute(m_decoder, filepos / 2);
+    m_leftoverBufferLength = 0; // clear internal buffer since we moved
     return filepos;
 }
 
 unsigned int SoundSourceFLAC::read(unsigned long size, const SAMPLE *destination) {
-    qDebug() << "SSFLAC::read";
     if (!m_decoder) return 0;
     SAMPLE *destBuffer = const_cast<SAMPLE*>(destination);
     unsigned int samplesWritten = 0;
-    // first, empty the leftover buffer in case there were any samples left from last read()
-    for (unsigned int i = 0; m_leftoverBufferLength > 0 && samplesWritten < size; ++i) {
-        destBuffer[samplesWritten++] = m_leftoverBuffer[i];
-        --m_leftoverBufferLength;
-    }
-    // then, read samples from FLAC as necessary
     unsigned int i = 0;
     while (samplesWritten < size) {
-        if (m_flacBufferLength <= 0) {
+        // if our buffer from libflac is empty (either because we explicitly cleared
+        // it or because we've simply used all the samples), ask for a new buffer
+        if (m_flacBufferLength == 0) {
             i = 0;
             if (!FLAC__stream_decoder_process_single(m_decoder)) {
-                qDebug() << "decoder_process_single returned false";
+                qDebug() << "SSFLAC: decoder_process_single returned false";
+                break;
+            } else if (m_flacBufferLength == 0) {
+                // EOF
                 break;
             }
         }
         destBuffer[samplesWritten++] = m_flacBuffer[i++];
         --m_flacBufferLength;
     }
-    // lastly, move the rest of flacBuffer to leftoverBuffer for the next read call
-    i = 0;
-    while (m_flacBufferLength > 0) {
-        m_leftoverBuffer[m_leftoverBufferLength++] = m_flacBuffer[i++];
-        --m_flacBufferLength;
-    } 
+    if (m_flacBufferLength != 0) {
+        memcpy(m_leftoverBuffer, &m_flacBuffer[i],
+                m_flacBufferLength * sizeof(m_flacBuffer[0])); // safe because leftoverBuffer
+                                                               // is as long as flacbuffer
+        memcpy(m_flacBuffer, m_leftoverBuffer,
+                m_flacBufferLength * sizeof(m_leftoverBuffer[0]));
+        // memmove = malloc = expensive. Far more expensive than the 128kbits that
+        // goes into each of these channel buffers
+        // this whole if block could go away if this just used a ring buffer but I'd
+        // rather do that after I've gotten off the inital happiness of getting this right,
+        // if I see SIGSEGV one more time I'll pop -- bkgood
+    }
     return samplesWritten;
 }
 
 inline unsigned long SoundSourceFLAC::length() {
-    qDebug() << "SSFLAC::length";
     return m_samples * m_channels;
 }
 
 int SoundSourceFLAC::parseHeader() {
-    qDebug() << "SSFLAC::parseHeader";
     return OK;
 }
 
 // static
-QList<QString> SoundSourceFLAC::supportedFileExtensions()
-{
+QList<QString> SoundSourceFLAC::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("flac");
     return list;
@@ -153,7 +157,6 @@ QList<QString> SoundSourceFLAC::supportedFileExtensions()
 
 // flac callback methods
 FLAC__StreamDecoderReadStatus SoundSourceFLAC::flacRead(FLAC__byte buffer[], size_t *bytes) {
-    //qDebug() << "SSFLAC::flacRead";
     *bytes = m_file.read((char*) buffer, *bytes);
     if (*bytes > 0) {
         return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
@@ -165,7 +168,6 @@ FLAC__StreamDecoderReadStatus SoundSourceFLAC::flacRead(FLAC__byte buffer[], siz
 }
 
 FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 offset) {
-    //qDebug() << "SSFLAC::flacSeek";
     if (m_file.seek(offset)) {
         return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
     } else {
@@ -174,7 +176,6 @@ FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 offset) {
 }
 
 FLAC__StreamDecoderTellStatus SoundSourceFLAC::flacTell(FLAC__uint64 *offset) {
-    //qDebug() << "SSFLAC::flacTell";
     if (m_file.isSequential()) {
         return FLAC__STREAM_DECODER_TELL_STATUS_UNSUPPORTED;
     }
@@ -183,7 +184,6 @@ FLAC__StreamDecoderTellStatus SoundSourceFLAC::flacTell(FLAC__uint64 *offset) {
 }
 
 FLAC__StreamDecoderLengthStatus SoundSourceFLAC::flacLength(FLAC__uint64 *length) {
-    //qDebug() << "SSFLAC::flacLength";
     if (m_file.isSequential()) {
         return FLAC__STREAM_DECODER_LENGTH_STATUS_UNSUPPORTED;
     }
@@ -192,39 +192,35 @@ FLAC__StreamDecoderLengthStatus SoundSourceFLAC::flacLength(FLAC__uint64 *length
 }
 
 FLAC__bool SoundSourceFLAC::flacEOF() {
-    //qDebug() << "SSFLAC::flacEOF";
     if (m_file.isSequential()) {
         return false;
     }
     return m_file.atEnd();
 }
 
-FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(const FLAC__Frame *frame, const FLAC__int32 *const buffer[]) {
-    //qDebug() << "SSFLAC::flacWrite";
+FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(const FLAC__Frame *frame,
+        const FLAC__int32 *const buffer[]) {
     unsigned int i;
     m_flacBufferLength = 0;
     if (frame->header.channels > 1) {
         // stereo (or greater)
         for (i = 0; i < frame->header.blocksize; ++i) {
-            m_flacBuffer[i  ] = buffer[0][i]; // left channel
-            m_flacBuffer[i+1] = buffer[1][i]; // right channel
-            m_flacBufferLength += 2;
+            m_flacBuffer[m_flacBufferLength++] = buffer[0][i]; // left channel
+            m_flacBuffer[m_flacBufferLength++] = buffer[1][i]; // right channel
         }
     } else {
-        // mono (sad)
-        qDebug() << "mono!";
+        // mono
         for (i = 0; i < frame->header.blocksize; ++i) {
-            m_flacBuffer[i  ] = buffer[0][i]; // left channel
-            m_flacBuffer[i+1] = buffer[0][i]; // mono channel
-            m_flacBufferLength += 2;
+            m_flacBuffer[m_flacBufferLength++] = buffer[0][i]; // left channel
+            m_flacBuffer[m_flacBufferLength++] = buffer[0][i]; // mono channel
         }
     }
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE; // can't anticipate any errors here
 }
 
 void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
-    //qDebug() << "SSFLAC::flacMetadata";
-    if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {
+    switch (metadata->type) {
+    case FLAC__METADATA_TYPE_STREAMINFO:
         m_samples = metadata->data.stream_info.total_samples;
         m_channels = metadata->data.stream_info.channels;
         m_iSampleRate = metadata->data.stream_info.sample_rate;
@@ -234,15 +230,44 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
         m_minFramesize = metadata->data.stream_info.min_framesize;
         m_maxFramesize = metadata->data.stream_info.max_framesize;
         qDebug() << "FLAC file " << m_qFilename;
-        qDebug() << m_channels << " @ " << m_iSampleRate << " Hz, " << m_samples << " total, " << m_bps << " bps";
-        qDebug() << "Blocksize in [" << m_minBlocksize << ", " << m_maxBlocksize << "], Framesize in ["
-                 << m_minFramesize << ", " << m_maxFramesize << "]";
+        qDebug() << m_channels << " @ " << m_iSampleRate << " Hz, " << m_samples
+            << " total, " << m_bps << " bps";
+        qDebug() << "Blocksize in [" << m_minBlocksize << ", " << m_maxBlocksize
+            << "], Framesize in [" << m_minFramesize << ", " << m_maxFramesize << "]";
+        break;
+    case FLAC__METADATA_TYPE_VORBIS_COMMENT:
+        // handle a vorbis/flac comment
+        break;
+    default:
+        // don't care, and libflac won't send us any others anyway...
+        break;
     }
 }
 
 void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     qDebug() << "SSFLAC::flacError";
-    (void) status;
+    QString error;
+    // not much can be done at this point -- luckly the decoder seems to be
+    // pretty forgiving -- bkgood
+    switch (status) {
+    case FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC:
+        error = "STREAM_DECODER_ERROR_STATUS_LOST_SYNC";
+        break;
+    case FLAC__STREAM_DECODER_ERROR_STATUS_BAD_HEADER:
+        error = "STREAM_DECODER_ERROR_STATUS_BAD_HEADER";
+        break;
+    case FLAC__STREAM_DECODER_ERROR_STATUS_FRAME_CRC_MISMATCH:
+        error = "STREAM_DECODER_ERROR_STATUS_FRAME_CRC_MISMATCH";
+        break;
+    case FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM:
+        error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
+        break;
+    }
+    qDebug() << "SSFLAC got error" << error << "from libFLAC for file"
+        << m_file.fileName();
+    // not much else to do here... whatever function that initiated whatever
+    // decoder method resulted in this error will return an error, and the caller
+    // will bail. libFLAC docs say to not close the decoder here -- bkgood
 }
 
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
