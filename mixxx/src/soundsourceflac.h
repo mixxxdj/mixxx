@@ -47,10 +47,10 @@ public:
     void flacMetadata(const FLAC__StreamMetadata *metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 private:
+    void setTag(const QString &tag);
     QFile m_file;
     FLAC__StreamDecoder *m_decoder;
     FLAC__StreamMetadata_StreamInfo *m_streamInfo;
-    unsigned int m_channels; // number of channels
     unsigned int m_samples; // total number of samples
     unsigned int m_bps; // bits per sample
     // misc bits about the flac format:
@@ -67,6 +67,7 @@ private:
     FLAC__int16 *m_leftoverBuffer; // buffer to place any samples which haven't been used
                                    // at the end of a read call
     unsigned int m_leftoverBufferLength;
+    QList<QString> m_tags; // stored in vorbis comment format as received, ex. "ARTIST=blah"
 };
 
 // callbacks for libFLAC
