@@ -56,8 +56,8 @@ int SoundSourceFLAC::open() {
     }
     if (!FLAC__stream_decoder_set_metadata_respond(m_decoder,
                 FLAC__METADATA_TYPE_VORBIS_COMMENT)) {
-        qDebug() << "SSFLAC: set metadata responde to vorbis comments failed";
-        return ERR;
+        qDebug() << "SSFLAC: set metadata respond to vorbis comments failed";
+        goto decoderError;
     }
     FLAC__StreamDecoderInitStatus initStatus;
     initStatus = FLAC__stream_decoder_init_stream(
@@ -66,25 +66,16 @@ int SoundSourceFLAC::open() {
         (void*) this);
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
         qDebug() << "SSFLAC: decoder init failed!";
-        FLAC__stream_decoder_finish(m_decoder);
-        FLAC__stream_decoder_delete(m_decoder);
-        m_decoder = NULL;
-        return ERR;
+        goto decoderError;
     }
     if (!FLAC__stream_decoder_process_until_end_of_metadata(m_decoder)) {
         qDebug() << "SSFLAC: process to end of meta failed!";
         qDebug() << "SSFLAC: decoder state: " << FLAC__stream_decoder_get_state(m_decoder);
-        FLAC__stream_decoder_finish(m_decoder);
-        FLAC__stream_decoder_delete(m_decoder);
-        m_decoder = NULL;
-        return ERR;
+        goto decoderError;
     } // now number of samples etc. should be populated
     if (m_bps != 16) {
         qDebug() << "SoundSourceFLAC only supports FLAC files encoded at 16 bits per sample.";
-        FLAC__stream_decoder_finish(m_decoder);
-        FLAC__stream_decoder_delete(m_decoder);
-        m_decoder = NULL;
-        return ERR;
+        goto decoderError;
     }
     if (m_flacBuffer == NULL) {
         m_flacBuffer = new FLAC__int16[m_maxBlocksize * m_iChannels];
@@ -97,6 +88,11 @@ int SoundSourceFLAC::open() {
     qDebug() << "SSFLAC: Channels: " << m_iChannels;
     qDebug() << "SSFLAC: BPS: " << m_bps;
     return OK;
+decoderError:
+    FLAC__stream_decoder_finish(m_decoder);
+    FLAC__stream_decoder_delete(m_decoder);
+    m_decoder = NULL;
+    return ERR;
 }
 
 long SoundSourceFLAC::seek(long filepos) {
@@ -267,11 +263,11 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
         m_minFramesize = metadata->data.stream_info.min_framesize;
         m_maxFramesize = metadata->data.stream_info.max_framesize;
-        qDebug() << "FLAC file " << m_qFilename;
-        qDebug() << m_iChannels << " @ " << m_iSampleRate << " Hz, " << m_samples
-            << " total, " << m_bps << " bps";
-        qDebug() << "Blocksize in [" << m_minBlocksize << ", " << m_maxBlocksize
-            << "], Framesize in [" << m_minFramesize << ", " << m_maxFramesize << "]";
+//        qDebug() << "FLAC file " << m_qFilename;
+//        qDebug() << m_iChannels << " @ " << m_iSampleRate << " Hz, " << m_samples
+//            << " total, " << m_bps << " bps";
+//        qDebug() << "Blocksize in [" << m_minBlocksize << ", " << m_maxBlocksize
+//            << "], Framesize in [" << m_minFramesize << ", " << m_maxFramesize << "]";
         break;
     case FLAC__METADATA_TYPE_VORBIS_COMMENT:
         for (unsigned int i = 0; i < metadata->data.vorbis_comment.num_comments; ++i) {
