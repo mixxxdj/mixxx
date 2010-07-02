@@ -22,7 +22,6 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
     : SoundSource(filename)
     , m_file(filename)
     , m_decoder(NULL)
-    , m_channels(0)
     , m_samples(0)
     , m_bps(0)
     , m_flacBuffer(NULL)
@@ -55,6 +54,11 @@ int SoundSourceFLAC::open() {
         qDebug() << "SSFLAC: decoder allocation failed!";
         return ERR;
     }
+    if (!FLAC__stream_decoder_set_metadata_respond(m_decoder,
+                FLAC__METADATA_TYPE_VORBIS_COMMENT)) {
+        qDebug() << "SSFLAC: set metadata responde to vorbis comments failed";
+        return ERR;
+    }
     FLAC__StreamDecoderInitStatus initStatus;
     initStatus = FLAC__stream_decoder_init_stream(
         m_decoder, FLAC_read_cb, FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb,
@@ -82,11 +86,15 @@ int SoundSourceFLAC::open() {
         m_decoder = NULL;
         return ERR;
     }
-    m_flacBuffer = new FLAC__int16[m_maxBlocksize * m_channels];
-    m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * m_channels];
+    if (m_flacBuffer == NULL) {
+        m_flacBuffer = new FLAC__int16[m_maxBlocksize * m_iChannels];
+    }
+    if (m_leftoverBuffer == NULL) {
+        m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * m_iChannels];
+    }
     qDebug() << "SSFLAC: Total samples: " << m_samples;
     qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
-    qDebug() << "SSFLAC: Channels: " << m_channels;
+    qDebug() << "SSFLAC: Channels: " << m_iChannels;
     qDebug() << "SSFLAC: BPS: " << m_bps;
     return OK;
 }
@@ -96,7 +104,7 @@ long SoundSourceFLAC::seek(long filepos) {
     FLAC__bool seekResult;
     // important division here, filepos is in audio samples (i.e. shorts)
     // but libflac expects a number in time samples. I _think_ this should
-    // be hard-coded at two because /2 is the assumption the caller makes
+    // be hard-coded at two because *2 is the assumption the caller makes
     // -- bkgood
     seekResult = FLAC__stream_decoder_seek_absolute(m_decoder, filepos / 2);
     m_leftoverBufferLength = 0; // clear internal buffer since we moved
@@ -140,11 +148,41 @@ unsigned int SoundSourceFLAC::read(unsigned long size, const SAMPLE *destination
 }
 
 inline unsigned long SoundSourceFLAC::length() {
-    return m_samples * m_channels;
+    return m_samples * m_iChannels;
 }
 
 int SoundSourceFLAC::parseHeader() {
+    open();
+    setType("FLAC");
+    setBitrate(m_iSampleRate * 16 * m_iChannels / 1000); // 16 = bps
+    setDuration(m_samples / m_iSampleRate);
+    foreach (QString i, m_tags) {
+        setTag(i);
+    }
     return OK;
+}
+
+void SoundSourceFLAC::setTag(const QString &tag) {
+    QString key = tag.left(tag.indexOf("=")).toUpper();
+    QString value = tag.right(tag.length() - tag.indexOf("=") - 1);
+    // standard here: http://www.xiph.org/vorbis/doc/v-comment.html
+    if (key == "ARTIST") {
+        m_sArtist = value;
+    } else if (key == "TITLE") {
+        m_sTitle = value;
+    } else if (key == "ALBUM") {
+        m_sAlbum = value;
+    } else if (key == "COMMENT") { // this doesn't exist in standard vorbis comments
+        m_sComment = value;
+    } else if (key == "DATE") {
+        m_sYear = value;
+    } else if (key == "GENRE") {
+        m_sGenre = value;
+    } else if (key == "TRACKNUMBER") {
+        m_sTrackNumber = value;
+    } else if (key == "BPM") { // this doesn't exist in standard vorbis comments
+        m_fBPM = value.toFloat();
+    }
 }
 
 // static
@@ -222,7 +260,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
     switch (metadata->type) {
     case FLAC__METADATA_TYPE_STREAMINFO:
         m_samples = metadata->data.stream_info.total_samples;
-        m_channels = metadata->data.stream_info.channels;
+        m_iChannels = metadata->data.stream_info.channels;
         m_iSampleRate = metadata->data.stream_info.sample_rate;
         m_bps = metadata->data.stream_info.bits_per_sample;
         m_minBlocksize = metadata->data.stream_info.min_blocksize;
@@ -230,13 +268,17 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
         m_minFramesize = metadata->data.stream_info.min_framesize;
         m_maxFramesize = metadata->data.stream_info.max_framesize;
         qDebug() << "FLAC file " << m_qFilename;
-        qDebug() << m_channels << " @ " << m_iSampleRate << " Hz, " << m_samples
+        qDebug() << m_iChannels << " @ " << m_iSampleRate << " Hz, " << m_samples
             << " total, " << m_bps << " bps";
         qDebug() << "Blocksize in [" << m_minBlocksize << ", " << m_maxBlocksize
             << "], Framesize in [" << m_minFramesize << ", " << m_maxFramesize << "]";
         break;
     case FLAC__METADATA_TYPE_VORBIS_COMMENT:
-        // handle a vorbis/flac comment
+        for (unsigned int i = 0; i < metadata->data.vorbis_comment.num_comments; ++i) {
+            m_tags.append(QString::fromUtf8(
+                        (const char*) metadata->data.vorbis_comment.comments[i].entry,
+                        metadata->data.vorbis_comment.comments[i].length));
+        }
         break;
     default:
         // don't care, and libflac won't send us any others anyway...
