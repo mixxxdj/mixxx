@@ -32,7 +32,7 @@
 	#define sleep(x) Sleep(x*1000)
 #endif
 
-#define TIMEOUT 20
+#define TIMEOUT 10
 
 #include <QDebug>
 #include <QMutexLocker>
@@ -355,6 +355,7 @@ bool EngineShoutcast::serverConnect()
 	//otherwise disable shoutcast in preferences
 	m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
 	if(m_pShout){
+		shout_close(m_pShout);
 		errorDialog("Mixxx could not connect to the server", "Please check your connection to the Internet and verify that your username and password are correct.");
 	}
 
