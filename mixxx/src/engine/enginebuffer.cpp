@@ -29,7 +29,7 @@
 #include "enginebufferscalereal.h"
 #include "enginebufferscaledummy.h"
 #include "mathstuff.h"
-
+#include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "loopingcontrol.h"
@@ -47,6 +47,7 @@
 
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
+    m_engineLock(QMutex::Recursive),
     group(_group),
     m_pConfig(_config),
     m_pLoopingControl(NULL),
@@ -113,7 +114,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     visualPlaypos =
         new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
 
-    // m_pTrackEnd is used to signal when at end of file during playback
+    // m_pTrackEnd is used to signal when at end of file during
+    // playback. TODO(XXX) This should not even be a control object because it
+    // is an internal flag used only by the EngineBuffer.
     m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
 
     // TrackEndMode determines what to do at the end of a track
@@ -166,7 +169,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
     setNewPlaypos(0.);
-    m_pReader->start();
 }
 
 EngineBuffer::~EngineBuffer()
@@ -250,6 +252,15 @@ void EngineBuffer::setNewPlaypos(double newpos)
     if (m_pScale)
         m_pScale->clear();
     m_pReadAheadManager->notifySeek(filepos_play);
+
+    // Must hold the engineLock while using m_engineControls
+    m_engineLock.lock();
+    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
+         it != m_engineControls.end(); it++) {
+        EngineControl *pControl = *it;
+        pControl->notifySeek(filepos_play);
+    }
+    m_engineLock.unlock();
 }
 
 const char * EngineBuffer::getGroup()
@@ -265,20 +276,26 @@ double EngineBuffer::getRate()
 void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
+    pause.lock();
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
-    pause.unlock();
-
+    m_pTrackSamples->set(iTrackNumSamples);
     slotControlSeek(0.);
 
-    m_pTrackSamples->set(iTrackNumSamples);
+    // Let the engine know that a track is loaded now.
+    m_pTrackEnd->set(0.0f);
+
+    pause.unlock();
+
     emit(trackLoaded(pTrack));
 }
 
 void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
                                        QString reason) {
+    pause.lock();
     file_srate_old = 0;
     file_length_old = 0;
+    playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     pause.unlock();
@@ -305,7 +322,6 @@ void EngineBuffer::slotControlSeek(double change)
         new_playpos--;
 
     // Give EngineControl's a chance to veto or correct the seek target.
-
 
     // Seek reader
     Hint seek_hint;
@@ -403,7 +419,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
 
-            //XXX: Trying to force RAMAN to read from correct 
+            //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
             if ((rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
@@ -479,6 +495,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         } // else (bCurBufferPaused)
 
+        m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
@@ -505,8 +522,20 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                         at_start = true;
                     }
                 }
+                // TODO(XXX) need to re-evaluate this later. If we
+                // setNewPlaypos, that clear()'s soundtouch, which might screw
+                // up the audio. This sort of jump is a normal event. Also, the
+                // EngineControl which caused this jump will get a notifySeek
+                // for the same jump which might be confusing. For 1.8.0
+                // purposes this works fine. If we do not notifySeek the RAMAN,
+                // the engine and RAMAN can get out of sync.
+
+                //setNewPlaypos(filepos_play);
+                m_pReadAheadManager->notifySeek(filepos_play);
             }
         }
+        m_engineLock.unlock();
+
 
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
@@ -649,8 +678,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
 void EngineBuffer::hintReader(const double dRate,
                               const int iSourceSamples) {
-    m_hintList.clear();
+    m_engineLock.lock();
 
+    m_hintList.clear();
     m_pReadAheadManager->hintReader(m_hintList, iSourceSamples);
 
     QListIterator<EngineControl*> it(m_engineControls);
@@ -658,21 +688,35 @@ void EngineBuffer::hintReader(const double dRate,
         EngineControl* pControl = it.next();
         pControl->hintReader(m_hintList);
     }
-
     m_pReader->hintAndMaybeWake(m_hintList);
+
+    m_engineLock.unlock();
 }
 
 void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
-    pause.lock();
+    // Raise the track end flag so the EngineBuffer stops processing frames
+    m_pTrackEnd->set(1.0);
+    
+    //Stop playback
+    playButton->set(0.0);
+
+    // Signal to the reader to load the track. The reader will respond with
+    // either trackLoaded or trackLoadFailed signals.
     m_pReader->newTrack(pTrack);
     m_pReader->wake();
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
+    m_engineLock.lock();
     m_engineControls.push_back(pControl);
+    m_engineLock.unlock();
     connect(pControl, SIGNAL(seek(double)),
             this, SLOT(slotControlSeek(double)));
     connect(pControl, SIGNAL(seekAbs(double)),
             this, SLOT(slotControlSeekAbs(double)));
+}
+
+void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
+    pWorkerScheduler->bindWorker(m_pReader);
 }
