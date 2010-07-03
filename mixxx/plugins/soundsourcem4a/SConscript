@@ -206,10 +206,10 @@ finally:
 #Mixxx sources to build
 #sources = []
 sources = Split("""  #src/soundsource.cpp """) # Still have to build soundsource.o into this file because we're subclassing????
-#                    #src/trackinfoobject.cpp 
-#                    #src/soundsource.cpp 
-#                    #src/xmlparse.cpp 
-#                    #src/library/dao/cue.cpp 
+#                    #src/trackinfoobject.cpp
+#                    #src/soundsource.cpp
+#                    #src/xmlparse.cpp
+#                    #src/library/dao/cue.cpp
 #                    #src/soundsourceproxy.cpp """)
 
 #Set up the library path on Windows:
@@ -262,18 +262,17 @@ have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'])) or conf.Check
 # while in 2.6 the type is uint32_t*. We can use the optional
 # call parameter to CheckLibWithHeader to build a test file to
 # check which one this faad.h supports.
-if not 'win' in platform:	# This check doesn't work correctly on Windows
-							# And we build it manually anyway, so we know it's v2.7
-	have_faad_26 = (not conf.CheckLibWithHeader(
-					'libfaad', 'faad.h', 'c++',
-					call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);'))
-else:
-	have_faad_26 = 0
 
-if not have_faad_26:	# This is here to prevent linking faad twice (only do one CheckLib)
-	have_faad = conf.CheckLib(['faad', 'libfaad'])
-else:
-	have_faad = have_faad_26
+have_faad = conf.CheckLib(['faad', 'libfaad'])
+have_faad_26 = False
+
+# Check for libfaad version 2.6. This check doesn't work correctly on Windows
+# And we build it manually anyway, so we know it's v2.7
+if have_faad and 'win' not in platform:
+	have_faad_26 = (not conf.CheckLibWithHeader(
+                        'libfaad', 'faad.h', 'c++',
+                        call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);',
+                        autoadd=False))
 
 have_m4a = have_mp4 and have_faad
 flags_m4a = getFlags(env, 'm4a', 0)
@@ -364,7 +363,7 @@ if platform in ('linux', 'bsd'):
 
 if 'win' in platform:
 	env.Append(LIBS = 'QtCore4');
-	
+
 env.Append(CPPDEFINES = ['QT_THREAD_SUPPORT', 'QT_SHARED', 'QT_TABLET_SUPPORT']) #Stolen from Mixxx's build output
 
 if platform in ('linux','bsd') or 'win' in platform:
@@ -600,7 +599,10 @@ else:
 	ssm4a_bin = env.SharedLibrary('soundsourcem4a', sources)
 
 #Pass this soundsourcem4a library object file back to the SConscript above us.
-Return("ssm4a_bin")
+if int(flags_m4a):
+	Return("ssm4a_bin")
+else:
+	Return("")
 
 """
 if platform in ('linux', 'bsd'):
