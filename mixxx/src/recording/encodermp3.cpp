@@ -164,7 +164,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		//print qDebugs to detect which function pointer is null
 		qDebug() << "lame_init: " << lame_init;
 		qDebug() << "lame_set_num_channels: " << lame_set_num_channels;
-		qDebug() << "ame_set_in_samplerate: " << ame_set_in_samplerate;
+		qDebug() << "lame_set_in_samplerate: " << lame_set_in_samplerate;
 		qDebug() << "lame_set_out_samplerate: " << lame_set_out_samplerate;
 		qDebug() << "lame_close: " << lame_close;
 		qDebug() << "lame_set_brate " << lame_set_brate;
