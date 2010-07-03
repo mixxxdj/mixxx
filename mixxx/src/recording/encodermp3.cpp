@@ -156,11 +156,39 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		!id3tag_set_title ||
 		!id3tag_set_artist ||
 		!id3tag_set_album 
+
 	)
 	{
-		qDebug() << "Error loading liblame: Function pointer may be NULL";
 		m_library->unload();
 		m_library = NULL;
+		//print qDebugs to detect which function pointer is null
+		qDebug() << "lame_init: " << lame_init;
+		qDebug() << "lame_set_num_channels: " << lame_set_num_channels;
+		qDebug() << "ame_set_in_samplerate: " << ame_set_in_samplerate;
+		qDebug() << "lame_set_out_samplerate: " << lame_set_out_samplerate;
+		qDebug() << "lame_close: " << lame_close;
+		qDebug() << "lame_set_brate " << lame_set_brate;
+		qDebug() << "lame_set_mode: " << lame_set_mode;
+		qDebug() << "lame_set_quality: " << lame_set_quality;
+		qDebug() << "lame_set_bWriteVbrTag: " << lame_set_bWriteVbrTag;
+		qDebug() << "lame_encode_buffer_float: " << lame_encode_buffer_float;
+		qDebug() << "lame_init_params: " << lame_init_params;
+		qDebug() << "lame_encode_flush: " << lame_encode_flush;
+		qDebug() << "get_lame_version: " << get_lame_version;
+		qDebug() << "id3tag_init: " << id3tag_init;
+		qDebug() << "id3tag_set_title : " << id3tag_set_title ;
+		qDebug() << "id3tag_set_artist: " << id3tag_set_artist;
+		qDebug() << "id3tag_set_album  " << id3tag_set_album ;
+
+		ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+		props->setType(DLG_WARNING);
+		props->setTitle("Encoder");
+		QString key = "Mixxx has detected that you use a modified version of liblamemp3. Please download an offical binary from ???";
+		props->setText(key);
+ 		props->setKey(key);
+		ErrorDialogHandler::instance()->requestErrorDialog(props);
+
+		
 		return;
 	}	
 		
