@@ -1,8 +1,8 @@
-  	<!--18 February 2010 20:02:11 CET-->  
+  	<!--4 July 2010 13:32:59 CEST-->  
   	<!--   
-  	Deere v0.81beta Developer Preview, Skin for Mixxx 1.8.x
+  	Deere v1.00, Skin for Mixxx 1.8.x
     www.mixxx.org
-    Copyright (C) 2010 jus ; jus/justmail/de
+    Copyright (C) 2010 jus ; jus@justmail.de
   
     This file is part of the "Deere" Skin for Mixxx 1.8.x
     "Deeree" is licensed under the Attribution-Noncommercial-Share Alike 3.0 licence.
@@ -26,8 +26,17 @@
 
   	<!--
   	CHANGELOG
+  	v1.00	(04/07/2010)
+  	* Version bump
+  	* some alignment & positioning corrections
+  	* some buttons fine tuned
+  	* changed (hot)cue button colors
+  	+ added dark background color for waveform overviews
+  	- "Preview" watermark removed
+  	
   	v0.81b	(18/02/2010)
   	+ Hotcues preview the Cue when the player is stopped
+  	
   	v0.80b	(07/02/2010)
 	Initial Developer Preview for Mixxx 1.8.x
   	--> 
@@ -97,7 +106,7 @@
 		<SignalColor>#0099FF</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
 		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#ffff33</MarkerColor>
+		<MarkerColor>#FFFF00</MarkerColor>
 		<CueColor>#000000</CueColor>
 		<!--<FisheyeColor>#404040</FisheyeColor>-->
 		<Zoom>true</Zoom>
@@ -107,7 +116,7 @@
     		<Pixmap>marker_cue.png</Pixmap>
     		<Text>CUEPOINT</Text>
 			<Align>bottom</Align>
-			<Color>#00FF00</Color>
+			<Color>#FF001C</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		
@@ -176,11 +185,11 @@
 		<Size>403,102</Size>
 		<BgColor>#000000</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
-		<SignalColor>#FF9900</SignalColor>
+		<SignalColor>#E17800</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
 		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#ffff33</MarkerColor>
-		<CueColor>#000000</CueColor>
+		<MarkerColor>#FFFF00</MarkerColor>
+		<CueColor>#FF001C</CueColor>
 		<!--<FisheyeColor>#404040</FisheyeColor>-->
 		<Zoom>true</Zoom>
 		
@@ -189,7 +198,7 @@
     		<Pixmap>marker_cue.png</Pixmap>
     		<Text>CUEPOINT</Text>
 			<Align>bottom</Align>
-			<Color>#00FF00</Color>
+			<Color>#FF001C</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		
@@ -234,7 +243,7 @@
 			<Color>#00FF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
-  		<Mark>"#00FF00"
+  		<Mark>
     		<Control>loop_end_position</Control>
 			<Pixmap>marker_loopout.png</Pixmap>
    			<Text>LOOP OUT</Text>
@@ -263,7 +272,7 @@
 		<Size>355,40</Size>
 		<BgColor>#000000</BgColor>
 		<SignalColor>#0099FF</SignalColor>
-		<MarkerColor>#00FF00</MarkerColor>
+		<MarkerColor>#FFFFFF</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -275,8 +284,8 @@
 		<Pos>859,194</Pos>
 		<Size>355,40</Size>
 		<BgColor>#000000</BgColor>		
-		<SignalColor>#FF9900</SignalColor>
-		<MarkerColor>#ffffff</MarkerColor>
+		<SignalColor>#E17800</SignalColor>
+		<MarkerColor>#FFFFFF</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -422,7 +431,7 @@
 		<Pos>859,20</Pos>
 		<Size>400,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%;
+		background-color: transparent; color: #E17800; text-align: left;padding-left: 1%;
 		</Style>
 	</Text>
 
@@ -450,7 +459,7 @@
 		<Pos>1070,52</Pos>
 		<Size>115,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%;
+		background-color: transparent; color: #E17800; text-align: left;padding-left: 1%;
 		</Style>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
@@ -482,7 +491,7 @@
 		<Pos>859,52</Pos>
 		<Size>205,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%;
+		background-color: transparent; color: #E17800; text-align: left;padding-left: 1%;
 		</Style>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
@@ -515,7 +524,7 @@
 		<Pos>1192,52</Pos>
 		<Size>70,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: right; padding-right: 1%;
+		background-color: transparent; color: #E17800; text-align: right; padding-right: 1%;
 		</Style>
 		<Alignment>right</Alignment>
 		<NumberOfDigits>4</NumberOfDigits>
@@ -631,7 +640,7 @@
 			<Pressed>btn_play1_over.png</Pressed>
 			<Unpressed>btn_play1_over.png</Unpressed>
 		</State>
-		<Pos>465,329</Pos>
+		<Pos>471,329</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -656,7 +665,7 @@
 			<Pressed>btn_play2_over.png</Pressed>
 			<Unpressed>btn_play2_over.png</Unpressed>
 		</State>
-		<Pos>802,329</Pos>
+		<Pos>798,329</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -682,7 +691,7 @@
             <Pressed>btn_cue1_over.png</Pressed>
             <Unpressed>btn_cue1.png</Unpressed>
         </State>
-        <Pos>421,329</Pos>
+        <Pos>428,329</Pos>
         <Connection>
             <ConfigKey>[Channel1],cue_default</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
@@ -702,7 +711,7 @@
             <Pressed>btn_cue2_over.png</Pressed>
             <Unpressed>btn_cue2.png</Unpressed>
         </State>
-        <Pos>760,329</Pos>
+        <Pos>755,329</Pos>
         <Connection>
             <ConfigKey>[Channel2],cue_default</ConfigKey>
             <EmitOnDownPress>true</EmitOnDownPress>
@@ -1472,7 +1481,7 @@
 			<Pressed>btn_pfl1_over.png</Pressed>
 			<Unpressed>btn_pfl1_over.png</Unpressed>
 		</State>
-		<Pos>491,276</Pos>
+		<Pos>491,275</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pfl</ConfigKey>
 		</Connection>
@@ -1490,7 +1499,7 @@
 			<Pressed>btn_pfl2_over.png</Pressed>
 			<Unpressed>btn_pfl2_over.png</Unpressed>
 		</State>
-		<Pos>734,276</Pos>
+		<Pos>734,275</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
 		</Connection>
