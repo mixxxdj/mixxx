@@ -123,6 +123,24 @@ QString AudioPath::getStringFromType(AudioPathType type) {
 }
 
 //static
+AudioPath::AudioPathType getTypeFromString(QString string) {
+    string = string.toLower();
+    if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
+        return AudioPath::MASTER;
+    } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
+        return AudioPath::HEADPHONES;
+    } else if (string == AudioPath::getStringFromType(AudioPath::DECK).toLower()) {
+        return AudioPath::DECK;
+    } else if (string == AudioPath::getStringFromType(AudioPath::VINYLCONTROL).toLower()) {
+        return AudioPath::VINYLCONTROL;
+    } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
+        return AudioPath::MICROPHONE;
+    } else if (string == AudioPath::getStringFromType(AudioPath::PASSTHROUGH).toLower()) {
+        return AudioPath::PASSTHROUGH;
+    }
+}
+
+//static
 bool AudioPath::isIndexable(AudioPathType type) {
     switch (type) {
     case DECK:
@@ -168,9 +186,9 @@ unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type)
 }
 
 AudioSource::AudioSource(AudioPath::AudioPathType type,
-        unsigned char channelBase, unsigned char channels,
+        unsigned char channelBase,
         unsigned char index /* = 0 */)
-    : AudioPath(channelBase, channels) {
+    : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
     if (getSupportedTypes().contains(type)) {
         setType(type);
     }
@@ -191,9 +209,9 @@ QList<AudioPath::AudioPathType> AudioSource::getSupportedTypes() {
 }
 
 AudioReceiver::AudioReceiver(AudioPath::AudioPathType type,
-        unsigned char channelBase, unsigned char channels,
+        unsigned char channelBase,
         unsigned char index /* = 0 */)
-  : AudioPath(channelBase, channels) {
+  : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
     if (getSupportedTypes().contains(type)) {
         setType(type);
     }

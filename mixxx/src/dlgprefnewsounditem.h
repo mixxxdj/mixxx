@@ -18,21 +18,27 @@
 
 #include <QtCore>
 #include "ui_dlgprefnewsounditem.h"
+#include "audiopath.h"
 
 class SoundDevice;
 
 class DlgPrefNewSoundItem : public QWidget, public Ui::DlgPrefNewSoundItem {
     Q_OBJECT;
 public:
-    DlgPrefNewSoundItem(QWidget *parent, QString &type, QList<SoundDevice*> &devices,
-            bool isInput, unsigned int channelsNeeded = 2);
+    DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathType type,
+            QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
     ~DlgPrefNewSoundItem();
+    SoundDevice *getDevice() const; // if this returns NULL, result of getPath will be invalid
+    AudioPath getPath() const;
+signals:
+    void settingChanged();
 public slots:
     void refreshDevices(QList<SoundDevice*> &devices);
     void deviceChanged(int index);
 private:
+    AudioPath::AudioPathType m_type;
+    unsigned int m_index;
     QList<SoundDevice*> m_devices;
-    unsigned int m_channelsNeeded;
     bool m_isInput;
 };
 

@@ -398,8 +398,7 @@ int SoundManager::setupDevices()
         {
             AudioSource src(
                 AudioSource::MASTER,
-                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt(),
-                2 // stereo
+                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt()
             );
 
             err = device->addSource(src);
@@ -412,8 +411,7 @@ int SoundManager::setupDevices()
         {
             AudioSource src(
                 AudioSource::HEADPHONES,
-                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt(),
-                2 // stereo
+                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt()
             );
 
 			err = device->addSource(src);
@@ -429,7 +427,6 @@ int SoundManager::setupDevices()
             AudioReceiver recv(
                 AudioReceiver::VINYLCONTROL,
                 m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt(),
-                2, // stereo
                 0 // first vc deck
             );
 
@@ -446,7 +443,6 @@ int SoundManager::setupDevices()
             AudioReceiver recv(
                 AudioReceiver::VINYLCONTROL,
                 m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt(),
-                2, // stereo
                 1 // second vc deck
             );
 
