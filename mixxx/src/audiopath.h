@@ -65,6 +65,7 @@ public:
     bool channelsClash(const AudioPath& other) const;
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
+    static AudioPathType getTypeFromString(QString string);
     static bool isIndexable(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
     static unsigned char channelsNeededForType(AudioPathType type);
@@ -86,7 +87,7 @@ protected:
 class AudioSource : public AudioPath {
 public:
     AudioSource(AudioPathType type, unsigned char channelBase,
-                unsigned char channels, unsigned char index = 0);
+                unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
 };
 
@@ -99,7 +100,7 @@ public:
 class AudioReceiver : public AudioPath {
 public:
     AudioReceiver(AudioPathType type, unsigned char channelBase,
-                  unsigned char channels, unsigned char index = 0);
+                  unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
 };
 

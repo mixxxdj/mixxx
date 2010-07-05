@@ -16,23 +16,58 @@
 #include "dlgprefnewsounditem.h"
 #include "sounddevice.h"
 
-DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, QString &type,
+DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathType type,
         QList<SoundDevice*> &devices, bool isInput,
-        unsigned int channelsNeeded /*= 2*/)
+        unsigned int index /* = 0 */)
     : QWidget(parent)
+    , m_type(type)
+    , m_index(index)
     , m_devices(devices)
-    , m_channelsNeeded(channelsNeeded)
     , m_isInput(isInput) {
     setupUi(this);
-    typeLabel->setText(type);
+    if (AudioPath::isIndexable(type)) {
+        typeLabel->setText(
+            QString("%1 %2").arg(AudioPath::getStringFromType(type)).arg(index + 1));
+    } else {
+        typeLabel->setText(AudioPath::getStringFromType(type));
+    }
     deviceComboBox->addItem("None" /* translate me */, "None" /*don't translate me */);
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(deviceChanged(int)));
+    connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SIGNAL(settingChanged()));
     refreshDevices(m_devices);
 }
 
 DlgPrefNewSoundItem::~DlgPrefNewSoundItem() {
 
+}
+
+SoundDevice *DlgPrefNewSoundItem::getDevice() const {
+    QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    if (selection == "None") {
+        return NULL;
+    }
+    foreach (SoundDevice *device, m_devices) {
+        if (selection == device->getInternalName()) {
+            return device;
+        }
+    }
+    // looks like something became invalid ???
+    deviceComboBox->setCurrentIndex(0); // set it to none
+    return NULL;
+}
+
+AudioPath DlgPrefNewSoundItem::getPath() const {
+    unsigned int channelBase = 0;
+    if (channelComboBox->count() > 0) {
+        channelBase = channelComboBox->itemData(channelComboBox->currentIndex()).toUInt();
+    }
+    if (m_isInput) {
+        return AudioReceiver(m_type, channelBase, m_index);
+    } else {
+        return AudioSource(m_type, channelBase, m_index);
+    }
 }
 
 void DlgPrefNewSoundItem::refreshDevices(QList<SoundDevice*> &devices) {
@@ -51,12 +86,12 @@ void DlgPrefNewSoundItem::refreshDevices(QList<SoundDevice*> &devices) {
 void DlgPrefNewSoundItem::deviceChanged(int index) {
     // TODO assumes we're looking for a two-channel device -- eventually will want
     // to give the option of mono for a microphone, depending on the value of
-    // m_channelsNeeded -- bkgood
+    // m_type -- bkgood
     channelComboBox->clear();
     QString selection = deviceComboBox->itemData(index).toString();
     unsigned int numChannels = 0;
     if (selection == "None") {
-        return;
+        goto emitAndReturn;
     } else {
         foreach (SoundDevice *device, m_devices) {
             if (device->getInternalName() == selection) {
@@ -69,11 +104,15 @@ void DlgPrefNewSoundItem::deviceChanged(int index) {
         }
     }
     if (numChannels == 0) {
-        return;
+        goto emitAndReturn;
     } else {
         for (unsigned int i = 1; i + 1 <= numChannels; i += 2) {
             channelComboBox->addItem(
-                QString("Channels %1 - %2").arg(i).arg(i + 1), i);
+                QString("Channels %1 - %2").arg(i).arg(i + 1), i - 1);
+            // i-1 because want the data part to be what goes into audiopath's
+            // channelbase which is zero-based -- bkgood
         }
     }
+emitAndReturn:
+    emit(settingChanged());
 }

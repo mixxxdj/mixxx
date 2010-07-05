@@ -46,8 +46,10 @@ private:
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
+    QString m_api;
 private slots:
     void apiChanged(int index);
+    void settingChanged();
 };
 
 #endif
