@@ -290,8 +290,7 @@ sources = Split("""
                 dlgtrackinfo.cpp
                 dlgprepare.cpp
                 dlgautodj.cpp
-                dlgaudiopath.cpp
-                audiopathmodel.cpp
+                dlgprefnewsounditem.cpp
 
                 engine/engineworker.cpp
                 engine/engineworkerscheduler.cpp
@@ -788,7 +787,7 @@ env.Uic4('dlgmidilearning.ui')
 env.Uic4('dlgtrackinfo.ui')
 env.Uic4('dlgprepare.ui')
 env.Uic4('dlgautodj.ui')
-env.Uic4('dlgaudiopathdlg.ui')
+env.Uic4('dlgprefnewsounditem.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
 env.Qrc('#res/mixxx.qrc')

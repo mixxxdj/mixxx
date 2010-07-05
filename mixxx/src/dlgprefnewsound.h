@@ -19,12 +19,13 @@
 #include <QtCore>
 #include "ui_dlgprefnewsounddlg.h"
 #include "configobject.h"
-#include "audiopathmodel.h"
 
-class QWidget;
 class SoundManager;
 class ControlObject;
-class AudioPathModel;
+class SoundDevice;
+
+const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
+                                  // soundmanager or something
 
 class DlgPrefNewSound : public QWidget, public Ui::DlgPrefNewSoundDlg  {
     Q_OBJECT;
@@ -33,17 +34,20 @@ public:
             ConfigObject<ConfigValue> *config);
     ~DlgPrefNewSound();
 signals:
+    void refreshOutputDevices(QList<SoundDevice*> &devices);
+    void refreshInputDevices(QList<SoundDevice*> &devices);
 public slots:
-    void slotUpdate();
-    void slotApply();
-private slots:
-    void slotUpdateApi();
-    void addClicked();
+    void slotUpdate(); // called on show
+    void slotApply();  // called on ok button
 private:
-    void setupDefaultPaths();
+    void initializePaths();
     SoundManager *m_pSoundManager;
     ConfigObject<ConfigValue> *m_pConfig;
-    AudioPathModel m_model;
+    QList<SoundDevice*> m_inputDevices;
+    QList<SoundDevice*> m_outputDevices;
+    bool m_settingsModified;
+private slots:
+    void apiChanged(int index);
 };
 
 #endif

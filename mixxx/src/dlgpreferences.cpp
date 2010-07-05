@@ -261,9 +261,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 
     if (current == m_pSoundButton)
            pagesWidget->setCurrentWidget(wsound);
-       else if (current == m_pNewSoundButton)
+       else if (current == m_pNewSoundButton) {
+           wnewsound->slotUpdate();
            pagesWidget->setCurrentWidget(wnewsound);
-       else if (current == m_pPlaylistButton)
+       } else if (current == m_pPlaylistButton)
            pagesWidget->setCurrentWidget(wplaylist);
        else if (current == m_pControlsButton)
            pagesWidget->setCurrentWidget(wcontrols);

@@ -1,7 +1,7 @@
 /**
  * @file dlgaudiopath.h
  * @author Bill Good <bkgood at gmail dot com>
- * @date 20100626
+ * @date 20100704
  */
 
 /***************************************************************************
@@ -13,41 +13,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGAUDIOPATH_H
-#define DLGAUDIOPATH_H
+#ifndef DLGPREFNEWSOUNDITEM_H
+#define DLGPREFNEWSOUNDITEM_H
 
 #include <QtCore>
-#include "ui_dlgaudiopathdlg.h"
-#include "configobject.h"
-#include "audiopath.h"
+#include "ui_dlgprefnewsounditem.h"
 
-class AudioPath;
+class SoundDevice;
 
-class DlgAudioPath : public QDialog, public Ui::DlgAudioPathDlg  {
-    Q_OBJECT
+class DlgPrefNewSoundItem : public QWidget, public Ui::DlgPrefNewSoundItem {
+    Q_OBJECT;
 public:
-    DlgAudioPath(QWidget *parent);
-    ~DlgAudioPath();
-    AudioPath getPath() const;
-signals:
+    DlgPrefNewSoundItem(QWidget *parent, QString &type, QList<SoundDevice*> &devices,
+            bool isInput, unsigned int channelsNeeded = 2);
+    ~DlgPrefNewSoundItem();
 public slots:
+    void refreshDevices(QList<SoundDevice*> &devices);
+    void deviceChanged(int index);
 private:
-    enum IO {
-        INPUT,
-        OUTPUT
-    };
-    void populateDevices();
-    void populateChannels();
-    void populateTypes();
-    IO m_io;
-    AudioPath::AudioPathType m_type;
-    unsigned int m_index;
-    unsigned int m_channelBase;
-    unsigned int m_channels;
-private slots:
-    void ioChanged();
-    void deviceChanged();
-    void typeChanged();
+    QList<SoundDevice*> m_devices;
+    unsigned int m_channelsNeeded;
+    bool m_isInput;
 };
 
 #endif
