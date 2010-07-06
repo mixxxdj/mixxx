@@ -147,6 +147,14 @@ void DlgPrefNewSound::apiChanged(int index) {
     }
     emit(refreshOutputDevices(m_outputDevices));
     emit(refreshInputDevices(m_inputDevices));
+    // JACK sets its own latency
+    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+        latencyLabel->setEnabled(false);
+        latencyComboBox->setEnabled(false);
+    } else {
+        latencyLabel->setEnabled(true);
+        latencyComboBox->setEnabled(true);
+    }
 }
 
 void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
