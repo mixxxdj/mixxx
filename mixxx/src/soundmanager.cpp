@@ -483,16 +483,6 @@ void SoundManager::sync()
 
 }
 
-QList<int> SoundManager::getLatencies(double sampleRate /* = 0.0 */) const {
-    QList<int> latencies; // in ms
-    if (sampleRate == 0.0) {
-        // give latencies for current srate
-    } else {
-        // calculate and give latencies for given srate
-    }
-    return latencies;
-}
-
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioSource, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer)

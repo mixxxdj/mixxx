@@ -54,7 +54,6 @@ class SoundManager : public QObject
         QList<QString> getHostAPIList();
         int setHostAPI(QString api);
         QString getHostAPI();
-        QList<int> getLatencies(double sampleRate = 0.0) const;
         QHash<AudioSource, const CSAMPLE*>
             requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         void pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
