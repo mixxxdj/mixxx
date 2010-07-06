@@ -155,12 +155,13 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     float sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toFloat();
     if (sampleRate == 0.0f) {
         sampleRateComboBox->setCurrentIndex(0); // hope this doesn't recurse!
+        return;
     }
     unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
-    // explanation of above: we don't want to display any sub-1ms latencies
-    // (well maybe we do but I don't know if current PC could handle it), so
-    // we iterate over all the buffer sizes until we find the first that gives
-    // us a latency >= 1 ms -- bkgood
+    // we don't want to display any sub-1ms latencies (well maybe we do but I
+    // don't know if current PC could handle it), so we iterate over all the
+    // buffer sizes until we find the first that gives us a latency >= 1 ms
+    // -- bkgood
     for (; framesPerBuffer / sampleRate * 1000 < 1.0f; framesPerBuffer *= 2);
     latencyComboBox->clear();
     for (unsigned int i = 0; i < LATENCY_COUNT; ++i) {
