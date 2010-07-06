@@ -26,6 +26,8 @@ class SoundDevice;
 
 const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
                                   // soundmanager or something
+const unsigned int LATENCY_COUNT = 8; // this seems to give a wide enough range to be
+                                      // useful, about 1-180 ms
 
 class DlgPrefNewSound : public QWidget, public Ui::DlgPrefNewSoundDlg  {
     Q_OBJECT;

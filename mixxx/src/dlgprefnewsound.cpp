@@ -150,8 +150,6 @@ void DlgPrefNewSound::apiChanged(int index) {
 }
 
 void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
-    const unsigned int LATENCY_COUNT = 8; // from my research with kspread 8
-    // gives a wide enough range to be useful (about 1 ms to ~180) -- bkgood
     float sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toFloat();
     if (sampleRate == 0.0f) {
         sampleRateComboBox->setCurrentIndex(0); // hope this doesn't recurse!
