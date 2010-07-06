@@ -79,7 +79,11 @@ void DlgPrefNewSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
-    // set api, srate, latency
+    float sampleRate = sampleRateComboBox->itemData(sampleRateComboBox->currentIndex()).toFloat();
+    unsigned int framesPerBuffer = latencyComboBox->itemData(latencyComboBox->currentIndex()).toUInt();
+    m_pSoundManager->setHostAPI(m_api);
+    m_pSoundManager->setSampleRate(sampleRate);
+    m_pSoundManager->setFramesPerBuffer(framesPerBuffer);
     // add paths to soundmanager
     // commit changes
     m_settingsModified = false;
