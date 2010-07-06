@@ -27,9 +27,11 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     , m_settingsModified(false)
     , m_api(soundManager->getHostAPI()) {
     setupUi(this);
+
     applyButton->setEnabled(false);
     connect(applyButton, SIGNAL(clicked()),
             this, SLOT(slotApply()));
+
     apiComboBox->clear();
     apiComboBox->addItem("None", "None");
     foreach (QString api, m_pSoundManager->getHostAPIList()) {
@@ -37,8 +39,21 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     }
     connect(apiComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(apiChanged(int)));
-    apiComboBox->setCurrentIndex(0); // this needs to be deleted when the config load method comes
+
+    sampleRateComboBox->clear();
+    foreach (QString srate, m_pSoundManager->getSamplerateList()) {
+        sampleRateComboBox->addItem(QString("%1 Hz").arg(srate), srate);
+    }
+    sampleRateComboBox->setCurrentIndex(0);
+    updateLatencies(0); // take this away when the config stuff is implemented
+    connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(updateLatencies(int)));
+    connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+
     initializePaths();
+//    loadSettings();
+
     connect(apiComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
@@ -55,7 +70,7 @@ void DlgPrefNewSound::slotUpdate() {
     // have to do this stupid dance because the old sound sound pane
     // resets stuff every chance it gets and breaks our pointers to
     // sound devices -- bkgood
-    // ought to be deleted
+    // ought to be deleted later
     apiComboBox->setCurrentIndex(0);
     apiComboBox->setCurrentIndex(1);
 }
@@ -132,6 +147,31 @@ void DlgPrefNewSound::apiChanged(int index) {
     }
     emit(refreshOutputDevices(m_outputDevices));
     emit(refreshInputDevices(m_inputDevices));
+}
+
+void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
+    const unsigned int LATENCY_COUNT = 8; // from my research with kspread 8
+    // gives a wide enough range to be useful (about 1 ms to ~180) -- bkgood
+    float sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toFloat();
+    if (sampleRate == 0.0f) {
+        sampleRateComboBox->setCurrentIndex(0); // hope this doesn't recurse!
+    }
+    unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
+    // explanation of above: we don't want to display any sub-1ms latencies
+    // (well maybe we do but I don't know if current PC could handle it), so
+    // we iterate over all the buffer sizes until we find the first that gives
+    // us a latency >= 1 ms -- bkgood
+    for (; framesPerBuffer / sampleRate * 1000 < 1.0f; framesPerBuffer *= 2);
+    latencyComboBox->clear();
+    for (unsigned int i = 0; i < LATENCY_COUNT; ++i) {
+        unsigned int latency = framesPerBuffer / sampleRate * 1000;
+        latencyComboBox->addItem(QString("%1 ms").arg(latency), framesPerBuffer);
+        framesPerBuffer *= 2;
+    }
+    // set it to the max, let the user dig if they need better latency. better
+    // than having a user get the pops on first use and thinking poorly of mixxx
+    // because of it -- bkgood
+    latencyComboBox->setCurrentIndex(latencyComboBox->count() - 1);
 }
 
 void DlgPrefNewSound::settingChanged() {
