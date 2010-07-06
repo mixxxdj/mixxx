@@ -49,6 +49,7 @@ private:
     QString m_api;
 private slots:
     void apiChanged(int index);
+    void updateLatencies(int sampleRateIndex);
     void settingChanged();
 };
 
