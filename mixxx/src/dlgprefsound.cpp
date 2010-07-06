@@ -322,19 +322,12 @@ void DlgPrefSound::slotApplyApi()
 
     m_pSoundManager->closeDevices();
 
-    if (m_pSoundManager->setHostAPI(ComboBoxSoundApi->currentText()) != 0)
+    // SoundManager::setHostAPI always returns 0, this is dumb -- bkgood
+    m_pSoundManager->setHostAPI(ComboBoxSoundApi->currentText());
+    if (m_pSoundManager->setupDevices() != 0)
     {
-        // Did they select the null api?
-        if (ComboBoxSoundApi->currentText() != "None") {
-            QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
-            config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
-        }
-    } else {
-        if (m_pSoundManager->setupDevices() != 0)
-        {
-            QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-			m_parent->setHidden(false);
-        }
+        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+        m_parent->setHidden(false);
     }
     enableValidComboBoxes();
     
