@@ -19,6 +19,10 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 
+/**
+ * Construct a new sound preferences pane. Initializes and populates all the
+ * all the controls to the values obtained from SoundManager.
+ */
 DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
         ConfigObject<ConfigValue> *config)
     : QWidget(parent)
@@ -66,6 +70,9 @@ DlgPrefNewSound::~DlgPrefNewSound() {
 
 }
 
+/**
+ * Slot called when the preferences dialog is opened.
+ */
 void DlgPrefNewSound::slotUpdate() {
     // have to do this stupid dance because the old sound sound pane
     // resets stuff every chance it gets and breaks our pointers to
@@ -75,6 +82,9 @@ void DlgPrefNewSound::slotUpdate() {
     apiComboBox->setCurrentIndex(1);
 }
 
+/**
+ * Slot called when the Apply or OK button is pressed.
+ */
 void DlgPrefNewSound::slotApply() {
     if (!m_settingsModified) {
         return;
@@ -90,6 +100,13 @@ void DlgPrefNewSound::slotApply() {
     applyButton->setEnabled(false);
 }
 
+/**
+ * Initializes (and creates) all the path items. Each path item widget allows
+ * the user to input a sound device name and channel number given a description
+ * of what will be done with that info. Inputs and outputs are grouped by tab,
+ * and each path item has an identifier (Master, Headphones, ...) and an index,
+ * if necessary.
+ */
 void DlgPrefNewSound::initializePaths() {
     foreach (AudioPath::AudioPathType type, AudioSource::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
@@ -137,6 +154,12 @@ void DlgPrefNewSound::initializePaths() {
     }
 }
 
+/**
+ * Slots called when the user selects a different API, or the
+ * software changes it programatically (for instance, when it
+ * loads a value from SoundManager). Refreshes the device lists
+ * for the new API and pushes those to the path items.
+ */
 void DlgPrefNewSound::apiChanged(int index) {
     QString selected = apiComboBox->itemData(index).toString();
     if (selected == "None") {
@@ -161,6 +184,11 @@ void DlgPrefNewSound::apiChanged(int index) {
     }
 }
 
+/**
+ * Slot called whenever the selected sample rate is changed. Populates the
+ * latency input box with LATENCY_COUNT values, starting at 1ms, representing
+ * a number of frames per buffer, which will always be a power of 2.
+ */
 void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     float sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toFloat();
     if (sampleRate == 0.0f) {
@@ -185,6 +213,11 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     latencyComboBox->setCurrentIndex(latencyComboBox->count() - 1);
 }
 
+/**
+ * Called when any of the combo boxes in this dialog are changed. Enables the
+ * apply button and marks that settings have been changed so that slotApply
+ * knows to apply them.
+ */
 void DlgPrefNewSound::settingChanged() {
     m_settingsModified = true;
     if (!applyButton->isEnabled()) {
