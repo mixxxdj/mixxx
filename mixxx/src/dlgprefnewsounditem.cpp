@@ -16,6 +16,15 @@
 #include "dlgprefnewsounditem.h"
 #include "sounddevice.h"
 
+/**
+ * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
+ * with a label and two combo boxes.
+ * @param type The AudioPathType of the path to be represented
+ * @param devices The list of devices for the user to choose from (either a collection
+ * of input or output devices).
+ * @param isInput true if this is representing an AudioReceiver, false otherwise
+ * @param index the index of the represented AudioPath, if applicable
+ */
 DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathType type,
         QList<SoundDevice*> &devices, bool isInput,
         unsigned int index /* = 0 */)
@@ -43,6 +52,10 @@ DlgPrefNewSoundItem::~DlgPrefNewSoundItem() {
 
 }
 
+/**
+ * Gets the currently selected SoundDevice
+ * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
+ */
 SoundDevice *DlgPrefNewSoundItem::getDevice() const {
     QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     if (selection == "None") {
@@ -58,6 +71,10 @@ SoundDevice *DlgPrefNewSoundItem::getDevice() const {
     return NULL;
 }
 
+/**
+ * Returns an AudioPath represented by this object. Only guaranteed valid if
+ * ::getDevice returns non-NULL.
+ */
 AudioPath DlgPrefNewSoundItem::getPath() const {
     unsigned int channelBase = 0;
     if (channelComboBox->count() > 0) {
@@ -70,6 +87,10 @@ AudioPath DlgPrefNewSoundItem::getPath() const {
     }
 }
 
+/**
+ * Slot called when the parent preferences pane updates its list of sound
+ * devices, to update the item widget's list of devices to display.
+ */
 void DlgPrefNewSoundItem::refreshDevices(QList<SoundDevice*> &devices) {
     m_devices = devices;
     deviceComboBox->setCurrentIndex(0);
@@ -83,6 +104,10 @@ void DlgPrefNewSoundItem::refreshDevices(QList<SoundDevice*> &devices) {
     }
 }
 
+/**
+ * Slot called when the device combo box selection changes. Updates the channel
+ * combo box.
+ */
 void DlgPrefNewSoundItem::deviceChanged(int index) {
     // TODO assumes we're looking for a two-channel device -- eventually will want
     // to give the option of mono for a microphone, depending on the value of
