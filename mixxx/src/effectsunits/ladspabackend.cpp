@@ -5,28 +5,6 @@ LADSPABackend::LADSPABackend() {
 
 	PluginIDSequence = 0;
 	m_monoBufferSize = 0;
-	m_LADSPALoader = new LADSPALoader();
-
-//	LADSPAPlugin * flanger = loader->getByLabel("Plate2x2");
-//	LADSPAInstance * flangerInstance = flanger->instantiate(0);
-//
-//	m_test = flangerInstance;
-//
-//
-//    zero = new LADSPAControl();
-//    um = new LADSPAControl();
-//    dois = new LADSPAControl();
-//    tres = new LADSPAControl();
-//
-//    zero->setValue(0.799);
-//    um->setValue(0.745);
-//    dois->setValue(0.8);
-//    tres->setValue(0.9);
-//
-//    m_test->connect(2, zero->getBuffer());
-//    m_test->connect(3, um->getBuffer());
-//    m_test->connect(4, dois->getBuffer());
-//    m_test->connect(5, tres->getBuffer());
 
 }
 
@@ -34,11 +12,18 @@ LADSPABackend::~LADSPABackend() {
 	// TODO Auto-generated destructor stub
 }
 
+/* LADSPABackend::loadPlugins
+ * For each plugin available on LADSPALoader (all LADSPA plugins from all LADSPA libraries).
+ * We will create a EffectsUnitsPlugin with all its Ports initialized using the LADSPA descriptor.
+ * This will also initialize a couple of internal objects for storing that data.
+ */
 void LADSPABackend::loadPlugins(){
 
 	EffectsUnitsPlugin * plugin;
 	LADSPAPlugin * ladspaplugin;
 	EffectsUnitsPort * port;
+
+	m_LADSPALoader = new LADSPALoader();
 
 	int i = 0;
 	ladspaplugin = m_LADSPALoader->getByIndex(i);
@@ -78,23 +63,23 @@ void LADSPABackend::loadPlugins(){
 
 }
 
+/* LADSPABackend::process
+ * Given a PluginID,
+ * We'll update all the LADSPA port values, using the control objects from the plugin,
+ * Then we will use all our LADSPAMagic to process the audio samples.
+ */
 void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID){
-	/* Invalid PluginID, NOP */
-	if (PluginID >= PluginIDSequence){ return; }
-	qDebug() << "FXUNITS: LADSPABackend: Processing: " << m_BackendPlugins.at(PluginID)->getName();
+	/* Invalid PluginID or plugin with asymmetrical ports (uninstantiable), NOP */
+	if (PluginID >= PluginIDSequence || m_LADSPAInstance.at(PluginID) == NULL){ return; }
+	//qDebug() << "FXUNITS: LADSPABackend: Processing: " << m_BackendPlugins.at(PluginID)->getName();
 
 
-	/* Initial Set-up */
+	/* Initial Set-up, creating workspace. */
 	if (m_monoBufferSize != iBufferSize/2){
 		m_monoBufferSize = iBufferSize/2;
+
 		LADSPAControl::setBufferSize(m_monoBufferSize);
 
-//		if (m_pBufferLeft[0] != NULL){
-//			delete [] m_pBufferLeft[0];
-//			delete [] m_pBufferLeft[1];
-//			delete [] m_pBufferRight[0];
-//			delete [] m_pBufferRight[1];
-//		}
 		m_pBufferLeft[0] = new CSAMPLE[m_monoBufferSize];
 		m_pBufferLeft[1] = new CSAMPLE[m_monoBufferSize];
 		m_pBufferRight[0] = new CSAMPLE[m_monoBufferSize];
@@ -127,7 +112,7 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
 	if (m_beingProcessed->isInplaceBroken())
 	{
 		m_beingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[1], m_pBufferRight[1], m_monoBufferSize);
-		qDebug() << "FXUNITS: LADSPABackend::process: INP: " << *m_pBufferLeft[0] << "OUT: " << *m_pBufferLeft[1] << "BUF IPB: " << iBufferSize;
+		//qDebug() << "FXUNITS: LADSPABackend::process: INP: " << *m_pBufferLeft[0] << "OUT: " << *m_pBufferLeft[1] << "BUF IPB: " << iBufferSize;
 
 		for (int i = 0; i < m_monoBufferSize; i++)
 		{
@@ -135,9 +120,9 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
 			m_pBufferRight[0][i] = m_pBufferRight[0][i] * 0.2 + m_pBufferRight[1][i] * 0.8;
 		}
 	} else {
-		qDebug() << "FXUNITS: LADSPABackend::process: IN: " << *m_pBufferLeft[0];
+		//qDebug() << "FXUNITS: LADSPABackend::process: IN: " << *m_pBufferLeft[0];
 		m_beingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[0], m_pBufferRight[0], m_monoBufferSize);
-		qDebug() << "FXUNITS: LADSPABackend::process: OUT: " << *m_pBufferLeft[0];
+		//qDebug() << "FXUNITS: LADSPABackend::process: OUT: " << *m_pBufferLeft[0];
 	}
 
 
@@ -151,17 +136,22 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
 }
 
 /* LADSPABackend::activatePlugin
- * Given a correct PluginID of an unactivated plugin, this is what we're doing to do:
+ * Given a valid PluginID of an unactivated plugin, this is what we're going to do:
  * Turn LADSPAPlugin into LADSPAInstance (which has process())
  * Connect the ports of the instance to LADSPAControls, so we can tweak values
  */
 void LADSPABackend::activatePlugin(int PluginID){
+	qDebug() << "FXUNITS: PLUGINID:" << PluginID;
 	if (m_LADSPAInstance.at(PluginID) == NULL && PluginID < PluginIDSequence){
 
 		/* Instantiates the plugin, so we can process it */
 		EffectsUnitsPlugin * fxplugin = m_BackendPlugins.at(PluginID);
 		LADSPAInstance * instance = m_LADSPAPlugin.at(PluginID)->instantiate(0);
+
+		if (instance == NULL) return; /* Plugin with asymmetrical in/out ports, cant process() */
+
 		m_LADSPAInstance.replace(PluginID, instance);
+		qDebug() << "FXUNITS: INSTANCE:" << instance;
 
 		/* Handle plugins ports */
 		QList<EffectsUnitsPort *> * ports = fxplugin->getPorts();

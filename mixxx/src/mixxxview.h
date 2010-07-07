@@ -143,6 +143,8 @@ private:
     QGridLayout* m_pLibraryPageLayout;
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
+    /** The layout for the effects units page. Allows stuff to resize automatically */
+    QGridLayout* m_pEffectsUnitsPageLayout;
 
 	// The splitter widget that contains the library panes
 	QSplitter *m_pSplitter;

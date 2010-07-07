@@ -17,8 +17,8 @@ EffectsUnitsController::EffectsUnitsController() {
 	loadAllPlugins();
 
 	//test:
-	activatePluginOnSource("djFlanger", "[Channel1]");
-	activatePluginOnSource("Plate2x2", "[Channel2]");
+	//activatePluginOnSource("djFlanger", "[Channel1]");
+	//activatePluginOnSource("Plate2x2", "[Channel2]");
 
 }
 

@@ -14,7 +14,7 @@
 
 LADSPAPlugin::LADSPAPlugin(const LADSPA_Descriptor * descriptor)
 {
-    m_pDescriptor = descriptor;
+	m_pDescriptor = descriptor;
 }
 
 LADSPAPlugin::~LADSPAPlugin()

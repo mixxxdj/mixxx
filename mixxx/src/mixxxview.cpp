@@ -127,6 +127,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 #endif
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
+    m_pEffectsUnitsPageLayout = new QGridLayout();
     m_pSplitter = 0;
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
@@ -792,6 +793,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 #ifdef __FXUNITS__
                     m_pEffectsUnitsView = new EffectsUnitsView(this);
                     m_pTabWidgetEffectsUnitsPage = m_pEffectsUnitsView;
+                    m_pEffectsUnitsPageLayout->setContentsMargins(0, 0, 0, 0);
+                    m_pTabWidgetEffectsUnitsPage->setLayout(m_pEffectsUnitsPageLayout);
+
 #endif
 
                     //Set the margins to be 0 for all the layouts.
@@ -799,6 +803,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 #ifdef __LADSPA__
                      m_pEffectsPageLayout->setContentsMargins(0, 0, 0, 0);
 #endif
+
 
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
