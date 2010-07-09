@@ -33,6 +33,7 @@ class LoopingControl;
 class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
+class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -180,6 +181,7 @@ private:
     ControlObject* m_pTrackSamples;
 
     ControlPushButton *playButton, *buttonBeatSync;
+    ControlObjectThreadMain *playButtonCOT, *m_pTrackEndCOT;
     ControlObject *fwdButton, *backButton;
 
     ControlObject *rateEngine;
