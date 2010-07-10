@@ -191,7 +191,8 @@ void SoundManager::closeDevices()
     iNumDevicesHaveRequestedBuffer = 0;
     //requestBufferMutex.unlock();
 
-    m_sourceBuffers.clear(); // anti-cruft
+    m_sourceBuffers.clear(); // anti-cruft (safe because sources only have
+                             // pointers to memory owned by EngineMaster)
 
     foreach (AudioReceiver recv, m_receiverBuffers.keys()) {
         short *buffer = m_receiverBuffers[recv];
@@ -203,6 +204,9 @@ void SoundManager::closeDevices()
     m_receiverBuffers.clear();
 
 #ifdef __VINYLCONTROL__
+    // TODO see comment where these objects are created in setupDevices,
+    // this should probably be in the dtor or at least somewhere other
+    // than here -- bkgood
     while (!m_VinylControl.empty()) {
         VinylControlProxy *vc = m_VinylControl.takeLast();
         if (vc != NULL) {
@@ -357,6 +361,9 @@ int SoundManager::setupDevices()
 
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
+    // TODO this ought to be done in the ctor or something. Not here. Really
+    // shouldn't be any reason for these to be reinitialized every time the
+    // audio prefs are updated. Will require work in DlgPrefVinyl -- bkgood
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
