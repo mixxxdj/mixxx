@@ -18,7 +18,7 @@
 #include "soundmanager.h"
 
 SoundManagerConfig::SoundManagerConfig(SoundManager *soundManager, QFileInfo configFile)
-    : m_soundManager(soundManager)
+    : m_pSoundManager(soundManager)
     , m_configFile(configFile) {
 
 }
@@ -90,7 +90,7 @@ void SoundManagerConfig::clearReceivers() {
 }
 
 void SoundManagerConfig::loadDefaults() {
-    QList<QString> apiList = m_soundManager->getHostAPIList();
+    QList<QString> apiList = m_pSoundManager->getHostAPIList();
     if (!apiList.isEmpty()) {
 #ifdef __LINUX__
         //Check for JACK and use that if it's available, otherwise use ALSA
@@ -109,7 +109,7 @@ void SoundManagerConfig::loadDefaults() {
         m_api = MIXXX_PORTAUDIO_COREAUDIO_STRING;
 #endif
     }
-    QList<unsigned int> sampleRates = m_soundManager->getSampleRates();
+    QList<unsigned int> sampleRates = m_pSoundManager->getSampleRates();
     if (sampleRates.contains(DEFAULT_SAMPLE_RATE)) {
         m_sampleRate = DEFAULT_SAMPLE_RATE;
     } else if (!sampleRates.isEmpty()) {
@@ -122,7 +122,7 @@ void SoundManagerConfig::loadDefaults() {
 
     m_sources.clear();
     m_receivers.clear();
-    QList<SoundDevice*> outputDevices = m_soundManager->getDeviceList(m_api, true, false);
+    QList<SoundDevice*> outputDevices = m_pSoundManager->getDeviceList(m_api, true, false);
     if (!outputDevices.isEmpty() && outputDevices.first()->getNumOutputChannels() > 1) {
         SoundDevice *masterDevice = outputDevices.first();
         AudioSource masterSource(AudioPath::MASTER, 0);
