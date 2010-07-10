@@ -30,7 +30,9 @@
  *  @param pConfig The config key table
  *  @param _master A pointer to the audio engine's mastering class.
  */
-SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master) : QObject()
+SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
+    : QObject()
+    , m_config(this)
 {
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
@@ -39,6 +41,12 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
+
+    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
+    // this needs to be up here so SoundManagerConfig can get at the list (populated) -- bkgood
+    m_samplerates.push_back(44100);
+    m_samplerates.push_back(48000);
+    m_samplerates.push_back(96000);
 
     //TODO: Find a better spot for this:
     //Set up a timer to sync Mixxx's ControlObjects on...
@@ -61,8 +69,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputL")));
     ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputR")));
 
-
-
     pControlObjectLatency->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
     pControlObjectVinylControlMode->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
@@ -73,10 +79,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     qDebug() << "Latency" << pControlObjectLatency->get();
 
-    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back(44100);
-    m_samplerates.push_back(48000);
-    m_samplerates.push_back(96000);
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers

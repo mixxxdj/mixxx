@@ -17,10 +17,12 @@
 #include "sounddevice.h"
 #include "soundmanager.h"
 
-SoundManagerConfig::SoundManagerConfig(SoundManager *soundManager, QFileInfo configFile)
-    : m_pSoundManager(soundManager)
-    , m_configFile(configFile) {
-
+SoundManagerConfig::SoundManagerConfig(SoundManager *soundManager)
+    : m_pSoundManager(soundManager) {
+    m_configFile = QFileInfo(QString("%1/%2/%3")
+            .arg(QDir::homePath())
+            .arg(SETTINGS_PATH)
+            .arg(SOUNDMANAGERCONFIG_FILENAME));
 }
 
 SoundManagerConfig::~SoundManagerConfig() {

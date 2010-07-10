@@ -25,6 +25,7 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolproxy.h"
 #endif
+#include "soundmanagerconfig.h"
 #include <QTimer>
 
 class SoundDevice;
@@ -86,6 +87,7 @@ class SoundManager : public QObject
         unsigned int iNumDevicesHaveRequestedBuffer;
         QMutex requestBufferMutex;
         QTimer m_controlObjSyncTimer;
+        SoundManagerConfig m_config;
 };
 
 #endif
