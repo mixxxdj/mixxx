@@ -15,13 +15,14 @@ StantonSCS1d.globalMode = false;        // Stay in the current modes on deck cha
 StantonSCS1d.platterSpeed = 0;          // Speed of the platter at 0% pitch: 0=33 RPM, 1=45 RPM
 StantonSCS1d.deckChangeWait = 1000;     // Time in milliseconds to hold the Deck Change button down to avoid changing decks
 StantonSCS1d.padVelocity = true;        // Use the velocity values when recalling cues on the trigger pads
+StantonSCS1d.browseDamp = 2;			// Number of platter ticks to move the highlight one item when browsing the library
 
 // These values are heavily latency-dependent. They're preset for 10ms and will need tuning for other latencies. (For 2ms, try 0.885, 0.15, and 1.5.)
 StantonSCS1d.scratching = {     "sensitivity":0.11,          // How much the audio moves for a given circle arc (higher=faster response, 0<n<1)
                                 "stoppedMultiplier":1.0 };  // Correction for when the deck is stopped (set higher for higher latencies)
 
 // ----------   Other global variables    ----------
-StantonSCS1d.debug = true;  // Enable/disable debugging messages to the console
+StantonSCS1d.debug = false;  // Enable/disable debugging messages to the console
 StantonSCS1d.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1d.channel = 0;   // MIDI channel the device is on
 StantonSCS1d.swVersion = "1.8";   // Mixxx version for display
@@ -35,7 +36,8 @@ StantonSCS1d.deck = 1;  // Currently active virtual deck
 StantonSCS1d.trackDuration = [0,0]; // Duration of the song on each deck (used for jog LCD and displays)
 StantonSCS1d.lastLight = [-1,-1];	// Last circle LCD values
 StantonSCS1d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
-StantonSCS1d.state = { "pitchAbs":0, "jog":0, "dontMove":0, "platterGrabbed":false };   // Temporary state variables
+// Temporary state variables
+StantonSCS1d.state = { "pitchAbs":0, "jog":0, "dontMove":0, "platterGrabbed":false, "browseTicks":0};
 StantonSCS1d.mutex = { };   // Temporary mutual exclusion variables
 StantonSCS1d.prevValues = { };  // Temporary previous value storage
 StantonSCS1d.inSetup = false;   // Flag for if the device is in setup mode
@@ -51,6 +53,7 @@ StantonSCS1d.pitchPoints = {    1:{ 8:-0.1998, 9:-0.1665, 10:-0.1332, 11:-0.0999
                                 3:{ 8:-0.4370, 9:-0.3677, 10:-0.3320, 11:-0.2495, 12:-0.1567, 13:-0.0548, 
                                     14:0.12, 15:0.263, 18:0.338, 19:0.506, 20:0.688, 21:0.895 } };  // Notes
 // Multiple banks of multiple cue points:
+// TODO: Remove this since hot cues are native in v1.8
 StantonSCS1d.padPoints =  {     1:{ // Deck
                                     1:{ 0x20:-0.1, 0x21:-0.1, 0x22:-0.1, 0x23:-0.1 },   // Bank
                                     2:{ 0x20:-0.1, 0x21:-0.1, 0x22:-0.1, 0x23:-0.1 },
@@ -147,6 +150,10 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel1]","duration","StantonSCS1d.durationChange1");
     engine.connectControl("[Channel2]","duration","StantonSCS1d.durationChange2");
     
+    //  Initialize the jog LCD if the mapping is loaded after a song is
+    StantonSCS1d.durationChange1(engine.getValue("[Channel1]","duration"));
+    StantonSCS1d.durationChange2(engine.getValue("[Channel2]","duration"));
+    
     //midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 16, 0xF7]),7); // Light all LEDs
 
     print ("StantonSCS1d: \""+StantonSCS1d.id+"\" on MIDI channel "+(StantonSCS1d.channel+1)+" initialized.");
@@ -201,6 +208,7 @@ StantonSCS1d.controlButton = function (channel, control, value, status) {
   if (StantonSCS1d.checkInSetup()) return;
     var byte1 = 0x90 + channel;
     if ((status & 0XF0) == 0x90) {    // If button down
+		engine.scratchDisable(StantonSCS1d.deck);
         midi.sendShortMsg(0xB0 + channel,1,'x'.toInt());   // Stop platter
         midi.sendShortMsg(byte1,control,1);  // Light 'er up
         StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = "control";
@@ -215,14 +223,16 @@ StantonSCS1d.browseButton = function (channel, control, value, status) {
   if (StantonSCS1d.checkInSetup()) return;
     var byte1 = 0x90 + channel;
     if ((status & 0XF0) == 0x90) {    // If button down
+		engine.scratchDisable(StantonSCS1d.deck);
         midi.sendShortMsg(0xB0 + channel,1,'x'.toInt());   // Stop platter
         midi.sendShortMsg(byte1,control,1);  // Light 'er up
-        StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = "browse";
         midi.sendShortMsg(0x80+channel,0x1B,0);  // turn off the "control" mode button
         midi.sendShortMsg(0x80+channel,0x1D,0);  // turn off the "vinyl" mode button
         
         return;
     }
+    // Switch modes on button up to give the motor a chance to stop
+	StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = "browse";
 }
 
 StantonSCS1d.vinylButton = function (channel, control, value, status) {
@@ -230,6 +240,8 @@ StantonSCS1d.vinylButton = function (channel, control, value, status) {
     var byte1 = 0x90 + channel;
     if ((status & 0XF0) == 0x90) {    // If button down
         midi.sendShortMsg(byte1,control,1);  // Light 'er up
+        var rpm = [33+1/3,45];
+        engine.scratchEnable(StantonSCS1d.deck, 4000, rpm[StantonSCS1d.platterSpeed], 1.0/8, (1.0/8)/32);
         StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = "vinyl";
         midi.sendShortMsg(0x80+channel,0x1B,0);  // turn off the "control" mode button
         midi.sendShortMsg(0x80+channel,0x1C,0);  // turn off the "browse" mode button
@@ -388,10 +400,13 @@ StantonSCS1d.pfl = function (channel, control, value, status) {
 }
 
 StantonSCS1d.rew = function (channel, control, value, status) {
-    if ((status & 0xF0) == 0x90) {    // If button down
-        midi.sendShortMsg(0xB0+channel,1,'4'.toInt());   // 45 RPM backward
-        midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 35, 1.5, 5, 0, 0, 0xF7]),11);  // Motor full speed
-        midi.sendShortMsg(0xB0+channel,1,'o'.toInt());   // Start platter
+    // If in vinyl mode and button down
+    if ((status & 0xF0) == 0x90) {
+		if (StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] == "vinyl") {
+			midi.sendShortMsg(0xB0+channel,1,'4'.toInt());   // 45 RPM backward
+			midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 35, 1.5, 5, 0, 0, 0xF7]),11);  // Motor full speed
+			midi.sendShortMsg(0xB0+channel,1,'o'.toInt());   // Start platter
+		}
         engine.setValue("[Channel"+StantonSCS1d.deck+"]","back",1);
         return;
     }
@@ -402,10 +417,13 @@ StantonSCS1d.rew = function (channel, control, value, status) {
 }
 
 StantonSCS1d.ffwd = function (channel, control, value, status) {
-    if ((status & 0xF0) == 0x90) {    // If button down
-        midi.sendShortMsg(0xB0+channel,1,'2'.toInt());   // 45 RPM foreward
-        midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 35, 1.5, 5, 0, 0, 0xF7]),11);  // Motor full speed
-        midi.sendShortMsg(0xB0+channel,1,'o'.toInt());   // Start platter
+    // If in vinyl mode and button down
+    if ((status & 0xF0) == 0x90) {
+		if (StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] == "vinyl") {
+			midi.sendShortMsg(0xB0+channel,1,'2'.toInt());   // 45 RPM foreward
+			midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 35, 1.5, 5, 0, 0, 0xF7]),11);  // Motor full speed
+			midi.sendShortMsg(0xB0+channel,1,'o'.toInt());   // Start platter
+		}
         engine.setValue("[Channel"+StantonSCS1d.deck+"]","fwd",1);
         return;
     }
@@ -473,7 +491,7 @@ StantonSCS1d.pitchReset = function (channel, control, value, status) {
     }
 }
 
-StantonSCS1d.platterMoved = function (data, length) {
+StantonSCS1d.vinylMoved = function (data, length) {
 	// Re-construct the 32-bit word
 	var iInfo = (data.charCodeAt(0) << 24) | (data.charCodeAt(1) << 16) | 
 				(data.charCodeAt(2) << 8) | data.charCodeAt(3);
@@ -488,24 +506,52 @@ StantonSCS1d.platterMoved = function (data, length) {
 	
 	StantonSCS1d.scratch["prevTimeStamp"] = iTimeStamp;
 	// Process the data
-	//	Timestamp range: 131071812 - 130547712 = 524,100
 	
-	if (iDirection==1) engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",1);
-	else engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",-0.5);
+	var platterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
 
-	// Skip if the track start position hasn't been set yet
-    //if (scratch.variables["initialTrackPos"] == -1.0)
-	//	engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",0);
-    // If the slider start value hasn't been set yet, set it
-    //if (scratch.variables["initialControlValue"] == 0) {
-    //    scratch.variables["initialControlValue"] = sliderValue;
-    //     print("Initial slider="+scratch.variables["initialControlValue"]);
-    //    }
-	//var temp=scratch.filter(StantonSCS1d.deck, iTimeStamp, StantonSCS1d.scratch["revtime"], StantonSCS1d.scratch["alpha"], StantonSCS1d.scratch["beta"], divisions);
-	//engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",temp);
+    switch(platterMode) {
+        case "control":
+			break;
+        case "browse":
+			if (StantonSCS1d.state["browseTicks"]==StantonSCS1d.browseDamp) {
+				StantonSCS1d.state["browseTicks"]=0;
+				if (iDirection==1) engine.setValue("[Playlist]","SelectNextTrack",1);
+				else engine.setValue("[Playlist]","SelectPrevTrack",1);
+            }
+            else StantonSCS1d.state["browseTicks"]++;
+			break;
+        case "vinyl":	// Scratching
+			// Ignore if the music speed is outside the motor abilities and the platter is stopped
+			if (StantonSCS1d.state["outsideMotor"]) return;
+			
+			// Timestamp range: 131071812 - 130547712 = 524,100
+			
+			// TODO: Remember to take into account default platter speed!
+			//		(StantonSCS1d.platterSpeed: 0=33 RPM, 1=45 RPM)
+			
+			engine.scratchTick(StantonSCS1d.deck,iDirection);
+			
+			/*
+			if (iDirection==1) engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",1);
+			else engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",-0.5);
+
+			// Skip if the track start position hasn't been set yet
+			if (scratch.variables["initialTrackPos"] == -1.0)
+				engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",0);
+			// If the slider start value hasn't been set yet, set it
+			if (scratch.variables["initialControlValue"] == 0) {
+				scratch.variables["initialControlValue"] = sliderValue;
+				 print("Initial slider="+scratch.variables["initialControlValue"]);
+				}
+			var temp=scratch.filter(StantonSCS1d.deck, iTimeStamp, StantonSCS1d.scratch["revtime"], StantonSCS1d.scratch["alpha"], StantonSCS1d.scratch["beta"], divisions);
+			engine.setValue("[Channel"+StantonSCS1d.deck+"]","scratch",temp);
+			*/
+			break;
+    }
 }
 
 StantonSCS1d.platterGrabbed = function (channel, control, value, status) {
+	return;
     // Ignore if the music speed is outside the motor abilities and the platter is stopped
     if (StantonSCS1d.state["outsideMotor"]) return;
     
@@ -526,6 +572,7 @@ StantonSCS1d.platterGrabbed = function (channel, control, value, status) {
 }
 
 StantonSCS1d.platterBend = function (channel, control, value, status) {
+	return;
     // Ignore if the music speed is outside the motor abilities and the platter is stopped
     if (StantonSCS1d.state["outsideMotor"]) return;
     
@@ -534,6 +581,7 @@ StantonSCS1d.platterBend = function (channel, control, value, status) {
 }
 
 StantonSCS1d.platterScratch = function (channel, control, value, status) {
+	return;
     // Ignore if the music speed is outside the motor abilities and the platter is stopped
     if (StantonSCS1d.state["outsideMotor"]) return;
     
@@ -663,6 +711,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
         else midi.sendShortMsg(byte1,control,32); // Deck select button green
     }
     else {
+		engine.scratchDisable(StantonSCS1d.deck);	// To avoid accidentally stopping the outgoing deck
         StantonSCS1d.connectDeckSignals(channel,true);    // Disconnect static signals
         midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 17, 0xF7]),7); // Extinguish all LEDs
         
@@ -1607,26 +1656,6 @@ StantonSCS1d.FXPeriodLEDs = function (value) {
     midi.sendShortMsg(0xB0+StantonSCS1d.channel,125,40+add);
 }
 
-StantonSCS1d.MasterVolumeLEDs = function (value) {
-    var LEDs = 0;
-    var mid = 1.0;
-    var lowMidRange = 1/4;
-    var midHighRange = 4/4;
-    if (value>0.0) LEDs++;
-    if (value>lowMidRange) LEDs++;
-    if (value>lowMidRange*2) LEDs++;
-    if (value>lowMidRange*3) LEDs++;
-//     if (value>lowMidRange*4) LEDs++;
-    if (value>mid) LEDs++;
-    if (value>mid+midHighRange) LEDs++;
-    if (value>mid+midHighRange*2) LEDs++;
-    if (value>mid+midHighRange*3) LEDs++;
-    if (value>=5.0) LEDs++;
-//     print("Value="+value+", LEDs="+LEDs);
-    var byte1 = 0xB0 + StantonSCS1d.channel;
-    midi.sendShortMsg(byte1,0x07,0x28+LEDs);
-}
-
 StantonSCS1d.pitchRangeLEDs = function (value) {
     StantonSCS1d.pitchChange(engine.getValue("[Channel"+StantonSCS1d.deck+"]","rate")); // So the platter speed is updated
     var on = 0x90 + StantonSCS1d.channel;
@@ -1729,7 +1758,12 @@ StantonSCS1d.circleBars = function (value) {
 }
 
 /*
-Bugs:
+TODO:
+- Use native Controls for hot cues
+- Add looping controls
+- Get scratching working (with timers eventually)
+
+Bugs: (obsolete)
 - These are due to platterGrabbed being set to true by DaRouter's Scratch signal: (my deck is hokey...I'll attempt fixes after it's repaired)
     - Scratching while stopped & pressing play during scratch causes platter not to spin, reset with ffwd/rew
     - quick taps on rew toggle platter status when stopped
