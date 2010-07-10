@@ -16,6 +16,10 @@
 #ifndef SOUNDMANAGERCONFIG_H
 #define SOUNDMANAGERCONFIG_H
 
+#ifndef SOUNDMANAGERCONFIG_FILENAME
+#define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
+#endif
+
 #include <QtCore>
 #include "audiopath.h"
 
@@ -29,7 +33,7 @@ const int DEFAULT_LATENCY = 8; // equals LATENCY_COUNT from DlgPrefNewSound,
 
 class SoundManagerConfig {
 public:
-    SoundManagerConfig(SoundManager *soundManager, QFileInfo configFile);
+    SoundManagerConfig(SoundManager *soundManager);
     ~SoundManagerConfig();
     bool readFromDisk();
     bool writeToDisk() const;
