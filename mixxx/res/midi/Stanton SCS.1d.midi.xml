@@ -347,7 +347,7 @@
                 <control>
                     <status>0xf9</status>
                     <group>[Master]</group>
-                    <key>StantonSCS1d.platterMoved</key>
+                    <key>StantonSCS1d.vinylMoved</key>
                     <options>
                         <Script-Binding/>
                     </options>

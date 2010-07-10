@@ -93,6 +93,10 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel1]","volume","StantonSCS1m.ch1FaderStart");
     engine.connectControl("[Channel2]","volume","StantonSCS1m.ch2FaderStart");
     
+	//  Initialize the vinyl LEDs if the mapping is loaded after a song is
+    StantonSCS1m.durationChange1(engine.getValue("[Channel1]","duration"));
+    StantonSCS1m.durationChange2(engine.getValue("[Channel2]","duration"));
+    
     // Set LCD text
     StantonSCS1m.initLCDs();
 
