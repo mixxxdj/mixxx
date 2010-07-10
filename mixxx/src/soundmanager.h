@@ -50,7 +50,7 @@ class SoundManager : public QObject
         void queryDevices();
         int setupDevices();
         void setDefaults(bool api=true, bool devices=true, bool other=true);
-        QList<QString> getSamplerateList();
+        QList<unsigned int> getSampleRates();
         QList<QString> getHostAPIList();
         QString getHostAPI() const;
         void setHostAPI(QString api);
@@ -70,7 +70,7 @@ class SoundManager : public QObject
         EngineMaster *m_pMaster;
         ConfigObject<ConfigValue> *m_pConfig;
         QList<SoundDevice*> m_devices;
-        QList<QString> m_samplerates;
+        QList<unsigned int> m_samplerates;
         QString m_hostAPI;
         float m_sampleRate;
         unsigned int m_framesPerBuffer;

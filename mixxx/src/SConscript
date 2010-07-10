@@ -471,6 +471,7 @@ sources = Split("""
 
                 segmentation.cpp
                 audiopath.cpp
+                soundmanagerconfig.cpp
                 """)
 
 #Set up the library path on Windows:

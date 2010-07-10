@@ -74,9 +74,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     qDebug() << "Latency" << pControlObjectLatency->get();
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back("44100");
-    m_samplerates.push_back("48000");
-    m_samplerates.push_back("96000");
+    m_samplerates.push_back(44100);
+    m_samplerates.push_back(48000);
+    m_samplerates.push_back(96000);
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -239,7 +239,7 @@ void SoundManager::clearDeviceList()
 /** Returns a list of samplerates we will attempt to support.
  *  @return The list of available samplerates.
  */
-QList<QString> SoundManager::getSamplerateList()
+QList<unsigned int> SoundManager::getSampleRates()
 {
     return m_samplerates;
 }
