@@ -45,7 +45,7 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
             this, SLOT(apiChanged(int)));
 
     sampleRateComboBox->clear();
-    foreach (QString srate, m_pSoundManager->getSamplerateList()) {
+    foreach (unsigned int srate, m_pSoundManager->getSampleRates()) {
         sampleRateComboBox->addItem(QString("%1 Hz").arg(srate), srate);
     }
     sampleRateComboBox->setCurrentIndex(0);

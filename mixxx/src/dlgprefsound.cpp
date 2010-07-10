@@ -182,13 +182,13 @@ void DlgPrefSound::slotUpdate()
 
     // Sample rate
     ComboBoxSamplerates->clear();
-    QList<QString> srates = m_pSoundManager->getSamplerateList();
-    QListIterator<QString> srate_it(srates);
+    QList<unsigned int> srates = m_pSoundManager->getSampleRates();
+    QListIterator<unsigned int> srate_it(srates);
     QString srate;
     j = 0;
     while (srate_it.hasNext())
     {
-        srate = srate_it.next();
+        srate = QString::number(srate_it.next());
         ComboBoxSamplerates->insertItem(j, srate);
         if (srate==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
             ComboBoxSamplerates->setCurrentIndex(j);
