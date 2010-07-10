@@ -32,7 +32,6 @@
  */
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
     : QObject()
-    , m_config(this)
 {
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;

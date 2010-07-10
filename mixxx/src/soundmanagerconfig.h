@@ -33,7 +33,7 @@ const int DEFAULT_LATENCY = 8; // equals LATENCY_COUNT from DlgPrefNewSound,
 
 class SoundManagerConfig {
 public:
-    SoundManagerConfig(SoundManager *soundManager);
+    SoundManagerConfig();
     ~SoundManagerConfig();
     bool readFromDisk();
     bool writeToDisk() const;
@@ -49,7 +49,6 @@ public:
     void clearReceivers();
     void loadDefaults();
 private:
-    SoundManager *m_pSoundManager;
     QFileInfo m_configFile;
     QString m_api;
     // none of our sample rates are actually decimals, this avoids
