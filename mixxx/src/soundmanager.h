@@ -59,8 +59,8 @@ class SoundManager : public QObject
         void setSampleRate(float sampleRate);
         unsigned int getFramesPerBuffer() const;
         void setFramesPerBuffer(unsigned int framesPerBuffer);
-        void addSource(SoundDevice *device, AudioSource source);
-        void addReceiver(SoundDevice *device, AudioReceiver receiver);
+        SoundManagerConfig getConfig() const;
+        void setConfig(SoundManagerConfig config);
         QHash<AudioSource, const CSAMPLE*>
             requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         void pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 

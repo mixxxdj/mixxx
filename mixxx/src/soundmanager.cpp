@@ -502,23 +502,13 @@ void SoundManager::setFramesPerBuffer(unsigned int framesPerBuffer) {
     }
     m_framesPerBuffer = framesPerBuffer;
 }
-
-/**
- * Adds an AudioSource going to the given device. Doesn't take effect
- * until setupDevices(). Not thread safe, only intended to be called
- * from the main thread.
- */
-void SoundManager::addSource(SoundDevice *device, AudioSource source) {
-    m_audioSources.append(QPair<SoundDevice*, AudioSource>(device, source));
+        
+SoundManagerConfig SoundManager::getConfig() const {
+    return m_config;
 }
 
-/**
- * Adds an AudioReceiver going to the given device. Doesn't take effect
- * until setupDevices(). Not thread safe, only intended to be called
- * from the main thread.
- */
-void SoundManager::addReceiver(SoundDevice *device, AudioReceiver receiver) {
-    m_audioReceivers.append(QPair<SoundDevice*, AudioReceiver>(device, receiver));
+void SoundManager::setConfig(SoundManagerConfig config) {
+    m_config = config;
 }
 
 void SoundManager::sync()

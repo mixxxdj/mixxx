@@ -51,10 +51,11 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     sampleRateComboBox->setCurrentIndex(0);
     updateLatencies(0); // take this away when the config stuff is implemented
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(updateLatencies(int)));
+            this, SLOT(sampleRateChanged(int)));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(settingChanged()));
-
+            this, SLOT(updateLatencies(int)));
+    connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(latencyChanged(int)));
     initializePaths();
 //    loadSettings();
 
@@ -89,13 +90,7 @@ void DlgPrefNewSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
-    float sampleRate = sampleRateComboBox->itemData(sampleRateComboBox->currentIndex()).toFloat();
-    unsigned int framesPerBuffer = latencyComboBox->itemData(latencyComboBox->currentIndex()).toUInt();
-    m_pSoundManager->setHostAPI(m_api);
-    m_pSoundManager->setSampleRate(sampleRate);
-    m_pSoundManager->setFramesPerBuffer(framesPerBuffer);
-    // add paths to soundmanager
-    // commit changes
+    m_pSoundManager->setConfig(m_config);
     m_settingsModified = false;
     applyButton->setEnabled(false);
 }
@@ -185,24 +180,41 @@ void DlgPrefNewSound::apiChanged(int index) {
 }
 
 /**
+ * Slot called when the sample rate combo box changes to update the
+ * sample rate in the config.
+ */
+void DlgPrefNewSound::sampleRateChanged(int index) {
+    m_config.setSampleRate(
+            sampleRateComboBox->itemData(index).toUInt());
+}
+
+/**
+ * Slot called when the latency combo box is chance to update the
+ * latency in the config.
+ */
+void DlgPrefNewSound::latencyChanged(int index) {
+    m_config.setLatency(
+            latencyComboBox->itemData(index).toUInt());
+}
+
+/**
  * Slot called whenever the selected sample rate is changed. Populates the
- * latency input box with LATENCY_COUNT values, starting at 1ms, representing
+ * latency input box with MAX_LATENCY values, starting at 1ms, representing
  * a number of frames per buffer, which will always be a power of 2.
  */
 void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
-    float sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toFloat();
-    if (sampleRate == 0.0f) {
+    double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
+    if (sampleRate == 0.0) {
         sampleRateComboBox->setCurrentIndex(0); // hope this doesn't recurse!
         return;
     }
     unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
     // we don't want to display any sub-1ms latencies (well maybe we do but I
-    // don't know if current PC could handle it), so we iterate over all the
-    // buffer sizes until we find the first that gives us a latency >= 1 ms
-    // -- bkgood
+    // don't right now!), so we iterate over all the buffer sizes until we
+    // find the first that gives us a latency >= 1 ms -- bkgood
     for (; framesPerBuffer / sampleRate * 1000 < 1.0f; framesPerBuffer *= 2);
     latencyComboBox->clear();
-    for (unsigned int i = 0; i < LATENCY_COUNT; ++i) {
+    for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
         unsigned int latency = framesPerBuffer / sampleRate * 1000;
         latencyComboBox->addItem(QString("%1 ms").arg(latency), framesPerBuffer);
         framesPerBuffer *= 2;

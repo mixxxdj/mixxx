@@ -21,6 +21,7 @@
 #include "audiopath.h"
 
 class SoundDevice;
+class SoundManagerConfig;
 
 class DlgPrefNewSoundItem : public QWidget, public Ui::DlgPrefNewSoundItem {
     Q_OBJECT;
@@ -28,14 +29,14 @@ public:
     DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathType type,
             QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
     ~DlgPrefNewSoundItem();
-    SoundDevice *getDevice() const; // if this returns NULL, result of getPath will be invalid
-    AudioPath getPath() const;
 signals:
     void settingChanged();
 public slots:
     void refreshDevices(QList<SoundDevice*> &devices);
     void deviceChanged(int index);
+    void writePath(SoundManagerConfig *config) const;
 private:
+    SoundDevice *getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     AudioPath::AudioPathType m_type;
     unsigned int m_index;
     QList<SoundDevice*> m_devices;

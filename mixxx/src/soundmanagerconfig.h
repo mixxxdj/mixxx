@@ -26,13 +26,22 @@
 class SoundDevice;
 class SoundManager;
 
+const unsigned int MAX_LATENCY = 8; // this represents latency values from 1 ms to about
+                                    // 180 ms, should be sufficient -- bkgood
 // no DEFAULT_API because we have to check that the api is available -- bkgood
 const unsigned int DEFAULT_SAMPLE_RATE = 48000;
-const int DEFAULT_LATENCY = 8; // equals LATENCY_COUNT from DlgPrefNewSound,
-                               // move it here? -- bkgood
+// default is max so that we don't set latency too low and make mixxx look bad
+// to newbies with a bunch of pops and clicks (maybe this should be more like
+// the ~80 ms value instead of the ~180 value though) -- bkgood
+const int DEFAULT_LATENCY = MAX_LATENCY;
 
 class SoundManagerConfig {
 public:
+    enum Defaults {
+        API = (1 << 0),
+        DEVICES = (1 << 1),
+        OTHER = (1 << 2),
+    };
     SoundManagerConfig();
     ~SoundManagerConfig();
     bool readFromDisk();
@@ -47,7 +56,7 @@ public:
     void addReceiver(SoundDevice *device, AudioReceiver receiver);
     void clearSources();
     void clearReceivers();
-    void loadDefaults();
+    void loadDefaults(SoundManager *soundManager, int flags);
 private:
     QFileInfo m_configFile;
     QString m_api;

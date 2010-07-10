@@ -19,6 +19,7 @@
 #include <QtCore>
 #include "ui_dlgprefnewsounddlg.h"
 #include "configobject.h"
+#include "soundmanagerconfig.h"
 
 class SoundManager;
 class ControlObject;
@@ -26,8 +27,6 @@ class SoundDevice;
 
 const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
                                   // soundmanager or something
-const unsigned int LATENCY_COUNT = 8; // this seems to give a wide enough range to be
-                                      // useful, about 1-180 ms
 
 class DlgPrefNewSound : public QWidget, public Ui::DlgPrefNewSoundDlg  {
     Q_OBJECT;
@@ -49,8 +48,11 @@ private:
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
     QString m_api;
+    SoundManagerConfig m_config;
 private slots:
     void apiChanged(int index);
+    void sampleRateChanged(int index);
+    void latencyChanged(int index);
     void updateLatencies(int sampleRateIndex);
     void settingChanged();
 };
