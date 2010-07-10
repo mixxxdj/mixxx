@@ -45,7 +45,7 @@ public:
     void clearReceivers();
     void loadDefaults();
 private:
-    SoundManager *m_soundManager;
+    SoundManager *m_pSoundManager;
     QFileInfo m_configFile;
     QString m_api;
     // none of our sample rates are actually decimals, this avoids
