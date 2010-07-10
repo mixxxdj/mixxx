@@ -74,7 +74,7 @@ unsigned char AudioPath::getIndex() const {
     return m_index;
 }
 
-bool AudioPath::operator==(const AudioPath& other) const {
+bool AudioPath::operator==(const AudioPath &other) const {
     return m_type == other.m_type
         && m_index == other.m_index
         && m_channelGroup == other.m_channelGroup;
@@ -86,7 +86,7 @@ unsigned int AudioPath::getHash() const {
         | (m_channelGroup.getHash() << 8);
 }
 
-bool AudioPath::channelsClash(const AudioPath& other) const {
+bool AudioPath::channelsClash(const AudioPath &other) const {
     return m_channelGroup.clashesWith(other.m_channelGroup);
 }
 
@@ -169,9 +169,9 @@ AudioPath::AudioPathType AudioPath::getTypeFromInt(int typeInt) {
         return AudioPath::PASSTHROUGH;
     case AudioPath::MICROPHONE:
         return AudioPath::MICROPHONE;
+    default:
+        return AudioPath::INVALID;
     }
-    // gcc will warn us here if we missed a type.
-    // if you're reading this and added a new type, check anyway -- bkgood
 }
 
 //static
@@ -225,7 +225,11 @@ AudioReceiver::AudioReceiver(AudioPath::AudioPathType type,
 //static
 QList<AudioPath::AudioPathType> AudioReceiver::getSupportedTypes() {
     QList<AudioPath::AudioPathType> types;
+#ifdef __VINYLCONTROL__
+    // this disables vinyl control for all of the sound devices stuff
+    // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
+#endif
     return types;
 }
 

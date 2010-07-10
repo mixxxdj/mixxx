@@ -48,21 +48,26 @@ private:
  */
 class AudioPath {
 public:
+    // XXX if you add a new type here, be sure to add it to the various
+    // methods including getStringFromType, isIndexable, getTypeFromInt,
+    // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
+    // (if necessary), etc. -- bkgood
     enum AudioPathType {
-        MASTER = 0, // guaranteed by the standard, make sure it happens
+        INVALID = 0, // indicates an int passed to getTypeFromInt was invalid
+        MASTER,
         HEADPHONES,
         DECK,
         VINYLCONTROL,
         MICROPHONE,
-        PASSTHROUGH
+        PASSTHROUGH,
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
     unsigned char getIndex() const;
-    bool operator==(const AudioPath& other) const;
+    bool operator==(const AudioPath &other) const;
     unsigned int getHash() const;
-    bool channelsClash(const AudioPath& other) const;
+    bool channelsClash(const AudioPath &other) const;
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
     static AudioPathType getTypeFromString(QString string);
