@@ -15,6 +15,7 @@
 
 #include "dlgprefnewsounditem.h"
 #include "sounddevice.h"
+#include "soundmanagerconfig.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
@@ -50,41 +51,6 @@ DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathTy
 
 DlgPrefNewSoundItem::~DlgPrefNewSoundItem() {
 
-}
-
-/**
- * Gets the currently selected SoundDevice
- * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
- */
-SoundDevice *DlgPrefNewSoundItem::getDevice() const {
-    QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
-    if (selection == "None") {
-        return NULL;
-    }
-    foreach (SoundDevice *device, m_devices) {
-        if (selection == device->getInternalName()) {
-            return device;
-        }
-    }
-    // looks like something became invalid ???
-    deviceComboBox->setCurrentIndex(0); // set it to none
-    return NULL;
-}
-
-/**
- * Returns an AudioPath represented by this object. Only guaranteed valid if
- * ::getDevice returns non-NULL.
- */
-AudioPath DlgPrefNewSoundItem::getPath() const {
-    unsigned int channelBase = 0;
-    if (channelComboBox->count() > 0) {
-        channelBase = channelComboBox->itemData(channelComboBox->currentIndex()).toUInt();
-    }
-    if (m_isInput) {
-        return AudioReceiver(m_type, channelBase, m_index);
-    } else {
-        return AudioSource(m_type, channelBase, m_index);
-    }
 }
 
 /**
@@ -140,4 +106,54 @@ void DlgPrefNewSoundItem::deviceChanged(int index) {
     }
 emitAndReturn:
     emit(settingChanged());
+}
+
+/**
+ * Slot called when the underlying DlgPrefNewSound wants this Item to
+ * record its respective path with the SoundManagerConfig instance at
+ * config.
+ */
+void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
+    SoundDevice *device = getDevice();
+    if (device == NULL) {
+        return;
+    } // otherwise, this will have a valid audiopath
+    if (m_isInput) {
+        config->addReceiver(
+                device,
+                AudioReceiver(
+                    m_type,
+                    channelComboBox->itemData(channelComboBox->currentIndex()).toUInt(),
+                    m_index
+                    )
+                );
+    } else {
+        config->addSource(
+                device,
+                AudioSource(
+                    m_type,
+                    channelComboBox->itemData(channelComboBox->currentIndex()).toUInt(),
+                    m_index
+                    )
+                );
+    }
+}
+
+/**
+ * Gets the currently selected SoundDevice
+ * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
+ */
+SoundDevice *DlgPrefNewSoundItem::getDevice() const {
+    QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    if (selection == "None") {
+        return NULL;
+    }
+    foreach (SoundDevice *device, m_devices) {
+        if (selection == device->getInternalName()) {
+            return device;
+        }
+    }
+    // looks like something became invalid ???
+    deviceComboBox->setCurrentIndex(0); // set it to none
+    return NULL;
 }
