@@ -100,7 +100,10 @@ void LegacyLibraryImporter::import()
                 emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
 
                 // Read the metadata we couldn't support in <1.8 from file.
-                TrackInfoObject trackInfoNew(trackInfo17.getLocation());
+                QFileInfo fileInfo(trackInfo17.getLocation());
+                //Ensure we have the absolute file path stored
+                trackInfo17.setLocation(fileInfo.absoluteFilePath()); 
+                TrackInfoObject trackInfoNew(trackInfo17.getLocation()); 
                 trackInfo17.setGenre(trackInfoNew.getGenre());
                 trackInfo17.setAlbum(trackInfoNew.getAlbum());
                 trackInfo17.setYear(trackInfoNew.getYear());

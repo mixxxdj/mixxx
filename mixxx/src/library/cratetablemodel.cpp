@@ -96,6 +96,8 @@ void CrateTableModel::setCrate(int crateId) {
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+    QFileInfo fileInfo(location);
+    location = fileInfo.absoluteFilePath();
     int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
     bool success = false;
     if (iTrackId >= 0) {
