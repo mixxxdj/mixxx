@@ -24,13 +24,13 @@ void TrackDAO::initialize()
     @return the track id for the track located at location, or -1 if the track
             is not in the database.
 */
-int TrackDAO::getTrackId(QString location)
+int TrackDAO::getTrackId(QString absoluteFilePath)
 {
     //qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location = track_locations.id WHERE track_locations.location=:locatio");
-    query.bindValue(":location", location);
+    query.bindValue(":location", absoluteFilePath);
 
     if (!query.exec()) {
         qDebug() << query.lastError();
@@ -72,9 +72,9 @@ QString TrackDAO::getTrackLocation(int trackId)
     @param file_location The full path to the track on disk, including the filename.
     @return true if the track is found in the library table, false otherwise.
 */
-bool TrackDAO::trackExistsInDatabase(QString location)
+bool TrackDAO::trackExistsInDatabase(QString absoluteFilePath)
 {
-    return (getTrackId(location) != -1);
+    return (getTrackId(absoluteFilePath) != -1);
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
@@ -130,11 +130,10 @@ void TrackDAO::saveDirtyTracks() {
     }
 }
 
-int TrackDAO::addTrack(QString location)
+int TrackDAO::addTrack(QString absoluteFilePath)
 {
-    QFileInfo file(location);
     int trackId = -1;
-    TrackInfoObject * pTrack = new TrackInfoObject(file.absoluteFilePath());
+    TrackInfoObject * pTrack = new TrackInfoObject(absoluteFilePath);
     if (pTrack) {
         //Add the song to the database.
         addTrack(pTrack);
