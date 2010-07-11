@@ -71,8 +71,6 @@ TrackInfoObject::TrackInfoObject(const QString sLocation)
     else
         m_bIsValid = false;
 
-    installEventFilter(this);
-
     //qDebug() << "done constructing  TrackInfoObject....";
 }
 
@@ -113,8 +111,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     // Check that the actual file exists:
     checkFileExists();
-
-    installEventFilter(this);
 
     m_bDirty = false;
 }
