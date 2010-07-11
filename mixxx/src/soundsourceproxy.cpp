@@ -209,7 +209,12 @@ int SoundSourceProxy::open()
     //of VBR MP3s until we've seeked through and counted all
     //the frames. We don't do that in ParseHeader() to keep
     //library scanning fast.
-    m_pTrack->setDuration(m_pSoundSource->getDuration());
+    // .... but only do this if the song doesn't already
+    //      have a duration parsed. (Some SoundSources don't
+    //      parse metadata on open(), so they won't have the
+    //      duration.)
+    if (m_pTrack->getDuration() == 0)
+        m_pTrack->setDuration(m_pSoundSource->getDuration());
 
     return retVal;
 }
