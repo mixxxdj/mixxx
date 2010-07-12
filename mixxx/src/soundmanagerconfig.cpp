@@ -66,6 +66,7 @@ unsigned int SoundManagerConfig::getLatency() const {
 }
 
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
+    Q_ASSERT(m_latency > 0); // endless loop otherwise
     unsigned int framesPerBuffer = 1;
     // first, get to the framesPerBuffer value corresponding to latency index 1
     for (; framesPerBuffer / m_sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
