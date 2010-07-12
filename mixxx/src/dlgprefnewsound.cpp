@@ -29,7 +29,6 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     , m_pSoundManager(soundManager)
     , m_pConfig(config)
     , m_settingsModified(false)
-    , m_api("None")
     , m_loading(false) {
     setupUi(this);
 
@@ -52,14 +51,13 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     foreach (unsigned int srate, m_pSoundManager->getSampleRates()) {
         sampleRateComboBox->addItem(QString("%1 Hz").arg(srate), srate);
     }
-    sampleRateComboBox->setCurrentIndex(0);
-    updateLatencies(0); // take this away when the config stuff is implemented
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(sampleRateChanged(int)));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(updateLatencies(int)));
     connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(latencyChanged(int)));
+
     initializePaths();
     loadSettings();
 
@@ -182,10 +180,10 @@ void DlgPrefNewSound::loadSettings() {
  * for the new API and pushes those to the path items.
  */
 void DlgPrefNewSound::apiChanged(int index) {
-    m_api = apiComboBox->itemData(index).toString();
+    m_config.setAPI(apiComboBox->itemData(index).toString());
     refreshDevices();
     // JACK sets its own latency
-    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
         latencyLabel->setEnabled(false);
         latencyComboBox->setEnabled(false);
     } else {
@@ -247,14 +245,14 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
  * just changes and we need to display new devices.
  */
 void DlgPrefNewSound::refreshDevices() {
-    if (m_api == "None") {
+    if (m_config.getAPI() == "None") {
         m_outputDevices.clear();
         m_inputDevices.clear();
     } else {
         m_outputDevices =
-            m_pSoundManager->getDeviceList(m_api, true, false);
+            m_pSoundManager->getDeviceList(m_config.getAPI(), true, false);
         m_inputDevices =
-            m_pSoundManager->getDeviceList(m_api, false, true);
+            m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
     }
     emit(refreshOutputDevices(m_outputDevices));
     emit(refreshInputDevices(m_inputDevices));
