@@ -131,9 +131,17 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
             }
 #endif
 #ifdef __WINDOWS__
-    //Existence of ASIO doesn't necessarily mean you've got ASIO devices
-    //Do something more advanced one day if you like - Adam
-            m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;
+            //Existence of ASIO doesn't necessarily mean you've got ASIO devices
+            //Do something more advanced one day if you like - Adam
+            // hoping this counts as more advanced, tests if ASIO is an option
+            // and then that we have at least one ASIO output device -- bkgood
+            if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING)
+                   && !soundManager->getDeviceList(
+                       MIXXX_PORTAUDIO_ASIO_STRING, true, false).isEmpty()) {
+                m_api = MIXXX_PORTAUDIO_ASIO_STRING;
+            } else {
+                m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;
+            }
 #endif
 #ifdef __APPLE__
             m_api = MIXXX_PORTAUDIO_COREAUDIO_STRING;
