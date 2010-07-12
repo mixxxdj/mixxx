@@ -77,7 +77,7 @@ void DlgPrefNewSoundItem::refreshDevices(QList<SoundDevice*> &devices) {
 void DlgPrefNewSoundItem::deviceChanged(int index) {
     // TODO assumes we're looking for a two-channel device -- eventually will want
     // to give the option of mono for a microphone, depending on the value of
-    // m_type -- bkgood
+    // m_type (this will be an easy fix when there's time) -- bkgood
     channelComboBox->clear();
     QString selection = deviceComboBox->itemData(index).toString();
     unsigned int numChannels = 0;

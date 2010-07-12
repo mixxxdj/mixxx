@@ -65,6 +65,8 @@ class SoundManager : public QObject
             requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         void pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+    signals:
+        void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
     public slots:
         void sync();
     private:

@@ -56,6 +56,7 @@ private slots:
     void sampleRateChanged(int index);
     void latencyChanged(int index);
     void updateLatencies(int sampleRateIndex);
+    void refreshDevices();
     void settingChanged();
 };
 

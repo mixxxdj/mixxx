@@ -291,8 +291,8 @@ void SoundManager::queryDevices()
             m_devices.push_back((SoundDevice*)currentDevice);
         }
     }
-
-
+    // now tell the prefs that we just broke all their pointers -- bkgood
+    emit(devicesUpdated());
 #endif
 }
 
