@@ -54,6 +54,8 @@ public:
     void setLatency(unsigned int latency);
     void addSource(SoundDevice *device, AudioSource source);
     void addReceiver(SoundDevice *device, AudioReceiver receiver);
+    QList<QPair<SoundDevice*, AudioSource> > getSources() const;
+    QList<QPair<SoundDevice*, AudioReceiver> > getReceivers() const;
     void clearSources();
     void clearReceivers();
     void loadDefaults(SoundManager *soundManager, int flags);
