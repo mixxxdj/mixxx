@@ -32,9 +32,9 @@ public:
 signals:
     void settingChanged();
 public slots:
-    void refreshDevices(QList<SoundDevice*> &devices);
+    void refreshDevices(const QList<SoundDevice*> &devices);
     void deviceChanged(int index);
-    void writePath(SoundManagerConfig &config) const;
+    void writePath(SoundManagerConfig *config) const;
 private:
     SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     AudioPath::AudioPathType m_type;

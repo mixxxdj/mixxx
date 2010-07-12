@@ -57,7 +57,7 @@ DlgPrefNewSoundItem::~DlgPrefNewSoundItem() {
  * Slot called when the parent preferences pane updates its list of sound
  * devices, to update the item widget's list of devices to display.
  */
-void DlgPrefNewSoundItem::refreshDevices(QList<SoundDevice*> &devices) {
+void DlgPrefNewSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
     m_devices = devices;
     deviceComboBox->setCurrentIndex(0);
     // not using combobox->clear means we can leave in "None" so it
@@ -113,13 +113,13 @@ emitAndReturn:
  * record its respective path with the SoundManagerConfig instance at
  * config.
  */
-void DlgPrefNewSoundItem::writePath(SoundManagerConfig &config) const {
+void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
     SoundDevice *device = getDevice();
     if (device == NULL) {
         return;
     } // otherwise, this will have a valid audiopath
     if (m_isInput) {
-        config.addReceiver(
+        config->addReceiver(
                 device,
                 AudioReceiver(
                     m_type,
@@ -128,7 +128,7 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig &config) const {
                     )
                 );
     } else {
-        config.addSource(
+        config->addSource(
                 device,
                 AudioSource(
                     m_type,
