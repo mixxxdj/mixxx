@@ -51,8 +51,8 @@ class SoundManager : public QObject
         void queryDevices();
         int setupDevices();
         void setDefaults(bool api=true, bool devices=true, bool other=true);
-        QList<unsigned int> getSampleRates();
-        QList<QString> getHostAPIList();
+        QList<unsigned int> getSampleRates() const;
+        QList<QString> getHostAPIList() const;
         QString getHostAPI() const;
         void setHostAPI(QString api);
         float getSampleRate() const;

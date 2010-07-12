@@ -151,7 +151,7 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
 /** Get a list of host APIs supported by PortAudio.
  *  @return The list of audio APIs supported on the current computer.
  */
-QList<QString> SoundManager::getHostAPIList()
+QList<QString> SoundManager::getHostAPIList() const
 {
     QList<QString> apiList;
 
@@ -240,7 +240,7 @@ void SoundManager::clearDeviceList()
 /** Returns a list of samplerates we will attempt to support.
  *  @return The list of available samplerates.
  */
-QList<unsigned int> SoundManager::getSampleRates()
+QList<unsigned int> SoundManager::getSampleRates() const
 {
     return m_samplerates;
 }
@@ -504,7 +504,9 @@ void SoundManager::setFramesPerBuffer(unsigned int framesPerBuffer) {
 }
         
 SoundManagerConfig SoundManager::getConfig() const {
-    return m_config;
+    SoundManagerConfig config;
+    config.loadDefaults(const_cast<SoundManager*>(this), SoundManagerConfig::API | SoundManagerConfig::DEVICES | SoundManagerConfig::OTHER);
+    return config;
 }
 
 void SoundManager::setConfig(SoundManagerConfig config) {

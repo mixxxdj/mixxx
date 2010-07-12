@@ -41,27 +41,27 @@ SoundDevice::~SoundDevice()
 
 }
 
-QString SoundDevice::getInternalName()
+QString SoundDevice::getInternalName() const
 {
     return m_strInternalName;
 }
 
-QString SoundDevice::getDisplayName()
+QString SoundDevice::getDisplayName() const
 {
     return m_strDisplayName;
 }
 
-QString SoundDevice::getHostAPI()
+QString SoundDevice::getHostAPI() const
 {
     return m_hostAPI;
 }
 
-int SoundDevice::getNumInputChannels()
+int SoundDevice::getNumInputChannels() const
 {
     return m_iNumInputChannels;
 }
 
-int SoundDevice::getNumOutputChannels()
+int SoundDevice::getNumOutputChannels() const
 {
     return m_iNumOutputChannels;
 }

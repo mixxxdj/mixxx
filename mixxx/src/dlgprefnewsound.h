@@ -35,6 +35,7 @@ public:
             ConfigObject<ConfigValue> *config);
     ~DlgPrefNewSound();
 signals:
+    void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevice*> &devices);
     void refreshInputDevices(const QList<SoundDevice*> &devices);
@@ -51,6 +52,7 @@ private:
     bool m_settingsModified;
     QString m_api;
     SoundManagerConfig m_config;
+    bool m_loading;
 private slots:
     void apiChanged(int index);
     void sampleRateChanged(int index);
