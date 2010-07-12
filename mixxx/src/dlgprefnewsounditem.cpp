@@ -113,13 +113,13 @@ emitAndReturn:
  * record its respective path with the SoundManagerConfig instance at
  * config.
  */
-void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
+void DlgPrefNewSoundItem::writePath(SoundManagerConfig &config) const {
     SoundDevice *device = getDevice();
     if (device == NULL) {
         return;
     } // otherwise, this will have a valid audiopath
     if (m_isInput) {
-        config->addReceiver(
+        config.addReceiver(
                 device,
                 AudioReceiver(
                     m_type,
@@ -128,7 +128,7 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
                     )
                 );
     } else {
-        config->addSource(
+        config.addSource(
                 device,
                 AudioSource(
                     m_type,
@@ -143,7 +143,7 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
  * Gets the currently selected SoundDevice
  * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
  */
-SoundDevice *DlgPrefNewSoundItem::getDevice() const {
+SoundDevice* DlgPrefNewSoundItem::getDevice() const {
     QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     if (selection == "None") {
         return NULL;
