@@ -106,6 +106,10 @@ QString AudioPath::getString() const {
 //static
 QString AudioPath::getStringFromType(AudioPathType type) {
     switch (type) {
+    case INVALID:
+        // this shouldn't happen but g++ complains if I don't
+        // handle this -- bkgood
+        return QString::fromAscii("Invalid");
     case MASTER:
         return QString::fromAscii("Master");
     case HEADPHONES:
@@ -137,6 +141,8 @@ AudioPath::AudioPathType getTypeFromString(QString string) {
         return AudioPath::MICROPHONE;
     } else if (string == AudioPath::getStringFromType(AudioPath::PASSTHROUGH).toLower()) {
         return AudioPath::PASSTHROUGH;
+    } else {
+        return AudioPath::INVALID;
     }
 }
 
@@ -195,7 +201,7 @@ AudioSource::AudioSource(AudioPath::AudioPathType type,
     if (isIndexable(type)) {
         m_index = index;
     } else {
-        index = 0;
+        m_index = 0;
     }
 }
 
@@ -218,7 +224,7 @@ AudioReceiver::AudioReceiver(AudioPath::AudioPathType type,
     if (isIndexable(type)) {
         m_index = index;
     } else {
-        index = 0;
+        m_index = 0;
     }
 }
 

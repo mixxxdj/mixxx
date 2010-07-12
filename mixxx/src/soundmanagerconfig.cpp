@@ -17,7 +17,10 @@
 #include "sounddevice.h"
 #include "soundmanager.h"
 
-SoundManagerConfig::SoundManagerConfig() {
+SoundManagerConfig::SoundManagerConfig()
+    : m_api("None")
+    , m_sampleRate(DEFAULT_SAMPLE_RATE)
+    , m_latency(DEFAULT_LATENCY) {
     m_configFile = QFileInfo(QString("%1/%2/%3")
             .arg(QDir::homePath())
             .arg(SETTINGS_PATH)
@@ -40,12 +43,12 @@ bool SoundManagerConfig::writeToDisk() const {
 }
 
 QString SoundManagerConfig::getAPI() const {
-    // SoundManagerConfig doesn't necessarily have access to a SoundManager
-    // instance, so I can't check for input validity here -- bkgood
     return m_api;
 }
 
 void SoundManagerConfig::setAPI(QString api) {
+    // SoundManagerConfig doesn't necessarily have access to a SoundManager
+    // instance, so I can't check for input validity here -- bkgood
     m_api = api;
 }
 
@@ -54,13 +57,23 @@ unsigned int SoundManagerConfig::getSampleRate() const {
 }
 
 void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
-    // SoundManagerConfig doesn't necessarily have access to a SoundManager
-    // instance, so I can't check for input validity here -- bkgood
-    m_sampleRate = sampleRate;
+    // making sure we don't divide by zero elsewhere
+    m_sampleRate = sampleRate != 0 ? sampleRate : DEFAULT_SAMPLE_RATE;
 }
 
 unsigned int SoundManagerConfig::getLatency() const {
     return m_latency;
+}
+
+unsigned int SoundManagerConfig::getFramesPerBuffer() const {
+    unsigned int framesPerBuffer = 1;
+    // first, get to the framesPerBuffer value corresponding to latency index 1
+    for (; framesPerBuffer / m_sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
+    // then, keep going until we get to our desired latency index (if not 1)
+    for (unsigned int latencyIndex = 1; latencyIndex < m_latency; ++latencyIndex) {
+        framesPerBuffer *= 2;
+    }
+    return framesPerBuffer;
 }
 
 /**
@@ -72,13 +85,9 @@ unsigned int SoundManagerConfig::getLatency() const {
  * between different sample rates.
  */
 void SoundManagerConfig::setLatency(unsigned int latency) {
-    if (latency == 0) {
-        // this shouldn't be zero, set it to one for fun
-        ++latency;
-    } else if (latency > MAX_LATENCY) {
-        latency = MAX_LATENCY;
-    }
-    m_latency = latency;
+    // latency should be either the min of MAX_LATENCY and the passed value
+    // if it's 0, pretend it was 1 -- bkgood
+    m_latency = latency != 0 ? math_min(latency, MAX_LATENCY) : 1;
 }
 
 void SoundManagerConfig::addSource(SoundDevice *device, AudioSource source) {

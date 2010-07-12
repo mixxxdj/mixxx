@@ -108,6 +108,32 @@ emitAndReturn:
     emit(settingChanged());
 }
 
+void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
+    if (m_isInput) {
+        QListIterator<QPair<SoundDevice*, AudioReceiver> > pairs(config.getReceivers());
+        while (pairs.hasNext()) {
+            QPair<SoundDevice*, AudioReceiver> pair = pairs.next();
+            if (pair.second.getType() == m_type && pair.second.getIndex() == m_index) {
+                setDevice(pair.first);
+                setChannel(pair.second.getChannelGroup().getChannelBase());
+                break; // we're just using the first one found, leave multiples
+                       // to a more advanced dialog -- bkgood
+            }
+        }
+    } else {
+        QListIterator<QPair<SoundDevice*, AudioSource> > pairs(config.getSources());
+        while (pairs.hasNext()) {
+            QPair<SoundDevice*, AudioSource> pair = pairs.next();
+            if (pair.second.getType() == m_type && pair.second.getIndex() == m_index) {
+                setDevice(pair.first);
+                setChannel(pair.second.getChannelGroup().getChannelBase());
+                break; // we're just using the first one found, leave multiples
+                       // to a more advanced dialog -- bkgood
+            }
+        }
+    }
+}
+
 /**
  * Slot called when the underlying DlgPrefNewSound wants this Item to
  * record its respective path with the SoundManagerConfig instance at
@@ -156,4 +182,22 @@ SoundDevice* DlgPrefNewSoundItem::getDevice() const {
     // looks like something became invalid ???
     deviceComboBox->setCurrentIndex(0); // set it to none
     return NULL;
+}
+
+void DlgPrefNewSoundItem::setDevice(const SoundDevice *device) {
+    int index = deviceComboBox->findData(device->getInternalName());
+    if (index != -1) {
+        deviceComboBox->setCurrentIndex(index);
+    } else {
+        deviceComboBox->setCurrentIndex(0); // None
+    }
+}
+
+void DlgPrefNewSoundItem::setChannel(unsigned int channel) {
+    int index = channelComboBox->findData(channel);
+    if (index != -1) {
+        channelComboBox->setCurrentIndex(index);
+    } else {
+        channelComboBox->setCurrentIndex(0); // 1
+    }
 }

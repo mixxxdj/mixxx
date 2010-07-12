@@ -51,6 +51,7 @@ public:
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
     unsigned int getLatency() const;
+    unsigned int getFramesPerBuffer() const;
     void setLatency(unsigned int latency);
     void addSource(SoundDevice *device, AudioSource source);
     void addReceiver(SoundDevice *device, AudioReceiver receiver);

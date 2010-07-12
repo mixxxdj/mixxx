@@ -29,7 +29,8 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     , m_pSoundManager(soundManager)
     , m_pConfig(config)
     , m_settingsModified(false)
-    , m_api(soundManager->getHostAPI()) {
+    , m_api("None")
+    , m_loading(false) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -60,7 +61,7 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(latencyChanged(int)));
     initializePaths();
-//    loadSettings();
+    loadSettings();
 
     connect(apiComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
@@ -108,16 +109,16 @@ void DlgPrefNewSound::initializePaths() {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
                 toInsert = new DlgPrefNewSoundItem(outputScrollAreaContents, type,
                         m_outputDevices, false, i);
-                connect(this, SIGNAL(refreshOutputDevices(QList<SoundDevice*>&)),
-                        toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
+                connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
+                        toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
                 outputVLayout->insertWidget(outputVLayout->count() - 1, toInsert);
                 items.append(toInsert);
             }
         } else {
             toInsert = new DlgPrefNewSoundItem(outputScrollAreaContents, type,
                 m_outputDevices, false);
-            connect(this, SIGNAL(refreshOutputDevices(QList<SoundDevice*>&)),
-                    toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
+            connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
+                    toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
             outputVLayout->insertWidget(outputVLayout->count() - 1, toInsert);
             items.append(toInsert);
         }
@@ -128,16 +129,16 @@ void DlgPrefNewSound::initializePaths() {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
                 toInsert = new DlgPrefNewSoundItem(inputScrollAreaContents, type,
                         m_inputDevices, true, i);
-                connect(this, SIGNAL(refreshInputDevices(QList<SoundDevice*>&)),
-                        toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
+                connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
+                        toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
                 inputVLayout->insertWidget(inputVLayout->count() - 1, toInsert);
                 items.append(toInsert);
             }
         } else {
             toInsert = new DlgPrefNewSoundItem(inputScrollAreaContents, type,
                 m_inputDevices, true);
-            connect(this, SIGNAL(refreshInputDevices(QList<SoundDevice*>&)),
-                    toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
+            connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
+                    toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
             inputVLayout->insertWidget(inputVLayout->count() - 1, toInsert);
             items.append(toInsert);
         }
@@ -145,8 +146,10 @@ void DlgPrefNewSound::initializePaths() {
     foreach (DlgPrefNewSoundItem *item, items) {
         connect(item, SIGNAL(settingChanged()),
                 this, SLOT(settingChanged()));
-        connect(this, SIGNAL(writePaths(SoundManagerConfig&)),
-                item, SLOT(writePath(SoundManagerConfig&)));
+        connect(this, SIGNAL(loadPaths(const SoundManagerConfig&)),
+                item, SLOT(loadPath(const SoundManagerConfig&)));
+        connect(this, SIGNAL(writePaths(SoundManagerConfig*)),
+                item, SLOT(writePath(SoundManagerConfig*)));
     }
 }
 
@@ -154,8 +157,22 @@ void DlgPrefNewSound::initializePaths() {
  *
  */
 void DlgPrefNewSound::loadSettings() {
+    m_loading = true; // so settingsChanged ignores all our modifications here
     m_config = m_pSoundManager->getConfig();
-
+    int apiIndex = apiComboBox->findData(m_config.getAPI());
+    if (apiIndex != -1) {
+        apiComboBox->setCurrentIndex(apiIndex);
+    }
+    int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
+    if (sampleRateIndex != -1) {
+        sampleRateComboBox->setCurrentIndex(sampleRateIndex);
+    }
+    int latencyIndex = latencyComboBox->findData(m_config.getLatency());
+    if (latencyIndex != -1) {
+        latencyComboBox->setCurrentIndex(latencyIndex);
+    }
+    emit(loadPaths(m_config));
+    m_loading = false;
 }
 
 /**
@@ -212,7 +229,7 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     // we don't want to display any sub-1ms latencies (well maybe we do but I
     // don't right now!), so we iterate over all the buffer sizes until we
     // find the first that gives us a latency >= 1 ms -- bkgood
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0f; framesPerBuffer *= 2);
+    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
     latencyComboBox->clear();
     for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
         unsigned int latency = framesPerBuffer / sampleRate * 1000;
@@ -249,6 +266,7 @@ void DlgPrefNewSound::refreshDevices() {
  * knows to apply them.
  */
 void DlgPrefNewSound::settingChanged() {
+    if (m_loading) return; // doesn't count if we're just loading prefs
     m_settingsModified = true;
     if (!applyButton->isEnabled()) {
         applyButton->setEnabled(true);

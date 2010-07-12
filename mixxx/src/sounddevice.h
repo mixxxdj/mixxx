@@ -35,14 +35,14 @@ class SoundDevice
     public:
         SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
         virtual ~SoundDevice();
-        QString getInternalName();
-        QString getDisplayName();
-        QString getHostAPI();
+        QString getInternalName() const;
+        QString getDisplayName() const;
+        QString getHostAPI() const;
         void setHostAPI(QString api);        
         virtual int open() = 0;
         virtual int close() = 0;
-        int getNumOutputChannels();     
-        int getNumInputChannels();   
+        int getNumOutputChannels() const;     
+        int getNumInputChannels() const;
         int addSource(AudioSource src);
         int addReceiver(AudioReceiver recv);
         void clearSources();
