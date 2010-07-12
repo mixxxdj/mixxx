@@ -95,6 +95,14 @@ void SoundManagerConfig::addReceiver(SoundDevice *device, AudioReceiver receiver
     }
 }
 
+QList<QPair<SoundDevice*, AudioSource> > SoundManagerConfig::getSources() const {
+    return m_sources;
+}
+
+QList<QPair<SoundDevice*, AudioReceiver> > SoundManagerConfig::getReceivers() const {
+    return m_receivers;
+}
+
 void SoundManagerConfig::clearSources() {
     m_sources.clear();
 }
@@ -106,7 +114,7 @@ void SoundManagerConfig::clearReceivers() {
 /**
  * Loads default values for API, master output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
- * @param flags Bitfield to determine which defaults to load, using something
+ * @param flags Bitfield to determine which defaults to load, use something
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
  *              load default API and master device.
  */
