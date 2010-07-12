@@ -58,7 +58,7 @@ public:
     QList<QPair<SoundDevice*, AudioReceiver> > getReceivers() const;
     void clearSources();
     void clearReceivers();
-    void loadDefaults(SoundManager *soundManager, int flags);
+    void loadDefaults(SoundManager *soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;
     QString m_api;
