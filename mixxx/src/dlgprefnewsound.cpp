@@ -32,6 +32,9 @@ DlgPrefNewSound::DlgPrefNewSound(QWidget *parent, SoundManager *soundManager,
     , m_api(soundManager->getHostAPI()) {
     setupUi(this);
 
+    connect(m_pSoundManager, SIGNAL(devicesUpdated()),
+            this, SLOT(refreshDevices()));
+
     applyButton->setEnabled(false);
     connect(applyButton, SIGNAL(clicked()),
             this, SLOT(slotApply()));
@@ -75,12 +78,6 @@ DlgPrefNewSound::~DlgPrefNewSound() {
  * Slot called when the preferences dialog is opened.
  */
 void DlgPrefNewSound::slotUpdate() {
-    // have to do this stupid dance because the old sound sound pane
-    // resets stuff every chance it gets and breaks our pointers to
-    // sound devices -- bkgood
-    // ought to be deleted later
-    apiComboBox->setCurrentIndex(0);
-    apiComboBox->setCurrentIndex(1);
 }
 
 /**
@@ -168,19 +165,8 @@ void DlgPrefNewSound::loadSettings() {
  * for the new API and pushes those to the path items.
  */
 void DlgPrefNewSound::apiChanged(int index) {
-    QString selected = apiComboBox->itemData(index).toString();
-    if (selected == "None") {
-        m_outputDevices.clear();
-        m_inputDevices.clear();
-    } else {
-        m_api = selected;
-        m_outputDevices =
-            m_pSoundManager->getDeviceList(m_api, true, false);
-        m_inputDevices =
-            m_pSoundManager->getDeviceList(m_api, false, true);
-    }
-    emit(refreshOutputDevices(m_outputDevices));
-    emit(refreshInputDevices(m_inputDevices));
+    m_api = apiComboBox->itemData(index).toString();
+    refreshDevices();
     // JACK sets its own latency
     if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
         latencyLabel->setEnabled(false);
@@ -235,6 +221,23 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     // than having a user get the pops on first use and thinking poorly of mixxx
     // because of it -- bkgood
     latencyComboBox->setCurrentIndex(latencyComboBox->count() - 1);
+}
+
+/**
+ * Slot called when device pointers go bad to refresh them all.
+ */
+void DlgPrefNewSound::refreshDevices() {
+    if (m_api == "None") {
+        m_outputDevices.clear();
+        m_inputDevices.clear();
+    } else {
+        m_outputDevices =
+            m_pSoundManager->getDeviceList(m_api, true, false);
+        m_inputDevices =
+            m_pSoundManager->getDeviceList(m_api, false, true);
+    }
+    emit(refreshOutputDevices(m_outputDevices));
+    emit(refreshInputDevices(m_inputDevices));
 }
 
 /**
