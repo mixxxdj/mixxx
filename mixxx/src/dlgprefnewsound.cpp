@@ -90,7 +90,8 @@ void DlgPrefNewSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
-    m_pSoundManager->setConfig(m_config);
+    emit(writePaths(m_config));
+    m_pSoundManager->setConfig(m_config); // setConfig will call setupDevices if necessary
     m_settingsModified = false;
     applyButton->setEnabled(false);
 }
@@ -103,6 +104,7 @@ void DlgPrefNewSound::slotApply() {
  * if necessary.
  */
 void DlgPrefNewSound::initializePaths() {
+    QList<DlgPrefNewSoundItem*> items;
     foreach (AudioPath::AudioPathType type, AudioSource::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
         if (AudioPath::isIndexable(type)) {
@@ -111,18 +113,16 @@ void DlgPrefNewSound::initializePaths() {
                         m_outputDevices, false, i);
                 connect(this, SIGNAL(refreshOutputDevices(QList<SoundDevice*>&)),
                         toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
-                connect(toInsert, SIGNAL(settingChanged()),
-                        this, SLOT(settingChanged()));
                 outputVLayout->insertWidget(outputVLayout->count() - 1, toInsert);
+                items.append(toInsert);
             }
         } else {
             toInsert = new DlgPrefNewSoundItem(outputScrollAreaContents, type,
                 m_outputDevices, false);
             connect(this, SIGNAL(refreshOutputDevices(QList<SoundDevice*>&)),
                     toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
-            connect(toInsert, SIGNAL(settingChanged()),
-                    this, SLOT(settingChanged()));
             outputVLayout->insertWidget(outputVLayout->count() - 1, toInsert);
+            items.append(toInsert);
         }
     }
     foreach (AudioPath::AudioPathType type, AudioReceiver::getSupportedTypes()) {
@@ -133,20 +133,32 @@ void DlgPrefNewSound::initializePaths() {
                         m_inputDevices, true, i);
                 connect(this, SIGNAL(refreshInputDevices(QList<SoundDevice*>&)),
                         toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
-                connect(toInsert, SIGNAL(settingChanged()),
-                        this, SLOT(settingChanged()));
                 inputVLayout->insertWidget(inputVLayout->count() - 1, toInsert);
+                items.append(toInsert);
             }
         } else {
             toInsert = new DlgPrefNewSoundItem(inputScrollAreaContents, type,
                 m_inputDevices, true);
             connect(this, SIGNAL(refreshInputDevices(QList<SoundDevice*>&)),
                     toInsert, SLOT(refreshDevices(QList<SoundDevice*>&)));
-            connect(toInsert, SIGNAL(settingChanged()),
-                    this, SLOT(settingChanged()));
             inputVLayout->insertWidget(inputVLayout->count() - 1, toInsert);
+            items.append(toInsert);
+        }
+        foreach (DlgPrefNewSoundItem *item, items) {
+            connect(item, SIGNAL(settingChanged()),
+                    this, SLOT(settingChanged()));
+            connect(this, SIGNAL(writePaths(SoundManagerConfig&)),
+                    item, SLOT(writePath(SoundManagerConfig&)));
         }
     }
+}
+
+/**
+ *
+ */
+void DlgPrefNewSound::loadSettings() {
+    m_config = m_pSoundManager->getConfig();
+
 }
 
 /**

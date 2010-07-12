@@ -35,6 +35,7 @@ public:
             ConfigObject<ConfigValue> *config);
     ~DlgPrefNewSound();
 signals:
+    void writePaths(SoundManagerConfig &config);
     void refreshOutputDevices(QList<SoundDevice*> &devices);
     void refreshInputDevices(QList<SoundDevice*> &devices);
 public slots:
@@ -42,6 +43,7 @@ public slots:
     void slotApply();  // called on ok button
 private:
     void initializePaths();
+    void loadSettings();
     SoundManager *m_pSoundManager;
     ConfigObject<ConfigValue> *m_pConfig;
     QList<SoundDevice*> m_inputDevices;
