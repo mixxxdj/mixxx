@@ -87,7 +87,7 @@ void DlgPrefNewSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
-    emit(writePaths(m_config));
+    emit(writePaths(&m_config));
     m_pSoundManager->setConfig(m_config); // setConfig will call setupDevices if necessary
     m_settingsModified = false;
     applyButton->setEnabled(false);
