@@ -141,12 +141,12 @@ void DlgPrefNewSound::initializePaths() {
             inputVLayout->insertWidget(inputVLayout->count() - 1, toInsert);
             items.append(toInsert);
         }
-        foreach (DlgPrefNewSoundItem *item, items) {
-            connect(item, SIGNAL(settingChanged()),
-                    this, SLOT(settingChanged()));
-            connect(this, SIGNAL(writePaths(SoundManagerConfig&)),
-                    item, SLOT(writePath(SoundManagerConfig&)));
-        }
+    }
+    foreach (DlgPrefNewSoundItem *item, items) {
+        connect(item, SIGNAL(settingChanged()),
+                this, SLOT(settingChanged()));
+        connect(this, SIGNAL(writePaths(SoundManagerConfig&)),
+                item, SLOT(writePath(SoundManagerConfig&)));
     }
 }
 
@@ -198,7 +198,9 @@ void DlgPrefNewSound::latencyChanged(int index) {
 /**
  * Slot called whenever the selected sample rate is changed. Populates the
  * latency input box with MAX_LATENCY values, starting at 1ms, representing
- * a number of frames per buffer, which will always be a power of 2.
+ * a number of frames per buffer, which will always be a power of 2 (so the
+ * values displayed in ms won't be constant between sample rates, but they'll
+ * be close).
  */
 void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
@@ -224,7 +226,8 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
 }
 
 /**
- * Slot called when device pointers go bad to refresh them all.
+ * Slot called when device pointers go bad to refresh them all, or the API
+ * just changes and we need to display new devices.
  */
 void DlgPrefNewSound::refreshDevices() {
     if (m_api == "None") {
