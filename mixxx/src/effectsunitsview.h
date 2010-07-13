@@ -5,7 +5,9 @@
 #include <QtGui>
 
 #include "configobject.h"
+#include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "widget/wknob.h"
 #include "effectsunits/effectsunitscontroller.h"
 
 class QWidget;
@@ -25,6 +27,8 @@ signals:
 private:
     QGridLayout * m_pGridLayout;
     EffectsUnitsController * m_EffectsUnitsController;
+    QLabel * m_label;
+    WKnob * m_pDryWetKnob;
 };
 
 #endif
