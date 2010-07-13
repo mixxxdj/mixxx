@@ -15,4 +15,4 @@
  ***************************************************************************/
 
 // Doing this in its own file avoids needlessly rebuilding everything when just the version number changes
-#define VERSION "1.8.0~beta2"
+#define VERSION "1.8.0~beta3-pre"

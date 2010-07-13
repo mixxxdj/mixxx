@@ -96,8 +96,7 @@ Import('architecture')	#CPU type & binary format for optimization
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
 		 'osx': '/usr/lib/Qt-4.5', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/lib/Qt-4.*.*/
-		 'win32': 'C:\\qt\\4.5.1',
-		 'win64': 'C:\\qt\\4.5.1'}[platform]	 #ditto
+		 'windows': 'C:\\qt\\4.5.1'}[platform]	 #ditto
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
