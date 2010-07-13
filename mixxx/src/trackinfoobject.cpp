@@ -89,8 +89,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_bIsValid = true;
 
-    installEventFilter(this);
-
     m_bDirty = false;
     m_bLocationChanged = false;
 }
@@ -129,8 +127,6 @@ void TrackInfoObject::initialize() {
 
     // parse() parses the metadata from file. This is not a quick operation!
     m_bIsValid = parse() == OK;
-
-    installEventFilter(this);
 }
 
 TrackInfoObject::~TrackInfoObject() {
