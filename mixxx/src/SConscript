@@ -141,17 +141,16 @@ def getFlags(env, argflag, default=0):
 
 
 Import('platform')
+Import('architecture')	#CPU type & binary format of native system
 Import('machine')	#CPU architecture for optimization
-Import('architecture')	#CPU type & binary format for optimization
+Import('bitwidth')	#CPU bit width that can be forced (use this for most build items)
 
 #Figure out what the QT path is
-
 
 default_qtdir = {'linux': '/usr/share/qt4',
 		 'bsd': '/usr/local/lib/qt4',
 		 'osx': '/usr/lib/Qt-4.5', #XXX this should be smarter, we just need qt4 so we should accept the highest version that matches /usr/lib/Qt-4.*.*/
-		 'win32': 'C:\\qt\\4.5.1',
-		 'win64': 'C:\\qt\\4.5.1'}[platform]	 #ditto
+		 'windows': 'C:\\qt\\4.5.1'}[platform]	 #ditto
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', os.environ.get('QTDIR', default_qtdir)) #environ['QTDIR'] there is mainly for the benefit of MSVC
@@ -177,7 +176,7 @@ if platform in ('linux', 'bsd'):
 elif platform == 'osx':
 	env = Environment(tools=['default', 'qt4', 'OSConsX'], toolpath=['#build/', '#/build/osx/'], ENV = os.environ)
 elif 'win' in platform:
-	#Pull in the environment's variables for win32...
+	#Pull in the environment's variables for windows...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['#build/'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 else:
 	raise Exception("Unknown platform, didn't make a env variable. Crashing")
@@ -222,9 +221,8 @@ if not 'win' in platform:
 	vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
 	vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
 	vars.Add('profiling', '(DEVELOPER) Set to 1 to enable profiling using gprof (Linux) or Saturn (OS X)', 0)
-	vars.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
 else:
-	if platform == 'win64':
+	if architecture[0] == '64bit':	# Check build machine's CPU
 		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
 	vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
 	vars.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
@@ -471,15 +469,9 @@ sources = Split("""
                 """)
 
 #Set up the library path on Windows:
-if platform == 'win64':
-	env.Append(CPPPATH='#/../mixxx-win64lib-msvc') #If you add more directories, separate them with a semicolon (;)
-	env.Append(LIBPATH='#/../mixxx-win64lib-msvc')
-
-if platform == 'win32':
-	env.Append(CPPPATH='#/../mixxx-win32lib-msvc') #If you add more directories, separate them with a semicolon (;)
-	env.Append(LIBPATH='#/../mixxx-win32lib-msvc')
-
 if 'win' in platform:
+	env.Append(CPPPATH='#/../mixxx-win' + bitwidth + 'lib-msvc') #If you add more directories, separate them with a semicolon (;)
+	env.Append(LIBPATH='#/../mixxx-win' + bitwidth + 'lib-msvc')
 	env.Append(CPPPATH='../../lib/ladspa') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib',  '/entry:mainCRTStartup'])
 	env.Append(LIBS='advapi32') # needed for PortMIDI
@@ -536,7 +528,7 @@ else:
 
 
 #Check for Ogg and Vorbis
-if platform == 'win64':
+if bitwidth == '64':
 	if not conf.CheckLib('vorbisfile_static'): # For some reason this has to be checked this way on win64, otherwise it looks for the dll lib which will cause a conflict later (at line 713)
 		print 'Did not find vorbisfile_static.lib or the libvorbisfile development headers, exiting!'
 		Exit(1)
@@ -695,10 +687,7 @@ elif platform == 'bsd':
 elif 'win' in platform:
 	env.Append(CPPDEFINES='__WINDOWS__')
 	env.Append(CPPDEFINES='UNICODE')	# Need this on Windows until we have UTF16 support in Mixxx
-	if platform == 'win32':
-		env.Append(CPPDEFINES='WIN32')
-	if platform == 'win64':
-		env.Append(CPPDEFINES='WIN64')
+	env.Append(CPPDEFINES='WIN'+bitwidth)
 
 if platform in ('linux', 'bsd'): #a define for code that works on unix only can ask for (not sure if this is actually used anywhere)
 	env.Append(CPPDEFINES='__UNIX__')
@@ -720,7 +709,7 @@ if platform in ('linux', 'bsd'):
 	env.Append(LIBS = 'vorbisfile') #? we shouldn't have to do this...
 
 if 'win' in platform:
-	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
+	env.Append(LIBS = 'Qt3Support4'); # Windows needs this instead of 'Qt3Support'
 	env.Append(LIBS = 'QtXml4');
 	env.Append(LIBS = 'QtXmlPatterns4');
 	env.Append(LIBS = 'QtSql4');
@@ -753,9 +742,7 @@ if platform in ('linux','bsd') or 'win' in platform:
 
 if 'win' in platform:
 	env.Append(CPPPATH=["$VCINSTALLDIR/include/atl", "C:/Program Files/Microsoft Platform SDK/Include/atl"])
-
-if 'win' in platform:
-	env.Append(CPPDEFINES = 'WIN32') #for soundtouch
+	env.Append(CPPDEFINES = 'WIN'+bitwidth) #for soundtouch
 else:
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g """)) # omghax
 	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g"""))
@@ -813,16 +800,15 @@ sources += Split("""engine/enginebufferscalest.cpp
                     """)
 
 if 'win' in platform:
-	if platform == 'win32':
-		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x86_win.cpp""")
-	if platform == 'win64':
+	if bitwidth == '64':
 		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x64_win.cpp""")
+	else:
+		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x86_win.cpp""")
 else:
-	if machine == 'x86_64':
+	if bitwidth == '64':
 		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x64_gcc.cpp""")
 	else:
 		sources += Split("""#lib/""" + soundtouch_path + """/cpu_detect_x86_gcc.cpp""")
-
 
 #KissFFT
 env.Append(CPPPATH=['#lib/kissfft'])
@@ -871,7 +857,7 @@ if int(flags_ipod):
 		env.Append(LIBS = 'gpod');
 		# You must check v-this-v directory out from http://publicsvn.songbirdnest.com/vendor-binaries/trunk/windows-i686-msvc8/libgpod/
 		env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib')
-		# Following building the following must be added to the dist folder in order for mixxx to run with ipod support on Win32
+		# Following building the following must be added to the dist folder in order for mixxx to run with ipod support on windows
 		# \windows-i686-msvc8\libgpod\release\lib\libgpod.dll
 		# \windows-i686-msvc8\glib\release\bin\libgobject-2.0-0.dll
 		# \windows-i686-msvc8\glib\release\bin\libglib-2.0-0.dll
@@ -982,7 +968,7 @@ if 'win' in platform:
 	if int(flags_msvcdebug):
 		env.Append(CCFLAGS = '/MDd') # required for sndfile w/ flac support on windows
 		env.Append(LINKFLAGS = '/DEBUG')
-		if platform == 'win64':
+		if bitwidth == '64':
 			env.Append(CXXFLAGS = '/Zi')
 			env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
 		else:
@@ -1122,27 +1108,27 @@ if int(flags_tuned):
 		else:
 			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
 	else:
-		if platform == 'win64':
+		if bitwidth == '64':
 			print "Optimizing for this CPU class (" + machine + ")... yes"
 			env.Append(CXXFLAGS = '/favor:' + machine)
 		else:
 			print "Optimizing for this CPU... no (not supported on 32-bit MSVC)"
 else:
-	if platform == 'win64':
+	if bitwidth == '64':
 		if 'makerelease' in COMMAND_LINE_TARGETS:
-			print "Optimizing for this CPU class... no\n  (using AMD64 due to makerelease)"
-			# AMD64 architecture is used by all consumer 64-bit CPUs, even Intel ones.
-			# IA64 is the Itanium processors, which we don't expect anyone to be using for DJing. :)
-			env.Append(CXXFLAGS = '/favor:AMD64')
+			print "Optimizing for this CPU class... no  (due to makerelease)"
+			# AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to IA64 which uses a different compiler.)
+			# For a release, we choose to have code run about the same on both
+			env.Append(CXXFLAGS = '/favor:blend')
 
 #Specific optimization
 flags_optimize = getFlags(env, 'optimize', 1)
 if int(flags_optimize):
 	if 'win' in platform:
-		if platform == 'win64':
+		if machine == 'AMD64' or machine == 'EM64T':
 			env.Append(LINKFLAGS = '/MACHINE:X64')
 		else:
-			env.Append(LINKFLAGS = '/MACHINE:X86')
+			env.Append(LINKFLAGS = '/MACHINE:'+machine)
 		if int(flags_msvcdebug):
 			print "Specific optimizations... DISABLED DUE TO DEBUG"
 		else:
@@ -1156,7 +1142,7 @@ if int(flags_optimize):
 			elif flags_optimize >= '2':
 				print "  Maximum optimizations (/Ox)"
 				env.Append(CXXFLAGS = '/Ox')
-			if not platform == 'win64': # SSE and SSE2 are core instructions on AMD64
+			if not machine == 'AMD64' and not machine == 'EM64T': # SSE and SSE2 are core instructions on x64
 				if flags_optimize == '3':
 					print "  SSE instructions enabled"
 					env.Append(CXXFLAGS = '/arch:SSE')
@@ -1203,22 +1189,13 @@ if int(flags_asmlib):
 	build_flags += 'asmlib '
 	if platform == 'linux':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		if architecture[0] == '64bit' and not int(force32):
-			env.Append(LIBS = '":alibelf64o.a"')
-		else:
-			env.Append(LIBS = '":alibelf32o.a"')
+		env.Append(LIBS = '":alibelf' + bitwidth + 'o.a"')
 	elif platform == 'osx':
 		env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		if architecture[0] == '64bit' and not int(force32):
-			env.Append(LIBS = '":alibmac64o.a"')
-		else:
-			env.Append(LIBS = '":alibmac32o.a"')
+		env.Append(LIBS = '":alibmac' + bitwidth + 'o.a"')
 	elif 'win' in platform:
 		env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
-		if platform == 'win64':
-			env.Append(LIBS = 'alibcof64o')
-		else:
-			env.Append(LIBS = 'alibcof32o')
+		env.Append(LIBS = 'alibcof' + bitwidth + 'o')
 	env.Append(CXXFLAGS = ' ') # add a space to the end of CXXFLAGS
 else:
 	print "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)... disabled"
@@ -1226,13 +1203,14 @@ else:
 # SoundTouch Optimizations -- turn them on only if we have SSE or MMX
 # enabled. It's dumb that they appear here, but they make the most sense next to
 # the optimization stuff. It's safe to assume that if opt > 1, then MMX and SSE
-# are enabled.
-if (not 'win' in platform and int(flags_optimize) > 1) or ('win' in platform and int(flags_optimize) > 2):
+# are enabled. All 64-bit CPUs have MMX and SSE as well.
+if (not 'win' in platform and int(flags_optimize) > 1) \
+	or ('win' in platform and (bitwidth == '64' or int(flags_optimize) > 2)):
     sources += Split("""#lib/""" + soundtouch_path + """/mmx_optimized.cpp #lib/""" + soundtouch_path + """/sse_optimized.cpp""")
     env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
 # Enable SoundTouch Windows 3dNow optimizations (decides at runtime if they're useful)
-if 'win' in platform:
+if 'win' in platform and not bitwidth == '64':
     sources += Split("""#lib/""" + soundtouch_path + """/3dnow_win.cpp""")
 
 #Debugging output
@@ -1256,17 +1234,6 @@ if int(flags_msvshacks):
 	build_flags += 'msvshacks '
 else:
 	print "MSVS 2005 hacks... disabled"
-
-#force 32-bit compile on GCC
-flags_force32 = getFlags(env, 'force32', 0)
-if int(flags_force32):
-	env.Append(CCFLAGS = '-m32')
-	env.Append(CXXFLAGS = '-m32')
-	env.Append(LINKFLAGS = '-m32')
-	print "Force 32-bit GCC compile... enabled"
-else:
-	print "Force 32-bit GCC compile... disabled"
-
 
 #Case Metrics
 if 'win' in platform or platform == 'linux':
@@ -1309,6 +1276,7 @@ vars.Save(cachefile, env)
 #Tell SCons to build Mixxx
 #=========================
 if 'win' in platform:
+	dist_dir = 'dist'+bitwidth
 	mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
 	mixxx_bin = env.Program('mixxx', sources)
@@ -1337,13 +1305,13 @@ if 'msvc' in COMMAND_LINE_TARGETS:
 	# Set up environment for debug target
 	# TODO Handle lib versions ie /MDd /Md etc...
 	#debugenv = env.Clone()
-	#debugenv.Prepend(LINKFLAGS = ['/DEBUG','/PDB:dist/mixxx.pdb']) # Generate MS VC Program Debug Database
+	#debugenv.Prepend(LINKFLAGS = ['/DEBUG','/PDB:'+dist_dir+'/mixxx.pdb']) # Generate MS VC Program Debug Database
 	#debugenv.Append(CXXFLAGS = '/ZI')
 
-	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = sources, incs = includes, variant = 'Debug', runfile = '../dist/mixxx')
+	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = sources, incs = includes, variant = 'Debug', runfile = '../'+dist_dir+'/mixxx')
 
 	# Reenable this once bug in scons is fixed...
-	#msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = sources, incs = includes, variant = 'Release', runfile = '../dist/mixxx')
+	#msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = sources, incs = includes, variant = 'Release', runfile = '../'+dist_dir+'/mixxx')
 
 	env.Alias('msvc', msvc)
 
@@ -1366,8 +1334,9 @@ binary_files = mixxx_bin;
 resource_files = Glob('#res/schema.xml')
 
 #Soundsource plugins
-Import('soundsource_plugins') #Grab these from the SConstruct above us
-soundsource_plugin_files = soundsource_plugins
+#Import('soundsource_plugins') #Grab these from the SConstruct above us
+#soundsource_plugin_files = soundsource_plugins
+soundsource_plugin_files = ""
 
 #Skins
 skin_files = Glob('#res/skins/*')
@@ -1390,7 +1359,7 @@ docs_files += Glob('#README')
 docs_files += Glob('#Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = Glob('#src/mixxx.desktop') #XXX why is this in images/?
+dotdesktop_files = Glob('#src/mixxx.desktop')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
@@ -1399,17 +1368,12 @@ icon_files = Glob('#res/images/mixxx-icon.png')
 image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
-if platform == 'win64':
-	dll_files = Glob('#/../mixxx-win64lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
-else:
-	dll_files = Glob('#/../mixxx-win32lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+dll_files = Glob('#/../mixxx-win' + bitwidth + 'lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
 $QTDIR/bin/phonon4.dll""")
 
-if int(flags_script):
-	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
-if int(flags_midiscript):
+if int(flags_script) or int(flags_midiscript):
 	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
 
 if platform in ('linux', 'bsd'):
@@ -1508,18 +1472,18 @@ if platform == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 	env.Alias('package', dmg)
 
 if 'win' in platform:
-	skins = env.Install("#dist/skins", skin_files)
-	resource = env.Install("#dist/", resource_files)
-	midimappings = env.Install("#dist/midi", midimappings_files)
-	keyboardmappings = env.Install("#dist/keyboard", keyboardmappings_files)
+	skins = env.Install("#"+dist_dir+"/skins", skin_files)
+	resource = env.Install("#"+dist_dir+"/", resource_files)
+	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)
+	keyboardmappings = env.Install("#"+dist_dir+"/keyboard", keyboardmappings_files)
 	if int(flags_ladspa):
-		ladspapresets = env.Install("#dist/ladspa_presets", ladspapresets_files)
-	docs = env.Install("#dist/doc/", docs_files)
-	promotracks = env.Install("#dist/promo/", promotracks_files)
-	#icon = env.Install("#dist", icon_files)
-	dlls = env.Install("#dist/", dll_files)
-	soundsource_plugins = env.Install("#dist/plugins/soundsource/", soundsource_plugin_files)
-	binary = env.Install("#dist/", binary_files)
+		ladspapresets = env.Install("#"+dist_dir+"/ladspa_presets", ladspapresets_files)
+	docs = env.Install("#"+dist_dir+"/doc/", docs_files)
+	promotracks = env.Install("#"+dist_dir+"/promo/", promotracks_files)
+	#icon = env.Install("#"+dist_dir+"", icon_files)
+	dlls = env.Install("#"+dist_dir+"/", dll_files)
+	soundsource_plugins = env.Install("#"+dist_dir+"/plugins/soundsource/", soundsource_plugin_files)
+	binary = env.Install("#"+dist_dir+"/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
@@ -1536,9 +1500,9 @@ if 'win' in platform:
 	env.Alias('mixxx', binary)
 
 	def cleanSVNDirsFromDist():
-		if os.path.exists("dist"):
-			print "Cleaning .svn directories from dist... ",
-			os.system('cmd.exe /c @FOR /F "tokens=*" %D IN (\'dir /b /ad /s dist\*.svn*\') do @(rd /s /q "%D") 2> NUL')
+		if os.path.exists(dist_dir):
+			print "Cleaning .svn directories from "+dist_dir+"... ",
+			os.system('cmd.exe /c @FOR /F "tokens=*" %D IN (\'dir /b /ad /s '+dist_dir+'\*.svn*\') do @(rd /s /q "%D") 2> NUL')
 			print "Done."
 	import atexit
 	atexit.register(cleanSVNDirsFromDist)
@@ -1553,7 +1517,7 @@ def BuildRelease(target, source, env):
 		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
 		print
 	print "Binary has size ",
-	os.system('ls -lh dist/mixxx.exe | cut -d \' \' -f 5')
+	os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
 	print
 	print "Installer file ",
 	os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
@@ -1591,7 +1555,7 @@ def BuildRelease(target, source, env):
 		if not nsis_location_handle:
 			print "Cannot find NSIS. Do you have it installed?"
 		else:
-			if platform == 'win64':
+			if bitwidth == '64':
 				buildwin64 = "/Dx64=1"
 			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
 			_winreg.CloseKey(hklm)
