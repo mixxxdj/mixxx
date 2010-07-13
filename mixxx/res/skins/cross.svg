@@ -13,65 +13,16 @@
    height="32"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.47+devel r9568"
    version="1.0"
-   inkscape:export-filename="/Users/bas/Dropbox/Programming/Mixxx 1.8/skins/mixxx/res/skins/cross.png"
-   inkscape:export-xdpi="3.2"
-   inkscape:export-ydpi="3.2"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="45"
+   inkscape:export-ydpi="45"
    sodipodi:docname="cross.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   style="display:inline"
-   enable-background="new">
-  <title
-     id="title6670">SearchFieldCancel</title>
+   style="display:inline">
   <defs
-     id="defs4">
-    <linearGradient
-       id="linearGradient3669">
-      <stop
-         style="stop-color:#1a1a1a;stop-opacity:0.78861791;"
-         offset="0"
-         id="stop3671" />
-      <stop
-         style="stop-color:#1a1a1a;stop-opacity:0;"
-         offset="1"
-         id="stop3673" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient3661">
-      <stop
-         style="stop-color:#540054;stop-opacity:1;"
-         offset="0"
-         id="stop3663" />
-      <stop
-         style="stop-color:#800080;stop-opacity:0;"
-         offset="1"
-         id="stop3665" />
-    </linearGradient>
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 225 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="450 : 225 : 1"
-       inkscape:persp3d-origin="225 : 150 : 1"
-       id="perspective3643" />
-    <inkscape:perspective
-       id="perspective3653"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <filter
-       inkscape:collect="always"
-       id="filter6696">
-      <feBlend
-         inkscape:collect="always"
-         mode="multiply"
-         in2="BackgroundImage"
-         id="feBlend6698" />
-    </filter>
-  </defs>
+     id="defs4" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -82,30 +33,28 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.33216"
-     inkscape:cx="5.8720929"
-     inkscape:cy="19.116925"
+     inkscape:zoom="9.8894544"
+     inkscape:cx="24.407312"
+     inkscape:cy="5.3312761"
      inkscape:document-units="px"
-     inkscape:current-layer="g6712"
+     inkscape:current-layer="g3779"
      height="5in"
      width="5in"
      units="in"
      inkscape:window-width="1276"
      inkscape:window-height="756"
-     inkscape:window-x="1448"
-     inkscape:window-y="99"
+     inkscape:window-x="4"
+     inkscape:window-y="22"
      showgrid="true"
      inkscape:window-maximized="0">
     <inkscape:grid
        type="xygrid"
-       id="grid5637"
+       id="grid2997"
        empspacing="4"
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       spacingx="1px"
-       spacingy="1px"
-       empcolor="#a400ff"
+       empcolor="#ae00ff"
        empopacity="0.25098039" />
   </sodipodi:namedview>
   <metadata
@@ -116,124 +65,49 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>SearchFieldCancel</dc:title>
-        <dc:contributor>
-          <cc:Agent>
-            <dc:title></dc:title>
-          </cc:Agent>
-        </dc:contributor>
-        <dc:creator>
-          <cc:Agent>
-            <dc:title>jus@justmail.de</dc:title>
-          </cc:Agent>
-        </dc:creator>
-        <dc:date>2010-06-30</dc:date>
-        <cc:license
-           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
-        <dc:subject>
-          <rdf:Bag>
-            <rdf:li>Mixxx</rdf:li>
-            <rdf:li>Gui</rdf:li>
-            <rdf:li>icon</rdf:li>
-          </rdf:Bag>
-        </dc:subject>
-        <dc:identifier>www.mixxx.org</dc:identifier>
-        <dc:description>Button for clearing the search field in library widget</dc:description>
+        <dc:title></dc:title>
       </cc:Work>
-      <cc:License
-         rdf:about="http://creativecommons.org/licenses/publicdomain/">
-        <cc:permits
-           rdf:resource="http://creativecommons.org/ns#Reproduction" />
-        <cc:permits
-           rdf:resource="http://creativecommons.org/ns#Distribution" />
-        <cc:permits
-           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
-      </cc:License>
     </rdf:RDF>
   </metadata>
   <g
      transform="translate(0,-418)"
-     id="g6659"
+     id="g3779"
      inkscape:groupmode="layer"
-     inkscape:label="backup"
-     style="display:none;filter:url(#filter6696)"
+     inkscape:label="cross.png"
+     style="display:inline"
      sodipodi:insensitive="true">
     <path
-       transform="matrix(0.08484849,0,0,0.08484849,-2.9090915,413.51515)"
-       d="m 411.42857,241.42857 a 188.57143,188.57143 0 1 1 -377.142849,0 188.57143,188.57143 0 1 1 377.142849,0 z"
-       sodipodi:ry="188.57143"
-       sodipodi:rx="188.57143"
-       sodipodi:cy="241.42857"
-       sodipodi:cx="222.85715"
-       id="path6661"
-       style="fill:#e6e6e6;stroke:none"
-       sodipodi:type="arc" />
-    <rect
-       transform="matrix(0,1,-1,0,0,0)"
-       ry="3"
-       rx="3"
-       y="-28"
-       x="431"
-       height="24"
-       width="6"
-       id="rect6663"
-       style="fill:#333333;fill-opacity:1;stroke:none" />
-    <rect
-       style="fill:#333333;fill-opacity:1;stroke:none"
-       id="rect6665"
-       width="6"
-       height="24"
-       x="13"
-       y="422"
-       rx="3"
-       ry="3" />
-  </g>
-  <g
-     style="display:inline;filter:url(#filter6696)"
-     inkscape:label="backup copy"
-     inkscape:groupmode="layer"
-     id="g6712"
-     transform="translate(0,-418)">
-    <path
-       sodipodi:type="arc"
-       style="fill:#e6e6e6;stroke:none"
-       id="path6714"
-       sodipodi:cx="222.85715"
-       sodipodi:cy="241.42857"
-       sodipodi:rx="188.57143"
-       sodipodi:ry="188.57143"
-       d="m 411.42857,241.42857 a 188.57143,188.57143 0 1 1 -377.142849,0 188.57143,188.57143 0 1 1 377.142849,0 z"
-       transform="matrix(0.05999694,-0.05999694,0.05999694,0.05999694,-11.855722,432.88577)" />
-    <rect
-       style="fill:#333333;fill-opacity:1;stroke:none"
-       id="rect6716"
-       width="3.9678659"
-       height="23.807196"
-       x="316.21411"
-       y="283.66702"
-       rx="1.983933"
-       ry="1.983933"
-       transform="matrix(0.70710677,0.70710679,-0.70710677,0.70710679,0,0)" />
-    <rect
-       ry="1.983933"
-       rx="1.983933"
-       y="306.29446"
-       x="-297.55457"
-       height="23.807196"
-       width="3.9678659"
-       id="rect6718"
-       style="fill:#333333;fill-opacity:1;stroke:none"
-       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)" />
-  </g>
-  <g
-     style="display:none"
-     inkscape:label="working"
-     inkscape:groupmode="layer"
-     id="g6678"
-     transform="translate(0,-418)">
-    <path
-       style="fill:#cccccc;stroke:none"
-       d="m 27.313708,422.68629 c -6.248388,-6.24839 -16.379028,-6.24839 -22.6274165,0 -6.2483887,6.24839 -6.248389,16.37903 0,22.62742 6.2483885,6.24839 16.3790285,6.24839 22.6274165,0 6.248389,-6.24839 6.248389,-16.37903 0,-22.62742 z m -2.828427,2.82843 c 1.175212,1.17521 1.175212,3.06743 0,4.24264 L 20.242641,434 l 4.24264,4.24264 c 1.175212,1.17521 1.175212,3.06743 0,4.24264 -1.175211,1.17521 -3.067429,1.17521 -4.24264,0 L 16,438.24264 l -4.242641,4.24264 c -1.175211,1.17521 -3.0674289,1.17521 -4.2426404,0 -1.1752114,-1.17521 -1.1752114,-3.06743 0,-4.24264 L 11.757359,434 7.5147186,429.75736 c -1.1752114,-1.17521 -1.1752114,-3.06743 0,-4.24264 1.1752115,-1.17521 3.0674294,-1.17521 4.2426404,0 L 16,429.75736 l 4.242641,-4.24264 c 1.175211,-1.17521 3.067429,-1.17521 4.24264,0 z"
-       id="path6680" />
+       style="color:#000000;fill:#b3b3b3;fill-opacity:1;fill-rule:nonzero;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 16,4 C 8.9403602,4 2,10.94036 2,18 2,25.05964 8.9403602,32 16,32 23.05964,32 30,25.05964 30,18 30,10.94036 23.05964,4 16,4 z m -5.65625,6.34375 c 0.511238,0 1.014513,0.202013 1.40625,0.59375 l 4.25,4.25 4.25,-4.25 c 0.783474,-0.783474 2.029026,-0.783474 2.8125,0 0.783474,0.783474 0.783474,2.029026 0,2.8125 l -4.25,4.25 4.25,4.25 c 0.783474,0.783474 0.783474,2.029026 0,2.8125 -0.783474,0.783474 -2.029026,0.783474 -2.8125,0 l -4.25,-4.25 -4.25,4.25 c -0.783474,0.783474 -2.0290257,0.783474 -2.8125,0 -0.7834743,-0.783474 -0.7834743,-2.029026 0,-2.8125 l 4.25,-4.25 -4.25,-4.25 c -0.7834743,-0.783474 -0.7834743,-2.029026 0,-2.8125 0.3917372,-0.391737 0.8950118,-0.59375 1.40625,-0.59375 z"
+       transform="translate(0,418)"
+       id="path3781"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssssscssscssscssscsss"
+       inkscape:export-filename="/Applications/Mixxx 1.8.0 beta2.app/Contents/Resources/skins/path3781.png"
+       inkscape:export-xdpi="45"
+       inkscape:export-ydpi="45" />
+    <g
+       style="fill:#1a1a1a"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,311.57063,117.80195)"
+       id="g3783" />
+    <text
+       xml:space="preserve"
+       style="font-size:4px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="16"
+       y="456"
+       id="text3803"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="16"
+         y="456"
+         id="tspan3817">Object is aligned to bottom cause it looks</tspan><tspan
+         sodipodi:role="line"
+         x="16.636719"
+         y="461"
+         id="tspan3821"> better in the skins searchbar </tspan><tspan
+         sodipodi:role="line"
+         x="16"
+         y="466"
+         id="tspan3813">(library widget where cross.png gets loaded)</tspan></text>
   </g>
 </svg>
