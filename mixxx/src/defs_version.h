@@ -13,6 +13,6 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- 
+
 // Doing this in its own file avoids needlessly rebuilding everything when just the version number changes
-#define VERSION "1.8.0~beta2-pre"
+#define VERSION "Trunk"

@@ -4,12 +4,12 @@
 #include <QtDebug>
 #include <QFileSystemModel>
 
-#include "defs_audiofiles.h"
+#include "soundsourceproxy.h"
 #include "library/browsefilter.h"
 
 BrowseFilter::BrowseFilter(QObject* parent)
         : QSortFilterProxyModel(parent),
-          m_regexp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive) {
+          m_regexp(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive) {
     setFilterCaseSensitivity(Qt::CaseInsensitive);
     setSortCaseSensitivity(Qt::CaseInsensitive);
 }

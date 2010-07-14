@@ -27,10 +27,11 @@ WBrowseTableView::~WBrowseTableView() {
 
 void WBrowseTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
     // TODO(XXX) Get rid of this!
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-        m_player1Act.setEnabled(false);
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-        m_player2Act.setEnabled(false);
+    m_player1Act.setEnabled(
+        ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==0.);
+    m_player2Act.setEnabled(
+        ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==0.);
+
     m_contextMenu.exec(pEvent->globalPos());
 }
 

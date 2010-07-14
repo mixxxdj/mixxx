@@ -1,0 +1,7 @@
+Package: mixxx-m4a
+Version: 1.8-1
+Section: sound
+Architecture: i386
+Depends: mixxx (>= 1.8), libmp4v2-0, libfaad0
+Maintainer: Your friendly neighborhood DJ <nobody@home>
+Description: M4A playback support for Mixxx

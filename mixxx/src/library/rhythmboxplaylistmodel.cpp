@@ -26,7 +26,8 @@
 #include "xmlparse.h"
 #include "trackinfoobject.h"
 #include "defs.h"
-#include "defs_audiofiles.h"
+
+#include "mixxxutils.cpp"
 
 RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) :
         TrackModel(QSqlDatabase::database("QSQLITE"),
@@ -103,8 +104,7 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     if ( pTrack == NULL )
         return QVariant();
 
-    int totalSeconds, seconds, mins;
-    if (role == Qt::DisplayRole) {
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
         switch (index.column()) {
             case RhythmboxPlaylistModel::COLUMN_ARTIST:
                 return pTrack->getArtist();
@@ -119,16 +119,7 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
             case RhythmboxPlaylistModel::COLUMN_LOCATION:
                 return pTrack->getLocation();
             case RhythmboxPlaylistModel::COLUMN_DURATION:
-                // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-                //Let's reformat this song length into a human readable MM:SS format.
-                totalSeconds = pTrack->getDuration();
-                seconds = totalSeconds % 60;
-                mins = totalSeconds / 60;
-                //int hours = mins / 60; //Not going to worry about this for now. :)
-
-                //Construct a nicely formatted duration string now.
-                return QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+                return MixxxUtils::secondsToMinutes(pTrack->getDuration());
             default:
                 return QVariant();
         }

@@ -45,6 +45,8 @@ void PrepareLibraryTableModel::search(const QString& searchText) {
 
 void PrepareLibraryTableModel::slotSearch(const QString& searchText)
 {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
     QString baseFilter;
     if (m_bShowRecentSongs)

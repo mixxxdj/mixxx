@@ -27,12 +27,12 @@
 #include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
-#include "portaudio.h"
 #include "mixxx.h"
+#include "soundsourceproxy.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
-#include "errordialog.h"
-#include "defs_audiofiles.h"
+#include "errordialoghandler.h"
+#include "defs_version.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -70,71 +70,10 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 QApplication * a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
-ErrorDialog *dialogHelper; //= new ErrorDialog();   // allows threads to show error dialogs
 
 void qInitImages_mixxx();
 
-void MessageOutput( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-
-    switch ( type ) {
-    case QtDebugMsg:
-#ifdef __WINDOWS__
-        if (strstr(msg, "doneCurrent")) {
-            break;
-        }
-#endif
-        fprintf( stderr, "Debug: %s\n", msg );
-        break;
-    case QtWarningMsg:
-        fprintf( stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-}
-
 QFile Logfile; // global logfile variable
-
-
-void MessageToLogfile( QtMsgType type, const char * msg )
-{
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-    
-    Q3TextStream Log( &Logfile );
-    switch ( type ) {
-    case QtDebugMsg:
-        Log << "Debug: " << msg << "\n";
-        break;
-    case QtWarningMsg:
-        Log << "Warning: " << msg << "\n";
-        //a->lock(); //this doesn't do anything in Qt4
-        QMessageBox::warning(0, "Mixxx", msg);
-        //a->unlock();
-        break;
-    case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
-        break;
-    case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", msg );
-        QMessageBox::warning(0, "Mixxx", msg);
-        abort();
-    }
-    Logfile.flush();
-}
-
 
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
@@ -148,21 +87,23 @@ void MessageHandler( QtMsgType type, const char * input )
     QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
     QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
     const char* s = ba.constData();
-    
-    
+
+
     if(!Logfile.isOpen())
     {
     Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
-     
+
 #ifdef QT3_SUPPORT
     Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
 #else
     Logfile.open(IO_WriteOnly | IO_Translate);
 #endif
     }
-      
+
     Q3TextStream Log( &Logfile );
-    
+
+    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
+
     switch ( type ) {
     case QtDebugMsg:
 #ifdef __WINDOWS__  //wtf? -kousu 2/2009
@@ -176,26 +117,22 @@ void MessageHandler( QtMsgType type, const char * input )
     case QtWarningMsg:
         fprintf( stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
-        //QMessageBox::warning(0, "Mixxx", input);
-        //dialogHelper->requestErrorDialog(0,input);
-        //I will break your legs if you re-enable the above lines of code.
-        //You shouldn't be using qWarning for reporting user-facing errors.
-        //Implement your own error message box...
-        // - Albert (March 11, 2010)
+        // Don't use qWarning for reporting user-facing errors.
+        //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
         fprintf( stderr, "Critical: %s\n", s );
         Log << "Critical: " << s << "\n";
-         //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-//         exit(-1);
-        break; //NOTREACHED(?)
+        Logfile.flush();    // Ensure the error is written to the log before exiting
+        dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
+//         exit(-1);    // Done in ErrorDialogHandler
+        break; //NOTREACHED
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", s );
         Log << "Fatal: " << s << "\n";
-        //QMessageBox::critical(0, "Mixxx", input);
-        dialogHelper->requestErrorDialog(1,input);
-        abort();
+        Logfile.flush();    // Ensure the error is written to the log before aborting
+        dialogHandler->requestErrorDialog(DLG_FATAL,input);
+//         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
     Logfile.flush();
@@ -205,25 +142,27 @@ void MessageHandler( QtMsgType type, const char * input )
 int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
+    // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
-	
+
 
 #ifdef __WINDOWS__
   #ifdef DEBUGCONSOLE
     InitDebugConsole();
   #endif
 #endif
-   dialogHelper = new ErrorDialog(); 
-
     qInstallMsgHandler( MessageHandler );
 
+    // Other things depend on this name to enforce thread exclusivity,
+    //  so if you change it here, change it also in:
+    //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
-
-
+    //Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
@@ -244,19 +183,24 @@ int main(int argc, char * argv[])
     // Construct a list of strings based on the command line arguments
     struct CmdlineArgs args;
     args.bStartInFullscreen = false; //Initialize vars
-    
+
     // Only match supported file types since command line options are also parsed elsewhere
-    QRegExp fileRx(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive);
+    QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
     for (int i=0; i<argc; ++i)
     {
         if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            printf("Mixxx digital DJ software - command line options");
+            printf("Mixxx digital DJ software v");
+            printf(VERSION);
+            printf(" - Command line options");
             printf("\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
-            printf(MIXXX_SUPPORTED_AUDIO_FILETYPES);
+            
+            QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+            QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
+            printf(fileExtensionsBA);
             printf("\n\n");
             printf("\
                             Each file you specify will be loaded into the\n\
@@ -266,17 +210,21 @@ int main(int argc, char * argv[])
                             for its resource files such as MIDI mappings,\n\
                             overriding the default installation location.\n\
 \n\
+    --pluginPath PATH       Top-level directory where Mixxx shoud look\n\
+                            for sound source plugins in addition to default\n\
+                            locations.\n\
+\n\
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
     -h, --help              Display this help message and exit");
-    
+
             printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
             return(0);
         }
-        
+
         if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
         {
             args.bStartInFullscreen = true;
@@ -284,8 +232,8 @@ int main(int argc, char * argv[])
         else if (fileRx.indexIn(argv[i]) != -1)
             args.qlMusicFiles += argv[i];
     }
-    
-    
+
+
     // set up the plugin paths...
     /*
     qDebug() << "Setting up plugin paths...";
@@ -323,7 +271,7 @@ int main(int argc, char * argv[])
     qDebug() << "...done.";
     */
 
-    
+
 #ifdef __APPLE__
      qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
@@ -342,26 +290,26 @@ int main(int argc, char * argv[])
 
     //a->setMainWidget(mixxx);
     a -> connect( a, SIGNAL(lastWindowClosed()), a, SLOT(quit()) );
-    
+
     int result = -1;
 
-    if (!dialogHelper->checkError()) {
+    if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
-    
+
         qDebug() << "Running Mixxx";
         result = a->exec();
     }
-    
-    delete mixxx;
-    
-	qDebug() << "Mixxx shutdown complete.";
 
-	// Don't make any more output after this
-	//	or mixxx.log will get clobbered!
+    delete mixxx;
+
+    qDebug() << "Mixxx shutdown complete with code" << result;
+
+    // Don't make any more output after this
+    //    or mixxx.log will get clobbered!
     if(Logfile.isOpen())
-	Logfile.close();
-    
+    Logfile.close();
+
     //delete plugin_paths;
     return result;
 }
