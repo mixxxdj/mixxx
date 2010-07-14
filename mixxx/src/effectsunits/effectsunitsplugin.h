@@ -14,6 +14,7 @@ public:
 	~EffectsUnitsPlugin();
 
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+	void connect(int PortID, float Value);
 	void activate();
 
 	void addPort(EffectsUnitsPort *);

@@ -15,6 +15,14 @@ EffectsUnitsPlugin::~EffectsUnitsPlugin() {
 	// TODO Auto-generated destructor stub
 }
 
+/* EffectsUnitsPlugin::connect
+ * Assigns a value to a plugins port.
+ * Redirects to the backend to preserve abstraction.
+ */
+void EffectsUnitsPlugin::connect(int PortID, float Value){
+	m_Backend->connect(PortID, Value, m_PluginID);
+}
+
 /* EffectsUnitsPlugin::process
  * We redirect the process call to the Backend because this
  * can be backend specific. This way we only have the Backend

@@ -41,7 +41,6 @@ void LADSPABackend::loadPlugins(){
 				port->isAudio = true;
 			} else {
 				port->isAudio = false;
-				port->isBound = false;
 				port->Max = ladspaplugin->getDescriptor()->PortRangeHints[j].UpperBound;
 				port->Min = ladspaplugin->getDescriptor()->PortRangeHints[j].LowerBound;
 				port->Def = port->Max;
@@ -61,6 +60,28 @@ void LADSPABackend::loadPlugins(){
 		ladspaplugin = m_LADSPALoader->getByIndex(i);
 	}
 
+}
+
+/* LADSPABackend::process
+ * Given a PluginID, Port and Value.
+ * We'll update this plugin's Port with Value.
+ * Updates the LADSPAControl variables of the LADSPAInstance.
+ */
+void LADSPABackend::connect(int PortID, float Value, int PluginID){
+
+    m_beingUpdated = m_PluginLADSPAControl.at(PluginID);
+    m_beingRead = m_BackendPlugins.at(PluginID)->getPorts();
+
+    int size = m_beingRead->size();
+    for (int i = 0; i < size; i++){
+    	if (!m_beingRead->at(i)->isAudio){
+    		if (m_beingRead->at(i)->isBound){
+    			// TODO - get value from control object
+    		} else {
+    			m_beingUpdated->at(i)->setValue(m_beingRead->at(i)->Def);
+    		}
+    	}
+    }
 }
 
 /* LADSPABackend::process
@@ -92,20 +113,7 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
         m_pBufferRight[0][i] = pIn[2 * i + 1];
     }
 
-    /* Process Controls: */
-    m_beingUpdated = m_PluginLADSPAControl.at(PluginID);
-    m_beingRead = m_BackendPlugins.at(PluginID)->getPorts();
-
-    int size = m_beingRead->size();
-    for (int i = 0; i < size; i++){
-    	if (!m_beingRead->at(i)->isAudio){
-    		if (m_beingRead->at(i)->isBound){
-    			// TODO - get value from control object
-    		} else {
-    			m_beingUpdated->at(i)->setValue(m_beingRead->at(i)->Def);
-    		}
-    	}
-    }
+    /* WetDry Test: */
     ControlObject * WetDry = ControlObject::getControl(ConfigKey("[FX]", "DryWet"));
 
     /* Process Audio Signals: */
@@ -183,7 +191,7 @@ void LADSPABackend::activatePlugin(int PluginID){
 }
 
 void LADSPABackend::deactivatePlugin(int PluginID){
-	//TODO - Turn plugin into instance
+	//TODO - deactivePlugin, hard to determine wether is it safe or not.
 
 }
 

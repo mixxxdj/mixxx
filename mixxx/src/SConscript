@@ -969,8 +969,11 @@ if int(flags_fxunits):
 	sources += Split("""
 			engine/engineeffectsunits.cpp
 			effectsunitsview.cpp 
+			effectsunitsslot.cpp 
+			effectsunitswidget.cpp 
 			effectsunits/effectsunitscontroller.cpp 
 			effectsunits/effectsunitsplugin.cpp 
+			effectsunits/effectsunitsinstance.cpp 
 			effectsunits/effectsunitsbackend.cpp 
 			effectsunits/ladspabackend.cpp 
 			effectsunits/debugbackend.cpp 

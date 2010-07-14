@@ -18,6 +18,9 @@ void DEBUGBackend::loadPlugins(){
 	m_BackendPlugins.append(lofi);
 }
 
+void DEBUGBackend::connect(int PortID, float Value, int m_PluginID){
+
+}
 void DEBUGBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID){
 	qDebug() << "FXUNITS: DEDBUGBackend: Processing #:" << PluginID;
 }

@@ -26,10 +26,11 @@ public:
 	EffectsUnitsBackend * getBackend();
 	QList<EffectsUnitsPlugin *> * getPlugins();
 
-	virtual void loadPlugins();
-	virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID);
-	virtual void activatePlugin(int PluginID);
-	virtual void deactivatePlugin(int PluginID);
+	virtual void loadPlugins() = 0;
+	virtual void connect(int PortID, float Value, int PluginID) = 0;
+	virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID) = 0;
+	virtual void activatePlugin(int PluginID) = 0;
+	virtual void deactivatePlugin(int PluginID) = 0;
 
 protected:
 	QString * m_Name;								// Name of the Backend (possibly useless since every backend will have its own class)

@@ -16,8 +16,6 @@ typedef struct _EffectsUnitsPort{
         float Max;
         float Def;
         bool isAudio;
-        bool isBound;
-        ControlObject * bind;
 } EffectsUnitsPort;
 
 #endif /* EFFECTSUNITSPORT_H_ */

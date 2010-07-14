@@ -11,6 +11,7 @@ public:
 	~DEBUGBackend();
 
 	void loadPlugins();
+	void connect(int PortID, float Value, int m_PluginID);
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID);
 	void activatePlugin(int PluginID);
 	void deactivatePlugin(int PluginID);

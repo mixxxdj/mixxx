@@ -32,6 +32,9 @@ void LADSPAControl::setValue(LADSPA_Data value)
 {
 #ifdef __LADSPA_SIMPLE_CONTROL__
     m_Value = value;
+#elif __FXUNITS__
+    // Different instances might share the same LADSPAControl.
+    m_Value = value;
 #else
     if (m_Value != value)
     {
