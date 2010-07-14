@@ -3,8 +3,11 @@
 
 #include "engineobject.h"
 #include "effectsunits/effectsunitsinstance.h"
+#include "effectsunits/effectsunitsplugin.h"
+#include "effectsunits/effectsunitsport.h"
 
 class EffectsUnitsInstance;
+class EffectsUnitsPlugin;
 
 class EngineEffectsUnits : public EngineObject {
 public:
@@ -22,6 +25,9 @@ private:
 	static EngineEffectsUnits * m_pEngine;			// We only want one engine running, here's the pointer to it.
 	QList<EffectsUnitsInstance * > * m_OnChannel1;	// Processing queue
 	QList<EffectsUnitsInstance * > * m_OnChannel2;	// for Channel1 e 2
+
+	EffectsUnitsPlugin * m_pCurrentPlugin;			// Plugin being processed
+	QList<EffectsUnitsPort *> * m_pPluginPorts;		// It's ports too
 
 };
 

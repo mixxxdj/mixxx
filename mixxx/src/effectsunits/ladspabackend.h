@@ -33,9 +33,9 @@ private:
 	QList<QList<LADSPAControl*> *> m_PluginLADSPAControl;
 
 	/* process(in, out, buf) helpers: */
-	LADSPAInstance * m_beingProcessed;
-	QList<LADSPAControl *> * m_beingUpdated;
-	QList<EffectsUnitsPort *> * m_beingRead;
+	LADSPAInstance * m_pInstancebeingProcessed;
+	QList<LADSPAControl *> * m_pControlbeingUpdated;
+	QList<EffectsUnitsPort *> * m_pPortbeingRead;
 	int m_monoBufferSize;
 	CSAMPLE * m_pBufferLeft[2];
 	CSAMPLE * m_pBufferRight[2];

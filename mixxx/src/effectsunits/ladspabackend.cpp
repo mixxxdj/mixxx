@@ -43,7 +43,7 @@ void LADSPABackend::loadPlugins(){
 				port->isAudio = false;
 				port->Max = ladspaplugin->getDescriptor()->PortRangeHints[j].UpperBound;
 				port->Min = ladspaplugin->getDescriptor()->PortRangeHints[j].LowerBound;
-				port->Def = port->Max;
+				port->Def = port->Min;
 				port->Name = new QString(ladspaplugin->getDescriptor()->PortNames[j]);
 			}
 
@@ -62,27 +62,14 @@ void LADSPABackend::loadPlugins(){
 
 }
 
-/* LADSPABackend::process
+/* LADSPABackend::connect
  * Given a PluginID, Port and Value.
  * We'll update this plugin's Port with Value.
  * Updates the LADSPAControl variables of the LADSPAInstance.
  */
 void LADSPABackend::connect(int PortID, float Value, int PluginID){
-
-//    m_beingUpdated = m_PluginLADSPAControl.at(PluginID);
-//    m_beingRead = m_BackendPlugins.at(PluginID)->getPorts();
-//
-//    int size = m_beingRead->size();
-//    for (int i = 0; i < size; i++){
-//    	if (!m_beingRead->at(i)->isAudio){
-//    		if (m_beingRead->at(i)->isBound){
-//    			// TODO - get value from control object
-//    		} else {
-//    			m_beingUpdated->at(i)->setValue(m_beingRead->at(i)->Def);
-//    		}
-//    	}
-//    }
-
+	m_pControlbeingUpdated = m_PluginLADSPAControl.at(PluginID);
+	m_pControlbeingUpdated->at(PortID)->setValue(Value);
 }
 
 /* LADSPABackend::process
@@ -118,10 +105,10 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
     ControlObject * WetDry = ControlObject::getControl(ConfigKey("[FX]", "DryWet"));
 
     /* Process Audio Signals: */
-    m_beingProcessed = m_LADSPAInstance.at(PluginID);
-	if (m_beingProcessed->isInplaceBroken() || WetDry->get() < 1.0)
+    m_pInstancebeingProcessed = m_LADSPAInstance.at(PluginID);
+	if (m_pInstancebeingProcessed->isInplaceBroken() || WetDry->get() < 1.0)
 	{
-		m_beingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[1], m_pBufferRight[1], m_monoBufferSize);
+		m_pInstancebeingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[1], m_pBufferRight[1], m_monoBufferSize);
 		//qDebug() << "FXUNITS: LADSPABackend::process: INP: " << *m_pBufferLeft[0] << "OUT: " << *m_pBufferLeft[1] << "BUF IPB: " << iBufferSize;
 
 		for (int i = 0; i < m_monoBufferSize; i++)
@@ -131,7 +118,7 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
 		}
 	} else {
 		//qDebug() << "FXUNITS: LADSPABackend::process: IN: " << *m_pBufferLeft[0];
-		m_beingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[0], m_pBufferRight[0], m_monoBufferSize);
+		m_pInstancebeingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[0], m_pBufferRight[0], m_monoBufferSize);
 		//qDebug() << "FXUNITS: LADSPABackend::process: OUT: " << *m_pBufferLeft[0];
 	}
 

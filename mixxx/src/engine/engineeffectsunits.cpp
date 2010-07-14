@@ -33,11 +33,26 @@ void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
  * On EngineMaster, we call process(in,out,buffer, SOURCE), with samples from this Source.
  */
 void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, const QString Source){
-	//qDebug() << "FXUNITS: Processing instances for Source:" << Source;
+
+	/* Processing all instances in this Source's queue */
 	QList<EffectsUnitsInstance *> * instancesList = getInstancesBySource(Source);
 	int size = instancesList->size();
 	for (int i = 0; i < size; ++i) {
-		instancesList->at(i)->getPlugin()->process(pIn, pOut, iBufferSize);
+
+		m_pCurrentPlugin = instancesList->at(i)->getPlugin();
+		m_pPluginPorts = m_pCurrentPlugin->getPorts();
+
+		/* Updating Port Values: */
+		int portn = m_pPluginPorts->size();
+		for (int i = 0; i < portn; i++){
+			// TODO - Get from instance
+			if (!m_pPluginPorts->at(i)->isAudio)
+				m_pCurrentPlugin->connect(i, m_pPluginPorts->at(i)->Max);
+		}
+
+		/* Processing Samples: */
+		m_pCurrentPlugin->process(pIn, pOut, iBufferSize);
+
 	 }
 }
 
