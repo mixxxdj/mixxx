@@ -42,10 +42,10 @@ Q_OBJECT
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     void initialize();
-    int getTrackId(QString location);
-    bool trackExistsInDatabase(QString location);
+    int getTrackId(QString absoluteFilePath);
+    bool trackExistsInDatabase(QString absoluteFilePath);
     QString getTrackLocation(int id);
-    int addTrack(QString location);
+    int addTrack(QString absoluteFilePath);
     int addTrack(QFileInfo& fileInfo);
     void removeTrack(int id);
     TrackInfoObject *getTrack(int id) const;
@@ -53,7 +53,7 @@ Q_OBJECT
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
-    void invalidateTrackLocations(QString directory);
+    void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
     void detectMovedFiles();
@@ -79,6 +79,7 @@ Q_OBJECT
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject * pTrack);
     TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
+    QString absoluteFilePath(QString location);
 
     // Prevents evil copy constructors! (auto-generated ones by the compiler
     // that don't compile)

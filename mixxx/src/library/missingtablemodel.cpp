@@ -5,6 +5,7 @@
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 
+#include "mixxxutils.cpp"
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -12,8 +13,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                      "mixxx.db.model.missing"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
-          m_trackDao(m_pTrackCollection->getTrackDAO()),
-          m_currentSearch("") {
+          m_trackDao(m_pTrackCollection->getTrackDAO()) {
 
     QSqlQuery query;
     //query.prepare("DROP VIEW " + playlistTableName);
@@ -83,6 +83,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
     setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
                   Qt::Horizontal, tr("Date Added"));
 
+    slotSearch("");
+
     select(); //Populate the data model.
 
     connect(this, SIGNAL(doSearch(const QString&)),
@@ -131,6 +133,8 @@ void MissingTableModel::search(const QString& searchText)
 }
 
 void MissingTableModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
     m_currentSearch = searchText;
 
     QString filter;
@@ -205,21 +209,17 @@ QVariant MissingTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = BaseSqlTableModel::data(item, role);
+    QVariant value;
 
-    if (role == Qt::DisplayRole &&
+    if (role == Qt::ToolTipRole)
+        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
+    else
+        value = BaseSqlTableModel::data(item, role);
+
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
         if (qVariantCanConvert<int>(value)) {
-            // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-            //Let's reformat this song length into a human readable MM:SS format.
-            int totalSeconds = qVariantValue<int>(value);
-            int seconds = totalSeconds % 60;
-            int mins = totalSeconds / 60;
-            //int hours = mins / 60; //Not going to worry about this for now. :)
-
-            //Construct a nicely formatted duration string now.
-            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
         }
     }
     return value;

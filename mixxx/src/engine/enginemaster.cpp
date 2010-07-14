@@ -19,6 +19,7 @@
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "enginemaster.h"
+#include "engine/engineworkerscheduler.h"
 #include "enginebuffer.h"
 #include "enginevolume.h"
 #include "enginechannel.h"
@@ -42,10 +43,16 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            EngineChannel * _channel1, EngineChannel * _channel2,
                            const char * group)
 {
+    m_pWorkerScheduler = new EngineWorkerScheduler(this);
+
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
+
+    // TODO(XXX) In features_hydra, stick this in addChannel()
+    buffer1->bindWorkers(m_pWorkerScheduler);
+    buffer2->bindWorkers(m_pWorkerScheduler);
 
     // Defaults
     master1 = true;
@@ -320,5 +327,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     sidechain->submitSamples(m_pMaster, iBufferSize);
 
     //Master/headphones interleaving is now done in SoundManager::requestBuffer() - Albert Nov 18/07
+
+
+    // We're close to the end of the callback. Schedule the workers. Hopefully
+    // the work thread doesn't get scheduled between now and then.
+    m_pWorkerScheduler->runWorkers();
 }
 
