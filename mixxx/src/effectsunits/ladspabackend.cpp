@@ -69,19 +69,20 @@ void LADSPABackend::loadPlugins(){
  */
 void LADSPABackend::connect(int PortID, float Value, int PluginID){
 
-    m_beingUpdated = m_PluginLADSPAControl.at(PluginID);
-    m_beingRead = m_BackendPlugins.at(PluginID)->getPorts();
+//    m_beingUpdated = m_PluginLADSPAControl.at(PluginID);
+//    m_beingRead = m_BackendPlugins.at(PluginID)->getPorts();
+//
+//    int size = m_beingRead->size();
+//    for (int i = 0; i < size; i++){
+//    	if (!m_beingRead->at(i)->isAudio){
+//    		if (m_beingRead->at(i)->isBound){
+//    			// TODO - get value from control object
+//    		} else {
+//    			m_beingUpdated->at(i)->setValue(m_beingRead->at(i)->Def);
+//    		}
+//    	}
+//    }
 
-    int size = m_beingRead->size();
-    for (int i = 0; i < size; i++){
-    	if (!m_beingRead->at(i)->isAudio){
-    		if (m_beingRead->at(i)->isBound){
-    			// TODO - get value from control object
-    		} else {
-    			m_beingUpdated->at(i)->setValue(m_beingRead->at(i)->Def);
-    		}
-    	}
-    }
 }
 
 /* LADSPABackend::process

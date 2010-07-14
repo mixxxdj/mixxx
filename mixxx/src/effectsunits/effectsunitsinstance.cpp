@@ -7,11 +7,14 @@
 
 #include "effectsunitsinstance.h"
 
-EffectsUnitsInstance::EffectsUnitsInstance() {
-	// TODO Auto-generated constructor stub
-
+EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin) {
+	m_pPlugin = Plugin;
 }
 
 EffectsUnitsInstance::~EffectsUnitsInstance() {
 	// TODO Auto-generated destructor stub
+}
+
+EffectsUnitsPlugin * EffectsUnitsInstance::getPlugin(){
+	return m_pPlugin;
 }

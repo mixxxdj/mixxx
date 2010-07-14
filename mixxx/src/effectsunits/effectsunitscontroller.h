@@ -4,6 +4,7 @@
 #include "../engine/engineeffectsunits.h"
 #include "debugbackend.h"
 #include "ladspabackend.h"
+#include "effectsunitsinstance.h"
 
 class EffectsUnitsController {
 

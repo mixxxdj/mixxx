@@ -48,7 +48,7 @@ void EffectsUnitsController::activatePluginOnSource(QString PluginName, QString 
 	EffectsUnitsPlugin * current = getPluginByName(PluginName);
 	if (current != NULL){
 		current->activate();
-		m_pEngine->addPluginToSource(current, Source);
+		m_pEngine->addInstanceToSource(new EffectsUnitsInstance(current), Source);
 	}
 }
 

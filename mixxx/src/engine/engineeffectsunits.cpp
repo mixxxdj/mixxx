@@ -6,8 +6,8 @@ EngineEffectsUnits * EngineEffectsUnits::m_pEngine = NULL;
 
 EngineEffectsUnits::EngineEffectsUnits() {
 	m_pEngine = this;
-	m_OnChannel1 = new QList<EffectsUnitsPlugin * >();
-	m_OnChannel2 = new QList<EffectsUnitsPlugin * >();
+	m_OnChannel1 = new QList<EffectsUnitsInstance * >();
+	m_OnChannel2 = new QList<EffectsUnitsInstance * >();
 
 	qDebug() << "FXUNITS: EngineEffectsUnits: new instance" << (int) m_pEngine;
 }
@@ -33,30 +33,30 @@ void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
  * On EngineMaster, we call process(in,out,buffer, SOURCE), with samples from this Source.
  */
 void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, const QString Source){
-	//qDebug() << "FXUNITS: Processing plugins for Source:" << Source;
-	QList<EffectsUnitsPlugin *> * pluginList = getPluginsBySource(Source);
-	int size = pluginList->size();
+	//qDebug() << "FXUNITS: Processing instances for Source:" << Source;
+	QList<EffectsUnitsInstance *> * instancesList = getInstancesBySource(Source);
+	int size = instancesList->size();
 	for (int i = 0; i < size; ++i) {
-		pluginList->at(i)->process(pIn, pOut, iBufferSize);
+		instancesList->at(i)->getPlugin()->process(pIn, pOut, iBufferSize);
 	 }
 }
 
-/* EngineEffectsUnits::addPluginToSource
- * Every source that wants to have fx, will mantain a process queue with fx plugins
- * If you want plugin X to run on source Y you run:
- * addPluginToSource(X, Y)
+/* EngineEffectsUnits::addInstanceToSource
+ * Every source that wants to have fx, will mantain a process queue with fx instances
+ * If you want instance X to run on source Y you run:
+ * addInstanceToSource(X, Y)
  *
  * This operation is called from EffectsUnitsController.
  */
-void EngineEffectsUnits::addPluginToSource(EffectsUnitsPlugin * Plugin, QString Source){
-	if (Plugin){
-		QList<EffectsUnitsPlugin *> * pluginList = getPluginsBySource(Source);
-		pluginList->append(Plugin);
+void EngineEffectsUnits::addInstanceToSource(EffectsUnitsInstance * Instance, QString Source){
+	if (Instance){
+		QList<EffectsUnitsInstance *> * instanceList = getInstancesBySource(Source);
+		instanceList->append(Instance);
 	}
 }
 
 
-QList<EffectsUnitsPlugin *> * EngineEffectsUnits::getPluginsBySource(QString Source){
+QList<EffectsUnitsInstance *> * EngineEffectsUnits::getInstancesBySource(QString Source){
 	if (Source == "[Channel1]"){
 		return m_OnChannel1;
 	} else if (Source == "[Channel2]"){
