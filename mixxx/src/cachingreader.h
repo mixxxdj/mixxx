@@ -16,6 +16,7 @@
 
 #include "defs.h"
 #include "configobject.h"
+#include "engine/engineworker.h"
 
 class SoundSource;
 class TrackInfoObject;
@@ -56,14 +57,12 @@ typedef struct Chunk {
 // cache so that areas of a file that will soon be read are present in memory
 // once they are needed. This can be accomplished by issueing 'hints' to the
 // reader of areas of a SoundSource that will be read soon.
-class CachingReader : public QThread {
+class CachingReader : public EngineWorker {
     Q_OBJECT
 
   public:
 
-    // Construct a CachingReader with the given group. The group is only
-    // necessary for legacy reasons. The CachingReader will clear the
-    // _group,'TrackEnd' control object when it is done loading a new track.
+    // Construct a CachingReader with the given group.
     CachingReader(const char* _group,
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
@@ -99,13 +98,14 @@ class CachingReader : public QThread {
     // Wake the reader up so that it will process newTrack requests and hints.
     void wake();
 
+    // Run upkeep operations like loading tracks and reading from file. Run by a
+    // thread pool via the EngineWorkerScheduler.
+    void run();
+
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
     void trackLoadFailed(TrackInfoObject *pTrack, QString reason);
-
-  protected:
-    void run();
 
   private:
 
@@ -121,9 +121,6 @@ class CachingReader : public QThread {
     // Initialize the reader by creating all the chunks from the RAM provided to
     // the CachingReader.
     void initialize();
-
-    // Stop the reader thread. This will block until the thread is stopped.
-    void stop();
 
     // Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(TrackInfoObject *pTrack);
@@ -193,7 +190,6 @@ class CachingReader : public QThread {
 
     // The current track loaded
     TrackInfoObject* m_pCurrentTrack;
-    ControlObjectThread* m_pTrackEnd;
     // The current sound source of the track loaded
     SoundSource* m_pCurrentSoundSource;
     int m_iTrackSampleRate;

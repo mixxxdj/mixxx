@@ -12,7 +12,7 @@
 class TrackCollection;
 class TrackInfoObject;
 
-class BaseSqlTableModel : public QSqlRelationalTableModel {
+class BaseSqlTableModel : public QSqlTableModel {
     Q_OBJECT
   public:
     BaseSqlTableModel(QObject* parent,

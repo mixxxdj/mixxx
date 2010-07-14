@@ -5,6 +5,8 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 
+#include "mixxxutils.cpp"
+
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
@@ -14,14 +16,43 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
 
-    setTable("library");
+    QSqlQuery query(pTrackCollection->getDatabase());
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
+                  "SELECT "
+                  "library." + LIBRARYTABLE_ID + "," +
+                  "library." + LIBRARYTABLE_ARTIST + "," +
+                  "library." + LIBRARYTABLE_TITLE + "," +
+                  "library." + LIBRARYTABLE_ALBUM + "," +
+                  "library." + LIBRARYTABLE_YEAR + "," +
+                  "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
+                  "library." + LIBRARYTABLE_BPM + "," +
+                  "track_locations.location," +
+                  "library." + LIBRARYTABLE_COMMENT + "," +
+                  "library." + LIBRARYTABLE_MIXXXDELETED + " " +
+                  "FROM library " +
+                  "INNER JOIN track_locations " +
+                  "ON library.location = track_locations.id ");
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+    }
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+    }
+
+    //setTable("library");
+    setTable("library_view");
 
     //Set up a relation which maps our location column (which is a foreign key
     //into the track_locations) table. We tell Qt that our LIBRARYTABLE_LOCATION
     //column maps into the row of the track_locations table that has the id
     //equal to our location col. It then grabs the "location" col from that row
     //and shows it...
-    setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
+    //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
     //Set the column heading labels, rename them for translations and have
     //proper capitalization
@@ -69,7 +100,8 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 	//Note: The model index is ignored when adding to the library track collection.
 	//      The position in the library is determined by whatever it's being sorted by,
 	//      and there's no arbitrary "unsorted" view.
-	int trackId = m_trackDao.addTrack(location);
+    QFileInfo fileInfo(location);
+	int trackId = m_trackDao.addTrack(fileInfo.absoluteFilePath());
 	select(); //Repopulate the data model.
     if (trackId >= 0)
         return true;
@@ -111,6 +143,9 @@ void LibraryTableModel::search(const QString& searchText) {
 
 void LibraryTableModel::slotSearch(const QString& searchText) {
     // qDebug() << "slotSearch()" << searchText << QThread::currentThread();
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
+
     m_currentSearch = searchText;
 
     QString filter;
@@ -156,23 +191,19 @@ QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
     if (!item.isValid())
         return QVariant();
 
-    QVariant value = BaseSqlTableModel::data(item, role);
+    QVariant value;
+    if (role == Qt::ToolTipRole)
+        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
+    else
+        value = BaseSqlTableModel::data(item, role);
 
-    if (role == Qt::DisplayRole &&
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
         item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
         if (qVariantCanConvert<int>(value)) {
-            // TODO(XXX) Pull this out into a MixxxUtil or something.
-
-            //Let's reformat this song length into a human readable MM:SS format.
-            int totalSeconds = qVariantValue<int>(value);
-            int seconds = totalSeconds % 60;
-            int mins = totalSeconds / 60;
-            //int hours = mins / 60; //Not going to worry about this for now. :)
-
-            //Construct a nicely formatted duration string now.
-            value = QString("%1:%2").arg(mins).arg(seconds, 2, 10, QChar('0'));
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
         }
     }
+
     return value;
 }
 

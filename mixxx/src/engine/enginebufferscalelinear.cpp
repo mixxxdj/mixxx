@@ -31,6 +31,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_fOldBaseRate = 1.0f;
     m_fPreviousL = 0.0f;
     m_fPreviousR = 0.0f;
+    m_scaleRemainder = 0.0f;
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
 }
@@ -71,6 +72,7 @@ void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
+    m_scaleRemainder = 0.0f;
 }
 
 
@@ -96,10 +98,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
 
-    // qDebug("rate_add_new %f", rate_add_new);
-    // qDebug("rate_add_old %f", rate_add_old);
-    // qDebug("rate_add_diff %f", rate_add_diff);
 
+    if ( rate_add_diff )
+        m_scaleRemainder = 0.0f;
+    
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
@@ -125,18 +127,33 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     rate_add = rate_add_new;
     rate_add_abs = fabs(rate_add);
 
-    // qDebug("rate_add %f", rate_add);
-    // qDebug("rate_add_abs %f", rate_add_abs);
-
     samples += (rate_add_abs * ((buf_size - iRateLerpLength)/2));
+    unscaled_samples_needed = ceil(samples);
+    
+
+    if ( samples != unscaled_samples_needed)
+        m_scaleRemainder += (double)unscaled_samples_needed - samples;
+
+    bool carry_remainder = FALSE;    
+    if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
+    {
+        long rem = (long)floor(m_scaleRemainder);
+        
+        // Be very defensive about equating the remainder
+        // back into unscaled_samples_needed
+	if ((unscaled_samples_needed - rem) >= 1)
+	{
+            carry_remainder = TRUE;
+            m_scaleRemainder -= rem;
+            unscaled_samples_needed -= rem;
+        }
+        
+    }
+
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
-    samples *= 2;
-
-    unscaled_samples_needed = ceil(samples);
-    if (!even(unscaled_samples_needed))
-        unscaled_samples_needed++;
-
+    unscaled_samples_needed *= 2;
+    
     Q_ASSERT(unscaled_samples_needed >= 0);
     Q_ASSERT(unscaled_samples_needed != 0);
 
@@ -155,10 +172,11 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     while(i < buf_size)
     {
         prev_sample = current_sample;
-        //qDebug("EBSL %d %f %f", prev_sample, buffer_index, new_playpos);
+        
         current_sample = floor(buffer_index) * 2;
         if (!even(current_sample))
             current_sample++;
+
 
         Q_ASSERT(current_sample % 2 == 0);
         Q_ASSERT(current_sample >= 0);
@@ -186,7 +204,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             else if (m_dBaseRate < 0)
                 new_playpos -= buffer_size;
 
-            //qDebug("Read buffer %d, requested %d", buffer_size, samples_to_read);
 
             if (buffer_size == 0 && last_read_failed) {
                 break;
@@ -220,12 +237,14 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         else
             buffer_index += rate_add_abs;
 
-        //qDebug("current_sample %d buffer_index %f new_playpos %f", current_sample,  buffer_index, new_playpos);
-
         i+=2;
     }
 
-    //qDebug("Screwups: %d", screwups);
+    if ( carry_remainder )
+    {
+        m_fPreviousL = buffer_int[buffer_size-2];
+        m_fPreviousR = buffer_int[buffer_size-1];
+    }
 
     // If we broke out of the loop, zero the remaining samples
     for (; i < buf_size; i += 2) {

@@ -159,7 +159,7 @@ void MidiDevice::disableMidiLearn() {
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
-    if (midiDebugging()) qDebug() << QString("MIDI ch %1: status: %2, ctrl: %3, val: %4")
+    if (midiDebugging()) qDebug() << QString("MIDI ch %1: opcode: %2, ctrl: %3, val: %4")
         .arg(QString::number(channel+1, 16).toUpper())
         .arg(QString::number(status & 255, 16).toUpper())
         .arg(QString::number(control, 16).toUpper())

@@ -33,6 +33,7 @@
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
+#include "soundsourceproxy.h"
 
 #include "player.h"
 #include "wtracktableview.h"
@@ -43,7 +44,6 @@
 
 #include "soundmanager.h"
 #include "defs_urls.h"
-#include "defs_audiofiles.h"
 #include "recording/defs_recording.h"
 
 #include "midi/mididevicemanager.h"
@@ -92,7 +92,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    setWindowTitle(tr("Mixxx " VERSION " x64"));
+#elif defined(IA64)
+    setWindowTitle(tr("Mixxx " VERSION " Itanium"));
+#else
     setWindowTitle(tr("Mixxx " VERSION));
+#endif
     setWindowIcon(QIcon(":/images/icon.svg"));
 
     //Reset pointer to players
@@ -389,8 +395,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE, "Mixxx constructor complete.");
 #endif
 
-    // Refresh the GUI (fix for Qt 4.6 display bug)
-    rebootMixxxView();
+    // Refresh the GUI (workaround for Qt 4.6 display bug)
+    QString QtVersion = qVersion();
+    if (QtVersion>="4.6.0") {
+        qDebug() << "Qt v4.6.0 or higher detected. Using rebootMixxxView() workaround."
+                 << "\n    (See bug https://bugs.launchpad.net/mixxx/+bug/521509)";
+        rebootMixxxView();
+    }
 }
 
 MixxxApp::~MixxxApp()
@@ -875,9 +886,11 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
-    if (!s.isNull()) {
-        slotLoadPlayer2(s);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+    if (!(s == QString::null)) {
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer1->slotLoadTrack(pTrack);
     }
 }
 
@@ -897,9 +910,11 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
-    if (!s.isNull()) {
-        slotLoadPlayer2(s);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+    if (!(s == QString::null)) {
+        // TODO(XXX) Lookup track in the Library and load that.
+        TrackInfoObject * pTrack = new TrackInfoObject(s);
+        m_pPlayer2->slotLoadTrack(pTrack);
     }
 }
 
@@ -1063,7 +1078,13 @@ void MixxxApp::slotHelpAbout()
 {
 
     DlgAbout *about = new DlgAbout(this);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    about->version_label->setText(VERSION " x64");
+#elif defined(IA64)
+    about->version_label->setText(VERSION " IA64");
+#else
     about->version_label->setText(VERSION);
+#endif
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
@@ -1103,13 +1124,15 @@ void MixxxApp::slotHelpAbout()
 "Tobias Rafreider<br>"
 "Bill Egert<br>"
 "Zach Shutters<br>"
-"Owen Williams<br>"
+"Owen Bullock<br>"
+"Bill Good<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
 "Stanton<br>"
 "Hercules<br>"
+"EKS<br>"
 "Echo Digital Audio<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
@@ -1164,7 +1187,14 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>").arg(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    "</p>").arg(VERSION " x64");
+#elif defined(IA64)
+    "</p>").arg(VERSION " IA64");
+#else
+    "</p>").arg(VERSION);
+#endif
+
 
 
     about->textBrowser->setHtml(credits);
@@ -1194,6 +1224,19 @@ void MixxxApp::rebootMixxxView() {
 
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
       setFixedSize(view->width(), view->height() + menuBar()->height());
+    }
+
+    // these signals/slots need reconnected to the new m_pVisuals after reboot or the
+    // signals go to the wrong slots
+    if (view->m_pVisualCh1) {
+        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer1(QString)));
+        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
+            this, SLOT(slotLoadPlayer1(QString)));
+    }
+    if (view->m_pVisualCh2) {
+        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer2(QString)));
+        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
+            this, SLOT(slotLoadPlayer2(QString)));
     }
 }
 

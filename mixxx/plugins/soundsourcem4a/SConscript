@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import SCons
+import shutil
+
+Import('env', 'flags', 'platform')
+
+
+# On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
+
+m4a_sources = []
+m4a_sources += Split("""soundsourcem4a.cpp""");  # MP4/M4A Support
+
+
+#Tell SCons to build the SoundSourceM4A plugin
+#=========================
+if int(flags['m4a']):
+	SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
+	if 'win' in platform:
+		ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+	else:
+		ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources)
+
+	#Pass this soundsourcem4a library object file back to the SConscript above us.
+	Return("ssm4a_bin")
+else:
+	Return("")
+
+
+
