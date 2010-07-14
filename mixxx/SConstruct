@@ -59,9 +59,10 @@ Export('bitwidth')
 Export('platform')
 Export('build_dir')
 
-#soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0)
-#SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports='soundsource_plugins') 
-SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0) 
+SConscript(File('src/SConscript.env'), build_dir=Dir(build_dir), duplicate=0) 
+Import('env', 'sources', 'flags') #Grab these, created by SConscript.env
+soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0, exports=['env', 'flags'])
+SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports=['env', 'sources', 'flags', 'soundsource_plugins']) 
 
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
