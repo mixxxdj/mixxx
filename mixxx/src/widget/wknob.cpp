@@ -151,6 +151,17 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
     update();
 }
 
+void WKnob::wheelEvent(QWheelEvent *e)
+{   
+    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
+    double newValue = getValue() + (wheelDirection);
+    this->updateValue(newValue);
+
+    e->accept();
+
+    //e->ignore();
+}
+
 void WKnob::paintEvent(QPaintEvent *)
 {
     if (m_pPixmaps>0)

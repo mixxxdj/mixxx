@@ -24,13 +24,13 @@ void TrackDAO::initialize()
     @return the track id for the track located at location, or -1 if the track
             is not in the database.
 */
-int TrackDAO::getTrackId(QString location)
+int TrackDAO::getTrackId(QString absoluteFilePath)
 {
     //qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location = track_locations.id WHERE track_locations.location=:locatio");
-    query.bindValue(":location", location);
+    query.bindValue(":location", absoluteFilePath);
 
     if (!query.exec()) {
         qDebug() << query.lastError();
@@ -72,9 +72,9 @@ QString TrackDAO::getTrackLocation(int trackId)
     @param file_location The full path to the track on disk, including the filename.
     @return true if the track is found in the library table, false otherwise.
 */
-bool TrackDAO::trackExistsInDatabase(QString location)
+bool TrackDAO::trackExistsInDatabase(QString absoluteFilePath)
 {
-    return (getTrackId(location) != -1);
+    return (getTrackId(absoluteFilePath) != -1);
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
@@ -142,9 +142,9 @@ int TrackDAO::addTrack(QFileInfo& fileInfo) {
     return trackId;
 }
 
-int TrackDAO::addTrack(QString location)
+int TrackDAO::addTrack(QString absoluteFilePath)
 {
-    QFileInfo fileInfo(location);
+    QFileInfo fileInfo(absoluteFilePath);
     return addTrack(fileInfo);
 }
 
@@ -480,19 +480,22 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
-
-void TrackDAO::invalidateTrackLocations(QString directory)
+/** Mark all the tracks whose paths begin with libraryPath as invalid.
+    That means we'll need to later check that those tracks actually
+    (still) exist as part of the library scanning procedure. */
+void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath)
 {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "invalidateTrackLocations(" << directory << ")";
+    qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
+    libraryPath += "%"; //Add wildcard to SQL query to match subdirectories!
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET needs_verification=1 "
-                  "WHERE directory=:directory");
-    query.bindValue(":directory", directory);
+                  "WHERE directory LIKE :directory");
+    query.bindValue(":directory", libraryPath);
     if (!query.exec()) {
-        qDebug() << "Couldn't mark tracks in directory" << directory <<  "as needing verification." << query.lastError();
+        qDebug() << "Couldn't mark tracks in directory" << libraryPath <<  "as needing verification." << query.lastError();
     }
 }
 
@@ -514,7 +517,7 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
 
 void TrackDAO::markUnverifiedTracksAsDeleted()
 {
-    qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markUnverifiedTracksAsDeleted()";
 
     QSqlQuery query(m_database);

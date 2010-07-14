@@ -42,6 +42,9 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
 
         //qDebug() << "press";
 
+        if (ke->isAutoRepeat())
+            return false;
+
         if (!kbdPress(getKeySeq(ke), false))
             ke->ignore();
         else

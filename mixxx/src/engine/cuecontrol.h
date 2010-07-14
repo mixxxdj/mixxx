@@ -56,6 +56,7 @@ class CueControl : public EngineControl {
     int senderHotcue(QObject* pSender);
 
     bool m_bPreviewing;
+    bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
 
     const int m_iNumHotCues;

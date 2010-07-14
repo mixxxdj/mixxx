@@ -48,6 +48,7 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename)
 	: SoundSource(qFilename),
 	  m_pSoundSource(NULL) {
     m_pSoundSource = initialize(qFilename);
+    m_pTrack = NULL;
    
 }
 
@@ -57,6 +58,7 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 	  m_pSoundSource(NULL) {
 
     m_pSoundSource = initialize(pTrack->getLocation());
+    m_pTrack = pTrack;
 }
 
 void SoundSourceProxy::loadPlugins()
@@ -200,7 +202,21 @@ int SoundSourceProxy::open()
     if (!m_pSoundSource) {
         return 0;
     }
-    return m_pSoundSource->open();
+    int retVal = m_pSoundSource->open();
+
+    //Update some metadata (currently only the duration)
+    //after a song is open()'d. Eg. We don't know the length
+    //of VBR MP3s until we've seeked through and counted all
+    //the frames. We don't do that in ParseHeader() to keep
+    //library scanning fast.
+    // .... but only do this if the song doesn't already
+    //      have a duration parsed. (Some SoundSources don't
+    //      parse metadata on open(), so they won't have the
+    //      duration.)
+    if (m_pTrack->getDuration() == 0)
+        m_pTrack->setDuration(m_pSoundSource->getDuration());
+
+    return retVal;
 }
 
 long SoundSourceProxy::seek(long l)
