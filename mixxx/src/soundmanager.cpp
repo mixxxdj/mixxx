@@ -359,7 +359,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
     if (other)
     {
         //Default samplerate, latency
-        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
+        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(48000));
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(46));
     }
 }
