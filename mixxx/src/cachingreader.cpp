@@ -30,7 +30,7 @@ CachingReader::CachingReader(const char* _group,
                              ConfigObject<ConfigValue>* _config) :
     m_pGroup(_group),
     m_pConfig(_config),
-    m_pCurrentTrack(NULL),
+    m_pCurrentTrack(),
     m_pCurrentSoundSource(NULL),
     m_iTrackSampleRate(0),
     m_iTrackNumSamples(0),
@@ -291,7 +291,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     return true;
 }
 
-void CachingReader::newTrack(TrackInfoObject* pTrack) {
+void CachingReader::newTrack(TrackWeakPointer pTrack) {
     m_trackQueueMutex.lock();
     m_trackQueue.enqueue(pTrack);
     m_trackQueueMutex.unlock();
@@ -476,12 +476,12 @@ void CachingReader::run() {
     emit(workStarting());
 
     QList<Hint> hintList;
-    TrackInfoObject* pLoadTrack = NULL;
+    TrackPointer pLoadTrack = TrackPointer();
 
     m_readerMutex.lock();
 
     m_trackQueueMutex.lock();
-    pLoadTrack = NULL;
+
     if (!m_trackQueue.isEmpty()) {
         pLoadTrack = m_trackQueue.takeLast();
         m_trackQueue.clear();
@@ -510,7 +510,7 @@ void CachingReader::wake() {
     emit(workReady());
 }
 
-void CachingReader::loadTrack(TrackInfoObject *pTrack) {
+void CachingReader::loadTrack(TrackPointer pTrack) {
     freeAllChunks();
 
     if (m_pCurrentSoundSource != NULL) {

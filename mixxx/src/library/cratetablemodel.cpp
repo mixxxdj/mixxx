@@ -116,7 +116,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 }
 
-TrackInfoObject* CrateTableModel::getTrack(const QModelIndex& index) const {
+TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
     int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
     return m_pTrackCollection->getTrackDAO().getTrack(trackId);
 }

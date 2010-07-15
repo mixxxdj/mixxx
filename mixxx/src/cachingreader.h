@@ -16,10 +16,10 @@
 
 #include "defs.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "engine/engineworker.h"
 
 class SoundSource;
-class TrackInfoObject;
 class ControlObjectThread;
 
 // A Hint is an indication to the CachingReader that a certain section of a
@@ -93,7 +93,7 @@ class CachingReader : public EngineWorker {
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
-    void newTrack(TrackInfoObject* pTrack);
+    void newTrack(TrackWeakPointer pTrack);
 
     // Wake the reader up so that it will process newTrack requests and hints.
     void wake();
@@ -104,8 +104,8 @@ class CachingReader : public EngineWorker {
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
-    void trackLoaded(TrackInfoObject *pTrack, int iSampleRate, int iNumSamples);
-    void trackLoadFailed(TrackInfoObject *pTrack, QString reason);
+    void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
 
@@ -123,11 +123,11 @@ class CachingReader : public EngineWorker {
     void initialize();
 
     // Internal method to load a track. Emits trackLoaded when finished.
-    void loadTrack(TrackInfoObject *pTrack);
+    void loadTrack(TrackPointer pTrack);
 
     // Queue of Tracks to load, and the corresponding lock.
     QMutex m_trackQueueMutex;
-    QQueue<TrackInfoObject*> m_trackQueue;
+    QQueue<TrackWeakPointer> m_trackQueue;
 
     // Held when the Reader is working: read() vs. run()
     QMutex m_readerMutex;
@@ -189,7 +189,7 @@ class CachingReader : public EngineWorker {
     const ConfigObject<ConfigValue>* m_pConfig;
 
     // The current track loaded
-    TrackInfoObject* m_pCurrentTrack;
+    TrackPointer m_pCurrentTrack;
     // The current sound source of the track loaded
     SoundSource* m_pCurrentSoundSource;
     int m_iTrackSampleRate;
