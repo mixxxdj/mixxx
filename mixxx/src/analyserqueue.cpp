@@ -33,7 +33,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
     m_aq.push_back(an);
 }
 
-TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
+TrackPointer AnalyserQueue::dequeueNextBlocking() {
     m_qm.lock();
 
     if (m_tioq.isEmpty()) {
@@ -41,20 +41,20 @@ TrackInfoObject* AnalyserQueue::dequeueNextBlocking() {
 
         if (m_exit) {
             m_qm.unlock();
-            return NULL;
+            return TrackPointer();
         }
     }
 
-    TrackInfoObject* tio = m_tioq.dequeue();
+    // Implicit cast to TrackPointer from weak pointer
+    TrackPointer pTrack = m_tioq.dequeue();
 
     m_qm.unlock();
 
-    Q_ASSERT(tio != NULL);
-
-    return tio;
+    // pTrack might be NULL, up to the caller to check.
+    return pTrack;
 }
 
-void AnalyserQueue::doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource) {
+void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource) {
 
     // TonalAnalyser requires a block size of 65536. Using a different value
     // breaks the tonal analyser. We need to use a smaller block size becuase on
@@ -133,10 +133,15 @@ void AnalyserQueue::run() {
         return;
 
 	while (!m_exit) {
-      TrackInfoObject* next = dequeueNextBlocking();
+      TrackPointer next = dequeueNextBlocking();
 
       if (m_exit) //When exit is set, it makes the above unblock first.
           return;
+
+      // If the track is NULL, get the next one. Could happen if the track was
+      // queued but then deleted.
+      if (!next)
+          continue;
 
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
@@ -168,7 +173,7 @@ void AnalyserQueue::run() {
     }
 }
 
-void AnalyserQueue::queueAnalyseTrack(TrackInfoObject* tio) {
+void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
     m_qm.lock();
     m_tioq.enqueue(tio);
     m_qwait.wakeAll();

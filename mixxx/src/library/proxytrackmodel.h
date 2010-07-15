@@ -25,7 +25,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel 
     ProxyTrackModel(QAbstractItemModel* pTrackModel, bool bHandleSearches=true);
     virtual ~ProxyTrackModel();
 
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();

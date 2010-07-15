@@ -56,7 +56,11 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
         {
             QString trackPath = extra.readLine();
             qDebug() << "PROMO: Auto-loading track" << trackPath;
-            m_tracksToAutoLoad.append(new TrackInfoObject(m_pConfig->getConfigPath() + "/" + trackPath));
+            TrackInfoObject* track = new TrackInfoObject(m_pConfig->getConfigPath() + "/" + trackPath);
+            // TODO(XXX) These tracks are probably getting leaked b/c
+            // m_tracksToAutoLoad is never cleared.
+            TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
+            m_tracksToAutoLoad.append(pTrack);
         }
         file.close();
     }
@@ -79,7 +83,7 @@ bool PromoTracksFeature::isSupported(ConfigObject<ConfigValue>* config) {
     return (QFile::exists(m_sPromoLocalHTMLLocation));
 }
 
-QList<TrackInfoObject*> PromoTracksFeature::getTracksToAutoLoad()
+QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
 {
     return m_tracksToAutoLoad;
 }
@@ -91,10 +95,10 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     m_pPromoTracksView = new PromoTracksWebView(libraryWidget, m_pConfig->getConfigPath(), m_sPromoLocalHTMLLocation, m_sPromoRemoteHTMLLocation);
 
     libraryWidget->registerView(m_sPromoTracksViewName, m_pPromoTracksView);
-    connect(m_pPromoTracksView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(m_pPromoTracksView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(m_pPromoTracksView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pPromoTracksView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 }
 
 QAbstractItemModel* PromoTracksFeature::getChildModel() {

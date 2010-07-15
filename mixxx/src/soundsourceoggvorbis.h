@@ -22,9 +22,6 @@
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
-class TrackInfoObject;
-
-
 class SoundSourceOggVorbis : public SoundSource {
  public:
   SoundSourceOggVorbis(QString qFilename);

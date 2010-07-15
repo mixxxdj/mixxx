@@ -25,11 +25,12 @@
 #include <q3valuelist.h>
 #include <QMutex>
 #include <QVector>
+#include <QSharedPointer>
+#include <QWeakPointer>
 
 #include "defs.h"
 
 #include "library/dao/cue.h"
-#include "library/dao/trackdao.h"
 
 class QString;
 class QDomElement;
@@ -41,6 +42,11 @@ class BpmReceiver;
 class BpmScheme;
 class TrackPlaylist;
 class Cue;
+
+class TrackInfoObject;
+
+typedef QSharedPointer<TrackInfoObject> TrackPointer;
+typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
 #include "segmentation.h"
 
@@ -192,6 +198,10 @@ public:
 
     bool isDirty();
 
+    // Signals to the creator of this TrackInfoObject to save the Track as it
+    // may be deleted.
+    void doSave();
+
     // Returns true if the track location has changed
     bool locationChanged();
 
@@ -211,6 +221,7 @@ public:
     void changed();
     void dirty();
     void clean();
+    void save();
 
   private:
 
