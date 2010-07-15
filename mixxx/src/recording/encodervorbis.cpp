@@ -3,6 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
+                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************

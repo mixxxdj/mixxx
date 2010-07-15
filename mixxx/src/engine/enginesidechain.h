@@ -61,13 +61,8 @@ class EngineSideChain : public QThread
 
 #ifdef __SHOUTCAST__
         EngineShoutcast *m_shoutcast;
-        ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-        ControlObjectThreadMain* m_pShoutcastNeedUpdateFromPrefsCOTM;
-			
 #endif
         EngineRecord* m_rec;
-		ControlObjectThread* m_recReady;
-    	ControlObject* m_recReadyCO;
 
 };
 

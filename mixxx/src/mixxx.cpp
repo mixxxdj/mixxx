@@ -664,12 +664,10 @@ void MixxxApp::initActions()
 #ifdef __SHOUTCAST__
     optionsShoutcast->setCheckable(true);
 	bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
-	if(broadcastEnabled)
-		optionsShoutcast->setChecked(true);
-	else
-		optionsShoutcast->setChecked(false);
-
-	optionsShoutcast->setStatusTip(tr("Activate Liveboradcasting"));
+	
+	optionsShoutcast->setChecked(broadcastEnabled);
+	
+	optionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
     optionsShoutcast->setWhatsThis(tr("Stream your mixes to a shoutcast or icecast server"));
     
     connect(optionsShoutcast, SIGNAL(toggled(bool)), this, SLOT(slotOptionsShoutcast(bool)));

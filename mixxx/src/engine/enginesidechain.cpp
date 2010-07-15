@@ -49,13 +49,9 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 
 #ifdef __SHOUTCAST__
     // Shoutcast
-    ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
-    m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
 	m_shoutcast = new EngineShoutcast(m_pConfig);
 #endif
 	
- 	m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
-    m_recReady = new ControlObjectThread(m_recReadyCO);
     m_rec = new EngineRecord(m_pConfig);
 
    	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
@@ -87,10 +83,9 @@ EngineSideChain::~EngineSideChain()
 #ifdef __SHOUTCAST__
     delete m_shoutcast;
 #endif
-	delete m_recReadyCO;
-	delete m_recReady;
-	if(m_rec)
-    	delete m_rec;
+
+    if(m_rec) delete m_rec;
+	
 
     m_backBufferLock.unlock();
 }
@@ -194,78 +189,10 @@ void EngineSideChain::run()
         m_backBufferLock.unlock();
 
 #ifdef __SHOUTCAST__
-
-        //Important note: We're "allowed" to access a ConfigKey here (below) because it doesn't take place
-        //                in the callback thread. ConfigKey access is slow, but we can afford the performance
-        //                hit here.
-
-        //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-
-        bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
-        
-
-        
-        if (prefEnabled) {
-			if(!m_shoutcast->isConnected()){
-				//Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
-				m_shoutcast->updateFromPreferences();
-				if(m_shoutcast->serverConnect()){	
-
-					ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-				    props->setType(DLG_INFO);
-				    props->setTitle(tr("Live broadcasting"));
-				    props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
-				    
-				    ErrorDialogHandler::instance()->requestErrorDialog(props);
-				}
-				
-			}
-			//send to soutcast
-			m_shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-
-			if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f){
-				/*
-				 * You cannot change bitrate, hostname, etc while connected to a stream
-				 */
-				m_shoutcast->serverDisconnect(); 
-				m_shoutcast->updateFromPreferences();
-				m_shoutcast->serverConnect();  
-			}	
-       	}
-		else{
-			if(m_shoutcast->isConnected()){
-				m_shoutcast->serverDisconnect(); 
-				ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-				props->setType(DLG_INFO);
-			 	props->setTitle(tr("Live broadcasting"));
-				props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
-				    
-				ErrorDialogHandler::instance()->requestErrorDialog(props);
-			}
-		} 
+		//send to soutcast
+		m_shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);     
 #endif
-	
-		//if recording is disabled			
-		if(m_recReady->get() == RECORD_OFF){
-			if(m_rec->fileOpen()){
-				m_rec->closeFile();	//close file and 
-			}
-		}
-		//if we are ready for recording, we open a new file
-		if(m_recReady->get() == RECORD_READY){
-			m_rec->updateFromPreferences();	//update file location from pref
-			if(m_rec->openFile()){
-				qDebug("Setting record flag to: ON");
-            	m_recReady->slotSet(RECORD_ON);
-			}
-			else{ //Maybe the encoder could not be initialized
-				qDebug("Setting record flag to: OFF");
-            	m_recReady->slotSet(RECORD_OFF);
-			}	
-		}
-		if(m_recReady->get() == RECORD_ON){	
-        	m_rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-		}
+        m_rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
         //m_backBufferLock.unlock();
 		
     }

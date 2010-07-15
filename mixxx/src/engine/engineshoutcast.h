@@ -73,6 +73,7 @@ private:
     long m_iShoutFailures;
     ConfigObject<ConfigValue> *m_pConfig;
     Encoder *m_encoder;
+    ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
     ControlObjectThread* m_pCrossfader;
     ControlObjectThread* m_pVolume1;
