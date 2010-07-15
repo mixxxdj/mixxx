@@ -18,6 +18,7 @@ const QString LIBRARYTABLE_ALBUM = "album";
 const QString LIBRARYTABLE_YEAR = "year";
 const QString LIBRARYTABLE_GENRE = "genre";
 const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
+const QString LIBRARYTABLE_FILETYPE = "filetype";
 const QString LIBRARYTABLE_LOCATION = "location";
 const QString LIBRARYTABLE_COMMENT = "comment";
 const QString LIBRARYTABLE_DURATION = "duration";
