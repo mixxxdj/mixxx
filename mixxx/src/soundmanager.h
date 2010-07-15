@@ -21,7 +21,6 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "defs.h"
-#include "audiopath.h"
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolproxy.h"
 #endif
@@ -30,6 +29,8 @@
 
 class SoundDevice;
 class EngineMaster;
+class AudioSource;
+class AudioReceiver;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"

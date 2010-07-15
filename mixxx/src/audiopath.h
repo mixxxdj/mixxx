@@ -53,7 +53,7 @@ public:
     // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     // (if necessary), etc. -- bkgood
     enum AudioPathType {
-        INVALID = 0, // indicates an int passed to getTypeFromInt was invalid
+        INVALID,
         MASTER,
         HEADPHONES,
         DECK,
@@ -75,10 +75,8 @@ public:
     static AudioPathType getTypeFromInt(int typeInt);
     static unsigned char channelsNeededForType(AudioPathType type);
 protected:
-    void setType(AudioPathType type);
-    // if the number of constants in AudioPathType ever exceeds 256, change
-    // m_type to type AudioPathType, fix methods accordingly and then run away
-    unsigned char m_type;
+    virtual void setType(AudioPathType type) = 0;
+    AudioPathType m_type;
     ChannelGroup m_channelGroup;
     unsigned char m_index;
 };
@@ -91,9 +89,11 @@ protected:
  */
 class AudioSource : public AudioPath {
 public:
-    AudioSource(AudioPathType type, unsigned char channelBase,
+    AudioSource(AudioPathType type = INVALID, unsigned char channelBase = 0,
                 unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
+protected:
+    void setType(AudioPathType type);
 };
 
 /**
@@ -104,9 +104,11 @@ public:
  */
 class AudioReceiver : public AudioPath {
 public:
-    AudioReceiver(AudioPathType type, unsigned char channelBase,
+    AudioReceiver(AudioPathType type = INVALID, unsigned char channelBase = 0,
                   unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
+protected:
+    void setType(AudioPathType type);
 };
 
 // globals for QHash

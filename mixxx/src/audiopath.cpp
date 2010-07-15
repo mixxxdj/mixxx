@@ -45,25 +45,12 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
         && other.m_channelBase <= m_channelBase + m_channels);
 }
 
-unsigned int ChannelGroup::getHash() const {
-    return ((m_channelBase & 0xFF) << 8) | (m_channels & 0xFF);
-}
-
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
     : m_channelGroup(channelBase, channels) {
 }
 
 AudioPath::AudioPathType AudioPath::getType() const {
-    // m_type is only stored in setType, which is safe, so this is safe
-    return AudioPath::AudioPathType(m_type);
-}
-
-// protected
-void AudioPath::setType(AudioPath::AudioPathType type) {
-    // this method is guaranteed safe as long as the caller gives
-    // a proper AudioPathType, i.e. it is as safe as it was when storing m_type
-    // as AudioPathType proper -- bkgood
-    m_type = (unsigned char) type;
+    return m_type;
 }
 
 ChannelGroup AudioPath::getChannelGroup() const {
@@ -76,14 +63,11 @@ unsigned char AudioPath::getIndex() const {
 
 bool AudioPath::operator==(const AudioPath &other) const {
     return m_type == other.m_type
-        && m_index == other.m_index
-        && m_channelGroup == other.m_channelGroup;
+        && m_index == other.m_index;
 }
 
 unsigned int AudioPath::getHash() const {
-    return ((m_type & 0xFF) << 24)
-        | ((m_index & 0xFF) << 16)
-        | (m_channelGroup.getHash() << 8);
+    return 0 | (m_type << 8) | m_index;
 }
 
 bool AudioPath::channelsClash(const AudioPath &other) const {
@@ -181,8 +165,7 @@ AudioPath::AudioPathType AudioPath::getTypeFromInt(int typeInt) {
 }
 
 //static
-unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type)
-{
+unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type) {
     switch (type) {
     case AudioPath::MICROPHONE:
         return 1;
@@ -191,13 +174,11 @@ unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type)
     }
 }
 
-AudioSource::AudioSource(AudioPath::AudioPathType type,
-        unsigned char channelBase,
+AudioSource::AudioSource(AudioPath::AudioPathType type /* = INVALID */,
+        unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
     : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
-    if (getSupportedTypes().contains(type)) {
-        setType(type);
-    }
+    setType(type);
     if (isIndexable(type)) {
         m_index = index;
     } else {
@@ -214,13 +195,21 @@ QList<AudioPath::AudioPathType> AudioSource::getSupportedTypes() {
     return types;
 }
 
-AudioReceiver::AudioReceiver(AudioPath::AudioPathType type,
-        unsigned char channelBase,
+// protected
+void AudioSource::setType(AudioPath::AudioPathType type) {
+    if (AudioSource::getSupportedTypes().contains(type)) {
+        m_type = type;
+    } else {
+        m_type = AudioPath::INVALID;
+    }
+}
+
+
+AudioReceiver::AudioReceiver(AudioPath::AudioPathType type /* = INVALID */,
+        unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
   : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
-    if (getSupportedTypes().contains(type)) {
-        setType(type);
-    }
+    setType(type);
     if (isIndexable(type)) {
         m_index = index;
     } else {
@@ -237,6 +226,15 @@ QList<AudioPath::AudioPathType> AudioReceiver::getSupportedTypes() {
     types.append(VINYLCONTROL);
 #endif
     return types;
+}
+
+// protected
+void AudioReceiver::setType(AudioPath::AudioPathType type) {
+    if (AudioReceiver::getSupportedTypes().contains(type)) {
+        m_type = type;
+    } else {
+        m_type = AudioPath::INVALID;
+    }
 }
 
 
