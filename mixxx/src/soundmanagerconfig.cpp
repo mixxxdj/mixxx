@@ -94,24 +94,18 @@ void SoundManagerConfig::setLatency(unsigned int latency) {
 }
 
 void SoundManagerConfig::addSource(SoundDevice *device, AudioSource source) {
-    QPair<SoundDevice*, AudioSource> toAppend(device, source);
-    if (!m_sources.contains(toAppend)) {
-        m_sources.append(toAppend);
-    }
+    m_sources.insert(device, source);
 }
 
 void SoundManagerConfig::addReceiver(SoundDevice *device, AudioReceiver receiver) {
-    QPair<SoundDevice*, AudioReceiver> toAppend(device, receiver);
-    if (!m_receivers.contains(toAppend)) {
-        m_receivers.append(toAppend);
-    }
+    m_receivers.insert(device, receiver);
 }
 
-QList<QPair<SoundDevice*, AudioSource> > SoundManagerConfig::getSources() const {
+QMultiHash<SoundDevice*, AudioSource> SoundManagerConfig::getSources() const {
     return m_sources;
 }
 
-QList<QPair<SoundDevice*, AudioReceiver> > SoundManagerConfig::getReceivers() const {
+QMultiHash<SoundDevice*, AudioReceiver> SoundManagerConfig::getReceivers() const {
     return m_receivers;
 }
 
