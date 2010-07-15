@@ -56,8 +56,8 @@ public:
     void setLatency(unsigned int latency);
     void addSource(SoundDevice *device, AudioSource source);
     void addReceiver(SoundDevice *device, AudioReceiver receiver);
-    QList<QPair<SoundDevice*, AudioSource> > getSources() const;
-    QList<QPair<SoundDevice*, AudioReceiver> > getReceivers() const;
+    QMultiHash<SoundDevice*, AudioSource> getSources() const;
+    QMultiHash<SoundDevice*, AudioReceiver> getReceivers() const;
     void clearSources();
     void clearReceivers();
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
@@ -72,7 +72,7 @@ private:
     // latency as milliseconds or frames per buffer is bad because those
     // values very with sample rate) -- bkgood
     unsigned int m_latency; // this is an index
-    QList<QPair<SoundDevice*, AudioSource> > m_sources;
-    QList<QPair<SoundDevice*, AudioReceiver> > m_receivers;
+    QMultiHash<SoundDevice*, AudioSource> m_sources;
+    QMultiHash<SoundDevice*, AudioReceiver> m_receivers;
 };
 #endif

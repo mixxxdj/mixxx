@@ -110,25 +110,27 @@ emitAndReturn:
 
 void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
-        QListIterator<QPair<SoundDevice*, AudioReceiver> > pairs(config.getReceivers());
-        while (pairs.hasNext()) {
-            QPair<SoundDevice*, AudioReceiver> pair = pairs.next();
-            if (pair.second.getType() == m_type && pair.second.getIndex() == m_index) {
-                setDevice(pair.first);
-                setChannel(pair.second.getChannelGroup().getChannelBase());
-                break; // we're just using the first one found, leave multiples
-                       // to a more advanced dialog -- bkgood
+        QMultiHash<SoundDevice*, AudioReceiver> recvs(config.getReceivers());
+        foreach (SoundDevice *dev, recvs.uniqueKeys()) {
+            foreach (AudioReceiver recv, recvs.values(dev)) {
+                if (recv.getType() == m_type && recv.getIndex() == m_index) {
+                    setDevice(dev);
+                    setChannel(recv.getChannelGroup().getChannelBase());
+                    return; // we're just using the first one found, leave
+                            // multiples to a more advanced dialog -- bkgood
+                }
             }
         }
     } else {
-        QListIterator<QPair<SoundDevice*, AudioSource> > pairs(config.getSources());
-        while (pairs.hasNext()) {
-            QPair<SoundDevice*, AudioSource> pair = pairs.next();
-            if (pair.second.getType() == m_type && pair.second.getIndex() == m_index) {
-                setDevice(pair.first);
-                setChannel(pair.second.getChannelGroup().getChannelBase());
-                break; // we're just using the first one found, leave multiples
-                       // to a more advanced dialog -- bkgood
+        QMultiHash<SoundDevice*, AudioSource> srcs(config.getSources());
+        foreach (SoundDevice *dev, srcs.uniqueKeys()) {
+            foreach (AudioSource src, srcs.values(dev)) {
+                if (src.getType() == m_type && src.getIndex() == m_index) {
+                    setDevice(dev);
+                    setChannel(src.getChannelGroup().getChannelBase());
+                    return; // we're just using the first one found, leave
+                            // multiples to a more advanced dialog -- bkgood
+                }
             }
         }
     }
