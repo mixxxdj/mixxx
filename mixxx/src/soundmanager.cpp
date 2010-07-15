@@ -41,12 +41,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
 
-    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    // this needs to be up here so SoundManagerConfig can get at the list (populated) -- bkgood
-    m_samplerates.push_back(44100);
-    m_samplerates.push_back(48000);
-    m_samplerates.push_back(96000);
-
     //TODO: Find a better spot for this:
     //Set up a timer to sync Mixxx's ControlObjects on...
     //(We set the timer to fire off
@@ -78,6 +72,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     qDebug() << "Latency" << pControlObjectLatency->get();
 
+    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
+    m_samplerates.push_back(44100);
+    m_samplerates.push_back(48000);
+    m_samplerates.push_back(96000);
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
