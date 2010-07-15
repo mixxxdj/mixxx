@@ -21,10 +21,11 @@
 #endif
 
 #include <QtCore>
-#include "audiopath.h"
 
 class SoundDevice;
 class SoundManager;
+class AudioSource;
+class AudioReceiver;
 
 const unsigned int MAX_LATENCY = 8; // this represents latency values from 1 ms to about
                                     // 180 ms, should be sufficient -- bkgood
