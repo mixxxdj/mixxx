@@ -2,6 +2,7 @@
                           enginerecord.cpp  -  class to record the mix
                              -------------------
     copyright            : (C) 2007 by John Sully
+    copyright            : (C) 2010 by Tobias Rafreider
     email                :
 ***************************************************************************/
 
@@ -41,11 +42,17 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     m_config = _config;
 	m_encoder = NULL;
 	m_sndfile = NULL;
+    
+    m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
+    m_recReady = new ControlObjectThread(m_recReadyCO);
+    
 }
 
 EngineRecord::~EngineRecord()
 {
 	closeFile();
+    if(m_recReadyCO)    delete m_recReadyCO;
+	if(m_recReady)      delete m_recReady;
 	
 }
 void EngineRecord::updateFromPreferences()
@@ -105,16 +112,36 @@ void EngineRecord::updateFromPreferences()
 
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-	if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
-		if(m_sndfile != NULL)
-			sf_write_float(m_sndfile, pIn, iBufferSize);
+	//if recording is disabled			
+	if(m_recReady->get() == RECORD_OFF){
+		if(fileOpen()){
+			closeFile();	//close file and free encoder
+		}
 	}
-	else{
-		if(!m_encoder) return;
-    	//Compress audio. Encoder will call method 'write()' below to write a file stream
-		m_encoder->encodeBuffer(pIn, iBufferSize); 
+	//if we are ready for recording, i.e, the output file has been selected, we open a new file
+	if(m_recReady->get() == RECORD_READY){
+		updateFromPreferences();	//update file location from pref
+		if(openFile()){
+			qDebug("Setting record flag to: ON");
+            m_recReady->slotSet(RECORD_ON);
+		}
+		else{ //Maybe the encoder could not be initialized
+			qDebug("Setting record flag to: OFF");
+            m_recReady->slotSet(RECORD_OFF);
+		}	
 	}
-  	
+    //If recording is enabled process audio to compressed or uncompressed data.
+    if(m_recReady->get() == RECORD_ON){	
+	    if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
+		    if(m_sndfile != NULL)
+			    sf_write_float(m_sndfile, pIn, iBufferSize);
+	    }
+	    else{
+		    if(!m_encoder) return;
+        	//Compress audio. Encoder will call method 'write()' below to write a file stream
+		    m_encoder->encodeBuffer(pIn, iBufferSize); 
+	    }
+  	}
 	
 	
 }

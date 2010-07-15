@@ -63,6 +63,9 @@ private:
 	SNDFILE *m_sndfile;
     SF_INFO m_sfInfo;
 
+    ControlObjectThread* m_recReady;
+    ControlObject* m_recReadyCO;
+
 
 };
 

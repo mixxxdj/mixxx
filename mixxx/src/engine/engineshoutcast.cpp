@@ -56,12 +56,17 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 	
     m_pShout = 0;
     m_iShoutStatus = 0;
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
+    m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
+    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
+  
     m_bQuit = false;
 
     m_pCrossfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
     m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
     m_pVolume2 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
+    
+    
+
 	m_firstCall = false;
     // Initialize libshout
     shout_init();
@@ -95,6 +100,7 @@ EngineShoutcast::~EngineShoutcast()
 	}
 	
     delete m_pUpdateShoutcastFromPrefs;
+    delete m_pShoutcastNeedUpdateFromPrefs;
     delete m_pCrossfader;
     delete m_pVolume1;
     delete m_pVolume2;
@@ -417,17 +423,54 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
     QMutexLocker locker(&m_shoutMutex);
-	
+	 //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
+     bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+     
+    if (prefEnabled) {
+	    if(!isConnected()){
+			//Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
+			updateFromPreferences();
 
-    if (m_iShoutStatus != SHOUTERR_CONNECTED)
-        return;
+			if(serverConnect()){
+				ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+				props->setType(DLG_INFO);
+				props->setTitle(tr("Live broadcasting"));
+				props->setText(tr("Mixxx has successfully connected to the shoutcast server"));  
+				ErrorDialogHandler::instance()->requestErrorDialog(props);
+			}	
+		}
+        //send to shoutcast, if connection has been established
+        if (m_iShoutStatus != SHOUTERR_CONNECTED)
+            return;
 
-    if (iBufferSize > 0 && m_encoder){
-        m_encoder->encodeBuffer(pOut, iBufferSize); //encode and send to shoutcast
-	}
-
-    if (metaDataHasChanged())
-        updateMetaData();
+        if (iBufferSize > 0 && m_encoder){
+            m_encoder->encodeBuffer(pOut, iBufferSize); //encode and send to shoutcast
+	    }
+        //Check if track has changed and submit its new metadata to shoutcast
+        if (metaDataHasChanged())
+            updateMetaData();
+ 
+        if (m_pUpdateShoutcastFromPrefs->get() > 0.0f){
+	        /*
+			 * You cannot change bitrate, hostname, etc while connected to a stream
+		     */
+			serverDisconnect(); 
+			updateFromPreferences();
+			serverConnect();  
+		}
+     }
+    //if shoutcast is disabled	
+	else{
+		if(isConnected()){
+			serverDisconnect(); 
+			ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+			props->setType(DLG_INFO);
+			props->setTitle(tr("Live broadcasting"));
+			props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
+				    
+			ErrorDialogHandler::instance()->requestErrorDialog(props);
+		}
+	} 
 }
 
 /*
@@ -561,6 +604,9 @@ void EngineShoutcast::updateMetaData()
 
 	 * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
  	 */
+
+
+    //If we use MP3 streaming and want dynamic metadata changes
 	if(!m_custom_metadata && !qstrcmp(m_baFormat, "MP3")){
 		if (m_pMetaData != NULL) {
 		    // convert QStrings to char*s
@@ -572,9 +618,10 @@ void EngineShoutcast::updateMetaData()
     		shout_set_metadata(m_pShout, m_pShoutMetaData);
 		}
 	}
+    //Otherwise we might use static metadata
 	else{
 		/** If we use static metadata, we only need to call the following line once **/
-		if(!m_firstCall){
+		if(m_custom_metadata && !m_firstCall){
 			baSong = m_baCustom_artist + " - " + m_baCustom_title;
 			/** Update metadata */
 			shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());

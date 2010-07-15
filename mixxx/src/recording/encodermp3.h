@@ -3,6 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2009 by Phillip Whelan (rewritten for mp3)
+                           (C) 2010 by Tobias Rafreider (fixes for shoutcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,9 +26,9 @@
 ///#include <lame/lame.h> // may be elsewhere on other distros besides Ubuntu
 #include <QLibrary>
 /*
- * We load the library exlicitly to avoid legal issues
+ * We load the library explicitly to avoid legal issues
  * On Linux make sure the file libmp3lame.so is in /usr/lib.
- * If not use your packet manager to install.
+ * If not use your package manager to install.
  * You might need to create a hard-link with ln -l if your distro names the file other than libmp3lame.so
  */
 

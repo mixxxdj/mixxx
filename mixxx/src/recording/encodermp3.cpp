@@ -3,6 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2009 by Phillip Whelan (rewritten for mp3)
+                           (C) 2010 by Tobias Rafreider (fixes for shoutcast, dynamic loading of lame_enc.dll, etc)
  ***************************************************************************/
 
 /***************************************************************************
@@ -137,8 +138,13 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 	id3tag_set_album 	 		= (id3tag_set_album__)m_library->resolve("id3tag_set_album");
 
 	
-	//Check if all function pointer are not NULL
-
+	/*
+     * Check if all function pointers are not NULL
+     * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h  
+     * Indicates a modified lame version
+     *
+     * Should not happend on Linux, but many lame binaries for Windows are modified.
+     */
 	if(	!lame_init ||
 		!lame_set_num_channels ||
 		!lame_set_in_samplerate ||
@@ -161,7 +167,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 	{
 		m_library->unload();
 		m_library = NULL;
-		//print qDebugs to detect which function pointer is null
+		//print qDebugs to detect which function pointers are null
 		qDebug() << "lame_init: " << lame_init;
 		qDebug() << "lame_set_num_channels: " << lame_set_num_channels;
 		qDebug() << "lame_set_in_samplerate: " << lame_set_in_samplerate;
@@ -183,7 +189,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 		props->setType(DLG_WARNING);
 		props->setTitle("Encoder");
-		QString key = "Mixxx has detected that you use a modified version of liblamemp3. Please download an offical binary from ???";
+        QString key = "<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>";
 		props->setText(key);
  		props->setKey(key);
 		ErrorDialogHandler::instance()->requestErrorDialog(props);
@@ -192,7 +198,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 		return;
 	}	
 		
-	qDebug() << "Loaded liblame version " << get_lame_version();	
+	qDebug() << "Loaded libmp3lame version " << get_lame_version();	
 }
 
 // Destructor
@@ -202,7 +208,7 @@ EncoderMp3::~EncoderMp3()
     	flush();
     	lame_close(m_lameFlags);
 		m_library->unload(); //unload dll, so, ...
-		qDebug() << "Unloaded liblame ";
+		qDebug() << "Unloaded libmp3lame ";
 		m_library = NULL;
 	}
 	//free requested buffers
