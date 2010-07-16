@@ -117,6 +117,8 @@ public:
     void slotClearTrackTextCh1(TrackInfoObject* pTrack);
     void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
     void slotClearTrackTextCh2(TrackInfoObject* pTrack);
+    /** Saves entire sampler bank as XML file **/
+    void slotSaveSamplerBank();
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
@@ -160,6 +162,7 @@ private:
 
     PlayerManager* m_pPlayerManager;
     
+    QAction *saveSamplerBank;    
     SamplerManager* m_pSamplerManager;
     
     WSampler* m_pSampler;

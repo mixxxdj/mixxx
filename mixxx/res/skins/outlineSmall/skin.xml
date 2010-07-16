@@ -1237,7 +1237,7 @@
 			<Size>201,27</Size>
 			<BgColor>#fafafa</BgColor>
 			<SignalColor>#00ff00</SignalColor>
-			<MarkerColor>#0000ff</MarkerColor>
+			<MarkerColor>#ff0000</MarkerColor>
 			<Connection>
 				<ConfigKey>[Channel3],playposition</ConfigKey>
 				<EmitOnDownPress>false</EmitOnDownPress>
@@ -1255,6 +1255,4 @@
 		</Knob>
 	</SamplerView>
 
-	
-	
 </skin>

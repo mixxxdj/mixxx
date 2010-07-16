@@ -927,6 +927,21 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
                 m_pSamplerWindow->resize(800,100);
                 
+                QPalette palette = m_pSamplerWindow->palette();
+                palette.setColor(backgroundRole(), QColor(24, 24, 24));
+                m_pSamplerWindow->setPalette(palette);
+                m_pSamplerWindow->setAutoFillBackground(true);
+                
+                //TODO CHANGE THIS TO A WPUSHBUTTON
+                QPushButton *saveButton = new QPushButton(m_pSamplerWindow);
+                saveButton->setText("Save Sampler Bank");
+                saveButton->move(640,70);
+                
+                saveSamplerBank = new QAction(tr("&Save Sampler Bank"), this);
+                connect(saveButton, SIGNAL(clicked()), saveSamplerBank, SIGNAL(activated()));
+                connect(saveSamplerBank, SIGNAL(activated()), this, SLOT(slotSaveSamplerBank()));
+                
+                
                 QDomNode samplerNode = node.firstChild();
                 while (!samplerNode.isNull())
                 {
@@ -1156,5 +1171,21 @@ void MixxxView::slotClearTrackTextCh2(TrackInfoObject* pTrack)
 {
 	if (m_pTextCh2)
 		m_pTextCh2->setText("");
+}
+
+void MixxxView::slotSaveSamplerBank() {
+    QString s = QFileDialog::getSaveFileName(this, tr("Save Sampler Bank"));
+    QFile file(s);
+    if(!file.open(IO_WriteOnly)) {
+        qDebug("Cannot write to file.");
+    };
+    QDomDocument samplerBank("samplerbank");
+    
+    QDomElement sampler1 = samplerBank.createElement( "sampler1" );
+    QString loc1 = m_pSamplerManager->getTrackLocation(1);
+    sampler1.setAttribute( "location", loc1);
+    samplerBank.appendChild(sampler1);
+    
+    file.write(samplerBank.toString());
 }
 

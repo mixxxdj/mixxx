@@ -477,8 +477,6 @@ void MixxxApp::initActions()
     fileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     fileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
     
-    fileSaveSamplerBank = new QAction(tr("&Save Sampler Bank"), this);
-
     fileQuit = new QAction(tr("E&xit"), this);
     fileQuit->setShortcut(tr("Ctrl+Q"));
     fileQuit->setShortcutContext(Qt::ApplicationShortcut);
@@ -537,8 +535,7 @@ void MixxxApp::initActions()
     fileLoadSongPlayer2->setWhatsThis(tr("Open\n\nOpens a song in player 2"));
     connect(fileLoadSongPlayer2, SIGNAL(activated()), this, SLOT(slotFileLoadSongPlayer2()));
     
-    connect(fileSaveSamplerBank, SIGNAL(activated()), this, SLOT(slotSaveSamplerBank()));
-
+    
     fileQuit->setStatusTip(tr("Quits the application"));
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
     connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
@@ -621,7 +618,6 @@ void MixxxApp::initMenuBar()
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
-    fileMenu->addAction(fileSaveSamplerBank);
     fileMenu->addSeparator();
     fileMenu->addAction(fileQuit);
 
@@ -842,22 +838,6 @@ void MixxxApp::slotFileLoadSongPlayer2()
     if (s != QString::null) {
         m_pPlayerManager->slotLoadToPlayer(s, 2);
     }
-}
-
-void MixxxApp::slotSaveSamplerBank() {
-    QString s = QFileDialog::getSaveFileName(this, tr("Save Sampler Bank"));
-    QFile file(s);
-    if(!file.open(IO_WriteOnly)) {
-        qDebug("Cannot write to file.");
-    };
-    QDomDocument samplerBank("samplerbank");
-    
-    QDomElement sampler1 = samplerBank.createElement( "sampler1" );
-    QString loc1 = m_pSamplerManager->getTrackLocation(1);
-    sampler1.setAttribute( "location", loc1);
-    samplerBank.appendChild(sampler1);
-    
-    file.write(samplerBank.toString());
 }
 
 void MixxxApp::slotFileQuit()
