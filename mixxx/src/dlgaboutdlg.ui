@@ -88,9 +88,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="version_label">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>21</x>
      <y>60</y>
-     <width>91</width>
+     <width>200</width>
      <height>20</height>
     </rect>
    </property>
