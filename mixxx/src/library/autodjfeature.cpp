@@ -79,7 +79,10 @@ bool AutoDJFeature::dropAccept(QUrl url) {
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-    QString location = url.toLocalFile();
+    QString location = url.toString();
+    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toString()
+    //     instead of toLocalFile()
+
     if (!trackDao.trackExistsInDatabase(location))
     {
         trackDao.addTrack(location);
