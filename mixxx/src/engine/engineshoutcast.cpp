@@ -130,6 +130,7 @@ bool EngineShoutcast::serverDisconnect()
 }
 bool EngineShoutcast::isConnected()
 {
+    QMutexLocker locker(&m_shoutMutex);
 	if (m_pShout) {
 		m_iShoutStatus = shout_get_connected(m_pShout);
     	if (m_iShoutStatus == SHOUTERR_CONNECTED) 
