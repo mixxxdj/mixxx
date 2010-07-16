@@ -106,8 +106,6 @@ class MixxxApp : public QMainWindow
     void slotFileLoadSongPlayer1();
     /** Opens a file in player 2 */
     void slotFileLoadSongPlayer2();
-    /** Saves entire sampler bank as XML file **/
-    void slotSaveSamplerBank();
     /** exits the application */
     void slotFileQuit();
 
@@ -194,7 +192,6 @@ class MixxxApp : public QMainWindow
     QAction *fileNew;
     QAction *fileLoadSongPlayer1;
     QAction *fileLoadSongPlayer2;
-    QAction *fileSaveSamplerBank;
     QAction *fileSave;
     QAction *fileSaveAs;
     QAction *fileClose;
