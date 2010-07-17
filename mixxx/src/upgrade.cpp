@@ -160,35 +160,33 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         return config;
     }
     
+    // If it's already current, stop here
+    if (configVersion == VERSION) {
+        qDebug() << "Configuration file is at the current version" << VERSION;
+        return config;
+    }
+
     // Allows for incremental upgrades incase someone upgrades from a few versions prior
     // (I wish we could do a switch on a QString.)
-    /*
-    // Examples, since we didn't store the version number prior to v1.7.0
-    if (configVersion.startsWith("1.6.0")) {
-        qDebug() << "Upgrading from v1.6.0 to 1.6.1...";
-        // Upgrade tasks go here
-        configVersion = "1.6.1";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.6.1"));
-    }
-    if (configVersion.startsWith("1.6.1")) {
-        qDebug() << "Upgrading from v1.6.1 to 1.7.0...";
-        // Upgrade tasks go here
-        configVersion = "1.7.0";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.0"));
-    }
-    */
     
-    // For the next release, if needed:
-    /*
     if (configVersion.startsWith("1.7")) {
-        qDebug() << "Upgrading from v1.7.x to" << VERSION <<"...";
-        // Upgrade tasks go here
-        configVersion = ConfigValue(VERSION);
+        qDebug() << "Upgrading from 1.7.x to" << VERSION <<"...";
+        // Nothing to change, really
+        configVersion = VERSION;
+        config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+    }
+
+    // For the next release
+    /*
+    if (configVersion.startsWith("1.8.0")) {
+        qDebug() << "Upgrading from v1.8.0 to" << VERSION <<"...";
+        // Upgrade tasks go here, if any
+        configVersion = VERSION;
         config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
     }
     */
 
-    if (configVersion == VERSION) qDebug() << "Configuration file is at the current version" << VERSION;
+    if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
     else {
         qWarning() << "Configuration file is at version" << configVersion
                    << "and I don't know how to upgrade it to the current" << VERSION
