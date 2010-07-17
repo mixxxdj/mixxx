@@ -130,4 +130,12 @@ METADATA
       DROP TABLE library_old;
     </sql>
   </revision>
+  <revision version="4">
+    <description>
+      Add file type column.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT "?";
+    </sql>
+  </revision>
 </schema>
