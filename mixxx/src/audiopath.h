@@ -111,6 +111,8 @@ protected:
     void setType(AudioPathType type);
 };
 
+typedef AudioPath::AudioPathType AudioPathType;
+
 // globals for QHash
 unsigned int qHash(const AudioSource &src);
 unsigned int qHash(const AudioReceiver &recv);

@@ -49,7 +49,7 @@ AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
     : m_channelGroup(channelBase, channels) {
 }
 
-AudioPath::AudioPathType AudioPath::getType() const {
+AudioPathType AudioPath::getType() const {
     return m_type;
 }
 
@@ -111,7 +111,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
 }
 
 //static
-AudioPath::AudioPathType getTypeFromString(QString string) {
+AudioPathType getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
@@ -145,7 +145,7 @@ bool AudioPath::isIndexable(AudioPathType type) {
 }
 
 // static
-AudioPath::AudioPathType AudioPath::getTypeFromInt(int typeInt) {
+AudioPathType AudioPath::getTypeFromInt(int typeInt) {
     switch (typeInt) {
     case AudioPath::MASTER:
         return AudioPath::MASTER;
@@ -165,7 +165,7 @@ AudioPath::AudioPathType AudioPath::getTypeFromInt(int typeInt) {
 }
 
 //static
-unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type) {
+unsigned char AudioPath::channelsNeededForType(AudioPathType type) {
     switch (type) {
     case AudioPath::MICROPHONE:
         return 1;
@@ -174,7 +174,7 @@ unsigned char AudioPath::channelsNeededForType(AudioPath::AudioPathType type) {
     }
 }
 
-AudioSource::AudioSource(AudioPath::AudioPathType type /* = INVALID */,
+AudioSource::AudioSource(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
     : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
@@ -187,8 +187,8 @@ AudioSource::AudioSource(AudioPath::AudioPathType type /* = INVALID */,
 }
 
 //static
-QList<AudioPath::AudioPathType> AudioSource::getSupportedTypes() {
-    QList<AudioPath::AudioPathType> types;
+QList<AudioPathType> AudioSource::getSupportedTypes() {
+    QList<AudioPathType> types;
     types.append(MASTER);
     types.append(HEADPHONES);
     types.append(DECK);
@@ -196,7 +196,7 @@ QList<AudioPath::AudioPathType> AudioSource::getSupportedTypes() {
 }
 
 // protected
-void AudioSource::setType(AudioPath::AudioPathType type) {
+void AudioSource::setType(AudioPathType type) {
     if (AudioSource::getSupportedTypes().contains(type)) {
         m_type = type;
     } else {
@@ -205,7 +205,7 @@ void AudioSource::setType(AudioPath::AudioPathType type) {
 }
 
 
-AudioReceiver::AudioReceiver(AudioPath::AudioPathType type /* = INVALID */,
+AudioReceiver::AudioReceiver(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
   : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
@@ -218,8 +218,8 @@ AudioReceiver::AudioReceiver(AudioPath::AudioPathType type /* = INVALID */,
 }
 
 //static
-QList<AudioPath::AudioPathType> AudioReceiver::getSupportedTypes() {
-    QList<AudioPath::AudioPathType> types;
+QList<AudioPathType> AudioReceiver::getSupportedTypes() {
+    QList<AudioPathType> types;
 #ifdef __VINYLCONTROL__
     // this disables vinyl control for all of the sound devices stuff
     // (prefs, etc), minimal ifdefs :) -- bkgood
@@ -229,7 +229,7 @@ QList<AudioPath::AudioPathType> AudioReceiver::getSupportedTypes() {
 }
 
 // protected
-void AudioReceiver::setType(AudioPath::AudioPathType type) {
+void AudioReceiver::setType(AudioPathType type) {
     if (AudioReceiver::getSupportedTypes().contains(type)) {
         m_type = type;
     } else {
