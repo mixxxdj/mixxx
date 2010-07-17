@@ -1203,56 +1203,6 @@
 		<BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
 	</TableView>
 
-	<SamplerView>
-		<PushButton>
-			<Tooltip>Left Click: Play from beginning.</Tooltip>
-			<NumberStates>2</NumberStates>
-			<State>
-				<Number>0</Number>
-				<Pressed>play-off-Ch2.png</Pressed>
-				<Unpressed>play-off-Ch2.png</Unpressed>
-			</State>
-			<State>
-				<Number>1</Number>
-				<Pressed>play-on-Ch2.png</Pressed>
-				<Unpressed>play-on-Ch2.png</Unpressed>
-			</State>
-			<Pos>0, 0</Pos>
-			<Connection>
-				<ConfigKey>[Channel3],play</ConfigKey>
-				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
-			</Connection>
-			<Connection>
-				<ConfigKey>[Channel3],start</ConfigKey>
-				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-
-		<Overview>
-			<Tooltip>Overview display of waveform</Tooltip>
-			<Channel>3</Channel>
-			<Pos>47,0</Pos>
-			<Size>201,27</Size>
-			<BgColor>#fafafa</BgColor>
-			<SignalColor>#00ff00</SignalColor>
-			<MarkerColor>#ff0000</MarkerColor>
-			<Connection>
-				<ConfigKey>[Channel3],playposition</ConfigKey>
-				<EmitOnDownPress>false</EmitOnDownPress>
-			</Connection>
-		</Overview>
-		
-		<Knob>
-			<Tooltip>Sampler 1 Gain</Tooltip>
-			<NumberStates>41</NumberStates>
-			<Path>knobr%1.png</Path>
-			<Pos>250,0</Pos>
-			<Connection>
-				<ConfigKey>[Channel3],pregain</ConfigKey>
-			</Connection>
-		</Knob>
-	</SamplerView>
+	
 
 </skin>
