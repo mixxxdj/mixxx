@@ -5,7 +5,7 @@ import sys
 import SCons
 import shutil
 
-Import('env', 'flags', 'platform')
+Import('env', 'flags', 'platformString')
 
 
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
@@ -18,7 +18,7 @@ m4a_sources += Split("""soundsourcem4a.cpp""");  # MP4/M4A Support
 #=========================
 if int(flags['m4a']):
 	SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
-	if 'win' in platform:
+	if 'win' in platformString:
 		ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 	else:
 		ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources)
