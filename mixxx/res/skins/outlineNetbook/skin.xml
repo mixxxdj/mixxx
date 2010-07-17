@@ -547,7 +547,37 @@
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
+ 
+ <StatusLight>
+  <Tooltip>Clipping Indicator</Tooltip>
+  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
+  <PathBack>peak-indicator-off.png</PathBack>
+  <Pos>78, 353</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
 
+ <StatusLight>
+  <Tooltip>Clipping Indicator</Tooltip>
+  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
+  <PathBack>peak-indicator-off.png</PathBack>
+  <Pos>981, 353</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+
+ <StatusLight>
+  <Tooltip>Clipping Indicator</Tooltip>
+  <PathStatusLight>peak-indicator-master-on.png</PathStatusLight>
+  <PathBack>peak-indicator-master-off.png</PathBack>
+  <Pos>717,182</Pos>
+  <Connection>
+   <ConfigKey>[Master],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
  <PushButton>
   <Tooltip>End of track mode</Tooltip>
   <NumberStates>3</NumberStates>
@@ -926,7 +956,7 @@
   <Tooltip>Master volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>687,181</Pos>
+  <Pos>684,181</Pos>
   <Connection>
    <ConfigKey>[Master],volume</ConfigKey>
   </Connection>
@@ -936,7 +966,7 @@
   <Tooltip>Master balance</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>649,181</Pos>
+  <Pos>646,181</Pos>
   <Connection>
    <ConfigKey>[Master],balance</ConfigKey>
   </Connection>
