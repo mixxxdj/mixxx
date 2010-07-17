@@ -370,7 +370,6 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setChannels(channels);
         track->setType(filetype);
         track->setLocation(location);
-        track->setLength(filesize);
         track->setHeaderParsed(header_parsed);
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));

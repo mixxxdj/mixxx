@@ -932,14 +932,21 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_pSamplerWindow->setPalette(palette);
                 m_pSamplerWindow->setAutoFillBackground(true);
                 
-                //TODO CHANGE THIS TO A WPUSHBUTTON
                 QPushButton *saveButton = new QPushButton(m_pSamplerWindow);
                 saveButton->setText("Save Sampler Bank");
                 saveButton->move(640,70);
                 
+                QPushButton *loadButton = new QPushButton(m_pSamplerWindow);
+                loadButton->setText("Load Sampler Bank");
+                loadButton->move(640,0);
+                
                 saveSamplerBank = new QAction(tr("&Save Sampler Bank"), this);
                 connect(saveButton, SIGNAL(clicked()), saveSamplerBank, SIGNAL(activated()));
                 connect(saveSamplerBank, SIGNAL(activated()), this, SLOT(slotSaveSamplerBank()));
+                
+                loadSamplerBank = new QAction(tr("&Load Sampler Bank"), this);
+                connect(loadButton, SIGNAL(clicked()), loadSamplerBank, SIGNAL(activated()));
+                connect(loadSamplerBank, SIGNAL(activated()), this, SLOT(slotLoadSamplerBank()));
                 
                 
                 QDomNode samplerNode = node.firstChild();
@@ -1186,6 +1193,70 @@ void MixxxView::slotSaveSamplerBank() {
     sampler1.setAttribute( "location", loc1);
     samplerBank.appendChild(sampler1);
     
+    QDomElement sampler2 = samplerBank.createElement( "sampler2" );
+    QString loc2 = m_pSamplerManager->getTrackLocation(2);
+    sampler2.setAttribute( "location", loc2);
+    samplerBank.appendChild(sampler2);
+    
+    QDomElement sampler3 = samplerBank.createElement( "sampler3" );
+    QString loc3 = m_pSamplerManager->getTrackLocation(3);
+    sampler3.setAttribute( "location", loc3);
+    samplerBank.appendChild(sampler3);
+    
+    QDomElement sampler4 = samplerBank.createElement( "sampler4" );
+    QString loc4 = m_pSamplerManager->getTrackLocation(4);
+    sampler4.setAttribute( "location", loc4);
+    samplerBank.appendChild(sampler4);
+    
     file.write(samplerBank.toString());
+}
+
+void MixxxView::slotLoadSamplerBank() {
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Sampler Bank"));
+    QFile file(s);
+    if(!file.open(IO_ReadOnly)) {
+        qDebug("Cannot read file.");
+    };
+    QDomDocument doc;
+    doc.setContent(file.readAll());
+    
+    QDomNode n = doc.firstChild();
+    qDebug() << n.nodeName();
+    while(!n.isNull()) {
+        qDebug("In Loop");
+        if (n.isElement()) {
+            QDomElement e = n.toElement();
+            
+            qDebug() << e.tagName();
+            if(e.tagName() == "sampler1") {
+                QString location = e.attribute("location", "");
+                qDebug() << location;
+                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
+            }
+            if(e.tagName() == "sampler2") {
+                QString location = e.attribute("location", "");
+                qDebug() << location;
+                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
+            }
+            if(e.tagName() == "sampler3") {
+                QString location = e.attribute("location", "");
+                qDebug() << location;
+                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
+            }
+            if(e.tagName() == "sampler4") {
+                QString location = e.attribute("location", "");
+                qDebug() << location;
+                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
+            }
+        }
+        n = n.nextSibling();
+    }
+    
+    file.close();
+    
 }
 
