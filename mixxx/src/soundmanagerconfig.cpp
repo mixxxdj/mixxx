@@ -74,7 +74,7 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
     // then, keep going until we get to our desired latency index (if not 1)
     for (unsigned int latencyIndex = 1; latencyIndex < m_latency; ++latencyIndex) {
-        framesPerBuffer *= 2;
+        framesPerBuffer <<= 1; // *= 2
     }
     return framesPerBuffer;
 }

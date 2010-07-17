@@ -26,7 +26,7 @@
  * @param isInput true if this is representing an AudioReceiver, false otherwise
  * @param index the index of the represented AudioPath, if applicable
  */
-DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathType type,
+DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
         QList<SoundDevice*> &devices, bool isInput,
         unsigned int index /* = 0 */)
     : QWidget(parent)

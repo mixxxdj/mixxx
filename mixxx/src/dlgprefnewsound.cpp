@@ -101,7 +101,7 @@ void DlgPrefNewSound::slotApply() {
  */
 void DlgPrefNewSound::initializePaths() {
     QList<DlgPrefNewSoundItem*> items;
-    foreach (AudioPath::AudioPathType type, AudioSource::getSupportedTypes()) {
+    foreach (AudioPathType type, AudioSource::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
         if (AudioPath::isIndexable(type)) {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
@@ -121,7 +121,7 @@ void DlgPrefNewSound::initializePaths() {
             items.append(toInsert);
         }
     }
-    foreach (AudioPath::AudioPathType type, AudioReceiver::getSupportedTypes()) {
+    foreach (AudioPathType type, AudioReceiver::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
         if (AudioPath::isIndexable(type)) {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
@@ -202,7 +202,7 @@ void DlgPrefNewSound::sampleRateChanged(int index) {
 }
 
 /**
- * Slot called when the latency combo box is chance to update the
+ * Slot called when the latency combo box is changed to update the
  * latency in the config.
  */
 void DlgPrefNewSound::latencyChanged(int index) {
@@ -232,7 +232,7 @@ void DlgPrefNewSound::updateLatencies(int sampleRateIndex) {
     for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
         unsigned int latency = framesPerBuffer / sampleRate * 1000;
         latencyComboBox->addItem(QString("%1 ms").arg(latency), framesPerBuffer);
-        framesPerBuffer *= 2;
+        framesPerBuffer <<= 1; // *= 2
     }
     // set it to the max, let the user dig if they need better latency. better
     // than having a user get the pops on first use and thinking poorly of mixxx

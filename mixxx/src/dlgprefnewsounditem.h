@@ -26,7 +26,7 @@ class SoundManagerConfig;
 class DlgPrefNewSoundItem : public QWidget, public Ui::DlgPrefNewSoundItem {
     Q_OBJECT;
 public:
-    DlgPrefNewSoundItem(QWidget *parent, AudioPath::AudioPathType type,
+    DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
             QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
     ~DlgPrefNewSoundItem();
 signals:
@@ -40,7 +40,7 @@ private:
     SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setDevice(const SoundDevice *device);
     void setChannel(unsigned int channel);
-    AudioPath::AudioPathType m_type;
+    AudioPathType m_type;
     unsigned int m_index;
     QList<SoundDevice*> m_devices;
     bool m_isInput;
