@@ -427,7 +427,9 @@ sources = Split("""
                 library/librarymidicontrol.cpp
                 library/schemamanager.cpp
                 library/promotracksfeature.cpp
-                library/promotrackswebview.cpp
+                library/featuredartistswebview.cpp
+                library/bundledsongswebview.cpp
+                library/songdownloader.cpp
 
                 xmlparse.cpp
                 parser.cpp
