@@ -76,7 +76,7 @@ WSampler::~WSampler() {
 void WSampler::setup(QDomNode node){
     
     m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
-    m_pSamplerWindow->resize(600,100);
+    m_pSamplerWindow->resize(800,100);
     
     QPalette palette = m_pSamplerWindow->palette();
     palette.setColor(backgroundRole(), QColor(24, 24, 24));
