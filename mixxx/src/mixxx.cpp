@@ -206,9 +206,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     
     m_pSamplerManager = new SamplerManager(config, m_pEngine, m_pLibrary);
     m_pSamplerManager->addSampler();
-    m_pSamplerManager->addSampler();
-    m_pSamplerManager->addSampler();
-    m_pSamplerManager->addSampler();
+    //m_pSamplerManager->addSampler();
+    //m_pSamplerManager->addSampler();
+    //m_pSamplerManager->addSampler();
     
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config,
@@ -373,10 +373,11 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete playerManager" << qTime.elapsed();
     delete m_pPlayerManager;
+    qDebug() << "delete SamplerManager" << qTime.elapsed();
+    delete m_pSamplerManager;
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
-
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
 
