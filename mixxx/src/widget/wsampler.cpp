@@ -65,11 +65,6 @@ WSampler::~WSampler() {
 	    delete m_pWaveformRendererCh3;
 	    m_pWaveformRendererCh3 = NULL;
     }
-    
-    delete m_pOverviewCh3;
-    delete m_pSamplerWindow;
-    delete saveSamplerBank; 
-    delete loadSamplerBank;
 
 }
 
