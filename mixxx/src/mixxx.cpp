@@ -104,6 +104,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     Upgrade upgrader;
     config = upgrader.versionUpgrade();
     bool bFirstRun = upgrader.isFirstRun();
+    bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -210,7 +211,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this, config, bFirstRun);
+    qDebug() << "****FR:" << bFirstRun << "U:" << bUpgraded;
+    m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
 
     //Create the "players" (virtual playback decks)
     m_pPlayer1 = new Player(config, buffer1, "[Channel1]");

@@ -18,16 +18,17 @@
 #include <QtXml>
 #include <QDebug>
 #include <QDesktopServices>
-#include "promotrackswebview.h"
+#include "featuredartistswebview.h"
 
-#define LOAD_TIMEOUT 5000
+#define LOAD_TIMEOUT 10000
 
-PromoTracksWebView::PromoTracksWebView(QWidget* parent, QString mixxxPath, QString localURL, QString remoteURL) : QWebView(parent), LibraryView()
+FeaturedArtistsWebView::FeaturedArtistsWebView(QWidget* parent, QString libraryPath, QString remoteURL, SongDownloader* downloader) : QWebView(parent), LibraryView()
 {
-    m_sMixxxPath = mixxxPath;
-    m_sLocalURL = localURL;
+    m_sLibraryPath = libraryPath;
     m_sRemoteURL = remoteURL;
+    m_sLocalErrorURL = "about:qt";
     m_bOfflineMode = false;
+    m_pSongDownloader = downloader;
 
     QWidget::setContextMenuPolicy(Qt::PreventContextMenu);
 
@@ -53,24 +54,15 @@ PromoTracksWebView::PromoTracksWebView(QWidget* parent, QString mixxxPath, QStri
     loadingTimer->start(LOAD_TIMEOUT);
 }
 
-PromoTracksWebView::~PromoTracksWebView()
-{
-
-}
-
-void PromoTracksWebView::setup(QDomNode node)
-{
-
-}
 
 /* Google Analytics doesn't like our crappy malformed "Mixxx 1.8" string
    as a user agent. Let Qt construct it for us instead by leaving this commented out.
-QString PromoTracksWebView::userAgentForUrl (const QUrl & url) const
+QString FeaturedArtistsWebView::userAgentForUrl (const QUrl & url) const
 {
     return QCoreApplication::applicationName() + " " + QCoreApplication::applicationVersion();
 } */
 
-void PromoTracksWebView::handleLoadFinished(bool ok)
+void FeaturedArtistsWebView::handleLoadFinished(bool ok)
 {
     //If the remote webpage failed to load, show the
     //local copy of it.
@@ -78,27 +70,38 @@ void PromoTracksWebView::handleLoadFinished(bool ok)
     {
         /* This doesn't work inside this signal handler for some reason:
         QWebView::stop();
-        QWebView::load(QUrl(m_sLocalURL));
+        QWebView::load(QUrl(m_sLocalErrorURL));
         */
         m_bOfflineMode = true;
-        qDebug() << "PROMO: Loading local copy at" << m_sLocalURL;
+        qDebug() << "PROMO: handleLoadFinished, error loading page!";
     }
 }
 
-void PromoTracksWebView::checkWebpageLoadingProgress()
+void FeaturedArtistsWebView::checkWebpageLoadingProgress()
 {
     if (QWebView::page()->bytesReceived() == 0) {
         qDebug() << "PROMO: Load timed out, loading local page";
         QWebView::stop();
-        QWebView::load(QUrl(m_sLocalURL));
+        QWebView::load(QUrl(m_sLocalErrorURL));
         m_bOfflineMode = true;
     }
 }
 
-void PromoTracksWebView::handleClickedLink(const QUrl& url)
+FeaturedArtistsWebView::~FeaturedArtistsWebView()
+{
+
+}
+
+void FeaturedArtistsWebView::setup(QDomNode node)
+{
+
+}
+
+void FeaturedArtistsWebView::handleClickedLink(const QUrl& url)
 {
     qDebug() << "link clicked!" << url; 
 
+    /*
     if (url.scheme() == "deck1")
     {
         TrackInfoObject* track = new TrackInfoObject(m_sMixxxPath + "/" + url.path());
@@ -109,17 +112,19 @@ void PromoTracksWebView::handleClickedLink(const QUrl& url)
         TrackInfoObject* track = new TrackInfoObject(m_sMixxxPath + "/" + url.path());
         emit(loadTrackToPlayer(track, 2));
     }
+    */
+    if (url.host().contains("mixxx.org")) {
+        //Allow navigation through any Mixxx site in the browser
+        this->load(url);
+    }
     else
     {
         QDesktopServices::openUrl(url);
     }
-    //emit(loadTrack(track));
-    //int player = 1;
-    //emit(loadTrackToPlayer(track, player));
 }
 
 //TODO: Implement this for MIDI control
-void PromoTracksWebView::keyPressEvent(QKeyEvent* event)
+void FeaturedArtistsWebView::keyPressEvent(QKeyEvent* event)
 {
     //Look at WTrackTableView::keyPressEvent(...) for some
     //code to start with...
