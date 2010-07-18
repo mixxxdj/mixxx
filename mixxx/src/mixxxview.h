@@ -89,7 +89,7 @@ public:
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
-    WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2, *m_pWaveformRendererCh3;
+    WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
     /** Pointer to absolute file position widgets */
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
     /** Pointer to BPM display widgets */
@@ -102,9 +102,8 @@ public:
     /** Pointer to Search PushButton*/
     QPushButton *m_pPushButton;
     /** Pointer to overview displays */
-    WOverview *m_pOverviewCh1, *m_pOverviewCh2, *m_pOverviewCh3;
+    WOverview *m_pOverviewCh1, *m_pOverviewCh2;
     
-    QFrame* m_pSamplerWindow;
 
     void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
@@ -112,14 +111,10 @@ public:
   public slots:
     void slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack);
     void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
-    void slotSetupTrackConnectionsCh3(TrackInfoObject* pTrack);
     void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
     void slotClearTrackTextCh1(TrackInfoObject* pTrack);
     void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
     void slotClearTrackTextCh2(TrackInfoObject* pTrack);
-    /** Saves entire sampler bank as XML file **/
-    void slotSaveSamplerBank();
-    void slotLoadSamplerBank();
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
@@ -162,9 +157,7 @@ private:
     QWidget* m_pLibrarySidebarPage;
 
     PlayerManager* m_pPlayerManager;
-    
-    QAction *saveSamplerBank; 
-    QAction *loadSamplerBank;   
+     
     SamplerManager* m_pSamplerManager;
     
     WSampler* m_pSampler;

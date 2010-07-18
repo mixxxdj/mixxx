@@ -100,11 +100,10 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
-    m_pWaveformRendererCh3 = new WaveformRenderer("[Channel3]");
 
     Player* pPlayer1 = m_pPlayerManager->getPlayer(1);
     Player* pPlayer2 = m_pPlayerManager->getPlayer(2);
-    Sampler* pSampler1 = m_pSamplerManager->getSampler(1);
+    
 
     connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
             m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
@@ -115,10 +114,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
             m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
     
-    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pSampler1, SIGNAL(unloadingTrack(TrackInfoObject *)),
-            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackInfoObject *)));
 
     // Default values for visuals
     m_pTextCh1 = 0;
@@ -134,7 +129,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
-    m_pOverviewCh3 = 0;
     m_pLineEditSearch = 0;
     m_pTabWidget = 0;
     m_pTabWidgetLibraryPage = 0;
@@ -144,9 +138,10 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLibraryPageLayout = new QGridLayout();
     m_pEffectsPageLayout = new QGridLayout();
     m_pSplitter = 0;
-    m_pSamplerWindow = 0;
     m_pLibrarySidebar = 0;
-    m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
+    m_pLibrarySidebarPage = 0;
+     //The sidebar and search widgets get embedded in this.
+    m_pSampler = 0;
 
 
     setupColorScheme(docElem, pConfig);
@@ -172,10 +167,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
   connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
           m_pOverviewCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
           
-    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    connect(pSampler1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-              m_pOverviewCh3, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    
           
 
 
@@ -201,8 +193,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 		this, SLOT(slotSetupTrackConnectionsCh1(TrackInfoObject*)));
 	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
 		this, SLOT(slotSetupTrackConnectionsCh2(TrackInfoObject*)));
-    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-		this, SLOT(slotSetupTrackConnectionsCh3(TrackInfoObject*)));
+    
 
 	// Connect search box signals to the library
 	connect(m_pLineEditSearch, SIGNAL(search(const QString&)),
@@ -241,9 +232,8 @@ MixxxView::~MixxxView()
 	m_pWaveformRendererCh2 = NULL;
     }
     
-    if(m_pWaveformRendererCh3) {
-	delete m_pWaveformRendererCh3;
-	m_pWaveformRendererCh2 = NULL;
+    if(m_pSampler) {
+        delete m_pSampler;
     }
 }
 
@@ -924,65 +914,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="SamplerView")
             {
-                m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
-                m_pSamplerWindow->resize(800,100);
-                
-                QPalette palette = m_pSamplerWindow->palette();
-                palette.setColor(backgroundRole(), QColor(24, 24, 24));
-                m_pSamplerWindow->setPalette(palette);
-                m_pSamplerWindow->setAutoFillBackground(true);
-                
-                QPushButton *saveButton = new QPushButton(m_pSamplerWindow);
-                saveButton->setText("Save Sampler Bank");
-                saveButton->move(640,70);
-                
-                QPushButton *loadButton = new QPushButton(m_pSamplerWindow);
-                loadButton->setText("Load Sampler Bank");
-                loadButton->move(640,0);
-                
-                saveSamplerBank = new QAction(tr("&Save Sampler Bank"), this);
-                connect(saveButton, SIGNAL(clicked()), saveSamplerBank, SIGNAL(activated()));
-                connect(saveSamplerBank, SIGNAL(activated()), this, SLOT(slotSaveSamplerBank()));
-                
-                loadSamplerBank = new QAction(tr("&Load Sampler Bank"), this);
-                connect(loadButton, SIGNAL(clicked()), loadSamplerBank, SIGNAL(activated()));
-                connect(loadSamplerBank, SIGNAL(activated()), this, SLOT(slotLoadSamplerBank()));
-                
-                
-                QDomNode samplerNode = node.firstChild();
-                while (!samplerNode.isNull())
-                {
-                    if (samplerNode.nodeName()=="PushButton")
-                    {
-                        WPushButton * p = new WPushButton(m_pSamplerWindow);
-                        p->setup(samplerNode);
-                        p->installEventFilter(m_pKeyboard);
-                        p->setParent(m_pSamplerWindow);
-                        m_qWidgetList.append(p);
-                    } else if (samplerNode.nodeName()=="Overview")
-                    {
-                        if (WWidget::selectNodeInt(samplerNode, "Channel")==3)
-                        {
-                            if (m_pOverviewCh3 == 0)
-                                m_pOverviewCh3 = new WOverview("[Channel3]", m_pSamplerWindow);
-                            m_pOverviewCh3->setup(samplerNode);
-                            m_pOverviewCh3->setParent(m_pSamplerWindow);
-            		        m_pOverviewCh3->show();
-                        }
-                    } else if (samplerNode.nodeName()=="Knob")
-                    {
-                        WKnob * p = new WKnob(this);
-                        p->setup(samplerNode);
-                        p->setParent(m_pSamplerWindow);
-                        p->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(p);
-                        currentControl = qobject_cast<WAbstractControl*>(p);
-                    }
-                    samplerNode = samplerNode.nextSibling();
-                    
-                }
-                m_pSamplerWindow->show();
-                
+                m_pSampler = new WSampler(parent, m_pSamplerManager);
+                m_pSampler->setup(node);
+                m_pSampler->show();
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {
@@ -1027,10 +961,9 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
     if (m_pOverviewCh2) m_pOverviewCh2->hide();
-    if (m_pOverviewCh3) m_pOverviewCh3->hide();
     if (m_pLineEditSearch) m_pLineEditSearch->hide();
     if (m_pTabWidget) m_pTabWidget->hide();
-    if (m_pSamplerWindow) m_pSamplerWindow->hide();
+    if (m_pSampler) delete m_pSampler;
 
     //load the skin
     QDomElement docElem = openSkin(qSkinPath);
@@ -1151,11 +1084,6 @@ void MixxxView::slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack)
 
 }
 
-void MixxxView::slotSetupTrackConnectionsCh3(TrackInfoObject* pTrack) {
-    connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-		m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-}
-
 void MixxxView::slotUpdateTrackTextCh1(TrackInfoObject* pTrack)
 {
 	if (m_pTextCh1)
@@ -1180,83 +1108,5 @@ void MixxxView::slotClearTrackTextCh2(TrackInfoObject* pTrack)
 		m_pTextCh2->setText("");
 }
 
-void MixxxView::slotSaveSamplerBank() {
-    QString s = QFileDialog::getSaveFileName(this, tr("Save Sampler Bank"));
-    QFile file(s);
-    if(!file.open(IO_WriteOnly)) {
-        qDebug("Cannot write to file.");
-    };
-    QDomDocument samplerBank("samplerbank");
-    
-    QDomElement sampler1 = samplerBank.createElement( "sampler1" );
-    QString loc1 = m_pSamplerManager->getTrackLocation(1);
-    sampler1.setAttribute( "location", loc1);
-    samplerBank.appendChild(sampler1);
-    
-    QDomElement sampler2 = samplerBank.createElement( "sampler2" );
-    QString loc2 = m_pSamplerManager->getTrackLocation(2);
-    sampler2.setAttribute( "location", loc2);
-    samplerBank.appendChild(sampler2);
-    
-    QDomElement sampler3 = samplerBank.createElement( "sampler3" );
-    QString loc3 = m_pSamplerManager->getTrackLocation(3);
-    sampler3.setAttribute( "location", loc3);
-    samplerBank.appendChild(sampler3);
-    
-    QDomElement sampler4 = samplerBank.createElement( "sampler4" );
-    QString loc4 = m_pSamplerManager->getTrackLocation(4);
-    sampler4.setAttribute( "location", loc4);
-    samplerBank.appendChild(sampler4);
-    
-    file.write(samplerBank.toString());
-}
 
-void MixxxView::slotLoadSamplerBank() {
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Sampler Bank"));
-    QFile file(s);
-    if(!file.open(IO_ReadOnly)) {
-        qDebug("Cannot read file.");
-    };
-    QDomDocument doc;
-    doc.setContent(file.readAll());
-    
-    QDomNode n = doc.firstChild();
-    qDebug() << n.nodeName();
-    while(!n.isNull()) {
-        qDebug("In Loop");
-        if (n.isElement()) {
-            QDomElement e = n.toElement();
-            
-            qDebug() << e.tagName();
-            if(e.tagName() == "sampler1") {
-                QString location = e.attribute("location", "");
-                qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
-                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
-            }
-            if(e.tagName() == "sampler2") {
-                QString location = e.attribute("location", "");
-                qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
-                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
-            }
-            if(e.tagName() == "sampler3") {
-                QString location = e.attribute("location", "");
-                qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
-                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
-            }
-            if(e.tagName() == "sampler4") {
-                QString location = e.attribute("location", "");
-                qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
-                m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
-            }
-        }
-        n = n.nextSibling();
-    }
-    
-    file.close();
-    
-}
 

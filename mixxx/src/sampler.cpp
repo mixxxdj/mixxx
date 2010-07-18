@@ -30,11 +30,11 @@ Sampler::Sampler(ConfigObject<ConfigValue> *pConfig,
     pMixingEngine->addChannel(pChannel);
 
     CueControl* pCueControl = new CueControl(m_strChannel, pConfig);
-    connect(this, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        pCueControl, SLOT(loadTrack(TrackInfoObject*)));
-    connect(this, SIGNAL(unloadingTrack(TrackInfoObject*)),
-        pCueControl, SLOT(unloadTrack(TrackInfoObject*)));
-    pEngineBuffer->addControl(pCueControl);
+            connect(this, SIGNAL(newTrackLoaded(TrackInfoObject*)),
+                pCueControl, SLOT(loadTrack(TrackInfoObject*)));
+            connect(this, SIGNAL(unloadingTrack(TrackInfoObject*)),
+                pCueControl, SLOT(unloadTrack(TrackInfoObject*)));
+            pEngineBuffer->addControl(pCueControl);
 
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and

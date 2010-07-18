@@ -109,9 +109,11 @@ EngineMaster::~EngineMaster()
     delete clipping;
     delete head_clipping;
     delete sidechain;
+    
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
+    
 
     QMutableListIterator<CSAMPLE*> buffer_it(m_channelBuffers);
     while (buffer_it.hasNext()) {
@@ -119,6 +121,7 @@ EngineMaster::~EngineMaster()
         buffer_it.remove();
         SampleUtil::free(buffer);
     }
+    
 
     QMutableListIterator<EngineChannel*> channel_it(m_channels);
     while (channel_it.hasNext()) {
@@ -126,6 +129,8 @@ EngineMaster::~EngineMaster()
         channel_it.remove();
         delete channel;
     }
+    
+    
 
 }
 
