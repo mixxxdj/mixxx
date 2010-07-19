@@ -76,6 +76,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             return QVariant(pTrack->getYear());
         } else if (fieldIndex(LIBRARYTABLE_GENRE) == col) {
             return QVariant(pTrack->getGenre());
+        } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == col) {
+            return QVariant(pTrack->getType());
         } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == col) {
             return QVariant(pTrack->getTrackNumber());
         } else if (fieldIndex(LIBRARYTABLE_LOCATION) == col) {

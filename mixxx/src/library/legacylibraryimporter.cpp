@@ -111,6 +111,7 @@ void LegacyLibraryImporter::import()
                 trackInfo17.setGenre(trackInfoNew.getGenre());
                 trackInfo17.setAlbum(trackInfoNew.getAlbum());
                 trackInfo17.setYear(trackInfoNew.getYear());
+                trackInfo17.setType(trackInfoNew.getType());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
 
                 // Import the track's saved cue point if it is non-zero.
