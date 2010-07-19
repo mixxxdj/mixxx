@@ -212,7 +212,9 @@ int SoundSourceProxy::open()
     //      have a duration parsed. (Some SoundSources don't
     //      parse metadata on open(), so they won't have the
     //      duration.)
-    if (m_pTrack->getDuration() == 0)
+    // SSMP3 will set duration to -1 on VBR files,
+    //  so we must look for that here too
+    if (m_pTrack->getDuration() <= 0)
         m_pTrack->setDuration(m_pSoundSource->getDuration());
 
     return retVal;
@@ -260,7 +262,15 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         //Dump the metadata from the soundsource into the TIO
         //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
         p->setArtist(sndsrc->getArtist());
-        p->setTitle(sndsrc->getTitle());
+        QString title = sndsrc->getTitle();
+        if (title.isEmpty()) {
+            // If no title is returned, use the file name (without the extension)
+            int start = qFilename.lastIndexOf(QRegExp("[/\\\\]"))+1;
+            int end = qFilename.lastIndexOf('.');
+            if (end == -1) end = qFilename.length();
+            title = qFilename.mid(start,end-start);
+        }
+        p->setTitle(title);
         p->setAlbum(sndsrc->getAlbum());
         p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());

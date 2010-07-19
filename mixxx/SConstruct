@@ -1,55 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 
-import sys, os, platform
+#Run our configuration stuff to setup our build environment (detect platform/arch, find libraries, etc)
+SConscript(File('src/SConscript.env'), duplicate=0) 
 
-architecture = platform.architecture()
-machine = platform.machine()
-Export('machine')	#So architecture-specific decisions & optimizations can be made in the SConscript
-Export('architecture')
+#Grab some variables, created by SConscript.env, that we'll need to do the rest of the build
+#and installation.
+Import('env', 'sources', 'flags') 
+Import('build_dir', 'platformString')
 
-if os.name == 'nt':
-	print 'Platform: Windows' + machine + ' (' + architecture[0] + ')'
-	if machine == 'x86':
-		platform = 'win32'
-	else:		#This is only correctly detected if you're running a 64-bit version of Python, otherwise it'll see an x86 system
-		platform = 'win64'
-	
-	# Allow to override auto-detection (environment variables must already be set appropriately with SETENV.CMD /xp /x86 or /x64)
-	if ARGUMENTS.get('win64'):
-		print 'FORCING 64-BIT BUILD'
-		platform = 'win64'
-	if ARGUMENTS.get('win32'):
-		print 'FORCING 32-BIT BUILD'
-		platform = 'win32'
-	
-elif sys.platform == 'linux2':
-     print 'Platform: Linux ' + machine + ' (' + architecture[0] + ')'
-     platform = 'linux'
-elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
-     print 'Platform: BSD ' + machine + ' (' + architecture[0] + ')'
-     platform = 'bsd'
-elif sys.platform == 'darwin':
-     print 'Platform: OS X ' + machine + ' (' + architecture[0] + ')'
-     platform = 'osx'
-else:
-	print 'Platform: Unknown (assuming Linux-like,) ' + machine + ' (' + architecture[0] + ')'
-	platform = 'linux'
+#Build our soundsource plugins
+soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0, exports=['env', 'flags', 'platformString'])
 
-print 'Binary format: ' + architecture[1]
+#Setup and build the "mixxx" executable target. Also sets up our install targets for each platform.
+SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports=['env', 'sources', 'flags', 'soundsource_plugins']) 
 
-build_dir = '%s_build' % platform
 
-Export('platform')
-Export('build_dir')
-
-soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0)
-SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports='soundsource_plugins') 
+#Conveniece - Copy over the Mixxx executable out of the build directory and into the bottom of the source
+#             tree. (That should be the directory where you run "scons".)
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
-
 #hack for windows:
 Copy("mixxx", os.path.join(build_dir, "mixxx"))
 
-#on OS X, if the bundle has been built, copy it up:
+#On OS X, if the bundle has been built, copy it up:
 #Command("Mixxx.app", os.path.join(build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))
