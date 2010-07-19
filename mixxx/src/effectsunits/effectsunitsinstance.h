@@ -9,6 +9,7 @@
 #define EFFECTSUNITSINSTANCE_H_
 
 #include "effectsunitsplugin.h"
+#include "../controlobject.h"
 
 class EffectsUnitsPlugin;
 
@@ -20,7 +21,15 @@ public:
 	EffectsUnitsPlugin * getPlugin();
 
 private:
+
+	int m_InstanceID;
 	EffectsUnitsPlugin * m_pPlugin;
+
+	ControlObject * m_pOnOff;
+	ControlObject * m_pWetDry;
+	QList<ControlObject *> * m_pBindings;
+
+	int m_WetDryPort;
 };
 
 #endif /* EFFECTSUNITSINSTANCE_H_ */

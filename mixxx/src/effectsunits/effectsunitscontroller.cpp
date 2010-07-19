@@ -48,6 +48,9 @@ void EffectsUnitsController::activatePluginOnSource(QString PluginName, QString 
 	EffectsUnitsPlugin * current = getPluginByName(PluginName);
 	if (current != NULL){
 		current->activate();
+		// TODO - Implement this properly, should make one for each widget.
+		// Maybe it should always create a new instance.
+		// Shouldnt forget about freeing this memory when the plugin is unloaded.
 		m_pEngine->addInstanceToSource(new EffectsUnitsInstance(current), Source);
 	}
 }
