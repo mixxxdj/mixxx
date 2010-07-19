@@ -30,7 +30,7 @@ class WSampler : public WWidget {
 public:
     WSampler(QWidget* parent, SamplerManager* pSamplerManager);
     virtual ~WSampler();
-    void setup(QDomNode node);
+    void setup(QDomNode node, QList<QObject *> m_qWidgetList);
     WOverview *m_pOverviewCh3;
     //WOverview *m_pOverviewCh4;
     //WOverview *m_pOverviewCh5;
