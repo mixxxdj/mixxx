@@ -49,7 +49,7 @@ private:
 class AudioPath {
 public:
     // XXX if you add a new type here, be sure to add it to the various
-    // methods including getStringFromType, isIndexable, getTypeFromInt,
+    // methods including getStringFromType, isIndexed, getTypeFromInt,
     // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     // (if necessary), etc. -- bkgood
     enum AudioPathType {
@@ -71,7 +71,7 @@ public:
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
     static AudioPathType getTypeFromString(QString string);
-    static bool isIndexable(AudioPathType type);
+    static bool isIndexed(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
     static unsigned char channelsNeededForType(AudioPathType type);
 protected:

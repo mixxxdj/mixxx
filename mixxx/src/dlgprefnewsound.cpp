@@ -103,7 +103,7 @@ void DlgPrefNewSound::initializePaths() {
     QList<DlgPrefNewSoundItem*> items;
     foreach (AudioPathType type, AudioSource::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
-        if (AudioPath::isIndexable(type)) {
+        if (AudioPath::isIndexed(type)) {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
                 toInsert = new DlgPrefNewSoundItem(outputScrollAreaContents, type,
                         m_outputDevices, false, i);
@@ -123,7 +123,7 @@ void DlgPrefNewSound::initializePaths() {
     }
     foreach (AudioPathType type, AudioReceiver::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
-        if (AudioPath::isIndexable(type)) {
+        if (AudioPath::isIndexed(type)) {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
                 toInsert = new DlgPrefNewSoundItem(inputScrollAreaContents, type,
                         m_inputDevices, true, i);

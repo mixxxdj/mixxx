@@ -80,7 +80,7 @@ bool AudioPath::channelsClash(const AudioPath &other) const {
  *          doesn't at the moment so worry about that later. :)
  */
 QString AudioPath::getString() const {
-    if (isIndexable(getType())) {
+    if (isIndexed(getType())) {
         return QString("%1 %2")
             .arg(getStringFromType(getType())).arg(m_index + 1);
     }
@@ -131,7 +131,7 @@ AudioPathType getTypeFromString(QString string) {
 }
 
 //static
-bool AudioPath::isIndexable(AudioPathType type) {
+bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
     case DECK:
     case VINYLCONTROL:
@@ -179,7 +179,7 @@ AudioSource::AudioSource(AudioPathType type /* = INVALID */,
         unsigned char index /* = 0 */)
     : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
     setType(type);
-    if (isIndexable(type)) {
+    if (isIndexed(type)) {
         m_index = index;
     } else {
         m_index = 0;
@@ -210,7 +210,7 @@ AudioReceiver::AudioReceiver(AudioPathType type /* = INVALID */,
         unsigned char index /* = 0 */)
   : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
     setType(type);
-    if (isIndexable(type)) {
+    if (isIndexed(type)) {
         m_index = index;
     } else {
         m_index = 0;

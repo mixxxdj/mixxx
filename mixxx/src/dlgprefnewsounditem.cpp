@@ -35,7 +35,7 @@ DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
     , m_devices(devices)
     , m_isInput(isInput) {
     setupUi(this);
-    if (AudioPath::isIndexable(type)) {
+    if (AudioPath::isIndexed(type)) {
         typeLabel->setText(
             QString("%1 %2").arg(AudioPath::getStringFromType(type)).arg(index + 1));
     } else {
