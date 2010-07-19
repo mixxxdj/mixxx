@@ -914,8 +914,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="SamplerView")
             {
-                m_pSampler = new WSampler(parent, m_pSamplerManager);
-                m_pSampler->setup(node);
+                if(!m_pSampler){
+                    m_pSampler = new WSampler(parent, m_pSamplerManager);
+                    m_pSampler->setup(node, m_qWidgetList);
+                }
                 m_pSampler->show();
             }
             // set default value (only if it changes from the standard value)
@@ -961,9 +963,10 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
     if (m_pOverviewCh2) m_pOverviewCh2->hide();
+    //if (m_pSampler->m_pOverviewCh3) m_pSampler->m_pOverviewCh3->hide();
     if (m_pLineEditSearch) m_pLineEditSearch->hide();
     if (m_pTabWidget) m_pTabWidget->hide();
-    if (m_pSampler) delete m_pSampler;
+    if (m_pSampler) m_pSampler->hide();
 
     //load the skin
     QDomElement docElem = openSkin(qSkinPath);

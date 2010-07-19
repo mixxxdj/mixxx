@@ -61,14 +61,14 @@ WSampler::WSampler(QWidget* parent, SamplerManager* pSamplerManager) :
 WSampler::~WSampler() {
     
     
-    if(m_pWaveformRendererCh3) {
-	    delete m_pWaveformRendererCh3;
-	    m_pWaveformRendererCh3 = NULL;
-    }
+    // if(m_pWaveformRendererCh3) {
+    //      delete m_pWaveformRendererCh3;
+    //      m_pWaveformRendererCh3 = NULL;
+    //     }
 
 }
 
-void WSampler::setup(QDomNode node){
+void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
     
     m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
     m_pSamplerWindow->resize(800,100);
@@ -104,7 +104,7 @@ void WSampler::setup(QDomNode node){
             p->setup(samplerNode);
             //p->installEventFilter(m_pKeyboard);
             p->setParent(m_pSamplerWindow);
-            //m_qWidgetList.append(p);
+            m_qWidgetList.append(p);
         } else if (samplerNode.nodeName()=="Overview")
         {
             if (WWidget::selectNodeInt(samplerNode, "Channel")==3)
@@ -121,13 +121,12 @@ void WSampler::setup(QDomNode node){
             p->setup(samplerNode);
             p->setParent(m_pSamplerWindow);
             //p->installEventFilter(m_pKeyboard);
-            //m_qWidgetList.append(p);
+            m_qWidgetList.append(p);
             //currentControl = qobject_cast<WAbstractControl*>(p);
         }
         samplerNode = samplerNode.nextSibling();
         
     }
-    m_pSamplerWindow->show();
     WWidget::setup(node);
     
     
@@ -141,6 +140,8 @@ void WSampler::setup(QDomNode node){
               
     connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
      		this, SLOT(slotSetupTrackConnectionsCh3(TrackInfoObject*)));
+     		
+    m_pSamplerWindow->show();
 }
 
 void WSampler::slotSaveSamplerBank() {
