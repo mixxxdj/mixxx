@@ -15,66 +15,49 @@
  */
 EffectsUnitsView::EffectsUnitsView(QWidget * parent) : QWidget(parent)
 {
+	m_EffectsUnitsController = new EffectsUnitsController();
+	m_EffectsUnitsSlots = new QList<EffectsUnitsSlot *>();
+
     setObjectName("EffectsUnits");
     m_pGridLayout = new QGridLayout();
     this->setLayout(m_pGridLayout);
 
+    /* Opens up our skin file */
+    QDomDocument skin("EffectsUnitsSkin");
+    QFile file(WWidget::getPath("skin_fx.xml"));
+    if (!file.open(IO_ReadOnly))
+    {
+        qDebug() << "FXUNITS: Could not open skin definition file: " << file.fileName();
+    }
+    if (!skin.setContent(&file))
+    {
+        qDebug() << "FXUNITS: Error parsing skin definition file: " << file.fileName();
+    }
+    file.close();
+    qDebug() << "FXUNITS: Skin parsing done!";
 
-    m_EffectsUnitsController = new EffectsUnitsController();
+    /* Gets the DOM of the Skin, so we're iterating on top of it.
+     * When we get to a EffectsUnitsSlot node, we instantiate a
+     * EffectsUnitsSlot with the firstchild of that node, and controller
+     * pointer.
+     */
+    QDomNode node = skin.documentElement().firstChild();
+    while (!node.isNull()){
 
-    QComboBox * comboBox = new QComboBox(this);
-    comboBox->addItem("djFlanger");
-    comboBox->addItem("Plate2x2");
-    comboBox->addItem("Lorenz");
-    comboBox->addItem("AutoWah");
-    comboBox->addItem("White");
-    comboBox->show();
+    	qDebug() << "FXUNITS: Skin: " << node.nodeName();
 
-    m_label = new QLabel("THIS", this);
-    m_label->move(100, 100);
-    m_label->show();
+    	/* Instantiates our EffectsUnitsSlots */
+    	if (node.nodeName() == "EffectsUnitsSlot"){
+    		m_EffectsUnitsSlots->append(new EffectsUnitsSlot(m_EffectsUnitsController, node.firstChild()));
 
-    ConfigKey *key = new ConfigKey("[FX]", "DryWet");
-    ControlPotmeter *control = new ControlPotmeter(*key, 0.0, 1.0);
+    	/* Apply Background */
+    	} else if (node.nodeName() == "Background"){
+    		// TODO - apply background with Qlabel hack lol
+    	}
 
-    QDomDocument skin("LADSPASkin");
-    QFile file(WWidget::getPath("ladspa_skin.xml"));
-    skin.setContent(&file);
-    QDomElement docElement = skin.documentElement();
-    QDomElement slotTableElement = docElement.firstChildElement("SlotTable");
-    QDomElement slotElement = slotTableElement.firstChildElement("Slot");
-    QDomElement m_qKnobElement = slotElement.firstChildElement("Knob");
-    QString keyString = QString("[FX],DryWet");
-    m_qKnobElement.firstChildElement(QString("Connection")).firstChildElement(QString("ConfigKey")).firstChild().setNodeValue(keyString);
-    m_qKnobElement.firstChildElement(QString("Tooltip")).firstChild().setNodeValue("Dry/wet");
-
-    QDomElement bgElement = docElement.firstChildElement("Background");
-    QString filename = bgElement.firstChildElement("Path").text();
-    QPixmap *background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-
-    QPalette palette;
-    QColor c(0,0,0);
-    palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-    QColor c2(255,255,255);
-    palette.setBrush(foregroundRole(), WSkinColor::getCorrectColor(c2));
-
-    palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c));
-    palette.setColor(QPalette::Text, WSkinColor::getCorrectColor(c2));
-
-    setBackgroundRole(QPalette::Window);
-    setPalette(palette);
-    setAutoFillBackground(true);
-
-    //m_pGridLayout->setPallete(pallete);
-
-    m_pDryWetKnob = new WKnob(this);
-    m_pDryWetKnob->setup(m_qKnobElement);
-    m_pDryWetKnob->move(100, 70);
-    m_pDryWetKnob->show();
-
-    connect(comboBox, SIGNAL(activated(QString)), this, SLOT(slotClick(QString)) );
-
-
+    	/* Next node, please. */
+    	node = node.nextSibling();
+    }
 }
 
 EffectsUnitsView::~EffectsUnitsView()

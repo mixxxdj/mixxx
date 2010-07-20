@@ -8,9 +8,13 @@
 #ifndef EFFECTSUNITSWIDGET_H_
 #define EFFECTSUNITSWIDGET_H_
 
+#include <QtCore>
+#include <QtGui>
+#include <QtXml>
+
 class EffectsUnitsWidget {
 public:
-	EffectsUnitsWidget();
+	EffectsUnitsWidget(QDomNode node);
 	virtual ~EffectsUnitsWidget();
 };
 

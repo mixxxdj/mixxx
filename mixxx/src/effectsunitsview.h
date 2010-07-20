@@ -9,6 +9,7 @@
 #include "controlpushbutton.h"
 #include "widget/wknob.h"
 #include "effectsunits/effectsunitscontroller.h"
+#include "effectsunitsslot.h"
 
 class QWidget;
 
@@ -27,6 +28,7 @@ signals:
 private:
     QGridLayout * m_pGridLayout;
     EffectsUnitsController * m_EffectsUnitsController;
+    QList<EffectsUnitsSlot *> * m_EffectsUnitsSlots;
     QLabel * m_label;
     WKnob * m_pDryWetKnob;
 };
