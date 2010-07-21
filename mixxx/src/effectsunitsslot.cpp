@@ -14,11 +14,9 @@ EffectsUnitsSlot::EffectsUnitsSlot(QWidget * parent, EffectsUnitsController *, Q
 
 	m_pEffectsUnitsWidgets = new QList<EffectsUnitsWidget *>();
 	int jp = 0;
-	int iw = 1;
+	int iw = 0;
 	while (!node.isNull()){
 		qDebug() << "FXUNITS: 	Skin: " << node.nodeName();
-
-
 
 		/* Buttons for applying effects on deck X */
 		if (node.nodeName() == "PushButton"){
@@ -33,7 +31,7 @@ EffectsUnitsSlot::EffectsUnitsSlot(QWidget * parent, EffectsUnitsController *, Q
 		} else if (node.nodeName() == "EffectsUnitsWidget"){
 			EffectsUnitsWidget * wid = new EffectsUnitsWidget(this, node.firstChild());
 			m_pEffectsUnitsWidgets->append(wid);
-			lay->addWidget(wid, iw, 0);
+			lay->addWidget(wid, iw, jp);
 			iw++;
 		}
 
