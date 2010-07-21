@@ -19,6 +19,7 @@ const QString LIBRARYTABLE_ALBUM = "album";
 const QString LIBRARYTABLE_YEAR = "year";
 const QString LIBRARYTABLE_GENRE = "genre";
 const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
+const QString LIBRARYTABLE_FILETYPE = "filetype";
 const QString LIBRARYTABLE_LOCATION = "location";
 const QString LIBRARYTABLE_COMMENT = "comment";
 const QString LIBRARYTABLE_DURATION = "duration";
@@ -42,10 +43,10 @@ Q_OBJECT
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     void initialize();
-    int getTrackId(QString location);
-    bool trackExistsInDatabase(QString location);
+    int getTrackId(QString absoluteFilePath);
+    bool trackExistsInDatabase(QString absoluteFilePath);
     QString getTrackLocation(int id);
-    int addTrack(QString location);
+    int addTrack(QString absoluteFilePath);
     int addTrack(QFileInfo& fileInfo);
     void removeTrack(int id);
     TrackInfoObject *getTrack(int id) const;
@@ -79,6 +80,7 @@ Q_OBJECT
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject * pTrack);
     TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
+    QString absoluteFilePath(QString location);
 
     // Prevents evil copy constructors! (auto-generated ones by the compiler
     // that don't compile)
