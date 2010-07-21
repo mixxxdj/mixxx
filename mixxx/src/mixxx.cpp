@@ -92,7 +92,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    setWindowTitle(tr("Mixxx " VERSION " x64"));
+#elif defined(IA64)
+    setWindowTitle(tr("Mixxx " VERSION " Itanium"));
+#else
     setWindowTitle(tr("Mixxx " VERSION));
+#endif
     setWindowIcon(QIcon(":/images/icon.svg"));
 
     //Reset pointer to players
@@ -1095,7 +1101,13 @@ void MixxxApp::slotHelpAbout()
 {
 
     DlgAbout *about = new DlgAbout(this);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    about->version_label->setText(VERSION " x64");
+#elif defined(IA64)
+    about->version_label->setText(VERSION " IA64");
+#else
     about->version_label->setText(VERSION);
+#endif
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
@@ -1143,6 +1155,7 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Stanton<br>"
 "Hercules<br>"
+"EKS<br>"
 "Echo Digital Audio<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
@@ -1197,7 +1210,14 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>").arg(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    "</p>").arg(VERSION " x64");
+#elif defined(IA64)
+    "</p>").arg(VERSION " IA64");
+#else
+    "</p>").arg(VERSION);
+#endif
+
 
 
     about->textBrowser->setHtml(credits);

@@ -39,6 +39,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_YEAR + "," +
                                   LIBRARYTABLE_DURATION + "," +
                                   LIBRARYTABLE_GENRE + "," +
+                                  LIBRARYTABLE_FILETYPE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
                                   LIBRARYTABLE_BPM + "," +
                                   LIBRARYTABLE_DATETIMEADDED + ","
@@ -79,6 +80,8 @@ void CrateTableModel::setCrate(int crateId) {
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
     setHeaderData(fieldIndex("location"),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -96,6 +99,8 @@ void CrateTableModel::setCrate(int crateId) {
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+    QFileInfo fileInfo(location);
+    location = fileInfo.absoluteFilePath();
     int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
     bool success = false;
     if (iTrackId >= 0) {
