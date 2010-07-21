@@ -11,9 +11,12 @@
 #include "effectsunits/effectsunitscontroller.h"
 #include "effectsunitswidget.h"
 
-class EffectsUnitsSlot {
+class EffectsUnitsSlot : public QWidget {
+
+	Q_OBJECT
+
 public:
-	EffectsUnitsSlot(EffectsUnitsController * m_pController, QDomNode node);
+	EffectsUnitsSlot(QWidget * parent, EffectsUnitsController * m_pController, QDomNode node);
 	virtual ~EffectsUnitsSlot();
 
 private:

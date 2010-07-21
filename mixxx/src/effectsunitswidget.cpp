@@ -7,10 +7,16 @@
 
 #include "effectsunitswidget.h"
 
-EffectsUnitsWidget::EffectsUnitsWidget(QDomNode node) {
+EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node) : QWidget(parent) {
+	QGridLayout * lay = new QGridLayout(this);
+	this->setLayout(lay);
+
 	qDebug() << "FXUNITS: 		Skin: " << node.nodeName();
+	int jk = 0;
 	while (!node.isNull()){
 			qDebug() << "FXUNITS: 		Skin: " << node.nodeName();
+
+
 
 			if (node.nodeName() == "EffectsComboBox"){
 				// TODO - FXComboBox
@@ -19,7 +25,12 @@ EffectsUnitsWidget::EffectsUnitsWidget(QDomNode node) {
 				// TODO - ControlObject for On/Off
 
 			} else if (node.nodeName() == "Knob"){
-				// TODO - ControlObject for On/Off
+				WKnob * knob = new WKnob(this);
+				knob->setup(node);
+				lay->addWidget(knob, 0, jk);
+				knob->show();
+				jk++;
+
 
 			} else if (node.nodeName() == "Label"){
 				// TODO - ControlObject for On/Off

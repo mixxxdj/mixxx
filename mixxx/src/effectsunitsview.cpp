@@ -48,7 +48,10 @@ EffectsUnitsView::EffectsUnitsView(QWidget * parent) : QWidget(parent)
 
     	/* Instantiates our EffectsUnitsSlots */
     	if (node.nodeName() == "EffectsUnitsSlot"){
-    		m_EffectsUnitsSlots->append(new EffectsUnitsSlot(m_EffectsUnitsController, node.firstChild()));
+    		EffectsUnitsSlot * fxslot = new EffectsUnitsSlot(this, m_EffectsUnitsController, node.firstChild());
+    		m_EffectsUnitsSlots->append(fxslot);
+    		m_pGridLayout->addWidget(fxslot);
+    		fxslot->show();
 
     	/* Apply Background */
     	} else if (node.nodeName() == "Background"){

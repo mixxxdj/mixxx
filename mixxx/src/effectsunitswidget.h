@@ -12,9 +12,15 @@
 #include <QtGui>
 #include <QtXml>
 
-class EffectsUnitsWidget {
+#include "widget/wpushbutton.h"
+#include "widget/wknob.h"
+
+class EffectsUnitsWidget : public QWidget{
+
+	Q_OBJECT
+
 public:
-	EffectsUnitsWidget(QDomNode node);
+	EffectsUnitsWidget(QWidget * parent, QDomNode node);
 	virtual ~EffectsUnitsWidget();
 };
 
