@@ -475,32 +475,6 @@ void SoundManager::setHostAPI(QString api) {
     m_hostAPI = api;
 }
 
-float SoundManager::getSampleRate() const {
-    return m_sampleRate;
-}
-
-void SoundManager::setSampleRate(float sampleRate) {
-    // trust input is good? -- bkgood
-    m_sampleRate = sampleRate;
-}
-
-unsigned int SoundManager::getFramesPerBuffer() const {
-    return m_framesPerBuffer;
-}
-
-void SoundManager::setFramesPerBuffer(unsigned int framesPerBuffer) {
-    // check that it's a power of 2 because otherwise we
-    // get crashes and slowdowns (and bears, oh my) -- bkgood
-    // next line is INT_MAX because I can't think of a better limit
-    for (unsigned int i = 1; i < INT_MAX; i *= 2) {
-        if (i >= framesPerBuffer) {
-            framesPerBuffer = i;
-            break;
-        }
-    }
-    m_framesPerBuffer = framesPerBuffer;
-}
-        
 SoundManagerConfig SoundManager::getConfig() const {
     SoundManagerConfig config;
     config.loadDefaults(const_cast<SoundManager*>(this), SoundManagerConfig::API | SoundManagerConfig::DEVICES | SoundManagerConfig::OTHER);
