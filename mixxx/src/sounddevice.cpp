@@ -125,3 +125,11 @@ bool SoundDevice::operator== (QString other)
     return (this->getInternalName() == other);
 }
 
+SoundDeviceInfo SoundDevice::getInfo() const {
+    SoundDeviceInfo info;
+    info.displayName = getDisplayName();
+    info.internalName = getInternalName();
+    info.outputChannels = getNumOutputChannels();
+    info.inputChannels = getNumInputChannels();
+    return info;
+}
