@@ -93,7 +93,7 @@ class CachingReader : public EngineWorker {
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
-    void newTrack(TrackWeakPointer pTrack);
+    void newTrack(TrackPointer pTrack);
 
     // Wake the reader up so that it will process newTrack requests and hints.
     void wake();

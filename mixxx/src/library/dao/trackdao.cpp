@@ -113,7 +113,11 @@ bool TrackDAO::isDirty(int trackId) {
 }
 
 void TrackDAO::slotTrackDirty() {
-    // TODO(XXX) GET RID OF SENDER() CALL, SAFETY RISK
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to ask that it be saved. The only
+    // time this could be unsafe is when the TIO's reference count drops to
+    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
+    // will wait for this slot to comlete.
     TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
     if (pTrack) {
         int id = pTrack->getId();
@@ -125,7 +129,11 @@ void TrackDAO::slotTrackDirty() {
 }
 
 void TrackDAO::slotTrackChanged() {
-    // TODO(XXX) GET RID OF SENDER() CALL, SAFETY RISK
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to ask that it be saved. The only
+    // time this could be unsafe is when the TIO's reference count drops to
+    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
+    // will wait for this slot to comlete.
     TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
     if (pTrack) {
         int id = pTrack->getId();
@@ -136,7 +144,11 @@ void TrackDAO::slotTrackChanged() {
 }
 
 void TrackDAO::slotTrackSave() {
-    // TODO(XXX) GET RID OF SENDER() CALL, SAFETY RISK
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to ask that it be saved. The last
+    // time it is used is when the track is being deleted (i.e. its reference
+    // count has dropped to 0). The TIO is deleted with QObject:deleteLater, so
+    // Qt will wait for this slot to comlete.
     TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
     if (pTrack) {
         saveTrack(pTrack);

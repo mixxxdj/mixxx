@@ -291,7 +291,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     return true;
 }
 
-void CachingReader::newTrack(TrackWeakPointer pTrack) {
+void CachingReader::newTrack(TrackPointer pTrack) {
     m_trackQueueMutex.lock();
     m_trackQueue.enqueue(pTrack);
     m_trackQueueMutex.unlock();
