@@ -37,14 +37,14 @@ class SoundDevicePortAudio;
 /** A struct to some stuff we need to pass along to the callback through PortAudio **/
 struct PADeviceCallbackStuff
 {
-	SoundDevicePortAudio* soundDevice;
+	SoundDevicePortAudio *soundDevice;
 	int devIndex;
 };
 
 class SoundDevicePortAudio : SoundDevice
 {
     public:
-        SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager* sm, const PaDeviceInfo *deviceInfo, unsigned int devIndex);
+        SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm, const PaDeviceInfo *deviceInfo, unsigned int devIndex);
         ~SoundDevicePortAudio();
         int open();
         int close();

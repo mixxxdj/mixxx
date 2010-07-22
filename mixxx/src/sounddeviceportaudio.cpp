@@ -25,8 +25,8 @@
 #include "sounddeviceportaudio.h"
 #include "audiopath.h"
 
-SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, SoundManager * sm,
-                                           const PaDeviceInfo * deviceInfo, unsigned int devIndex)
+SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
+                                           const PaDeviceInfo *deviceInfo, unsigned int devIndex)
         : SoundDevice(config, sm),
           m_bSetThreadPriority(false)
 {
@@ -55,7 +55,7 @@ int SoundDevicePortAudio::open()
     qDebug() << "SoundDevicePortAudio::open()" << this->getInternalName();
     PaError err;
 
-    if (m_audioSources.empty() && m_audioReceivers.empty())
+    if (m_audioOutputs.empty() && m_audioInputs.empty())
     {
         return -1;
     }
@@ -65,18 +65,19 @@ int SoundDevicePortAudio::open()
     PaStreamParameters * pOutputParams = &m_outputParams;
     PaStreamParameters * pInputParams = &m_inputParams;
 
-    //Look at how many audio sources we have, so we can figure out how many output channels we need to open.
-    if (m_audioSources.empty())
+    // Look at how many audio outputs we have,
+    // so we can figure out how many output channels we need to open.
+    if (m_audioOutputs.empty())
     {
         pOutputParams = NULL;
     }
     else
     {
-        QListIterator<AudioSource> srcIt(m_audioSources);
-        while (srcIt.hasNext())
+        QListIterator<AudioOutput> outputIt(m_audioOutputs);
+        while (outputIt.hasNext())
         {
-            AudioSource src = srcIt.next();
-            ChannelGroup channelGroup = src.getChannelGroup();
+            AudioOutput out = outputIt.next();
+            ChannelGroup channelGroup = out.getChannelGroup();
             int highChannel = channelGroup.getChannelBase()
                 + channelGroup.getChannelCount();
             if (m_outputParams.channelCount <= highChannel) {
@@ -86,18 +87,19 @@ int SoundDevicePortAudio::open()
     }
 
 
-    //Look at how many audio receivers we're connected to, so we can figure out how many input channels we need to open.
-    if (m_audioReceivers.empty())
+    // Look at how many audio inputs we have,
+    // so we can figure out how many input channels we need to open.
+    if (m_audioInputs.empty())
     {
         pInputParams = NULL;
     }
     else
     {
-        QListIterator<AudioReceiver> recvIt(m_audioReceivers);
-        while (recvIt.hasNext())
+        QListIterator<AudioInput> inputIt(m_audioInputs);
+        while (inputIt.hasNext())
         {
-            AudioReceiver recv = recvIt.next();
-            ChannelGroup channelGroup = recv.getChannelGroup();
+            AudioInput in = inputIt.next();
+            ChannelGroup channelGroup = in.getChannelGroup();
             int highChannel = channelGroup.getChannelBase()
                 + channelGroup.getChannelCount();
             if (m_inputParams.channelCount <= highChannel) {
@@ -119,12 +121,14 @@ int SoundDevicePortAudio::open()
         iLatencyMSec = 75;
 
     qDebug() << "iLatencyMSec:" << iLatencyMSec;
-    qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:" << m_inputParams.channelCount;
-
-    //Calculate the latency in samples
-    int iMaxChannels = math_max(m_outputParams.channelCount, m_inputParams.channelCount); //Max channels opened for input or output
+    qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:"
+        << m_inputParams.channelCount;
 
     /*
+    //Calculate the latency in samples
+    //Max channels opened for input or output
+    int iMaxChannels = math_max(m_outputParams.channelCount, m_inputParams.channelCount);
+
     int iLatencySamples = (int)((float)(m_dSampleRate*iMaxChannels)/1000.f*(float)iLatencyMSec);
 
     //Round to the nearest multiple of 4.
@@ -187,7 +191,7 @@ int SoundDevicePortAudio::open()
     qDebug() << "Opening stream with id" << m_devId;
 
     //Create the callback function pointer.
-    PaStreamCallback * callback = paV19Callback;
+    PaStreamCallback *callback = paV19Callback;
 
     // Try open device using iChannelMax
     err = Pa_OpenStream(&m_pStream,
@@ -241,8 +245,10 @@ int SoundDevicePortAudio::open()
     //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
     //for the latency.
 
-    ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
-    ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
+    ControlObjectThreadMain* pControlObjectSampleRate =
+        new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
+    ControlObjectThreadMain* pControlObjectLatency =
+        new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
 
     //The latency ControlObject value MUST BE ZERO, otherwise the waveform view gets out of whack.
     //Yes, this is confusing. Fortunately, the latency ControlObject is ONLY used in the waveform view
@@ -318,7 +324,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     int iFrameSize;
     int iVCGain;
     int i;
-    static ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+    static ControlObject* pControlObjectVinylControlGain =
+        ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
 
     //Initialize some variables.
@@ -343,20 +350,26 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //Apply software preamp
         //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
+        // TODO(bkgood) move this to vcproxy or something, once we have other
+        // inputs we don't want every input getting the vc gain
         iVCGain = pControlObjectVinylControlGain->get();
-        for (i=0; i < framesPerBuffer*m_inputParams.channelCount; i++)
+        for (i = 0; i < framesPerBuffer * m_inputParams.channelCount; i++)
             in[i] *= iVCGain;
 
         //qDebug() << in[0];
 
-        m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer, m_inputParams.channelCount);
+        // TODO(bkgood) deinterlace here and send a hashmap of buffers to
+        // soundmanager so we have all our deinterlacing in one place and
+        // soundmanager gets simplified to boot
+
+        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer, m_inputParams.channelCount);
     }
 
     if (output && framesPerBuffer > 0)
     {
         assert(iFrameSize > 0);
-        QHash<AudioSource, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
+        QHash<AudioOutput, const CSAMPLE*> outputAudio
+            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer);
 
         //qDebug() << framesPerBuffer;
 
@@ -370,22 +383,25 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
             //Interlace Audio data onto portaudio buffer
             //We iterate through the source list to find out what goes in the buffer
             //data is interlaced in the order of the list
-            QListIterator<AudioSource> devItr(m_audioSources);
+            QListIterator<AudioOutput> outputItr(m_audioOutputs);
             int iChannel;
-            while (devItr.hasNext())
+            while (outputItr.hasNext())
             {
-                AudioSource src = devItr.next();
-                ChannelGroup srcChans = src.getChannelGroup();
-                int iLocalFrameBase = (iFrameBase/iFrameSize) * srcChans.getChannelCount();
-                for (iChannel = 0; iChannel < srcChans.getChannelCount(); iChannel++) //this will make sure a sample from each channel is copied
+                AudioOutput out = outputItr.next();
+                ChannelGroup outChans = out.getChannelGroup();
+                int iLocalFrameBase = (iFrameBase/iFrameSize) * outChans.getChannelCount();
+                for (iChannel = 0; iChannel < outChans.getChannelCount(); iChannel++)
+                    //this will make sure a sample from each channel is copied
                 {
                     // note that if QHash gets request for a value with a key it doesn't know, it
                     // will return a default value (NULL is the likely choice here), but the old system
                     // would've done something similar (it would have gone over the bounds of the array)
-                    output[iFrameBase + srcChans.getChannelBase() + iChannel] += outputAudio[src][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    output[iFrameBase + outChans.getChannelBase() + iChannel] +=
+                        outputAudio[out][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
                     //Input audio pass-through (useful for debugging)
                     //if (in)
-                    //    output[iFrameBase + src.channelBase + iChannel] += in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    //    output[iFrameBase + src.channelBase + iChannel] +=
+                    //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
                 }
             }
         }

@@ -29,8 +29,8 @@
 
 class SoundDevice;
 class EngineMaster;
-class AudioSource;
-class AudioReceiver;
+class AudioOutput;
+class AudioInput;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -58,9 +58,9 @@ class SoundManager : public QObject
         void setHostAPI(QString api);
         SoundManagerConfig getConfig() const;
         void setConfig(SoundManagerConfig config);
-        QHash<AudioSource, const CSAMPLE*>
-            requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
-        void pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
+        QHash<AudioOutput, const CSAMPLE*>
+            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer);
+        void pushBuffer(QList<AudioInput> inputs, short *inputBuffer, 
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
@@ -72,8 +72,8 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<unsigned int> m_samplerates;
         QString m_hostAPI;
-        QHash<AudioSource, const CSAMPLE*> m_sourceBuffers;
-        QHash<AudioReceiver, short*> m_receiverBuffers; /** Audio received from input */
+        QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
+        QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;
 #endif        

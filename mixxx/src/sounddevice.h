@@ -24,8 +24,8 @@
 ///....
 class SoundDevice;
 class SoundManager;
-class AudioSource;
-class AudioReceiver;
+class AudioOutput;
+class AudioInput;
 struct SoundDeviceInfo;
 
 #define MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL 0x0f00f00
@@ -44,18 +44,18 @@ class SoundDevice
         virtual int close() = 0;
         int getNumOutputChannels() const;     
         int getNumInputChannels() const;
-        int addSource(AudioSource src);
-        int addReceiver(AudioReceiver recv);
-        void clearSources();
-        void clearReceivers();
-        bool operator== (SoundDevice* other);
-        bool operator== (QString other);
+        int addOutput(const AudioOutput &out);
+        int addInput(const AudioInput &in);
+        void clearOutputs();
+        void clearInputs();
+        bool operator==(const SoundDevice &other) const;
+        bool operator==(const QString &other) const;
         SoundDeviceInfo getInfo() const;
     protected:
     
     //TODO: Cleanup unused members
         ConfigObject<ConfigValue> *m_pConfig;
-        SoundManager* m_pSoundManager;      //Pointer to the SoundManager object which we'll request audio from.
+        SoundManager *m_pSoundManager;      //Pointer to the SoundManager object which we'll request audio from.
         QString m_strInternalName;          //The name of the soundcard, used internally (may include the device ID)
         QString m_strDisplayName;           //The name of the soundcard, as displayed to the user 
         int m_iNumOutputChannels;           //The number of output channels that the soundcard has
@@ -64,8 +64,8 @@ class SoundDevice
         double m_dSampleRate;               //The current samplerate for the sound device.
         QString m_hostAPI;                  //The name of the audio API used by this device.
         //int m_iLatency;                       //The latency of the soundcard in milliseconds (TODO: Use bufferSize instead?)
-        QList<AudioSource> m_audioSources;          //A list containing all the sources (devices) that we're going to receive/request audio from.
-        QList<AudioReceiver> m_audioReceivers;      //A list containing all the "receivers" that we're going to send audio to.
+        QList<AudioOutput> m_audioOutputs;
+        QList<AudioInput> m_audioInputs;
         //QList<int> m_listActiveOutputChannels;    //A list containing the output channels which are currently active on the soundcard.
         //QList<int> m_listActiveInputChannels;     //A list containing the input channels which are currently active on the soundcard.
 
