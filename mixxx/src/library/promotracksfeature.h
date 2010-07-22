@@ -20,6 +20,7 @@
 
 #include <QStringListModel>
 
+#include "trackinfoobject.h"
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "configobject.h"
@@ -27,7 +28,6 @@
 class PlaylistTableModel;
 class ProxyTrackModel;
 class TrackCollection;
-class TrackInfoObject;
 class PromoTracksWebView;
 
 class PromoTracksFeature : public LibraryFeature {
@@ -38,7 +38,7 @@ class PromoTracksFeature : public LibraryFeature {
                   TrackCollection* pTrackCollection);
     virtual ~PromoTracksFeature();
     static bool isSupported(ConfigObject<ConfigValue>* config);
-    QList<TrackInfoObject*> getTracksToAutoLoad();
+    QList<TrackPointer> getTracksToAutoLoad();
 
     QVariant title();
     QIcon getIcon();
@@ -69,7 +69,7 @@ private:
     static QString m_sPromoRemoteHTMLLocation;
     QString m_sPromoAutoloadLocation;
     QStringListModel m_childModel;
-    QList<TrackInfoObject*> m_tracksToAutoLoad;
+    QList<TrackPointer> m_tracksToAutoLoad;
 };
 
 

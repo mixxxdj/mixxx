@@ -20,7 +20,7 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
-TrackInfoObject* ProxyTrackModel::getTrack(const QModelIndex& index) const {
+TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrack(indexSource);
 }

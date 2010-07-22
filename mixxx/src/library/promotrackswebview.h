@@ -27,9 +27,9 @@
 
 class PromoTracksWebView : public QWebView, public LibraryView
 {
-    Q_OBJECT 
+    Q_OBJECT
     public:
-        PromoTracksWebView(QWidget* parent, QString mixxxPath, 
+        PromoTracksWebView(QWidget* parent, QString mixxxPath,
                            QString localURL, QString remoteURL);
         ~PromoTracksWebView();
         virtual void setup(QDomNode node);
@@ -40,14 +40,14 @@ class PromoTracksWebView : public QWebView, public LibraryView
         virtual QWidget* getWidgetForMIDIControl() { return this; };
         virtual void keyPressEvent(QKeyEvent* event);
 
-    public slots: 
+    public slots:
         void handleClickedLink(const QUrl& url);
         void handleLoadFinished(bool ok);
         void checkWebpageLoadingProgress();
 
     signals:
-        void loadTrack(TrackInfoObject* pTrack);
-        void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+        void loadTrack(TrackPointer pTrack);
+        void loadTrackToPlayer(TrackPointer pTrack, int player);
     protected:
         //virtual QString userAgentForUrl (const QUrl & url) const;
 

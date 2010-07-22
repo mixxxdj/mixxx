@@ -7,19 +7,19 @@
 #include <QMap>
 #include <QSqlDatabase>
 
+#include "trackinfoobject.h"
 #include "library/dao/dao.h"
 
 #define CUE_TABLE "cues"
 
 class Cue;
-class TrackInfoObject;
 
 class CueDAO : public DAO {
   public:
     CueDAO(QSqlDatabase& database);
     virtual ~CueDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
-    
+
     void initialize();
     int cueCount();
     int numCuesForTrack(int trackId);

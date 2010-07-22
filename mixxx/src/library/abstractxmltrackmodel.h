@@ -35,8 +35,6 @@
 #include <QtXml>
 #include "trackmodel.h"
 
-class TrackInfoObject;
-
 class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
 {
     Q_OBJECT
@@ -52,9 +50,9 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
     virtual int columnCount(const QModelIndex& parent) const;
 
     //Track Model stuff
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual TrackInfoObject *getTrackByLocation(const QString& location) const;
+    virtual TrackPointer getTrackByLocation(const QString& location) const;
     virtual void search(const QString& searchText);
     virtual const QList<int>& searchColumns() const;
     virtual const QString currentSearch();
@@ -76,7 +74,7 @@ private:
 
 protected:
     /* Implemented by AbstractXmlTrackModel implementations to parse the DOM Node into a TrackInfoObject */
-    virtual TrackInfoObject *parseTrackNode(QDomNode node) const = 0;
+    virtual TrackPointer parseTrackNode(QDomNode node) const = 0;
     /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
     virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const = 0;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */

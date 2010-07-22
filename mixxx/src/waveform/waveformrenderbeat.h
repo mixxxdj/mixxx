@@ -15,7 +15,6 @@ class QPaintEvent;
 
 class ControlObjectThreadMain;
 class WaveformRenderer;
-class TrackInfoObject;
 class SoundSourceProxy;
 
 class WaveformRenderBeat : public RenderObject {
@@ -25,7 +24,7 @@ public:
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackInfoObject *pTrack);
+    void newTrack(TrackPointer pTrack);
 
 public slots:
     void slotUpdateBpm(double bpm);
@@ -36,7 +35,7 @@ private:
     ControlObjectThreadMain *m_pBpm;
     ControlObjectThreadMain *m_pBeatFirst;
     ControlObjectThreadMain *m_pTrackSamples;
-    TrackInfoObject *m_pTrack;
+    TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
     double m_dBpm;
     double m_dBeatFirst;

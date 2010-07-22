@@ -103,7 +103,7 @@ bool MissingTableModel::addTrack(const QModelIndex& index, QString location)
     return false;
 }
 
-TrackInfoObject* MissingTableModel::getTrack(const QModelIndex& index) const
+TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 
