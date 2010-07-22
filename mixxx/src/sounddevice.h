@@ -26,6 +26,7 @@ class SoundDevice;
 class SoundManager;
 class AudioSource;
 class AudioReceiver;
+struct SoundDeviceInfo;
 
 #define MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL 0x0f00f00
 #define MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL  0x0100100
@@ -49,6 +50,7 @@ class SoundDevice
         void clearReceivers();
         bool operator== (SoundDevice* other);
         bool operator== (QString other);
+        SoundDeviceInfo getInfo() const;
     protected:
     
     //TODO: Cleanup unused members
@@ -67,6 +69,13 @@ class SoundDevice
         //QList<int> m_listActiveOutputChannels;    //A list containing the output channels which are currently active on the soundcard.
         //QList<int> m_listActiveInputChannels;     //A list containing the input channels which are currently active on the soundcard.
 
+};
+
+struct SoundDeviceInfo {
+    QString displayName;
+    QString internalName;
+    int outputChannels;
+    int inputChannels;
 };
 
 #endif
