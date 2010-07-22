@@ -93,28 +93,28 @@ void SoundManagerConfig::setLatency(unsigned int latency) {
     m_latency = latency != 0 ? math_min(latency, MAX_LATENCY) : 1;
 }
 
-void SoundManagerConfig::addSource(SoundDevice *device, AudioSource source) {
-    m_sources.insert(device, source);
+void SoundManagerConfig::addOutput(SoundDevice *device, AudioOutput out) {
+    m_outputs.insert(device, out);
 }
 
-void SoundManagerConfig::addReceiver(SoundDevice *device, AudioReceiver receiver) {
-    m_receivers.insert(device, receiver);
+void SoundManagerConfig::addInput(SoundDevice *device, AudioInput in) {
+    m_inputs.insert(device, in);
 }
 
-QMultiHash<SoundDevice*, AudioSource> SoundManagerConfig::getSources() const {
-    return m_sources;
+QMultiHash<SoundDevice*, AudioOutput> SoundManagerConfig::getOutputs() const {
+    return m_outputs;
 }
 
-QMultiHash<SoundDevice*, AudioReceiver> SoundManagerConfig::getReceivers() const {
-    return m_receivers;
+QMultiHash<SoundDevice*, AudioInput> SoundManagerConfig::getInputs() const {
+    return m_inputs;
 }
 
-void SoundManagerConfig::clearSources() {
-    m_sources.clear();
+void SoundManagerConfig::clearOutputs() {
+    m_outputs.clear();
 }
 
-void SoundManagerConfig::clearReceivers() {
-    m_receivers.clear();
+void SoundManagerConfig::clearInputs() {
+    m_inputs.clear();
 }
 
 /**
@@ -155,13 +155,13 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         }
     }
     if (flags & SoundManagerConfig::DEVICES) {
-        m_sources.clear();
-        m_receivers.clear();
+        clearOutputs();
+        clearInputs();
         QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty() && outputDevices.first()->getNumOutputChannels() > 1) {
             SoundDevice *masterDevice = outputDevices.first();
-            AudioSource masterSource(AudioPath::MASTER, 0);
-            addSource(masterDevice, masterSource);
+            AudioOutput masterOut(AudioPath::MASTER, 0);
+            addOutput(masterDevice, masterOut);
         }
     }
     if (flags & SoundManagerConfig::OTHER) {

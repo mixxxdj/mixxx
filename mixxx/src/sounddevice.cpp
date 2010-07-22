@@ -71,58 +71,56 @@ void SoundDevice::setHostAPI(QString api)
     m_hostAPI = api;
 }
 
-int SoundDevice::addSource(const AudioSource src)
+int SoundDevice::addOutput(const AudioOutput &out)
 { 
     //Check if the output channels are already used
-    QListIterator<AudioSource> itr(m_audioSources);
+    QListIterator<AudioOutput> itr(m_audioOutputs);
     while (itr.hasNext())
     {
-        AudioSource src_internal = itr.next();
-        if (src.channelsClash(src_internal)) {
+        AudioOutput out_internal = itr.next();
+        if (out.channelsClash(out_internal)) {
             return MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL;
         }
     }
-    m_audioSources.push_back(src);
+    m_audioOutputs.push_back(out);
     
     return 0;
 }
 
-void SoundDevice::clearSources()
+void SoundDevice::clearOutputs()
 {
-    while (!m_audioSources.empty())
-        m_audioSources.pop_back();
+    m_audioOutputs.clear();
 }
 
-int SoundDevice::addReceiver(const AudioReceiver recv)
+int SoundDevice::addInput(const AudioInput &in)
 {
     //Check if the input channels are already used
-    QListIterator<AudioReceiver> itr(m_audioReceivers);
+    QListIterator<AudioInput> itr(m_audioInputs);
     while (itr.hasNext())
     {
-        AudioReceiver recv_internal = itr.next();
-        if (recv.channelsClash(recv_internal)) {
+        AudioInput in_internal = itr.next();
+        if (in.channelsClash(in_internal)) {
             return MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL;
         }
     }
-    m_audioReceivers.push_back(recv);
+    m_audioInputs.push_back(in);
     
     return 0;
 }
 
-void SoundDevice::clearReceivers()
+void SoundDevice::clearInputs()
 {
-    while (!m_audioReceivers.empty())
-        m_audioReceivers.pop_back();
+    m_audioInputs.clear();
 }
 
-bool SoundDevice::operator== (SoundDevice * other)
+bool SoundDevice::operator==(const SoundDevice &other) const
 {
-    return (this->getInternalName() == other->getInternalName());
+    return this->getInternalName() == other.getInternalName();
 }
 
-bool SoundDevice::operator== (QString other)
+bool SoundDevice::operator==(const QString &other) const
 {
-    return (this->getInternalName() == other);
+    return getInternalName() == other;
 }
 
 SoundDeviceInfo SoundDevice::getInfo() const {

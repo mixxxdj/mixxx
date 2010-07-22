@@ -2,11 +2,6 @@
  * @file audiopath.h
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100611
- * @note This file/these classes use uchar instead of uint because they are
- *       passed around a lot in code which needs to be fast (portaudio
- *       callback). Using uchars means an AudioPath should fit in 4 bytes of
- *       memory and hopefully last longer in high-level cache -- hopefully.
- *       None of these values should really be >255 anyway. -- bkgood
  */
 
 /***************************************************************************
@@ -44,7 +39,8 @@ private:
 /**
  * @class AudioPath
  * @brief Describes a path for audio to take.
- * @warning Subclass me before using!
+ * @note This needs a new name, the current one sucks. If you find one,
+ *       feel free to rename as necessary.
  */
 class AudioPath {
 public:
@@ -82,14 +78,14 @@ protected:
 };
 
 /**
- * @class AudioSource
+ * @class AudioOutput
  * @extends AudioPath
  * @brief A source of audio in Mixxx that is to be output to a group of
  *        channels on an audio interface.
  */
-class AudioSource : public AudioPath {
+class AudioOutput : public AudioPath {
 public:
-    AudioSource(AudioPathType type = INVALID, unsigned char channelBase = 0,
+    AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                 unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
 protected:
@@ -97,14 +93,14 @@ protected:
 };
 
 /**
- * @class AudioReceiver
+ * @class AudioInput
  * @extends AudioPath
  * @brief A source of audio at a group of channels on an audio interface
  *        that is be processed in Mixxx.
  */
-class AudioReceiver : public AudioPath {
+class AudioInput : public AudioPath {
 public:
-    AudioReceiver(AudioPathType type = INVALID, unsigned char channelBase = 0,
+    AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                   unsigned char index = 0);
     static QList<AudioPathType> getSupportedTypes();
 protected:
@@ -114,7 +110,7 @@ protected:
 typedef AudioPath::AudioPathType AudioPathType;
 
 // globals for QHash
-unsigned int qHash(const AudioSource &src);
-unsigned int qHash(const AudioReceiver &recv);
+unsigned int qHash(const AudioOutput &output);
+unsigned int qHash(const AudioInput &input);
 
 #endif

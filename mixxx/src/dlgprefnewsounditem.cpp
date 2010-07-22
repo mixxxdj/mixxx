@@ -23,7 +23,7 @@
  * @param type The AudioPathType of the path to be represented
  * @param devices The list of devices for the user to choose from (either a collection
  * of input or output devices).
- * @param isInput true if this is representing an AudioReceiver, false otherwise
+ * @param isInput true if this is representing an AudioInput, false otherwise
  * @param index the index of the represented AudioPath, if applicable
  */
 DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
@@ -75,9 +75,9 @@ void DlgPrefNewSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
  * combo box.
  */
 void DlgPrefNewSoundItem::deviceChanged(int index) {
-    // TODO assumes we're looking for a two-channel device -- eventually will want
-    // to give the option of mono for a microphone, depending on the value of
-    // m_type (this will be an easy fix when there's time) -- bkgood
+    // TODO(bkgood) assumes we're looking for a two-channel device -- eventually
+    // will want to give the option of mono for a microphone, depending on the
+    // value of m_type (this will be an easy fix when there's time)
     channelComboBox->clear();
     QString selection = deviceComboBox->itemData(index).toString();
     unsigned int numChannels = 0;
@@ -110,24 +110,24 @@ emitAndReturn:
 
 void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
-        QMultiHash<SoundDevice*, AudioReceiver> recvs(config.getReceivers());
-        foreach (SoundDevice *dev, recvs.uniqueKeys()) {
-            foreach (AudioReceiver recv, recvs.values(dev)) {
-                if (recv.getType() == m_type && recv.getIndex() == m_index) {
+        QMultiHash<SoundDevice*, AudioInput> inputs(config.getInputs());
+        foreach (SoundDevice *dev, inputs.uniqueKeys()) {
+            foreach (AudioInput in, inputs.values(dev)) {
+                if (in.getType() == m_type && in.getIndex() == m_index) {
                     setDevice(dev);
-                    setChannel(recv.getChannelGroup().getChannelBase());
+                    setChannel(in.getChannelGroup().getChannelBase());
                     return; // we're just using the first one found, leave
                             // multiples to a more advanced dialog -- bkgood
                 }
             }
         }
     } else {
-        QMultiHash<SoundDevice*, AudioSource> srcs(config.getSources());
-        foreach (SoundDevice *dev, srcs.uniqueKeys()) {
-            foreach (AudioSource src, srcs.values(dev)) {
-                if (src.getType() == m_type && src.getIndex() == m_index) {
+        QMultiHash<SoundDevice*, AudioOutput> outputs(config.getOutputs());
+        foreach (SoundDevice *dev, outputs.uniqueKeys()) {
+            foreach (AudioOutput out, outputs.values(dev)) {
+                if (out.getType() == m_type && out.getIndex() == m_index) {
                     setDevice(dev);
-                    setChannel(src.getChannelGroup().getChannelBase());
+                    setChannel(out.getChannelGroup().getChannelBase());
                     return; // we're just using the first one found, leave
                             // multiples to a more advanced dialog -- bkgood
                 }
@@ -147,18 +147,18 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
         return;
     } // otherwise, this will have a valid audiopath
     if (m_isInput) {
-        config->addReceiver(
+        config->addInput(
                 device,
-                AudioReceiver(
+                AudioInput(
                     m_type,
                     channelComboBox->itemData(channelComboBox->currentIndex()).toUInt(),
                     m_index
                     )
                 );
     } else {
-        config->addSource(
+        config->addOutput(
                 device,
-                AudioSource(
+                AudioOutput(
                     m_type,
                     channelComboBox->itemData(channelComboBox->currentIndex()).toUInt(),
                     m_index

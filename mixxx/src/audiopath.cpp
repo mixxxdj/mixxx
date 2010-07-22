@@ -174,7 +174,7 @@ unsigned char AudioPath::channelsNeededForType(AudioPathType type) {
     }
 }
 
-AudioSource::AudioSource(AudioPathType type /* = INVALID */,
+AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
     : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
@@ -187,7 +187,7 @@ AudioSource::AudioSource(AudioPathType type /* = INVALID */,
 }
 
 //static
-QList<AudioPathType> AudioSource::getSupportedTypes() {
+QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
     types.append(HEADPHONES);
@@ -196,8 +196,8 @@ QList<AudioPathType> AudioSource::getSupportedTypes() {
 }
 
 // protected
-void AudioSource::setType(AudioPathType type) {
-    if (AudioSource::getSupportedTypes().contains(type)) {
+void AudioOutput::setType(AudioPathType type) {
+    if (AudioOutput::getSupportedTypes().contains(type)) {
         m_type = type;
     } else {
         m_type = AudioPath::INVALID;
@@ -205,7 +205,7 @@ void AudioSource::setType(AudioPathType type) {
 }
 
 
-AudioReceiver::AudioReceiver(AudioPathType type /* = INVALID */,
+AudioInput::AudioInput(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
   : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
@@ -218,7 +218,7 @@ AudioReceiver::AudioReceiver(AudioPathType type /* = INVALID */,
 }
 
 //static
-QList<AudioPathType> AudioReceiver::getSupportedTypes() {
+QList<AudioPathType> AudioInput::getSupportedTypes() {
     QList<AudioPathType> types;
 #ifdef __VINYLCONTROL__
     // this disables vinyl control for all of the sound devices stuff
@@ -229,8 +229,8 @@ QList<AudioPathType> AudioReceiver::getSupportedTypes() {
 }
 
 // protected
-void AudioReceiver::setType(AudioPathType type) {
-    if (AudioReceiver::getSupportedTypes().contains(type)) {
+void AudioInput::setType(AudioPathType type) {
+    if (AudioInput::getSupportedTypes().contains(type)) {
         m_type = type;
     } else {
         m_type = AudioPath::INVALID;
@@ -238,10 +238,10 @@ void AudioReceiver::setType(AudioPathType type) {
 }
 
 
-unsigned int qHash(const AudioSource &src) {
-    return src.getHash();
+unsigned int qHash(const AudioOutput &output) {
+    return output.getHash();
 }
 
-unsigned int qHash(const AudioReceiver &recv) {
-    return recv.getHash();
+unsigned int qHash(const AudioInput &input) {
+    return input.getHash();
 }

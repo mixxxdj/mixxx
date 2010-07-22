@@ -101,7 +101,7 @@ void DlgPrefNewSound::slotApply() {
  */
 void DlgPrefNewSound::initializePaths() {
     QList<DlgPrefNewSoundItem*> items;
-    foreach (AudioPathType type, AudioSource::getSupportedTypes()) {
+    foreach (AudioPathType type, AudioOutput::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
         if (AudioPath::isIndexed(type)) {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {
@@ -121,7 +121,7 @@ void DlgPrefNewSound::initializePaths() {
             items.append(toInsert);
         }
     }
-    foreach (AudioPathType type, AudioReceiver::getSupportedTypes()) {
+    foreach (AudioPathType type, AudioInput::getSupportedTypes()) {
         DlgPrefNewSoundItem *toInsert;
         if (AudioPath::isIndexed(type)) {
             for (unsigned int i = 0; i < NUM_DECKS; ++i) {

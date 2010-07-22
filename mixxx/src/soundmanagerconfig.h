@@ -24,8 +24,8 @@
 
 class SoundDevice;
 class SoundManager;
-class AudioSource;
-class AudioReceiver;
+class AudioOutput;
+class AudioInput;
 
 const unsigned int MAX_LATENCY = 8; // this represents latency values from 1 ms to about
                                     // 180 ms, should be sufficient -- bkgood
@@ -54,12 +54,12 @@ public:
     unsigned int getLatency() const;
     unsigned int getFramesPerBuffer() const;
     void setLatency(unsigned int latency);
-    void addSource(SoundDevice *device, AudioSource source);
-    void addReceiver(SoundDevice *device, AudioReceiver receiver);
-    QMultiHash<SoundDevice*, AudioSource> getSources() const;
-    QMultiHash<SoundDevice*, AudioReceiver> getReceivers() const;
-    void clearSources();
-    void clearReceivers();
+    void addOutput(SoundDevice *device, AudioOutput out);
+    void addInput(SoundDevice *device, AudioInput in);
+    QMultiHash<SoundDevice*, AudioOutput> getOutputs() const;
+    QMultiHash<SoundDevice*, AudioInput> getInputs() const;
+    void clearOutputs();
+    void clearInputs();
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;
@@ -72,7 +72,7 @@ private:
     // latency as milliseconds or frames per buffer is bad because those
     // values very with sample rate) -- bkgood
     unsigned int m_latency; // this is an index
-    QMultiHash<SoundDevice*, AudioSource> m_sources;
-    QMultiHash<SoundDevice*, AudioReceiver> m_receivers;
+    QMultiHash<SoundDevice*, AudioOutput> m_outputs;
+    QMultiHash<SoundDevice*, AudioInput> m_inputs;
 };
 #endif
