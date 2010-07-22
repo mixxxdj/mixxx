@@ -37,9 +37,6 @@ class QDomElement;
 class QDomDocument;
 class QDomNode;
 class ControlObject;
-class BpmDetector;
-class BpmReceiver;
-class BpmScheme;
 class TrackPlaylist;
 class Cue;
 

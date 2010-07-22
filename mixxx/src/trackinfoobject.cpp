@@ -25,8 +25,6 @@
 
 #include "trackinfoobject.h"
 
-#include "bpm/bpmscheme.h"
-#include "bpm/bpmreceiver.h"
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
 #include "controlobject.h"

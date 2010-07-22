@@ -49,7 +49,6 @@ typedef struct MadSeekFrameType {
 /**
   *@author Tue and Ken Haste Andersen
   */
-class TrackInfoObject;
 
 class SoundSourceMp3 : public SoundSource {
 public:
