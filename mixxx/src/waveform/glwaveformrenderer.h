@@ -9,9 +9,8 @@
 #include <qgl.h>
 
 #include "defs.h"
+#include "trackinfoobject.h"
 
-
-class TrackInfoObject;
 class ControlObjectThreadMain;
 class QDomNode;
 class WaveformRenderBeat;
@@ -28,7 +27,7 @@ public:
     void glDraw();
     void drawSignalLines();
     void drawSignalPixmap(QPainter* p);
-    void newTrack(TrackInfoObject *pTrack);
+    void newTrack(TrackPointer pTrack);
     void setup(QDomNode node);
     void precomputePixmap();
     void setDesiredSecondsToDisplay(int seconds);
@@ -51,7 +50,7 @@ private:
     ControlObject *m_pCOVisualResample;
 
     int m_iDesiredSecondsToDisplay;
-    TrackInfoObject *m_pTrack;
+    TrackPointer m_pTrack;
 
     GLfloat *m_pInternalBuffer;
     int m_iInternalBufferSize;

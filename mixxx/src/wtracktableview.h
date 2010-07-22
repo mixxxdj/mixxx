@@ -5,12 +5,13 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/searchthread.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
 
-class TrackInfoObject;
+
 class DlgTrackInfo;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -41,8 +42,8 @@ private slots:
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
 signals:
-    void loadTrack(TrackInfoObject* pTrack);
-    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, int player);
 
 private:
     void showTrackInfo(QModelIndex index);

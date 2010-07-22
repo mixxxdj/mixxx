@@ -112,7 +112,7 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
         return false;
 }
 
-TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
+TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
 	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 	return m_trackDao.getTrack(trackId);
