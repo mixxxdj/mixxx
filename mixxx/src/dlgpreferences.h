@@ -34,7 +34,6 @@ class MixxxView;
 class PlayerProxy;
 class SoundManager;
 class DlgPrefSound;
-class DlgPrefNewSound;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
 class DlgPrefNoMidi;
@@ -77,7 +76,6 @@ private:
     void destroyMidiWidgets();
     void setupMidiWidgets();
     DlgPrefSound *wsound;
-    DlgPrefNewSound *wnewsound;
     QList<DlgPrefMidiBindings*> wmidiBindingsForDevice;
     DlgPrefPlaylist *wplaylist;
     DlgPrefNoMidi *wNoMidi;
@@ -90,7 +88,6 @@ private:
     DlgPrefShoutcast *wshoutcast;
 
 	QTreeWidgetItem* m_pSoundButton;
-	QTreeWidgetItem* m_pNewSoundButton;
 	QTreeWidgetItem* m_pPlaylistButton;
 	QTreeWidgetItem* m_pControlsButton;
 	QTreeWidgetItem* m_pEqButton;

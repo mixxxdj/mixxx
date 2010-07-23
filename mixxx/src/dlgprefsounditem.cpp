@@ -1,5 +1,5 @@
 /**
- * @file dlgprefnewsounditem.cpp
+ * @file dlgprefsounditem.cpp
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100704
  */
@@ -13,7 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dlgprefnewsounditem.h"
+#include "dlgprefsounditem.h"
 #include "sounddevice.h"
 #include "soundmanagerconfig.h"
 
@@ -26,7 +26,7 @@
  * @param isInput true if this is representing an AudioInput, false otherwise
  * @param index the index of the represented AudioPath, if applicable
  */
-DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
+DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
         QList<SoundDevice*> &devices, bool isInput,
         unsigned int index /* = 0 */)
     : QWidget(parent)
@@ -49,7 +49,7 @@ DlgPrefNewSoundItem::DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
     refreshDevices(m_devices);
 }
 
-DlgPrefNewSoundItem::~DlgPrefNewSoundItem() {
+DlgPrefSoundItem::~DlgPrefSoundItem() {
 
 }
 
@@ -57,7 +57,7 @@ DlgPrefNewSoundItem::~DlgPrefNewSoundItem() {
  * Slot called when the parent preferences pane updates its list of sound
  * devices, to update the item widget's list of devices to display.
  */
-void DlgPrefNewSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
+void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
     m_devices = devices;
     deviceComboBox->setCurrentIndex(0);
     // not using combobox->clear means we can leave in "None" so it
@@ -74,7 +74,7 @@ void DlgPrefNewSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
  * Slot called when the device combo box selection changes. Updates the channel
  * combo box.
  */
-void DlgPrefNewSoundItem::deviceChanged(int index) {
+void DlgPrefSoundItem::deviceChanged(int index) {
     // TODO(bkgood) assumes we're looking for a two-channel device -- eventually
     // will want to give the option of mono for a microphone, depending on the
     // value of m_type (this will be an easy fix when there's time)
@@ -108,7 +108,7 @@ emitAndReturn:
     emit(settingChanged());
 }
 
-void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
+void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
         QMultiHash<QString, AudioInput> inputs(config.getInputs());
         foreach (QString devName, inputs.uniqueKeys()) {
@@ -137,11 +137,11 @@ void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
 }
 
 /**
- * Slot called when the underlying DlgPrefNewSound wants this Item to
+ * Slot called when the underlying DlgPrefSound wants this Item to
  * record its respective path with the SoundManagerConfig instance at
  * config.
  */
-void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
+void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
     SoundDevice *device = getDevice();
     if (device == NULL) {
         return;
@@ -171,7 +171,7 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
  * Gets the currently selected SoundDevice
  * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
  */
-SoundDevice* DlgPrefNewSoundItem::getDevice() const {
+SoundDevice* DlgPrefSoundItem::getDevice() const {
     QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     if (selection == "None") {
         return NULL;
@@ -186,7 +186,7 @@ SoundDevice* DlgPrefNewSoundItem::getDevice() const {
     return NULL;
 }
 
-void DlgPrefNewSoundItem::setDevice(const QString &deviceName) {
+void DlgPrefSoundItem::setDevice(const QString &deviceName) {
     int index = deviceComboBox->findData(deviceName);
     if (index != -1) {
         deviceComboBox->setCurrentIndex(index);
@@ -195,7 +195,7 @@ void DlgPrefNewSoundItem::setDevice(const QString &deviceName) {
     }
 }
 
-void DlgPrefNewSoundItem::setChannel(unsigned int channel) {
+void DlgPrefSoundItem::setChannel(unsigned int channel) {
     int index = channelComboBox->findData(channel);
     if (index != -1) {
         channelComboBox->setCurrentIndex(index);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgPrefNewSoundItem</class>
- <widget class="QWidget" name="DlgPrefNewSoundItem">
+ <class>DlgPrefSoundItem</class>
+ <widget class="QWidget" name="DlgPrefSoundItem">
   <property name="windowTitle">
    <string>Form</string>
   </property>

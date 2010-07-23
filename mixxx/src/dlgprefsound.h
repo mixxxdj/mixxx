@@ -1,10 +1,8 @@
-/***************************************************************************
-                          dlgprefsound.h  -  description
-                             -------------------
-    begin                : Thu Apr 17 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
+/**
+ * @file dlgprefsound.h
+ * @author Bill Good <bkgood at gmail dot com>
+ * @date 20100625
+ */
 
 /***************************************************************************
  *                                                                         *
@@ -18,54 +16,49 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
+#include <QtCore>
 #include "ui_dlgprefsounddlg.h"
 #include "configobject.h"
+#include "soundmanagerconfig.h"
 
-class QWidget;
 class SoundManager;
 class ControlObject;
+class SoundDevice;
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
+                                  // soundmanager or something
 
 class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
-    Q_OBJECT
+    Q_OBJECT;
 public:
-    DlgPrefSound(QWidget *parent, SoundManager* _soundman, ConfigObject<ConfigValue> *_config);
+    DlgPrefSound(QWidget *parent, SoundManager *soundManager,
+            ConfigObject<ConfigValue> *config);
     ~DlgPrefSound();
-public slots:
-    /** Update widget */
-    void slotUpdate();
-    void slotLatency();
-    void slotApply();
-    void slotApplyApi();
-
-private slots:
-    void slotLatencySliderClick();
-    void slotLatencySliderRelease();
-    void slotLatencySliderChange(int);
-	void slotComboBoxSoundcardMasterChange();
-	void slotComboBoxSoundcardHeadphonesChange();
-    	void slotChannelChange();
-
 signals:
-    void apiUpdated();
-
+    void loadPaths(const SoundManagerConfig &config);
+    void writePaths(SoundManagerConfig *config);
+    void refreshOutputDevices(const QList<SoundDevice*> &devices);
+    void refreshInputDevices(const QList<SoundDevice*> &devices);
+public slots:
+    void slotUpdate(); // called on show
+    void slotApply();  // called on ok button
 private:
-    /** Set QComboBox objects to be enabled or disabled based on different configuration states */
-    void enableValidComboBoxes();
-    /** Transform a slider value to latency value in msec */
-    int getSliderLatencyMsec(int);
-    /** Transform latency value in msec to slider value */
-    int getSliderLatencyVal(int);
-    /** Pointer to the sound manager */
-    SoundManager* m_pSoundManager;
-    /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
-    /** True if the mouse is currently dragging the latency slider */
-    bool m_bLatencySliderDrag; 
-	QWidget *m_parent;
+    void initializePaths();
+    void loadSettings();
+    SoundManager *m_pSoundManager;
+    ConfigObject<ConfigValue> *m_pConfig;
+    QList<SoundDevice*> m_inputDevices;
+    QList<SoundDevice*> m_outputDevices;
+    bool m_settingsModified;
+    SoundManagerConfig m_config;
+    bool m_loading;
+private slots:
+    void apiChanged(int index);
+    void sampleRateChanged(int index);
+    void latencyChanged(int index);
+    void updateLatencies(int sampleRateIndex);
+    void refreshDevices();
+    void settingChanged();
 };
 
 #endif
