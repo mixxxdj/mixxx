@@ -39,7 +39,9 @@ class SoundDevice
         QString getInternalName() const;
         QString getDisplayName() const;
         QString getHostAPI() const;
-        void setHostAPI(QString api);        
+        void setHostAPI(QString api);
+        void setSampleRate(double sampleRate);
+        void setFramesPerBuffer(unsigned int framesPerBuffer);
         virtual int open() = 0;
         virtual int close() = 0;
         int getNumOutputChannels() const;     
@@ -52,23 +54,17 @@ class SoundDevice
         bool operator==(const QString &other) const;
         SoundDeviceInfo getInfo() const;
     protected:
-    
-    //TODO: Cleanup unused members
         ConfigObject<ConfigValue> *m_pConfig;
         SoundManager *m_pSoundManager;      //Pointer to the SoundManager object which we'll request audio from.
         QString m_strInternalName;          //The name of the soundcard, used internally (may include the device ID)
         QString m_strDisplayName;           //The name of the soundcard, as displayed to the user 
         int m_iNumOutputChannels;           //The number of output channels that the soundcard has
         int m_iNumInputChannels;            //The number of input channels that the soundcard has
-        int m_iBufferSize;                  //The number of samples in a buffer.
         double m_dSampleRate;               //The current samplerate for the sound device.
         QString m_hostAPI;                  //The name of the audio API used by this device.
-        //int m_iLatency;                       //The latency of the soundcard in milliseconds (TODO: Use bufferSize instead?)
+        unsigned int m_framesPerBuffer;
         QList<AudioOutput> m_audioOutputs;
         QList<AudioInput> m_audioInputs;
-        //QList<int> m_listActiveOutputChannels;    //A list containing the output channels which are currently active on the soundcard.
-        //QList<int> m_listActiveInputChannels;     //A list containing the input channels which are currently active on the soundcard.
-
 };
 
 struct SoundDeviceInfo {
