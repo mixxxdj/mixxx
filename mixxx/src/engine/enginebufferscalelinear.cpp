@@ -139,7 +139,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
     {
         long rem = (long)floor(m_scaleRemainder);
-        
+
+
         // Be very defensive about equating the remainder
         // back into unscaled_samples_needed
 	if ((unscaled_samples_needed - rem) >= 1)
@@ -148,12 +149,13 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             m_scaleRemainder -= rem;
             unscaled_samples_needed -= rem;
         }
-        
+
     }
 
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
     unscaled_samples_needed *= 2;
+    
     Q_ASSERT(unscaled_samples_needed >= 0);
     Q_ASSERT(unscaled_samples_needed != 0);
 
