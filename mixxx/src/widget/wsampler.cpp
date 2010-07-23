@@ -61,10 +61,10 @@ WSampler::WSampler(QWidget* parent, SamplerManager* pSamplerManager) :
 WSampler::~WSampler() {
     
     
-    // if(m_pWaveformRendererCh3) {
-    //      delete m_pWaveformRendererCh3;
-    //      m_pWaveformRendererCh3 = NULL;
-    //     }
+    if(m_pWaveformRendererCh3) {
+          delete m_pWaveformRendererCh3;
+          m_pWaveformRendererCh3 = NULL;
+         }
 
 }
 
@@ -115,6 +115,7 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
                 m_pOverviewCh3->setParent(m_pSamplerWindow);
 		        m_pOverviewCh3->show();
             }
+            
         } else if (samplerNode.nodeName()=="Knob")
         {
             WKnob * p = new WKnob(this);
@@ -127,7 +128,7 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
         samplerNode = samplerNode.nextSibling();
         
     }
-    WWidget::setup(node);
+    //WWidget::setup(node);
     
     
     
