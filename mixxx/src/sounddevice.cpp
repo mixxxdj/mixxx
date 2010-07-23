@@ -29,11 +29,7 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
     m_strDisplayName = "Unknown Soundcard";
     m_iNumOutputChannels = 2;
     m_iNumInputChannels = 2;
-    m_iBufferSize = 3200; //~72 milliseconds at 44100 Hz
     m_dSampleRate = 44100.0f;
-    //Add channel 1 and 2 as active channels
-    //m_listActiveChannels.push_back(1);
-    //m_listActiveChannels.push_back(2);
 }
 
 SoundDevice::~SoundDevice()
@@ -69,6 +65,25 @@ int SoundDevice::getNumOutputChannels() const
 void SoundDevice::setHostAPI(QString api)
 {
     m_hostAPI = api;
+}
+
+void SoundDevice::setSampleRate(double sampleRate) {
+    if (sampleRate <= 0.0) {
+        // this is the default value used elsewhere in this file
+        sampleRate = 44100.0;
+    }
+    m_dSampleRate = sampleRate;
+}
+
+void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
+    if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
+        // framesPerBuffer * 2 because a frame will generally end up
+        // being 2 samples and MAX_BUFFER_LEN is a number of samples
+        // this isn't checked elsewhere, so...
+        qFatal("framesPerBuffer too big in "
+                "SoundDevice::setFramesPerBuffer(uint)");
+    }
+    m_framesPerBuffer = framesPerBuffer;
 }
 
 int SoundDevice::addOutput(const AudioOutput &out)
