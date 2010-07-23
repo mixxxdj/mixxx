@@ -27,7 +27,6 @@
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
-#include "dlgprefnewsound.h"
 #include "dlgprefmidibindings.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefnomidi.h"
@@ -65,7 +64,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, config);
-    wnewsound = new DlgPrefNewSound(this, soundman, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     weq = new DlgPrefEQ(this, config);
@@ -86,7 +84,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     }
 
     pagesWidget->addWidget(wsound);
-    pagesWidget->addWidget(wnewsound);
     pagesWidget->addWidget(wplaylist);
     pagesWidget->addWidget(wcontrols);
     pagesWidget->addWidget(weq);
@@ -113,7 +110,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wnewsound,    SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), weq,       SLOT(slotUpdate()));
@@ -137,7 +133,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                                                                  //connect for wsound...
 #endif
     connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wnewsound,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
@@ -170,11 +165,6 @@ void DlgPreferences::createIcons()
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     
-    m_pNewSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pNewSoundButton->setIcon(0, QIcon(":/images/preferences/soundhardware.png"));
-    m_pNewSoundButton->setText(0, tr("New Sound Hardware"));
-    m_pNewSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pNewSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 /*
     QTreeWidgetItem * midiButton = new QTreeWidgetItem(contentsTreeWidget);
     midiButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
@@ -259,11 +249,9 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     if (!current)
         current = previous;
 
-    if (current == m_pSoundButton)
+    if (current == m_pSoundButton) {
+           wsound->slotUpdate();
            pagesWidget->setCurrentWidget(wsound);
-       else if (current == m_pNewSoundButton) {
-           wnewsound->slotUpdate();
-           pagesWidget->setCurrentWidget(wnewsound);
        } else if (current == m_pPlaylistButton)
            pagesWidget->setCurrentWidget(wplaylist);
        else if (current == m_pControlsButton)

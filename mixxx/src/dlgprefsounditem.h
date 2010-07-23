@@ -1,5 +1,5 @@
 /**
- * @file dlgaudiopath.h
+ * @file dlgprefsounditem.h
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100704
  */
@@ -13,22 +13,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFNEWSOUNDITEM_H
-#define DLGPREFNEWSOUNDITEM_H
+#ifndef DLGPREFSOUNDITEM_H
+#define DLGPREFSOUNDITEM_H
 
 #include <QtCore>
-#include "ui_dlgprefnewsounditem.h"
+#include "ui_dlgprefsounditem.h"
 #include "audiopath.h"
 
 class SoundDevice;
 class SoundManagerConfig;
 
-class DlgPrefNewSoundItem : public QWidget, public Ui::DlgPrefNewSoundItem {
+class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT;
 public:
-    DlgPrefNewSoundItem(QWidget *parent, AudioPathType type,
+    DlgPrefSoundItem(QWidget *parent, AudioPathType type,
             QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
-    ~DlgPrefNewSoundItem();
+    ~DlgPrefSoundItem();
 signals:
     void settingChanged();
 public slots:
