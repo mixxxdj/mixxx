@@ -110,11 +110,11 @@ emitAndReturn:
 
 void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
-        QMultiHash<SoundDevice*, AudioInput> inputs(config.getInputs());
-        foreach (SoundDevice *dev, inputs.uniqueKeys()) {
-            foreach (AudioInput in, inputs.values(dev)) {
+        QMultiHash<QString, AudioInput> inputs(config.getInputs());
+        foreach (QString devName, inputs.uniqueKeys()) {
+            foreach (AudioInput in, inputs.values(devName)) {
                 if (in.getType() == m_type && in.getIndex() == m_index) {
-                    setDevice(dev);
+                    setDevice(devName);
                     setChannel(in.getChannelGroup().getChannelBase());
                     return; // we're just using the first one found, leave
                             // multiples to a more advanced dialog -- bkgood
@@ -122,11 +122,11 @@ void DlgPrefNewSoundItem::loadPath(const SoundManagerConfig &config) {
             }
         }
     } else {
-        QMultiHash<SoundDevice*, AudioOutput> outputs(config.getOutputs());
-        foreach (SoundDevice *dev, outputs.uniqueKeys()) {
-            foreach (AudioOutput out, outputs.values(dev)) {
+        QMultiHash<QString, AudioOutput> outputs(config.getOutputs());
+        foreach (QString devName, outputs.uniqueKeys()) {
+            foreach (AudioOutput out, outputs.values(devName)) {
                 if (out.getType() == m_type && out.getIndex() == m_index) {
-                    setDevice(dev);
+                    setDevice(devName);
                     setChannel(out.getChannelGroup().getChannelBase());
                     return; // we're just using the first one found, leave
                             // multiples to a more advanced dialog -- bkgood
@@ -148,7 +148,7 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
     } // otherwise, this will have a valid audiopath
     if (m_isInput) {
         config->addInput(
-                device,
+                device->getInternalName(),
                 AudioInput(
                     m_type,
                     channelComboBox->itemData(channelComboBox->currentIndex()).toUInt(),
@@ -157,7 +157,7 @@ void DlgPrefNewSoundItem::writePath(SoundManagerConfig *config) const {
                 );
     } else {
         config->addOutput(
-                device,
+                device->getInternalName(),
                 AudioOutput(
                     m_type,
                     channelComboBox->itemData(channelComboBox->currentIndex()).toUInt(),
@@ -186,8 +186,8 @@ SoundDevice* DlgPrefNewSoundItem::getDevice() const {
     return NULL;
 }
 
-void DlgPrefNewSoundItem::setDevice(const SoundDevice *device) {
-    int index = deviceComboBox->findData(device->getInternalName());
+void DlgPrefNewSoundItem::setDevice(const QString &deviceName) {
+    int index = deviceComboBox->findData(deviceName);
     if (index != -1) {
         deviceComboBox->setCurrentIndex(index);
     } else {

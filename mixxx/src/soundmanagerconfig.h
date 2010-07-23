@@ -48,16 +48,16 @@ public:
     bool readFromDisk();
     bool writeToDisk() const;
     QString getAPI() const;
-    void setAPI(QString api);
+    void setAPI(const QString &api);
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
     unsigned int getLatency() const;
     unsigned int getFramesPerBuffer() const;
     void setLatency(unsigned int latency);
-    void addOutput(SoundDevice *device, AudioOutput out);
-    void addInput(SoundDevice *device, AudioInput in);
-    QMultiHash<SoundDevice*, AudioOutput> getOutputs() const;
-    QMultiHash<SoundDevice*, AudioInput> getInputs() const;
+    void addOutput(const QString &device, const AudioOutput &out);
+    void addInput(const QString &device, const AudioInput &in);
+    QMultiHash<QString, AudioOutput> getOutputs() const;
+    QMultiHash<QString, AudioInput> getInputs() const;
     void clearOutputs();
     void clearInputs();
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
@@ -72,7 +72,7 @@ private:
     // latency as milliseconds or frames per buffer is bad because those
     // values very with sample rate) -- bkgood
     unsigned int m_latency; // this is an index
-    QMultiHash<SoundDevice*, AudioOutput> m_outputs;
-    QMultiHash<SoundDevice*, AudioInput> m_inputs;
+    QMultiHash<QString, AudioOutput> m_outputs;
+    QMultiHash<QString, AudioInput> m_inputs;
 };
 #endif

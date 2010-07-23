@@ -47,7 +47,7 @@ QString SoundManagerConfig::getAPI() const {
     return m_api;
 }
 
-void SoundManagerConfig::setAPI(QString api) {
+void SoundManagerConfig::setAPI(const QString &api) {
     // SoundManagerConfig doesn't necessarily have access to a SoundManager
     // instance, so I can't check for input validity here -- bkgood
     m_api = api;
@@ -93,19 +93,19 @@ void SoundManagerConfig::setLatency(unsigned int latency) {
     m_latency = latency != 0 ? math_min(latency, MAX_LATENCY) : 1;
 }
 
-void SoundManagerConfig::addOutput(SoundDevice *device, AudioOutput out) {
+void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out) {
     m_outputs.insert(device, out);
 }
 
-void SoundManagerConfig::addInput(SoundDevice *device, AudioInput in) {
+void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
     m_inputs.insert(device, in);
 }
 
-QMultiHash<SoundDevice*, AudioOutput> SoundManagerConfig::getOutputs() const {
+QMultiHash<QString, AudioOutput> SoundManagerConfig::getOutputs() const {
     return m_outputs;
 }
 
-QMultiHash<SoundDevice*, AudioInput> SoundManagerConfig::getInputs() const {
+QMultiHash<QString, AudioInput> SoundManagerConfig::getInputs() const {
     return m_inputs;
 }
 
@@ -161,7 +161,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         if (!outputDevices.isEmpty() && outputDevices.first()->getNumOutputChannels() > 1) {
             SoundDevice *masterDevice = outputDevices.first();
             AudioOutput masterOut(AudioPath::MASTER, 0);
-            addOutput(masterDevice, masterOut);
+            addOutput(masterDevice->getInternalName(), masterOut);
         }
     }
     if (flags & SoundManagerConfig::OTHER) {

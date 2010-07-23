@@ -38,7 +38,7 @@ public slots:
     void writePath(SoundManagerConfig *config) const;
 private:
     SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
-    void setDevice(const SoundDevice *device);
+    void setDevice(const QString &deviceName);
     void setChannel(unsigned int channel);
     AudioPathType m_type;
     unsigned int m_index;
