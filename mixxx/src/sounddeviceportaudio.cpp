@@ -55,8 +55,7 @@ int SoundDevicePortAudio::open()
     qDebug() << "SoundDevicePortAudio::open()" << this->getInternalName();
     PaError err;
 
-    if (m_audioOutputs.empty() && m_audioInputs.empty())
-    {
+    if (m_audioOutputs.empty() && m_audioInputs.empty()) {
         return -1;
     }
 
@@ -67,16 +66,10 @@ int SoundDevicePortAudio::open()
 
     // Look at how many audio outputs we have,
     // so we can figure out how many output channels we need to open.
-    if (m_audioOutputs.empty())
-    {
+    if (m_audioOutputs.empty()) {
         pOutputParams = NULL;
-    }
-    else
-    {
-        QListIterator<AudioOutput> outputIt(m_audioOutputs);
-        while (outputIt.hasNext())
-        {
-            AudioOutput out = outputIt.next();
+    } else {
+        foreach (AudioOutput out, m_audioOutputs) {
             ChannelGroup channelGroup = out.getChannelGroup();
             int highChannel = channelGroup.getChannelBase()
                 + channelGroup.getChannelCount();
@@ -86,19 +79,12 @@ int SoundDevicePortAudio::open()
         }
     }
 
-
     // Look at how many audio inputs we have,
     // so we can figure out how many input channels we need to open.
-    if (m_audioInputs.empty())
-    {
+    if (m_audioInputs.empty()) {
         pInputParams = NULL;
-    }
-    else
-    {
-        QListIterator<AudioInput> inputIt(m_audioInputs);
-        while (inputIt.hasNext())
-        {
-            AudioInput in = inputIt.next();
+    } else {
+        foreach (AudioInput in, m_audioInputs) {
             ChannelGroup channelGroup = in.getChannelGroup();
             int highChannel = channelGroup.getChannelBase()
                 + channelGroup.getChannelCount();
@@ -108,19 +94,15 @@ int SoundDevicePortAudio::open()
         }
     }
 
-
     //Sample rate
-    m_dSampleRate = (double)m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
     if (m_dSampleRate <= 0)
         m_dSampleRate = 44100.0f;
     qDebug() << "m_dSampleRate" << m_dSampleRate;
 
     //Get latency in milleseconds
-    int iLatencyMSec = m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt();
-    if (iLatencyMSec <= 0)     //Make sure we don't get a crazy latency value.
-        iLatencyMSec = 75;
+    double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
+    qDebug() << "latency in milliseconds:" << latencyMSec;
 
-    qDebug() << "iLatencyMSec:" << iLatencyMSec;
     qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:"
         << m_inputParams.channelCount;
 
@@ -150,40 +132,22 @@ int SoundDevicePortAudio::open()
     unsigned int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
     */
 
-    //Drastically simplified frames per buffer calculation. PortAudio-v19 uses the
-    //suggested latency field in input/output params to figure out the number of
-    //buffers for us.
-    unsigned int iFramesPerBuffer = ((float)iLatencyMSec/1000.0f)*m_dSampleRate;
-
-    //Round to the nearest power-of-two buffer size. This is improves compatibility with
-    //soundcards (and buggy drivers and APIs like ALSA/PulseAudio that can crash), and also
-    //seems to give us lower latencies. Win-win. :)
-    unsigned int i;
-    iFramesPerBuffer &= INT_MAX;
-    for (i = 1; iFramesPerBuffer > i; i <<= 1) ;
-    iFramesPerBuffer = i;
-    qDebug() << "iFramesPerBuffer" << iFramesPerBuffer;
-
     //PortAudio's JACK backend also only properly supports paFramesPerBufferUnspecified in non-blocking mode
     //because the latency comes from the JACK daemon. (PA should give an error or something though, but it doesn't.)
-    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_JACK_STRING)
-    {
-        iFramesPerBuffer = paFramesPerBufferUnspecified;
+    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
+        m_framesPerBuffer = paFramesPerBufferUnspecified;
     }
-
 
     //Fill out the rest of the info.
     m_outputParams.device = m_devId;
     m_outputParams.sampleFormat = paFloat32;
-    m_outputParams.suggestedLatency = ((float)iLatencyMSec) / 1000.0f;
+    m_outputParams.suggestedLatency = latencyMSec / 1000.0;
     m_outputParams.hostApiSpecificStreamInfo = NULL;
 
     m_inputParams.device  = m_devId;
     m_inputParams.sampleFormat  = paInt16; //This is how our vinyl control stuff like samples.
-    m_inputParams.suggestedLatency = ((float)iLatencyMSec) / 1000.0f;
+    m_inputParams.suggestedLatency = latencyMSec / 1000.0;
     m_inputParams.hostApiSpecificStreamInfo = NULL;
-
-    qDebug() << "iLatencyMSec:" << iLatencyMSec;
 
     m_callbackStuff.soundDevice = this;
     m_callbackStuff.devIndex = m_devId; //FIXME: No longer necessary?
@@ -198,7 +162,7 @@ int SoundDevicePortAudio::open()
                         pInputParams,                           // Input parameters
                         pOutputParams,                      // Output parameters
                         m_dSampleRate,                      // Sample rate
-                        iFramesPerBuffer,                       // Frames per buffer
+                        m_framesPerBuffer,                       // Frames per buffer
                         paClipOff,                                      // Stream flags
                         callback,                                       // Stream callback
                         (void *)&m_callbackStuff);                //Data pointer passed to the callback function

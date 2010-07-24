@@ -234,7 +234,8 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     latencyComboBox->clear();
     for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
         unsigned int latency = framesPerBuffer / sampleRate * 1000;
-        latencyComboBox->addItem(QString("%1 ms").arg(latency), framesPerBuffer);
+        // i + 1 in the next line is a latency index as described in SSConfig
+        latencyComboBox->addItem(QString("%1 ms").arg(latency), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
     // set it to the max, let the user dig if they need better latency. better
