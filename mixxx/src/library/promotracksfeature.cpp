@@ -68,7 +68,12 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
             QString trackPath = extra.readLine();
             trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
             qDebug() << "PROMO: Auto-loading track" << trackPath;
-            m_tracksToAutoLoad.append(new TrackInfoObject(trackPath));
+            
+            TrackInfoObject* track = new TrackInfoObject(trackPath);
+            // TODO(XXX) These tracks are probably getting leaked b/c
+            // m_tracksToAutoLoad is never cleared.
+            TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
+            m_tracksToAutoLoad.append(pTrack);
         }
         file.close();
     }
@@ -113,7 +118,7 @@ bool PromoTracksFeature::isSupported(ConfigObject<ConfigValue>* config) {
     return (QFile::exists(m_sPromoLocalHTMLLocation));
 }
 
-QList<TrackInfoObject*> PromoTracksFeature::getTracksToAutoLoad()
+QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
 {
     return m_tracksToAutoLoad;
 }
@@ -121,16 +126,17 @@ QList<TrackInfoObject*> PromoTracksFeature::getTracksToAutoLoad()
 void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                     WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
+    
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
     m_pBundledSongsView = new BundledSongsWebView(libraryWidget, PROMO_BUNDLE_PATH, m_sPromoLocalHTMLLocation, m_bFirstRun, m_pConfig);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
-    connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(m_pBundledSongsView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pBundledSongsView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 
 /*  XXX: Re-enable this code for Promo 3.0
     m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this)); 

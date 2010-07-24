@@ -22,6 +22,7 @@
 #include <qmutex.h>
 #include "defs.h"
 #include "engineobject.h"
+#include "trackinfoobject.h"
 #include "configobject.h"
 // #include "monitor.h"
 #include "rotary.h"
@@ -33,6 +34,7 @@ class LoopingControl;
 class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
+class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -40,7 +42,6 @@ class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-class TrackInfoObject;
 class EngineWorkerScheduler;
 
 struct Hint;
@@ -84,7 +85,7 @@ public:
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
-    void loadTrack(TrackInfoObject* pTrack);
+    void loadTrack(TrackPointer pTrack);
 
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);
@@ -111,14 +112,14 @@ public slots:
     void slotControlSeekAbs(double);
 
 signals:
-    void trackLoaded(TrackInfoObject *pTrack);
-    void trackLoadFailed(TrackInfoObject *pTrack, QString reason);
+    void trackLoaded(TrackPointer pTrack);
+    void trackLoadFailed(TrackPointer pTrack, QString reason);
     void loadNextTrack();
 
 private slots:
-    void slotTrackLoaded(TrackInfoObject *pTrack,
+    void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
-    void slotTrackLoadFailed(TrackInfoObject *pTrack,
+    void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
 
 private:
@@ -180,6 +181,7 @@ private:
     ControlObject* m_pTrackSamples;
 
     ControlPushButton *playButton, *buttonBeatSync;
+    ControlObjectThreadMain *playButtonCOT, *m_pTrackEndCOT;
     ControlObject *fwdButton, *backButton;
 
     ControlObject *rateEngine;

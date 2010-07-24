@@ -3,7 +3,6 @@
 
 #include <QItemSelectionModel>
 
-#include "trackinfoobject.h"
 #include "library/library.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
@@ -99,10 +98,10 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SLOT(slotLoadTrack(TrackInfoObject*)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SLOT(slotLoadTrack(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -139,10 +138,10 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
     connect(feature, SIGNAL(switchToView(const QString&)),
             this, SLOT(slotSwitchToView(const QString&)));
-    connect(feature, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SLOT(slotLoadTrack(TrackInfoObject*)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
+    connect(feature, SIGNAL(loadTrack(TrackPointer)),
+            this, SLOT(slotLoadTrack(TrackPointer)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
 }
@@ -161,11 +160,11 @@ void Library::slotSwitchToView(const QString& view) {
     emit(switchToView(view));
 }
 
-void Library::slotLoadTrack(TrackInfoObject* pTrack) {
+void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
-void Library::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
     emit(loadTrackToPlayer(pTrack, player));
 }
 
@@ -183,10 +182,10 @@ void Library::slotCreatePlaylist()
     m_pPlaylistFeature->slotCreatePlaylist();
 }
 
-QList<TrackInfoObject*> Library::getTracksToAutoLoad()
+QList<TrackPointer> Library::getTracksToAutoLoad()
 {
     if (m_pPromoTracksFeature)
         return m_pPromoTracksFeature->getTracksToAutoLoad();
     else
-        return QList<TrackInfoObject*>();
+        return QList<TrackPointer>();
 }

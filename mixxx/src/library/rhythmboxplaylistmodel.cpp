@@ -100,7 +100,7 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     // TODO(XXX) THIS IS SOAKED IN WASTE. It creates a new TIO for every
     // row. The trackmodel need some sort of 'getIndexOfTrack' call, and then
     // you simply pass this whole call off to RhythmboxTrackModel::data(index).
-    TrackInfoObject *pTrack = getTrack(index);
+    TrackPointer pTrack = getTrack(index);
     if ( pTrack == NULL )
         return QVariant();
 
@@ -213,7 +213,7 @@ QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const
     return QString();
 }
 
-TrackInfoObject * RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
+TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
 {
     QDomNodeList playlistTrackList = m_mPlaylists[m_sCurrentPlaylist];
     QDomNode pnode = playlistTrackList.at(index.row());

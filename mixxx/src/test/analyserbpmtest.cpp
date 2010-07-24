@@ -24,7 +24,7 @@ namespace {
             qDebug() << "SetUp";
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
             abpm = new AnalyserBPM(config);
-            tio = new TrackInfoObject("foo");
+            tio = TrackPointer(new TrackInfoObject("foo"));
             //Subpixels per second, from waveformrenderer.cpp:247
             tio->setVisualResampleRate(200);
 
@@ -54,7 +54,7 @@ namespace {
 
         AnalyserBPM* abpm;
         ConfigObject<ConfigValue>* config;
-        TrackInfoObject* tio;
+        TrackPointer tio;
         CSAMPLE* bigbuf;
         CSAMPLE* canaryBigBuf;
     };

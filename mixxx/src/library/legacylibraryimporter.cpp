@@ -24,6 +24,10 @@ struct LegacyPlaylist
     QList<int> indexes;
 };
 
+void doNothing(TrackInfoObject*) {
+
+}
+
 LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
                                              PlaylistDAO& playlistDao) : QObject(),
     m_trackDao(trackDao),
@@ -100,10 +104,14 @@ void LegacyLibraryImporter::import()
                 emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
 
                 // Read the metadata we couldn't support in <1.8 from file.
+                QFileInfo fileInfo(trackInfo17.getLocation());
+                //Ensure we have the absolute file path stored
+                trackInfo17.setLocation(fileInfo.absoluteFilePath());
                 TrackInfoObject trackInfoNew(trackInfo17.getLocation());
                 trackInfo17.setGenre(trackInfoNew.getGenre());
                 trackInfo17.setAlbum(trackInfoNew.getAlbum());
                 trackInfo17.setYear(trackInfoNew.getYear());
+                trackInfo17.setType(trackInfoNew.getType());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
 
                 // Import the track's saved cue point if it is non-zero.
@@ -114,7 +122,9 @@ void LegacyLibraryImporter::import()
                     pCue->setPosition(fCuePoint);
                 }
 
-                m_trackDao.saveTrack(&trackInfo17);
+                // Provide a no-op deleter b/c this Track is on the stack.
+                TrackPointer pTrack(&trackInfo17, &doNothing);
+                m_trackDao.saveTrack(pTrack);
 
                 //Check if this track is used in a playlist anywhere. If it is, save the
                 //track location. (The "id" of a track in 1.8 is a database index, so it's totally
