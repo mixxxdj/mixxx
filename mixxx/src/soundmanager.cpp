@@ -76,6 +76,14 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_samplerates.push_back(44100);
     m_samplerates.push_back(48000);
     m_samplerates.push_back(96000);
+
+    queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
+                    // its thing if it needs to
+    if (!m_config.readFromDisk()) {
+        m_config.loadDefaults(this,
+                SoundManagerConfig::API | SoundManagerConfig::DEVICES
+                | SoundManagerConfig::OTHER);
+    }
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -294,69 +302,13 @@ void SoundManager::queryDevices()
 #endif
 }
 
-//Attempt to set up some sane default sound device settings.
-//The parameters control what stuff gets set to the defaults.other
-void SoundManager::setDefaults(bool api, bool devices, bool other)
-{
-    qDebug() << "SoundManager: Setting defaults";
-
-    QList<QString> apiList = getHostAPIList();
-
-    if (api && !apiList.isEmpty())
-    {
-#ifdef __LINUX__
-        //Check for JACK and use that if it's available, otherwise use ALSA
-        if (apiList.contains(MIXXX_PORTAUDIO_JACK_STRING))
-            setHostAPI(MIXXX_PORTAUDIO_JACK_STRING);
-        else
-            setHostAPI(MIXXX_PORTAUDIO_ALSA_STRING);
-#endif
-#ifdef __WINDOWS__
-//TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
-//        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
-//            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);
-//        else
-//Existence of ASIO doesn't necessarily mean you've got ASIO devices
-//Do something more advanced one day if you like - Adam
-            setHostAPI(MIXXX_PORTAUDIO_DIRECTSOUND_STRING);
-#endif
-#ifdef __APPLE__
-        setHostAPI(MIXXX_PORTAUDIO_COREAUDIO_STRING);
-#endif
-    }
-
-    if (devices)
-    {
-        //Set the default master device to be the first ouput device in the list (that matches the API)
-		QList<SoundDevice *> qlistAPI = getDeviceList(getHostAPI(), true, false);
-		if(! qlistAPI.isEmpty())
-		{
-			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(qlistAPI.front()->getInternalName()));
-			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(qlistAPI.front()->getInternalName()));
-			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(qlistAPI.front()->getInternalName()));
-			m_pConfig->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(QString::number(0)));
-			m_pConfig->set(ConfigKey("[Soundcard]","ChannelHeadphones"), ConfigValue(QString::number(2)));
-		}
-    }
-
-    if (other)
-    {
-        //Default samplerate, latency
-        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
-        m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(64));
-    }
-}
-
 //Opens all the devices chosen by the user in the preferences dialog, and establishes
 //the proper connections between them and the mixing engine.
 int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
     int err = 0;
-    bool bNeedToOpenDeviceForOutput = 0;
-    bool bNeedToOpenDeviceForInput = 0;
-    QListIterator<SoundDevice *> deviceIt(m_devices);
-    SoundDevice * device;
+    iNumDevicesOpenedForOutput = iNumDevicesOpenedForInput = 0;
 
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
@@ -366,93 +318,56 @@ int SoundManager::setupDevices()
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
-
-    while (deviceIt.hasNext())
-    {
-        device = deviceIt.next();
-        bNeedToOpenDeviceForOutput = 0;
-        bNeedToOpenDeviceForInput = 0;
-
-        //Close the device in case it was open.
+    foreach (SoundDevice *device, m_devices) {
+        bool isInput = false;
+        bool isOutput = false;
         device->close();
-
-        // Disconnect the device from any inputs/outputs
-        device->clearOutputs();
         device->clearInputs();
-
-        //Connect the mixing engine's sound output(s) to the soundcard(s).
-
-        if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == device->getInternalName())
-        {
-            AudioOutput out(
-                AudioOutput::MASTER,
-                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt()
-            );
-
-            err = device->addOutput(out);
-            if (err != 0)
-                return err;
-            m_outputBuffers[out] = m_pMaster->getMasterBuffer();
-            bNeedToOpenDeviceForOutput = 1;
-        }
-        if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
-        {
-            AudioOutput out(
-                AudioOutput::HEADPHONES,
-                m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt()
-            );
-
-            err = device->addOutput(out);
-            if (err != 0)
-                return err;
-            m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
-            bNeedToOpenDeviceForOutput = 1;
-        }
-
-        //Connect the soundcard's inputs to the Engine.
-        if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getInternalName())
-        {
-            AudioInput in(
-                AudioInput::VINYLCONTROL,
-                m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt(),
-                0 // first vc deck
-            );
-
+        device->clearOutputs();
+        foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
+            isInput = true;
             err = device->addInput(in);
             if (err != 0)
                 return err;
             if (!m_inputBuffers.contains(in)) {
                 m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
             }
-            bNeedToOpenDeviceForInput = 1;
         }
-        if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
-        {
-            AudioInput in(
-                AudioInput::VINYLCONTROL,
-                m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt(),
-                1 // second vc deck
-            );
-
-            err = device->addInput(in);
+        foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
+            isOutput = true;
+            err = device->addOutput(out);
             if (err != 0)
                 return err;
-            if (!m_inputBuffers.contains(in)) {
-                m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
+            // TODO(bkgood) this would be nicer as something like
+            // EngineMaster::getBuffer(AudioPathType type, uint index = 0);
+            // but I don't want to mess with enginemaster if I can help it
+            // before hydra's merged
+            switch (out.getType()) {
+            case AudioPath::MASTER:
+                m_outputBuffers[out] = m_pMaster->getMasterBuffer();
+                break;
+            case AudioPath::HEADPHONES:
+                m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
+                break;
+            case AudioPath::DECK:
+                m_outputBuffers[out] = m_pMaster->getDeckBuffer(out.getIndex());
+                break;
+            default:
+                break;
             }
-            bNeedToOpenDeviceForInput = 1;
         }
 
-        //Open the device.
-        if (bNeedToOpenDeviceForOutput || bNeedToOpenDeviceForInput)
-        {
+        if (isInput || isOutput) {
+            device->setSampleRate(m_config.getSampleRate());
+            device->setFramesPerBuffer(m_config.getFramesPerBuffer());
             err = device->open();
-            if (err != 0)
+            if (err != 0) {
                 return err;
-            else
-            {
-                iNumDevicesOpenedForOutput += (int)bNeedToOpenDeviceForOutput;
-                iNumDevicesOpenedForInput += (int)bNeedToOpenDeviceForInput;
+            } else {
+                if (isOutput)
+                    ++iNumDevicesOpenedForOutput;
+                if (isInput)
+                    ++iNumDevicesOpenedForInput;
             }
         }
     }
@@ -464,21 +379,8 @@ int SoundManager::setupDevices()
     return (iNumDevicesOpenedForOutput == 0);
 }
 
-QString SoundManager::getHostAPI() const {
-    return m_hostAPI;
-}
-
-/** Set which host API Mixxx should use.
- *  @param api The host API that you want Mixxx to use.
- */
-void SoundManager::setHostAPI(QString api) {
-    m_hostAPI = api;
-}
-
 SoundManagerConfig SoundManager::getConfig() const {
-    SoundManagerConfig config;
-    config.loadDefaults(const_cast<SoundManager*>(this), SoundManagerConfig::API | SoundManagerConfig::DEVICES | SoundManagerConfig::OTHER);
-    return config;
+    return m_config;
 }
 
 void SoundManager::setConfig(SoundManagerConfig config) {

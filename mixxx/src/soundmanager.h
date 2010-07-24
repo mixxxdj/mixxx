@@ -51,11 +51,8 @@ class SoundManager : public QObject
         void clearDeviceList();
         void queryDevices();
         int setupDevices();
-        void setDefaults(bool api=true, bool devices=true, bool other=true);
         QList<unsigned int> getSampleRates() const;
         QList<QString> getHostAPIList() const;
-        QString getHostAPI() const;
-        void setHostAPI(QString api);
         SoundManagerConfig getConfig() const;
         void setConfig(SoundManagerConfig config);
         QHash<AudioOutput, const CSAMPLE*>

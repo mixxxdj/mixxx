@@ -77,6 +77,7 @@ DlgPrefSound::~DlgPrefSound() {
  * Slot called when the preferences dialog is opened.
  */
 void DlgPrefSound::slotUpdate() {
+    loadSettings();
 }
 
 /**
@@ -86,6 +87,8 @@ void DlgPrefSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
+    m_config.clearInputs();
+    m_config.clearOutputs();
     emit(writePaths(&m_config));
     m_pSoundManager->setConfig(m_config); // setConfig will call setupDevices if necessary
     m_settingsModified = false;
