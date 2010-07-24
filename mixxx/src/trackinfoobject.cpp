@@ -25,8 +25,6 @@
 
 #include "trackinfoobject.h"
 
-#include "bpm/bpmscheme.h"
-#include "bpm/bpmreceiver.h"
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
 #include "controlobject.h"
@@ -89,8 +87,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_bIsValid = true;
 
-    installEventFilter(this);
-
     m_bDirty = false;
     m_bLocationChanged = false;
 }
@@ -129,11 +125,13 @@ void TrackInfoObject::initialize() {
 
     // parse() parses the metadata from file. This is not a quick operation!
     m_bIsValid = parse() == OK;
-
-    installEventFilter(this);
 }
 
 TrackInfoObject::~TrackInfoObject() {
+}
+
+void TrackInfoObject::doSave() {
+    emit(save());
 }
 
 bool TrackInfoObject::isValid() const {
@@ -170,6 +168,8 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     //}
 
 }
+
+static void doNothing(TrackInfoObject* pTrack) {}
 
 int TrackInfoObject::parse()
 {

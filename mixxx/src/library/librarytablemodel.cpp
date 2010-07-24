@@ -26,6 +26,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
@@ -66,6 +67,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
     setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -100,7 +103,8 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 	//Note: The model index is ignored when adding to the library track collection.
 	//      The position in the library is determined by whatever it's being sorted by,
 	//      and there's no arbitrary "unsorted" view.
-	int trackId = m_trackDao.addTrack(location);
+    QFileInfo fileInfo(location);
+	int trackId = m_trackDao.addTrack(fileInfo.absoluteFilePath());
 	select(); //Repopulate the data model.
     if (trackId >= 0)
         return true;
@@ -108,7 +112,7 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
         return false;
 }
 
-TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
+TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
 	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 	return m_trackDao.getTrack(trackId);

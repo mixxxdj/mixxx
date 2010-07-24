@@ -54,8 +54,8 @@ class BundledSongsWebView : public QWebView, public LibraryView
         void setFirstRun(bool firstRun);
 
     signals:
-        void loadTrack(TrackInfoObject* pTrack);
-        void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+        void loadTrack(TrackPointer pTrack);
+        void loadTrackToPlayer(TrackPointer pTrack, int player);
     protected:
         //virtual QString userAgentForUrl (const QUrl & url) const;
 

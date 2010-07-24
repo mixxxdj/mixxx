@@ -30,7 +30,7 @@ void WaveformRenderSignal::resize(int w, int h) {
     m_iHeight = h;
 }
 
-void WaveformRenderSignal::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderSignal::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
 }
 

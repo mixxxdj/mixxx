@@ -63,7 +63,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 
     if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
         qDebug() << "Returning override for track" << trackId;
-        TrackInfoObject* pTrack = m_trackDAO.getTrack(trackId);
+        TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
         // TODO(XXX) Qt properties could really help here.
         if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
@@ -76,6 +76,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             return QVariant(pTrack->getYear());
         } else if (fieldIndex(LIBRARYTABLE_GENRE) == col) {
             return QVariant(pTrack->getGenre());
+        } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == col) {
+            return QVariant(pTrack->getType());
         } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == col) {
             return QVariant(pTrack->getTrackNumber());
         } else if (fieldIndex(LIBRARYTABLE_LOCATION) == col) {

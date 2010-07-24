@@ -20,6 +20,7 @@
 
 #include <QStringListModel>
 
+#include "trackinfoobject.h"
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/cratetablemodel.h"
@@ -42,7 +43,7 @@ class PromoTracksFeature : public LibraryFeature {
                   bool firstRun);
     virtual ~PromoTracksFeature();
     static bool isSupported(ConfigObject<ConfigValue>* config);
-    QList<TrackInfoObject*> getTracksToAutoLoad();
+    QList<TrackPointer> getTracksToAutoLoad();
 
     QVariant title();
     QIcon getIcon();
@@ -77,9 +78,9 @@ private:
     const static QString m_sMyDownloadsViewName;
     QStringListModel m_childModel;
     CrateTableModel m_downloadsTableModel;
-    QList<TrackInfoObject*> m_tracksToAutoLoad;
     SongDownloader* m_pSongDownloader;
     bool m_bFirstRun;
+    QList<TrackPointer> m_tracksToAutoLoad;
 };
 
 

@@ -11,7 +11,7 @@ AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
     m_pDetector = NULL;
 }
 
-void AnalyserBPM::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
+void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     m_bProcessEntireSong = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
@@ -57,17 +57,17 @@ float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
     return BPM;
 }
 
-void AnalyserBPM::finalise(TrackInfoObject *tio) {
+void AnalyserBPM::finalise(TrackPointer tio) {
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {
         return;
     }
-    
+
     float bpm = m_pDetector->getBpm();
     if(bpm != 0) {
         // Shift it by 2's until it is in the desired range
         float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm, m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt());
-        
+
         tio->setBpm(newbpm);
         tio->setBpmConfirm();
         //if(pBpmReceiver) {
@@ -83,4 +83,4 @@ void AnalyserBPM::finalise(TrackInfoObject *tio) {
     delete m_pDetector;
     m_pDetector = NULL;
 
-} 
+}

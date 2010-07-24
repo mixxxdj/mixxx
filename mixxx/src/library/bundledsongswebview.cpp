@@ -53,7 +53,7 @@ BundledSongsWebView::BundledSongsWebView(QWidget* parent, QString promoBundlePat
     QWebPage* page = QWebView::page();
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
-    connect(this, SIGNAL(linkClicked(const QUrl&)), 
+    connect(this, SIGNAL(linkClicked(const QUrl&)),
             this, SLOT(handleClickedLink(const QUrl&)));
 
 }
@@ -65,7 +65,7 @@ BundledSongsWebView::~BundledSongsWebView()
 
 void BundledSongsWebView::attachObjects()
 {
-    qDebug() << "attachObjects()";
+    //qDebug() << "attachObjects()";
     page()->mainFrame()->addToJavaScriptWindowObject("mixxx", this);
 }
 
@@ -85,19 +85,28 @@ void BundledSongsWebView::onShow()
     //    page()->mainFrame()->evaluateJavaScript("showMainStuff(0, 0);");
 }
 
+/* Google Analytics doesn't like our crappy malformed "Mixxx 1.8" string
+   as a user agent. Let Qt construct it for us instead by leaving this commented out.
+QString PromoTracksWebView::userAgentForUrl (const QUrl & url) const
+{
+    return QCoreApplication::applicationName() + " " + QCoreApplication::applicationVersion();
+} */
+
 void BundledSongsWebView::handleClickedLink(const QUrl& url)
 {
-    //qDebug() << "link clicked!" << url; 
+    //qDebug() << "link clicked!" << url;
 
     if (url.scheme() == "deck1")
     {
         TrackInfoObject* track = new TrackInfoObject(m_sPromoBundlePath + "/" + url.path());
-        emit(loadTrackToPlayer(track, 1));
+        TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
+        emit(loadTrackToPlayer(pTrack, 1));
     }
     else if (url.scheme() == "deck2")
     {
         TrackInfoObject* track = new TrackInfoObject(m_sPromoBundlePath + "/" + url.path());
-        emit(loadTrackToPlayer(track, 2));
+        TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
+        emit(loadTrackToPlayer(pTrack, 2));
     }
     else
     {
