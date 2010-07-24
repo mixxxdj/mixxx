@@ -17,6 +17,7 @@
 #define AUDIOPATH_H
 
 #include <QString>
+#include <QtXml>
 
 /**
  * @class ChannelGroup
@@ -87,6 +88,8 @@ class AudioOutput : public AudioPath {
 public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                 unsigned char index = 0);
+    QDomElement toXML(QDomElement *element) const;
+    static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
 protected:
     void setType(AudioPathType type);
@@ -102,6 +105,8 @@ class AudioInput : public AudioPath {
 public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                   unsigned char index = 0);
+    QDomElement toXML(QDomElement *element) const;
+    static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
 protected:
     void setType(AudioPathType type);
