@@ -158,10 +158,13 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         clearOutputs();
         clearInputs();
         QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
-        if (!outputDevices.isEmpty() && outputDevices.first()->getNumOutputChannels() > 1) {
-            SoundDevice *masterDevice = outputDevices.first();
-            AudioOutput masterOut(AudioPath::MASTER, 0);
-            addOutput(masterDevice->getInternalName(), masterOut);
+        if (!outputDevices.isEmpty()) {
+            foreach (SoundDevice *device, outputDevices) {
+                if (device->getNumOutputChannels() < 2) continue;
+                AudioOutput masterOut(AudioPath::MASTER, 0);
+                addOutput(device->getInternalName(), masterOut);
+                break;
+            }
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
