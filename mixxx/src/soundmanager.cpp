@@ -386,6 +386,7 @@ SoundManagerConfig SoundManager::getConfig() const {
 void SoundManager::setConfig(SoundManagerConfig config) {
     m_config = config;
     setupDevices();
+    m_config.writeToDisk();
 }
 
 void SoundManager::sync()

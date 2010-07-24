@@ -111,7 +111,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
 }
 
 //static
-AudioPathType getTypeFromString(QString string) {
+AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
@@ -186,6 +186,22 @@ AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
     }
 }
 
+QDomElement AudioOutput::toXML(QDomElement *element) const {
+    element->setTagName("output");
+    element->setAttribute("type", AudioPath::getStringFromType(m_type));
+    element->setAttribute("index", m_index);
+    element->setAttribute("channel", m_channelGroup.getChannelBase());
+    return *element;
+}
+
+//static
+AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
+    AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
+    unsigned int index(xml.attribute("index", "0").toUInt());
+    unsigned int channel(xml.attribute("channel", "0").toUInt());
+    return AudioOutput(type, channel, index);
+}
+
 //static
 QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
@@ -204,7 +220,6 @@ void AudioOutput::setType(AudioPathType type) {
     }
 }
 
-
 AudioInput::AudioInput(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
@@ -215,6 +230,22 @@ AudioInput::AudioInput(AudioPathType type /* = INVALID */,
     } else {
         m_index = 0;
     }
+}
+
+QDomElement AudioInput::toXML(QDomElement *element) const {
+    element->setTagName("input");
+    element->setAttribute("type", AudioPath::getStringFromType(m_type));
+    element->setAttribute("index", m_index);
+    element->setAttribute("channel", m_channelGroup.getChannelBase());
+    return *element;
+}
+
+//static
+AudioInput AudioInput::fromXML(const QDomElement &xml) {
+    AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
+    unsigned int index(xml.attribute("index", "0").toUInt());
+    unsigned int channel(xml.attribute("channel", "0").toUInt());
+    return AudioInput(type, channel, index);
 }
 
 //static

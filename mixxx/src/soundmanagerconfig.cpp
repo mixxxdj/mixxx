@@ -33,14 +33,62 @@ SoundManagerConfig::~SoundManagerConfig() {
     // to save its own configuration -- bkgood
 }
 
+/**
+ * Read the SoundManagerConfig xml serialization at the predetermined
+ * path
+ * @returns false if the file can't be read or is invalid XML, true otherwise
+ */
 bool SoundManagerConfig::readFromDisk() {
-    // TODO read from XML file
+    QFile file(m_configFile.absoluteFilePath());
+    QDomDocument doc;
+    QDomElement rootElement;
+    if (!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+    if (!doc.setContent(&file)) {
+        file.close();
+        return false;
+    }
+    file.close();
+    rootElement = doc.documentElement();
+    QDomNodeList devElements(rootElement.elementsByTagName("sounddevice"));
+    for (int i = 0; i < devElements.count(); ++i) {
+        QDomElement devElement(devElements.at(i).toElement());
+        if (devElement.isNull()) continue;
+        
+    }
     return false;
 }
 
 bool SoundManagerConfig::writeToDisk() const {
-    // TODO write to XML file
-    return false;
+    QDomDocument doc("SoundManagerConfig");
+    QDomElement docElement(doc.createElement("SoundManagerConfig"));
+    docElement.setAttribute("api", m_api);
+    docElement.setAttribute("samplerate", m_sampleRate);
+    docElement.setAttribute("latency", m_latency);
+    doc.appendChild(docElement);
+    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+        QDomElement devElement(doc.createElement("SoundDevice"));
+        devElement.setAttribute("name", device);
+        foreach (AudioInput in, m_inputs.values(device)) {
+            QDomElement inElement(doc.createElement("input"));
+            in.toXML(&inElement);
+            devElement.appendChild(inElement);
+        }
+        foreach (AudioOutput out, m_outputs.values(device)) {
+            QDomElement outElement(doc.createElement("output"));
+            out.toXML(&outElement);
+            devElement.appendChild(outElement);
+        }
+        docElement.appendChild(devElement);
+    }
+    QFile file(m_configFile.absoluteFilePath());
+    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        return false;
+    }
+    file.write(doc.toString().toUtf8());
+    file.close();
+    return true;
 }
 
 QString SoundManagerConfig::getAPI() const {
