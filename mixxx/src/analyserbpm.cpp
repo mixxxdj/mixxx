@@ -20,7 +20,6 @@ void AnalyserBPM::initialise(TrackInfoObject* tio, int sampleRate, int totalSamp
 
     // If BPM detection is not enabled, or the track already has BPM detection done.
     if(bpmEnabled &&
-       tio->getBpmConfirm() == false &&
        tio->getBpm() == 0.) {
         // All SoundSource's return stereo data, no matter the real file's type
         m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
