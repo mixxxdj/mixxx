@@ -14,6 +14,7 @@
  ***************************************************************************/
 
 #include <QDebug>
+#include <QMessageBox>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
 #include "soundmanager.h"
@@ -103,6 +104,7 @@ void DlgPrefSound::slotApply() {
     }
     m_settingsModified = false;
     applyButton->setEnabled(false);
+    loadSettings(); // in case SM decided to change anything it didn't like
 }
 
 /**
