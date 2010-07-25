@@ -35,6 +35,14 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
 
     qDebug() << "Constructed LibraryScanner!!!";
 
+    //Force the GUI thread's TrackInfoObject cache to be cleared
+    //when a library scan is finished, because we might have
+    //modified the database directly when we detected moved files,
+    //and the TIOs corresponding to the moved files would then have the
+    //wrong track location.
+    connect(this, SIGNAL(scanFinished()), 
+            &(collection->getTrackDAO()), SLOT(clearCache()));
+
 }
 
 LibraryScanner::~LibraryScanner()
@@ -292,9 +300,12 @@ bool LibraryScanner::recursiveScan(QString dirPath)
         //Wrong! We need to mark the directory in the database as "existing", so that we can
         //keep track of directories that have been deleted to stop the database from keeping
         //rows about deleted directories around. :)
-
         //qDebug() << "prevHash == newHash";
         m_libraryHashDao.markAsExisting(dirPath);
+
+        //We also need to mark the tracks _inside_ this directory as verified 
+        //and still existing!
+        m_trackDao.markTracksInDirectoryAsVerified(dirPath);
     }
 
 
@@ -305,6 +316,12 @@ bool LibraryScanner::recursiveScan(QString dirPath)
         if (!recursiveScan(dirIt.next()))
             bScanFinishedCleanly = false;
     }
+
+    //Remove the hashes for any directories that have been 
+    //marked as deleted to clean up. We need to do this otherwise
+    //we can skip over songs if you move a set of songs from directory
+    //A to B, then back to A.
+    m_libraryHashDao.removeDeletedDirectoryHashes();
 
     return bScanFinishedCleanly;
 }

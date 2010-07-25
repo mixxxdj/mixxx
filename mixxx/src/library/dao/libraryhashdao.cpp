@@ -15,7 +15,6 @@ LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
 
 LibraryHashDAO::~LibraryHashDAO()
 {
-
 }
 
 void LibraryHashDAO::initialize()
@@ -110,4 +109,13 @@ void LibraryHashDAO::markAllDirectoriesAsDeleted()
     if (!query.exec()) {
         qDebug() << query.lastError();
     }
+}
+
+void LibraryHashDAO::removeDeletedDirectoryHashes()
+{
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM LibraryHashes WHERE "
+               "directory_deleted=:directory_deleted");
+    query.bindValue(":directory_deleted", 1);
+    Q_ASSERT(query.exec());
 }

@@ -58,6 +58,7 @@ Q_OBJECT
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
+    void markTracksInDirectoryAsVerified(QString directory);
     void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
@@ -79,6 +80,12 @@ Q_OBJECT
     // via getTrack(). saveDirtyTracks() saves all cached tracks marked dirty
     // to the database.
     void saveDirtyTracks();
+
+    // Clears the cached TrackInfoObjects, which can be useful when the 
+    // underlying database tables change (eg. during a library rescan,
+    // we might detect that a track has been moved and modify the update
+    // the tables directly.)
+    void clearCache();
 
   private slots:
     void slotTrackDirty();

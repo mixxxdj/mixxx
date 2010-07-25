@@ -573,7 +573,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
 void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath)
 {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
-    qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
+    //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
     libraryPath += "%"; //Add wildcard to SQL query to match subdirectories!
 
     QSqlQuery query(m_database);
@@ -599,7 +599,21 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
     if (!query.exec()) {
         qDebug() << "Couldn't mark track" << location << " as verified." << query.lastError();
     }
+}
 
+void TrackDAO::markTracksInDirectoryAsVerified(QString directory)
+{
+    //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
+
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE track_locations "
+                  "SET needs_verification=0, fs_deleted=0 "
+                  "WHERE directory=:directory");
+    query.bindValue(":directory", directory);
+    if (!query.exec()) {
+        qDebug() << "Couldn't mark tracks in" << directory << " as verified." << query.lastError();
+    }
 }
 
 void TrackDAO::markUnverifiedTracksAsDeleted()
@@ -700,5 +714,9 @@ void TrackDAO::detectMovedFiles()
             Q_ASSERT(query2.exec());
         }
     }
+}
 
+void TrackDAO::clearCache()
+{
+    m_trackCache.clear();
 }
