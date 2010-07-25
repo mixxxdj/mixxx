@@ -15,35 +15,43 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef __PROMOTRACKSWEBVIEW_H_
-#define __PROMOTRACKSWEBVIEW_H_
+#ifndef __BUNDLEDSONGSWEBVIEW_H_
+#define __BUNDLEDSONGSWEBVIEW_H_
 
 #include <QWebView>
 #include <QUrl>
+#include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 
 #define MIXXX_PROMO_HTML_LOCATION "promo/promotracks.html"
 
-class PromoTracksWebView : public QWebView, public LibraryView
+class BundledSongsWebView : public QWebView, public LibraryView
 {
-    Q_OBJECT
+    Q_OBJECT 
+    Q_PROPERTY(bool m_statTracking READ statTracking WRITE setStatTracking)
+    Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
     public:
-        PromoTracksWebView(QWidget* parent, QString mixxxPath,
-                           QString localURL, QString remoteURL);
-        ~PromoTracksWebView();
+        BundledSongsWebView(QWidget* parent, QString promoBundlePath, 
+                           QString localURL, bool firstRun,
+                           ConfigObject<ConfigValue>* config);
+        ~BundledSongsWebView();
         virtual void setup(QDomNode node);
         virtual void onSearchStarting() {};
         virtual void onSearchCleared()  {};
         virtual void onSearch(const QString&) {};
-        virtual void onShow() {};
+        virtual void onShow();
         virtual QWidget* getWidgetForMIDIControl() { return this; };
         virtual void keyPressEvent(QKeyEvent* event);
 
-    public slots:
+        bool firstRun() const;
+
+    public slots: 
         void handleClickedLink(const QUrl& url);
-        void handleLoadFinished(bool ok);
-        void checkWebpageLoadingProgress();
+        void attachObjects();
+        void setStatTracking(bool statTracking);
+        bool statTracking() const; //has to be a slot to get it into javascript land
+        void setFirstRun(bool firstRun);
 
     signals:
         void loadTrack(TrackPointer pTrack);
@@ -52,11 +60,13 @@ class PromoTracksWebView : public QWebView, public LibraryView
         //virtual QString userAgentForUrl (const QUrl & url) const;
 
     private:
-        QString m_sMixxxPath; /** Top-level path to directory that contains the promo directory. */
+        QString m_sPromoBundlePath; /** Directory that contains the promo bundle, which contains
+                                        the local HTML page and music/ folder. */
         QString m_sLocalURL; /** URL to local copy of the promo tracks web page. */
-        QString m_sRemoteURL; /** URL to remotely hosted (promo.mixxx.org) copy of promo tracks web page.*/
-        bool m_bOfflineMode; /** Load promo tracks page locally if we're offline */
+        bool m_statTracking;
+        bool m_bFirstRun;
+        ConfigObject<ConfigValue>* m_pConfig;
 };
 
 
-#endif //__PROMOTRACKSWEBVIEW_H_
+#endif //__BUNDLEDSONGSWEBVIEW_H_ 
