@@ -20,6 +20,7 @@
 
 #include <QtSql>
 #include <QSqlDatabase>
+#include <QRegExp>
 
 #include "configobject.h"
 #include "library/dao/trackdao.h"
@@ -31,7 +32,6 @@
 
 const QString MIXXX_DB_PATH = QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxdb.sqlite");
 
-class TrackInfoObject;
 class BpmDetector;
 
 
@@ -72,6 +72,7 @@ private:
     CueDAO m_cueDao;
     TrackDAO m_trackDao;
     CrateDAO m_crateDao;
+    const QRegExp m_supportedFileExtensionsRegex;
 
     /** Flag to raise when library scan should be cancelled */
     int bCancelLibraryScan;

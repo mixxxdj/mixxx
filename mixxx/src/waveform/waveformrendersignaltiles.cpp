@@ -31,7 +31,7 @@ void WaveformRenderSignalTiles::resize(int w, int h) {
     resetTiles();
 }
 
-void WaveformRenderSignalTiles::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderSignalTiles::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
 }
 

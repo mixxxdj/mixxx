@@ -123,11 +123,11 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
         emit(setRootIndex(absIndexProxy));
     } else {
         TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-        TrackInfoObject* track = trackDao.getTrack(trackDao.getTrackId(absPath));
+        TrackPointer track = trackDao.getTrack(trackDao.getTrackId(absPath));
 
         // The track doesn't exist in the database.
         if (track == NULL) {
-            track = new TrackInfoObject(absPath);
+            track = TrackPointer(new TrackInfoObject(info), &QObject::deleteLater);
         }
 
         emit(loadTrack(track));
@@ -142,11 +142,11 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
 
     if (!m_browseModel.isDir(sourceIndex)) {
         TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-        TrackInfoObject* track = trackDao.getTrack(trackDao.getTrackId(absPath));
+        TrackPointer track = trackDao.getTrack(trackDao.getTrackId(absPath));
 
         // The track doesn't exist in the database.
         if (track == NULL) {
-            track = new TrackInfoObject(absPath);
+            track = TrackPointer(new TrackInfoObject(info), &QObject::deleteLater);
         }
 
         emit(loadTrackToPlayer(track, player));

@@ -9,8 +9,8 @@
 
 #include "configobject.h"
 #include "library/libraryview.h"
+#include "trackinfoobject.h"
 
-class TrackInfoObject;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
@@ -23,8 +23,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     virtual void setup(QDomNode node);
 
   signals:
-    void loadTrack(TrackInfoObject* pTrack);
-    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, int player);
 
   public slots:
     void saveVScrollBarPos();

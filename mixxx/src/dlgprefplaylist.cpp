@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
+#include "library/promotracksfeature.h"
 //#include "plugindownloader.h"
 #include <QtCore>
 #include <QtGui>
@@ -55,6 +56,11 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     connect(LineEditiPodMountPoint,   SIGNAL(returnPressed()), this,      SLOT(slotApply()));
     groupBoxiPod->setVisible(true);
 #endif
+
+    if (!PromoTracksFeature::isSupported(config))
+    {
+        groupBoxBundledSongs->hide();
+    }
 }
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
@@ -134,6 +140,8 @@ void DlgPrefPlaylist::slotUpdate()
     LineEditSongfiles->setText(config->getValueString(ConfigKey("[Playlist]","Directory")));
     // iPod mount point
     LineEditiPodMountPoint->setText(config->getValueString(ConfigKey("[iPod]","MountPoint")));
+    //Bundled songs stat tracking
+    checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
@@ -207,6 +215,10 @@ void DlgPrefPlaylist::slotBrowseiPodMountPoint()
 
 void DlgPrefPlaylist::slotApply()
 {
+
+    config->set(ConfigKey("[Promo]","StatTracking"), 
+                   ConfigValue((int)checkBoxPromoStats->isChecked()));
+    config->Save();
 
     // Update playlist if path has changed
     if (LineEditSongfiles->text() != config->getValueString(ConfigKey("[Playlist]","Directory")))
