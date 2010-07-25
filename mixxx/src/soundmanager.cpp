@@ -383,10 +383,14 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-void SoundManager::setConfig(SoundManagerConfig config) {
+int SoundManager::setConfig(SoundManagerConfig config) {
+    int err = OK;
     m_config = config;
-    setupDevices();
-    m_config.writeToDisk();
+    err = setupDevices();
+    if (err == OK) {
+        m_config.writeToDisk();
+    }
+    return err;
 }
 
 void SoundManager::sync()
