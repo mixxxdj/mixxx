@@ -76,7 +76,7 @@ void SoundDevice::setSampleRate(double sampleRate) {
 }
 
 void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
-    if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
+    if (framesPerBuffer * 2 > (unsigned int) MAX_BUFFER_LEN) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
         // this isn't checked elsewhere, so...
@@ -89,17 +89,13 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
 int SoundDevice::addOutput(const AudioOutput &out)
 { 
     //Check if the output channels are already used
-    QListIterator<AudioOutput> itr(m_audioOutputs);
-    while (itr.hasNext())
-    {
-        AudioOutput out_internal = itr.next();
-        if (out.channelsClash(out_internal)) {
+    foreach (AudioOutput myOut, m_audioOutputs) {
+        if (out.channelsClash(myOut)) {
             return MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL;
         }
     }
-    m_audioOutputs.push_back(out);
-    
-    return 0;
+    m_audioOutputs.append(out);
+    return OK;
 }
 
 void SoundDevice::clearOutputs()
@@ -110,17 +106,13 @@ void SoundDevice::clearOutputs()
 int SoundDevice::addInput(const AudioInput &in)
 {
     //Check if the input channels are already used
-    QListIterator<AudioInput> itr(m_audioInputs);
-    while (itr.hasNext())
-    {
-        AudioInput in_internal = itr.next();
-        if (in.channelsClash(in_internal)) {
+    foreach (AudioInput myIn, m_audioInputs) {
+        if (in.channelsClash(myIn)) {
             return MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL;
         }
     }
-    m_audioInputs.push_back(in);
-    
-    return 0;
+    m_audioInputs.append(in);
+    return OK;
 }
 
 void SoundDevice::clearInputs()

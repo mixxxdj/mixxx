@@ -42,7 +42,8 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
         && m_channelBase <= other.m_channelBase + other.m_channels)
         ||
         (other.m_channelBase > m_channelBase
-        && other.m_channelBase <= m_channelBase + m_channels);
+        && other.m_channelBase <= m_channelBase + m_channels)
+        || m_channelBase == other.m_channelBase;
 }
 
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
