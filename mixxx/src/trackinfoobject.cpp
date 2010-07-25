@@ -109,7 +109,6 @@ void TrackInfoObject::initialize() {
     m_sComment = "";
     m_sURL = "";
     m_iDuration = 0;
-    m_iLength = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
