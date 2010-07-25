@@ -91,6 +91,16 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit(writePaths(&m_config));
     int err = m_pSoundManager->setConfig(m_config);
+    if (err == MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL) {
+        QMessageBox::warning(NULL, "Configuration error",
+                "Two outputs cannot share channels on a device");
+    } else if (err == MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL) {
+        QMessageBox::warning(NULL, "Configuration error",
+                "Two inputs cannot share channels on a device");
+    } else if (err != OK) {
+        QMessageBox::warning(NULL, "Configuration error",
+                "Error opening audio devices");
+    }
     m_settingsModified = false;
     applyButton->setEnabled(false);
 }
