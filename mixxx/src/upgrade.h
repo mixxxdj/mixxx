@@ -25,8 +25,10 @@ class Upgrade
         ~Upgrade();
         ConfigObject<ConfigValue>* versionUpgrade();
         bool isFirstRun() { return m_bFirstRun; };
+        bool isUpgraded() { return m_bUpgraded; };
     private:
         bool m_bFirstRun;
+        bool m_bUpgraded;
 };
 
 #endif

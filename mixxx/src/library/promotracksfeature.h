@@ -23,19 +23,24 @@
 #include "trackinfoobject.h"
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
+#include "library/cratetablemodel.h"
 #include "configobject.h"
 
 class PlaylistTableModel;
 class ProxyTrackModel;
 class TrackCollection;
-class PromoTracksWebView;
+class TrackInfoObject;
+class BundledSongsWebView;
+class FeaturedArtistsWebView;
+class SongDownloader;
 
 class PromoTracksFeature : public LibraryFeature {
     Q_OBJECT
     public:
     PromoTracksFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
-                  TrackCollection* pTrackCollection);
+                  TrackCollection* pTrackCollection,
+                  bool firstRun);
     virtual ~PromoTracksFeature();
     static bool isSupported(ConfigObject<ConfigValue>* config);
     QList<TrackPointer> getTracksToAutoLoad();
@@ -63,12 +68,18 @@ public slots:
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    PromoTracksWebView* m_pPromoTracksView;
-    const static QString m_sPromoTracksViewName;
+    FeaturedArtistsWebView* m_pFeaturedArtistsView;
+    BundledSongsWebView* m_pBundledSongsView;
     static QString m_sPromoLocalHTMLLocation;
     static QString m_sPromoRemoteHTMLLocation;
     QString m_sPromoAutoloadLocation;
+    const static QString m_sFeaturedArtistsViewName;
+    const static QString m_sBundledSongsViewName;
+    const static QString m_sMyDownloadsViewName;
     QStringListModel m_childModel;
+    CrateTableModel m_downloadsTableModel;
+    SongDownloader* m_pSongDownloader;
+    bool m_bFirstRun;
     QList<TrackPointer> m_tracksToAutoLoad;
 };
 

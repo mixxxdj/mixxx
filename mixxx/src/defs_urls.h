@@ -19,5 +19,6 @@
 
 #define MIXXX_WEBSITE_URL       "http://www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "http://www.mixxx.org/support.php"
+#define MIXXX_PROMO_URL         "http://promo.mixxx.org/"
 
 #endif

@@ -110,6 +110,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     Upgrade upgrader;
     config = upgrader.versionUpgrade();
     bool bFirstRun = upgrader.isFirstRun();
+    bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -216,8 +217,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
+    m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
-    m_pLibrary = new Library(this, config, bFirstRun);
 
     //Create the "players" (virtual playback decks)
     m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
@@ -368,7 +369,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     channel2->setEngineBuffer(buffer2);
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun)
+    if (bFirstRun || bUpgraded)
     {
         QList<TrackPointer> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
         if (tracksToAutoLoad.count() > 0)

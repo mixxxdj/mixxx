@@ -36,12 +36,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     m_pSidebarModel = new SidebarModel(parent);
     m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
 
-    //Show the promo tracks view on first run, otherwise show the library
-    if (firstRun) {
-        qDebug() << "First Run, switching to PROMO view!";
-        m_pSidebarModel->setDefaultSelection(1);
-        //Note the promo tracks item has index=1... hardcoded hack. :/
-    }
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -49,7 +43,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(m_pMixxxLibraryFeature);
     if(PromoTracksFeature::isSupported(m_pConfig)) {
         m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
-                                                       m_pTrackCollection);
+                                                       m_pTrackCollection,
+                                                       firstRun);
         addFeature(m_pPromoTracksFeature);
     }
     else
@@ -67,6 +62,15 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
         addFeature(new ITunesFeature(this));
+    
+    //Show the promo tracks view on first run, otherwise show the library
+    if (firstRun) {
+        qDebug() << "First Run, switching to PROMO view!";
+        //This doesn't trigger onShow()... argh
+        m_pSidebarModel->setDefaultSelection(1);
+        //slotSwitchToView(tr("Bundled Songs"));
+        //Note the promo tracks item has index=1... hardcoded hack. :/
+    }
 }
 
 Library::~Library() {
