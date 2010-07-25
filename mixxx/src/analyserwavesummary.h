@@ -7,14 +7,14 @@
 
 class AnalyserWavesummary : public Analyser {
 
-public:
-	AnalyserWavesummary();
-	void initialise(TrackInfoObject* tio, int sampleRate, int totalSamples);
-	void process(const CSAMPLE *pIn, const int iLen);
-	void finalise(TrackInfoObject* tio);
+  public:
+    AnalyserWavesummary();
+    void initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    void process(const CSAMPLE *pIn, const int iLen);
+    void finalise(TrackPointer tio);
 
-private:
-	QByteArray *m_pData;
+  private:
+    QByteArray *m_pData;
     int m_iCurPos;
     int m_iBufferPos;
     int m_iStrideLength;

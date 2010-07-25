@@ -21,10 +21,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bPlayer2Primed = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig);
 
-    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -164,7 +164,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
             return;
         }*/ //don't need this code, above block takes care of this case.
 
-        //If only one of the players is playing... 
+        //If only one of the players is playing...
         if ((m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f) ||
             (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 1.0f))
         {
@@ -264,7 +264,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
         float crossfadeValue = 1.0f - 2*(value-posThreshold)/(1.0f-posThreshold);
         m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
 
-        //If the first player doesn't have the next track loaded, load a track into 
+        //If the first player doesn't have the next track loaded, load a track into
         //it and start playing it!
         if (!m_bPlayer1Primed)
         {
@@ -306,7 +306,7 @@ bool DlgAutoDJ::loadNextTrackFromQueue(bool removeTopMostBeforeLoading)
     }
 
     //Get the track at the top of the playlist...
-    TrackInfoObject* nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
+    TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
 
     if (!nextTrack) //We ran out of tracks in the queue...
     {

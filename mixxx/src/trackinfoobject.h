@@ -20,26 +20,30 @@
 
 #include <QList>
 #include <QObject>
+#include <QFileInfo>
 #include <q3memarray.h>
 #include <q3valuelist.h>
 #include <QMutex>
 #include <QVector>
+#include <QSharedPointer>
+#include <QWeakPointer>
 
 #include "defs.h"
 
 #include "library/dao/cue.h"
-#include "library/dao/trackdao.h"
 
 class QString;
 class QDomElement;
 class QDomDocument;
 class QDomNode;
 class ControlObject;
-class BpmDetector;
-class BpmReceiver;
-class BpmScheme;
 class TrackPlaylist;
 class Cue;
+
+class TrackInfoObject;
+
+typedef QSharedPointer<TrackInfoObject> TrackPointer;
+typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
 #include "segmentation.h"
 
@@ -49,25 +53,37 @@ class TrackInfoObject : public QObject
 public:
     /** Initialize a new track with the filename. */
     TrackInfoObject(const QString sLocation="");
+    // Initialize track with a QFileInfo class
+    TrackInfoObject(QFileInfo& fileInfo);
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
-    ~TrackInfoObject();
+    virtual ~TrackInfoObject();
 
     /** Returns true if the object contains valid information */
     bool isValid() const;
     int parse();
-    /** Checks if the file given in m_sFilename really exists on the disc, and
-        updates the m_bExists flag accordingly. Returns true if the file
-        exists */
-    bool checkFileExists();
     void writeToXML( QDomDocument &, QDomElement & );
 
     /** Returns the duration in seconds */
     int getDuration() const;
     /** Returns the duration as a string: H:MM:SS */
     QString getDurationStr() const;
-    /** Returns the location of the file, included path */
+
+    // Accessors for various stats of the file on disk. These are auto-populated
+    // when the TIO is constructed, or when setLocation() is called.
+
+    // Returns absolute path to the file, including the filename.
     QString getLocation() const;
+    // Returns the absolute path to the directory containing the file
+    QString getDirectory() const;
+    // Returns the filename of the file.
+    QString getFilename() const;
+    // Returns the length of the file in bytes
+    int getLength() const;
+    // Returns whether the file exists on disk or not. Updated as of the time
+    // the TrackInfoObject is created, or when setLocation() is called.
+    bool exists() const;
+
     /** Returns BPM */
     float getBpm() const;
     /** Set BPM */
@@ -98,10 +114,6 @@ public:
     void setBeatFirst(float);
     /** Get first beat pos */
     float getBeatFirst() const;
-    /** Retruns the length of the file in bytes */
-    int getLength() const;
-    /** Sets the length of the file in bytes */
-    void setLength(int bytes);
     /** Set sample rate */
     void setSampleRate(int iSampleRate);
     /** Get sample rate */
@@ -140,11 +152,6 @@ public:
     QString getTrackNumber() const;
     /** Set Track Number */
     void setTrackNumber(QString);
-
-    /** Return filename */
-    QString getFilename() const;
-    /** Return true if the file exist */
-    bool exists() const;
     /** Return number of times the track has been played */
     int getTimesPlayed() const;
     /** Increment times played with one */
@@ -174,8 +181,7 @@ public:
 
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
-    /** Set pointer to ControlObject holding duration value in engine */
-    QString getFilepath() const;
+
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
     /** Get saved the cue point */
@@ -188,6 +194,13 @@ public:
     void setCuePoints(QList<Cue*> cuePoints);
 
     bool isDirty();
+
+    // Signals to the creator of this TrackInfoObject to save the Track as it
+    // may be deleted.
+    void doSave();
+
+    // Returns true if the track location has changed
+    bool locationChanged();
 
     /** Set the track's full file path */
     void setLocation(QString location);
@@ -205,8 +218,16 @@ public:
     void changed();
     void dirty();
     void clean();
+    void save();
 
   private:
+
+    // Common initialization function between all TIO constructors.
+    void initialize();
+
+    // Initialize all the location variables.
+    void populateLocation(QFileInfo& fileInfo);
+
     // Method for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
@@ -223,13 +244,19 @@ public:
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
 
+    // Special flag for telling if the track location was changed.
+    bool m_bLocationChanged;
+
+    // The filename
+    QString m_sFilename;
+    // The full path to the file, including the filename.
+    QString m_sLocation;
+    // The full path to the directory containing the file.
+    QString m_sDirectory;
+    // Length of track in bytes
+    int m_iLength;
     // Flag which indicates whether the file exists or not.
     bool m_bExists;
-    // Filename
-    QString m_sFilename;
-    // The full path to the file
-    QString m_sLocation;
-
 
     /** Metadata */
     /** Album */
@@ -253,8 +280,6 @@ public:
     QString m_sURL;
     /** Duration of track in seconds */
     int m_iDuration;
-    /** Length of track in bytes */
-    int m_iLength;
     /** Sample rate */
     int m_iSampleRate;
     /** Number of channels */

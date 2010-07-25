@@ -47,7 +47,7 @@ EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractR
     pEngine = engine;
     metaDataTitle = metaDataArtist = NULL;
     m_pMetaData = NULL;
-    
+
     m_pConfig = _config;
 }
 
@@ -102,7 +102,7 @@ bool EncoderVorbis::metaDataHasChanged()
     case 1:
         // track 1 is playing
         {
-        TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+        TrackPointer newMetaData = PlayerInfo::Instance().getTrackInfo(1);
         if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
@@ -113,7 +113,7 @@ bool EncoderVorbis::metaDataHasChanged()
     case 2:
         // track 2 is playing
         {
-        TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+        TrackPointer newMetaData = PlayerInfo::Instance().getTrackInfo(2);
         if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
@@ -128,14 +128,14 @@ bool EncoderVorbis::metaDataHasChanged()
                                                      "[Master]","crossfader")));
         if (m_pCrossfader->get() <= 0)
         {
-            TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+            TrackPointer newMetaData = PlayerInfo::Instance().getTrackInfo(1);
             if (newMetaData != m_pMetaData)
             {
                 m_pMetaData = newMetaData;
                 changed = true;
             }
         } else {
-            TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+            TrackPointer newMetaData = PlayerInfo::Instance().getTrackInfo(2);
             if (newMetaData != m_pMetaData)
             {
                 m_pMetaData = newMetaData;
@@ -189,7 +189,7 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
     sendPackages();
 }
 
-void EncoderVorbis::updateMetaData(TrackInfoObject *trackInfoObj)
+void EncoderVorbis::updateMetaData(TrackPointer trackInfoObj)
 {
     // convert QStrings to char*s
     QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
@@ -243,11 +243,11 @@ int EncoderVorbis::initEncoder(float quality)
 {
     int ret;
     vorbis_info_init(&vinfo);
-    
+
     // initialize VBR quality based mode
     unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
     ret = vorbis_encode_init_vbr(&vinfo, 2, samplerate, quality);
-    
+
     if (ret == 0) {
         initStream();
     } else {

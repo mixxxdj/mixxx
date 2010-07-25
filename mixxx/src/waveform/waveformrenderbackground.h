@@ -14,7 +14,6 @@ class QPainter;
 class QPaintEvent;
 
 class WaveformRenderer;
-class TrackInfoObject;
 
 class WaveformRenderBackground : public RenderObject {
     Q_OBJECT
@@ -23,7 +22,7 @@ public:
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackInfoObject *pTrack);
+    void newTrack(TrackPointer pTrack);
 
 private:
     void generatePixmap();

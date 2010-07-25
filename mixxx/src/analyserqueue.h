@@ -14,7 +14,7 @@ class SoundSourceProxy;
 
 class AnalyserQueue : public QThread {
     Q_OBJECT
-    
+
     public:
 	AnalyserQueue();
 	virtual ~AnalyserQueue();
@@ -26,27 +26,27 @@ class AnalyserQueue : public QThread {
     static AnalyserQueue* createAnalyserQueue(QList<Analyser*> analysers);
 
 public slots:
-    void queueAnalyseTrack(TrackInfoObject* tio);
-    
+    void queueAnalyseTrack(TrackPointer tio);
+
 signals:
-    void trackProgress(TrackInfoObject*,int);
-    void trackFinished(TrackInfoObject*);
-    
+    void trackProgress(TrackPointer pTrack,int progress);
+    void trackFinished(TrackPointer pTrack);
+
 protected:
 	void run();
-    
+
 private:
 	void addAnalyser(Analyser* an);
-    
+
 	QList<Analyser*> m_aq;
-    
-	TrackInfoObject* dequeueNextBlocking();
-	void doAnalysis(TrackInfoObject* tio, SoundSourceProxy *pSoundSource);
-    
+
+	TrackPointer dequeueNextBlocking();
+	void doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
+
 	bool m_exit;
-    
+
 	// The processing queue and associated mutex
-	QQueue<TrackInfoObject*> m_tioq;
+	QQueue<TrackPointer> m_tioq;
 	QMutex m_qm;
 	QWaitCondition m_qwait;
 };
