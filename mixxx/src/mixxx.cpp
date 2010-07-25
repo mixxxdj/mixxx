@@ -183,7 +183,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
 
     soundmanager = new SoundManager(config, master);
-    soundmanager->queryDevices();
 
     // Find path of skin
     QString qSkinPath = getSkinPath();
