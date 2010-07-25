@@ -309,6 +309,8 @@ int SoundManager::setupDevices()
     qDebug() << "SoundManager::setupDevices()";
     int err = 0;
     iNumDevicesOpenedForOutput = iNumDevicesOpenedForInput = 0;
+    int devicesAttempted = 0;
+    int devicesOpened = 0;
 
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
@@ -327,7 +329,7 @@ int SoundManager::setupDevices()
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             err = device->addInput(in);
-            if (err != 0)
+            if (err != OK)
                 return err;
             if (!m_inputBuffers.contains(in)) {
                 m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
@@ -336,7 +338,7 @@ int SoundManager::setupDevices()
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
             isOutput = true;
             err = device->addOutput(out);
-            if (err != 0)
+            if (err != OK)
                 return err;
             // TODO(bkgood) this would be nicer as something like
             // EngineMaster::getBuffer(AudioPathType type, uint index = 0);
@@ -360,10 +362,12 @@ int SoundManager::setupDevices()
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
+            ++devicesAttempted;
             err = device->open();
-            if (err != 0) {
+            if (err != OK) {
                 return err;
             } else {
+                ++devicesOpened;
                 if (isOutput)
                     ++iNumDevicesOpenedForOutput;
                 if (isInput)
@@ -375,8 +379,12 @@ int SoundManager::setupDevices()
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
-    //Returns non-zero if we have no output devices
-    return (iNumDevicesOpenedForOutput == 0);
+    // returns OK if we were able to open all the devices the user
+    // wanted
+    if (devicesAttempted == devicesOpened) {
+        return OK;
+    }
+    return ERR;
 }
 
 SoundManagerConfig SoundManager::getConfig() const {
