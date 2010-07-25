@@ -171,7 +171,7 @@ int SoundDevicePortAudio::open()
     {
         qDebug() << "Error opening stream:" << Pa_GetErrorText(err);
         m_pStream = 0;
-        return 1;
+        return ERR;
     }
     else
     {
@@ -201,7 +201,7 @@ int SoundDevicePortAudio::open()
     {
         qDebug() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_pStream = 0;
-        return 1;
+        return ERR;
     }
     else
         qDebug() << "PortAudio: Started stream successfully";
@@ -226,7 +226,7 @@ int SoundDevicePortAudio::open()
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
-    return 0;
+    return OK;
 }
 
 int SoundDevicePortAudio::close()
