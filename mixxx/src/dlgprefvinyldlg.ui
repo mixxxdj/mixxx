@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DlgPrefVinylDlg</class>
- <widget class="QWidget" name="DlgPrefVinylDlg" >
-  <property name="geometry" >
+ <widget class="QWidget" name="DlgPrefVinylDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,185 +10,115 @@
     <height>468</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form1</string>
   </property>
-  <layout class="QGridLayout" >
-   <item row="0" column="0" colspan="2" >
-    <widget class="Q3GroupBox" name="Input" >
-     <property name="title" >
+  <layout class="QGridLayout">
+   <item row="0" column="0" colspan="2">
+    <widget class="Q3GroupBox" name="Input">
+     <property name="title">
       <string>Input</string>
      </property>
-     <layout class="QGridLayout" >
-      <item row="0" column="0" >
-       <widget class="QLabel" name="TextLabel1_2" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-        <property name="frameShape" >
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="frameShadow" >
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="text" >
-         <string>Deck 1</string>
-        </property>
-        <property name="wordWrap" >
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" >
-       <widget class="QComboBox" name="ComboBoxDeviceDeck1" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" >
-       <widget class="QComboBox" name="ComboBoxChannelDeck1" />
-      </item>
-      <item row="1" column="0" >
-       <widget class="QLabel" name="TextLabel1_2_3" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-        <property name="frameShape" >
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="frameShadow" >
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="text" >
-         <string>Deck 2</string>
-        </property>
-        <property name="wordWrap" >
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" >
-       <widget class="QComboBox" name="ComboBoxDeviceDeck2" >
-        <property name="enabled" >
-         <bool>true</bool>
-        </property>
-        <property name="font" >
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2" >
-       <widget class="QComboBox" name="ComboBoxChannelDeck2" />
-      </item>
-      <item row="2" column="0" colspan="3" >
-       <widget class="QLabel" name="label_2" >
-        <property name="text" >
-         <string>&lt;a href="http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting">Troubleshooting&lt;/a></string>
-        </property>
-        <property name="openExternalLinks" >
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="2" >
-       <widget class="QLabel" name="textLabel1_3" >
-        <property name="text" >
+     <layout class="QGridLayout">
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="textLabel1_3">
+        <property name="text">
          <string>Turntable Input Preamp</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="3" >
-       <widget class="QSlider" name="VinylGain" >
-        <property name="minimum" >
+      <item row="2" column="0" colspan="3">
+       <widget class="QSlider" name="VinylGain">
+        <property name="minimum">
          <number>1</number>
         </property>
-        <property name="maximum" >
+        <property name="maximum">
          <number>150</number>
         </property>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2" >
-       <widget class="QLabel" name="textLabel2" >
-        <property name="text" >
+      <item row="3" column="0" colspan="2">
+       <widget class="QLabel" name="textLabel2">
+        <property name="text">
          <string>1 (Off)</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="5" column="2" >
-       <widget class="QLabel" name="textLabel3" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+      <item row="3" column="2">
+       <widget class="QLabel" name="textLabel3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>150</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</string>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2" >
-    <widget class="Q3GroupBox" name="VinylOptions" >
-     <property name="title" >
+   <item row="1" column="0" colspan="2">
+    <widget class="Q3GroupBox" name="VinylOptions">
+     <property name="title">
       <string>Vinyl Configuration</string>
      </property>
-     <layout class="QGridLayout" >
-      <item row="0" column="0" >
-       <widget class="QLabel" name="TextLabel2" >
-        <property name="enabled" >
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="TextLabel2">
+        <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font" >
+        <property name="font">
          <font/>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Vinyl Type</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" >
+      <item row="0" column="1">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeType" >
+        <property name="sizeType">
          <enum>QSizePolicy::Minimum</enum>
         </property>
-        <property name="sizeHint" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
           <height>20</height>
@@ -195,50 +126,50 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="2" colspan="2" >
-       <widget class="QComboBox" name="ComboBoxVinylType" >
-        <property name="enabled" >
+      <item row="0" column="2" colspan="2">
+       <widget class="QComboBox" name="ComboBoxVinylType">
+        <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font" >
+        <property name="font">
          <font/>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" >
-       <widget class="QLabel" name="TextLabel2_2" >
-        <property name="enabled" >
+      <item row="1" column="0">
+       <widget class="QLabel" name="TextLabel2_2">
+        <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font" >
+        <property name="font">
          <font/>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Lead-in time</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" >
+      <item row="1" column="1">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
           <height>20</height>
@@ -246,28 +177,28 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="2" >
-       <widget class="QLineEdit" name="LeadinTime" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="LeadinTime">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
        </widget>
       </item>
-      <item row="1" column="3" >
-       <widget class="QLabel" name="TextLabel2_2_2" >
-        <property name="enabled" >
+      <item row="1" column="3">
+       <widget class="QLabel" name="TextLabel2_2_2">
+        <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="font" >
+        <property name="font">
          <font/>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>seconds</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
@@ -275,76 +206,76 @@
      </layout>
     </widget>
    </item>
-   <item rowspan="2" row="2" column="0" >
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+   <item row="2" column="0" rowspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="title" >
+     <property name="title">
       <string>Control Mode</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QVBoxLayout">
       <item>
-       <widget class="QRadioButton" name="AbsoluteMode" >
-        <property name="text" >
+       <widget class="QRadioButton" name="AbsoluteMode">
+        <property name="text">
          <string>Absolute Mode</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="RelativeMode" >
-        <property name="text" >
+       <widget class="QRadioButton" name="RelativeMode">
+        <property name="text">
          <string>Relative Mode</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="ScratchMode" >
-        <property name="text" >
+       <widget class="QRadioButton" name="ScratchMode">
+        <property name="text">
          <string>Scratch Mode</string>
         </property>
        </widget>
       </item>
       <item>
-        <widget class="QCheckBox" name="NeedleSkipEnable" >
+       <widget class="QCheckBox" name="NeedleSkipEnable">
         <property name="text">
-                <string>Enable Needle Skip Prevention</string>
+         <string>Enable Needle Skip Prevention</string>
         </property>
-        </widget>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="2" column="1" >
-    <widget class="QGroupBox" name="groupBoxSignalQuality" >
-     <property name="title" >
+   <item row="2" column="1">
+    <widget class="QGroupBox" name="groupBoxSignalQuality">
+     <property name="title">
       <string>Signal Quality</string>
      </property>
-     <layout class="QGridLayout" />
+     <layout class="QGridLayout"/>
     </widget>
    </item>
-   <item row="3" column="1" >
-    <widget class="QLabel" name="label" >
-     <property name="enabled" >
+   <item row="3" column="1">
+    <widget class="QLabel" name="label">
+     <property name="enabled">
       <bool>false</bool>
      </property>
-     <property name="toolTip" >
+     <property name="toolTip">
       <string>http://www.xwax.co.uk</string>
      </property>
-     <property name="text" >
+     <property name="text">
       <string>Powered by xwax</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
