@@ -95,7 +95,7 @@ void EngineClipping::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const in
                 pOutput[i] = pIn[i];
         }
     }
-    if(clipped == true)
+    if(clipped)
         m_ctrlClipping->set(1.);
     else
         m_ctrlClipping->set(0);

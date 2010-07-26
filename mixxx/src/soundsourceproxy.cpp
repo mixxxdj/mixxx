@@ -46,14 +46,13 @@ QMutex SoundSourceProxy::m_extensionsMutex;
 //Constructor
 SoundSourceProxy::SoundSourceProxy(QString qFilename)
 	: SoundSource(qFilename),
-	  m_pSoundSource(NULL) {
+	  m_pSoundSource(NULL),
+	  m_pTrack() {
     m_pSoundSource = initialize(qFilename);
-    m_pTrack = NULL;
-   
 }
 
 //Other constructor
-SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
+SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
 	: SoundSource(pTrack->getLocation()),
 	  m_pSoundSource(NULL) {
 
@@ -64,7 +63,7 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack)
 void SoundSourceProxy::loadPlugins()
 {
     /** Scan for and initialize all plugins */
-    
+
     QList<QDir> pluginDirs;
     QStringList nameFilters;
 
@@ -85,7 +84,7 @@ void SoundSourceProxy::loadPlugins()
     bundlePluginDir.remove("MacOS");
     //blah/Mixxx.app/Contents/PlugIns/soundsource
     //bundlePluginDir.append("PlugIns/soundsource");  //Our SCons bundle target doesn't handle plugin subdirectories :(
-    bundlePluginDir.append("PlugIns/"); 
+    bundlePluginDir.append("PlugIns/");
     pluginDirs.append(QDir(bundlePluginDir));
     pluginDirs.append(QDir("/Library/Application Support/Mixxx/Plugins/soundsource/"));
     nameFilters << "libsoundsource*";
@@ -126,7 +125,7 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
             return getter(qFilename);
         }
         else {
-            qDebug() << "Failed to resolve getSoundSource in plugin for" << 
+            qDebug() << "Failed to resolve getSoundSource in plugin for" <<
                         extension;
             return NULL; //Failed to load plugin
         }
@@ -156,7 +155,7 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
         if (!plugin->load()) {
             qDebug() << "Failed to dynamically load" << lib_filename << plugin->errorString();
         } else {
-            qDebug() << "Dynamically loaded" << lib_filename;        
+            qDebug() << "Dynamically loaded" << lib_filename;
             //Add the plugin to our list of loaded QLibraries/plugins
             m_plugins.insert(lib_filename, plugin);
 
@@ -174,7 +173,7 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
             //Map the file extensions this plugin supports onto a function
             //pointer to the "getter" function that gets a SoundSourceBlah.
             getSoundSourceFunc getter = (getSoundSourceFunc)plugin->resolve("getSoundSource");
-            Q_ASSERT(getter); //Getter function not found. 
+            Q_ASSERT(getter); //Getter function not found.
                               //Did you export it properly in your plugin?
             getSupportedFileExtensionsFunc getFileExts = (getSupportedFileExtensionsFunc)plugin->resolve("supportedFileExtensions");
             Q_ASSERT(getFileExts);
@@ -189,8 +188,8 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
             }
             free(supportedFileExtensions);
             //So now we have a list of file extensions (eg. "m4a", "mp4", etc)
-            //that map onto the getter function for this plugin (eg. the 
-            //function that returns a SoundSourceM4A object) 
+            //that map onto the getter function for this plugin (eg. the
+            //function that returns a SoundSourceM4A object)
         }
     }
     return plugin;
@@ -209,7 +208,14 @@ int SoundSourceProxy::open()
     //of VBR MP3s until we've seeked through and counted all
     //the frames. We don't do that in ParseHeader() to keep
     //library scanning fast.
-    m_pTrack->setDuration(m_pSoundSource->getDuration());
+    // .... but only do this if the song doesn't already
+    //      have a duration parsed. (Some SoundSources don't
+    //      parse metadata on open(), so they won't have the
+    //      duration.)
+    // SSMP3 will set duration to -1 on VBR files,
+    //  so we must look for that here too
+    if (m_pTrack->getDuration() <= 0)
+        m_pTrack->setDuration(m_pSoundSource->getDuration());
 
     return retVal;
 }
@@ -244,9 +250,9 @@ int SoundSourceProxy::parseHeader()
     return 0;
 }
 
-int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
+int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
-    
+
     QString qFilename = p->getLocation();
     SoundSource* sndsrc = initialize(qFilename);
     if (sndsrc == NULL)
@@ -256,7 +262,15 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
         //Dump the metadata from the soundsource into the TIO
         //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
         p->setArtist(sndsrc->getArtist());
-        p->setTitle(sndsrc->getTitle());
+        QString title = sndsrc->getTitle();
+        if (title.isEmpty()) {
+            // If no title is returned, use the file name (without the extension)
+            int start = qFilename.lastIndexOf(QRegExp("[/\\\\]"))+1;
+            int end = qFilename.lastIndexOf('.');
+            if (end == -1) end = qFilename.length();
+            title = qFilename.mid(start,end-start);
+        }
+        p->setTitle(title);
         p->setAlbum(sndsrc->getAlbum());
         p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());
@@ -286,7 +300,7 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
-    
+
     return supportedFileExtensions;
 }
 
@@ -305,7 +319,7 @@ QString SoundSourceProxy::supportedFileExtensionsString()
         if (it.hasNext())
             supportedFileExtString.append(" ");
     }
-    
+
     return supportedFileExtString;
 }
 
@@ -325,7 +339,7 @@ QString SoundSourceProxy::supportedFileExtensionsRegex()
             supportedFileExtRegex.append("|");
     }
     supportedFileExtRegex.append(")");
-    
+
     return supportedFileExtRegex;
 }
 

@@ -17,7 +17,7 @@ class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~LibraryTableModel();
 
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();

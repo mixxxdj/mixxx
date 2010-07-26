@@ -41,10 +41,10 @@ void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     DlgPrepare* pPrepareView = new DlgPrepare(libraryWidget,
                                               m_pConfig,
                                               m_pTrackCollection);
-    connect(pPrepareView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(pPrepareView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(pPrepareView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pPrepareView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
     pPrepareView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sPrepareViewName, pPrepareView);
