@@ -3,7 +3,6 @@
 
 #include <QSqlDatabase>
 #include "library/dao/dao.h"
-class TrackInfoObject;
 
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";

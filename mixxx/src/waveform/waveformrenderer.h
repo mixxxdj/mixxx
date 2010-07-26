@@ -13,8 +13,8 @@
 #include <QVector>
 
 #include "defs.h"
+#include "trackinfoobject.h"
 
-class TrackInfoObject;
 class ControlObjectThreadMain;
 class RenderObject;
 class WaveformRenderBackground;
@@ -39,8 +39,8 @@ public:
     int getPixelsPerSecond();
 
 public slots:
-    void slotNewTrack(TrackInfoObject *pTrack);
-    void slotUnloadTrack(TrackInfoObject* pTrack);
+    void slotNewTrack(TrackPointer pTrack);
+    void slotUnloadTrack(TrackPointer pTrack);
     void slotUpdateLatency(double latency);
     void slotUpdatePlayPos(double playpos);
     void slotUpdateRate(double rate);
@@ -87,7 +87,7 @@ private:
 
     const int m_iSubpixelsPerPixel;
     const int m_iPixelsPerSecond;
-    TrackInfoObject *m_pTrack;
+    TrackPointer m_pTrack;
 
     bool m_bQuit;
 };

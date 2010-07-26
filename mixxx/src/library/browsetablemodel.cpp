@@ -20,16 +20,16 @@ BrowseTableModel::~BrowseTableModel()
 
 }
 
-TrackInfoObject* BrowseTableModel::getTrack(const QModelIndex& index) const
+TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
 	//TODO
 
-    return NULL;
+    return TrackPointer();
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    return filePath(index); 
+    return filePath(index);
 }
 
 void BrowseTableModel::search(const QString& searchText)

@@ -16,7 +16,6 @@
 
 class EngineBuffer;
 class WaveformRenderer;
-class TrackInfoObject;
 
 class WWaveformViewer : public QWidget
 {

@@ -48,6 +48,8 @@
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
+#include "trackinfoobject.h"
+#include "engine/enginemaster.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
 //#include "trackplaylist.h"
@@ -125,14 +127,14 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-	QString getSkinPath();
+    QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
 
-	/** Scan or rescan the music library directory */
-	void slotScanLibrary();
-	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
-	void slotEnableRescanLibraryAction();
+    /** Scan or rescan the music library directory */
+    void slotScanLibrary();
+    /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+    void slotEnableRescanLibraryAction();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
