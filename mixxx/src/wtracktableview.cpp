@@ -55,6 +55,9 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlayer1Act;
     delete m_pPlayer2Act;
     delete m_pSampler1Act;
+    delete m_pSampler2Act;
+    delete m_pSampler3Act;
+    delete m_pSampler4Act;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
     //delete m_pRenamePlaylistAct;
@@ -160,6 +163,15 @@ void WTrackTableView::createActions()
     m_pSampler1Act = new QAction(tr("Sampler 1"),this);
     connect(m_pSampler1Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler1()));
     
+    m_pSampler2Act = new QAction(tr("Sampler 2"),this);
+    connect(m_pSampler2Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler2()));
+    
+    m_pSampler3Act = new QAction(tr("Sampler 3"),this);
+    connect(m_pSampler3Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler3()));
+    
+    m_pSampler4Act = new QAction(tr("Sampler 4"),this);
+    connect(m_pSampler4Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler4()));
+    
     m_pRemoveAct = new QAction(tr("Remove"),this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
@@ -179,6 +191,9 @@ void WTrackTableView::createActions()
     m_pMenu->addAction(m_pPlayer2Act);
     m_pMenu->addMenu(m_pSamplerMenu);
     m_pSamplerMenu->addAction(m_pSampler1Act);
+    m_pSamplerMenu->addAction(m_pSampler2Act);
+    m_pSamplerMenu->addAction(m_pSampler3Act);
+    m_pSamplerMenu->addAction(m_pSampler4Act);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
     m_pMenu->addAction(m_pPropertiesAct);
@@ -225,6 +240,42 @@ void WTrackTableView::slotLoadSampler1() {
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
             emit(loadTrackToSampler(pTrack, 1));
+        }
+    }
+}
+
+void WTrackTableView::slotLoadSampler2() {
+    if (m_selectedIndices.size() > 0) {
+        QModelIndex index = m_selectedIndices.at(0);
+        TrackModel* trackModel = getTrackModel();
+        TrackInfoObject* pTrack = NULL;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            emit(loadTrackToSampler(pTrack, 2));
+        }
+    }
+}
+
+void WTrackTableView::slotLoadSampler3() {
+    if (m_selectedIndices.size() > 0) {
+        QModelIndex index = m_selectedIndices.at(0);
+        TrackModel* trackModel = getTrackModel();
+        TrackInfoObject* pTrack = NULL;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            emit(loadTrackToSampler(pTrack, 3));
+        }
+    }
+}
+
+void WTrackTableView::slotLoadSampler4() {
+    if (m_selectedIndices.size() > 0) {
+        QModelIndex index = m_selectedIndices.at(0);
+        TrackModel* trackModel = getTrackModel();
+        TrackInfoObject* pTrack = NULL;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            emit(loadTrackToSampler(pTrack, 4));
         }
     }
 }
@@ -301,11 +352,17 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pPlayer1Act->setEnabled(false);
         m_pPlayer2Act->setEnabled(false);
         m_pSampler1Act->setEnabled(false);
+        m_pSampler2Act->setEnabled(false);
+        m_pSampler3Act->setEnabled(false);
+        m_pSampler4Act->setEnabled(false);
         m_pPropertiesAct->setEnabled(false);
     } else {
         m_pPlayer1Act->setEnabled(true);
         m_pPlayer2Act->setEnabled(true);
         m_pSampler1Act->setEnabled(true);
+        m_pSampler2Act->setEnabled(true);
+        m_pSampler3Act->setEnabled(true);
+        m_pSampler4Act->setEnabled(true);
         m_pPropertiesAct->setEnabled(true);
     }
 

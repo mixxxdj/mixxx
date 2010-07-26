@@ -31,15 +31,12 @@ class WBrowseTableView : public virtual WLibraryTableView {
   private slots:
     void slotLoadPlayer1();
     void slotLoadPlayer2();
-    void slotLoadSampler1();
   private:
     //Used for right-click operations
     /**Send to Player 1 Action**/
     QAction m_player1Act;
     /**Send to Player 2 Action**/
     QAction m_player2Act;
-    /**Send to Sampler Actions**/
-    QAction m_sampler1Act;
     QMenu m_contextMenu;
 };
 

@@ -36,6 +36,9 @@ public slots:
     void slotLoadPlayer1();
     void slotLoadPlayer2();
     void slotLoadSampler1();
+    void slotLoadSampler2();
+    void slotLoadSampler3();
+    void slotLoadSampler4();
 private slots:
     void slotRemove();
     void slotShowTrackInfo();
