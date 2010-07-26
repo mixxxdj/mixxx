@@ -62,15 +62,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputL")));
     ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputR")));
 
-    pControlObjectLatency->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
-    pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
     pControlObjectVinylControlMode->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
     pControlObjectVinylControlEnabled->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
     pControlObjectVinylControlGain->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
-
-
-    qDebug() << "SampleRate" << pControlObjectSampleRate->get();
-    qDebug() << "Latency" << pControlObjectLatency->get();
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -85,6 +79,11 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
         newConfig.loadDefaults(this, SoundManagerConfig::ALL);
     }
     setConfig(newConfig);
+
+    // TODO(bkgood) do these really need to be here? they're set in
+    // SoundDevicePortAudio::open
+    pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
+    pControlObjectSampleRate->slotSet(m_config.getSampleRate());
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
