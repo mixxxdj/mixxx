@@ -79,11 +79,12 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
 
     queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
                     // its thing if it needs to
-    if (!m_config.readFromDisk()) {
-        m_config.loadDefaults(this,
-                SoundManagerConfig::API | SoundManagerConfig::DEVICES
-                | SoundManagerConfig::OTHER);
+
+    SoundManagerConfig newConfig;
+    if (!newConfig.readFromDisk()) {
+        newConfig.loadDefaults(this, SoundManagerConfig::ALL);
     }
+    setConfig(newConfig);
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -358,7 +359,6 @@ int SoundManager::setupDevices()
                 break;
             }
         }
-
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
@@ -394,6 +394,15 @@ SoundManagerConfig SoundManager::getConfig() const {
 int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
     m_config = config;
+    if (!m_config.checkAPI(*this)) {
+        m_config.setAPI(DEFAULT_API);
+        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+    }
+    if (!m_config.checkSampleRate(*this)) {
+        m_config.setSampleRate(DEFAULT_SAMPLE_RATE);
+        m_config.loadDefaults(this, SoundManagerConfig::OTHER);
+    }
+    // latency checks itself for validity on SMConfig::setLatency()
     err = setupDevices();
     if (err == OK) {
         m_config.writeToDisk();
