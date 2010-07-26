@@ -51,13 +51,53 @@ bool SoundManagerConfig::readFromDisk() {
     }
     file.close();
     rootElement = doc.documentElement();
-    QDomNodeList devElements(rootElement.elementsByTagName("sounddevice"));
+    setAPI(rootElement.attribute("api"));
+    setSampleRate(rootElement.attribute("samplerate", "0").toUInt());
+    setLatency(rootElement.attribute("latency", "0").toUInt());
+    clearOutputs();
+    clearInputs();
+    QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
     for (int i = 0; i < devElements.count(); ++i) {
         QDomElement devElement(devElements.at(i).toElement());
         if (devElement.isNull()) continue;
-        
+        QString device(devElement.attribute("name"));
+        if (device.isEmpty()) continue;
+        QDomNodeList outElements(devElement.elementsByTagName("output"));
+        QDomNodeList inElements(devElement.elementsByTagName("input"));
+        for (int j = 0; j < outElements.count(); ++j) {
+            QDomElement outElement(outElements.at(j).toElement());
+            if (outElement.isNull()) continue;
+            AudioOutput out(AudioOutput::fromXML(outElement));
+            if (out.getType() == AudioPath::INVALID) continue;
+            bool dupe(false);
+            foreach (AudioOutput otherOut, m_outputs) {
+                if (out == otherOut
+                        && out.getChannelGroup() == otherOut.getChannelGroup()) {
+                    dupe = true;
+                    break;
+                }
+            }
+            if (dupe) continue;
+            addOutput(device, out);
+        }
+        for (int j = 0; j < inElements.count(); ++j) {
+            QDomElement inElement(inElements.at(j).toElement());
+            if (inElement.isNull()) continue;
+            AudioInput in(AudioInput::fromXML(inElement));
+            if (in.getType() == AudioPath::INVALID) continue;
+            bool dupe(false);
+            foreach (AudioInput otherIn, m_inputs) {
+                if (in == otherIn
+                        && in.getChannelGroup() == otherIn.getChannelGroup()) {
+                    dupe = true;
+                    break;
+                }
+            }
+            if (dupe) continue;
+            addInput(device, in);
+        }
     }
-    return false;
+    return true;
 }
 
 bool SoundManagerConfig::writeToDisk() const {
@@ -101,6 +141,19 @@ void SoundManagerConfig::setAPI(const QString &api) {
     m_api = api;
 }
 
+/**
+ * Checks that the API in the object is valid according to the list of APIs
+ * given by SoundManager.
+ * @returns false if the API is not found in SoundManager's list, otherwise
+ *          true
+ */
+bool SoundManagerConfig::checkAPI(const SoundManager &soundManager) {
+    if (!soundManager.getHostAPIList().contains(m_api)) {
+        return false;
+    }
+    return true;
+}
+
 unsigned int SoundManagerConfig::getSampleRate() const {
     return m_sampleRate;
 }
@@ -108,6 +161,19 @@ unsigned int SoundManagerConfig::getSampleRate() const {
 void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     // making sure we don't divide by zero elsewhere
     m_sampleRate = sampleRate != 0 ? sampleRate : DEFAULT_SAMPLE_RATE;
+}
+
+/**
+ * Checks that the sample rate in the object is valid according to the list of
+ * sample rates given by SoundManager.
+ * @returns false if the sample rate is not found in SoundManager's list,
+ *          otherwise true
+ */
+bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
+    if (!soundManager.getSampleRates().contains(m_sampleRate)) {
+        return false;
+    }
+    return true;
 }
 
 unsigned int SoundManagerConfig::getLatency() const {

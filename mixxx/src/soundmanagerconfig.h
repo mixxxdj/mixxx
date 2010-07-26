@@ -27,6 +27,8 @@ class SoundManager;
 class AudioOutput;
 class AudioInput;
 
+#define DEFAULT_API "None"
+
 const unsigned int MAX_LATENCY = 8; // this represents latency values from 1 ms to about
                                     // 180 ms, should be sufficient -- bkgood
 // no DEFAULT_API because we have to check that the api is available -- bkgood
@@ -42,6 +44,7 @@ public:
         API = (1 << 0),
         DEVICES = (1 << 1),
         OTHER = (1 << 2),
+        ALL = (API | DEVICES | OTHER),
     };
     SoundManagerConfig();
     ~SoundManagerConfig();
@@ -49,8 +52,10 @@ public:
     bool writeToDisk() const;
     QString getAPI() const;
     void setAPI(const QString &api);
+    bool checkAPI(const SoundManager &soundManager);
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
+    bool checkSampleRate(const SoundManager &soundManager);
     unsigned int getLatency() const;
     unsigned int getFramesPerBuffer() const;
     void setLatency(unsigned int latency);

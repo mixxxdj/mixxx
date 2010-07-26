@@ -67,6 +67,7 @@ int SoundDevicePortAudio::open()
     // Look at how many audio outputs we have,
     // so we can figure out how many output channels we need to open.
     if (m_audioOutputs.empty()) {
+        m_outputParams.channelCount = 0;
         pOutputParams = NULL;
     } else {
         foreach (AudioOutput out, m_audioOutputs) {
@@ -82,6 +83,7 @@ int SoundDevicePortAudio::open()
     // Look at how many audio inputs we have,
     // so we can figure out how many input channels we need to open.
     if (m_audioInputs.empty()) {
+        m_inputParams.channelCount = 0;
         pInputParams = NULL;
     } else {
         foreach (AudioInput in, m_audioInputs) {
@@ -95,8 +97,10 @@ int SoundDevicePortAudio::open()
     }
 
     //Sample rate
-    if (m_dSampleRate <= 0)
+    if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
+        qDebug() << "************************ HAD TO SET SRATE IN SDPA!!!!";
+    }
     qDebug() << "m_dSampleRate" << m_dSampleRate;
 
     //Get latency in milleseconds
