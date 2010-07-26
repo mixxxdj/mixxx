@@ -34,6 +34,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
 {
     m_pSoundManager = soundman;
     config = _config;
+    m_dontForce = false;
 
     setupUi(this);
 
@@ -82,6 +83,14 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
 
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
+
+    connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(settingsChanged()));
+    connect(ComboBoxVinylType, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
+    connect(LeadinTime, SIGNAL(textChanged(const QString&)), this, SLOT(settingsChanged()));
+    connect(NeedleSkipEnable, SIGNAL(stateChanged(int)), this, SLOT(settingsChanged()));
+    connect(AbsoluteMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
+    connect(RelativeMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
+    connect(ScratchMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
 }
 
 DlgPrefVinyl::~DlgPrefVinyl()
@@ -124,6 +133,8 @@ void DlgPrefVinyl::slotClose()
 
 void DlgPrefVinyl::slotUpdate()
 {
+    m_dontForce = true; // otherwise all the signals fired in here will cause
+                        // DlgPrefSound to call setupDevices needlessly :) -- bkgood
     // Set vinyl control types in the comboboxes
     int combo_index = ComboBoxVinylType->findText(config->getValueString(ConfigKey("[VinylControl]","strVinylType")));
     if (combo_index != -1)
@@ -146,6 +157,7 @@ void DlgPrefVinyl::slotUpdate()
 
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
+    m_dontForce = false;
 }
 
 // Update the config object with parameters from dialog
@@ -156,7 +168,7 @@ void DlgPrefVinyl::slotApply()
     // Lead-in time
     QString strLeadIn      = LeadinTime->text();
     bool isInteger;
-    int iLeadIn        = strLeadIn.toInt(&isInteger);
+    strLeadIn.toInt(&isInteger);
     if (isInteger)
         config->set(ConfigKey("[VinylControl]","LeadInTime"), strLeadIn);
     else
@@ -264,3 +276,8 @@ void DlgPrefVinyl::updateInputLevelRight2(double value)
     m_signalWidget2.updateSignalQuality(VINYLCONTROL_SIGRIGHTCHANNEL, value);
 }
 
+void DlgPrefVinyl::settingsChanged() {
+    if (!m_dontForce) {
+        emit(refreshVCProxies());
+    }
+}
