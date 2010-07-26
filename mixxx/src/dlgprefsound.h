@@ -42,6 +42,7 @@ signals:
 public slots:
     void slotUpdate(); // called on show
     void slotApply();  // called on ok button
+    void forceApply(); // called by DlgPrefVinyl to make slotApply call setupDevices
 private:
     void initializePaths();
     void loadSettings();
@@ -52,6 +53,7 @@ private:
     bool m_settingsModified;
     SoundManagerConfig m_config;
     bool m_loading;
+    bool m_forceApply;
 private slots:
     void apiChanged(int index);
     void sampleRateChanged(int index);

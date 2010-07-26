@@ -59,6 +59,9 @@ public slots:
 
 signals:
     void apply();
+    void refreshVCProxies();
+private slots:
+    void settingsChanged();
 private:
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
@@ -76,6 +79,7 @@ private:
     ControlObjectThreadMain* m_vinylControlInput1R;
     ControlObjectThreadMain* m_vinylControlInput2L;
     ControlObjectThreadMain* m_vinylControlInput2R;
+    bool m_dontForce;
 };
 
 #endif
