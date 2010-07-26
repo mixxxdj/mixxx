@@ -44,10 +44,10 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                            m_pTrackCollection);
     pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
-    connect(pAutoDJView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 }
 
 QAbstractItemModel* AutoDJFeature::getChildModel() {
@@ -79,7 +79,10 @@ bool AutoDJFeature::dropAccept(QUrl url) {
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-    QString location = url.toLocalFile();
+    QString location = url.toString();
+    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toString()
+    //     instead of toLocalFile()
+
     if (!trackDao.trackExistsInDatabase(location))
     {
         trackDao.addTrack(location);

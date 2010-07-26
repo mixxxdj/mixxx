@@ -24,6 +24,7 @@
 Upgrade::Upgrade()
 {
     m_bFirstRun = false;
+    m_bUpgraded = false;
 }
 
 Upgrade::~Upgrade()
@@ -50,7 +51,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 #endif
 
     if (pre170Config->exists()) {
-    
+
         // Move the files to their new location
         QString newLocation = QDir::homePath().append("/").append(SETTINGS_PATH);
         
@@ -71,8 +72,10 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         QString newFilePath = newLocation.arg("mixxxtrack.xml");
         QFile* oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
-            if (oldFile->copy(newFilePath))
+            if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
+                m_bUpgraded = true;
+            }
             else {
                 if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
                 else qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
@@ -160,6 +163,12 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         return config;
     }
     
+    // If it's already current, stop here
+    if (configVersion == VERSION) {
+        qDebug() << "Configuration file is at the current version" << VERSION;
+        return config;
+    }
+
     // Allows for incremental upgrades incase someone upgrades from a few versions prior
     // (I wish we could do a switch on a QString.)
     /*
@@ -177,23 +186,45 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.0"));
     }
     */
+
+    //We use the following blocks to detect if this is the first time
+    //you've run the latest version of Mixxx. This lets us show
+    //the promo tracks stats agreement stuff for all users that are
+    //upgrading Mixxx.
     
-    // For the next release, if needed:
-    /*
     if (configVersion.startsWith("1.7")) {
         qDebug() << "Upgrading from v1.7.x to" << VERSION <<"...";
         // Upgrade tasks go here
-        configVersion = ConfigValue(VERSION);
+        // Nothing to change, really
+    }
+
+    if (configVersion.startsWith("1.8.0~beta1") || 
+        configVersion.startsWith("1.8.0~beta2")) {
+        qDebug() << "Upgrading from v1.8.0~beta to" << VERSION <<"...";
+        // Upgrade tasks go here
+    }
+    // For the next release
+    /*
+    if (configVersion.startsWith("1.8.0")) {
+        qDebug() << "Upgrading from v1.8.0 to" << VERSION <<"...";
+        // Upgrade tasks go here, if any
+        configVersion = VERSION;
         config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
     }
     */
 
-    if (configVersion == VERSION) qDebug() << "Configuration file is at the current version" << VERSION;
+    configVersion = VERSION;
+    m_bUpgraded = true;
+    config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+
+    if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
     else {
+        /* Way too verbose, this confuses the hell out of Linux users when they see this:
         qWarning() << "Configuration file is at version" << configVersion
                    << "and I don't know how to upgrade it to the current" << VERSION
                    << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
                    << "\n-> Leaving the configuration file version as-is.";
+        */
     }
 
     return config;

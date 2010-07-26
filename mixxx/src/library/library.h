@@ -12,10 +12,10 @@
 #include <QAbstractItemModel>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class TrackModel;
 class TrackCollection;
-class TrackInfoObject;
 class SidebarModel;
 class LibraryFeature;
 class LibraryTableModel;
@@ -40,7 +40,7 @@ public:
                     WLibrary* libraryWidget,
                     MixxxKeyboard* pKeyboard);
     void addFeature(LibraryFeature* feature);
-    QList<TrackInfoObject*> getTracksToAutoLoad();
+    QList<TrackPointer> getTracksToAutoLoad();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -55,16 +55,16 @@ public:
 public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
-    void slotLoadTrack(TrackInfoObject* pTrack);
-    void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void slotLoadTrack(TrackPointer pTrack);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, int player);
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void loadTrack(TrackInfoObject* tio);
-    void loadTrackToPlayer(TrackInfoObject* tio, int n);
+    void loadTrack(TrackPointer tio);
+    void loadTrackToPlayer(TrackPointer tio, int n);
     void restoreSearch(const QString&);
 
 private:
