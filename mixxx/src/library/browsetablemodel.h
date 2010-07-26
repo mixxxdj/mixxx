@@ -5,13 +5,13 @@
 #include "trackmodel.h"
 class QMimeData;
 
-class BrowseTableModel : public QFileSystemModel, public TrackModel 
+class BrowseTableModel : public QFileSystemModel, public TrackModel
 {
     Q_OBJECT
 	public:
 		BrowseTableModel(QObject* parent);
 		~BrowseTableModel();
-		virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+		virtual TrackPointer getTrack(const QModelIndex& index) const;
 		virtual QString getTrackLocation(const QModelIndex& index) const;
 		virtual void search(const QString& searchText);
 		virtual void removeTrack(const QModelIndex& index);

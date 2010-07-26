@@ -121,34 +121,29 @@ void AbstractXmlTrackModel::moveTrack(const QModelIndex& sourceIndex,
 
 QString AbstractXmlTrackModel::getTrackLocation(const QModelIndex& index) const
 {
-    TrackInfoObject *track;
-    QString location;
-
-    track = getTrack(index);
-    location = track->getLocation();
-
-    delete track;
-
+    TrackPointer track = getTrack(index);
+    QString location = track->getLocation();
+    // track is auto-deleted
     return location;
 }
 
-TrackInfoObject * AbstractXmlTrackModel::getTrack(const QModelIndex& index) const
+TrackPointer AbstractXmlTrackModel::getTrack(const QModelIndex& index) const
 {
     QDomNode songNode = m_trackNodes.at(index.row());
     return parseTrackNode(songNode);
 }
 
-TrackInfoObject * AbstractXmlTrackModel::getTrackByLocation(const QString& location) const
+TrackPointer AbstractXmlTrackModel::getTrackByLocation(const QString& location) const
 {
     if ( !m_mTracksByLocation.contains(location))
-        return NULL;
+        return TrackPointer();
 
     QDomNode songNode = m_mTracksByLocation[location];
     return parseTrackNode(songNode);
 }
 
 /*
-TrackInfoObject *AbstractXmlTrackModel::parseTrackNode(QDomNode node)
+TrackPointer AbstractXmlTrackModel::parseTrackNode(QDomNode node)
 {
     qDebug() << "Child class has not implemented parseTrackNode";
     return NULL;

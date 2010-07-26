@@ -99,14 +99,14 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     Player* pPlayer1 = m_pPlayerManager->getPlayer(1);
     Player* pPlayer2 = m_pPlayerManager->getPlayer(2);
 
-    connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
-    connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackPointer)));
+    connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackPointer)));
+    connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackPointer)));
+    connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackPointer)));
 
     // Default values for visuals
     m_pTextCh1 = 0;
@@ -149,26 +149,26 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
  	 //Connect the players to the waveform overview widgets so they
  	 //update when a new track is loaded.
- 	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-          m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-  connect(pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-          m_pOverviewCh1, SLOT(slotUnloadTrack(TrackInfoObject*)));
-	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-          m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-  connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-          m_pOverviewCh2, SLOT(slotUnloadTrack(TrackInfoObject*)));
+ 	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+          m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackPointer)));
+  connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+          m_pOverviewCh1, SLOT(slotUnloadTrack(TrackPointer)));
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+          m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackPointer)));
+  connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+          m_pOverviewCh2, SLOT(slotUnloadTrack(TrackPointer)));
 
 
 	//Connect the players to some other widgets, so they get updated when a
 	//new track is loaded.
-	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-          this, SLOT(slotUpdateTrackTextCh1(TrackInfoObject*)));
-  connect(pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-          this, SLOT(slotClearTrackTextCh1(TrackInfoObject*)));
-	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-          this, SLOT(slotUpdateTrackTextCh2(TrackInfoObject*)));
-  connect(pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-          this, SLOT(slotClearTrackTextCh2(TrackInfoObject*)));
+	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+          this, SLOT(slotUpdateTrackTextCh1(TrackPointer)));
+  connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+          this, SLOT(slotClearTrackTextCh1(TrackPointer)));
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+          this, SLOT(slotUpdateTrackTextCh2(TrackPointer)));
+  connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+          this, SLOT(slotClearTrackTextCh2(TrackPointer)));
 
 	//Setup a connection that allows us to connect the TrackInfoObjects that
 	//get loaded into the players to the waveform overview widgets. We don't
@@ -177,10 +177,10 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 	//notify the waveform overview widgets to update once the waveform
 	//summary has finished generating. This connection gives us a way to
 	//create that connection at runtime.)
-	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-		this, SLOT(slotSetupTrackConnectionsCh1(TrackInfoObject*)));
-	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-		this, SLOT(slotSetupTrackConnectionsCh2(TrackInfoObject*)));
+	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+		this, SLOT(slotSetupTrackConnectionsCh1(TrackPointer)));
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+		this, SLOT(slotSetupTrackConnectionsCh2(TrackPointer)));
 
 	// Connect search box signals to the library
 	connect(m_pLineEditSearch, SIGNAL(search(const QString&)),
@@ -1032,52 +1032,52 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 
 }
 
-void MixxxView::slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack)
+void MixxxView::slotSetupTrackConnectionsCh1(TrackPointer pTrack)
 {
-	//Note: This slot gets called when Player emits a newTrackLoaded() signal.
-
-	//Connect the track to the waveform overview widget, so it updates when the wavesummary is finished
-	//generating.
-	connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-		m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-	//Connect the track to the BPM readout in the GUI, so it updates when the BPM is finished being calculated.
-    connect(pTrack, SIGNAL(bpmUpdated(double)),
-	    m_pNumberBpmCh1, SLOT(setValue(double)));
+    //Note: This slot gets called when Player emits a newTrackLoaded() signal.
+    //Connect the track to the waveform overview widget, so it updates when the
+    //wavesummary is finished generating.
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+            m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    //Connect the track to the BPM readout in the GUI, so it updates when the
+    //BPM is finished being calculated.
+    connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
+            m_pNumberBpmCh1, SLOT(setValue(double)));
 }
 
-void MixxxView::slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack)
+void MixxxView::slotSetupTrackConnectionsCh2(TrackPointer pTrack)
 {
-	//Note: This slot gets called when Player emits a newTrackLoaded() signal.
-
-	//Connect the track to the waveform overview widget, so it updates when the wavesummary is finished
-	//generating.
-	connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-		m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-	//Connect the track to the BPM readout in the GUI, so it updates when the BPM is finished being calculated.
-	connect(pTrack, SIGNAL(bpmUpdated(double)),
-		m_pNumberBpmCh2, SLOT(setValue(double)));
+    //Note: This slot gets called when Player emits a newTrackLoaded() signal.
+    //Connect the track to the waveform overview widget, so it updates when the
+    //wavesummary is finished generating.
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+            m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    //Connect the track to the BPM readout in the GUI, so it updates when the
+    //BPM is finished being calculated.
+    connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
+            m_pNumberBpmCh2, SLOT(setValue(double)));
 
 }
 
-void MixxxView::slotUpdateTrackTextCh1(TrackInfoObject* pTrack)
+void MixxxView::slotUpdateTrackTextCh1(TrackPointer pTrack)
 {
 	if (m_pTextCh1)
 		m_pTextCh1->setText(pTrack->getInfo());
 }
 
-void MixxxView::slotUpdateTrackTextCh2(TrackInfoObject* pTrack)
+void MixxxView::slotUpdateTrackTextCh2(TrackPointer pTrack)
 {
 	if (m_pTextCh2)
 		m_pTextCh2->setText(pTrack->getInfo());
 }
 
-void MixxxView::slotClearTrackTextCh1(TrackInfoObject* pTrack)
+void MixxxView::slotClearTrackTextCh1(TrackPointer pTrack)
 {
 	if (m_pTextCh1)
 		m_pTextCh1->setText("");
 }
 
-void MixxxView::slotClearTrackTextCh2(TrackInfoObject* pTrack)
+void MixxxView::slotClearTrackTextCh2(TrackPointer pTrack)
 {
 	if (m_pTextCh2)
 		m_pTextCh2->setText("");
