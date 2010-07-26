@@ -322,9 +322,14 @@ int SoundManager::setupDevices()
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
     foreach (SoundDevice *device, m_devices) {
+        // close all the devices first so if we error on starting a device
+        // and jump out of the method we don't have zombie devices still
+        // running -- bkgood
+        device->close();
+    }
+    foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
         bool isOutput = false;
-        device->close();
         device->clearInputs();
         device->clearOutputs();
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
