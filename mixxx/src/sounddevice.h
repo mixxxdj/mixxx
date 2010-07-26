@@ -28,8 +28,13 @@ class AudioOutput;
 class AudioInput;
 struct SoundDeviceInfo;
 
-#define MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL 0x0f00f00
-#define MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL  0x0100100
+enum SoundDeviceError {
+    SOUNDDEVICE_ERROR_OK = OK,
+    SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL,
+    SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL,
+    SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL,
+    SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL,
+};
 
 class SoundDevice
 {
@@ -46,13 +51,12 @@ class SoundDevice
         virtual int close() = 0;
         int getNumOutputChannels() const;     
         int getNumInputChannels() const;
-        int addOutput(const AudioOutput &out);
-        int addInput(const AudioInput &in);
+        SoundDeviceError addOutput(const AudioOutput &out);
+        SoundDeviceError addInput(const AudioInput &in);
         void clearOutputs();
         void clearInputs();
         bool operator==(const SoundDevice &other) const;
         bool operator==(const QString &other) const;
-        SoundDeviceInfo getInfo() const;
     protected:
         ConfigObject<ConfigValue> *m_pConfig;
         SoundManager *m_pSoundManager;      //Pointer to the SoundManager object which we'll request audio from.
@@ -65,13 +69,6 @@ class SoundDevice
         unsigned int m_framesPerBuffer;
         QList<AudioOutput> m_audioOutputs;
         QList<AudioInput> m_audioInputs;
-};
-
-struct SoundDeviceInfo {
-    QString displayName;
-    QString internalName;
-    int outputChannels;
-    int inputChannels;
 };
 
 #endif

@@ -86,16 +86,20 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
     m_framesPerBuffer = framesPerBuffer;
 }
 
-int SoundDevice::addOutput(const AudioOutput &out)
+SoundDeviceError SoundDevice::addOutput(const AudioOutput &out)
 { 
     //Check if the output channels are already used
     foreach (AudioOutput myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
-            return MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL;
+            return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;
         }
     }
+    if (out.getChannelGroup().getChannelBase()
+            + out.getChannelGroup().getChannelCount() > getNumOutputChannels()) {
+        return SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL;
+    }
     m_audioOutputs.append(out);
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 void SoundDevice::clearOutputs()
@@ -103,16 +107,20 @@ void SoundDevice::clearOutputs()
     m_audioOutputs.clear();
 }
 
-int SoundDevice::addInput(const AudioInput &in)
+SoundDeviceError SoundDevice::addInput(const AudioInput &in)
 {
     //Check if the input channels are already used
     foreach (AudioInput myIn, m_audioInputs) {
         if (in.channelsClash(myIn)) {
-            return MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL;
+            return SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL;
         }
     }
+    if (in.getChannelGroup().getChannelBase()
+            + in.getChannelGroup().getChannelCount() > getNumInputChannels()) {
+        return SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL;
+    }
     m_audioInputs.append(in);
-    return OK;
+    return SOUNDDEVICE_ERROR_OK;
 }
 
 void SoundDevice::clearInputs()
@@ -128,13 +136,4 @@ bool SoundDevice::operator==(const SoundDevice &other) const
 bool SoundDevice::operator==(const QString &other) const
 {
     return getInternalName() == other;
-}
-
-SoundDeviceInfo SoundDevice::getInfo() const {
-    SoundDeviceInfo info;
-    info.displayName = getDisplayName();
-    info.internalName = getInternalName();
-    info.outputChannels = getNumOutputChannels();
-    info.inputChannels = getNumInputChannels();
-    return info;
 }
