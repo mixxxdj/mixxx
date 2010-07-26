@@ -4,6 +4,7 @@
 #include <QSignalMapper>
 #include <QSet>
 #include <QThreadPool>
+#include <QMutex>
 
 class EngineWorker;
 
@@ -24,6 +25,7 @@ class EngineWorkerScheduler : public QThreadPool {
   private:
     QSet<EngineWorker*> m_scheduledWorkers;
     QSet<EngineWorker*> m_activeWorkers;
+    QMutex m_mutex;
 
     QSignalMapper m_readyMapper;
     QSignalMapper m_startedMapper;
