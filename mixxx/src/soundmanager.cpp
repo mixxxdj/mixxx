@@ -411,6 +411,9 @@ int SoundManager::setConfig(SoundManagerConfig config) {
     if (err == OK) {
         m_config.writeToDisk();
     }
+    // certain parts of mixxx rely on this being here, for the time being, just
+    // letting those be -- bkgood
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
     return err;
 }
 
