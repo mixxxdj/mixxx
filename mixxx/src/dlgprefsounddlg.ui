@@ -176,6 +176,20 @@
    <item>
     <layout class="QHBoxLayout" name="buttonsHLayout">
      <item>
+      <widget class="QPushButton" name="queryButton">
+       <property name="text">
+        <string>Query Devices</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="resetButton">
+       <property name="text">
+        <string>Reset to Defaults</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="buttonsHSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

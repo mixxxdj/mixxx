@@ -46,6 +46,7 @@ public slots:
 private:
     void initializePaths();
     void loadSettings();
+    void loadSettings(const SoundManagerConfig &config);
     SoundManager *m_pSoundManager;
     ConfigObject<ConfigValue> *m_pConfig;
     QList<SoundDevice*> m_inputDevices;
@@ -61,6 +62,8 @@ private slots:
     void updateLatencies(int sampleRateIndex);
     void refreshDevices();
     void settingChanged();
+    void queryClicked();
+    void resetClicked();
 };
 
 #endif
