@@ -26,7 +26,6 @@ class SoundDevice;
 class SoundManager;
 class AudioOutput;
 class AudioInput;
-struct SoundDeviceInfo;
 
 enum SoundDeviceError {
     SOUNDDEVICE_ERROR_OK = OK,
