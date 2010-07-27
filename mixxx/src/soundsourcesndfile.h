@@ -20,9 +20,8 @@
 #include "soundsource.h"
 #include <stdio.h>
 #include <sndfile.h>
-class TrackInfoObject;
 
-class SoundSourceSndFile : public SoundSource 
+class SoundSourceSndFile : public SoundSource
 {
 public:
     SoundSourceSndFile(QString qFilename);

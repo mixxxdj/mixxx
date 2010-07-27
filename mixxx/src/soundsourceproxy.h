@@ -20,9 +20,9 @@
 
 #include <QMutex>
 #include "soundsource.h"
+#include "trackinfoobject.h"
 
 class QLibrary;
-class TrackInfoObject;
 
 /**
   *@author Tue Haste Andersen
@@ -36,7 +36,7 @@ class SoundSourceProxy : public SoundSource
 {
 public:
     SoundSourceProxy(QString qFilename);
-    SoundSourceProxy(TrackInfoObject *pTrack);
+    SoundSourceProxy(TrackPointer pTrack);
     ~SoundSourceProxy();
     static void loadPlugins();
     int open();
@@ -44,7 +44,7 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
     int parseHeader();
-    static int ParseHeader(TrackInfoObject *p);
+    static int ParseHeader(TrackInfoObject* p);
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();
@@ -58,7 +58,7 @@ private:
     static QLibrary* getPlugin(QString lib_filename);
 
     SoundSource *m_pSoundSource;
-    TrackInfoObject* m_pTrack;
+    TrackPointer m_pTrack;
     static QMap<QString, QLibrary*> m_plugins;
     static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;

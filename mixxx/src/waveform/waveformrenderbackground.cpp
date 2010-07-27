@@ -34,7 +34,7 @@ void WaveformRenderBackground::resize(int w, int h) {
     m_bRepaintBackground = true;
 }
 
-void WaveformRenderBackground::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderBackground::newTrack(TrackPointer pTrack) {
 }
 
 void WaveformRenderBackground::setup(QDomNode node) {
@@ -56,7 +56,7 @@ void WaveformRenderBackground::generatePixmap() {
     linearGrad.setColorAt(0.0, bgColor);
     linearGrad.setColorAt(0.5, bgColor.light(180));
     linearGrad.setColorAt(1.0, bgColor);
-      
+
     // linearGrad.setColorAt(0.0, Qt::black);
     // linearGrad.setColorAt(0.3, bgColor);
     // linearGrad.setColorAt(0.7, bgColor);
@@ -67,6 +67,6 @@ void WaveformRenderBackground::generatePixmap() {
     newPainter.begin(&m_backgroundPixmap);
     newPainter.fillRect(m_backgroundPixmap.rect(), brush);
     newPainter.end();
-    
+
     m_bRepaintBackground = false;
 }

@@ -178,7 +178,7 @@ void WTrackTableView::createActions()
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 {
     TrackModel* trackModel = getTrackModel();
-    TrackInfoObject* pTrack = NULL;
+    TrackPointer pTrack;
     if (trackModel && (pTrack = trackModel->getTrack(index))) {
         emit(loadTrack(pTrack));
     }
@@ -188,7 +188,7 @@ void WTrackTableView::slotLoadPlayer1() {
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
-        TrackInfoObject* pTrack = NULL;
+        TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
             emit(loadTrackToPlayer(pTrack, 1));
@@ -200,7 +200,7 @@ void WTrackTableView::slotLoadPlayer2() {
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
-        TrackInfoObject* pTrack = NULL;
+        TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
             emit(loadTrackToPlayer(pTrack, 2));
@@ -263,7 +263,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     if (!trackModel)
         return;
 
-    TrackInfoObject* pTrack = trackModel->getTrack(index);
+    TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
     pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
@@ -529,7 +529,8 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 //Add all the dropped URLs/tracks to the track model (playlist/crate)
                 foreach (url, urls)
                 {
-                    if (!trackModel->addTrack(destIndex, url.toLocalFile()))
+                    QFileInfo file(url.toString());
+                    if (!trackModel->addTrack(destIndex, file.absoluteFilePath()))
                         numNewRows--; //# of rows to select must be decremented if we skipped some tracks
                 }
 

@@ -20,12 +20,12 @@
 #include <QObject>
 #include "defs.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "encoder.h"
 
 #include <lame/lame.h> // may be elsewhere on other distros besides Ubuntu
 
 class EngineAbstractRecord;
-class TrackInfoObject;
 
 class EncoderMp3 : public Encoder {
 
@@ -49,9 +49,9 @@ private:
     int m_bufferOutSize;
     float *m_bufferIn[2];
     int m_bufferInSize;
-    
+
     EngineAbstractRecord *pEngine;
-    TrackInfoObject *m_pMetaData;
+    TrackPointer m_pMetaData;
     char *metaDataTitle;
     char *metaDataArtist;
 };

@@ -64,7 +64,7 @@ void WVisualSimple::setup(QDomNode node)
 {
     // Setup position and connections
     WWidget::setup(node);
-    
+
     // Size
     QString size = selectNodeQString(node, "Size");
     int x = size.left(size.indexOf(",")).toInt();
@@ -73,7 +73,7 @@ void WVisualSimple::setup(QDomNode node)
 
     m_pWaveformRenderer->resize(x,y);
     m_pWaveformRenderer->setup(node);
-    
+
     // Set constants for line drawing
     m_qMarkerPos1.setX(x/2);
     m_qMarkerPos1.setY(0);
@@ -88,7 +88,7 @@ void WVisualSimple::setup(QDomNode node)
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
-    
+
     //the simple view seems to look fine even if we never set a background colour at all
     //but since the code used to do it, we'll continue to do it --kousu 2009/03
     QPalette palette = this->palette();
@@ -100,10 +100,6 @@ void WVisualSimple::setup(QDomNode node)
     colorSignal = WSkinColor::getCorrectColor(colorSignal);
     colorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     colorMarker = WSkinColor::getCorrectColor(colorMarker);
-}
-
-void WVisualSimple::slotNewTrack(TrackInfoObject* track)
-{
 }
 
 void WVisualSimple::mouseMoveEvent(QMouseEvent * e)

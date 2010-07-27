@@ -21,11 +21,11 @@
 #include "defs.h"
 #include "configobject.h"
 #include "encoder.h"
+#include "trackinfoobject.h"
 
 #include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
 
 class EngineAbstractRecord;
-class TrackInfoObject;
 
 class EncoderVorbis : public Encoder {
     Q_OBJECT
@@ -40,7 +40,7 @@ public:
 
 
 private slots:
-    void updateMetaData(TrackInfoObject *trackInfoObj);
+    void updateMetaData(TrackPointer trackInfoObj);
 
 private:
     int getSerial();
@@ -60,7 +60,7 @@ private:
     vorbis_comment vcomment;  /* stores all user comments */
 
     EngineAbstractRecord *pEngine;
-    TrackInfoObject *m_pMetaData;
+    TrackPointer m_pMetaData;
     char *metaDataTitle;
     char *metaDataArtist;
 };

@@ -53,7 +53,7 @@ void WaveformRenderMark::resize(int w, int h) {
     m_iHeight = h;
 }
 
-void WaveformRenderMark::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderMark::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
     m_iMarkPoint = -1;
     m_iNumSamples = 0;

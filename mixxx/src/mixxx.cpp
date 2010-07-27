@@ -92,7 +92,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    setWindowTitle(tr("Mixxx " VERSION " x64"));
+#elif defined(IA64)
+    setWindowTitle(tr("Mixxx " VERSION " Itanium"));
+#else
     setWindowTitle(tr("Mixxx " VERSION));
+#endif
     setWindowIcon(QIcon(":/images/icon.svg"));
 
     //Reset pointer to players
@@ -104,6 +110,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     Upgrade upgrader;
     config = upgrader.versionUpgrade();
     bool bFirstRun = upgrader.isFirstRun();
+    bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -210,7 +217,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this, config, bFirstRun);
+    m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
+    qRegisterMetaType<TrackPointer>("TrackPointer");
 
     //Create the "players" (virtual playback decks)
     m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
@@ -218,12 +226,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     //Connect the player to the track collection so that when a track is unloaded,
     //it's data (eg. waveform summary) is saved back to the database.
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackInfoObject*)),
+    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackInfoObject*)),
+            SLOT(saveTrack(TrackPointer)));
+    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
+            SLOT(saveTrack(TrackPointer)));
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
                        m_pLibrary);
@@ -280,10 +288,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 
     // Setup the analyser queue to automatically process new tracks loaded by either player
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(config);
-    connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
-    connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
+    connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+    connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
 
 
 
@@ -306,16 +314,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
                 this, SLOT(slotLoadPlayer2(QString)));
 
     if (view->m_pWaveformRendererCh1)
-        connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-                view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackInfoObject *)));
+        connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+                view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackPointer)));
     if (view->m_pWaveformRendererCh2)
-          connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-                  view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackInfoObject *)));
+          connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+                  view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackPointer)));
 
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
-    connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
-             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
+    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
+             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackPointer)));
 
     // Setup state of End of track controls from config database
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
@@ -361,9 +369,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     channel2->setEngineBuffer(buffer2);
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun)
+    if (bFirstRun || bUpgraded)
     {
-        QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
+        QList<TrackPointer> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
         if (tracksToAutoLoad.count() > 0)
             m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
         if (tracksToAutoLoad.count() > 1)
@@ -886,7 +894,8 @@ void MixxxApp::slotFileLoadSongPlayer1()
     if (!(s == QString::null)) {
         // TODO(XXX) Lookup track in the Library and load that.
         TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer1->slotLoadTrack(pTrack);
+        TrackPointer track = TrackPointer(pTrack, &QObject::deleteLater);
+        m_pPlayer1->slotLoadTrack(track);
     }
 }
 
@@ -910,7 +919,8 @@ void MixxxApp::slotFileLoadSongPlayer2()
     if (!(s == QString::null)) {
         // TODO(XXX) Lookup track in the Library and load that.
         TrackInfoObject * pTrack = new TrackInfoObject(s);
-        m_pPlayer2->slotLoadTrack(pTrack);
+        TrackPointer track = TrackPointer(pTrack, &QObject::deleteLater);
+        m_pPlayer2->slotLoadTrack(track);
     }
 }
 
@@ -1074,7 +1084,13 @@ void MixxxApp::slotHelpAbout()
 {
 
     DlgAbout *about = new DlgAbout(this);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    about->version_label->setText(VERSION " x64");
+#elif defined(IA64)
+    about->version_label->setText(VERSION " IA64");
+#else
     about->version_label->setText(VERSION);
+#endif
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
@@ -1122,6 +1138,7 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Stanton<br>"
 "Hercules<br>"
+"EKS<br>"
 "Echo Digital Audio<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
@@ -1176,7 +1193,14 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>").arg(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    "</p>").arg(VERSION " x64");
+#elif defined(IA64)
+    "</p>").arg(VERSION " IA64");
+#else
+    "</p>").arg(VERSION);
+#endif
+
 
 
     about->textBrowser->setHtml(credits);
@@ -1266,7 +1290,7 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 
 }
 
-void MixxxApp::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
+void MixxxApp::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
     // TODO(XXX) In the future, when we support multiple decks, this method will
     // be less of a hack.
     if (player == 1) {
@@ -1275,7 +1299,7 @@ void MixxxApp::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
         m_pPlayer2->slotLoadTrack(pTrack);
     }
 }
-void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
+void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackPointer pTrack)
 {
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
         m_pPlayer1->slotLoadTrack(pTrack, false);
@@ -1287,11 +1311,11 @@ void MixxxApp::slotLoadPlayer1(QString location)
 {
     // Try to get TrackInfoObject* from library, identified by location.
     TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
     // If not, create a new TrackInfoObject*
     if (pTrack == NULL)
     {
-        pTrack = new TrackInfoObject(location);
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     }
     //Load the track into the Player.
     m_pPlayer1->slotLoadTrack(pTrack);
@@ -1301,11 +1325,11 @@ void MixxxApp::slotLoadPlayer2(QString location)
 {
     // Try to get TrackInfoObject* from library, identified by location.
     TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
     // If not, create a new TrackInfoObject*
     if (pTrack == NULL)
     {
-        pTrack = new TrackInfoObject(location);
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     }
     //Load the track into the Player.
     m_pPlayer2->slotLoadTrack(pTrack);
