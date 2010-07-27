@@ -29,8 +29,11 @@ class AudioInput;
 
 #define DEFAULT_API "None"
 
-const unsigned int MAX_LATENCY = 8; // this represents latency values from 1 ms to about
+const unsigned int MAX_LATENCY = 6; // this represents latency values from 1 ms to about
                                     // 180 ms, should be sufficient -- bkgood
+// 20100726 latencies ~80 and ~170 are utterly broken right now, at least on
+// linux/ALSA (although I think this is a Mixxx bug somewhere around
+// enginebuffer), as such, disabling these latencies -- bkgood
 // no DEFAULT_API because we have to check that the api is available -- bkgood
 const unsigned int DEFAULT_SAMPLE_RATE = 48000;
 // default is max so that we don't set latency too low and make mixxx look bad
