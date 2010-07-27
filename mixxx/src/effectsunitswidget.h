@@ -14,14 +14,31 @@
 
 #include "widget/wpushbutton.h"
 #include "widget/wknob.h"
+#include "effectsunits/effectsunitsinstance.h"
+#include "effectsunits/effectsunitscontroller.h"
 
 class EffectsUnitsWidget : public QWidget{
 
 	Q_OBJECT
 
 public:
-	EffectsUnitsWidget(QWidget * parent, QDomNode node);
+	EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsUnitsController * controller);
 	virtual ~EffectsUnitsWidget();
+
+public slots:
+	void slotEffectChanged(QString);
+
+private:
+	int m_WidgetID;
+	EffectsUnitsController * m_pController;								// Our fx controller
+	EffectsUnitsInstance * m_pCurrentInstance, * m_pPreviousInstance;	// Previous and Current instance
+	QList<QLabel*> m_Labels;	// Instance parameter labels
+	int m_KnobCount;			// Number of knobs displayed in this widget
+	QComboBox * m_ComboBox;		// Fx names
+
+private:
+	static int getNextID();
+	static int NextID;
 };
 
 #endif /* EFFECTSUNITSWIDGET_H_ */

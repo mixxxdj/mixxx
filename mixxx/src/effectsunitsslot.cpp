@@ -8,7 +8,7 @@
 #include "effectsunitsslot.h"
 #include "widget/wpushbutton.h"
 
-EffectsUnitsSlot::EffectsUnitsSlot(QWidget * parent, EffectsUnitsController *, QDomNode node) : QWidget(parent) {
+EffectsUnitsSlot::EffectsUnitsSlot(QWidget * parent, EffectsUnitsController * controller, QDomNode node) : QWidget(parent) {
 	QGridLayout * lay = new QGridLayout(this);
 	this->setLayout(lay);
 
@@ -29,7 +29,7 @@ EffectsUnitsSlot::EffectsUnitsSlot(QWidget * parent, EffectsUnitsController *, Q
 
 		/* Our precious Widgets! */
 		} else if (node.nodeName() == "EffectsUnitsWidget"){
-			EffectsUnitsWidget * wid = new EffectsUnitsWidget(this, node.firstChild());
+			EffectsUnitsWidget * wid = new EffectsUnitsWidget(this, node.firstChild(), controller);
 			m_pEffectsUnitsWidgets->append(wid);
 			lay->addWidget(wid, iw, jp);
 			iw++;

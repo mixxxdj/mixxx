@@ -12,15 +12,19 @@ public:
 	EffectsUnitsController();
 	~EffectsUnitsController();
 
-	void activatePluginOnSource(QString PluginName, QString Source);
-	void loadAllPlugins();
+	void addInstanceToSource(int InstanceID, QString Source);
+	EffectsUnitsInstance * instantiatePluginForWidget(QString PluginName, int Widget);
 
+	void loadAllPlugins();
+	QStringList * getEffectsList();
 	EffectsUnitsPlugin * getPluginByName(QString PluginName);
 
 private:
 	EngineEffectsUnits * m_pEngine;					// Engine pointer so we can append plugins to the processing queue
 	QList<EffectsUnitsBackend *> m_BackendsList;    // List of every fx backend we have
 	QList<EffectsUnitsPlugin *> m_AllPlugins;		// List of every plugin from every backend
+	QStringList m_PluginNames;						// List of plugin names, for dropdown and misc.
+	QList<EffectsUnitsInstance *> m_ActiveInstances;// List of active instances, for instance mgmt
 };
 
 #endif

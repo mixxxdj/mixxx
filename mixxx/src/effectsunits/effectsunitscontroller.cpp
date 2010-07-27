@@ -38,21 +38,21 @@ void EffectsUnitsController::loadAllPlugins(){
 		backendPlugins = m_BackendsList.at(i)->getPlugins();
 		m_AllPlugins.append((*backendPlugins));
 	}
+
+
+	// TODO - Apply restrictions so we don't load all of them
+	size = m_AllPlugins.size();
+	for (int i = 0; i < size; ++i) {
+		m_PluginNames.append(m_AllPlugins.at(i)->getName());
+	}
 }
 
 /* EffectsUnitsController::activatePluginOnSource
  * Adds the desired plugin to the processing queue of the desired source.
  * i.e. activatePluginOnSource("Delay", [Channel1])
  */
-void EffectsUnitsController::activatePluginOnSource(QString PluginName, QString Source){
-	EffectsUnitsPlugin * current = getPluginByName(PluginName);
-	if (current != NULL){
-		current->activate();
-		// TODO - Implement this properly, should make one for each widget.
-		// Maybe it should always create a new instance.
-		// Shouldnt forget about freeing this memory when the plugin is unloaded.
-		m_pEngine->addInstanceToSource(new EffectsUnitsInstance(current), Source);
-	}
+void EffectsUnitsController::addInstanceToSource(int InstanceID, QString Source){
+
 }
 
 /* EffectsUnitsController::getPluginByName
@@ -65,4 +65,19 @@ EffectsUnitsPlugin * EffectsUnitsController::getPluginByName(QString PluginName)
 			return m_AllPlugins.at(i);
 	 }
 	return NULL;
+}
+
+EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QString PluginName, int Widget){
+	EffectsUnitsPlugin * current = getPluginByName(PluginName);
+	if (current != NULL){
+		current->activate();
+		// TODO - Implement this properly, should make one for each widget.
+		// Maybe it should always create a new instance.
+		// Shouldnt forget about freeing this memory when the plugin is unloaded.
+		return (new EffectsUnitsInstance(current));
+	}
+}
+
+QStringList * EffectsUnitsController::getEffectsList(){
+	return &m_PluginNames;
 }

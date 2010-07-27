@@ -20,11 +20,6 @@ public:
     EffectsUnitsView(QWidget *parent);
     ~EffectsUnitsView();
 
-public slots:
-	void slotClick(QString);
-
-signals:
-
 private:
     QGridLayout * m_pGridLayout;
     EffectsUnitsController * m_EffectsUnitsController;

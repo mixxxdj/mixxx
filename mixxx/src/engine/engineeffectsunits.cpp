@@ -5,6 +5,8 @@
 EngineEffectsUnits * EngineEffectsUnits::m_pEngine = NULL;
 
 EngineEffectsUnits::EngineEffectsUnits() {
+	// TODO - we shouldnt bound by the number of channels
+
 	m_pEngine = this;
 	m_OnChannel1 = new QList<EffectsUnitsInstance * >();
 	m_OnChannel2 = new QList<EffectsUnitsInstance * >();

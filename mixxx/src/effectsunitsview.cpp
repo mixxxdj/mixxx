@@ -68,11 +68,4 @@ EffectsUnitsView::~EffectsUnitsView()
 
 }
 
-void EffectsUnitsView::slotClick(QString teste){
-	ControlObject * WetDry = ControlObject::getControl(ConfigKey("[FX]", "DryWet"));
-	qDebug() << "FXUNITS: " << teste << "oi:" << WetDry->get();
-	m_label->setText(teste);
-	m_EffectsUnitsController->activatePluginOnSource(teste, "[Channel1]");
-}
-
 
