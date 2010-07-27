@@ -211,9 +211,9 @@ void SoundManager::closeDevices()
     m_inputBuffers.clear();
 
 #ifdef __VINYLCONTROL__
-    // TODO see comment where these objects are created in setupDevices,
+    // TODO(bkgood) see comment where these objects are created in setupDevices,
     // this should probably be in the dtor or at least somewhere other
-    // than here -- bkgood
+    // than here.
     while (!m_VinylControl.empty()) {
         VinylControlProxy *vc = m_VinylControl.takeLast();
         if (vc != NULL) {
@@ -314,9 +314,9 @@ int SoundManager::setupDevices()
 
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
-    // TODO this ought to be done in the ctor or something. Not here. Really
+    // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
     // shouldn't be any reason for these to be reinitialized every time the
-    // audio prefs are updated. Will require work in DlgPrefVinyl -- bkgood
+    // audio prefs are updated. Will require work in DlgPrefVinyl.
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
