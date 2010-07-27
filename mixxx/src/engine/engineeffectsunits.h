@@ -27,6 +27,7 @@ private:
 	QList<EffectsUnitsInstance * > * m_OnChannel2;	// for Channel1 e 2
 
 	EffectsUnitsPlugin * m_pCurrentPlugin;			// Plugin being processed
+	EffectsUnitsInstance * m_pCurrentInstance;
 	QList<EffectsUnitsPort *> * m_pPluginPorts;		// It's ports too
 
 };

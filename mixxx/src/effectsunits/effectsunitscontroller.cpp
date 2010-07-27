@@ -76,7 +76,7 @@ EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QStrin
 	if (current != NULL){
 		current->activate();
 		EffectsUnitsInstance * instance = new EffectsUnitsInstance(current, Widget, KnobCount);
-		m_ActiveInstances.prepend(instance);
+		m_ActiveInstances.append(instance);
 		return (instance);
 	}
 }

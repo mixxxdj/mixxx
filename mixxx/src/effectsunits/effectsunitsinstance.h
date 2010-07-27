@@ -19,6 +19,11 @@ public:
 	EffectsUnitsInstance(EffectsUnitsPlugin * Plugin, int WidgetID, int KnobCount);
 	virtual ~EffectsUnitsInstance();
 
+	void updatePorts();
+	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+	double getWetDry();
+	void activate();
+
 	EffectsUnitsPlugin * getPlugin();
 	int getInstanceID();
 	static int getNextInstanceID();

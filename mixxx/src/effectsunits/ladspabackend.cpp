@@ -77,7 +77,7 @@ void LADSPABackend::connect(int PortID, float Value, int PluginID){
  * We'll update all the LADSPA port values, using the control objects from the plugin,
  * Then we will use all our LADSPAMagic to process the audio samples.
  */
-void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID){
+void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID, double WetDry){
 	/* Invalid PluginID or plugin with asymmetrical ports (uninstantiable), NOP */
 	if (PluginID >= PluginIDSequence || m_LADSPAInstance.at(PluginID) == NULL){ return; }
 	//qDebug() << "FXUNITS: LADSPABackend: Processing: " << m_BackendPlugins.at(PluginID)->getName();
@@ -101,20 +101,17 @@ void LADSPABackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
         m_pBufferRight[0][i] = pIn[2 * i + 1];
     }
 
-    /* WetDry Test: */
-    ControlObject * WetDry = ControlObject::getControl(ConfigKey("[FX]", "DryWet"));
-
     /* Process Audio Signals: */
     m_pInstancebeingProcessed = m_LADSPAInstance.at(PluginID);
-	if (m_pInstancebeingProcessed->isInplaceBroken() || WetDry->get() < 1.0)
+	if (m_pInstancebeingProcessed->isInplaceBroken() || WetDry < 1.0)
 	{
 		m_pInstancebeingProcessed->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[1], m_pBufferRight[1], m_monoBufferSize);
 		//qDebug() << "FXUNITS: LADSPABackend::process: INP: " << *m_pBufferLeft[0] << "OUT: " << *m_pBufferLeft[1] << "BUF IPB: " << iBufferSize;
 
 		for (int i = 0; i < m_monoBufferSize; i++)
 		{
-			m_pBufferLeft [0][i] = m_pBufferLeft [0][i] * (1-WetDry->get()) + m_pBufferLeft [1][i] * WetDry->get(); // TODO - Make Dry/Wet
-			m_pBufferRight[0][i] = m_pBufferRight[0][i] * (1-WetDry->get()) + m_pBufferRight[1][i] * WetDry->get();
+			m_pBufferLeft [0][i] = m_pBufferLeft [0][i] * (1-WetDry) + m_pBufferLeft [1][i] * WetDry; // TODO - Make Dry/Wet
+			m_pBufferRight[0][i] = m_pBufferRight[0][i] * (1-WetDry) + m_pBufferRight[1][i] * WetDry;
 		}
 	} else {
 		//qDebug() << "FXUNITS: LADSPABackend::process: IN: " << *m_pBufferLeft[0];

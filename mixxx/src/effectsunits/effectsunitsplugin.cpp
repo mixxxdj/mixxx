@@ -19,7 +19,7 @@ EffectsUnitsPlugin::~EffectsUnitsPlugin() {
  * Assigns a value to a plugins port.
  * Redirects to the backend to preserve abstraction.
  */
-void EffectsUnitsPlugin::connect(int PortID, float Value){
+void EffectsUnitsPlugin::connect(int PortID, double Value){
 	m_Backend->connect(PortID, Value, m_PluginID);
 }
 
@@ -28,8 +28,8 @@ void EffectsUnitsPlugin::connect(int PortID, float Value){
  * can be backend specific. This way we only have the Backend
  * abstraction and corresponding implementations for each fx Backend.
  */
-void EffectsUnitsPlugin::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize){
-	m_Backend->process(pIn, pOut, iBufferSize, m_PluginID);
+void EffectsUnitsPlugin::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, double WetDry){
+	m_Backend->process(pIn, pOut, iBufferSize, m_PluginID, WetDry);
 }
 
 void EffectsUnitsPlugin::activate(){

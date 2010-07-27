@@ -39,6 +39,10 @@ EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsU
 
 			/* Knobs for controlling fx parameters */
 			} else if (node.nodeName() == "Knob"){
+
+			    ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(m_WidgetID) + "Parameter" + QString::number(m_KnobCount));
+			    ControlObject * potmeter = new ControlPotmeter(*key, 0.0, 1.0);
+
 				WKnob * knob = new WKnob(this);
 				knob->setup(node);
 				lay->addWidget(knob, 0, jk);
@@ -72,6 +76,7 @@ void EffectsUnitsWidget::slotEffectChanged(QString Name){
 
 	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
 	m_pController->addInstanceToSource(m_pCurrentInstance->getInstanceID(), "[Channel1]");
+
 }
 
 int EffectsUnitsWidget::getNextID(){

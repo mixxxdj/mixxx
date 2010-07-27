@@ -13,8 +13,8 @@ public:
 	EffectsUnitsPlugin(EffectsUnitsBackend * Backend, QString * Name, int PluginID);
 	~EffectsUnitsPlugin();
 
-	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-	void connect(int PortID, float Value);
+	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, double WetDry);
+	void connect(int PortID, double Value);
 	void activate();
 
 	void addPort(EffectsUnitsPort *);

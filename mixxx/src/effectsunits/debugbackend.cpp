@@ -21,7 +21,7 @@ void DEBUGBackend::loadPlugins(){
 void DEBUGBackend::connect(int PortID, float Value, int m_PluginID){
 
 }
-void DEBUGBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID){
+void DEBUGBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID, double WetDry){
 	qDebug() << "FXUNITS: DEDBUGBackend: Processing #:" << PluginID;
 }
 

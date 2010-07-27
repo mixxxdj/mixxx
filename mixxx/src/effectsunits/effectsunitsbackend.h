@@ -28,7 +28,7 @@ public:
 
 	virtual void loadPlugins() = 0;
 	virtual void connect(int PortID, float Value, int PluginID) = 0;
-	virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID) = 0;
+	virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID, double WetDry) = 0;
 	virtual void activatePlugin(int PluginID) = 0;
 	virtual void deactivatePlugin(int PluginID) = 0;
 

@@ -21,7 +21,7 @@ QList<EffectsUnitsPlugin *> * EffectsUnitsBackend::getPlugins(){
 }
 
 void EffectsUnitsBackend::loadPlugins(){}
-void EffectsUnitsBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID){ qDebug() << "FXUNITS: EffectsUnitsBackend, you're doing it wrong.";}
+void EffectsUnitsBackend::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, int PluginID, double WetDry){ qDebug() << "FXUNITS: EffectsUnitsBackend, you're doing it wrong.";}
 void EffectsUnitsBackend::connect(int PortID, float Value, int PluginID){}
 void EffectsUnitsBackend::activatePlugin(int PluginID){}
 void EffectsUnitsBackend::deactivatePlugin(int PluginID){}

@@ -41,19 +41,9 @@ void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
 	int size = instancesList->size();
 	for (int i = 0; i < size; ++i) {
 
-		m_pCurrentPlugin = instancesList->at(i)->getPlugin();
-		m_pPluginPorts = m_pCurrentPlugin->getPorts();
-
-		/* Updating Port Values: */
-		int portn = m_pPluginPorts->size();
-		for (int i = 0; i < portn; i++){
-			// TODO - Get from instance
-			if (!m_pPluginPorts->at(i)->isAudio)
-				m_pCurrentPlugin->connect(i, m_pPluginPorts->at(i)->Max);
-		}
-
-		/* Processing Samples: */
-		m_pCurrentPlugin->process(pIn, pOut, iBufferSize);
+		m_pCurrentInstance = instancesList->at(i);
+		m_pCurrentInstance->updatePorts();
+		m_pCurrentInstance->process(pIn, pOut, iBufferSize);
 
 	 }
 }
