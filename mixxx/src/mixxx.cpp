@@ -341,7 +341,11 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     prefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
-    while (soundmanager->setupDevices() != 0)
+    int setupDevices = soundmanager->setupDevices();
+    unsigned int numDevices = soundmanager->getConfig().getOutputs().count();
+    // test for at least one out device, if none, display another dlg that
+    // says "mixxx will barely work with no outs"
+    while (setupDevices != OK || numDevices == 0)
     {
 
 #ifdef __C_METRICS__
@@ -350,8 +354,21 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #endif
 
         // Exit when we press the Exit button in the noSoundDlg dialog
-        if ( noSoundDlg() != 0 )
-            exit(0);
+        // only call it if setupDevices != OK
+        if (setupDevices != OK) {
+            if (noSoundDlg() != 0) {
+                exit(0);
+            }
+        } else if (numDevices == 0) {
+            bool continueClicked = false;
+            int noOutput = noOutputDlg(&continueClicked);
+            if (continueClicked) break;
+            if (noOutput != 0) {
+                exit(0);
+            }
+        }
+        setupDevices = soundmanager->setupDevices();
+        numDevices = soundmanager->getConfig().getOutputs().count();
     }
 
     //setFocusPolicy(QWidget::StrongFocus);
@@ -498,25 +515,23 @@ int MixxxApp::noSoundDlg(void)
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle("Sound Device Busy");
-    msgBox.setText( "<html>Mixxx cannot access the sound device <b>"+
-                    config->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
-                    "</b>. "+
-                    "Another application is using the sound device or it is "+
-                    "not plugged in."+
-                    "<ul>"+
-                        "<li>"+
-                            "<b>Retry</b> after closing the other application "+
-                            "or reconnecting the sound device"+
-                        "</li>"+
-                        "<li>"+
-                            "<b>Reconfigure</b> Mixxx to use another sound device."+
-                        "</li>" +
-                        "<li>"+
-                            "Get <b>Help</b> from the Mixxx Wiki."+
-                        "</li>"+
-                        "<li>"+
-                            "<b>Exit</b> without saving your settings."+
-                        "</li>" +
+    msgBox.setText( "<html>Mixxx was unable to open all the configured sound devices. "
+                    "Another application is using a sound device Mixxx is configured to use "
+                    "or a device is not plugged in."
+                    "<ul>"
+                        "<li>"
+                            "<b>Retry</b> after closing the other application "
+                            "or reconnecting a sound device"
+                        "</li>"
+                        "<li>"
+                            "<b>Reconfigure</b> Mixxx's sound device settings."
+                        "</li>"
+                        "<li>"
+                            "Get <b>Help</b> from the Mixxx Wiki."
+                        "</li>"
+                        "<li>"
+                            "<b>Exit</b> Mixxx."
+                        "</li>"
                     "</ul></html>"
     );
 
@@ -555,6 +570,56 @@ int MixxxApp::noSoundDlg(void)
     }
 }
 
+int MixxxApp::noOutputDlg(bool *continueClicked)
+{
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle("No Output Devices");
+    msgBox.setText( "<html>Mixxx was not configured without any output sound devices. "
+                    "Audio processing will be disabled without a configured output device."
+                    "<ul>"
+                        "<li>"
+                            "<b>Continue</b> without any outputs."
+                        "</li>"
+                        "<li>"
+                            "<b>Reconfigure</b> Mixxx's sound device settings."
+                        "</li>"
+                        "<li>"
+                            "<b>Exit</b> Mixxx."
+                        "</li>"
+                    "</ul></html>"
+    );
+
+    QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
+    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+
+    while(1)
+    {
+        msgBox.exec();
+
+        if (msgBox.clickedButton() == continueButton) {
+            *continueClicked = true;
+            return 0;
+        } else if (msgBox.clickedButton() == reconfigureButton) {
+            msgBox.hide();
+            soundmanager->queryDevices();
+
+            // This way of opening the dialog allows us to use it synchronously
+            prefDlg->setWindowModality(Qt::ApplicationModal);
+            prefDlg->exec();
+            if ( prefDlg->result() == QDialog::Accepted) {
+                soundmanager->queryDevices();
+                return 0;
+            }
+
+            msgBox.show();
+
+        } else if (msgBox.clickedButton() == exitButton) {
+            return 1;
+        }
+    }
+}
 
 /** initializes all QActions of the application */
 void MixxxApp::initActions()

@@ -58,6 +58,7 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
+#include "audiopath.h"
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
@@ -242,6 +243,7 @@ class MixxxApp : public QMainWindow
 #endif
 
     int noSoundDlg(void);
+    int noOutputDlg(bool *continueClicked);
     // Fullscreen patch
     QPoint winpos;
 };
