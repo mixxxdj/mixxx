@@ -48,6 +48,10 @@ public:
     void flacError(FLAC__StreamDecoderErrorStatus status);
 private:
     void setTag(const QString &tag);
+    // these next two are inline but are defined in the cpp file because
+    // they should only be used there -- bkgood
+    inline int getShift() const;
+    inline FLAC__int16 shift(const FLAC__int32 sample) const;
     QFile m_file;
     FLAC__StreamDecoder *m_decoder;
     FLAC__StreamMetadata_StreamInfo *m_streamInfo;

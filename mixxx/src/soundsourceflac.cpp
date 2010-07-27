@@ -73,10 +73,6 @@ int SoundSourceFLAC::open() {
         qDebug() << "SSFLAC: decoder state: " << FLAC__stream_decoder_get_state(m_decoder);
         goto decoderError;
     } // now number of samples etc. should be populated
-    if (m_bps != 16) {
-        qDebug() << "SoundSourceFLAC only supports FLAC files encoded at 16 bits per sample.";
-        goto decoderError;
-    }
     if (m_flacBuffer == NULL) {
         m_flacBuffer = new FLAC__int16[m_maxBlocksize * m_iChannels];
     }
@@ -181,6 +177,28 @@ void SoundSourceFLAC::setTag(const QString &tag) {
     }
 }
 
+/**
+ * Shift needed to take our FLAC sample size to Mixxx's 16-bit samples.
+ */
+inline int SoundSourceFLAC::getShift() const {
+    return 16 - m_bps;
+}
+
+/**
+ * Shift a sample from FLAC as necessary to get a 16-bit value.
+ */
+inline FLAC__int16 SoundSourceFLAC::shift(FLAC__int32 sample) const {
+    // this is how libsndfile does this operation and is wonderfully
+    // straightforward -- bkgood
+    if (getShift() == 0) {
+        return sample;
+    } else if (getShift() < 0) {
+        return sample >> abs(getShift());
+    } else {
+        return sample << getShift();
+    }
+};
+
 // static
 QList<QString> SoundSourceFLAC::supportedFileExtensions() {
     QList<QString> list;
@@ -239,14 +257,14 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(const FLAC__Frame *fra
     if (frame->header.channels > 1) {
         // stereo (or greater)
         for (i = 0; i < frame->header.blocksize; ++i) {
-            m_flacBuffer[m_flacBufferLength++] = buffer[0][i]; // left channel
-            m_flacBuffer[m_flacBufferLength++] = buffer[1][i]; // right channel
+            m_flacBuffer[m_flacBufferLength++] = shift(buffer[0][i]); // left channel
+            m_flacBuffer[m_flacBufferLength++] = shift(buffer[1][i]); // right channel
         }
     } else {
         // mono
         for (i = 0; i < frame->header.blocksize; ++i) {
-            m_flacBuffer[m_flacBufferLength++] = buffer[0][i]; // left channel
-            m_flacBuffer[m_flacBufferLength++] = buffer[0][i]; // mono channel
+            m_flacBuffer[m_flacBufferLength++] = shift(buffer[0][i]); // left channel
+            m_flacBuffer[m_flacBufferLength++] = shift(buffer[0][i]); // mono channel
         }
     }
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE; // can't anticipate any errors here
