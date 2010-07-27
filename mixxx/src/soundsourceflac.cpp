@@ -74,10 +74,11 @@ int SoundSourceFLAC::open() {
         goto decoderError;
     } // now number of samples etc. should be populated
     if (m_flacBuffer == NULL) {
-        m_flacBuffer = new FLAC__int16[m_maxBlocksize * m_iChannels];
+        // we want 2 samples per frame, see ::flacWrite code -- bkgood
+        m_flacBuffer = new FLAC__int16[m_maxBlocksize * 2 /*m_iChannels*/];
     }
     if (m_leftoverBuffer == NULL) {
-        m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * m_iChannels];
+        m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * 2 /*m_iChannels*/];
     }
     qDebug() << "SSFLAC: Total samples: " << m_samples;
     qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
