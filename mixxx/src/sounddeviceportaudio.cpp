@@ -99,7 +99,6 @@ int SoundDevicePortAudio::open()
     //Sample rate
     if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
-        qDebug() << "************************ HAD TO SET SRATE IN SDPA!!!!";
     }
     qDebug() << "m_dSampleRate" << m_dSampleRate;
 
