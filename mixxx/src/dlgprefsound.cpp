@@ -177,12 +177,16 @@ void DlgPrefSound::initializePaths() {
     }
 }
 
+void DlgPrefSound::loadSettings() {
+    loadSettings(m_pSoundManager->getConfig());
+}
+
 /**
  *
  */
-void DlgPrefSound::loadSettings() {
+void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     m_loading = true; // so settingsChanged ignores all our modifications here
-    m_config = m_pSoundManager->getConfig();
+    m_config = config;
     int apiIndex = apiComboBox->findData(m_config.getAPI());
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
@@ -296,4 +300,14 @@ void DlgPrefSound::settingChanged() {
     if (!applyButton->isEnabled()) {
         applyButton->setEnabled(true);
     }
+}
+
+void DlgPrefSound::queryClicked() {
+    m_pSoundManager->queryDevices();
+}
+
+void DlgPrefSound::resetClicked() {
+    SoundManagerConfig newConfig;
+    newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
+    loadSettings(newConfig);
 }
