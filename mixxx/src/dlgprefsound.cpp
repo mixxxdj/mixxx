@@ -69,6 +69,11 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
             this, SLOT(settingChanged()));
     connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
+
+    connect(queryButton, SIGNAL(clicked()),
+            this, SLOT(queryClicked()));
+    connect(resetButton, SIGNAL(clicked()),
+            this, SLOT(resetClicked()));
 }
 
 DlgPrefSound::~DlgPrefSound() {
