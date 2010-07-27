@@ -6,9 +6,8 @@
 #include <QFile>
 
 #include "controlobject.h"
+#include "configobject.h"
 #include "midi/midiscriptengine.h"
-
-#define UNIX_SHARE_PATH "/usr/share/mixxx"
 
 namespace {
     class MidiScriptEngineTest : public testing::Test {
@@ -39,7 +38,8 @@ namespace {
     };
 
     TEST_F(MidiScriptEngineTest, commonScriptHasNoErrors) {
-        QString commonScript = QString(UNIX_SHARE_PATH) +
+        ConfigObject<ConfigValue> config("~/.mixxx/mixxx.cfg");
+        QString commonScript = config.getConfigPath() + "/" +
             "/midi/midi-mappings-scripts.js";
         scriptEngine->evaluate(commonScript);
         EXPECT_FALSE(scriptEngine->hasErrors(commonScript));

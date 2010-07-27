@@ -5,9 +5,8 @@
 #include <QItemDelegate>
 #include <QtSql>
 
+#include "trackinfoobject.h"
 #include "library/dao/settingsdao.h"
-
-class TrackInfoObject;
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -32,7 +31,7 @@ public:
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const = 0;
+    virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;

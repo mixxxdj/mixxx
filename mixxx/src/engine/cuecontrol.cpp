@@ -21,7 +21,7 @@ CueControl::CueControl(const char * _group,
         m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
         m_iNumHotCues(NUM_HOT_CUES),
-        m_pLoadedTrack(NULL),
+        m_pLoadedTrack(),
         m_mutex(QMutex::Recursive) {
     createControls();
 
@@ -154,7 +154,7 @@ void CueControl::detachCue(int hotCue) {
     m_hotcueEnabled[hotCue]->set(0);
 }
 
-void CueControl::loadTrack(TrackInfoObject* pTrack) {
+void CueControl::loadTrack(TrackPointer pTrack) {
     Q_ASSERT(pTrack);
 
     QMutexLocker lock(&m_mutex);
@@ -162,7 +162,7 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
         unloadTrack(m_pLoadedTrack);
 
     m_pLoadedTrack = pTrack;
-    connect(pTrack, SIGNAL(cuesUpdated()),
+    connect(pTrack.data(), SIGNAL(cuesUpdated()),
             this, SLOT(trackCuesUpdated()));
 
     Cue* loadCue = NULL;
@@ -208,9 +208,9 @@ void CueControl::loadTrack(TrackInfoObject* pTrack) {
     }
 }
 
-void CueControl::unloadTrack(TrackInfoObject* pTrack) {
+void CueControl::unloadTrack(TrackPointer pTrack) {
     QMutexLocker lock(&m_mutex);
-    disconnect(pTrack, 0, this, 0);
+    disconnect(pTrack.data(), 0, this, 0);
     for (int i = 0; i < m_iNumHotCues; ++i) {
         detachCue(i);
     }
@@ -237,7 +237,7 @@ void CueControl::unloadTrack(TrackInfoObject* pTrack) {
         loadCue->setPosition(cuePoint);
     }
 
-    m_pLoadedTrack = NULL;
+    m_pLoadedTrack.clear();
 }
 
 void CueControl::cueUpdated() {

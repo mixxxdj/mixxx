@@ -5,9 +5,17 @@
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
 
+// The number of tracks to cache in memory at once. Once the n+1'th track is
+// created, the TrackDAO's QCache deletes its TrackPointer to the track, which
+// allows the track reference count to drop to zero. The track cache basically
+// functions to hold a reference to the track so its reference count stays above
+// 0.
+#define TRACK_CACHE_SIZE 20
+
 TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao)
         : m_database(database),
-          m_cueDao(cueDao) {
+          m_cueDao(cueDao),
+          m_trackCache(TRACK_CACHE_SIZE) {
 
 }
 
@@ -24,13 +32,13 @@ void TrackDAO::initialize()
     @return the track id for the track located at location, or -1 if the track
             is not in the database.
 */
-int TrackDAO::getTrackId(QString location)
+int TrackDAO::getTrackId(QString absoluteFilePath)
 {
     //qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location = track_locations.id WHERE track_locations.location=:locatio");
-    query.bindValue(":location", location);
+    query.bindValue(":location", absoluteFilePath);
 
     if (!query.exec()) {
         qDebug() << query.lastError();
@@ -72,9 +80,15 @@ QString TrackDAO::getTrackLocation(int trackId)
     @param file_location The full path to the track on disk, including the filename.
     @return true if the track is found in the library table, false otherwise.
 */
-bool TrackDAO::trackExistsInDatabase(QString location)
+bool TrackDAO::trackExistsInDatabase(QString absoluteFilePath)
 {
-    return (getTrackId(location) != -1);
+    return (getTrackId(absoluteFilePath) != -1);
+}
+
+void TrackDAO::saveTrack(TrackPointer track) {
+
+    if (track)
+        saveTrack(track.data());
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
@@ -99,6 +113,11 @@ bool TrackDAO::isDirty(int trackId) {
 }
 
 void TrackDAO::slotTrackDirty() {
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to ask that it be saved. The only
+    // time this could be unsafe is when the TIO's reference count drops to
+    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
+    // will wait for this slot to comlete.
     TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
     if (pTrack) {
         int id = pTrack->getId();
@@ -110,6 +129,11 @@ void TrackDAO::slotTrackDirty() {
 }
 
 void TrackDAO::slotTrackChanged() {
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to ask that it be saved. The only
+    // time this could be unsafe is when the TIO's reference count drops to
+    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
+    // will wait for this slot to comlete.
     TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
     if (pTrack) {
         int id = pTrack->getId();
@@ -119,11 +143,24 @@ void TrackDAO::slotTrackChanged() {
     }
 }
 
+void TrackDAO::slotTrackSave() {
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to ask that it be saved. The last
+    // time it is used is when the track is being deleted (i.e. its reference
+    // count has dropped to 0). The TIO is deleted with QObject:deleteLater, so
+    // Qt will wait for this slot to comlete.
+    TrackInfoObject* pTrack = dynamic_cast<TrackInfoObject*>(sender());
+    if (pTrack) {
+        saveTrack(pTrack);
+    }
+}
+
 void TrackDAO::saveDirtyTracks() {
-    QHashIterator<int, TrackInfoObject*> it(m_tracks);
+    QHashIterator<int, TrackWeakPointer> it(m_tracks);
     while (it.hasNext()) {
         it.next();
-        TrackInfoObject* pTrack = it.value();
+        // Auto-cast from TrackWeakPointer to TrackPointer
+        TrackPointer pTrack = it.value();
         if (pTrack && pTrack->isDirty()) {
             saveTrack(pTrack);
         }
@@ -142,13 +179,13 @@ int TrackDAO::addTrack(QFileInfo& fileInfo) {
     return trackId;
 }
 
-int TrackDAO::addTrack(QString location)
+int TrackDAO::addTrack(QString absoluteFilePath)
 {
-    QFileInfo fileInfo(location);
+    QFileInfo fileInfo(absoluteFilePath);
     return addTrack(fileInfo);
 }
 
-void TrackDAO::addTrack(TrackInfoObject * pTrack)
+void TrackDAO::addTrack(TrackInfoObject* pTrack)
 {
     QTime time;
     time.start();
@@ -203,12 +240,12 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     Q_ASSERT(trackLocationId >= 0);
 
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
-                  "location, comment, url, duration, "
+                  "filetype, location, comment, url, duration, "
                   "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
                   "channels, mixxx_deleted, header_parsed) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
-                  ":location, :comment, :url, :duration, "
+                  ":filetype, :location, :comment, :url, :duration, "
                   ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":channels, :mixxx_deleted, :header_parsed)");
     query.bindValue(":artist", pTrack->getArtist());
@@ -217,6 +254,7 @@ void TrackDAO::addTrack(TrackInfoObject * pTrack)
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
+    query.bindValue(":filetype", pTrack->getType());
     query.bindValue(":location", trackLocationId);
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
@@ -301,9 +339,25 @@ void TrackDAO::removeTrack(int id)
     }
 }
 
-TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
+// static
+void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
+    Q_ASSERT(pTrack);
+
+    qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
+
+    // Save dirty tracks.
+    pTrack->save();
+
+    // if (iId != -1 && isDirty(iId)) {
+    //     saveTrack(track);
+    // }
+
+    // Now Qt will delete it in the event loop.
+    pTrack->deleteLater();
+}
+
+TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
 {
-    TrackInfoObject* track = NULL;
     if (!query.isValid()) {
         //query.exec();
     }
@@ -335,10 +389,11 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         //int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
         int channels = query.value(query.record().indexOf("channels")).toInt();
         int filesize = query.value(query.record().indexOf("filesize")).toInt();
+        QString filetype = query.value(query.record().indexOf("filetype")).toString();
         QString location = query.value(query.record().indexOf("location")).toString();
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
 
-        track = new TrackInfoObject(location);
+        TrackInfoObject* track = new TrackInfoObject(location);
 
         // TIO already stats the file to see if it exists, what its length is,
         // etc. So don't bother setting it.
@@ -363,7 +418,8 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
         delete wavesummaryhex;
         //track->setTimesPlayed //Doesn't exist wtfbbq
         track->setChannels(channels);
-
+        track->setType(filetype);
+        track->setLocation(location);
         track->setHeaderParsed(header_parsed);
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
@@ -374,38 +430,68 @@ TrackInfoObject *TrackDAO::getTrackFromDB(QSqlQuery &query) const
                 this, SLOT(slotTrackDirty()));
         connect(track, SIGNAL(changed()),
                 this, SLOT(slotTrackChanged()));
+        connect(track, SIGNAL(save()),
+                this, SLOT(slotTrackSave()));
 
-        m_tracks[trackId] = track;
+        TrackPointer pTrack = TrackPointer(track, this->deleteTrack);
 
+        // Automatic conversion to a weak pointer
+        m_tracks[trackId] = pTrack;
+        m_trackCache.insert(trackId, new TrackPointer(pTrack));
+
+        return pTrack;
     }
     //query.finish();
 
-    return track;
+    return TrackPointer();
 }
 
-TrackInfoObject *TrackDAO::getTrack(int id) const
+TrackPointer TrackDAO::getTrack(int id) const
 {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
+
+    // If the track cache contains the track, use it to get a strong reference
+    // to the track. We do this first so that the QCache keeps track of the
+    // least-recently-used track so that it expires them intelligently.
+    if (m_trackCache.contains(id)) {
+        TrackPointer& pTrack = *m_trackCache[id];
+
+        // If the strong reference is still valid (it should be), then return
+        // it. Otherwise query the DB for the track.
+        if (pTrack)
+            return pTrack;
+    }
+
+    // Next, check the weak-reference cache to see if the track was ever loaded
+    // into memory. It's possible that something is currently using this track,
+    // so its reference count is non-zero despite it not being present in the
+    // track cache. m_tracks is a map of weak pointers to the tracks.
     if (m_tracks.contains(id)) {
         //qDebug() << "Returning cached TIO for track" << id;
-        return m_tracks[id];
+        TrackPointer pTrack = m_tracks[id];
+
+        // If the pointer to the cached copy is still valid, return
+        // it. Otherwise, re-query the DB for the track.
+        if (pTrack)
+            return pTrack;
     }
 
     QTime time;
     time.start();
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
-    TrackInfoObject* track = NULL;
+    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, filetype, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
+    TrackPointer pTrack;
+
     if (query.exec()) {
-         track = getTrackFromDB(query);
+         pTrack = getTrackFromDB(query);
     } else {
         qDebug() << QString("getTrack(%1)").arg(id) << query.lastError();
     }
     qDebug() << "getTrack hit the database, took " << time.elapsed() << "ms";
 
-    return track;
+    return pTrack;
 }
 
 /** Saves a track's info back to the database */
@@ -428,7 +514,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
                   "title=:title, album=:album, year=:year, genre=:genre, "
-                  "tracknumber=:tracknumber, "
+                  "filetype=:filetype, tracknumber=:tracknumber, "
                   "comment=:comment, url=:url, duration=:duration, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
@@ -439,6 +525,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":album", pTrack->getAlbum());
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
+    query.bindValue(":filetype", pTrack->getType());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
@@ -481,7 +568,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
 }
 
 /** Mark all the tracks whose paths begin with libraryPath as invalid.
-    That means we'll need to later check that those tracks actually 
+    That means we'll need to later check that those tracks actually
     (still) exist as part of the library scanning procedure. */
 void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath)
 {

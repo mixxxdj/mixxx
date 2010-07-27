@@ -11,24 +11,24 @@ AnalyserWaveform::AnalyserWaveform() {
     downsampleVector = NULL;
 }
 
-void AnalyserWaveform::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
+void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
     if(tio->getVisualWaveform() != NULL) {
         return;
     }
-    
+
     if(totalSamples == 0) {
         return;  //?
     }
 
     double mz = tio->getVisualResampleRate();
     double n = double(sampleRate) / mz;
-    
-    QByteArray err_tmp = QString("TrackInfoObject %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(mz).arg(n).toAscii();
+
+    QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(mz).arg(n).toAscii();
     Q_ASSERT_X(mz != 0 && n > 0,"AnalyserWaveform::initialise",err_tmp);
-    
+
     if (mz == 0 || n <= 0) {
-        qDebug() << "TrackInfoObject" << tio->getId() << "returned bad data: tio->getVisualResampleRate()=" << mz << "n=" << n << "Aborting analysis";
+        qDebug() << "TrackPointer" << tio->getId() << "returned bad data: tio->getVisualResampleRate()=" << mz << "n=" << n << "Aborting analysis";
         return;
     }
 
@@ -72,7 +72,7 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
 
     //qDebug() << "AnalyserWaveform::process() processing " << iLen << " samples";
     for(int i=0; i<iLen; i+=2) {
-      
+
         if(m_iBufferPos >= m_iStrideLength) {
             //(*downsample)[m_iCurPos] = m_fLMax;
             *(downsampleVector++) = m_fLMax;
@@ -81,7 +81,7 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
             //(*downsample)[m_iCurPos] = m_fRMax;
             *(downsampleVector++) = m_fRMax;
             m_iCurPos++;
-            
+
             m_iBufferPos = 0;
             m_fLMax = -1.0f;
             m_fRMax = -1.0f;
@@ -95,19 +95,19 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
             if(sr > m_fRMax)
                 m_fRMax = sr;
         }
-	
+
         m_iBufferPos += 2;
     }
 }
 
-void AnalyserWaveform::finalise(TrackInfoObject *tio) {
+void AnalyserWaveform::finalise(TrackPointer tio) {
     if(downsample == NULL) {
         return;
     }
 
     downsample = NULL;
     downsampleVector = NULL;
-    
+
     qDebug() << "AnalyserWaveform :: Waveform downsampling finished.";
     m_iStartTime = clock() - m_iStartTime;
     qDebug() << "AnalyserWaveform :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
