@@ -40,7 +40,9 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
 
 			qDebug() << "FXUNITS: PORT: Widget" + QString::number(WidgetID) + "Parameter" + QString::number(Knobi);
 		    ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "Parameter" + QString::number(Knobi));
-		    ControlObject * potmeter = new ControlPotmeter(*key, ports->at(Porti)->Min, ports->at(Porti)->Max);
+		    ControlObject * co = ControlObject::getControl(*key);
+		    ControlPotmeter * potmeter = dynamic_cast<ControlPotmeter *>(co);
+		    potmeter->setRange(ports->at(Porti)->Min, ports->at(Porti)->Max);
 		    m_pBindings->append(potmeter);
 		    Knobi++;
 		    Porti++;
