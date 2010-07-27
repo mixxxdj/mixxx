@@ -146,7 +146,7 @@ void LADSPABackend::activatePlugin(int PluginID){
 		LADSPAInstance * instance = m_LADSPAPlugin.at(PluginID)->instantiate(0);
 
 		/* Plugin with asymmetrical in/out ports, cant process() */
-		if (instance == NULL) return;
+		if (instance == NULL) { qDebug() << "FXUNITS: LADSPABackend: Assymetrical ports!!! ABORT!"; return; }
 
 		m_LADSPAInstance.replace(PluginID, instance);
 		qDebug() << "FXUNITS: INSTANCE:" << instance;

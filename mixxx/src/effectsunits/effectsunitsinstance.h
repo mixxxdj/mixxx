@@ -10,18 +10,22 @@
 
 #include "effectsunitsplugin.h"
 #include "../controlobject.h"
+#include "../controlpotmeter.h"
 
 class EffectsUnitsPlugin;
 
 class EffectsUnitsInstance {
 public:
-	EffectsUnitsInstance(EffectsUnitsPlugin *);
+	EffectsUnitsInstance(EffectsUnitsPlugin * Plugin, int WidgetID, int KnobCount);
 	virtual ~EffectsUnitsInstance();
 
 	EffectsUnitsPlugin * getPlugin();
+	int getInstanceID();
+	static int getNextInstanceID();
 
 private:
 
+	static int nextInstanceID;
 	int m_InstanceID;
 	EffectsUnitsPlugin * m_pPlugin;
 

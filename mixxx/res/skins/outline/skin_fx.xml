@@ -70,6 +70,21 @@
    </PushButton>
    
    <Knob>
+    <Tooltip>Widget1 Parameter0</Tooltip>
+    <NumberStates>41</NumberStates>
+    <Path>knobm%1.png</Path>
+    <Pos>842,311</Pos>
+    <Connection>
+     <ConfigKey>[FX],Widget1Parameter0</ConfigKey>
+    </Connection>
+   </Knob>
+   
+   <Label>
+    <Pos>0,0</Pos>
+    <FontSize>12</FontSize>
+   </Label>
+    
+   <Knob>
     <Tooltip>Widget1 Parameter1</Tooltip>
     <NumberStates>41</NumberStates>
     <Path>knobm%1.png</Path>
@@ -129,21 +144,6 @@
     <FontSize>12</FontSize>
    </Label> 
    
-   <Knob>
-    <Tooltip>Widget1 Parameter5</Tooltip>
-    <NumberStates>41</NumberStates>
-    <Path>knobm%1.png</Path>
-    <Pos>842,311</Pos>
-    <Connection>
-     <ConfigKey>[FX],Widget1Parameter5</ConfigKey>
-    </Connection>
-   </Knob>
-   
-   <Label>
-    <Pos>0,0</Pos>
-    <FontSize>12</FontSize>
-   </Label> 
-   
   </EffectsUnitsWidget> 
   
   <EffectsUnitsWidget>
@@ -170,6 +170,21 @@
      <ConfigKey>[FX],Widget2OnOff</ConfigKey>
     </Connection>
    </PushButton>
+
+   <Knob>
+    <Tooltip>Widget2 Parameter0</Tooltip>
+    <NumberStates>41</NumberStates>
+    <Path>knobm%1.png</Path>
+    <Pos>842,311</Pos>
+    <Connection>
+     <ConfigKey>[FX],Widget2Parameter0</ConfigKey>
+    </Connection>
+   </Knob>
+   
+   <Label>
+    <Pos>0,0</Pos>
+    <FontSize>12</FontSize>
+   </Label> 
    
    <Knob>
     <Tooltip>Widget2 Parameter1</Tooltip>
@@ -223,21 +238,6 @@
     <Pos>842,311</Pos>
     <Connection>
      <ConfigKey>[FX],Widget2Parameter4</ConfigKey>
-    </Connection>
-   </Knob>
-   
-   <Label>
-    <Pos>0,0</Pos>
-    <FontSize>12</FontSize>
-   </Label> 
-   
-   <Knob>
-    <Tooltip>Widget2 Parameter5</Tooltip>
-    <NumberStates>41</NumberStates>
-    <Path>knobm%1.png</Path>
-    <Pos>842,311</Pos>
-    <Connection>
-     <ConfigKey>[FX],Widget2Parameter5</ConfigKey>
     </Connection>
    </Knob>
    
@@ -312,6 +312,21 @@
      <ConfigKey>[FX],Widget3OnOff</ConfigKey>
     </Connection>
    </PushButton>
+    
+   <Knob>
+    <Tooltip>Widget3 Parameter0</Tooltip>
+    <NumberStates>41</NumberStates>
+    <Path>knobm%1.png</Path>
+    <Pos>842,311</Pos>
+    <Connection>
+     <ConfigKey>[FX],Widget3Parameter0</ConfigKey>
+    </Connection>
+   </Knob>
+   
+   <Label>
+    <Pos>0,0</Pos>
+    <FontSize>12</FontSize>
+   </Label> 
    
    <Knob>
     <Tooltip>Widget3 Parameter1</Tooltip>
@@ -373,21 +388,6 @@
     <FontSize>12</FontSize>
    </Label> 
    
-   <Knob>
-    <Tooltip>Widget3 Parameter5</Tooltip>
-    <NumberStates>41</NumberStates>
-    <Path>knobm%1.png</Path>
-    <Pos>842,311</Pos>
-    <Connection>
-     <ConfigKey>[FX],Widget3Parameter5</ConfigKey>
-    </Connection>
-   </Knob>
-   
-   <Label>
-    <Pos>0,0</Pos>
-    <FontSize>12</FontSize>
-   </Label> 
-   
   </EffectsUnitsWidget> 
 
   <EffectsUnitsWidget>
@@ -414,6 +414,21 @@
      <ConfigKey>[FX],Widget4OnOff</ConfigKey>
     </Connection>
    </PushButton>
+      
+   <Knob>
+    <Tooltip>Widget4 Parameter0</Tooltip>
+    <NumberStates>41</NumberStates>
+    <Path>knobm%1.png</Path>
+    <Pos>842,311</Pos>
+    <Connection>
+     <ConfigKey>[FX],Widget4Parameter0</ConfigKey>
+    </Connection>
+   </Knob>
+   
+   <Label>
+    <Pos>0,0</Pos>
+    <FontSize>12</FontSize>
+   </Label> 
    
    <Knob>
     <Tooltip>Widget4 Parameter1</Tooltip>
@@ -467,21 +482,6 @@
     <Pos>842,311</Pos>
     <Connection>
      <ConfigKey>[FX],Widget4Parameter4</ConfigKey>
-    </Connection>
-   </Knob>
-   
-   <Label>
-    <Pos>0,0</Pos>
-    <FontSize>12</FontSize>
-   </Label> 
-   
-   <Knob>
-    <Tooltip>Widget4 Parameter5</Tooltip>
-    <NumberStates>41</NumberStates>
-    <Path>knobm%1.png</Path>
-    <Pos>842,311</Pos>
-    <Connection>
-     <ConfigKey>[FX],Widget4Parameter5</ConfigKey>
     </Connection>
    </Knob>
    

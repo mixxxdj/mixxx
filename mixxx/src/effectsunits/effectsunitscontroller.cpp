@@ -47,12 +47,16 @@ void EffectsUnitsController::loadAllPlugins(){
 	}
 }
 
-/* EffectsUnitsController::activatePluginOnSource
- * Adds the desired plugin to the processing queue of the desired source.
- * i.e. activatePluginOnSource("Delay", [Channel1])
- */
-void EffectsUnitsController::addInstanceToSource(int InstanceID, QString Source){
 
+void EffectsUnitsController::addInstanceToSource(int InstanceID, QString Source){
+	// TODO - Manage instances?
+
+	int size = m_ActiveInstances.size();
+	for (int i = 0; i < size; i++){
+		if (m_ActiveInstances.at(i)->getInstanceID() == InstanceID){
+			m_pEngine->addInstanceToSource(m_ActiveInstances.at(i), Source);
+		}
+	}
 }
 
 /* EffectsUnitsController::getPluginByName
@@ -67,14 +71,13 @@ EffectsUnitsPlugin * EffectsUnitsController::getPluginByName(QString PluginName)
 	return NULL;
 }
 
-EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QString PluginName, int Widget){
+EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QString PluginName, int Widget, int KnobCount){
 	EffectsUnitsPlugin * current = getPluginByName(PluginName);
 	if (current != NULL){
 		current->activate();
-		// TODO - Implement this properly, should make one for each widget.
-		// Maybe it should always create a new instance.
-		// Shouldnt forget about freeing this memory when the plugin is unloaded.
-		return (new EffectsUnitsInstance(current));
+		EffectsUnitsInstance * instance = new EffectsUnitsInstance(current, Widget, KnobCount);
+		m_ActiveInstances.prepend(instance);
+		return (instance);
 	}
 }
 

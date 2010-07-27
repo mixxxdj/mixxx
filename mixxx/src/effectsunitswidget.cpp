@@ -7,7 +7,7 @@
 
 #include "effectsunitswidget.h"
 
-int EffectsUnitsWidget::NextID = 0;
+int EffectsUnitsWidget::NextID = 1;
 
 EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsUnitsController * controller) : QWidget(parent) {
 	m_pCurrentInstance = NULL;
@@ -70,7 +70,8 @@ void EffectsUnitsWidget::slotEffectChanged(QString Name){
 		// TODO - unload previous instance
 	}
 
-	//
+	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
+	m_pController->addInstanceToSource(m_pCurrentInstance->getInstanceID(), "[Channel1]");
 }
 
 int EffectsUnitsWidget::getNextID(){

@@ -13,7 +13,7 @@ public:
 	~EffectsUnitsController();
 
 	void addInstanceToSource(int InstanceID, QString Source);
-	EffectsUnitsInstance * instantiatePluginForWidget(QString PluginName, int Widget);
+	EffectsUnitsInstance * instantiatePluginForWidget(QString PluginName, int Widget, int KnobCount);
 
 	void loadAllPlugins();
 	QStringList * getEffectsList();
