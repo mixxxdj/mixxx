@@ -74,11 +74,11 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
                     // its thing if it needs to
 
-    SoundManagerConfig newConfig;
-    if (!newConfig.readFromDisk()) {
-        newConfig.loadDefaults(this, SoundManagerConfig::ALL);
+    if (!m_config.readFromDisk()) {
+        m_config.loadDefaults(this, SoundManagerConfig::ALL);
     }
-    setConfig(newConfig);
+    checkConfig();
+    m_config.writeToDisk(); // in case anything changed by applying defaults
 
     // TODO(bkgood) do these really need to be here? they're set in
     // SoundDevicePortAudio::open
@@ -312,6 +312,8 @@ int SoundManager::setupDevices()
     int devicesAttempted = 0;
     int devicesOpened = 0;
 
+    // close open devices, close running vinyl control proxies
+    closeDevices();
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
     // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
@@ -320,12 +322,6 @@ int SoundManager::setupDevices()
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
-    foreach (SoundDevice *device, m_devices) {
-        // close all the devices first so if we error on starting a device
-        // and jump out of the method we don't have zombie devices still
-        // running -- bkgood
-        device->close();
-    }
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
         bool isOutput = false;
@@ -404,6 +400,18 @@ SoundManagerConfig SoundManager::getConfig() const {
 int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
     m_config = config;
+    checkConfig();
+    err = setupDevices();
+    if (err == OK) {
+        m_config.writeToDisk();
+    }
+    // certain parts of mixxx rely on this being here, for the time being, just
+    // letting those be -- bkgood
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    return err;
+}
+
+void SoundManager::checkConfig() {
     if (!m_config.checkAPI(*this)) {
         m_config.setAPI(DEFAULT_API);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
@@ -413,14 +421,6 @@ int SoundManager::setConfig(SoundManagerConfig config) {
         m_config.loadDefaults(this, SoundManagerConfig::OTHER);
     }
     // latency checks itself for validity on SMConfig::setLatency()
-    err = setupDevices();
-    if (err == OK) {
-        m_config.writeToDisk();
-    }
-    // certain parts of mixxx rely on this being here, for the time being, just
-    // letting those be -- bkgood
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
-    return err;
 }
 
 void SoundManager::sync()

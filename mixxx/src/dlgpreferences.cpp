@@ -313,12 +313,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 
 }
 
-void DlgPreferences::showVinylControlPage()
+void DlgPreferences::showSoundHardwarePage()
 {
-#ifdef __VINYLCONTROL__
-    pagesWidget->setCurrentWidget(wvinylcontrol);
-    contentsTreeWidget->setCurrentItem(m_pVinylControlButton);
-#endif
+    pagesWidget->setCurrentWidget(wsound);
+    contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
 bool DlgPreferences::eventFilter(QObject * o, QEvent * e)

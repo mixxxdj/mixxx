@@ -55,6 +55,7 @@ class SoundManager : public QObject
         QList<QString> getHostAPIList() const;
         SoundManagerConfig getConfig() const;
         int setConfig(SoundManagerConfig config);
+        void checkConfig();
         QHash<AudioOutput, const CSAMPLE*>
             requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer);
         void pushBuffer(QList<AudioInput> inputs, short *inputBuffer, 
