@@ -74,7 +74,7 @@ void EffectsUnitsWidget::slotEffectChanged(QString Name){
 	m_pPreviousInstance = m_pCurrentInstance;
 
 	if (m_pPreviousInstance != NULL){
-		// TODO - unload previous instance
+		m_pController->removeInstance(m_pPreviousInstance->getInstanceID());
 	}
 
 	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);

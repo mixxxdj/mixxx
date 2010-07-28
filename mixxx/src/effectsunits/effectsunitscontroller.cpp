@@ -47,7 +47,6 @@ void EffectsUnitsController::loadAllPlugins(){
 	}
 }
 
-
 void EffectsUnitsController::addInstanceToSource(int InstanceID, QString Source){
 	// TODO - Manage instances?
 
@@ -79,6 +78,16 @@ EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QStrin
 		m_ActiveInstances.append(instance);
 		return (instance);
 	}
+}
+
+void EffectsUnitsController::removeInstanceFromSource(int InstanceID, QString Source){
+	m_pEngine->removeInstanceFromSource(InstanceID, Source);
+}
+
+void EffectsUnitsController::removeInstance(int InstanceID){
+	// TODO - For all sources
+	m_pEngine->removeInstanceFromSource(InstanceID, "[Channel1]");
+	m_pEngine->removeInstanceFromSource(InstanceID, "[Channel2]");
 }
 
 QStringList * EffectsUnitsController::getEffectsList(){

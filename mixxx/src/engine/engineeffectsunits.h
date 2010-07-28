@@ -19,6 +19,7 @@ public:
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize, const QString Source);
 
 	void addInstanceToSource(EffectsUnitsInstance * Instance, QString Source);
+	void removeInstanceFromSource(int InstanceID, QString Source);
 	QList<EffectsUnitsInstance *> * getInstancesBySource(QString Source);
 
 private:

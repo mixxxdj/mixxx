@@ -65,6 +65,19 @@ void EngineEffectsUnits::addInstanceToSource(EffectsUnitsInstance * Instance, QS
 	}
 }
 
+void EngineEffectsUnits::removeInstanceFromSource(int InstanceID, QString Source){
+	QList<EffectsUnitsInstance *> * instanceList = getInstancesBySource(Source);
+	if (instanceList){
+		int size = instanceList->size();
+		for (int i = 0; i < size; i++){
+			if (instanceList->at(i)->getInstanceID() == InstanceID){
+				instanceList->removeAt(i);
+				return;
+			}
+		}
+	}
+}
+
 
 QList<EffectsUnitsInstance *> * EngineEffectsUnits::getInstancesBySource(QString Source){
 	if (Source == "[Channel1]"){
