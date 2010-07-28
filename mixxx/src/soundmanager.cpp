@@ -337,11 +337,17 @@ int SoundManager::setupDevices()
             if (err != OK)
                 return err;
             if (!m_inputBuffers.contains(in)) {
+                // TODO(bkgood) look into allocating this with the frames per
+                // buffer value from SMConfig
                 m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
             isOutput = true;
+            // following keeps us from asking for a channel buffer EngineMaster
+            // doesn't have -- bkgood
+            if (out.getType() == AudioOutput::DECK
+                    && out.getIndex() >= m_pMaster->numChannels()) continue;
             err = device->addOutput(out);
             if (err != OK)
                 return err;
@@ -357,7 +363,7 @@ int SoundManager::setupDevices()
                 m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
                 break;
             case AudioPath::DECK:
-                m_outputBuffers[out] = m_pMaster->getDeckBuffer(out.getIndex());
+                m_outputBuffers[out] = m_pMaster->getChannelBuffer(out.getIndex());
                 break;
             default:
                 break;
