@@ -312,6 +312,10 @@ int SoundManager::setupDevices()
     int devicesAttempted = 0;
     int devicesOpened = 0;
 
+    // filter out any devices in the config we don't actually have
+    m_config.filterOutputs(this);
+    m_config.filterInputs(this);
+
     // close open devices, close running vinyl control proxies
     closeDevices();
 #ifdef __VINYLCONTROL__
