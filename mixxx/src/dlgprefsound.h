@@ -25,6 +25,12 @@ class SoundManager;
 class ControlObject;
 class SoundDevice;
 
+/*
+ * TODO(bkgood) (n-decks) make this class get the number of channels from
+ * EngineMaster, perhaps establish a signal/slot connection with a signal
+ * on EngineMaster that emits every time a channel is added, and a slot here
+ * that updates the dialog accordingly.
+ */
 const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
                                   // soundmanager or something
 

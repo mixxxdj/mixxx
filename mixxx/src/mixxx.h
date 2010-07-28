@@ -17,6 +17,7 @@
 
 #ifndef MIXXX_H
 #define MIXXX_H
+
 // include files for QT
 #include <qaction.h>
 #include <qmenubar.h>
@@ -30,7 +31,6 @@
 #include <qapplication.h>
 //Added by qt3to4:
 #include <QFrame>
-#include <vector>
 #include <qstringlist.h>
 
 #ifdef QT3_SUPPORT
@@ -49,8 +49,6 @@
 #include "defs.h"
 #include "mixxxview.h"
 #include "trackinfoobject.h"
-#include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
@@ -64,7 +62,9 @@
 #include "script/scriptengine.h"
 #endif
 
-class WVisual;
+class EngineMaster;
+class PlayerManager;
+class TrackInfoObject;
 class PlayerProxy;
 class BpmDetector;
 class QSplashScreen;
@@ -128,22 +128,14 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-	QString getSkinPath();
+    QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-    // Load a track into the next available (non-playing) Player
-    void slotLoadTrackIntoNextAvailablePlayer(TrackPointer track);
-    // Load a track into the specified player. Does nothing if an invalid player
-    // is specified. player is indexed from 1.
-    void slotLoadTrackToPlayer(TrackPointer track, int player);
-    /** Load a track into Player 1 */
-    void slotLoadPlayer1(QString location);
-    /** Load a track into Player 2 */
-	void slotLoadPlayer2(QString location);
-	/** Scan or rescan the music library directory */
-	void slotScanLibrary();
-	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
-	void slotEnableRescanLibraryAction();
+
+    /** Scan or rescan the music library directory */
+    void slotScanLibrary();
+    /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+    void slotEnableRescanLibraryAction();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -159,15 +151,14 @@ class MixxxApp : public QMainWindow
     QFrame *frame;
 
     QApplication *app;
-    EngineObject *engine;
-    EngineBuffer *buffer1, *buffer2;
+    // The mixing engine.
+    EngineMaster *m_pEngine;
 
-    EngineChannel *channel1, *channel2;
-    EngineMaster *master;
+    // The sound manager
     SoundManager *soundmanager;
-    Player *m_pPlayer1;
-    Player *m_pPlayer2;
-    AnalyserQueue* m_pAnalyserQueue;
+
+    PlayerManager* m_pPlayerManager;
+
     MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;

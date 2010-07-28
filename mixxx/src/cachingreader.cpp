@@ -10,6 +10,7 @@
 #include "cachingreader.h"
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
+#include "sampleutil.h"
 
 
 // There's a little math to this, but not much: 48khz stereo audio is 384kb/sec
@@ -60,7 +61,6 @@ CachingReader::~CachingReader() {
 
 void CachingReader::initialize() {
     int memory_to_use = 5000000; // 5mb, TODO
-
     Q_ASSERT(memory_to_use >= kChunkLength);
 
     // Only allocate as many bytes as we will actually use.
@@ -281,9 +281,7 @@ bool CachingReader::readChunkFromFile(Chunk* pChunk, int chunk_number) {
     // TODO(XXX) This loop can't be done with a memcpy, but could be done with
     // SSE.
     CSAMPLE* buffer = pChunk->data;
-    for (int i=0; i < samples_read; i++) {
-        buffer[i] = CSAMPLE(m_pSample[i]);
-    }
+    SampleUtil::convert(buffer, m_pSample, samples_read);
 
     pChunk->chunk_number = chunk_number;
     pChunk->length = samples_read;
@@ -324,7 +322,6 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Need to lock while we're touching Chunk's
     m_readerMutex.lock();
     for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
-
         Chunk* current = getChunk(chunk_num, &cache_miss);
 
         if (cache_miss) {
@@ -388,6 +385,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
+    // TODO(XXX) memset
     for (int i=0; i<samples_remaining; i++) {
         buffer[i] = 0.0f;
     }
