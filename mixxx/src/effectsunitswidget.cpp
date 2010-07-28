@@ -15,6 +15,7 @@ EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsU
 	m_KnobCount = 0;
 	m_pController = controller;
 	m_WidgetID = getNextID();
+	m_pSlot = dynamic_cast<EffectsUnitsSlot *>(parent);
 
 	QGridLayout * lay = new QGridLayout(this);
 	this->setLayout(lay);
@@ -71,16 +72,17 @@ EffectsUnitsWidget::~EffectsUnitsWidget() {
 
 void EffectsUnitsWidget::slotEffectChanged(QString Name){
 	m_pPreviousInstance = m_pCurrentInstance;
+	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
 
 	if (m_pPreviousInstance != NULL){
-		m_pController->removeInstance(m_pPreviousInstance->getInstanceID());
+		m_pSlot->changedWidgetEffect(m_pPreviousInstance->getInstanceID(), m_pCurrentInstance->getInstanceID());
+	} else {
+		m_pSlot->changedWidgetEffect(NULL, m_pCurrentInstance->getInstanceID());
 	}
-
-	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
 }
 
 int EffectsUnitsWidget::getInstanceID(){
-	return m_pCurrentInstance->getInstanceID();
+	return ((m_pCurrentInstance != NULL) ? m_pCurrentInstance->getInstanceID() : NULL);
 }
 
 int EffectsUnitsWidget::getNextID(){

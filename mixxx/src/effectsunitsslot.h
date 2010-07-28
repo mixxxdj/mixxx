@@ -12,6 +12,8 @@
 #include "effectsunitswidget.h"
 #include <QSignalMapper>
 
+class EffectsUnitsWidget;
+
 class EffectsUnitsSlot : public QWidget {
 
 	Q_OBJECT
@@ -23,6 +25,8 @@ public:
 	int getNextID();
 	void activateOnDeck(int i);
 	void deactivateOnDeck(int i);
+	void changedWidgetEffect(int PreviousID, int CurrentID);
+	bool deckIsActivated(int i);
 
 public slots:
 	void slotDeckUpdated(int i);

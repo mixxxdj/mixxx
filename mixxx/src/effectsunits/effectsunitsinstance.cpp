@@ -7,7 +7,7 @@
 
 #include "effectsunitsinstance.h"
 
-int EffectsUnitsInstance::nextInstanceID = 0;
+int EffectsUnitsInstance::nextInstanceID = 1;
 
 EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int WidgetID, int KnobCount) {
 	m_pPlugin = Plugin;

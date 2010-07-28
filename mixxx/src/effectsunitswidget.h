@@ -14,9 +14,12 @@
 
 #include "widget/wpushbutton.h"
 #include "widget/wknob.h"
+#include "effectsunitsslot.h"
 #include "effectsunits/effectsunitsinstance.h"
 #include "effectsunits/effectsunitscontroller.h"
 #include "controlpushbutton.h"
+
+class EffectsUnitsSlot;
 
 class EffectsUnitsWidget : public QWidget{
 
@@ -35,6 +38,7 @@ private:
 	int m_WidgetID;
 	EffectsUnitsController * m_pController;								// Our fx controller
 	EffectsUnitsInstance * m_pCurrentInstance, * m_pPreviousInstance;	// Previous and Current instance
+	EffectsUnitsSlot * m_pSlot;
 	QList<QLabel*> m_Labels;	// Instance parameter labels
 	int m_KnobCount;			// Number of knobs displayed in this widget
 	QComboBox * m_ComboBox;		// Fx names

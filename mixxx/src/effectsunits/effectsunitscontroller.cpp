@@ -48,12 +48,12 @@ void EffectsUnitsController::loadAllPlugins(){
 }
 
 void EffectsUnitsController::addInstanceToSource(int InstanceID, QString Source){
-	// TODO - Manage instances?
-
-	int size = m_ActiveInstances.size();
-	for (int i = 0; i < size; i++){
-		if (m_ActiveInstances.at(i)->getInstanceID() == InstanceID){
-			m_pEngine->addInstanceToSource(m_ActiveInstances.at(i), Source);
+	if (InstanceID != NULL){
+		int size = m_ActiveInstances.size();
+		for (int i = 0; i < size; i++){
+			if (m_ActiveInstances.at(i)->getInstanceID() == InstanceID){
+				m_pEngine->addInstanceToSource(m_ActiveInstances.at(i), Source);
+			}
 		}
 	}
 }
@@ -81,13 +81,16 @@ EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QStrin
 }
 
 void EffectsUnitsController::removeInstanceFromSource(int InstanceID, QString Source){
-	m_pEngine->removeInstanceFromSource(InstanceID, Source);
+	if (InstanceID != NULL)
+		m_pEngine->removeInstanceFromSource(InstanceID, Source);
 }
 
 void EffectsUnitsController::removeInstance(int InstanceID){
 	// TODO - For all sources
-	m_pEngine->removeInstanceFromSource(InstanceID, "[Channel1]");
-	m_pEngine->removeInstanceFromSource(InstanceID, "[Channel2]");
+	if (InstanceID != NULL){
+		m_pEngine->removeInstanceFromSource(InstanceID, "[Channel1]");
+		m_pEngine->removeInstanceFromSource(InstanceID, "[Channel2]");
+	}
 }
 
 QStringList * EffectsUnitsController::getEffectsList(){

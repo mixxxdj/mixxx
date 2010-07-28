@@ -67,23 +67,46 @@ int EffectsUnitsSlot::getNextID(){
 }
 
 void EffectsUnitsSlot::slotDeckUpdated(int i){
-	if (m_DeckButtons.at(i)->getValue() > 0){
+	if (deckIsActivated(i)){
 		activateOnDeck(i);
 	} else {
 		deactivateOnDeck(i);
 	}
 }
 
-void EffectsUnitsSlot::activateOnDeck(int i){
+void EffectsUnitsSlot::activateOnDeck(int iDeck){
 	int size = m_pEffectsUnitsWidgets->size();
 	for (int i = 0; i < size; i++){
-		m_pController->addInstanceToSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel1]");
+		if (i == 0)
+			m_pController->addInstanceToSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel1]");
+		else
+			m_pController->addInstanceToSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel2]");
 	}
 }
 
-void EffectsUnitsSlot::deactivateOnDeck(int i){
+void EffectsUnitsSlot::deactivateOnDeck(int iDeck){
 	int size = m_pEffectsUnitsWidgets->size();
 	for (int i = 0; i < size; i++){
-		m_pController->removeInstanceFromSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel1]");
+		if (i == 0)
+			m_pController->removeInstanceFromSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel1]");
+		else
+			m_pController->removeInstanceFromSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel2]");
+	}
+}
+
+bool EffectsUnitsSlot::deckIsActivated(int i){
+	return (m_DeckButtons.at(i)->getValue() > 0);
+}
+
+void EffectsUnitsSlot::changedWidgetEffect(int PreviousID, int CurrentID){
+	m_pController->removeInstance(PreviousID);
+	int size = m_DeckButtons.size();
+	for (int i = 0; i < size; i++){
+		if (deckIsActivated(i)){
+			if (i == 0)
+				m_pController->addInstanceToSource(CurrentID, "[Channel1]");
+			else
+				m_pController->addInstanceToSource(CurrentID, "[Channel2]");
+		}
 	}
 }
