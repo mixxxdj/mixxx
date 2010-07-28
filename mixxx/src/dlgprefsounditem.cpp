@@ -59,6 +59,7 @@ DlgPrefSoundItem::~DlgPrefSoundItem() {
  */
 void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
     m_devices = devices;
+    QString oldDev = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     deviceComboBox->setCurrentIndex(0);
     // not using combobox->clear means we can leave in "None" so it
     // doesn't flicker when you switch APIs... cleaner Mixxx :) bkgood
@@ -67,6 +68,10 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
     }
     foreach (SoundDevice *device, m_devices) {
         deviceComboBox->addItem(device->getDisplayName(), device->getInternalName());
+    }
+    int newIndex = deviceComboBox->findData(oldDev);
+    if (newIndex != -1) {
+        deviceComboBox->setCurrentIndex(newIndex);
     }
 }
 
@@ -141,6 +146,9 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
             }
         }
     }
+    // if we've gotten here without returning, we didn't find a path applicable
+    // to us so set some defaults -- bkgood
+    setDevice("None"); // this will blank the channel combo box
 }
 
 /**
