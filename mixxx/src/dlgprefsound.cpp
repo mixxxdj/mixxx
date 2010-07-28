@@ -20,6 +20,10 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 
+/** The number of decks Mixxx has (to be factored out with n-decks). */
+const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
+                                  // soundmanager or something
+
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
@@ -117,7 +121,8 @@ void DlgPrefSound::slotApply() {
 /**
  * Slot called by DlgPrefVinyl when it needs slotApply here to call setupDevices.
  * We're graced with this kludge because VC proxies are only initialized in
- * SM::setupDevices and reinit is the only way to make them reread their config.
+ * SoundManager::setupDevices and reinit is the only way to make them reread
+ * their config.
  */
 void DlgPrefSound::forceApply() {
     m_forceApply = true;
@@ -182,12 +187,16 @@ void DlgPrefSound::initializePaths() {
     }
 }
 
+/**
+ * Convenience overload to load settings from the SoundManagerConfig owned by
+ * SoundManager.
+ */
 void DlgPrefSound::loadSettings() {
     loadSettings(m_pSoundManager->getConfig());
 }
 
 /**
- *
+ * Loads the settings in the given SoundManagerConfig into the dialog.
  */
 void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     m_loading = true; // so settingsChanged ignores all our modifications here
@@ -209,7 +218,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 }
 
 /**
- * Slots called when the user selects a different API, or the
+ * Slot called when the user selects a different API, or the
  * software changes it programatically (for instance, when it
  * loads a value from SoundManager). Refreshes the device lists
  * for the new API and pushes those to the path items.
@@ -277,7 +286,7 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
 }
 
 /**
- * Slot called when device pointers go bad to refresh them all, or the API
+ * Slot called when device lists go bad to refresh them, or the API
  * just changes and we need to display new devices.
  */
 void DlgPrefSound::refreshDevices() {
@@ -296,8 +305,8 @@ void DlgPrefSound::refreshDevices() {
 
 /**
  * Called when any of the combo boxes in this dialog are changed. Enables the
- * apply button and marks that settings have been changed so that slotApply
- * knows to apply them.
+ * apply button and marks that settings have been changed so that
+ * DlgPrefSound::slotApply knows to apply them.
  */
 void DlgPrefSound::settingChanged() {
     if (m_loading) return; // doesn't count if we're just loading prefs
@@ -307,10 +316,16 @@ void DlgPrefSound::settingChanged() {
     }
 }
 
+/**
+ * Slot called when the "Query Devices" button is clicked.
+ */
 void DlgPrefSound::queryClicked() {
     m_pSoundManager->queryDevices();
 }
 
+/**
+ * Slot called when the "Reset to Defaults" button is clicked.
+ */
 void DlgPrefSound::resetClicked() {
     SoundManagerConfig newConfig;
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);

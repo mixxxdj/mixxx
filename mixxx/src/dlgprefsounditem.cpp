@@ -108,6 +108,13 @@ emitAndReturn:
     emit(settingChanged());
 }
 
+/**
+ * Slot called to load the respective AudioPath from a SoundManagerConfig
+ * object.
+ * @note If there are multiple AudioPaths matching this instance's type
+ *       and index (if applicable), then only the first one is used. A more
+ *       advanced preferences pane may one day allow multiples.
+ */
 void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
         QMultiHash<QString, AudioInput> inputs(config.getInputs());
@@ -186,6 +193,10 @@ SoundDevice* DlgPrefSoundItem::getDevice() const {
     return NULL;
 }
 
+/**
+ * Selects a device in the device combo box given a SoundDevice
+ * internal name, or selects "None" if the device isn't found.
+ */
 void DlgPrefSoundItem::setDevice(const QString &deviceName) {
     int index = deviceComboBox->findData(deviceName);
     if (index != -1) {
@@ -195,6 +206,10 @@ void DlgPrefSoundItem::setDevice(const QString &deviceName) {
     }
 }
 
+/**
+ * Selects a channel in the channel combo box given a channel number,
+ * or selects the first channel if the given channel isn't found.
+ */
 void DlgPrefSoundItem::setChannel(unsigned int channel) {
     int index = channelComboBox->findData(channel);
     if (index != -1) {
