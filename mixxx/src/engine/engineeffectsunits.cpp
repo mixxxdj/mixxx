@@ -42,8 +42,11 @@ void EngineEffectsUnits::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const 
 	for (int i = 0; i < size; ++i) {
 
 		m_pCurrentInstance = instancesList->at(i);
-		m_pCurrentInstance->updatePorts();
-		m_pCurrentInstance->process(pIn, pOut, iBufferSize);
+		/* Is it On? */
+		if (m_pCurrentInstance->getEnabled()){
+			m_pCurrentInstance->updatePorts();
+			m_pCurrentInstance->process(pIn, pOut, iBufferSize);
+		}
 
 	 }
 }

@@ -22,6 +22,7 @@ public:
 	void updatePorts();
 	void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 	double getWetDry();
+	bool getEnabled();
 	void activate();
 
 	EffectsUnitsPlugin * getPlugin();

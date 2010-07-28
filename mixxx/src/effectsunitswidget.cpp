@@ -33,6 +33,9 @@ EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsU
 
 			/* Enable/Disable Fx */
 			} else if (node.nodeName() == "PushButton"){
+
+				ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(m_WidgetID) + "OnOff");
+				ControlObject * button = new ControlPushButton(*key);
 				WPushButton * push = new WPushButton(this);
 				lay->addWidget(push, 0, 0);
 				push->setup(node);

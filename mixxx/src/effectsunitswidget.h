@@ -16,6 +16,7 @@
 #include "widget/wknob.h"
 #include "effectsunits/effectsunitsinstance.h"
 #include "effectsunits/effectsunitscontroller.h"
+#include "controlpushbutton.h"
 
 class EffectsUnitsWidget : public QWidget{
 

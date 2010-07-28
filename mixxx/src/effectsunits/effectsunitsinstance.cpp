@@ -16,18 +16,22 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
 
 	qDebug() << "FXUNITS: EffectsUnitsIntance: " << m_InstanceID;
 
-	QList<EffectsUnitsPort *> * ports = Plugin->getPorts();
-
-	int PortCount = ports->size();
-
-	int Porti = 0;
-	int Knobi = 1;
-
 	/* Defaults wet/dry to a non-port, but knob0 */
 	m_WetDryPort = -1;
-	ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "Parameter0");
-	m_pWetDry = new ControlPotmeter(*key, 0.0, 1.0);
-	qDebug() << "FXUNITS: W&D: Widget" << WidgetID << "Parameter 0";
+	ConfigKey * keywd = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "Parameter0");
+    ControlObject * wd = ControlObject::getControl(*keywd);
+    ControlPotmeter * potwd = dynamic_cast<ControlPotmeter *>(wd);
+    if (potwd != NULL){
+    	potwd->setRange(0.0, 1.0);
+    	m_pWetDry = potwd;
+    } else {
+    	qDebug() << "FXUNITS: Something's odd, EffectsUnitsInstance";
+    }
+
+	QList<EffectsUnitsPort *> * ports = Plugin->getPorts();
+	int PortCount = ports->size();
+	int Porti = 0;
+	int Knobi = 1;
 
 	/* Binds every other non-audio port to available knobs */
 	while(Porti < PortCount && Knobi < KnobCount){
@@ -38,17 +42,26 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
 
 		} else {
 
-			qDebug() << "FXUNITS: PORT: Widget" + QString::number(WidgetID) + "Parameter" + QString::number(Knobi);
 		    ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "Parameter" + QString::number(Knobi));
 		    ControlObject * co = ControlObject::getControl(*key);
 		    ControlPotmeter * potmeter = dynamic_cast<ControlPotmeter *>(co);
-		    potmeter->setRange(ports->at(Porti)->Min, ports->at(Porti)->Max);
-		    m_pBindings->append(potmeter);
-		    Knobi++;
-		    Porti++;
+
+		    if (potmeter != NULL){
+				potmeter->setRange(ports->at(Porti)->Min, ports->at(Porti)->Max);
+				m_pBindings->append(potmeter);
+				Knobi++;
+				Porti++;
+		    } else {
+		    	qDebug() << "FXUNITS: Something's odd, EffectsUnitsInstance";
+		    }
 
 		}
 	}
+
+	/* Care for an OnOff button? */
+	ConfigKey * keyb = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "OnOff");
+	ControlObject * button = ControlObject::getControl(*keyb);
+	m_pOnOff = button;
 
 }
 
@@ -60,7 +73,6 @@ void EffectsUnitsInstance::updatePorts(){
 			// NOP, Audio Port
 		} else {
 			getPlugin()->connect(i, m_pBindings->at(i)->get());
-			qDebug() << "FXUNITS: VA:" << i << m_pBindings->at(i)->get();
 		}
 	}
 }
@@ -77,6 +89,10 @@ double EffectsUnitsInstance::getWetDry(){
 	// TODO - normalize wet/dry if not on standard port
 	//qDebug() << "FXUNITS: WD: " << m_pWetDry->get();
 	return m_pWetDry->get();
+}
+
+bool EffectsUnitsInstance::getEnabled(){
+	return (m_pOnOff->get() > 0);
 }
 
 EffectsUnitsInstance::~EffectsUnitsInstance() {
