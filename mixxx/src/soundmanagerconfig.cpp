@@ -231,6 +231,38 @@ void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
 }
 
+void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
+    QSet<QString> deviceNames;
+    QSet<QString> toDelete;
+    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, true, false)) {
+        deviceNames.insert(device->getInternalName());
+    }
+    foreach (QString deviceName, m_outputs.uniqueKeys()) {
+        if (!deviceNames.contains(deviceName)) {
+            toDelete.insert(deviceName);
+        }
+    }
+    foreach (QString del, toDelete) {
+        m_outputs.remove(del);
+    }
+}
+
+void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
+    QSet<QString> deviceNames;
+    QSet<QString> toDelete;
+    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, false, true)) {
+        deviceNames.insert(device->getInternalName());
+    }
+    foreach (QString deviceName, m_inputs.uniqueKeys()) {
+        if (!deviceNames.contains(deviceName)) {
+            toDelete.insert(deviceName);
+        }
+    }
+    foreach (QString del, toDelete) {
+        m_inputs.remove(del);
+    }
+}
+
 /**
  * Loads default values for API, master output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
