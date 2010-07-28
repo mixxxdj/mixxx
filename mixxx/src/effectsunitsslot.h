@@ -21,6 +21,8 @@ public:
 	virtual ~EffectsUnitsSlot();
 
 	int getNextID();
+	void activateOnDeck(int i);
+	void deactivateOnDeck(int i);
 
 public slots:
 	void slotDeckUpdated(int i);
@@ -32,6 +34,7 @@ private:
 	int m_SlotID;
 	QSignalMapper * m_pSignalMapper;
 	QList<WPushButton*> m_DeckButtons;
+	EffectsUnitsController * m_pController;
 };
 
 #endif /* EFFECTSUNITSSLOT_H_ */

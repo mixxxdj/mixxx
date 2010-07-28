@@ -77,8 +77,6 @@ void EffectsUnitsWidget::slotEffectChanged(QString Name){
 	}
 
 	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
-	m_pController->addInstanceToSource(m_pCurrentInstance->getInstanceID(), "[Channel1]");
-
 }
 
 int EffectsUnitsWidget::getInstanceID(){
