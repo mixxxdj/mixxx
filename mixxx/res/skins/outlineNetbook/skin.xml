@@ -1367,20 +1367,36 @@
 	
 		<PushButton>
 			<Tooltip>Left Click: Play from beginning.</Tooltip>
-			<NumberStates>2</NumberStates>
+			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>play-off-Ch1.png</Pressed>
-				<Unpressed>play-off-Ch1.png</Unpressed>
+				<Pressed>fwd-on-Ch1.png</Pressed>
+				<Unpressed>fwd-off-Ch1.png</Unpressed>
 			</State>
 			<State>
 				<Number>1</Number>
-				<Pressed>play-on-Ch1.png</Pressed>
-				<Unpressed>play-on-Ch1.png</Unpressed>
+				<Pressed>fwd-on-Ch1.png</Pressed>
+				<Unpressed>fwd-on-Ch1.png</Unpressed>
 			</State>
 			<Pos>0, 0</Pos>
 			<Connection>
 				<ConfigKey>[Channel3],playstart</ConfigKey>
+				<EmitOnDownPress>true</EmitOnDownPress>
+				<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+		
+		<PushButton>
+			<Tooltip>Stop</Tooltip>
+			<NumberStates>1</NumberStates>
+			<State>
+				<Number>0</Number>
+				<Pressed>ratedown-on-Ch1.png</Pressed>
+				<Unpressed>ratedown-off-Ch1.png</Unpressed>
+			</State>
+			<Pos>20, 4</Pos>
+			<Connection>
+				<ConfigKey>[Channel3],stop</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
@@ -1438,20 +1454,31 @@
 		
 		<PushButton>
 			<Tooltip>Left Click: Play from beginning.</Tooltip>
-			<NumberStates>2</NumberStates>
+			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>play-off-Ch2.png</Pressed>
-				<Unpressed>play-off-Ch2.png</Unpressed>
-			</State>
-			<State>
-				<Number>1</Number>
-				<Pressed>play-on-Ch2.png</Pressed>
-				<Unpressed>play-on-Ch2.png</Unpressed>
+				<Pressed>fwd-on-Ch2.png</Pressed>
+				<Unpressed>fwd-off-Ch2.png</Unpressed>
 			</State>
 			<Pos>0, 35</Pos>
 			<Connection>
 				<ConfigKey>[Channel4],playstart</ConfigKey>
+				<EmitOnDownPress>true</EmitOnDownPress>
+				<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+		
+		<PushButton>
+			<Tooltip>Stop</Tooltip>
+			<NumberStates>1</NumberStates>
+			<State>
+				<Number>0</Number>
+				<Pressed>ratedown-on-Ch2.png</Pressed>
+				<Unpressed>ratedown-off-Ch2.png</Unpressed>
+			</State>
+			<Pos>20, 39</Pos>
+			<Connection>
+				<ConfigKey>[Channel4],stop</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
@@ -1509,25 +1536,31 @@
 		
 		<PushButton>
 			<Tooltip>Left Click: Play from beginning.</Tooltip>
-			<NumberStates>2</NumberStates>
+			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>play-off-Ch2.png</Pressed>
-				<Unpressed>play-off-Ch2.png</Unpressed>
-			</State>
-			<State>
-				<Number>1</Number>
-				<Pressed>play-on-Ch2.png</Pressed>
-				<Unpressed>play-on-Ch2.png</Unpressed>
+				<Pressed>fwd-on-Ch2.png</Pressed>
+				<Unpressed>fwd-off-Ch2.png</Unpressed>
 			</State>
 			<Pos>325, 0</Pos>
 			<Connection>
-				<ConfigKey>[Channel5],play</ConfigKey>
+				<ConfigKey>[Channel5],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
+		</PushButton>
+		
+		<PushButton>
+			<Tooltip>Stop</Tooltip>
+			<NumberStates>1</NumberStates>
+			<State>
+				<Number>0</Number>
+				<Pressed>ratedown-on-Ch2.png</Pressed>
+				<Unpressed>ratedown-off-Ch2.png</Unpressed>
+			</State>
+			<Pos>345, 4</Pos>
 			<Connection>
-				<ConfigKey>[Channel5],start</ConfigKey>
+				<ConfigKey>[Channel5],stop</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
@@ -1585,25 +1618,31 @@
 
 		<PushButton>
 			<Tooltip>Left Click: Play from beginning.</Tooltip>
-			<NumberStates>2</NumberStates>
+			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>play-off-Ch1.png</Pressed>
-				<Unpressed>play-off-Ch1.png</Unpressed>
-			</State>
-			<State>
-				<Number>1</Number>
-				<Pressed>play-on-Ch1.png</Pressed>
-				<Unpressed>play-on-Ch1.png</Unpressed>
+				<Pressed>fwd-on-Ch1.png</Pressed>
+				<Unpressed>fwd-off-Ch1.png</Unpressed>
 			</State>
 			<Pos>325, 35</Pos>
 			<Connection>
-				<ConfigKey>[Channel6],play</ConfigKey>
+				<ConfigKey>[Channel6],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
+		</PushButton>
+		
+		<PushButton>
+			<Tooltip>Stop</Tooltip>
+			<NumberStates>1</NumberStates>
+			<State>
+				<Number>0</Number>
+				<Pressed>ratedown-on-Ch2.png</Pressed>
+				<Unpressed>ratedown-off-Ch2.png</Unpressed>
+			</State>
+			<Pos>345, 39</Pos>
 			<Connection>
-				<ConfigKey>[Channel6],start</ConfigKey>
+				<ConfigKey>[Channel6],stop</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
