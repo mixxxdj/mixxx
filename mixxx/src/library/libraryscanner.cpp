@@ -199,6 +199,12 @@ void LibraryScanner::run()
         qDebug() << "Detecting moved files.";
         m_trackDao.detectMovedFiles();
         
+        //Remove the hashes for any directories that have been 
+        //marked as deleted to clean up. We need to do this otherwise
+        //we can skip over songs if you move a set of songs from directory
+        //A to B, then back to A.
+        m_libraryHashDao.removeDeletedDirectoryHashes();
+
         m_database.commit();
         qDebug() << "Scan finished cleanly";
     }
@@ -316,12 +322,6 @@ bool LibraryScanner::recursiveScan(QString dirPath)
         if (!recursiveScan(dirIt.next()))
             bScanFinishedCleanly = false;
     }
-
-    //Remove the hashes for any directories that have been 
-    //marked as deleted to clean up. We need to do this otherwise
-    //we can skip over songs if you move a set of songs from directory
-    //A to B, then back to A.
-    m_libraryHashDao.removeDeletedDirectoryHashes();
 
     return bScanFinishedCleanly;
 }
