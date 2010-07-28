@@ -19,10 +19,9 @@ EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsU
 	QGridLayout * lay = new QGridLayout(this);
 	this->setLayout(lay);
 
-	qDebug() << "FXUNITS: 		Skin: " << node.nodeName();
 	int jk = 2;
 	while (!node.isNull()){
-			qDebug() << "FXUNITS: 		Skin: " << node.nodeName();
+			//qDebug() << "FXUNITS: 		Skin: " << node.nodeName();
 
 			/* Combobox for use to choose desired fx */
 			if (node.nodeName() == "EffectsComboBox"){
@@ -80,6 +79,10 @@ void EffectsUnitsWidget::slotEffectChanged(QString Name){
 	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
 	m_pController->addInstanceToSource(m_pCurrentInstance->getInstanceID(), "[Channel1]");
 
+}
+
+int EffectsUnitsWidget::getInstanceID(){
+	return m_pCurrentInstance->getInstanceID();
 }
 
 int EffectsUnitsWidget::getNextID(){

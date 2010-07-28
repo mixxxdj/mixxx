@@ -26,6 +26,8 @@ public:
 	EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsUnitsController * controller);
 	virtual ~EffectsUnitsWidget();
 
+	int getInstanceID();
+
 public slots:
 	void slotEffectChanged(QString);
 

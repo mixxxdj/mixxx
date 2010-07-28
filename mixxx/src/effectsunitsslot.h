@@ -10,6 +10,7 @@
 
 #include "effectsunits/effectsunitscontroller.h"
 #include "effectsunitswidget.h"
+#include <QSignalMapper>
 
 class EffectsUnitsSlot : public QWidget {
 
@@ -19,8 +20,18 @@ public:
 	EffectsUnitsSlot(QWidget * parent, EffectsUnitsController * m_pController, QDomNode node);
 	virtual ~EffectsUnitsSlot();
 
+	int getNextID();
+
+public slots:
+	void slotDeckUpdated(int i);
+
 private:
 	QList<EffectsUnitsWidget *> * m_pEffectsUnitsWidgets;
+
+	static int NextID;
+	int m_SlotID;
+	QSignalMapper * m_pSignalMapper;
+	QList<WPushButton*> m_DeckButtons;
 };
 
 #endif /* EFFECTSUNITSSLOT_H_ */
