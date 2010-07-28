@@ -101,6 +101,8 @@ public:
     const char* getGroup();
 public slots:
     void slotControlPlay(double);
+    void slotControlPlayFromStart(double);
+    void slotControlStop(double);
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
@@ -180,8 +182,8 @@ private:
 
     ControlObject* m_pTrackSamples;
 
-    ControlPushButton *playButton, *buttonBeatSync;
-    ControlObjectThreadMain *playButtonCOT, *m_pTrackEndCOT;
+    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopButton;
+    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
 
     ControlObject *rateEngine;
