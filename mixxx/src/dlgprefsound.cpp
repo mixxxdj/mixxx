@@ -330,4 +330,5 @@ void DlgPrefSound::resetClicked() {
     SoundManagerConfig newConfig;
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
+    settingChanged(); // force the apply button to enable
 }

@@ -172,12 +172,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pEngine = new EngineMaster(config, "[Master]");
 
     // Initialize player device
-    // XXX(bkgood) note that the SoundManager ctor does call SM:setupDevices,
-    // and at this point in this method the EngineChannels haven't been added
-    // yet so if the saved SoundManagerConfig has any deck outputs set up,
-    // they won't be set up (since there's no pointer to their buffers).
-    // However, SM::setupDevices is called later in this function, so the deck
-    // outputs will be setup then.
+    // while this is created here, setupDevices needs to be called sometime
+    // after the players are added to the engine (as is done currently) -- bkgood
     soundmanager = new SoundManager(config, m_pEngine);
 
     // Find path of skin
@@ -488,7 +484,7 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle("No Output Devices");
-    msgBox.setText( "<html>Mixxx was not configured without any output sound devices. "
+    msgBox.setText( "<html>Mixxx was configured without any output sound devices. "
                     "Audio processing will be disabled without a configured output device."
                     "<ul>"
                         "<li>"
@@ -977,18 +973,23 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 #ifdef __VINYLCONTROL__
     //qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
 
-    QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"));
-    QString device2 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
+    QMultiHash<QString, AudioInput> inputs = soundmanager->getConfig().getInputs();
+    unsigned int countVCIns = 0;
+    foreach (AudioInput in, inputs.values()) {
+        if (in.getType() == AudioInput::VINYLCONTROL) {
+            ++countVCIns;
+        }
+    }
 
-    if (device1 == "" && device2 == "" && (toggle==true))
+    if (countVCIns == 0 && toggle)
     {
         QMessageBox::warning(this, tr("Mixxx"),
                                    tr("No input device(s) select.\n"
-                                      "Please select your soundcard(s) in vinyl control preferences."),
+                                      "Please select your soundcard(s) in the sound hardware preferences."),
                                    QMessageBox::Ok,
                                    QMessageBox::Ok);
         prefDlg->show();
-        prefDlg->showVinylControlPage();
+        prefDlg->showSoundHardwarePage();
         optionsVinylControl->setChecked(false);
     }
     else

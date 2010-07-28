@@ -65,7 +65,7 @@ public slots:
     void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void showVinylControlPage();
+    void showSoundHardwarePage();
     void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
 signals:
     void closeDlg();
