@@ -1380,12 +1380,7 @@
 			</State>
 			<Pos>0, 0</Pos>
 			<Connection>
-				<ConfigKey>[Channel3],play</ConfigKey>
-				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
-			</Connection>
-			<Connection>
-				<ConfigKey>[Channel3],start</ConfigKey>
+				<ConfigKey>[Channel3],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
@@ -1456,12 +1451,7 @@
 			</State>
 			<Pos>0, 35</Pos>
 			<Connection>
-				<ConfigKey>[Channel4],play</ConfigKey>
-				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
-			</Connection>
-			<Connection>
-				<ConfigKey>[Channel4],start</ConfigKey>
+				<ConfigKey>[Channel4],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
