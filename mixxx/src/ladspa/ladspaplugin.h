@@ -25,6 +25,7 @@ public:
     LADSPAInstance * instantiate(int slot);
     const QString getLabel();
     const LADSPA_Descriptor * getDescriptor();
+    bool isSupported();
 
 private:
     const LADSPA_Descriptor * m_pDescriptor;

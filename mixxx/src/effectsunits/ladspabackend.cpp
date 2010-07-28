@@ -30,35 +30,38 @@ void LADSPABackend::loadPlugins(){
 
 	while (ladspaplugin != NULL){
 
-		plugin = new EffectsUnitsPlugin(this, new QString(ladspaplugin->getLabel()), PluginIDSequence++);
+		if (ladspaplugin->isSupported()){
 
-		int j = 0;
-		int port_count = ladspaplugin->getDescriptor()->PortCount;
-		for (j = 0; j < port_count; j++){
-			port = new EffectsUnitsPort();
+			plugin = new EffectsUnitsPlugin(this, new QString(ladspaplugin->getLabel()), PluginIDSequence++);
 
-			if (LADSPA_IS_PORT_AUDIO(ladspaplugin->getDescriptor()->PortDescriptors[j])){
-				port->isAudio = true;
-			} else {
-				port->isAudio = false;
-				port->Max = ladspaplugin->getDescriptor()->PortRangeHints[j].UpperBound;
-				port->Min = ladspaplugin->getDescriptor()->PortRangeHints[j].LowerBound;
-				port->Def = port->Min;
-				port->Name = new QString(ladspaplugin->getDescriptor()->PortNames[j]);
+			int j = 0;
+			int port_count = ladspaplugin->getDescriptor()->PortCount;
+			for (j = 0; j < port_count; j++){
+				port = new EffectsUnitsPort();
+
+				if (LADSPA_IS_PORT_AUDIO(ladspaplugin->getDescriptor()->PortDescriptors[j])){
+					port->isAudio = true;
+				} else {
+					port->isAudio = false;
+					port->Max = ladspaplugin->getDescriptor()->PortRangeHints[j].UpperBound;
+					port->Min = ladspaplugin->getDescriptor()->PortRangeHints[j].LowerBound;
+					port->Def = port->Min;
+					port->Name = new QString(ladspaplugin->getDescriptor()->PortNames[j]);
+				}
+
+				plugin->addPort(port);
 			}
 
-			plugin->addPort(port);
+			m_BackendPlugins.push_back(plugin);
+			m_LADSPAPlugin.push_back(ladspaplugin);
+			m_LADSPAInstance.push_back(NULL);
+			m_PluginLADSPAControl.push_back(NULL);
+
 		}
 
-		m_BackendPlugins.push_back(plugin);
-		m_LADSPAPlugin.push_back(ladspaplugin);
-		m_LADSPAInstance.push_back(NULL);
-		m_PluginLADSPAControl.push_back(NULL);
+		ladspaplugin = m_LADSPALoader->getByIndex(++i);
 
-		i++;
-
-		ladspaplugin = m_LADSPALoader->getByIndex(i);
-	}
+		}
 
 }
 
