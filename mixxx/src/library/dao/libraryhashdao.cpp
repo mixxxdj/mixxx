@@ -38,10 +38,10 @@ int LibraryHashDAO::getDirectoryHash(QString dirPath)
     //Grab a hash for this directory from the database, from the last time it was scanned.
     if (query.next()) {
         hash = query.value(query.record().indexOf("hash")).toInt();
-        //qDebug() << "prev hash exists" << hash << dirPath;
+        qDebug() << "prev hash exists" << hash << dirPath;
     }
     else {
-        //qDebug() << "prev hash does not exist" << dirPath;
+        qDebug() << "prev hash does not exist" << dirPath;
     }
 
     return hash;
@@ -61,7 +61,7 @@ void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
     if (!query.exec()) {
         qDebug() << "Creating new dirhash failed:" << query.lastError();
     }
-    qDebug() << "created new hash" << hash;
+    //qDebug() << "created new hash" << hash;
 }
 
 void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_deleted)
@@ -78,7 +78,7 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
     if (!query.exec()) {
         qDebug() << "Updating existing dirhash failed:" << query.lastError();
     }
-    qDebug() << "updated old existing hash" << newHash << dirPath << dir_deleted;
+    //qDebug() << "updated old existing hash" << newHash << dirPath << dir_deleted;
 
     //DEBUG: Print out the directory hash we just saved to verify...
     //qDebug() << getDirectoryHash(dirPath);
