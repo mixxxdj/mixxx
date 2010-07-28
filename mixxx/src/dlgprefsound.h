@@ -31,9 +31,9 @@ class SoundDevice;
  * on EngineMaster that emits every time a channel is added, and a slot here
  * that updates the dialog accordingly.
  */
-const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
-                                  // soundmanager or something
-
+/**
+ * Class representing a preferences pane to configure sound devices for Mixxx.
+ */
 class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
 public:

@@ -23,6 +23,12 @@
 class SoundDevice;
 class SoundManagerConfig;
 
+/**
+ * Class representing an input or output selection widget in DlgPrefSound.
+ * The widget includes a label describing the input or output, a combo box
+ * with a list of available devices and a combo box with a list of available
+ * channels.
+ */
 class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT;
 public:
