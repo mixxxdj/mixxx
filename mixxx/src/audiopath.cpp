@@ -16,24 +16,46 @@
 #include <QtCore>
 #include "audiopath.h"
 
+/**
+ * Constructs a ChannelGroup.
+ * @param channelBase the first channel in the group.
+ * @param channels the number of channels.
+ */
 ChannelGroup::ChannelGroup(unsigned char channelBase, unsigned char channels)
   : m_channelBase(channelBase)
   , m_channels(channels) {
 }
 
+/**
+ * @return This ChannelGroup's base channel
+ */
 unsigned char ChannelGroup::getChannelBase() const {
     return m_channelBase;
 }
 
+/**
+ * @return The number of channels in this ChannelGroup
+ */
 unsigned char ChannelGroup::getChannelCount() const {
     return m_channels;
 }
 
+/**
+ * Defines equality between two ChannelGroups.
+ * @return true if the two ChannelGroups share a common base channel
+ *          and channel count, otherwise false.
+ */
 bool ChannelGroup::operator==(const ChannelGroup &other) const {
     return m_channelBase == other.m_channelBase
         && m_channels == other.m_channels;
 }
 
+/**
+ * Checks if another ChannelGroup shares channels with this one.
+ * @param other the other ChannelGroup to check for a clash with.
+ * @return true if the other and this ChannelGroup share any channels,
+ *          false otherwise.
+ */
 bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
     if (m_channels == 0 || other.m_channels == 0) {
         return false; // can't clash if there are no channels in use
@@ -46,39 +68,66 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
         || m_channelBase == other.m_channelBase;
 }
 
+/**
+ * Constructs an AudioPath object (must be called by a child class's
+ * constructor, AudioPath is abstract).
+ * @param channelBase the first channel on a sound device used by this AudioPath.
+ * @param channels the number of channels used.
+ */
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
     : m_channelGroup(channelBase, channels) {
 }
 
+/**
+ * @return This AudioPath's type
+ */
 AudioPathType AudioPath::getType() const {
     return m_type;
 }
 
+/**
+ * @return This AudioPath's ChannelGroup instance.
+ */
 ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;
 }
 
+/**
+ * @return This AudioPath's index, or 0 if this AudioPath isn't indexable.
+ */
 unsigned char AudioPath::getIndex() const {
     return m_index;
 }
 
+/**
+ * Defines equality for AudioPath objects.
+ * @return true of this and other share a common type and index.
+ */
 bool AudioPath::operator==(const AudioPath &other) const {
     return m_type == other.m_type
         && m_index == other.m_index;
 }
 
+/**
+ * Generates a hash of this AudioPath, so it can act as a key in a QHash.
+ * @return a hash for this AudioPath
+ */
 unsigned int AudioPath::getHash() const {
     return 0 | (m_type << 8) | m_index;
 }
 
+/**
+ * Checks if this AudioPath's channels clash with another's
+ * (see ChannelGroup::clashesWith).
+ */
 bool AudioPath::channelsClash(const AudioPath &other) const {
     return m_channelGroup.clashesWith(other.m_channelGroup);
 }
 
 /**
- * Gives a string describing the AudioPath for user benefit.
- * @returns A QString. Ideally will use tr() for i18n but the rest of mixxx
- *          doesn't at the moment so worry about that later. :)
+ * Returns a string describing the AudioPath for user benefit.
+ * @note Ideally this will use tr() for i18n but the rest of mixxx
+ *       doesn't at the moment so worry about that later. :)
  */
 QString AudioPath::getString() const {
     if (isIndexed(getType())) {
@@ -88,7 +137,10 @@ QString AudioPath::getString() const {
     return getStringFromType(getType());
 }
 
-//static
+/**
+ * Returns a string given an AudioPathType.
+ * @note This method is static.
+ */
 QString AudioPath::getStringFromType(AudioPathType type) {
     switch (type) {
     case INVALID:
@@ -111,7 +163,10 @@ QString AudioPath::getStringFromType(AudioPathType type) {
     return QString::fromAscii("Unknown path type %1").arg(type);
 }
 
-//static
+/**
+ * Returns an AudioPathType given a string.
+ * @note This method is static.
+ */
 AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
@@ -131,7 +186,10 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
     }
 }
 
-//static
+/**
+ * Defines whether or not an AudioPathType can be indexed.
+ * @note This method is static.
+ */
 bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
     case DECK:
@@ -145,7 +203,10 @@ bool AudioPath::isIndexed(AudioPathType type) {
     return false;
 }
 
-// static
+/**
+ * Returns an AudioPathType given an int.
+ * @note This method is static.
+ */
 AudioPathType AudioPath::getTypeFromInt(int typeInt) {
     switch (typeInt) {
     case AudioPath::MASTER:
@@ -165,7 +226,11 @@ AudioPathType AudioPath::getTypeFromInt(int typeInt) {
     }
 }
 
-//static
+/**
+ * Returns the number of channels needed on a sound device for an
+ * AudioPathType.
+ * @note This method is static.
+ */
 unsigned char AudioPath::channelsNeededForType(AudioPathType type) {
     switch (type) {
     case AudioPath::MICROPHONE:
@@ -175,6 +240,9 @@ unsigned char AudioPath::channelsNeededForType(AudioPathType type) {
     }
 }
 
+/**
+ * Constructs an AudioOutput.
+ */
 AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
@@ -187,6 +255,10 @@ AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
     }
 }
 
+/**
+ * Writes this AudioOutput's data to an XML element, preallocated from an XML
+ * DOM document.
+ */
 QDomElement AudioOutput::toXML(QDomElement *element) const {
     element->setTagName("output");
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
@@ -195,7 +267,10 @@ QDomElement AudioOutput::toXML(QDomElement *element) const {
     return *element;
 }
 
-//static
+/**
+ * Constructs and returns an AudioOutput given an XML element representing it.
+ * @note This method is static.
+ */
 AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
@@ -204,6 +279,10 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
 }
 
 //static
+/**
+ * Enumerates the AudioPathTypes supported by AudioOutput.
+ * @note This method is static.
+ */
 QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
@@ -212,7 +291,10 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     return types;
 }
 
-// protected
+/**
+ * Implements setting the type of an AudioOutput, using
+ * AudioOutput::getSupportedTypes.
+ */
 void AudioOutput::setType(AudioPathType type) {
     if (AudioOutput::getSupportedTypes().contains(type)) {
         m_type = type;
@@ -221,6 +303,9 @@ void AudioOutput::setType(AudioPathType type) {
     }
 }
 
+/**
+ * Constructs an AudioInput.
+ */
 AudioInput::AudioInput(AudioPathType type /* = INVALID */,
         unsigned char channelBase /* = 0 */,
         unsigned char index /* = 0 */)
@@ -233,6 +318,10 @@ AudioInput::AudioInput(AudioPathType type /* = INVALID */,
     }
 }
 
+/**
+ * Writes this AudioInput's data to an XML element, preallocated from an XML
+ * DOM document.
+ */
 QDomElement AudioInput::toXML(QDomElement *element) const {
     element->setTagName("input");
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
@@ -241,7 +330,10 @@ QDomElement AudioInput::toXML(QDomElement *element) const {
     return *element;
 }
 
-//static
+/**
+ * Constructs and returns an AudioInput given an XML element representing it.
+ * @note This method is static.
+ */
 AudioInput AudioInput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
@@ -249,7 +341,10 @@ AudioInput AudioInput::fromXML(const QDomElement &xml) {
     return AudioInput(type, channel, index);
 }
 
-//static
+/**
+ * Enumerates the AudioPathTypes supported by AudioInput.
+ * @note This method is static.
+ */
 QList<AudioPathType> AudioInput::getSupportedTypes() {
     QList<AudioPathType> types;
 #ifdef __VINYLCONTROL__
@@ -260,7 +355,10 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     return types;
 }
 
-// protected
+/**
+ * Implements setting the type of an AudioInput, using
+ * AudioInput::getSupportedTypes.
+ */
 void AudioInput::setType(AudioPathType type) {
     if (AudioInput::getSupportedTypes().contains(type)) {
         m_type = type;
@@ -269,11 +367,16 @@ void AudioInput::setType(AudioPathType type) {
     }
 }
 
-
+/**
+ * Defined for QHash, so AudioOutput can be used as a QHash key.
+ */
 unsigned int qHash(const AudioOutput &output) {
     return output.getHash();
 }
 
+/**
+ * Defined for QHash, so AudioInput can be used as a QHash key.
+ */
 unsigned int qHash(const AudioInput &input) {
     return input.getHash();
 }
