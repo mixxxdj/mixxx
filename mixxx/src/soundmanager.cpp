@@ -32,6 +32,7 @@
  */
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
     : QObject()
+    , m_pErrorDevice(NULL)
 {
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
@@ -331,6 +332,7 @@ int SoundManager::setupDevices()
         bool isOutput = false;
         device->clearInputs();
         device->clearOutputs();
+        m_pErrorDevice = device;
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             err = device->addInput(in);
@@ -394,7 +396,12 @@ int SoundManager::setupDevices()
     if (devicesAttempted == devicesOpened) {
         return OK;
     }
+    m_pErrorDevice = NULL;
     return ERR;
+}
+
+SoundDevice* SoundManager::getErrorDevice() const {
+    return m_pErrorDevice;
 }
 
 SoundManagerConfig SoundManager::getConfig() const {

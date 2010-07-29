@@ -56,7 +56,9 @@ int SoundDevicePortAudio::open()
     PaError err;
 
     if (m_audioOutputs.empty() && m_audioInputs.empty()) {
-        return -1;
+        m_lastError = QString::fromAscii("No inputs or outputs in SDPA::open() "
+            "(THIS IS A BUG, this should be filtered by SM::setupDevices)");
+        return ERR;
     }
 
     memset(&m_outputParams, 0, sizeof(m_outputParams));
@@ -173,6 +175,7 @@ int SoundDevicePortAudio::open()
     if (err != paNoError)
     {
         qDebug() << "Error opening stream:" << Pa_GetErrorText(err);
+        m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
         m_pStream = 0;
         return ERR;
     }
@@ -203,6 +206,7 @@ int SoundDevicePortAudio::open()
     if (err != paNoError)
     {
         qDebug() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
+        m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
         m_pStream = 0;
         return ERR;
     }
@@ -279,6 +283,9 @@ int SoundDevicePortAudio::close()
     return 0;
 }
 
+QString SoundDevicePortAudio::getError() const {
+    return m_lastError;
+}
 
 /** -------- ------------------------------------------------------
         Purpose: This callback function gets called everytime the sound device runs

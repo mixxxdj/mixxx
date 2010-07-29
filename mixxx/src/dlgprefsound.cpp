@@ -103,15 +103,27 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit(writePaths(&m_config));
     int err = m_pSoundManager->setConfig(m_config);
-    if (err == SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL) {
-        QMessageBox::warning(NULL, "Configuration error",
-                "Two outputs cannot share channels on a device");
-    } else if (err == SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL) {
-        QMessageBox::warning(NULL, "Configuration error",
-                "Two inputs cannot share channels on a device");
-    } else if (err != OK) {
-        QMessageBox::warning(NULL, "Configuration error",
-                "Error opening audio devices");
+    if (err != OK) {
+        QString error;
+        QString deviceName("a device");
+        QString detailedError("An unknown error occurred");
+        SoundDevice *device = m_pSoundManager->getErrorDevice();
+        if (device != NULL) {
+            deviceName = QString("sound device \"%1\"").arg(device->getDisplayName());
+            detailedError = device->getError();
+        }
+        switch (err) {
+        case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
+            error = QString("Two outputs cannot share channels on %1").arg(deviceName);
+            break;
+        case SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL:
+            error = QString("Two inputs cannot share channels on %1").arg(deviceName);
+            break;
+        default:
+            error = QString("Error opening %1\n%2").arg(deviceName).arg(detailedError);
+            break;
+        }
+        QMessageBox::warning(NULL, "Configuration error", error);
     }
     m_settingsModified = false;
     applyButton->setEnabled(false);

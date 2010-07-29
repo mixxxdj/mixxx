@@ -51,6 +51,7 @@ class SoundManager : public QObject
         void clearDeviceList();
         void queryDevices();
         int setupDevices();
+        SoundDevice* getErrorDevice() const;
         QList<unsigned int> getSampleRates() const;
         QList<QString> getHostAPIList() const;
         SoundManagerConfig getConfig() const;
@@ -81,6 +82,7 @@ class SoundManager : public QObject
         QMutex requestBufferMutex;
         QTimer m_controlObjSyncTimer;
         SoundManagerConfig m_config;
+        SoundDevice *m_pErrorDevice;
 };
 
 #endif

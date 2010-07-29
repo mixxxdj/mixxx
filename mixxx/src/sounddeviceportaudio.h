@@ -48,6 +48,7 @@ class SoundDevicePortAudio : SoundDevice
         ~SoundDevicePortAudio();
         int open();
         int close();
+        QString getError() const;
         int callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex);
     private:
         /** PortAudio stream for this device. */
@@ -66,7 +67,8 @@ class SoundDevicePortAudio : SoundDevice
         PaStreamParameters m_outputParams;
         /** Description of the input stream coming from the soundcard */
 	    PaStreamParameters m_inputParams;
-
+        /** A string describing the last PortAudio error to occur */
+        QString m_lastError;
   private:
     bool m_bSetThreadPriority;
 };
