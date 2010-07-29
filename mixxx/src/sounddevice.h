@@ -48,6 +48,7 @@ class SoundDevice
         void setFramesPerBuffer(unsigned int framesPerBuffer);
         virtual int open() = 0;
         virtual int close() = 0;
+        virtual QString getError() const = 0;
         int getNumOutputChannels() const;     
         int getNumInputChannels() const;
         SoundDeviceError addOutput(const AudioOutput &out);
