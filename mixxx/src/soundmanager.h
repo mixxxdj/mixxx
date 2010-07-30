@@ -83,6 +83,9 @@ class SoundManager : public QObject
         QTimer m_controlObjSyncTimer;
         SoundManagerConfig m_config;
         SoundDevice *m_pErrorDevice;
+#ifdef __PORTAUDIO__
+        bool m_paInitialized;
+#endif
 };
 
 #endif

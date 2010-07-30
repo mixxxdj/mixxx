@@ -41,7 +41,7 @@ struct PADeviceCallbackStuff
 	int devIndex;
 };
 
-class SoundDevicePortAudio : SoundDevice
+class SoundDevicePortAudio : public SoundDevice
 {
     public:
         SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm, const PaDeviceInfo *deviceInfo, unsigned int devIndex);
