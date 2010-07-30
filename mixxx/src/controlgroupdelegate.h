@@ -19,6 +19,7 @@
 #define CONTROLGROUP_CHANNEL2_STRING "[Channel2]"
 #define CONTROLGROUP_MASTER_STRING   "[Master]"
 #define CONTROLGROUP_PLAYLIST_STRING "[Playlist]"
+#define CONTROLGROUP_FX_STRING "[FX]"
 
 class ControlGroupDelegate : public QItemDelegate
 {

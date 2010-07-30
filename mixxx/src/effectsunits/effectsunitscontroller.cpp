@@ -36,6 +36,8 @@ void EffectsUnitsController::loadAllPlugins(){
 	for (int i = 0; i < size; i++){
 		m_BackendsList.at(i)->loadPlugins();
 		backendPlugins = m_BackendsList.at(i)->getPlugins();
+
+		// TODO - Verify if there are presets available
 		m_AllPlugins.append((*backendPlugins));
 	}
 

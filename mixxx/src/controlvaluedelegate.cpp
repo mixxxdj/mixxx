@@ -16,6 +16,7 @@
 QStringList ControlValueDelegate::m_channelControlValues;
 QStringList ControlValueDelegate::m_masterControlValues;
 QStringList ControlValueDelegate::m_playlistControlValues;
+QStringList ControlValueDelegate::m_fxControlValues;
 
 
 ControlValueDelegate::ControlValueDelegate(QObject *parent)
@@ -67,6 +68,37 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_playlistControlValues.append("SelectPrevPlaylist"); 
         m_playlistControlValues.append("SelectPrevTrack");
         m_playlistControlValues.append("SelectTrackKnob");
+    }
+    if (m_fxControlValues.isEmpty())
+    {
+    	m_fxControlValues.append("Slot1Deck1OnOff");
+    	m_fxControlValues.append("Slot1Deck2OnOff");
+    	m_fxControlValues.append("Slot2Deck1OnOff");
+    	m_fxControlValues.append("Slot2Deck2OnOff");
+    	m_fxControlValues.append("Widget1OnOff");
+    	m_fxControlValues.append("Widget1Parameter0");
+    	m_fxControlValues.append("Widget1Parameter1");
+    	m_fxControlValues.append("Widget1Parameter2");
+    	m_fxControlValues.append("Widget1Parameter3");
+    	m_fxControlValues.append("Widget1Parameter4");
+    	m_fxControlValues.append("Widget2OnOff");
+    	m_fxControlValues.append("Widget2Parameter0");
+    	m_fxControlValues.append("Widget2Parameter1");
+    	m_fxControlValues.append("Widget2Parameter2");
+    	m_fxControlValues.append("Widget2Parameter3");
+    	m_fxControlValues.append("Widget2Parameter4");
+    	m_fxControlValues.append("Widget3OnOff");
+    	m_fxControlValues.append("Widget3Parameter0");
+    	m_fxControlValues.append("Widget3Parameter1");
+    	m_fxControlValues.append("Widget3Parameter2");
+    	m_fxControlValues.append("Widget3Parameter3");
+    	m_fxControlValues.append("Widget3Parameter4");
+    	m_fxControlValues.append("Widget4OnOff");
+    	m_fxControlValues.append("Widget4Parameter0");
+    	m_fxControlValues.append("Widget4Parameter1");
+    	m_fxControlValues.append("Widget4Parameter2");
+    	m_fxControlValues.append("Widget4Parameter3");
+    	m_fxControlValues.append("Widget4Parameter4");
     }
 }
 
@@ -120,7 +152,11 @@ QWidget *ControlValueDelegate::createEditor(QWidget *parent,
     {
         //Add all the ControlObject values that only [Playlist] has.
         editor->addItems(m_playlistControlValues);
-    }   
+    }
+    else if (controlGroup == CONTROLGROUP_FX_STRING)
+    {
+    	editor->addItems(m_fxControlValues);
+    }
     return editor;
 }
 
@@ -179,6 +215,11 @@ bool ControlValueDelegate::verifyControlValueValidity(QString controlGroup, QAbs
     {
         if (m_playlistControlValues.contains(value))
             return true; 
+    }
+    else if (controlGroup == CONTROLGROUP_FX_STRING)
+    {
+		if (m_fxControlValues.contains(value))
+			return true;
     }
     else
     {
