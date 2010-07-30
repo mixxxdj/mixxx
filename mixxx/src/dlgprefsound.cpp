@@ -279,6 +279,7 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
         sampleRateComboBox->setCurrentIndex(0); // hope this doesn't recurse!
         return;
     }
+    int oldLatency = latencyComboBox->currentIndex();
     unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
     // we don't want to display any sub-1ms latencies (well maybe we do but I
     // don't right now!), so we iterate over all the buffer sizes until we
@@ -291,10 +292,14 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
         latencyComboBox->addItem(QString("%1 ms").arg(latency), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
-    // set it to the max, let the user dig if they need better latency. better
-    // than having a user get the pops on first use and thinking poorly of mixxx
-    // because of it -- bkgood
-    latencyComboBox->setCurrentIndex(latencyComboBox->count() - 1);
+    if (oldLatency < latencyComboBox->count() && oldLatency >= 0) {
+        latencyComboBox->setCurrentIndex(oldLatency);
+    } else {
+        // set it to the max, let the user dig if they need better latency. better
+        // than having a user get the pops on first use and thinking poorly of mixxx
+        // because of it -- bkgood
+        latencyComboBox->setCurrentIndex(latencyComboBox->count() - 1);
+    }
 }
 
 /**
