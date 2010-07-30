@@ -33,6 +33,9 @@
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
     : QObject()
     , m_pErrorDevice(NULL)
+#ifdef __PORTAUDIO__
+    , m_paInitialized(false)
+#endif
 {
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
@@ -91,12 +94,13 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
   and terminates PortAudio. */
 SoundManager::~SoundManager()
 {
-    //TODO: Should only call Pa_Terminate() if Pa_Inititialize() was successful.
-
     //Clean up devices.
     clearDeviceList();
 
-    Pa_Terminate();
+    if (m_paInitialized) {
+        Pa_Terminate();
+        m_paInitialized = false;
+    }
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 }
@@ -240,7 +244,10 @@ void SoundManager::clearDeviceList()
     }
     
 #ifdef __PORTAUDIO__
-    Pa_Terminate();
+    if (m_paInitialized) {
+        Pa_Terminate();
+        m_paInitialized = false;
+    }
 #endif
 }
 
@@ -259,13 +266,18 @@ void SoundManager::queryDevices()
     clearDeviceList();
 
 #ifdef __PORTAUDIO__
-    PaError err = Pa_Initialize();
+    PaError err = paNoError;
+    if (!m_paInitialized) {
+        err = Pa_Initialize();
+        m_paInitialized = true;
+    }
     if (err != paNoError)
     {
         qDebug() << "Error:" << Pa_GetErrorText(err);
+        m_paInitialized = false;
         return;
     }
-    
+
     int iNumDevices;
     iNumDevices = Pa_GetDeviceCount();
     if(iNumDevices < 0)
@@ -290,17 +302,12 @@ void SoundManager::queryDevices()
             PaTime 	defaultHighOutputLatency
             double 	defaultSampleRate
          */
-        const PaHostApiInfo * apiInfo = NULL;
-        apiInfo = Pa_GetHostApiInfo(deviceInfo->hostApi);
-        //if (apiInfo->name == m_hostAPI)
-        {
-            SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
-            m_devices.push_back((SoundDevice*)currentDevice);
-        }
+        SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+        m_devices.push_back(currentDevice);
     }
+#endif
     // now tell the prefs that we updated the device list -- bkgood
     emit(devicesUpdated());
-#endif
 }
 
 //Opens all the devices chosen by the user in the preferences dialog, and establishes
