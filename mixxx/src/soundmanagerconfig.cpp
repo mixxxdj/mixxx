@@ -148,7 +148,7 @@ void SoundManagerConfig::setAPI(const QString &api) {
  *          true
  */
 bool SoundManagerConfig::checkAPI(const SoundManager &soundManager) {
-    if (!soundManager.getHostAPIList().contains(m_api)) {
+    if (!soundManager.getHostAPIList().contains(m_api) && m_api != "None") {
         return false;
     }
     return true;
