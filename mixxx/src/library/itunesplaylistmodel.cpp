@@ -41,7 +41,7 @@ QVariant ITunesPlaylistModel::data ( const QModelIndex & index, int role ) const
     if (!index.isValid())
         return QVariant();
 
-    TrackInfoObject *pTrack = getTrack(index);
+    TrackPointer pTrack = getTrack(index);
     if ( pTrack == NULL )
         return QVariant();
 
@@ -159,13 +159,13 @@ QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const
     return QString();
 }
 
-TrackInfoObject * ITunesPlaylistModel::getTrack(const QModelIndex& index) const
+TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
 {
     int row = index.row();
 
     if (!m_pTrackModel ||
         !m_pTrackModel->m_mPlaylists.contains(m_sCurrentPlaylist)) {
-        return NULL;
+        return TrackPointer();
     }
 
     // Qt should do this by reference for us so we aren't actually making a copy
@@ -173,7 +173,7 @@ TrackInfoObject * ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     QList<QString> songIds = m_pTrackModel->m_mPlaylists[m_sCurrentPlaylist];
 
     if (row < 0 || row >= songIds.length()) {
-        return NULL;
+        return TrackPointer();
     }
 
     return m_pTrackModel->getTrackById(songIds.at(row));

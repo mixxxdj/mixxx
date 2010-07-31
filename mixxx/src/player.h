@@ -4,9 +4,9 @@
 #include <QtCore>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class EngineBuffer;
-class TrackInfoObject;
 class ControlObjectThreadMain;
 
 class Player : public QObject
@@ -17,18 +17,18 @@ class Player : public QObject
            QString channel);
     ~Player();
 public slots:
-    void slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos=false);
-    void slotFinishLoading(TrackInfoObject* pTrackInfoObject);
-    void slotLoadFailed(TrackInfoObject* pTrackInfoObject, QString reason);
+    void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
+    void slotFinishLoading(TrackPointer pTrackInfoObject);
+    void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
 signals:
-    void newTrackLoaded(TrackInfoObject* m_pLoadedTrack);
-    void unloadingTrack(TrackInfoObject* m_pAboutToBeUnloaded);
+    void newTrackLoaded(TrackPointer m_pLoadedTrack);
+    void unloadingTrack(TrackPointer m_pAboutToBeUnloaded);
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pEngineBuffer;
     QString m_strChannel;
 
-    TrackInfoObject* m_pLoadedTrack;
+    TrackPointer m_pLoadedTrack;
 
     ControlObjectThreadMain* m_pCuePoint;
     ControlObjectThreadMain* m_pLoopInPoint;

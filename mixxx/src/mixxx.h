@@ -48,6 +48,7 @@
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
+#include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
@@ -63,7 +64,6 @@
 #endif
 
 class WVisual;
-class TrackInfoObject;
 class PlayerProxy;
 class BpmDetector;
 class QSplashScreen;
@@ -131,10 +131,10 @@ class MixxxApp : public QMainWindow
 
     void slotlibraryMenuAboutToShow();
     // Load a track into the next available (non-playing) Player
-    void slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* track);
+    void slotLoadTrackIntoNextAvailablePlayer(TrackPointer track);
     // Load a track into the specified player. Does nothing if an invalid player
     // is specified. player is indexed from 1.
-    void slotLoadTrackToPlayer(TrackInfoObject* track, int player);
+    void slotLoadTrackToPlayer(TrackPointer track, int player);
     /** Load a track into Player 1 */
     void slotLoadPlayer1(QString location);
     /** Load a track into Player 2 */

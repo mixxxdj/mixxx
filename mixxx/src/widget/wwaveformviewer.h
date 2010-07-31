@@ -16,7 +16,6 @@
 
 class EngineBuffer;
 class WaveformRenderer;
-class TrackInfoObject;
 
 class WWaveformViewer : public QWidget
 {
@@ -38,7 +37,7 @@ signals:
     void trackDropped(QString filename);
 
 protected:
-    
+
     void timerEvent(QTimerEvent *);
     void paintEvent(QPaintEvent* event);
 
@@ -51,7 +50,7 @@ private:
 
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
-    
+
     bool m_painting;
     QMutex m_paintMutex;
 

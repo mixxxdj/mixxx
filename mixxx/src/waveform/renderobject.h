@@ -5,11 +5,11 @@
 #include <QDomNode>
 #include <QVector>
 
+#include "trackinfoobject.h"
+
 class QDomNode;
 class QPainter;
 class QPaintEvent;
-
-class TrackInfoObject;
 
 class RenderObject : public QObject {
     Q_OBJECT
@@ -21,7 +21,7 @@ class RenderObject : public QObject {
     virtual void draw(QPainter *pPainter, QPaintEvent *pEvent,
                       QVector<float> *buffer, double playpos,
                       double rateAdjust) = 0;
-    virtual void newTrack(TrackInfoObject *pTrack) = 0;
+    virtual void newTrack(TrackPointer pTrack) = 0;
 };
 
 #endif

@@ -20,21 +20,21 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     : m_pConfig(pConfig),
       m_pEngineBuffer(buffer),
       m_strChannel(channel),
-      m_pLoadedTrack(NULL) {
+      m_pLoadedTrack() {
 
     CueControl* pCueControl = new CueControl(channel, pConfig);
-    connect(this, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            pCueControl, SLOT(loadTrack(TrackInfoObject*)));
-    connect(this, SIGNAL(unloadingTrack(TrackInfoObject*)),
-            pCueControl, SLOT(unloadTrack(TrackInfoObject*)));
+    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
+            pCueControl, SLOT(loadTrack(TrackPointer)));
+    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
+            pCueControl, SLOT(unloadTrack(TrackPointer)));
     m_pEngineBuffer->addControl(pCueControl);
 
     //Tell the reader to notify us when it's done loading a track so we can
     //finish doing stuff.
-    connect(m_pEngineBuffer, SIGNAL(trackLoaded(TrackInfoObject*)),
-            this, SLOT(slotFinishLoading(TrackInfoObject*)));
-    connect(m_pEngineBuffer, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
-            this, SLOT(slotLoadFailed(TrackInfoObject*, QString)));
+    connect(m_pEngineBuffer, SIGNAL(trackLoaded(TrackPointer)),
+            this, SLOT(slotFinishLoading(TrackPointer)));
+    connect(m_pEngineBuffer, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotLoadFailed(TrackPointer, QString)));
 
     //Get cue point control object
     m_pCuePoint = new ControlObjectThreadMain(
@@ -66,7 +66,7 @@ Player::~Player()
     delete m_pBPM;
 }
 
-void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
+void Player::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 {
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {
@@ -110,14 +110,14 @@ void Player::slotLoadTrack(TrackInfoObject* track, bool bStartFromEndPos)
 	PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(),m_pLoadedTrack);
 	
     // Listen for updates to the file's BPM
-    connect(m_pLoadedTrack, SIGNAL(bpmUpdated(double)),
+    connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
             m_pBPM, SLOT(slotSet(double)));
 
     //Request a new track from the reader
     m_pEngineBuffer->loadTrack(track);
 }
 
-void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
+void Player::slotLoadFailed(TrackPointer track, QString reason) {
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
@@ -135,16 +135,16 @@ void Player::slotLoadFailed(TrackInfoObject* track, QString reason) {
     m_pBPM->slotSet(0);
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
-    m_pLoadedTrack = NULL;
+    m_pLoadedTrack.clear();
 	//Update the PlayerInfo class that is used in EngineShoutcast.cpp to replace the metadata of a stream
 	PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(),m_pLoadedTrack);
 }
 
-void Player::slotFinishLoading(TrackInfoObject* pTrackInfoObject)
+void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
 {
     // Read the tags if required
     if(!m_pLoadedTrack->getHeaderParsed())
-        SoundSourceProxy::ParseHeader(m_pLoadedTrack);
+        SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
 
     // Generate waveform summary
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.

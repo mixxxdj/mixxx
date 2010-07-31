@@ -43,7 +43,7 @@
  * Initialize EngineShoutcast
  */
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
-        : m_pMetaData(NULL),
+        : m_pMetaData(),
           m_pShout(NULL),
           m_pShoutMetaData(NULL),
           m_pConfig(_config),
@@ -535,7 +535,7 @@ bool EngineShoutcast::metaDataHasChanged()
 {
     QMutexLocker locker(&m_shoutMutex);
     int tracks;
-    TrackInfoObject *newMetaData = NULL;
+    TrackPointer newMetaData;
     bool changed = false;
 
 
