@@ -87,6 +87,9 @@ void WNumberPos::setRemain(bool bRemain)
         m_qsText = "Rem: ";
     else
         m_qsText = "Pos: ";
+
+    // Have the widget redraw itself with its current value.
+    setValue(m_dOldValue);
 }
 
 
