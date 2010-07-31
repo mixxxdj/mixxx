@@ -125,6 +125,12 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
 
+    // Default to showing absolute durations instead of duration remaining. The
+    // preferences will change this to what the user prefers.
+    m_bDurationRemain = false;
+
+    m_textCh1 = "";
+    m_textCh2 = "";
 
     setupColorScheme(docElem, pConfig);
 
@@ -428,6 +434,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="NumberBpm")
             {
+                if (m_pNumberBpmCh1 != NULL || m_pNumberBpmCh2) {
+                    qDebug() << "WARNING: BPM widget pointers wre not reset on GUI reboot.";
+                }
+                // NOTE: The BPM widgets are added to the widget list (so they
+                // will be auto-deleted) and also assigned to m_pNumberBpmCh1/2.
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberBpm * p = new WNumberBpm("[Channel1]", this);
@@ -595,27 +606,32 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
 
             /*############## PERSISTENT OBJECT ##############*/
+
+
             // persistent: m_pTextCh1, m_pTextCh2
+
+            // NOTE: The m_pTextCh1/2 widgets are no longer persistent, but they
+            // are stored in those member fields. -- rryan 8/2010
             else if (node.nodeName()=="Text")
             {
                 QLabel * p = 0;
-                // Associate pointers
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pTextCh1 != 0)
-                    p = m_pTextCh1;
-                else if (WWidget::selectNodeInt(node, "Channel")==2  && m_pTextCh2 != 0)
-                    p = m_pTextCh2;
-                else {
-                    p = new QLabel(this);
-                    p->installEventFilter(m_pKeyboard);
+
+                if (m_pTextCh1 != NULL || m_pTextCh2 != NULL) {
+                    qDebug() << "WARNING: Text widgets not destroyed before rebooting GUI.";
                 }
 
+                p = new QLabel(this);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+
                 // Associate pointers
-                if (WWidget::selectNodeInt(node, "Channel")==1)
+                if (WWidget::selectNodeInt(node, "Channel")==1) {
                     m_pTextCh1 = p;
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                    m_pTextCh1->setText(m_textCh1);
+                } else if (WWidget::selectNodeInt(node, "Channel")==2) {
                     m_pTextCh2 = p;
-                else
-                    m_qWidgetList.append(p);
+                    m_pTextCh2->setText(m_textCh2);
+                }
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -659,34 +675,36 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
                     p->setAlignment(Qt::AlignRight);
 
-		p->show();
+                p->show();
             }
 
             // persistent: m_pNumberPosCh1, m_pNumberPosCh2
+
+            // NOTE: The m_pNumberPosCh1/2 widgets are no longer persistent, but they
+            // are stored in those member fields. -- rryan 8/2010
             else if (node.nodeName()=="NumberPos")
             {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    if (m_pNumberPosCh1 == 0) {
-                        m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
-                        m_pNumberPosCh1->installEventFilter(m_pKeyboard);
-                    }
-		    m_pNumberPosCh1->setup(node);
-		    m_pNumberPosCh1->show();
-
+                if (m_pNumberPosCh1 != NULL || m_pNumberPosCh2 != NULL) {
+                    qDebug() << "WARNING: Number widgets were not reset before rebooting GUI.";
                 }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    if (m_pNumberPosCh2 == 0) {
-                        m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
-                        m_pNumberPosCh2->installEventFilter(m_pKeyboard);
-		    }
-		    m_pNumberPosCh2->setup(node);
-		    m_pNumberPosCh2->show();
+
+                if (WWidget::selectNodeInt(node, "Channel")==1) {
+                    m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
+                    m_pNumberPosCh1->installEventFilter(m_pKeyboard);
+                    m_pNumberPosCh1->setup(node);
+                    m_pNumberPosCh1->setRemain(m_bDurationRemain);
+                    m_pNumberPosCh1->show();
+                    m_qWidgetList.append(m_pNumberPosCh1);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2) {
+                    m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
+                    m_pNumberPosCh2->installEventFilter(m_pKeyboard);
+                    m_pNumberPosCh2->setup(node);
+                    m_pNumberPosCh2->setRemain(m_bDurationRemain);
+                    m_pNumberPosCh2->show();
+                    m_qWidgetList.append(m_pNumberPosCh2);
                 }
             }
-
-
 
             // persistent: m_pSliderRateCh1, m_pSliderRateCh2
             else if (node.nodeName()=="SliderComposed")
@@ -898,23 +916,29 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     QObject *obj;
     int i;
 
-    // This isn't thread safe, does anything else hack on this object?
+    // This isn't thread safe, so this must only be called from Qt main thread.
 
-    // Temporary hack since we keep these pointers around, but we have them on
-    // the widget list.
+
+    // Clear the pointers to widgets that are going to be deleted (e.g. on the
+    // widget list) but we retain pointers to for contacting from other parts of
+    // Mixxx.
     m_pVisualCh1 = NULL;
     m_pVisualCh2 = NULL;
+    m_pTextCh1 = NULL;
+    m_pTextCh2 = NULL;
+    m_pNumberPosCh1 = NULL;
+    m_pNumberPosCh2 = NULL;
+    m_pNumberBpmCh1 = NULL;
+    m_pNumberBpmCh2 = NULL;
 
-    //remove all widget from the list (except permanent one)
+    // Delete all the widgets on the 'widget list'. This is a list of active
+    // screen widgets that should be automatically deleted on a skin reboot or
+    // shutdown.
     while (!m_qWidgetList.isEmpty()) {
         delete m_qWidgetList.takeFirst();
     }
 
-    //hide permanent widget
-    if (m_pTextCh1) m_pTextCh1->hide();
-    if (m_pTextCh2) m_pTextCh2->hide();
-    if (m_pNumberPosCh1) m_pNumberPosCh1->hide();
-    if (m_pNumberPosCh2) m_pNumberPosCh2->hide();
+    // Hide all widgets that are persistent across GUI reboots.
     if (m_pSliderRateCh1) m_pSliderRateCh1->hide();
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
@@ -1043,25 +1067,36 @@ void MixxxView::slotSetupTrackConnectionsCh2(TrackPointer pTrack)
 
 void MixxxView::slotUpdateTrackTextCh1(TrackPointer pTrack)
 {
-	if (m_pTextCh1)
-		m_pTextCh1->setText(pTrack->getInfo());
+    m_textCh1 = pTrack->getInfo();
+    if (m_pTextCh1)
+        m_pTextCh1->setText(m_textCh1);
 }
 
 void MixxxView::slotUpdateTrackTextCh2(TrackPointer pTrack)
 {
-	if (m_pTextCh2)
-		m_pTextCh2->setText(pTrack->getInfo());
+    m_textCh2 = pTrack->getInfo();
+    if (m_pTextCh2)
+        m_pTextCh2->setText(m_textCh2);
 }
 
 void MixxxView::slotClearTrackTextCh1(TrackPointer pTrack)
 {
-	if (m_pTextCh1)
-		m_pTextCh1->setText("");
+    m_textCh1 = "";
+    if (m_pTextCh1)
+        m_pTextCh1->setText("");
 }
 
 void MixxxView::slotClearTrackTextCh2(TrackPointer pTrack)
 {
-	if (m_pTextCh2)
-		m_pTextCh2->setText("");
+    m_textCh2 = "";
+    if (m_pTextCh2)
+        m_pTextCh2->setText("");
 }
 
+void MixxxView::slotSetDurationRemaining(bool bDurationRemaining) {
+    m_bDurationRemain = bDurationRemaining;
+    if (m_pNumberPosCh1)
+        m_pNumberPosCh1->setRemain(m_bDurationRemain);
+    if (m_pNumberPosCh2)
+        m_pNumberPosCh2->setRemain(m_bDurationRemain);
+}
