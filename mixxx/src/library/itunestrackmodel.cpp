@@ -243,7 +243,7 @@ bool ITunesTrackModel::isColumnInternal(int column) {
     return false;
 }
 
-TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
+TrackPointer ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
     QString strloc = findValueByKey(songNode,"Location");
     QByteArray strlocbytes = strloc.toUtf8();
@@ -258,7 +258,7 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 #endif
     //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
 
-    TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
+    TrackInfoObject* pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(findValueByKey(songNode, "Artist"));
     pTrack->setTitle(findValueByKey(songNode, "Name"));
@@ -270,12 +270,13 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     // ITunes stores time in total milliseconds
     pTrack->setDuration(findValueByKey(songNode,"Total Time").toInt() / 1000);
 
-    return pTrack;
+    // Let Qt handle deleting the track since it isn't owned by the library.
+    return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
-TrackInfoObject* ITunesTrackModel::getTrackById(QString id) {
+TrackPointer ITunesTrackModel::getTrackById(QString id) {
     if (!m_mTracksById.contains(id)) {
-        return NULL;
+        return TrackPointer();
     }
     return parseTrackNode(m_mTracksById[id]);
 }

@@ -23,6 +23,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "trackinfoobject.h"
 #include <QMessageBox>
 #include "errordialoghandler.h"
 
@@ -36,7 +37,6 @@
 //class ControlLogpotmeter;
 //class ConfigKey;
 class EncoderVorbis;
-class TrackInfoObject;
 
 class EngineShoutcast : public EngineAbstractRecord {
     Q_OBJECT
@@ -65,7 +65,7 @@ private:
     int getActiveTracks();
     bool metaDataHasChanged();
     void updateMetaData();
-    TrackInfoObject *m_pMetaData;
+    TrackPointer m_pMetaData;
     shout_t *m_pShout;
     shout_metadata_t *m_pShoutMetaData;
     int m_pMetaDataLife;
