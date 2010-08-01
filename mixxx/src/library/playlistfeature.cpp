@@ -50,7 +50,7 @@ QVariant PlaylistFeature::title() {
 }
 
 QIcon PlaylistFeature::getIcon() {
-    return QIcon(":/images/library/rhythmbox.png");
+    return QIcon(":/images/library/ic_library_playlist.png");
 }
 
 
