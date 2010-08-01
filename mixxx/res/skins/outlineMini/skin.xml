@@ -3,22 +3,6 @@
 
  <Schemes>
   <Scheme>
-   <Name>11pm (Dark Mixxx)</Name>
-   <Filters>
-    <Invert/>
-	<HueInv/>
-    <Add>
-     <Amount>50</Amount>
-    </Add>
-    <ScaleWhite>
-     <Amount>1.5</Amount>
-    </ScaleWhite>
-    <Add>
-     <Amount>-50</Amount>
-    </Add>
-   </Filters>
-  </Scheme>
-  <Scheme>
    <Name>5pm (Classic Mixxx)</Name>
    <Filters>
    </Filters>
@@ -42,6 +26,22 @@
 
 		 </Filters>
 	 </Scheme>
+  <Scheme>
+   <Name>11pm (Dark Mixxx)</Name>
+   <Filters>
+    <Invert/>
+	<HueInv/>
+    <Add>
+     <Amount>50</Amount>
+    </Add>
+    <ScaleWhite>
+     <Amount>1.5</Amount>
+    </ScaleWhite>
+    <Add>
+     <Amount>-50</Amount>
+    </Add>
+   </Filters>
+  </Scheme>
 	 <Scheme>
 		 <Name>3am (Still Awake Mixxx)</Name>
 		 <Filters>
@@ -61,14 +61,13 @@
 
  <Background>
   <Path>scene.png</Path>
-  <BgColor>#ffffff</BgColor>
  </Background>
 
  <SliderComposed>
   <Tooltip>Crossfader</Tooltip>
   <Handle>crosshandle-on-.png</Handle>
   <Slider>crossslider-off-.png</Slider>
-  <Pos>413,185</Pos>
+  <Pos>301,155</Pos>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],crossfader</ConfigKey>
@@ -80,7 +79,7 @@
   <Tooltip>Playback rate</Tooltip>
   <Handle>ratehandle-on-Ch1.png</Handle>
   <Slider>rateslider-off-Ch1.png</Slider>
-  <Pos>4,102</Pos>
+  <Pos>2,64</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
@@ -92,7 +91,7 @@
   <Tooltip>Playback rate</Tooltip>
   <Handle>ratehandle-on-Ch2.png</Handle>
   <Slider>rateslider-off-Ch2.png</Slider>
-  <Pos>907,102</Pos>
+  <Pos>689,64</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
@@ -108,7 +107,7 @@
    <Pressed>sync-on-Ch1.png</Pressed>
    <Unpressed>sync-off-Ch1.png</Unpressed>
   </State>
-  <Pos>50,295</Pos>
+  <Pos>51,63</Pos>
   <Connection>
    <ConfigKey>[Channel1],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -124,7 +123,7 @@
    <Pressed>sync-on-Ch2.png</Pressed>
    <Unpressed>sync-off-Ch2.png</Unpressed>
   </State>
-  <Pos>953,295</Pos>
+  <Pos>738,63</Pos>
   <Connection>
    <ConfigKey>[Channel2],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -133,142 +132,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Loop-In</Tooltip>
-  <NumberStates>1</NumberStates>
-  <State>
-   <Number>0</Number>
-   <Pressed>loopin-on-Ch1.png</Pressed>
-   <Unpressed>loopin-off.png</Unpressed>
-  </State>
-  <Pos>50,92</Pos>
-  <Connection>
-   <ConfigKey>[Channel1],loop_in</ConfigKey>
-   <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel1],loop_in</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
- </PushButton>
-
- <PushButton>
-  <Tooltip>Loop-In</Tooltip>
-  <NumberStates>1</NumberStates>
-  <State>
-   <Number>0</Number>
-   <Pressed>loopin-on-Ch2.png</Pressed>
-   <Unpressed>loopin-off.png</Unpressed>
-  </State>
-  <Pos>953,92</Pos>
-  <Connection>
-   <ConfigKey>[Channel2],loop_in</ConfigKey>
-   <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel2],loop_in</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-
- </PushButton>
-
- <PushButton>
-  <Tooltip>Loop-Out</Tooltip>
-  <NumberStates>1</NumberStates>
-  <State>
-   <Number>0</Number>
-   <Pressed>loopout-on-Ch1.png</Pressed>
-   <Unpressed>loopout-off.png</Unpressed>
-  </State>
-  <Pos>50,120</Pos>
-  <Connection>
-   <ConfigKey>[Channel1],loop_out</ConfigKey>
-   <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel1],loop_out</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
- </PushButton>
-
- <PushButton>
-  <Tooltip>Loop-Out</Tooltip>
-  <NumberStates>1</NumberStates>
-  <State>
-   <Number>0</Number>
-   <Pressed>loopout-on-Ch2.png</Pressed>
-   <Unpressed>loopout-off.png</Unpressed>
-  </State>
-  <Pos>953,120</Pos>
-  <Connection>
-   <ConfigKey>[Channel2],loop_out</ConfigKey>
-   <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel2],loop_out</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
- </PushButton>
-
- <PushButton>
-  <Tooltip>Reloop</Tooltip>
-  <NumberStates>1</NumberStates>
-  <State>
-   <Number>0</Number>
-   <Pressed>reloop-on-Ch1.png</Pressed>
-   <Unpressed>reloop-off.png</Unpressed>
-  </State>
-  <Pos>50,148</Pos>
-  <Connection>
-   <ConfigKey>[Channel1],reloop_exit</ConfigKey>
-   <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel1],reloop_exit</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
- </PushButton>
-
- <PushButton>
-  <Tooltip>Reloop</Tooltip>
-  <NumberStates>1</NumberStates>
-  <State>
-   <Number>0</Number>
-   <Pressed>reloop-on-Ch2.png</Pressed>
-   <Unpressed>reloop-off.png</Unpressed>
-  </State>
-  <Pos>953,148</Pos>
-  <Connection>
-   <ConfigKey>[Channel2],reloop_exit</ConfigKey>
-   <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel2],reloop_exit</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
- </PushButton>
-
-
- <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>rateup-on-Ch1.png</Pressed>
    <Unpressed>rateup-off-Ch1.png</Unpressed>
   </State>
-  <Pos>36,230</Pos>
+  <Pos>35,138</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate_perm_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -282,14 +154,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>rateup-on-Ch2.png</Pressed>
    <Unpressed>rateup-off-Ch2.png</Unpressed>
   </State>
-  <Pos>939,230</Pos>
+  <Pos>722,138</Pos>
   <Connection>
    <ConfigKey>[Channel2],rate_perm_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -303,14 +176,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>ratedown-on-Ch1.png</Pressed>
    <Unpressed>ratedown-off-Ch1.png</Unpressed>
   </State>
-  <Pos>36,252</Pos>
+  <Pos>35,162</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate_perm_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -324,14 +198,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>ratedown-on-Ch2.png</Pressed>
    <Unpressed>ratedown-off-Ch2.png</Unpressed>
   </State>
-  <Pos>939,252</Pos>
+  <Pos>722,162</Pos>
   <Connection>
    <ConfigKey>[Channel2],rate_perm_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -345,14 +220,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>rateup-on-Ch1.png</Pressed>
    <Unpressed>rateup-off-Ch1.png</Unpressed>
   </State>
-  <Pos>67,230</Pos>
+  <Pos>70,138</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate_temp_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -376,14 +252,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>ratedown-on-Ch1.png</Pressed>
    <Unpressed>ratedown-off-Ch1.png</Unpressed>
   </State>
-  <Pos>67,252</Pos>
+  <Pos>70,162</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate_temp_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -407,14 +284,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>rateup-on-Ch2.png</Pressed>
    <Unpressed>rateup-off-Ch2.png</Unpressed>
   </State>
-  <Pos>970,230</Pos>
+  <Pos>757,138</Pos>
   <Connection>
    <ConfigKey>[Channel2],rate_temp_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -438,14 +316,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>ratedown-on-Ch2.png</Pressed>
    <Unpressed>ratedown-off-Ch2.png</Unpressed>
   </State>
-  <Pos>970,252</Pos>
+  <Pos>757,162</Pos>
   <Connection>
    <ConfigKey>[Channel2],rate_temp_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -472,7 +351,7 @@
   <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch1.png</Handle>
   <Slider>volslider-off-Ch1.png</Slider>
-  <Pos>4,355</Pos>
+  <Pos>2,220</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
    <ConfigKey>[Channel1],volume</ConfigKey>
@@ -484,7 +363,7 @@
   <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch2.png</Handle>
   <Slider>volslider-off-Ch2.png</Slider>
-  <Pos>907,352</Pos>
+  <Pos>689,220</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
    <ConfigKey>[Channel2],volume</ConfigKey>
@@ -496,31 +375,12 @@
   <Tooltip>Master VuMeter</Tooltip>
   <PathVu>vumeter-on-.png</PathVu>
   <PathBack>vumeter-off-.png</PathBack>
-  <Pos>728,182</Pos>
-  <Horizontal>true</Horizontal>
+  <Pos>305,126</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
- <!--
-  <PeakFallTime>80</PeakFallTime>
-  <PeakFallStep>5</PeakFallStep> -->
-  <Connection>
-   <ConfigKey>[Master],VuMeterL</ConfigKey>
-  </Connection>
- </VuMeter>
-
- <VuMeter>
-  <Tooltip>Master VuMeter</Tooltip>
-  <PathVu>vumeter-on-.png</PathVu>
-  <PathBack>vumeter-off-.png</PathBack>
-  <Pos>728,200</Pos>
   <Horizontal>true</Horizontal>
-  <PeakHoldSize>5</PeakHoldSize>
-  <PeakHoldTime>400</PeakHoldTime>
- <!--
-  <PeakFallTime>80</PeakFallTime>
-  <PeakFallStep>5</PeakFallStep> -->
   <Connection>
-   <ConfigKey>[Master],VuMeterR</ConfigKey>
+   <ConfigKey>[Master],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
 
@@ -528,7 +388,7 @@
   <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch1.png</PathVu>
   <PathBack>vumeter-off-Ch1.png</PathBack>
-  <Pos>78,363</Pos>
+  <Pos>79,227</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
   <Connection>
@@ -540,44 +400,14 @@
   <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch2.png</PathVu>
   <PathBack>vumeter-off-Ch2.png</PathBack>
-  <Pos>981,363</Pos>
+  <Pos>766,224</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
- 
- <StatusLight>
-  <Tooltip>Clipping Indicator</Tooltip>
-  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
-  <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>78,353</Pos>
-  <Connection>
-   <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
-  </Connection>
- </StatusLight>
 
- <StatusLight>
-  <Tooltip>Clipping Indicator</Tooltip>
-  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
-  <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>981,353</Pos>
-  <Connection>
-   <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
-  </Connection>
- </StatusLight>
-
- <StatusLight>
-  <Tooltip>Clipping Indicator</Tooltip>
-  <PathStatusLight>peak-indicator-master-on.png</PathStatusLight>
-  <PathBack>peak-indicator-master-off.png</PathBack>
-  <Pos>717,182</Pos>
-  <Connection>
-   <ConfigKey>[Master],PeakIndicator</ConfigKey>
-  </Connection>
- </StatusLight>
- 
  <PushButton>
   <Tooltip>End of track mode</Tooltip>
   <NumberStates>3</NumberStates>
@@ -596,7 +426,7 @@
    <Pressed>endoftrack-loop-ch1.png</Pressed>
    <Unpressed>endoftrack-loop-ch1.png</Unpressed>
   </State>
-  <Pos>356,147</Pos>
+  <Pos>308,98</Pos>
   <Connection>
    <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
   </Connection>
@@ -620,14 +450,16 @@
    <Pressed>endoftrack-loop-ch2.png</Pressed>
    <Unpressed>endoftrack-loop-ch2.png</Unpressed>
   </State>
-  <Pos>622,147</Pos>
+  <Pos>447,98</Pos>
   <Connection>
    <ConfigKey>[Channel2],TrackEndMode</ConfigKey>
   </Connection>
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <Tooltip>Left click: Pause/play,
+Right click: Set cue point
+</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -639,7 +471,7 @@
    <Pressed>play-on-Ch1.png</Pressed>
    <Unpressed>play-on-Ch1.png</Unpressed>
   </State>
-  <Pos>2,30</Pos>
+  <Pos>1,2</Pos>
   <Connection>
    <ConfigKey>[Channel1],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -653,7 +485,9 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <Tooltip>Left click: Pause/play,
+Right click: Set cue point
+</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -665,7 +499,7 @@
    <Pressed>play-on-Ch2.png</Pressed>
    <Unpressed>play-on-Ch2.png</Unpressed>
   </State>
-  <Pos>905,30</Pos>
+  <Pos>688,2</Pos>
   <Connection>
    <ConfigKey>[Channel2],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -679,22 +513,19 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+  <Tooltip>Go to and play (while playing),
+Set cue point (while stopped),
+Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>cue-on-Ch1.png</Pressed>
    <Unpressed>cue-off-Ch1.png</Unpressed>
   </State>
-  <Pos>50,30</Pos>
+  <Pos>51,2</Pos>
   <Connection>
    <ConfigKey>[Channel1],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel1],cue_default</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
@@ -705,22 +536,19 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+  <Tooltip>Go to and play (while playing),
+Set cue point (while stopped),
+Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>cue-on-Ch2.png</Pressed>
    <Unpressed>cue-off-Ch2.png</Unpressed>
   </State>
-  <Pos>953,30</Pos>
+  <Pos>738,2</Pos>
   <Connection>
    <ConfigKey>[Channel2],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel2],cue_default</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
@@ -738,7 +566,7 @@
    <Pressed>rev-on-Ch1.png</Pressed>
    <Unpressed>rev-off-Ch1.png</Unpressed>
   </State>
-  <Pos>50,61</Pos>
+  <Pos>51,32</Pos>
   <Connection>
    <ConfigKey>[Channel1],reverse</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -759,7 +587,7 @@
    <Pressed>rev-on-Ch2.png</Pressed>
    <Unpressed>rev-off-Ch2.png</Unpressed>
   </State>
-  <Pos>953,61</Pos>
+  <Pos>738,32</Pos>
   <Connection>
    <ConfigKey>[Channel2],reverse</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -773,14 +601,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+  <Tooltip>Left click: Fast forward,
+Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>fwd-on-Ch1.png</Pressed>
    <Unpressed>fwd-off-Ch1.png</Unpressed>
   </State>
-  <Pos>27,61</Pos>
+  <Pos>26,32</Pos>
   <Connection>
    <ConfigKey>[Channel1],fwd</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -799,14 +628,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+  <Tooltip>Left click: Fast backward,
+Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>back-on-Ch1.png</Pressed>
    <Unpressed>back-off-Ch1.png</Unpressed>
   </State>
-  <Pos>2,61</Pos>
+  <Pos>1,32</Pos>
   <Connection>
    <ConfigKey>[Channel1],back</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -825,14 +655,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+  <Tooltip>Left click: Fast forward,
+Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>fwd-on-Ch2.png</Pressed>
    <Unpressed>fwd-off-Ch2.png</Unpressed>
   </State>
-  <Pos>930,61</Pos>
+  <Pos>713,32</Pos>
   <Connection>
    <ConfigKey>[Channel2],fwd</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -851,14 +682,15 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+  <Tooltip>Left click: Fast backward,
+Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>back-on-Ch2.png</Pressed>
    <Unpressed>back-off-Ch2.png</Unpressed>
   </State>
-  <Pos>905,61</Pos>
+  <Pos>688,32</Pos>
   <Connection>
    <ConfigKey>[Channel2],back</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -889,7 +721,7 @@
    <Pressed>flanger-on-Ch1.png</Pressed>
    <Unpressed>flanger-on-Ch1.png</Unpressed>
   </State>
-  <Pos>50,326</Pos>
+  <Pos>51,192</Pos>
   <Connection>
    <ConfigKey>[Channel1],flanger</ConfigKey>
   </Connection>
@@ -908,7 +740,7 @@
    <Pressed>flanger-on-Ch2.png</Pressed>
    <Unpressed>flanger-on-Ch2.png</Unpressed>
   </State>
-  <Pos>953,326</Pos>
+  <Pos>739,192</Pos>
   <Connection>
    <ConfigKey>[Channel2],flanger</ConfigKey>
   </Connection>
@@ -927,7 +759,7 @@
    <Pressed>head-on-Ch1.png</Pressed>
    <Unpressed>head-on-Ch1.png</Unpressed>
   </State>
-  <Pos>2,295</Pos>
+  <Pos>2,192</Pos>
   <Connection>
    <ConfigKey>[Channel1],pfl</ConfigKey>
   </Connection>
@@ -946,7 +778,7 @@
    <Pressed>head-on-Ch2.png</Pressed>
    <Unpressed>head-on-Ch2.png</Unpressed>
   </State>
-  <Pos>905,295</Pos>
+  <Pos>689,192</Pos>
   <Connection>
    <ConfigKey>[Channel2],pfl</ConfigKey>
   </Connection>
@@ -956,7 +788,7 @@
   <Tooltip>Master volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>684,181</Pos>
+  <Pos>647,149</Pos>
   <Connection>
    <ConfigKey>[Master],volume</ConfigKey>
   </Connection>
@@ -966,7 +798,7 @@
   <Tooltip>Master balance</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>646,181</Pos>
+  <Pos>607,149</Pos>
   <Connection>
    <ConfigKey>[Master],balance</ConfigKey>
   </Connection>
@@ -976,7 +808,7 @@
   <Tooltip>Headphone volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>290,181</Pos>
+  <Pos>265,149</Pos>
   <Connection>
    <ConfigKey>[Master],headVolume</ConfigKey>
   </Connection>
@@ -986,7 +818,7 @@
   <Tooltip>Mix between headphone and main</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>252,181</Pos>
+  <Pos>227,149</Pos>
   <Connection>
    <ConfigKey>[Master],headMix</ConfigKey>
   </Connection>
@@ -996,7 +828,7 @@
   <Tooltip>Flanger depth</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>102,181</Pos>
+  <Pos>103,149</Pos>
   <Connection>
    <ConfigKey>[Flanger],lfoDepth</ConfigKey>
   </Connection>
@@ -1006,7 +838,7 @@
   <Tooltip>Flanger delay</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>140,181</Pos>
+  <Pos>144,149</Pos>
   <Connection>
    <ConfigKey>[Flanger],lfoDelay</ConfigKey>
   </Connection>
@@ -1016,7 +848,7 @@
   <Tooltip>Flanger LFO period</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>177,181</Pos>
+  <Pos>184,149</Pos>
   <Connection>
    <ConfigKey>[Flanger],lfoPeriod</ConfigKey>
   </Connection>
@@ -1026,7 +858,7 @@
   <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
-  <Pos>43,375</Pos>
+  <Pos>43,228</Pos>
   <Connection>
    <ConfigKey>[Channel1],pregain</ConfigKey>
   </Connection>
@@ -1037,7 +869,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>43,417</Pos>
+  <Pos>43,273</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterHigh</ConfigKey>
   </Connection>
@@ -1052,7 +884,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>43,457</Pos>
+  <Pos>43,316</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterMid</ConfigKey>
   </Connection>
@@ -1067,7 +899,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>43,497</Pos>
+  <Pos>43,359</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterLow</ConfigKey>
   </Connection>
@@ -1081,7 +913,7 @@
   <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
-  <Pos>946,375</Pos>
+  <Pos>730,227</Pos>
   <Connection>
    <ConfigKey>[Channel2],pregain</ConfigKey>
   </Connection>
@@ -1092,7 +924,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>946,417</Pos>
+  <Pos>730,272</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterHigh</ConfigKey>
   </Connection>
@@ -1107,7 +939,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>946,457</Pos>
+  <Pos>730,315</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterMid</ConfigKey>
   </Connection>
@@ -1122,7 +954,7 @@
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <DisabledPath>knobg%1.png</DisabledPath>
-  <Pos>946,497</Pos>
+  <Pos>730,359</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterLow</ConfigKey>
   </Connection>
@@ -1132,11 +964,12 @@
   </Connection>
  </Knob>
 
+<!-- Track display -->
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>1</Channel>
-  <Pos>102,17</Pos>
-  <Size>798,60</Size>
+  <Pos>101,14</Pos>
+  <Size>580,40</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#0000f0</BeatColor>
@@ -1163,8 +996,8 @@
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>2</Channel>
-  <Pos>102,80</Pos>
-  <Size>798,60</Size>
+  <Pos>101,56</Pos>
+  <Size>580,40</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#f00000</BeatColor>
@@ -1188,18 +1021,19 @@
   </Mark>
  </Visual>
 
+<!-- Track title display -->
  <Text>
   <Channel>1</Channel>
-  <Pos>102,0</Pos>
-  <Size>395,19</Size>
+  <Pos>100,1</Pos>
+  <Size>288,12</Size>
   <FgColor>#606060</FgColor>
   <BgColor>#ffffff</BgColor>
  </Text>
 
  <Text>
   <Channel>2</Channel>
-  <Pos>505,0</Pos>
-  <Size>395,19</Size>
+  <Pos>395,1</Pos>
+  <Size>288,12</Size>
   <FgColor>#606060</FgColor>
   <BgColor>#ffffff</BgColor>
   <Align>right</Align>
@@ -1208,7 +1042,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>1</Channel>
-  <Pos>102,140</Pos>
+  <Pos>101,98</Pos>
   <Size>78,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -1221,7 +1055,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>2</Channel>
-  <Pos>649,140</Pos>
+  <Pos>476,98</Pos>
   <Size>78,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -1234,7 +1068,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>258,140</Pos>
+  <Pos>209,98</Pos>
   <Size>94,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -1248,7 +1082,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
-  <Pos>805,140</Pos>
+  <Pos>583,98</Pos>
   <Size>94,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -1262,7 +1096,7 @@
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>1</Channel>
-  <Pos>40,182</Pos>
+  <Pos>35,122</Pos>
   <Size>47,16</Size>
   <NumberOfDigits>3</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -1275,7 +1109,7 @@
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>2</Channel>
-  <Pos>943,182</Pos>
+  <Pos>722,122</Pos>
   <Size>47,16</Size>
   <NumberOfDigits>3</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -1289,7 +1123,7 @@
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker1.png</Handle>
   <Slider>playpos-slider.png</Slider>
-  <Pos>112,177</Pos>
+  <Pos>101,113</Pos>
   <Horizontal>true</Horizontal>
   <EventWhileDrag>no</EventWhileDrag>
   <Connection>
@@ -1302,7 +1136,7 @@
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker2.png</Handle>
   <Slider>playpos-slider.png</Slider>
-  <Pos>487,177</Pos>
+  <Pos>476,113</Pos>
   <Horizontal>true</Horizontal>
   <EventWhileDrag>no</EventWhileDrag>
   <Connection>
@@ -1314,8 +1148,8 @@
  <Overview>
 	 <Tooltip>Overview display of waveform</Tooltip>
 	 <Channel>1</Channel>
-	 <Pos>102,155</Pos>
-	 <Size>251,20</Size>
+	 <Pos>101,113</Pos>
+	 <Size>201,13</Size>
 	 <BgColor>#fafafa</BgColor>
 	 <SignalColor>#00ff00</SignalColor>
 	 <MarkerColor>#0000ff</MarkerColor>
@@ -1328,8 +1162,8 @@
  <Overview>
 	 <Tooltip>Overview display of waveform</Tooltip>
 	 <Channel>2</Channel>
-	 <Pos>649,155</Pos>
-	 <Size>251,20</Size>
+	 <Pos>476,113</Pos>
+	 <Size>201,13</Size>
 	 <BgColor>#fafafa</BgColor>
 	 <SignalColor>#00ff00</SignalColor>
 	 <MarkerColor>#ff0000</MarkerColor>
@@ -1340,24 +1174,33 @@
  </Overview>
 
  <ComboBox>
-  <Pos>100,261</Pos>
-  <Size>164,22</Size>
+  <Pos>100,194</Pos>
+  <Size>164,25</Size>
  </ComboBox>
 
  <Search>
-  <Pos>565,261</Pos>
-  <Size>300,22</Size>
+  <Pos>274,194</Pos>
+  <Size>325,25</Size>
   <BgColor>#ffffff</BgColor>
  </Search>
 
  <TableView>
-  <Pos>101,224</Pos>
-  <Size>799,325</Size>
+  <Pos>100,219</Pos>
+  <Size>582,180</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
   <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
   <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
+<!--
+  <ColWidthTitle>100</ColWidthTitle>
+  <ColWidthArtist>100</ColWidthArtist>
+  <ColWidthComment>85</ColWidthComment>
+  <ColWidthType>30</ColWidthType>
+  <ColWidthDuration>55</ColWidthDuration>
+  <ColWidthBpm>35</ColWidthBpm>
+  <ColWidthBitrate>40</ColWidthBitrate>
+-->
  </TableView>
-  </skin>
+</skin>
