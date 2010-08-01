@@ -1,0 +1,1316 @@
+<!DOCTYPE skin>
+<skin>
+
+<!-- ***** COLOR SCHEMES ***** -->
+<Schemes>
+  <Scheme>
+    <Name>Cyan</Name>
+  </Scheme>
+  <Scheme>
+    <Name>Orange-Red</Name>
+    <Filters>
+      <HSVTweak>
+        <HConst>66</HConst>
+      </HSVTweak>
+    </Filters>
+  </Scheme>
+  <Scheme>
+    <Name>Green</Name>
+    <Filters>
+      <HSVTweak>
+        <HConst>169</HConst>
+      </HSVTweak>
+    </Filters>
+  </Scheme>
+</Schemes>
+
+ <Background>
+  <Path>scene.png</Path>
+ </Background>
+
+<!-- ***** SLIDERS ***** -->
+ <SliderComposed>
+  <Tooltip>Master: Crossfader</Tooltip>
+  <Handle>b-slid-h.png</Handle>
+  <Slider>slid-fade.png</Slider>
+  <Pos>516,202</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Master],crossfader</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Deck A: Playback rate</Tooltip>
+  <Handle>b-slid-v.png</Handle>
+  <Slider>v-slid.png</Slider>
+  <Pos>381,50</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel1],rate</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Deck B: Playback rate</Tooltip>
+  <Handle>b-slid-v.png</Handle>
+  <Slider>v-slid.png</Slider>
+  <Pos>869,50</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel2],rate</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Deck A: Channel volume</Tooltip>
+  <Handle>b-slid-v.png</Handle>
+  <Slider>v-slid.png</Slider>
+  <Pos>327,50</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel1],volume</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Deck B: Channel volume</Tooltip>
+  <Handle>b-slid-v.png</Handle>
+  <Slider>v-slid.png</Slider>
+  <Pos>923,50</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel2],volume</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+<!-- ***** VOLUME METERS ***** -->
+ <VuMeter>
+  <Tooltip>Master: Volume Meter</Tooltip>
+  <PathVu>vol-main-a.png</PathVu>
+  <PathBack>vol-main-i.png</PathBack>
+  <Pos>1093,162</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Master],VuMeter</ConfigKey>
+  </Connection>
+ </VuMeter>
+
+ <VuMeter>
+  <Tooltip>Deck A: Volume Meter</Tooltip>
+  <PathVu>vol-l-a.png</PathVu>
+  <PathBack>vol-l-i.png</PathBack>
+  <Pos>230,113</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
+  <Connection>
+   <ConfigKey>[Channel1],VuMeter</ConfigKey>
+  </Connection>
+ </VuMeter>
+
+ <VuMeter>
+  <Tooltip>Deck B: Volume Meter</Tooltip>
+  <PathVu>vol-r-a.png</PathVu>
+  <PathBack>vol-r-i.png</PathBack>
+  <Pos>1041,113</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
+  <Connection>
+   <ConfigKey>[Channel2],VuMeter</ConfigKey>
+  </Connection>
+ </VuMeter>
+
+<!-- ***** PLAYER 1 CONTROL BUTTONS ***** -->
+ <PushButton>
+  <Tooltip>Deck A: Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-play-1.png</Pressed>
+   <Unpressed>b-play-0.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-play-0.png</Pressed>
+   <Unpressed>b-play-1.png</Unpressed>
+  </State>
+  <Pos>23,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],play</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],cue_set</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-cue-1.png</Pressed>
+   <Unpressed>b-cue-0.png</Unpressed>
+  </State>
+  <Pos>61,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],cue_default</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Left click: Fast backward, Right click: Start of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-rew-1.png</Pressed>
+   <Unpressed>b-rew-0.png</Unpressed>
+  </State>
+  <Pos>99,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Left click: Fast forward, Right click: End of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-ff-1.png</Pressed>
+   <Unpressed>b-ff-0.png</Unpressed>
+  </State>
+  <Pos>137,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Reverse playback</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-rev-1.png</Pressed>
+   <Unpressed>b-rev-0.png</Unpressed>
+  </State>
+  <Pos>175,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],reverse</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],reverse</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Headphone cue</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-hp-1.png</Pressed>
+   <Unpressed>b-hp-0.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-hp-0.png</Pressed>
+   <Unpressed>b-hp-1.png</Unpressed>
+  </State>
+  <Pos>23,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],pfl</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Flanger on/off</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-flan-1.png</Pressed>
+   <Unpressed>b-flan-0.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-flan-0.png</Pressed>
+   <Unpressed>b-flan-1.png</Unpressed>
+  </State>
+  <Pos>61,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],flanger</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: End of track mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-eot-s.png</Pressed>
+   <Unpressed>b-eot-s.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-eot-n.png</Pressed>
+   <Unpressed>b-eot-n.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>b-eot-r.png</Pressed>
+   <Unpressed>b-eot-r.png</Unpressed>
+  </State>
+  <Pos>99,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Tempo syncronization</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sync-1.png</Pressed>
+   <Unpressed>b-sync-0.png</Unpressed>
+  </State>
+  <Pos>175,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],beatsync</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- ***** PLAYER 2 CONTROL BUTTONS ***** -->
+ <PushButton>
+  <Tooltip>Deck B: Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-play-1.png</Pressed>
+   <Unpressed>b-play-0.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-play-0.png</Pressed>
+   <Unpressed>b-play-1.png</Unpressed>
+  </State>
+  <Pos>1067,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],play</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],cue_set</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-cue-1.png</Pressed>
+   <Unpressed>b-cue-0.png</Unpressed>
+  </State>
+  <Pos>1105,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],cue_default</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Left click: Fast backward, Right click: Start of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-rew-1.png</Pressed>
+   <Unpressed>b-rew-0.png</Unpressed>
+  </State>
+  <Pos>1143,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Left click: Fast forward, Right click: End of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-ff-1.png</Pressed>
+   <Unpressed>b-ff-0.png</Unpressed>
+  </State>
+  <Pos>1181,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Reverse playback</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-rev-1.png</Pressed>
+   <Unpressed>b-rev-0.png</Unpressed>
+  </State>
+  <Pos>1219,83</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],reverse</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],reverse</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Headphone cue</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-hp-1.png</Pressed>
+   <Unpressed>b-hp-0.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-hp-0.png</Pressed>
+   <Unpressed>b-hp-1.png</Unpressed>
+  </State>
+  <Pos>1067,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],pfl</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Flanger on/off</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-flan-1.png</Pressed>
+   <Unpressed>b-flan-0.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-flan-0.png</Pressed>
+   <Unpressed>b-flan-1.png</Unpressed>
+  </State>
+  <Pos>1105,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],flanger</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: End of track mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-eot-s.png</Pressed>
+   <Unpressed>b-eot-s.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-eot-n.png</Pressed>
+   <Unpressed>b-eot-n.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>b-eot-r.png</Pressed>
+   <Unpressed>b-eot-r.png</Unpressed>
+  </State>
+  <Pos>1143,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Tempo syncronization</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sync-1.png</Pressed>
+   <Unpressed>b-sync-0.png</Unpressed>
+  </State>
+  <Pos>1219,117</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],beatsync</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- ***** PLAYER 1 TEMPO BUTTONS ***** -->
+ <PushButton>
+  <Tooltip>Deck A: Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-up-1l.png</Pressed>
+   <Unpressed>b-up-0l.png</Unpressed>
+  </State>
+  <Pos>419,201</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-dwn-1l.png</Pressed>
+   <Unpressed>b-dwn-0l.png</Unpressed>
+  </State>
+  <Pos>419,221</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-up-1r.png</Pressed>
+   <Unpressed>b-up-0r.png</Unpressed>
+  </State>
+  <Pos>461,201</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-dwn-1r.png</Pressed>
+   <Unpressed>b-dwn-0r.png</Unpressed>
+  </State>
+  <Pos>461,221</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- ***** PLAYER 2 TEMPO BUTTONS ***** -->
+ <PushButton>
+  <Tooltip>Deck B: Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-up-1r.png</Pressed>
+   <Unpressed>b-up-0r.png</Unpressed>
+  </State>
+  <Pos>819,201</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-dwn-0r.png</Pressed>
+   <Unpressed>b-dwn-0r.png</Unpressed>
+  </State>
+  <Pos>819,221</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-up-1l.png</Pressed>
+   <Unpressed>b-up-0l.png</Unpressed>
+  </State>
+  <Pos>777,201</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-dwn-1l.png</Pressed>
+   <Unpressed>b-dwn-0l.png</Unpressed>
+  </State>
+  <Pos>777,221</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- ***** MASTER/FLANGER KNOBS ***** -->
+ <Knob>
+  <Tooltip>Master volume</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>1189,180</Pos>
+  <Connection>
+   <ConfigKey>[Master],volume</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Master balance</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>1228,180</Pos>
+  <Connection>
+   <ConfigKey>[Master],balance</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Headphone volume</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>1070,180</Pos>
+  <Connection>
+   <ConfigKey>[Master],headVolume</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Mix between headphone and main</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>1109,180</Pos>
+  <Connection>
+   <ConfigKey>[Master],headMix</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Flanger depth</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>27,170</Pos>
+  <Connection>
+   <ConfigKey>[Flanger],lfoDepth</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Flanger delay</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>66,170</Pos>
+  <Connection>
+   <ConfigKey>[Flanger],lfoDelay</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Flanger LFO period</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>106,170</Pos>
+  <Connection>
+   <ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+  </Connection>
+ </Knob>
+
+<!-- ***** PLAYER 1 KNOBS ***** -->
+ <Knob>
+  <Tooltip>Deck A: Channel pre gain</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>281,56</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],pregain</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Deck A: Channel highpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <DisabledPath>knob-%1.png</DisabledPath>
+  <Pos>281,105</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterHigh</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterHighKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Deck A: Channel bandpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <DisabledPath>knob-%1.png</DisabledPath>
+  <Pos>281,154</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterMid</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterMidKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Deck A: Channel lowpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <DisabledPath>knob-%1.png</DisabledPath>
+  <Pos>281,203</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterLow</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterLowKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+<!-- ***** PLAYER 2 KNOBS ***** -->
+<Knob>
+  <Tooltip>Deck B: Channel pre gain</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <Pos>974,56</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],pregain</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Deck B: Channel highpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <DisabledPath>knob-%1.png</DisabledPath>
+  <Pos>974,105</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterHigh</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterHighKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Deck B: Channel bandpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <DisabledPath>knob-%1.png</DisabledPath>
+  <Pos>974,154</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterMid</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterMidKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Deck B: Channel lowpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knob-%1.png</Path>
+  <DisabledPath>knob-%1.png</DisabledPath>
+  <Pos>974,203</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterLow</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterLowKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+<!-- ***** PLAYER 1 KILL BUTTONS ***** -->
+ <PushButton>
+  <Tooltip>Deck A: Treble Kill</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sw-0.png</Pressed>
+   <Unpressed>b-sw-1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-sw-1.png</Pressed>
+   <Unpressed>b-sw-0.png</Unpressed>
+  </State>
+  <Pos>248,104</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterHighKill</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Midrange Kill</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sw-0.png</Pressed>
+   <Unpressed>b-sw-1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-sw-1.png</Pressed>
+   <Unpressed>b-sw-0.png</Unpressed>
+  </State>
+  <Pos>248,154</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterMidKill</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck A: Bass Kill</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sw-0.png</Pressed>
+   <Unpressed>b-sw-1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-sw-1.png</Pressed>
+   <Unpressed>b-sw-0.png</Unpressed>
+  </State>
+  <Pos>248,204</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterLowKill</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- ***** PLAYER 2 KILL BUTTONS ***** -->
+ <PushButton>
+  <Tooltip>Deck B: Treble Kill</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sw-0.png</Pressed>
+   <Unpressed>b-sw-1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-sw-1.png</Pressed>
+   <Unpressed>b-sw-0.png</Unpressed>
+  </State>
+  <Pos>1014,104</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterHighKill</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Midrange Kill</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sw-0.png</Pressed>
+   <Unpressed>b-sw-1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-sw-1.png</Pressed>
+   <Unpressed>b-sw-0.png</Unpressed>
+  </State>
+  <Pos>1014,154</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterMidKill</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Deck B: Bass Kill</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>b-sw-0.png</Pressed>
+   <Unpressed>b-sw-1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>b-sw-1.png</Pressed>
+   <Unpressed>b-sw-0.png</Unpressed>
+  </State>
+  <Pos>1014,204</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterLowKill</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- ***** WAVEFORMS ***** -->
+ <Visual>
+  <Tooltip>Deck A: Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+  <Channel>1</Channel>
+  <Pos>443,48</Pos>
+  <Size>413,68</Size>
+  <BgColor>#1a1a1a</BgColor>
+  <SignalColor>#d1d1d1</SignalColor>
+  <BeatColor>#48839b</BeatColor>
+  <MarkerColor>#48839b</MarkerColor>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
+ </Visual>
+
+ <Visual>
+  <Tooltip>Deck B: Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+  <Channel>2</Channel>
+  <Pos>443,116</Pos>
+  <Size>413,68</Size>
+  <BgColor>#1a1a1a</BgColor>
+  <SignalColor>#d1d1d1</SignalColor>
+  <BeatColor>#9b4848</BeatColor>
+  <MarkerColor>#9b4848</MarkerColor>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+  </MarkRange>
+  <Mark>
+    <Control>loop_start_position</Control>
+    <Text>IN</Text>
+  </Mark>
+  <Mark>
+    <Control>loop_end_position</Control>
+    <Text>OUT</Text>
+  </Mark>
+ </Visual>
+
+ <XSliderComposed>
+  <Tooltip>Deck A: Play position - Use mouse to seek</Tooltip>
+  <Handle>playpos-marker1.png</Handle>
+  <Slider>playpos-slider.png</Slider>
+  <Pos>112,177</Pos>
+  <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </XSliderComposed>
+
+ <XSliderComposed>
+  <Tooltip>Deck B: Play position - Use mouse to seek</Tooltip>
+  <Handle>playpos-marker2.png</Handle>
+  <Slider>playpos-slider.png</Slider>
+  <Pos>487,177</Pos>
+  <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </XSliderComposed>
+
+ <Overview>
+   <Tooltip>Deck A: Overview display of waveform</Tooltip>
+   <Channel>1</Channel>
+   <Pos>31,11</Pos>
+   <Size>496,25</Size>
+   <BgColor>#373737</BgColor>
+   <SignalColor>#e1e1e1</SignalColor>
+   <MarkerColor>#48839b</MarkerColor>
+   <Connection>
+     <ConfigKey>[Channel1],playposition</ConfigKey>
+     <EmitOnDownPress>false</EmitOnDownPress>
+   </Connection>
+ </Overview>
+
+ <Overview>
+   <Tooltip>Deck B: Overview display of waveform</Tooltip>
+   <Channel>2</Channel>
+   <Pos>753,11</Pos>
+   <Size>496,25</Size>
+   <BgColor>#373737</BgColor>
+   <SignalColor>#e1e1e1</SignalColor>
+   <MarkerColor>#9b4848</MarkerColor>
+   <Connection>
+     <ConfigKey>[Channel2],playposition</ConfigKey>
+     <EmitOnDownPress>false</EmitOnDownPress>
+   </Connection>
+ </Overview>
+
+
+<!-- ***** TEXT ***** -->
+ <Text>
+  <Channel>1</Channel>
+  <Pos>26,44</Pos>
+  <Size>184,15</Size>
+  <FgColor>#e1e1e1</FgColor>
+  <BgColor>#212121</BgColor>
+ </Text>
+
+ <Text>
+  <Channel>2</Channel>
+  <Pos>1070,44</Pos>
+  <Size>184,15</Size>
+  <FgColor>#e1e1e1</FgColor>
+  <BgColor>#212121</BgColor>
+ </Text>
+
+ <NumberBpm>
+  <Tooltip>Deck A: Tempo display (Beat Per Minute)</Tooltip>
+  <Channel>1</Channel>
+  <Pos>781,101</Pos>
+  <Size>75,14</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9bc8db</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],bpm</ConfigKey>
+  </Connection>
+ </NumberBpm>
+
+ <NumberBpm>
+  <Tooltip>Deck B: Tempo display (Beat Per Minute)</Tooltip>
+  <Channel>2</Channel>
+  <Pos>781,117</Pos>
+  <Size>75,14</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#f29793</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],bpm</ConfigKey>
+  </Connection>
+ </NumberBpm>
+
+ <NumberPos>
+  <Tooltip>Deck A: Play position/remaining time</Tooltip>
+  <Channel>1</Channel>
+  <Pos>26,61</Pos>
+  <Size>184,15</Size>
+  <Alignment>right</Alignment>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#212121</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
+ <NumberPos>
+  <Tooltip>Deck B: Play position/remaining time</Tooltip>
+  <Channel>2</Channel>
+  <Pos>1070,61</Pos>
+  <Size>184,15</Size>
+  <Alignment>left</Alignment>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#212121</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
+ <NumberRate>
+  <Tooltip>Deck A: Playback rate factor</Tooltip>
+  <Channel>1</Channel>
+  <Pos>441,261</Pos>
+  <Size>40,16</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],rate</ConfigKey>
+  </Connection>
+ </NumberRate>
+
+ <NumberRate>
+  <Tooltip>Deck B: Playback rate factor</Tooltip>
+  <Channel>2</Channel>
+  <Pos>800,261</Pos>
+  <Size>40,16</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],rate</ConfigKey>
+  </Connection>
+ </NumberRate>
+
+<!-- ***** MEDIA LIBRARY ***** -->
+ <ComboBox>
+  <Pos>26,273</Pos>
+  <Size>164,20</Size>
+  <FgColor>#FF0000</FgColor>
+  <BgColor>#00FF00</BgColor>
+ </ComboBox>
+
+ <Search>
+  <Pos>918,273</Pos>
+  <Size>300,20</Size>
+  <FgColor>#EEEEEE</FgColor>
+  <BgColor>#2c2c2c</BgColor>
+ </Search>
+
+ <TableView>
+  <Pos>27,305</Pos>
+  <Size>1226,350</Size>
+  <FgColor>#dedede</FgColor>
+  <BgColor>#2c2c2c</BgColor>
+  <BgColorRowEven>#3c3c3c</BgColorRowEven>
+  <BgColorRowUneven>#4c4c4c</BgColorRowUneven>
+  <BgColorBpmNoConfirm>#00FF00</BgColorBpmNoConfirm>
+  <BgColorBpmConfirm>#FF0000</BgColorBpmConfirm>
+ </TableView>
+
+<!-- ***** CLIPPING LIGHTS ***** -->
+ <StatusLight>
+  <Tooltip>Deck A: Clipping Indicator</Tooltip>
+  <PathStatusLight>warn-clip-1.png</PathStatusLight>
+  <PathBack>warn-clip-a.png</PathBack>
+  <Pos>221, 113</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+
+ <StatusLight>
+  <Tooltip>Deck B: Clipping Indicator</Tooltip>
+  <PathStatusLight>warn-clip-1.png</PathStatusLight>
+  <PathBack>warn-clip-b.png</PathBack>
+  <Pos>1051, 113</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+
+ <StatusLight>
+  <Tooltip>Master: Clipping Indicator</Tooltip>
+  <PathStatusLight>warn-clip-1.png</PathStatusLight>
+  <PathBack>warn-clip-m.png</PathBack>
+  <Pos>1158,174</Pos>
+  <Connection>
+   <ConfigKey>[Master],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+
+</skin>
+
