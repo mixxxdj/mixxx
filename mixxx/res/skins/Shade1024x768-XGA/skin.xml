@@ -1,4 +1,4 @@
-  	<!--13 June 2010 12:39:11 CEST-->  
+  	<!--1 August 2010 17:59:11 CEST-->  
   	<!--   
   	Shade, Skin for Mixxx 1.8.x
     www.mixxx.org
@@ -26,6 +26,9 @@
 
   	<!--
   	CHANGELOG
+  	v0.84b	(01/08/2010)
+  	# corrected Headphone button positioning  	
+  	
   	v0.83b	(13/06/2010)
   	# corrected FX button positioning
 
@@ -1467,7 +1470,7 @@
 			<Pressed>btn_pfl1_over.png</Pressed>
 			<Unpressed>btn_pfl1_over.png</Unpressed>
 		</State>
-		<Pos>403,221</Pos>
+		<Pos>396,221</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pfl</ConfigKey>
 		</Connection>
