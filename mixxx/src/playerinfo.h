@@ -20,23 +20,23 @@
 #include <QObject>
 #include <QMutex>
 
-class TrackInfoObject;
+#include "trackinfoobject.h"
 
 class PlayerInfo : public QObject
 {
     Q_OBJECT
 public:
     static PlayerInfo &Instance();
-    TrackInfoObject *getTrackInfo(int track);
-    void setTrackInfo(int track, TrackInfoObject *trackInfoObj);
+    TrackPointer getTrackInfo(int track);
+    void setTrackInfo(int track, TrackPointer trackInfoObj);
 private:
     PlayerInfo();
     ~PlayerInfo();
     PlayerInfo(PlayerInfo const&);
     PlayerInfo &operator= (PlayerInfo const&);
     QMutex m_mutex;
-    TrackInfoObject *m_pTrack1;
-    TrackInfoObject *m_pTrack2;
+    TrackPointer m_pTrack1;
+    TrackPointer m_pTrack2;
 };
 
 #endif

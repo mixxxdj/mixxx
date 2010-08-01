@@ -140,6 +140,10 @@ void LibraryScanner::run()
     m_database.commit();
     qDebug("Legacy importer took %d ms", t2.elapsed());
 
+    //Refresh the name filters in case we loaded new 
+    //SoundSource plugins.
+    nameFilters = SoundSourceProxy::supportedFileExtensionsString().split(" ");
+
     // Time the library scanner.
     QTime t;
     t.start();
