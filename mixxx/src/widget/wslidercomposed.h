@@ -41,6 +41,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
+    void wheelEvent(QWheelEvent *e);
 public slots:
     void setValue(double);
 private:

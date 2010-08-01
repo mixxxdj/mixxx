@@ -22,6 +22,7 @@
 #include "cachingreader.h"
 
 #include "controlpushbutton.h"
+#include "controlobjectthreadmain.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "enginebufferscalest.h"
@@ -79,6 +80,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);
+    playButtonCOT = new ControlObjectThreadMain(playButton);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
@@ -118,6 +120,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // playback. TODO(XXX) This should not even be a control object because it
     // is an internal flag used only by the EngineBuffer.
     m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
+    //A COTM for use in slots that are called by the GUI thread.
+    m_pTrackEndCOT = new ControlObjectThreadMain(m_pTrackEnd);
 
     // TrackEndMode determines what to do at the end of a track
     m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
@@ -150,10 +154,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     addControl(m_pBpmControl);
 
     m_pReader = new CachingReader(_group, _config);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
-            this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackInfoObject*, QString)));
+    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -273,25 +277,24 @@ double EngineBuffer::getRate()
     return m_pRateControl->getRawRate();
 }
 
-void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
+void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     pause.lock();
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
-    playButton->set(0.0);
     slotControlSeek(0.);
 
     // Let the engine know that a track is loaded now.
-    m_pTrackEnd->set(0.0f);
+    m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
 
     pause.unlock();
 
     emit(trackLoaded(pTrack));
 }
 
-void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
+void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     pause.lock();
     file_srate_old = 0;
@@ -372,7 +375,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
-        double baserate = ((double)file_srate_old/m_pSampleRate->get());
+        float sr = m_pSampleRate->get();
+        double baserate = 0.0f;
+        if (sr > 0)
+            baserate = ((double)file_srate_old/sr);
 
         // Is a touch sensitive wheel being touched?
         bool wheelTouchSensorEnabled = wheelTouchSwitch->get() && wheelTouchSensor->get();
@@ -429,7 +435,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
             rate_old = rate;
-            rate = baserate*m_pScale->setTempo(rate/baserate);
+            if (baserate > 0) //Prevent division by 0
+                rate = baserate*m_pScale->setTempo(rate/baserate);
             m_pScale->setBaseRate(baserate);
             rate_old = rate;
             // Scaler is up to date now.
@@ -694,9 +701,12 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
-void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+void EngineBuffer::loadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
-    m_pTrackEnd->set(1.0);
+    m_pTrackEndCOT->slotSet(1.0);
+
+    //Stop playback
+    playButtonCOT->slotSet(0.0);
 
     // Signal to the reader to load the track. The reader will respond with
     // either trackLoaded or trackLoadFailed signals.

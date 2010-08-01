@@ -9,7 +9,7 @@
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
         QDialog(parent),
-        m_pLoadedTrack(NULL) {
+        m_pLoadedTrack() {
 
     setupUi(this);
 
@@ -89,7 +89,7 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
-void DlgTrackInfo::loadTrack(TrackInfoObject* pTrack) {
+void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = pTrack;
     clear();
 
@@ -220,7 +220,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
         }
     }
 
-    m_pLoadedTrack = NULL;
+    m_pLoadedTrack.clear();
     clear();
 }
 

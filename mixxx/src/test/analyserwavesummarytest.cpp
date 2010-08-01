@@ -21,7 +21,7 @@ namespace {
         virtual void SetUp() {
             qDebug() << "SetUp";
             aw = new AnalyserWavesummary();
-            tio = new TrackInfoObject("foo");
+            tio = TrackPointer(new TrackInfoObject("foo"));
             //Subpixels per second, from waveformrenderer.cpp:247
             tio->setVisualResampleRate(200);
 
@@ -51,7 +51,7 @@ namespace {
         }
 
         AnalyserWavesummary* aw;
-        TrackInfoObject* tio;
+        TrackPointer tio;
         CSAMPLE* bigbuf;
         CSAMPLE* canaryBigBuf;
     };
