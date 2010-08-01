@@ -345,10 +345,7 @@ void DlgPrefControls::slotSetRateDir(int)
 void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
-    QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
-    //textLabel->setText(
-      tr("Restart Mixxx before the change of visuals will take effect.")
-      );
+    m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetCueDefault(int)
