@@ -25,7 +25,7 @@
 </Schemes>
 
  <Background>
-  <Path>scene.png</Path>
+  <Path>scene1.8.png</Path>
  </Background>
 
 <!-- ***** SLIDERS ***** -->
@@ -1232,7 +1232,10 @@
  <NumberRate>
   <Tooltip>Deck A: Playback rate factor</Tooltip>
   <Channel>1</Channel>
+  <!-- update Mixxx 1.8 
   <Pos>441,261</Pos>
+  -->
+  <Pos>384,241</Pos>
   <Size>40,16</Size>
   <NumberOfDigits>3</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1245,7 +1248,10 @@
  <NumberRate>
   <Tooltip>Deck B: Playback rate factor</Tooltip>
   <Channel>2</Channel>
+  <!-- update Mixxx 1.8 
   <Pos>800,261</Pos>
+  -->
+  <Pos>872,241</Pos>
   <Size>40,16</Size>
   <NumberOfDigits>3</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1256,6 +1262,7 @@
  </NumberRate>
 
 <!-- ***** MEDIA LIBRARY ***** -->
+<!-- update Mixxx 1.8 
  <ComboBox>
   <Pos>26,273</Pos>
   <Size>164,20</Size>
@@ -1269,10 +1276,15 @@
   <FgColor>#EEEEEE</FgColor>
   <BgColor>#2c2c2c</BgColor>
  </Search>
-
+-->
+ 
  <TableView>
+<!-- update Mixxx 1.8 
   <Pos>27,305</Pos>
   <Size>1226,350</Size>
+ -->
+  <Pos>27,283</Pos>
+  <Size>1226,391</Size>
   <FgColor>#dedede</FgColor>
   <BgColor>#2c2c2c</BgColor>
   <BgColorRowEven>#3c3c3c</BgColorRowEven>
@@ -1313,4 +1325,3 @@
  </StatusLight>
 
 </skin>
-
