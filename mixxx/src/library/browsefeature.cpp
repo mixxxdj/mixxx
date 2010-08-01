@@ -39,7 +39,7 @@ QVariant BrowseFeature::title() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_browse.png");
 }
 
 QAbstractItemModel* BrowseFeature::getChildModel() {
