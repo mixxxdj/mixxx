@@ -141,7 +141,17 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-    QString location = url.toLocalFile();
+    QString location = url.toString();
+
+    //XXX: Possible WTF alert - Windows needs .toString() in the above in order
+    //     for drag and drop to work, at least for attached drives. 
+    //     The code was .toLocalFile() in 1.8.0 Beta2, and that totally broke
+    //     drag and drop on Windows, but I don't know if there was a particular
+    //     reason why we used .toLocalFile() in the first place. 
+    //     If you find that you need to change this to fix drag and drop for
+    //     a particular platform, please comment and/or platform #ifdef it.
+    //      -- Albert, July 05/2010
+
     if (!m_trackDao.trackExistsInDatabase(location))
     {
         m_trackDao.addTrack(location);

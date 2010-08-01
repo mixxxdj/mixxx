@@ -25,7 +25,7 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
     // From TrackModel
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
