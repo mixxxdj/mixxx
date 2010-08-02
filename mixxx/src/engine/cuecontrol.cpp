@@ -247,14 +247,10 @@ void CueControl::cueUpdated() {
 
 void CueControl::trackCuesUpdated() {
     QMutexLocker lock(&m_mutex);
+    QSet<int> active_hotcues;
 
     if (!m_pLoadedTrack)
         return;
-
-    // We don't know what changed so we have to detach everything and re-attach.
-    for (int i = 0; i < m_iNumHotCues; ++i) {
-        detachCue(i);
-    }
 
     const QList<Cue*>& cuePoints = m_pLoadedTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
@@ -266,8 +262,36 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            attachCue(pCue, hotcue);
+            Cue* pOldCue = m_hotcue[hotcue];
+
+            // If the old hotcue is different than this one.
+            if (pOldCue != pCue) {
+                // If the old hotcue exists, detach it
+                if (pOldCue != NULL)
+                    detachCue(hotcue);
+                attachCue(pCue, hotcue);
+            } else {
+                // If the old hotcue is the same, then we only need to update
+                double dOldPosition = m_hotcuePosition[hotcue]->get();
+                double dOldEnabled = m_hotcueEnabled[hotcue]->get();
+                double dPosition = pCue->getPosition();
+                double dEnabled = dPosition == -1 ? 0.0 : 1.0;
+                if (dEnabled != dOldEnabled) {
+                    m_hotcueEnabled[hotcue]->set(dEnabled);
+                }
+                if (dPosition != dOldPosition) {
+                    m_hotcuePosition[hotcue]->set(dPosition);
+                }
+            }
+            // Add the hotcue to the list of active hotcues
+            active_hotcues.insert(hotcue);
         }
+    }
+
+    // Detach all hotcues that are no longer present
+    for (int i = 0; i < m_iNumHotCues; ++i) {
+        if (!active_hotcues.contains(i))
+            detachCue(i);
     }
 }
 
