@@ -302,7 +302,7 @@ int CueControl::senderHotcue(QObject* pSender) {
 }
 
 void CueControl::hotcueSet(double v) {
-    qDebug() << "CueControl::hotcueSet" << v;
+    //qDebug() << "CueControl::hotcueSet" << v;
 
     if (v != 1.0)
         return;
@@ -369,7 +369,7 @@ void CueControl::hotcueGotoAndStop(double v) {
 }
 
 void CueControl::hotcueActivate(double v) {
-    qDebug() << "CueControl::hotcueActivate" << v;
+    //qDebug() << "CueControl::hotcueActivate" << v;
 
     QMutexLocker lock(&m_mutex);
 
