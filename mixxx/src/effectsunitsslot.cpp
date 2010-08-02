@@ -77,7 +77,7 @@ void EffectsUnitsSlot::slotDeckUpdated(int i){
 void EffectsUnitsSlot::activateOnDeck(int iDeck){
 	int size = m_pEffectsUnitsWidgets->size();
 	for (int i = 0; i < size; i++){
-		if (i == 0)
+		if (iDeck == 0)
 			m_pController->addInstanceToSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel1]");
 		else
 			m_pController->addInstanceToSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel2]");
@@ -87,7 +87,7 @@ void EffectsUnitsSlot::activateOnDeck(int iDeck){
 void EffectsUnitsSlot::deactivateOnDeck(int iDeck){
 	int size = m_pEffectsUnitsWidgets->size();
 	for (int i = 0; i < size; i++){
-		if (i == 0)
+		if (iDeck == 0)
 			m_pController->removeInstanceFromSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel1]");
 		else
 			m_pController->removeInstanceFromSource(m_pEffectsUnitsWidgets->at(i)->getInstanceID(), "[Channel2]");
