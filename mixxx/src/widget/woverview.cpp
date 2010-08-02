@@ -181,7 +181,7 @@ void WOverview::slotUnloadTrack(TrackPointer pTrack) {
 }
 
 void WOverview::cueChanged(double v) {
-    qDebug() << "WOverview::cueChanged()";
+    //qDebug() << "WOverview::cueChanged()";
     QObject* pSender = sender();
     if (!pSender)
         return;
@@ -191,7 +191,7 @@ void WOverview::cueChanged(double v) {
 
     int hotcue = m_hotcueMap[pSender];
     m_hotcues[hotcue] = v;
-    qDebug() << "hotcue" << hotcue << "position" << v;
+    //qDebug() << "hotcue" << hotcue << "position" << v;
     update();
 }
 
