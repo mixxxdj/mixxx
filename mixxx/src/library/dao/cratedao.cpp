@@ -35,13 +35,12 @@ unsigned int CrateDAO::crateCount() {
     return 0;
 }
 
-bool CrateDAO::createCrate(const QString& name, bool hidden) {
+bool CrateDAO::createCrate(const QString& name) {
     QSqlQuery query;
 
     qDebug() << "createCrate()" << name;
-    query.prepare("INSERT INTO " CRATE_TABLE " (name, show) VALUES (:name, :show)");
+    query.prepare("INSERT INTO " CRATE_TABLE " (name) VALUES (:name)");
     query.bindValue(":name", name);
-    query.bindValue(":show", !hidden);
 
     if (query.exec()) {
         return true;
