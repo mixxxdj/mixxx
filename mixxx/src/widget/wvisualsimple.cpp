@@ -105,10 +105,6 @@ void WVisualSimple::setup(QDomNode node)
     colorMarker = WSkinColor::getCorrectColor(colorMarker);
 }
 
-void WVisualSimple::slotNewTrack(TrackInfoObject* track)
-{
-}
-
 void WVisualSimple::mouseMoveEvent(QMouseEvent * e)
 {
     // Only process mouse move if it was initiated by a left click

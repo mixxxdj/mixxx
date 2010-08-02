@@ -20,7 +20,7 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
           m_pBpm(NULL),
           m_pBeatFirst(NULL),
           m_pTrackSamples(NULL),
-          m_pTrack(NULL),
+          m_pTrack(),
           m_iWidth(0),
           m_iHeight(0),
           m_dBpm(-1),
@@ -63,7 +63,7 @@ void WaveformRenderBeat::resize(int w, int h) {
     m_iHeight = h;
 }
 
-void WaveformRenderBeat::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderBeat::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
     m_dBpm = -1;
     m_dBeatFirst = -1;

@@ -23,10 +23,10 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
 
     m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig,
                                                             ConfigKey(), ConfigKey());
-    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -197,16 +197,16 @@ void DlgPrepare::analyze()
     {
         m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig);
 
-        connect(m_pAnalyserQueue, SIGNAL(trackProgress(TrackInfoObject*, int)),
-                this, SLOT(trackAnalysisProgress(TrackInfoObject*, int)));
-        connect(m_pAnalyserQueue, SIGNAL(trackFinished(TrackInfoObject*)),
-                this, SLOT(trackAnalysisFinished(TrackInfoObject*)));
+        connect(m_pAnalyserQueue, SIGNAL(trackProgress(TrackPointer, int)),
+                this, SLOT(trackAnalysisProgress(TrackPointer, int)));
+        connect(m_pAnalyserQueue, SIGNAL(trackFinished(TrackPointer)),
+                this, SLOT(trackAnalysisFinished(TrackPointer)));
 
         QModelIndex selectedIndex;
         m_indexesBeingAnalyzed = m_pPrepareLibraryTableView->selectionModel()->selectedRows();
         foreach(selectedIndex, m_indexesBeingAnalyzed)
         {
-            TrackInfoObject* tio = m_pPrepareLibraryTableModel->getTrack(selectedIndex);
+            TrackPointer tio = m_pPrepareLibraryTableModel->getTrack(selectedIndex);
             qDebug() << "Queueing track" << tio->getLocation();
             m_pAnalyserQueue->queueAnalyseTrack(tio);
         }
@@ -214,13 +214,14 @@ void DlgPrepare::analyze()
     }
 }
 
-void DlgPrepare::trackAnalysisFinished(TrackInfoObject* tio)
+void DlgPrepare::trackAnalysisFinished(TrackPointer tio)
 {
-    qDebug() << "Analysis finished!";
+    qDebug() << "Analysis finished on track:" << tio->getInfo();
+
+    // TrackPointer auto-deletes once nobody is referencing it anymore.
     m_pTrackCollection->getTrackDAO().saveTrack(tio);
-    qDebug() << "FIXME: Free the TIO when we're using autopointers";
-    //XXX: Delete the TIO once we're using auto-pointers !
-    //delete tio;
+
+
 
     //If the analyser has already been deleted by the time we get this signal
     //or there are no tracks in it when we do get the signal, then say we're done.
@@ -230,7 +231,7 @@ void DlgPrepare::trackAnalysisFinished(TrackInfoObject* tio)
     }
 }
 
-void DlgPrepare::trackAnalysisProgress(TrackInfoObject* tio, int progress)
+void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress)
 {
     QString text = "Analyzing";
     labelProgress->setText(QString("%1 %2\%").arg(text).arg(progress));

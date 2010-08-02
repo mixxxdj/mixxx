@@ -7,6 +7,7 @@
 #include <qstring.h>
 #include <Q3ValueList>
 #include <QList>
+#include "trackinfoobject.h"
 
 class ControlObject;
 class WSlider;
@@ -22,7 +23,6 @@ class QDomNode;
 class QDomElement;
 class Sampler;
 class SamplerManager;
-class TrackInfoObject;
 class WaveformRenderer;
 
 class WSampler : public WWidget {
@@ -41,10 +41,10 @@ public:
     WaveformRenderer* m_pWaveformRendererCh6;
     
 public slots:
-    void slotSetupTrackConnectionsCh3(TrackInfoObject* pTrack);
-    void slotSetupTrackConnectionsCh4(TrackInfoObject* pTrack);
-    void slotSetupTrackConnectionsCh5(TrackInfoObject* pTrack);
-    void slotSetupTrackConnectionsCh6(TrackInfoObject* pTrack);
+    void slotSetupTrackConnectionsCh3(TrackPointer pTrack);
+    void slotSetupTrackConnectionsCh4(TrackPointer pTrack);
+    void slotSetupTrackConnectionsCh5(TrackPointer pTrack);
+    void slotSetupTrackConnectionsCh6(TrackPointer pTrack);
     
     /** Saves entire sampler bank as XML file **/
     void slotSaveSamplerBank();

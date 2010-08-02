@@ -174,7 +174,7 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
 
 ControlObject * ControlObject::getControl(ConfigKey key)
 {
-    //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
+    qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
     m_sqCOHashMutex.lock();
     if(m_sqCOHash.contains(key)) {
         ControlObject *co = m_sqCOHash[key];

@@ -4,19 +4,19 @@
 #include <QList>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class Sampler;
 class Library;
 class EngineMaster;
 class AnalyserQueue;
-class TrackInfoObject;
 
 class SamplerManager : public QObject {
     Q_OBJECT
     public:
         SamplerManager(ConfigObject<ConfigValue> *pConfig,
-            EngineMaster* pEngine,
-            Library* pLibrary);
+                       EngineMaster* pEngine,
+                       Library* pLibrary);
         virtual ~SamplerManager();
         
         Sampler* addSampler();
@@ -29,13 +29,13 @@ class SamplerManager : public QObject {
         QString getTrackLocation(int sampler);
 
     public slots:
-        void slotLoadTrackToSampler(TrackInfoObject* pTrack, int sampler);
-        void slotLoadTrackIntoNextAvailableSampler(TrackInfoObject* pTrack);
+        void slotLoadTrackToSampler(TrackPointer pTrack, int sampler);
+        void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
         void slotLoadToSampler(QString location, int sampler);
         void slotLoadToSampler(QString location, QString group);
 
     private:
-        TrackInfoObject* lookupTrack(QString location);
+        TrackPointer lookupTrack(QString location);
         ConfigObject<ConfigValue>* m_pConfig;
         EngineMaster* m_pEngine;
         Library* m_pLibrary;
