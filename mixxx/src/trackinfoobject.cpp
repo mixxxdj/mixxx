@@ -273,7 +273,7 @@ void TrackInfoObject::setBpm(float f)
     lock.unlock();
 
     //Tell the GUI to update the bpm label...
-    qDebug() << "TrackInfoObject: emitting bpmUpdated signal!";
+    qDebug() << "TrackInfoObject signaling BPM update to" << f;
     emit(bpmUpdated(f));
 }
 
@@ -627,7 +627,7 @@ void TrackInfoObject::slotCueUpdated() {
 }
 
 Cue* TrackInfoObject::addCue() {
-    qDebug() << "TrackInfoObject::addCue()";
+    //qDebug() << "TrackInfoObject::addCue()";
     QMutexLocker lock(&m_qMutex);
     Cue* cue = new Cue(m_iId);
     connect(cue, SIGNAL(updated()),
@@ -654,7 +654,7 @@ const QList<Cue*>& TrackInfoObject::getCuePoints() {
 }
 
 void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
-    qDebug() << "setCuePoints" << cuePoints.length();
+    //qDebug() << "setCuePoints" << cuePoints.length();
     QMutexLocker lock(&m_qMutex);
     QListIterator<Cue*> it(m_cuePoints);
     while (it.hasNext()) {
@@ -690,7 +690,7 @@ void TrackInfoObject::setDirty(bool bDirty) {
     m_bDirty = bDirty;
     lock.unlock();
     if (change) {
-        qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
+        //qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
         if (m_bDirty)
             emit(dirty());
         else
