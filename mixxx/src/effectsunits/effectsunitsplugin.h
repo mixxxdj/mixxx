@@ -21,6 +21,7 @@ public:
 
 	QString getName();
 	QList<EffectsUnitsPort *> * getPorts();
+	QString getPortNameByIndex(int i);
 
 private:
 	QString * m_Name;					// Name of the Plugin

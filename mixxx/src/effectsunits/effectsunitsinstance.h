@@ -28,6 +28,7 @@ public:
 	EffectsUnitsPlugin * getPlugin();
 	int getInstanceID();
 	static int getNextInstanceID();
+	QString getPortNameByIndex(int Index);
 
 private:
 
@@ -38,6 +39,7 @@ private:
 	ControlObject * m_pOnOff;
 	ControlObject * m_pWetDry;
 	QList<ControlObject *> * m_pBindings;
+	QList<int> m_BindedPortIndex;
 
 	int m_WetDryPort;
 };

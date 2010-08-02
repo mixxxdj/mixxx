@@ -49,6 +49,7 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
 		    if (potmeter != NULL){
 				potmeter->setRange(ports->at(Porti)->Min, ports->at(Porti)->Max);
 				m_pBindings->append(potmeter);
+				m_BindedPortIndex.append(Porti);
 				Knobi++;
 				Porti++;
 		    } else {
@@ -109,4 +110,12 @@ int EffectsUnitsInstance::getInstanceID(){
 
 int EffectsUnitsInstance::getNextInstanceID(){
 	return nextInstanceID++;
+}
+
+QString EffectsUnitsInstance::getPortNameByIndex(int Index){
+	if (Index < m_BindedPortIndex.size()){
+		return getPlugin()->getPortNameByIndex(m_BindedPortIndex.at(Index));
+	} else {
+		return "Not Used";
+	}
 }

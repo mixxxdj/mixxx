@@ -30,6 +30,7 @@ public:
 	virtual ~EffectsUnitsWidget();
 
 	int getInstanceID();
+	void updateLabels();
 
 public slots:
 	void slotEffectChanged(QString);

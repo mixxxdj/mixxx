@@ -76,8 +76,10 @@ void EffectsUnitsWidget::slotEffectChanged(QString Name){
 
 	if (m_pPreviousInstance != NULL){
 		m_pSlot->changedWidgetEffect(m_pPreviousInstance->getInstanceID(), m_pCurrentInstance->getInstanceID());
+		updateLabels();
 	} else {
 		m_pSlot->changedWidgetEffect(NULL, m_pCurrentInstance->getInstanceID());
+		updateLabels();
 	}
 }
 
@@ -89,3 +91,9 @@ int EffectsUnitsWidget::getNextID(){
 	return NextID++;
 }
 
+void EffectsUnitsWidget::updateLabels(){
+	m_Labels.at(0)->setText("Wet/Dry");
+	for (int i = 0; i < m_KnobCount-1; i++){
+		m_Labels.at(i+1)->setText(m_pCurrentInstance->getPortNameByIndex(i)); // TODO - NULL cases, knob > portNumber
+	}
+}

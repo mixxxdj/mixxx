@@ -48,5 +48,13 @@ QList<EffectsUnitsPort *> * EffectsUnitsPlugin::getPorts(){
 	return &m_Ports;
 }
 
+QString EffectsUnitsPlugin::getPortNameByIndex(int i){
+	if (i < m_Ports.size()){
+		if (!m_Ports.at(i)->isAudio){
+			return *(m_Ports.at(i)->Name);
+		}
+	}
+	return "Not Used";
+}
 
 
