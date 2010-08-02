@@ -25,8 +25,6 @@
 
 #include "trackinfoobject.h"
 
-#include "bpm/bpmscheme.h"
-#include "bpm/bpmreceiver.h"
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
 #include "controlobject.h"
@@ -132,6 +130,10 @@ void TrackInfoObject::initialize() {
 TrackInfoObject::~TrackInfoObject() {
 }
 
+void TrackInfoObject::doSave() {
+    emit(save());
+}
+
 bool TrackInfoObject::isValid() const {
     QMutexLocker lock(&m_qMutex);
     return m_bIsValid;
@@ -166,6 +168,8 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     //}
 
 }
+
+static void doNothing(TrackInfoObject* pTrack) {}
 
 int TrackInfoObject::parse()
 {

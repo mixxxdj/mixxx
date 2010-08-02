@@ -20,6 +20,7 @@
 #include <QList>
 #include <q3valuelist.h>
 
+#include "trackinfoobject.h"
 #include "widget/wwidget.h"
 
 
@@ -29,7 +30,6 @@ Waveform overview display
 @author Tue Haste Andersen
 */
 
-class TrackInfoObject;
 class ControlObject;
 
 class WOverview : public WWidget
@@ -50,7 +50,8 @@ class WOverview : public WWidget
   public slots:
     void setValue(double);
     void slotLoadNewWaveform(TrackInfoObject* pTrack);
-    void slotUnloadTrack(TrackInfoObject* pTrack);
+    void slotLoadNewWaveform(TrackPointer pTrack);
+    void slotUnloadTrack(TrackPointer pTrack);
   private slots:
     void cueChanged(double v);
     void loopStartChanged(double v);

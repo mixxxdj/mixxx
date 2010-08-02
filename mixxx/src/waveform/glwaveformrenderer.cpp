@@ -40,7 +40,7 @@ m_iInternalBufferSize(0)
 {
     m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"playposition")));
     connect(m_pPlayPos, SIGNAL(valueChanged(double)), this, SLOT(slotUpdatePlayPos(double)));
-    
+
     m_pCOVisualResample = new ControlObject(ConfigKey(group,"VisualResample"));
     m_pCOVerticalScale = new ControlObject(ConfigKey(group, "VisualVerticalScale"));
 }
@@ -77,7 +77,7 @@ void GLWaveformRenderer::resize(int w, int h) {
         m_pInternalBuffer[i*3+0] = i-10;
         m_pInternalBuffer[i*3+1] = 0.5;
         m_pInternalBuffer[i*3+2] = 1.0;
-        
+
 
     }
 
@@ -89,7 +89,7 @@ void GLWaveformRenderer::resize(int w, int h) {
     gluLookAt(0,0,15.0, // look along z-axis
               0,0,0,  // from the origin
               0,1.0,0); // with y being 'up'
-    
+
     setupControlObjects();
 }
 
@@ -101,7 +101,7 @@ void GLWaveformRenderer::setupControlObjects() {
     int verticalScale = ((1<<15)-1)*2/ m_iHeight;
     m_pCOVerticalScale->set(verticalScale);
 
-    
+
     // the resample rate is the number of seconds that correspond to one pixel
     // on the visual waveform display.
 
@@ -128,7 +128,7 @@ void GLWaveformRenderer::setup(QDomNode node) {
     bgColor = WSkinColor::getCorrectColor(bgColor);
 
     qDebug() << "Got bgColor " << bgColor;
-    
+
     signalColor.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
     signalColor = WSkinColor::getCorrectColor(signalColor);
 
@@ -151,7 +151,7 @@ void GLWaveformRenderer::precomputePixmap() {
 }
 
 bool GLWaveformRenderer::fetchWaveformFromTrack() {
-    
+
     if(!m_pTrack)
         return false;
 
@@ -165,11 +165,11 @@ bool GLWaveformRenderer::fetchWaveformFromTrack() {
 
     return true;
 }
-    
+
 
 
 void GLWaveformRenderer::drawSignalLines() {
-    
+
     if(m_pSampleBuffer == NULL) {
             return;
     }
@@ -178,7 +178,7 @@ void GLWaveformRenderer::drawSignalLines() {
     if(m_dPlayPos != -1) {
         iCurPos = (int)(m_dPlayPos*m_iNumSamples);
     }
-        
+
     if((iCurPos % 2) != 0)
         iCurPos--;
 
@@ -193,10 +193,10 @@ void GLWaveformRenderer::drawSignalLines() {
 
             m_pInternalBuffer[i*3+1] = sampl;
         }
-        
+
 
     }
-    
+
     /*
     pPainter->scale(1.0/float(SCALE_TEST),m_iHeight*0.40);
     int halfw = m_iWidth*SCALE_TEST/2;
@@ -241,7 +241,7 @@ void GLWaveformRenderer::glDraw() {
         if(m_pSampleBuffer != NULL)
             qDebug() << "Received waveform from track";
     }
-    
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -251,29 +251,29 @@ void GLWaveformRenderer::glDraw() {
               0,1,0);
 
     glDrawBuffer(GL_BACK);
-    
-    
+
+
     glPushMatrix();
 
     glScalef(1.0/5.0,m_iHeight/2, 1.0);
 
     drawSignalLines();
-    
+
     glBegin(GL_LINES);
 
     glVertex3f(0,0,1.0);
     glVertex3f(0,1.0,1.0);
 
-    
+
     glEnd();
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, m_pInternalBuffer);
     glDrawArrays(GL_LINE_LOOP,0,m_iInternalBufferSize);
-    
+
     glPopMatrix();
-    
-    
+
+
 
     glFlush();
 }
@@ -281,10 +281,10 @@ void GLWaveformRenderer::glDraw() {
 void GLWaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     pPainter->fillRect(pEvent->rect(), QBrush(bgColor));
     pPainter->setPen(signalColor);
-    
+
     if(m_iWidth == 0 || m_iHeight == 0)
         return;
-    
+
     //int scaley = 32767*2/ m_iHeight;
     //int scaley2 = 32767*4/ m_iHeight;
     //int sca = m_iWidth*2/ m_iHeight;
@@ -296,17 +296,17 @@ void GLWaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
             qDebug() << "Received waveform from track";
     }
 
-   
+
 
     //drawSignalPixmap(pPainter);
 
-    
-    
+
+
     pPainter->translate(0,m_iHeight/2);
     pPainter->scale(1.0,-1.0);
     //drawSignalLines(pPainter);
 
-    
+
     // Draw various markers.
     pPainter->setPen(colorMarker);
 
@@ -318,7 +318,7 @@ void GLWaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
 }
 
-void GLWaveformRenderer::newTrack(TrackInfoObject* pTrack) {
+void GLWaveformRenderer::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
     m_pSampleBuffer = 0;
     m_iNumSamples = 0;

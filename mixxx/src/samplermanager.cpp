@@ -9,15 +9,15 @@
 #include "engine/enginemaster.h"
 
 SamplerManager::SamplerManager(ConfigObject<ConfigValue> *pConfig,
-    EngineMaster* pEngine,
-    Library* pLibrary)
-    : m_pConfig(pConfig),
-    m_pEngine(pEngine),
-m_pLibrary(pLibrary) {
+                               EngineMaster* pEngine,
+                               Library* pLibrary)
+         : m_pConfig(pConfig),
+           m_pEngine(pEngine),
+           m_pLibrary(pLibrary) {
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(pConfig);
 
-    connect(m_pLibrary, SIGNAL(loadTrackToSampler(TrackInfoObject*, int)),
-        this, SLOT(slotLoadTrackToSampler(TrackInfoObject*, int)));
+    connect(m_pLibrary, SIGNAL(loadTrackToSampler(TrackPointer, int)),
+        this, SLOT(slotLoadTrackToSampler(TrackPointer, int)));
 
     // Disabled to remove loading into sampler on double click
     //connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
@@ -51,14 +51,14 @@ Sampler* SamplerManager::addSampler() {
 
     // Connect the player to the library so that when a track is unloaded, it's
     // data (eg. waveform summary) is saved back to the database.
-    connect(pSampler, SIGNAL(unloadingTrack(TrackInfoObject*)),
+    connect(pSampler, SIGNAL(unloadingTrack(TrackPointer)),
         &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-        SLOT(saveTrack(TrackInfoObject*)));
+        SLOT(saveTrack(TrackPointer)));
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
-    connect(pSampler, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
+    connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
+        m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
 
     m_samplers.append(pSampler);
 
@@ -80,25 +80,24 @@ Sampler* SamplerManager::getSampler(QString group) {
 
 Sampler* SamplerManager::getSampler(int sampler) {
     if (sampler < 1 || sampler > numSamplers()) {
-        qWarning() << "Warning PlayerManager::getPlayer() called with invalid index: " << sampler;
+        qWarning() << "Warning SamplerManager::getSampler() called with invalid index: " << sampler;
         return NULL;
     }
     return m_samplers[sampler - 1];
 }
 
-void SamplerManager::slotLoadTrackToSampler(TrackInfoObject* pTrack, 
-int sampler) {
+void SamplerManager::slotLoadTrackToSampler(TrackPointer pTrack, int sampler) {
     Sampler* pSampler = getSampler(sampler);
 
     if (pSampler == NULL) {
-        qWarning() << "Invalid sampler argument " << sampler << " to slotLoadTrackToPlayer.";
+        qWarning() << "Invalid sampler argument " << sampler << " to slotLoadTrackToSampler.";
         return;
     }
 
     pSampler->slotLoadTrack(pTrack);
 }
 
-void SamplerManager::slotLoadTrackIntoNextAvailableSampler(TrackInfoObject* pTrack)
+void SamplerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack)
 {
     QList<Sampler*>::iterator it = m_samplers.begin();
     while (it != m_samplers.end()) {
@@ -113,14 +112,14 @@ void SamplerManager::slotLoadTrackIntoNextAvailableSampler(TrackInfoObject* pTra
     }
 }
 
-TrackInfoObject* SamplerManager::lookupTrack(QString location) {
+TrackPointer SamplerManager::lookupTrack(QString location) {
     // Try to get TrackInfoObject* from library, identified by location.
     TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
+    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+    // If not, create a new TrackPointer 
     if (pTrack == NULL)
     {
-        pTrack = new TrackInfoObject(location);
+        pTrack = TrackPointer(new TrackInfoObject(location));
     }
     return pTrack;
 }
@@ -137,7 +136,7 @@ void SamplerManager::slotLoadToSampler(QString location, int sampler) {
         return;
     }
 
-    TrackInfoObject *pTrack = lookupTrack(location);
+    TrackPointer pTrack = lookupTrack(location);
 
     //Load the track into the Player.
     pSampler->slotLoadTrack(pTrack);
@@ -152,9 +151,8 @@ void SamplerManager::slotLoadToSampler(QString location, QString group) {
         return;
     }
 
-    TrackInfoObject *pTrack = lookupTrack(location);
+    TrackPointer pTrack = lookupTrack(location);
 
     //Load the track into the Player.
     pSampler->slotLoadTrack(pTrack);
-    qDebug("Track Loaded in Sampler.");
 }

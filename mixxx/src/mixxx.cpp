@@ -114,6 +114,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     Upgrade upgrader;
     config = upgrader.versionUpgrade();
     bool bFirstRun = upgrader.isFirstRun();
+    bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -197,7 +198,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this, config, bFirstRun);
+    m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
+    qRegisterMetaType<TrackPointer>("TrackPointer");
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
@@ -300,8 +302,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     }
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun) {
-        QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
+    if (bFirstRun || bUpgraded) {
+        QList<TrackPointer> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
         for (int i = 0; i < m_pPlayerManager->numPlayers() && i < tracksToAutoLoad.count(); i++) {
             m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
         }

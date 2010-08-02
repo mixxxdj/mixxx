@@ -13,8 +13,9 @@
 #include <QAbstractItemModel>
 #include <QUrl>
 
+#include "trackinfoobject.h"
+
 class TrackModel;
-class TrackInfoObject;
 class WLibrarySidebar;
 class WLibrary;
 class MixxxKeyboard;
@@ -48,9 +49,9 @@ class LibraryFeature : public QObject {
     void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void loadTrack(TrackInfoObject* pTrack);
-    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
-    void loadTrackToSampler(TrackInfoObject* pTrack, int player);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, int player);
+    void loadTrackToSampler(TrackPointer pTrack, int sampler);
     void restoreSearch(const QString&);
 };
 

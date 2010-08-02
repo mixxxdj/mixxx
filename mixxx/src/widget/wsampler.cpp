@@ -55,25 +55,25 @@ WSampler::WSampler(QWidget* parent, SamplerManager* pSamplerManager) :
     m_pWaveformRendererCh6 = new WaveformRenderer("[Channel6]");
     
     
-    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pSampler1, SIGNAL(unloadingTrack(TrackInfoObject *)),
-            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackInfoObject *)));
+    connect(pSampler1, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackPointer)));
+    connect(pSampler1, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackPointer)));
 
-    connect(pSampler2, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh4, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pSampler2, SIGNAL(unloadingTrack(TrackInfoObject *)),
-            m_pWaveformRendererCh4, SLOT(slotNewTrack(TrackInfoObject *)));
+    connect(pSampler2, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh4, SLOT(slotNewTrack(TrackPointer)));
+    connect(pSampler2, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRendererCh4, SLOT(slotNewTrack(TrackPointer)));
             
-    connect(pSampler3, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh5, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pSampler3, SIGNAL(unloadingTrack(TrackInfoObject *)),
-            m_pWaveformRendererCh5, SLOT(slotNewTrack(TrackInfoObject *)));
+    connect(pSampler3, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh5, SLOT(slotNewTrack(TrackPointer)));
+    connect(pSampler3, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRendererCh5, SLOT(slotNewTrack(TrackPointer)));
             
-    connect(pSampler4, SIGNAL(newTrackLoaded(TrackInfoObject *)),
-            m_pWaveformRendererCh6, SLOT(slotNewTrack(TrackInfoObject *)));
-    connect(pSampler4, SIGNAL(unloadingTrack(TrackInfoObject *)),
-            m_pWaveformRendererCh6, SLOT(slotNewTrack(TrackInfoObject *)));
+    connect(pSampler4, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh6, SLOT(slotNewTrack(TrackPointer)));
+    connect(pSampler4, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRendererCh6, SLOT(slotNewTrack(TrackPointer)));
                 
     m_pOverviewCh3 = 0;
     m_pOverviewCh4 = 0;
@@ -149,21 +149,21 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
                     m_pOverviewCh3 = new WOverview("[Channel3]", m_pSamplerWindow);
                 m_pOverviewCh3->setup(samplerNode);
                 m_pOverviewCh3->setParent(m_pSamplerWindow);
-		        m_pOverviewCh3->show();
+		m_pOverviewCh3->show();
             } else if (WWidget::selectNodeInt(samplerNode, "Channel")==4)
             {
                 if (m_pOverviewCh4 == 0)
                     m_pOverviewCh4 = new WOverview("[Channel4]", m_pSamplerWindow);
                 m_pOverviewCh4->setup(samplerNode);
                 m_pOverviewCh4->setParent(m_pSamplerWindow);
-    		    m_pOverviewCh4->show();
+    		m_pOverviewCh4->show();
     		} else if (WWidget::selectNodeInt(samplerNode, "Channel")==5)
             {
                 if (m_pOverviewCh5 == 0)
                     m_pOverviewCh5 = new WOverview("[Channel5]", m_pSamplerWindow);
                 m_pOverviewCh5->setup(samplerNode);
                 m_pOverviewCh5->setParent(m_pSamplerWindow);
-        		m_pOverviewCh5->show();
+        	m_pOverviewCh5->show();
             } else if (WWidget::selectNodeInt(samplerNode, "Channel")==6)
             {
                     if (m_pOverviewCh6 == 0)
@@ -194,34 +194,34 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
     Sampler* pSampler3 = m_pSamplerManager->getSampler(3);
     Sampler* pSampler4 = m_pSamplerManager->getSampler(4);
     
-    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    connect(pSampler1, SIGNAL(unloadingTrack(TrackInfoObject*)),
-        m_pOverviewCh3, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    connect(pSampler1, SIGNAL(newTrackLoaded(TrackPointer)),
+        m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackPointer)));
+    connect(pSampler1, SIGNAL(unloadingTrack(TrackPointer)),
+        m_pOverviewCh3, SLOT(slotUnloadTrack(TrackPointer)));
         
-    connect(pSampler2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        m_pOverviewCh4, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    connect(pSampler2, SIGNAL(unloadingTrack(TrackInfoObject*)),
-        m_pOverviewCh4, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    connect(pSampler2, SIGNAL(newTrackLoaded(TrackPointer)),
+        m_pOverviewCh4, SLOT(slotLoadNewWaveform(TrackPointer)));
+    connect(pSampler2, SIGNAL(unloadingTrack(TrackPointer)),
+        m_pOverviewCh4, SLOT(slotUnloadTrack(TrackPointer)));
 
-    connect(pSampler3, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        m_pOverviewCh5, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    connect(pSampler3, SIGNAL(unloadingTrack(TrackInfoObject*)),
-        m_pOverviewCh5, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    connect(pSampler3, SIGNAL(newTrackLoaded(TrackPointer)),
+        m_pOverviewCh5, SLOT(slotLoadNewWaveform(TrackPointer)));
+    connect(pSampler3, SIGNAL(unloadingTrack(TrackPointer)),
+        m_pOverviewCh5, SLOT(slotUnloadTrack(TrackPointer)));
         
-    connect(pSampler4, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-        m_pOverviewCh6, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    connect(pSampler4, SIGNAL(unloadingTrack(TrackInfoObject*)),
-        m_pOverviewCh6, SLOT(slotUnloadTrack(TrackInfoObject*)));
+    connect(pSampler4, SIGNAL(newTrackLoaded(TrackPointer)),
+        m_pOverviewCh6, SLOT(slotLoadNewWaveform(TrackPointer)));
+    connect(pSampler4, SIGNAL(unloadingTrack(TrackPointer)),
+        m_pOverviewCh6, SLOT(slotUnloadTrack(TrackPointer)));
                       
-    connect(pSampler1, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-     		this, SLOT(slotSetupTrackConnectionsCh3(TrackInfoObject*)));
-    connect(pSampler2, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-     		this, SLOT(slotSetupTrackConnectionsCh4(TrackInfoObject*)));
-    connect(pSampler3, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-     		this, SLOT(slotSetupTrackConnectionsCh5(TrackInfoObject*)));
-    connect(pSampler4, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-     		this, SLOT(slotSetupTrackConnectionsCh6(TrackInfoObject*)));
+    connect(pSampler1, SIGNAL(newTrackLoaded(TrackPointer)),
+     		this, SLOT(slotSetupTrackConnectionsCh3(TrackPointer)));
+    connect(pSampler2, SIGNAL(newTrackLoaded(TrackPointer)),
+     		this, SLOT(slotSetupTrackConnectionsCh4(TrackPointer)));
+    connect(pSampler3, SIGNAL(newTrackLoaded(TrackPointer)),
+     		this, SLOT(slotSetupTrackConnectionsCh5(TrackPointer)));
+    connect(pSampler4, SIGNAL(newTrackLoaded(TrackPointer)),
+     		this, SLOT(slotSetupTrackConnectionsCh6(TrackPointer)));
      		
     m_pSamplerWindow->show();
 }
@@ -283,22 +283,22 @@ void WSampler::slotLoadSamplerBank() {
             if(e.tagName() == "sampler1") {
                 QString location = e.attribute("location", "");
                 qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                TrackPointer loadTrack = TrackPointer(new TrackInfoObject(location));
                 m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 1);
             } else if(e.tagName() == "sampler2") {
                 QString location = e.attribute("location", "");
                 qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                TrackPointer loadTrack = TrackPointer(new TrackInfoObject(location));
                 m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 2);
             } else if(e.tagName() == "sampler3") {
                 QString location = e.attribute("location", "");
                 qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                TrackPointer loadTrack = TrackPointer(new TrackInfoObject(location));
                 m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 3);
             } else if(e.tagName() == "sampler4") {
                 QString location = e.attribute("location", "");
                 qDebug() << location;
-                TrackInfoObject* loadTrack = new TrackInfoObject(location);
+                TrackPointer loadTrack = TrackPointer(new TrackInfoObject(location));
                 m_pSamplerManager->slotLoadTrackToSampler(loadTrack, 4);
             }
         }
@@ -310,22 +310,22 @@ void WSampler::slotLoadSamplerBank() {
     
 }
 
-void WSampler::slotSetupTrackConnectionsCh3(TrackInfoObject* pTrack) {
-    connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+void WSampler::slotSetupTrackConnectionsCh3(TrackPointer pTrack) {
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
 		m_pOverviewCh3, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
 }
 
-void WSampler::slotSetupTrackConnectionsCh4(TrackInfoObject* pTrack) {
-    connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+void WSampler::slotSetupTrackConnectionsCh4(TrackPointer pTrack) {
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
 		m_pOverviewCh4, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
 }
 
-void WSampler::slotSetupTrackConnectionsCh5(TrackInfoObject* pTrack) {
-    connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+void WSampler::slotSetupTrackConnectionsCh5(TrackPointer pTrack) {
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
 		m_pOverviewCh5, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
 }
 
-void WSampler::slotSetupTrackConnectionsCh6(TrackInfoObject* pTrack) {
-    connect(pTrack, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+void WSampler::slotSetupTrackConnectionsCh6(TrackPointer pTrack) {
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
 		m_pOverviewCh6, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
 }

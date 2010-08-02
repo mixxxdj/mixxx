@@ -25,6 +25,7 @@
 #include <QList>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "imgsource.h"
 
 class ControlObject;
@@ -56,7 +57,6 @@ class Player;
 class PlayerManager;
 class Sampler;
 class SamplerManager;
-class TrackInfoObject;
 class QStandardItemModel;
 class Library;
 class WLibrary;
@@ -109,12 +109,12 @@ public:
 
     static QList<QString> getSchemeList(QString qSkinPath);
   public slots:
-    void slotSetupTrackConnectionsCh1(TrackInfoObject* pTrack);
-    void slotSetupTrackConnectionsCh2(TrackInfoObject* pTrack);
-    void slotUpdateTrackTextCh1(TrackInfoObject* pTrack);
-    void slotClearTrackTextCh1(TrackInfoObject* pTrack);
-    void slotUpdateTrackTextCh2(TrackInfoObject* pTrack);
-    void slotClearTrackTextCh2(TrackInfoObject* pTrack);
+    void slotSetupTrackConnectionsCh1(TrackPointer pTrack);
+    void slotSetupTrackConnectionsCh2(TrackPointer pTrack);
+    void slotUpdateTrackTextCh1(TrackPointer pTrack);
+    void slotClearTrackTextCh1(TrackPointer pTrack);
+    void slotUpdateTrackTextCh2(TrackPointer pTrack);
+    void slotClearTrackTextCh2(TrackPointer pTrack);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);

@@ -29,14 +29,14 @@ public:
     void tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void selectAll();
     void analyze();
-    void trackAnalysisFinished(TrackInfoObject* tio);
-    void trackAnalysisProgress(TrackInfoObject* tio, int progress);
+    void trackAnalysisFinished(TrackPointer tio);
+    void trackAnalysisProgress(TrackPointer tio, int progress);
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);
   signals:
-    void loadTrack(TrackInfoObject* pTrack);
-    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, int player);
 
   private:
     void stopAnalysis();

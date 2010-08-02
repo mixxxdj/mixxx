@@ -19,10 +19,10 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
           m_pLibrary(pLibrary) {
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(pConfig);
 
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackInfoObject*, int)));
-    connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
-             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject*)));
+    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
+             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackPointer)));
 }
 
 PlayerManager::~PlayerManager() {
@@ -50,14 +50,14 @@ Player* PlayerManager::addPlayer() {
 
     // Connect the player to the library so that when a track is unloaded, it's
     // data (eg. waveform summary) is saved back to the database.
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackInfoObject*)),
+    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackInfoObject*)));
+            SLOT(saveTrack(TrackPointer)));
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackInfoObject*)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackInfoObject*)));
+    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
 
     m_players.append(pPlayer);
 
@@ -86,7 +86,7 @@ Player* PlayerManager::getPlayer(int player) {
     return m_players[player - 1];
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
     Player* pPlayer = getPlayer(player);
 
     if (pPlayer == NULL) {
@@ -97,7 +97,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player) {
     pPlayer->slotLoadTrack(pTrack);
 }
 
-void PlayerManager::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack)
+void PlayerManager::slotLoadTrackIntoNextAvailablePlayer(TrackPointer pTrack)
 {
     QList<Player*>::iterator it = m_players.begin();
     while (it != m_players.end()) {
@@ -112,14 +112,14 @@ void PlayerManager::slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack
     }
 }
 
-TrackInfoObject* PlayerManager::lookupTrack(QString location) {
-    // Try to get TrackInfoObject* from library, identified by location.
+TrackPointer PlayerManager::lookupTrack(QString location) {
+    // Try to get TrackPointer from library, identified by location.
     TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackInfoObject* pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
+    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+    // If not, create a new TrackPointer
     if (pTrack == NULL)
     {
-        pTrack = new TrackInfoObject(location);
+        pTrack = TrackPointer(new TrackInfoObject(location));
     }
     return pTrack;
 }
@@ -132,7 +132,7 @@ void PlayerManager::slotLoadToPlayer(QString location, int player) {
         return;
     }
 
-    TrackInfoObject *pTrack = lookupTrack(location);
+    TrackPointer pTrack = lookupTrack(location);
 
     //Load the track into the Player.
     pPlayer->slotLoadTrack(pTrack);
@@ -147,7 +147,7 @@ void PlayerManager::slotLoadToPlayer(QString location, QString group) {
         return;
     }
 
-    TrackInfoObject *pTrack = lookupTrack(location);
+    TrackPointer pTrack = lookupTrack(location);
 
     //Load the track into the Player.
     pPlayer->slotLoadTrack(pTrack);
