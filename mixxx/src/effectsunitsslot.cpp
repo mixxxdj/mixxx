@@ -10,6 +10,12 @@
 
 int EffectsUnitsSlot::NextID = 1;
 
+/* Effects Units Slot.
+ * Slots can have many Widgets.
+ * Slots have Deck Buttons, which apply the Effects from Widgets
+ * on the corresponding Deck.
+ * This is all skin based.
+ */
 EffectsUnitsSlot::EffectsUnitsSlot(QWidget * parent, EffectsUnitsController * controller, QDomNode node) : QWidget(parent) {
 	QGridLayout * lay = new QGridLayout(this);
 	this->setLayout(lay);
@@ -66,6 +72,10 @@ int EffectsUnitsSlot::getNextID(){
 	return NextID++;
 }
 
+/* EffectsUnitsSlot::slotDeckUpdated
+ * Is signalled when a Deck button is hit.
+ * Then we gotta see if that means to activate or deactivate.
+ */
 void EffectsUnitsSlot::slotDeckUpdated(int i){
 	if (deckIsActivated(i)){
 		activateOnDeck(i);
@@ -74,6 +84,10 @@ void EffectsUnitsSlot::slotDeckUpdated(int i){
 	}
 }
 
+/* EffectsUnitsSlot::activateOnDeck
+ * For every Widget on our Slot, add Widget's instance
+ * to processing queue of the given Channel
+ */
 void EffectsUnitsSlot::activateOnDeck(int iDeck){
 	int size = m_pEffectsUnitsWidgets->size();
 	for (int i = 0; i < size; i++){
@@ -84,6 +98,10 @@ void EffectsUnitsSlot::activateOnDeck(int iDeck){
 	}
 }
 
+/* EffectsUnitsSlot::deactivateOnDeck
+ * For every Widget on our Slot, remove Widget's instance
+ * from processing queue of the given Channel
+ */
 void EffectsUnitsSlot::deactivateOnDeck(int iDeck){
 	int size = m_pEffectsUnitsWidgets->size();
 	for (int i = 0; i < size; i++){
@@ -98,6 +116,11 @@ bool EffectsUnitsSlot::deckIsActivated(int i){
 	return (m_DeckButtons.at(i)->getValue() > 0);
 }
 
+/* EffectsUnitsSlot::changedWidgetEffect
+ * If a Widget suddenly changes effect, we have to mantain the
+ * current Deck setup, e.g. if Deck 1 is activated, we need to
+ * add the new instance to the Deck 1 processing queue.
+ */
 void EffectsUnitsSlot::changedWidgetEffect(int PreviousID, int CurrentID){
 	m_pController->removeInstance(PreviousID);
 	int size = m_DeckButtons.size();

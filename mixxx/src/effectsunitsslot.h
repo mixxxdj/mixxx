@@ -35,6 +35,7 @@ private:
 	QList<EffectsUnitsWidget *> * m_pEffectsUnitsWidgets;
 
 	static int NextID;
+
 	int m_SlotID;
 	QSignalMapper * m_pSignalMapper;
 	QList<WPushButton*> m_DeckButtons;

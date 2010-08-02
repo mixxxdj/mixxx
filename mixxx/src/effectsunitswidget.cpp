@@ -9,6 +9,12 @@
 
 int EffectsUnitsWidget::NextID = 1;
 
+/* Effects Units Widget.
+ * A Widget can have one active Instance.
+ * A Widget has the On/Off buton for that Instance.
+ * A Widget has many Knobs.
+ * The number of Knobs is skin based.
+ */
 EffectsUnitsWidget::EffectsUnitsWidget(QWidget * parent, QDomNode node, EffectsUnitsController * controller) : QWidget(parent) {
 	m_pCurrentInstance = NULL;
 	m_pPreviousInstance = NULL;
@@ -70,6 +76,11 @@ EffectsUnitsWidget::~EffectsUnitsWidget() {
 	// TODO Auto-generated destructor stub
 }
 
+/* EffectsUnitsWidget::slotEffectChanged
+ * When a new Effect is loaded in our widget, we need to properly load
+ * it by notifying our parent Slot, activating the Instance and updating
+ * the Knob Labels.
+ */
 void EffectsUnitsWidget::slotEffectChanged(QString Name){
 	m_pPreviousInstance = m_pCurrentInstance;
 	m_pCurrentInstance = m_pController->instantiatePluginForWidget(Name, m_WidgetID, m_KnobCount);
@@ -91,6 +102,10 @@ int EffectsUnitsWidget::getNextID(){
 	return NextID++;
 }
 
+/* EffectsUnitsWidget::updateLabels
+ * Updates the labels for the parameters.
+ * The first one is a Wet/Dry knob by definition.
+ */
 void EffectsUnitsWidget::updateLabels(){
 	m_Labels.at(0)->setText("Wet/Dry");
 	for (int i = 0; i < m_KnobCount-1; i++){

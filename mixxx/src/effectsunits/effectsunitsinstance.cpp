@@ -9,6 +9,12 @@
 
 int EffectsUnitsInstance::nextInstanceID = 1;
 
+/* Effects Units Instance.
+ * Instances were brought up so we can share the same plugin along many Widgets.
+ * This way, every instance has their own port values for the plugin to process.
+ * This is done by binding itself to given Widgets ControlObjects.
+ * Instances mantain communication with the Plugin, specially for Backend operations.
+ */
 EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int WidgetID, int KnobCount) {
 	m_pPlugin = Plugin;
 	m_pBindings = new QList<ControlObject *>();
@@ -66,6 +72,10 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
 
 }
 
+/* EffectsUnitsInstance::updatePorts
+ * Updates the Plugin with our values from the Widget.
+ * So we process the way the Widget wants.
+ */
 void EffectsUnitsInstance::updatePorts(){
 	/* Updating Port Values: */
 	int size = m_pBindings->size();
