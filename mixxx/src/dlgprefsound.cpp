@@ -47,9 +47,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
 
     apiComboBox->clear();
     apiComboBox->addItem("None", "None");
-    foreach (QString api, m_pSoundManager->getHostAPIList()) {
-        apiComboBox->addItem(api, api);
-    }
+    updateAPIs();
     connect(apiComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(apiChanged(int)));
 
@@ -196,6 +194,10 @@ void DlgPrefSound::initializePaths() {
                 item, SLOT(loadPath(const SoundManagerConfig&)));
         connect(this, SIGNAL(writePaths(SoundManagerConfig*)),
                 item, SLOT(writePath(SoundManagerConfig*)));
+        connect(this, SIGNAL(updatingAPI()),
+                item, SLOT(save()));
+        connect(this, SIGNAL(updatedAPI()),
+                item, SLOT(reload()));
     }
 }
 
@@ -246,6 +248,26 @@ void DlgPrefSound::apiChanged(int index) {
         latencyLabel->setEnabled(true);
         latencyComboBox->setEnabled(true);
     }
+}
+
+/**
+ * Updates the list of APIs, trying to keep the API and device selections
+ * constant if possible.
+ */
+void DlgPrefSound::updateAPIs() {
+    QString currentAPI(apiComboBox->itemData(apiComboBox->currentIndex()).toString());
+    emit(updatingAPI());
+    while (apiComboBox->count() > 1) {
+        apiComboBox->removeItem(apiComboBox->count() - 1);
+    }
+    foreach (QString api, m_pSoundManager->getHostAPIList()) {
+        apiComboBox->addItem(api, api);
+    }
+    int newIndex = apiComboBox->findData(currentAPI);
+    if (newIndex > -1) {
+        apiComboBox->setCurrentIndex(newIndex);
+    }
+    emit(updatedAPI());
 }
 
 /**
@@ -338,6 +360,7 @@ void DlgPrefSound::settingChanged() {
  */
 void DlgPrefSound::queryClicked() {
     m_pSoundManager->queryDevices();
+    updateAPIs();
 }
 
 /**

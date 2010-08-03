@@ -45,6 +45,8 @@ signals:
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevice*> &devices);
     void refreshInputDevices(const QList<SoundDevice*> &devices);
+    void updatingAPI();
+    void updatedAPI();
 public slots:
     void slotUpdate(); // called on show
     void slotApply();  // called on ok button
@@ -63,6 +65,7 @@ private:
     bool m_forceApply;
 private slots:
     void apiChanged(int index);
+    void updateAPIs();
     void sampleRateChanged(int index);
     void latencyChanged(int index);
     void updateLatencies(int sampleRateIndex);

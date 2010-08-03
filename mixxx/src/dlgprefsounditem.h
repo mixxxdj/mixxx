@@ -42,6 +42,8 @@ public slots:
     void deviceChanged(int index);
     void loadPath(const SoundManagerConfig &config);
     void writePath(SoundManagerConfig *config) const;
+    void save();
+    void reload();
 private:
     SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setDevice(const QString &deviceName);
@@ -50,6 +52,8 @@ private:
     unsigned int m_index;
     QList<SoundDevice*> m_devices;
     bool m_isInput;
+    QString m_savedDevice;
+    unsigned int m_savedChannel;
 };
 
 #endif
