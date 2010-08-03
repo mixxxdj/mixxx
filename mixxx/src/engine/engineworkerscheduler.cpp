@@ -2,6 +2,7 @@
 // Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#include <QMutexLocker>
 
 #include "engine/engineworker.h"
 #include "engine/engineworkerscheduler.h"
@@ -37,23 +38,27 @@ void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
 void EngineWorkerScheduler::workerReady(QObject* pObject) {
     EngineWorker* pWorker = dynamic_cast<EngineWorker*>(pObject);
     Q_ASSERT(pWorker);
+    QMutexLocker locker(&m_mutex);
     m_scheduledWorkers.insert(pWorker);
 }
 
 void EngineWorkerScheduler::workerStarted(QObject* pObject) {
     EngineWorker* pWorker = dynamic_cast<EngineWorker*>(pObject);
     Q_ASSERT(pWorker);
+    QMutexLocker locker(&m_mutex);
     m_activeWorkers.insert(pWorker);
 }
 
 void EngineWorkerScheduler::workerFinished(QObject* pObject) {
     EngineWorker* pWorker = dynamic_cast<EngineWorker*>(pObject);
     Q_ASSERT(pWorker);
+    QMutexLocker locker(&m_mutex);
     m_activeWorkers.remove(pWorker);
 }
 
 
 void EngineWorkerScheduler::runWorkers() {
+    QMutexLocker locker(&m_mutex);
     QMutableSetIterator<EngineWorker*> it(m_scheduledWorkers);
     while (it.hasNext()) {
         EngineWorker* pWorker = it.next();
