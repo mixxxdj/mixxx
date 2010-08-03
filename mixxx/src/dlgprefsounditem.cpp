@@ -33,7 +33,9 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
     , m_type(type)
     , m_index(index)
     , m_devices(devices)
-    , m_isInput(isInput) {
+    , m_isInput(isInput)
+    , m_savedDevice("")
+    , m_savedChannel(0) {
     setupUi(this);
     if (AudioPath::isIndexed(type)) {
         typeLabel->setText(
@@ -179,6 +181,28 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
                     m_index
                     )
                 );
+    }
+}
+
+/**
+ * Slot called to tell the Item to save its selections for later use.
+ */
+void DlgPrefSoundItem::save() {
+    m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toUInt();
+}
+
+/**
+ * Slot called to reload Item with previously saved settings.
+ */
+void DlgPrefSoundItem::reload() {
+    int newDevice = deviceComboBox->findData(m_savedDevice);
+    if (newDevice > -1) {
+        deviceComboBox->setCurrentIndex(newDevice);
+    }
+    int newChannel = channelComboBox->findData(m_savedChannel);
+    if (newChannel > -1) {
+        channelComboBox->setCurrentIndex(newChannel);
     }
 }
 

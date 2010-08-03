@@ -105,6 +105,7 @@ int SoundDevicePortAudio::open()
     qDebug() << "m_dSampleRate" << m_dSampleRate;
 
     //Get latency in milleseconds
+    qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
     qDebug() << "latency in milliseconds:" << latencyMSec;
 
@@ -238,6 +239,7 @@ int SoundDevicePortAudio::open()
 
 int SoundDevicePortAudio::close()
 {
+    //qDebug() << "SoundDevicePortAudio::close()" << this->getInternalName();
     if (m_pStream)
     {
         //Make sure the stream is not stopped before we try stopping it.
@@ -294,7 +296,7 @@ QString SoundDevicePortAudio::getError() const {
  */
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex)
 {
-    //qDebug() << "SoundDevicePortAudio::callbackProcess";
+    //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     int iFrameSize;
     int iVCGain;
     int i;
