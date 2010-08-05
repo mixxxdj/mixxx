@@ -552,7 +552,7 @@
   <Tooltip>Clipping Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
   <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>78, 353</Pos>
+  <Pos>78,353</Pos>
   <Connection>
    <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
   </Connection>
@@ -562,7 +562,7 @@
   <Tooltip>Clipping Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
   <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>981, 353</Pos>
+  <Pos>981,353</Pos>
   <Connection>
    <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
   </Connection>

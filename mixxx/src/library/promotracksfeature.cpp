@@ -109,7 +109,7 @@ QVariant PromoTracksFeature::title() {
 }
 
 QIcon PromoTracksFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_promotracks.png");
 }
 
 bool PromoTracksFeature::isSupported(ConfigObject<ConfigValue>* config) {
