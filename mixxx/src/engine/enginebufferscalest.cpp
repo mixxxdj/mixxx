@@ -74,17 +74,24 @@ bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
     return m_bPitchIndpTimeStretch;
 }
 
-
+ 
 void EngineBufferScaleST::setBaseRate(double dBaseRate)
 {
     m_dBaseRate = dBaseRate;
 
     m_qMutex.lock();
-    if (m_bPitchIndpTimeStretch)
+    if (m_bPitchIndpTimeStretch) {
         m_pSoundTouch->setRate(m_dBaseRate);
-    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
-    else if(m_dTempo >= MIN_SEEK_SPEED)
+    }
+    //or if if we use ST for linear interpolation...
+    else if (m_dBaseRate >= MIN_SEEK_SPEED) {
         m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
+    }
+    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
+    //if (m_dBaseRate <= MIN_SEEK_SPEED)
+    //    m_pSoundTouch->setRate(0.010f);
+    //else if(m_dBaseRate >= MIN_SEEK_SPEED)
+    //    m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
     m_qMutex.unlock();
 }
 
@@ -94,7 +101,6 @@ void EngineBufferScaleST::clear()
     m_qMutex.lock();
     m_pSoundTouch->clear();
     m_bClear = true;
-    //qDebug() << __FILE__ << " - clear";
     m_qMutex.unlock();
 }
 
@@ -164,7 +170,6 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
         iCurPos--;
     }
 
-
     //If we've just cleared SoundTouch's FIFO of unprocessed samples,
     //then reset our "read ahead position" because we probably need
     //to read backwards instead of forwards or something like that.
@@ -181,14 +186,13 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     long total_received_frames = 0;
     long total_read_frames = 0;
 
-
     long remaining_frames = buf_size/2;
     //long remaining_source_frames = iBaseLength/2;
     CSAMPLE* read = buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
-        long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
-                                                             remaining_frames);
+        long received_frames = received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
+                                                                              remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames*2;
@@ -237,6 +241,9 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     //for (unsigned long i = 0; i < buf_size; i++)
     //    qDebug() << buffer[i];
 
+    ///Even though this is called "new_playpos", it's really just the new _offset_
+    //of the playposition. It's how many samples forwards or backwards we just moved
+    //in the song.
     if (m_bBackwards)
         new_playpos = playpos - m_dTempo*m_dBaseRate*total_received_frames*2;
     else
