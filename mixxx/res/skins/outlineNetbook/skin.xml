@@ -658,7 +658,7 @@ Copyright (C) 2010 Mixxx
    <Pressed>play-on-Ch1.png</Pressed>
    <Unpressed>play-on-Ch1.png</Unpressed>
   </State>
-  <Pos>2,30</Pos>
+  <Pos>2,12</Pos>
   <Connection>
    <ConfigKey>[Channel1],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -684,7 +684,7 @@ Copyright (C) 2010 Mixxx
    <Pressed>play-on-Ch2.png</Pressed>
    <Unpressed>play-on-Ch2.png</Unpressed>
   </State>
-  <Pos>905,30</Pos>
+  <Pos>905,12</Pos>
   <Connection>
    <ConfigKey>[Channel2],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -705,7 +705,7 @@ Copyright (C) 2010 Mixxx
    <Pressed>cue-on-Ch1.png</Pressed>
    <Unpressed>cue-off-Ch1.png</Unpressed>
   </State>
-  <Pos>50,30</Pos>
+  <Pos>50,12</Pos>
   <Connection>
    <ConfigKey>[Channel1],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -731,7 +731,7 @@ Copyright (C) 2010 Mixxx
    <Pressed>cue-on-Ch2.png</Pressed>
    <Unpressed>cue-off-Ch2.png</Unpressed>
   </State>
-  <Pos>953,30</Pos>
+  <Pos>953,12</Pos>
   <Connection>
    <ConfigKey>[Channel2],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -1151,7 +1151,216 @@ Copyright (C) 2010 Mixxx
   </Connection>
  </Knob>
 
- <Visual>
+  <!---
+  **********************************************
+  Button- Hotcue
+  **********************************************
+  -->
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-1-Ch1.png</Pressed>
+      <Unpressed>hotcue-off-1.png</Unpressed>
+    </State>
+    <Pos>31,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-2-Ch1.png</Pressed>
+      <Unpressed>hotcue-off-2.png</Unpressed>
+    </State>
+    <Pos>47,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+ 
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-3-Ch1.png</Pressed>
+      <Unpressed>hotcue-off-3.png</Unpressed>
+    </State>
+    <Pos>63,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-4-Ch1.png</Pressed>
+      <Unpressed>hotcue-off-4.png</Unpressed>
+    </State>
+    <Pos>79,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-1-Ch2.png</Pressed>
+      <Unpressed>hotcue-off-1.png</Unpressed>
+    </State>
+    <Pos>905,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-2-Ch2.png</Pressed>
+      <Unpressed>hotcue-off-2.png</Unpressed>
+    </State>
+    <Pos>921,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-3-Ch2.png</Pressed>
+      <Unpressed>hotcue-off-3.png</Unpressed>
+    </State>
+    <Pos>937, 42</Pos>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+  <PushButton>
+    <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>hotcue-on-4-Ch2.png</Pressed>
+      <Unpressed>hotcue-off-4.png</Unpressed>
+    </State>
+    <Pos>953,42</Pos>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+
+
+  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>1</Channel>
   <Pos>102,17</Pos>
@@ -1177,7 +1386,35 @@ Copyright (C) 2010 Mixxx
     <Control>loop_end_position</Control>
     <Text>OUT</Text>
   </Mark>
- </Visual>
+    <Mark>
+      <Control>hotcue_1_position</Control>
+      <Text>HOTCUE 1</Text>
+      <Align>center</Align>
+      <Color>#0033FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>hotcue_2_position</Control>
+      <Text>HOTCUE 2</Text>
+      <Align>center</Align>
+      <Color>#FF0000</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>hotcue_3_position</Control>
+      <Text>HOTCUE 3</Text>
+      <Align>center</Align>
+      <Color>#FF00FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>hotcue_4_position</Control>
+      <Text>HOTCUE 4</Text>
+      <Align>center</Align>
+      <Color>#009900</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+  </Visual>
 
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
