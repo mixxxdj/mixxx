@@ -1,4 +1,4 @@
-  	<!--2 August 2010 17:59:11 CEST-->  
+  	<!--6 August 2010 18:29:42 CEST-->  
   	<!--   
   	Phoney, Skin for Mixxx 1.8.x
     www.mixxx.org
@@ -26,7 +26,7 @@
 
   	<!--
   	CHANGELOG
-	v1.00	(02/08/2010)
+	v1.00	(06/08/2010)
   	* Version bump
   	* some alignment & positioning corrections
   	* fine-tuned some buttons and background graphic's
@@ -115,73 +115,73 @@
   				
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+    		<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_5_position</Control>
-    		<Text>HOTCUE 5</Text>
+    		<Text> HOTCUE 5 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_6_position</Control>
-    		<Text>HOTCUE 6</Text>
+    		<Text> HOTCUE 6 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
-			<Color>#FD0564</Color>
+			<Color>#333333</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
-			<Color>#FD0564</Color>
+			<Color>#333333</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<MarkRange>
     		<StartControl>loop_start_position</StartControl>
     		<EndControl>loop_end_position</EndControl>
     		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#FD0564</Color>
-			<DisabledColor>#454C53</DisabledColor>
+			<Color>#B800C2</Color>
+			<DisabledColor>#FF6FCF</DisabledColor>
   		</MarkRange>
 	</Visual>
 	
@@ -202,49 +202,49 @@
 		
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+    		<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_5_position</Control>
-    		<Text>HOTCUE 5</Text>
+    		<Text> HOTCUE 5 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_6_position</Control>
-    		<Text>HOTCUE 6</Text>
+    		<Text> HOTCUE 6 </Text>
 			<Align>center</Align>
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -252,24 +252,24 @@
   		
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
-			<Color>#FD0564</Color>
+			<Color>#333333</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
-			<Color>#FD0564</Color>
+			<Color>#333333</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<MarkRange>
     		<StartControl>loop_start_position</StartControl>
     		<EndControl>loop_end_position</EndControl>
     		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#FD0564</Color>
-			<DisabledColor>#454C53</DisabledColor>
+			<Color>#B800C2</Color>
+			<DisabledColor>#FF6FCF</DisabledColor>
   		</MarkRange>	
 	</Visual>
 
@@ -285,7 +285,7 @@
 		<Size>320,35</Size>
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#0080FF</SignalColor>
-		<MarkerColor>#FD0564</MarkerColor>
+		<MarkerColor>#191919</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -298,7 +298,7 @@
 		<Size>320,35</Size>
 		<BgColor>#F7F7F7</BgColor>	
 		<SignalColor>#E17000</SignalColor>
-		<MarkerColor>#FD0564</MarkerColor>
+		<MarkerColor>#191919</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -768,7 +768,7 @@
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
         </Connection>
-    </PushButton>     
+    </PushButton>
         
     <PushButton>
         <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>

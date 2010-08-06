@@ -115,63 +115,63 @@
   				
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
 			<Color>#FFFF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#0000FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+    		<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_5_position</Control>
-    		<Text>HOTCUE 5</Text>
+    		<Text> HOTCUE 5 </Text>
 			<Align>center</Align>
 			<Color>#66FFCC</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_6_position</Control>
-    		<Text>HOTCUE 6</Text>
+    		<Text> HOTCUE 6 </Text>
 			<Align>center</Align>
 			<Color>#FFFF66</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
 			<Color>#FD0564</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
 			<Color>#FD0564</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -202,49 +202,49 @@
 		
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
 			<Color>#FFFF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#0000FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+    		<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_5_position</Control>
-    		<Text>HOTCUE 5</Text>
+    		<Text> HOTCUE 5 </Text>
 			<Align>center</Align>
 			<Color>#66FFCC</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_6_position</Control>
-    		<Text>HOTCUE 6</Text>
+    		<Text> HOTCUE 6 </Text>
 			<Align>center</Align>
 			<Color>#FFFF66</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -252,14 +252,14 @@
   		
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
 			<Color>#FD0564</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
 			<Color>#FD0564</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -768,7 +768,7 @@
             <EmitOnDownPress>true</EmitOnDownPress>
             <ButtonState>RightButton</ButtonState>
         </Connection>
-    </PushButton>    
+    </PushButton>
         
     <PushButton>
         <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
@@ -847,7 +847,7 @@
             <ButtonState>RightButton</ButtonState>
         </Connection>
     </PushButton>
-     <PushButton>
+    <PushButton>
         <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
         <NumberStates>1</NumberStates>
         <State>
@@ -1004,7 +1004,7 @@
         </Connection>
     </PushButton>    
  
-     <PushButton>
+    <PushButton>
         <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
         <NumberStates>1</NumberStates>
         <State>
@@ -1055,7 +1055,7 @@
             <ButtonState>RightButton</ButtonState>
         </Connection>
     </PushButton> 
- 
+
     <!--
 	**********************************************
 	Button- Looping
