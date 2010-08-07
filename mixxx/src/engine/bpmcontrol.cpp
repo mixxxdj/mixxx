@@ -29,10 +29,6 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pButtonSync, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlBeatSync(double)));
 
-    m_pButtonSyncDeck1 = new ControlPushButton(ConfigKey(_group, "beatsync1"));
-    connect(m_pButtonSyncDeck1, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlBeatSyncDeck1(double)));
-
 }
 
 BpmControl::~BpmControl() {
