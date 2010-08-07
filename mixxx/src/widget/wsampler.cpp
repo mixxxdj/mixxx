@@ -107,7 +107,7 @@ WSampler::~WSampler() {
 void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
     
     m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
-    m_pSamplerWindow->resize(800,80);
+    m_pSamplerWindow->resize(550,60);
     
     QPalette palette = m_pSamplerWindow->palette();
     palette.setColor(backgroundRole(), QColor(24, 24, 24));
@@ -115,12 +115,12 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
     m_pSamplerWindow->setAutoFillBackground(true);
     
     QPushButton *saveButton = new QPushButton(m_pSamplerWindow);
-    saveButton->setText("Save Sampler Bank");
-    saveButton->move(640,30);
+    saveButton->setText("Save Bank");
+    saveButton->move(435,25);
     
     QPushButton *loadButton = new QPushButton(m_pSamplerWindow);
-    loadButton->setText("Load Sampler Bank");
-    loadButton->move(640,0);
+    loadButton->setText("Load Bank");
+    loadButton->move(435,0);
     
     saveSamplerBank = new QAction(tr("&Save Sampler Bank"), this);
     connect(saveButton, SIGNAL(clicked()), saveSamplerBank, SIGNAL(activated()));
