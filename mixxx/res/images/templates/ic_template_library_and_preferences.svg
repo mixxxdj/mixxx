@@ -32,8 +32,8 @@
      id="namedview26"
      showgrid="true"
      inkscape:zoom="11.930556"
-     inkscape:cx="18.160307"
-     inkscape:cy="21.514644"
+     inkscape:cx="15.240709"
+     inkscape:cy="16.417549"
      inkscape:window-x="1280"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -63,216 +63,6 @@
      id="title5647">Mixxx 1.8 iconset</title>
   <defs
      id="defs28">
-    <linearGradient
-       id="linearGradient3922">
-      <stop
-         style="stop-color:#000000;stop-opacity:1"
-         offset="0"
-         id="stop3924" />
-      <stop
-         style="stop-color:#666666;stop-opacity:1;"
-         offset="1"
-         id="stop3926" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient5695">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop5697" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop5699" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3922"
-       id="linearGradient8268"
-       x1="-0.23033412"
-       y1="-4.9715085"
-       x2="16.204617"
-       y2="10.933281"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4458"
-       gradientUnits="userSpaceOnUse"
-       x1="-4"
-       y1="4"
-       x2="20"
-       y2="28" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4461"
-       gradientUnits="userSpaceOnUse"
-       x1="-4"
-       y1="4"
-       x2="20"
-       y2="28" />
-    <linearGradient
-       id="linearGradient5695-9">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop5697-3" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop5699-5" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient5122"
-       gradientUnits="userSpaceOnUse"
-       x1="-8"
-       y1="0"
-       x2="20"
-       y2="24" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient6079"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0,-2)"
-       x1="-4"
-       y1="0"
-       x2="24"
-       y2="28" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient8175"
-       gradientUnits="userSpaceOnUse"
-       x1="-8"
-       y1="0"
-       x2="20"
-       y2="24"
-       gradientTransform="translate(-1,-1)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695-9"
-       id="linearGradient8207"
-       gradientUnits="userSpaceOnUse"
-       x1="-4"
-       y1="-16"
-       x2="20"
-       y2="8" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695-9"
-       id="linearGradient8209"
-       gradientUnits="userSpaceOnUse"
-       x1="-4"
-       y1="-16"
-       x2="20"
-       y2="8" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695-9"
-       id="linearGradient8239"
-       gradientUnits="userSpaceOnUse"
-       x1="-4"
-       y1="-16"
-       x2="20"
-       y2="8"
-       gradientTransform="translate(-1,-1)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695-9"
-       id="linearGradient8241"
-       gradientUnits="userSpaceOnUse"
-       x1="-4"
-       y1="-16"
-       x2="20"
-       y2="8"
-       gradientTransform="translate(-1,-1)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient8537"
-       x1="-4"
-       y1="0"
-       x2="24"
-       y2="28"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4179" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4181" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4183" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4185" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4220"
-       x1="0"
-       y1="0"
-       x2="1"
-       y2="0"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-0.5000001,-0.5000001)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4222"
-       x1="0"
-       y1="0"
-       x2="1"
-       y2="0"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-0.80000006,-0.8000002)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4224"
-       x1="0"
-       y1="0"
-       x2="1"
-       y2="0"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-0.5000001,-0.5000001)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4226"
-       x1="0"
-       y1="0"
-       x2="1"
-       y2="0"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-0.80000006,-0.8000002)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4238"
-       x1="-1"
-       y1="-1"
-       x2="27"
-       y2="27"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695"
-       id="linearGradient4240"
-       x1="0"
-       y1="0"
-       x2="28"
-       y2="28"
-       gradientUnits="userSpaceOnUse" />
     <linearGradient
        id="linearGradient5695-6">
       <stop
@@ -618,15 +408,6 @@
        y1="0"
        x1="-4"
        gradientUnits="userSpaceOnUse"
-       id="linearGradient6815"
-       xlink:href="#linearGradient5695-17"
-       inkscape:collect="always" />
-    <linearGradient
-       y2="28"
-       x2="24"
-       y1="0"
-       x1="-4"
-       gradientUnits="userSpaceOnUse"
        id="linearGradient6817"
        xlink:href="#linearGradient5695-17"
        inkscape:collect="always" />
@@ -947,134 +728,6 @@
        id="linearGradient7738"
        xlink:href="#linearGradient5695-890"
        inkscape:collect="always" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3922"
-       id="linearGradient7810"
-       gradientUnits="userSpaceOnUse"
-       x1="-0.23033412"
-       y1="-4.9715085"
-       x2="16.204617"
-       y2="10.933281"
-       gradientTransform="translate(1.0603193,0)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3922"
-       id="linearGradient7991"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(1.0603193,0)"
-       x1="-0.23033412"
-       y1="-4.9715085"
-       x2="16.204617"
-       y2="10.933281" />
-    <linearGradient
-       id="linearGradient5695-6-8">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop5697-6-9" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop5699-7-3" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient5695-0-7">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop5697-58-1" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop5699-0-5" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient4158">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop4160" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop4162" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient4165">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop4167" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop4169" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient4172">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop4174" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop4176" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient4179-6">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop4181" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop4183" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695-0-7"
-       id="linearGradient7526-7"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.000095,0,0,1.0003937,-0.0014257,-0.00157512)"
-       x1="4.0010457"
-       y1="-7.9952769"
-       x2="27.998766"
-       y2="15.995277" />
-    <linearGradient
-       id="linearGradient4186">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop4188" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop4190" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5695-0-7"
-       id="linearGradient7528-1"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.000095,0,0,1.0003937,-0.0014257,-0.00157512)"
-       x1="4.0010457"
-       y1="-7.9952769"
-       x2="27.998766"
-       y2="15.995277" />
-    <linearGradient
-       id="linearGradient4193">
-      <stop
-         style="stop-color:#646464;stop-opacity:1;"
-         offset="0"
-         id="stop4195" />
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="1"
-         id="stop4197" />
-    </linearGradient>
   </defs>
   <metadata
      id="metadata4">
@@ -1139,62 +792,21 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:label="rhythmbox.png"
        style="display:none"
        sodipodi:insensitive="true">
-      <rect
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.85248959;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         id="rect4055-1"
-         width="22.147511"
-         height="26.147511"
-         x="4.9262447"
-         y="2.9262447"
-         ry="0.96842635" />
+      <path
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 2,2 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 8,8 C 6.892,8 6,7.108 6,6 6,4.892 6.892,4 8,4 z m 12,0 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 20,8 C 18.892,8 18,7.108 18,6 18,4.892 18.892,4 20,4 z m -4,7 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z"
+         id="rect3993"
+         inkscape:connector-curvature="0" />
       <path
          sodipodi:type="arc"
-         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         id="path4057-9"
-         sodipodi:cx="16.5"
-         sodipodi:cy="16"
-         sodipodi:rx="6.8508229"
-         sodipodi:ry="7.6120257"
-         d="M 23.350823,16 A 6.8508229,7.6120257 0 1 1 9.6491771,16 6.8508229,7.6120257 0 1 1 23.350823,16 z"
-         transform="matrix(1.025706,0,0,0.92313533,-0.9241488,5.229835)"
-         inkscape:transform-center-x="7"
-         inkscape:transform-center-y="6.0269299" />
-      <path
-         sodipodi:type="arc"
-         style="fill:#000000;stroke:none;display:inline"
+         style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
          id="path4671-4"
          sodipodi:cx="17.5"
          sodipodi:cy="19"
          sodipodi:rx="5.5"
          sodipodi:ry="6"
          d="m 23,19 a 5.5,6 0 1 1 -11,0 5.5,6 0 1 1 11,0 z"
-         transform="matrix(0.36363645,0,0,0.33333341,9.6363617,13.666665)" />
-      <path
-         sodipodi:type="arc"
-         style="fill:#000000;stroke:none;display:inline"
-         id="path4065-0"
-         sodipodi:cx="17.5"
-         sodipodi:cy="19"
-         sodipodi:rx="5.5"
-         sodipodi:ry="6"
-         d="m 23,19 a 5.5,6 0 1 1 -11,0 5.5,6 0 1 1 11,0 z"
-         transform="matrix(0.18181818,0,0,0.16666667,17.818182,4.833333)" />
-      <rect
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.45464587;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         id="rect4069-9"
-         width="5.8484516"
-         height="1.5453542"
-         x="7.2273231"
-         y="5.2273226"
-         ry="0" />
-      <rect
-         ry="0"
-         y="5.2273226"
-         x="18.924225"
-         height="1.5453542"
-         width="5.8484516"
-         id="rect4071-3"
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.45464587;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+         transform="matrix(0.54545455,0,0,0.5,6.4545454,9.5)" />
     </g>
     <g
        inkscape:groupmode="layer"
@@ -1202,37 +814,16 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:label="playlist2.png"
        style="display:none"
        sodipodi:insensitive="true">
-      <rect
+      <path
          style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="M 1,4 C 0.446,4 0,4.446 0,5 l 0,18 c 0,0.554 0.446,1 1,1 l 24,0 c 0.554,0 1,-0.446 1,-1 L 26,5 C 26,4.446 25.554,4 25,4 L 1,4 z M 8.9375,8.03125 C 9.2716216,8.0083571 9.6883986,8.0774079 10.09375,8.25 l 4.625,2.40625 4.6875,2.375 c 0.771083,0.373736 0.885067,1.433886 0.21875,1.9375 -0.07084,0.04305 -0.13991,0.09421 -0.21875,0.125 l -4.75,2.3125 L 10,19.6875 C 9,20.243635 8,20 8,19 L 7.96875,14 8,9 C 8,8.375 8.3806306,8.0694048 8.9375,8.03125 z"
          id="rect10668"
-         width="26"
-         height="20"
-         x="0"
-         y="4"
-         rx="1" />
+         inkscape:connector-curvature="0" />
       <path
          style="fill:none;stroke:#000000;stroke-width:1.99948609;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          d="m 2.999743,27.000257 26.000513,0 0,-20.0005137"
          id="path10670"
          inkscape:connector-curvature="0" />
-      <path
-         sodipodi:type="star"
-         style="color:#000000;fill:#fffafa;fill-opacity:1;fill-rule:nonzero;stroke:#fffafa;stroke-width:1.99992907;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         id="path10672"
-         sodipodi:sides="3"
-         sodipodi:cx="9"
-         sodipodi:cy="4"
-         sodipodi:r1="4.5308509"
-         sodipodi:r2="2.2654252"
-         sodipodi:arg1="1.5707963"
-         sodipodi:arg2="2.6179939"
-         inkscape:flatsided="false"
-         inkscape:rounded="0"
-         inkscape:randomized="0"
-         d="M 9.0000001,8.5308509 7.0380842,5.1327126 5.076168,1.7345747 9,1.7345748 l 3.923832,-3e-7 -1.961916,3.3981381 z"
-         inkscape:transform-center-y="-0.020913436"
-         transform="matrix(-1.2009562,0.59248351,-0.68111833,-1.0446742,25.990056,12.867258)"
-         inkscape:transform-center-x="-1.5430229" />
     </g>
     <g
        inkscape:groupmode="layer"
@@ -1257,7 +848,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer3"
        inkscape:label="missingtracks.png"
-       style="display:none">
+       style="display:none"
+       sodipodi:insensitive="true">
       <g
          transform="scale(1.0296931,0.97116316)"
          style="font-size:38.8465271px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
@@ -1441,8 +1033,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer42"
        inkscape:label="browse.png"
-       style="display:none"
-       sodipodi:insensitive="true">
+       style="display:none">
       <g
          id="g8438">
         <path
@@ -1467,8 +1058,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer38"
        inkscape:label="bpmdetect.png"
-       style="display:none"
-       sodipodi:insensitive="true">
+       style="display:none">
       <path
          sodipodi:type="star"
          style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
@@ -1496,14 +1086,12 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer37"
        inkscape:label="autodj.png"
-       style="display:none"
-       sodipodi:insensitive="true">
+       style="display:none">
       <path
          style="fill:#000000;stroke:none;display:inline"
-         d="m 16,1.9375 c -4.418278,0 -8,3.596693 -8,8.03125 C 8,9.97935 7.9999591,9.98941 8,10 l 0,0 16,0 0,0 C 24.000041,9.98941 24,9.97935 24,9.96875 24,5.534193 20.418278,1.9375 16,1.9375 z"
+         d="m 16,1.9375 c -4.418278,0 -8,3.596693 -8,8.03125 C 8,9.97935 7.9999591,9.98941 8,10 l 16,0 C 24.000041,9.98941 24,9.97935 24,9.96875 24,5.534193 20.418278,1.9375 16,1.9375 z M 12.5,5 C 13.328427,5 14,5.6715729 14,6.5 14,7.3284271 13.328427,8 12.5,8 11.671573,8 11,7.3284271 11,6.5 11,5.6715729 11.671573,5 12.5,5 z m 7,0 C 20.328427,5 21,5.6715729 21,6.5 21,7.3284271 20.328427,8 19.5,8 18.671573,8 18,7.3284271 18,6.5 18,5.6715729 18.671573,5 19.5,5 z"
          id="path4303"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="ssccccss" />
+         inkscape:connector-curvature="0" />
       <rect
          style="fill:#000000;stroke:none;display:inline"
          id="rect4796"
@@ -1532,30 +1120,10 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          rx="1"
          ry="1" />
       <path
-         sodipodi:type="arc"
-         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         id="path4311"
-         sodipodi:cx="-10.5"
-         sodipodi:cy="6.5"
-         sodipodi:rx="1.5"
-         sodipodi:ry="1.5"
-         d="m -9,6.5 a 1.5,1.5 0 1 1 -3,0 1.5,1.5 0 1 1 3,0 z"
-         transform="translate(23,0)" />
-      <path
          inkscape:connector-curvature="0"
          style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 8,12 8,13.15625 8,14 8,24.84375 C 8,25.490083 8.446,26 9,26 l 14,0 c 0.554,0 1,-0.509917 1,-1.15625 L 24,14 24,13.15625 24,12 23,12 9,12 8,12 z"
          id="rect4319" />
-      <path
-         transform="translate(30,0)"
-         d="m -9,6.5 a 1.5,1.5 0 1 1 -3,0 1.5,1.5 0 1 1 3,0 z"
-         sodipodi:ry="1.5"
-         sodipodi:rx="1.5"
-         sodipodi:cy="6.5"
-         sodipodi:cx="-10.5"
-         id="path4321"
-         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         sodipodi:type="arc" />
       <rect
          ry="1"
          rx="1"
@@ -1591,7 +1159,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
+           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -1601,7 +1169,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
+           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>
@@ -2063,7 +1631,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          inkscape:flatsided="false"
          inkscape:rounded="0"
          inkscape:randomized="0"
-         d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 z"
+         d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 8.9999997,29 z"
          transform="translate(2.9999999,0.99999896)" />
       <path
          style="fill:url(#linearGradient4386-1);fill-opacity:1;stroke:none;display:inline;filter:url(#filter6108)"
