@@ -99,7 +99,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #else
     setWindowTitle(tr("Mixxx " VERSION));
 #endif
-    setWindowIcon(QIcon(":/images/icon.svg"));
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     //Reset pointer to players
     soundmanager = 0;
