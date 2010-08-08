@@ -1130,6 +1130,7 @@ void MixxxApp::slotHelpAbout()
 "Sebastian Actist<br>"
 "Jussi Sainio<br>"
 "David Gnedt<br>"
+"Antonio Passamani<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
