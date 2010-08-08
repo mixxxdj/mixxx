@@ -1103,6 +1103,7 @@ void MixxxApp::slotHelpAbout()
 "Sean Pappalardo<br>"
 "Phillip Whelan<br>"
 "Tobias Rafreider<br>"
+"S. Brandt<br>"
 
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
@@ -1128,6 +1129,7 @@ void MixxxApp::slotHelpAbout()
 "Graeme Mathieson<br>"
 "Sebastian Actist<br>"
 "Jussi Sainio<br>"
+"David Gnedt<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
