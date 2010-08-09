@@ -99,7 +99,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #else
     setWindowTitle(tr("Mixxx " VERSION));
 #endif
-    setWindowIcon(QIcon(":/images/icon.svg"));
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     //Reset pointer to players
     soundmanager = 0;
@@ -936,8 +936,10 @@ void MixxxApp::slotOptionsBeatMark(bool)
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
+    if (optionsFullScreen)
+        optionsFullScreen->setChecked(toggle);
 
-// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
 #ifdef __LINUX__
@@ -1096,14 +1098,12 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
-"Garth Dahlstrom<br>"
 "RJ Ryan<br>"
+"Garth Dahlstrom<br>"
 "Sean Pappalardo<br>"
-"Nick Guenther<br>"
 "Phillip Whelan<br>"
-"Zach Elko<br>"
-"Tom Care<br>"
-"Pawel Bartkiewicz<br>"
+"Tobias Rafreider<br>"
+"S. Brandt<br>"
 
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
@@ -1111,27 +1111,26 @@ void MixxxApp::slotHelpAbout()
 "Mark Hills<br>"
 "Andre Roth<br>"
 "Robin Sheat<br>"
-"Michael Pujos<br>"
 "Mark Glines<br>"
-"Claudio Bantaloukas<br>"
-"Pavol Rusnak<br>"
 "Mathieu Rene<br>"
 "Miko Kiiski<br>"
-"Navaho Gunleg<br>"
-"Gavin Pryke<br>"
 "Brian Jackson<br>"
 "Owen Williams<br>"
-"James Evans<br>"
-"Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"J&aacute;n Jockusch<br>"
 "Oliver St&ouml;neberg<br>"
+"Jan Jockusch<br>"
 "C. Stewart<br>"
-"Tobias Rafreider<br>"
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
 "Bill Good<br>"
+"Graeme Mathieson<br>"
+"Sebastian Actist<br>"
+"Jussi Sainio<br>"
+"David Gnedt<br>"
+"Antonio Passamani<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1162,6 +1161,10 @@ void MixxxApp::slotHelpAbout()
 "Ben Wheeler<br>"
 "Wesley Stessens<br>"
 "Nathan Prado<br>"
+"Zach Elko<br>"
+"Tom Care<br>"
+"Pawel Bartkiewicz<br>"
+"Nick Guenther<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
@@ -1175,7 +1178,6 @@ void MixxxApp::slotHelpAbout()
 "Jeremie Zimmermann<br>"
 "Gianluca Romanin<br>"
 "Tim Jackson<br>"
-"J&aacute;n Jockusch<br>"
 "Stefan Langhammer<br>"
 "Frank Willascheck<br>"
 "Jeff Nelson<br>"
@@ -1193,6 +1195,14 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
+"James Evans<br>"
+"Martin Sakmar<br>"
+"Navaho Gunleg<br>"
+"Gavin Pryke<br>"
+"Michael Pujos<br>"
+"Claudio Bantaloukas<br>"
+"Pavol Rusnak<br>"
+
 #if defined(AMD64) || defined(EM64T) || defined(x86_64)
     "</p>").arg(VERSION " x64");
 #elif defined(IA64)
@@ -1221,6 +1231,12 @@ void MixxxApp::rebootMixxxView() {
     int oldh = view->height();
     int oldw = view->width();
     qDebug() << "Now in Rebootmixxview...";
+
+    // Workaround for changing skins while fullscreen, just go out of fullscreen
+    // mode. If you change skins while in fullscreen (on Linux, at least) the
+    // window returns to 0,0 but and the backdrop disappears so it looks as if
+    // it is not fullscreen, but acts as if it is.
+    slotOptionsFullScreen(false);
 
     QString qSkinPath = getSkinPath();
 

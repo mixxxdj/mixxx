@@ -19,6 +19,10 @@ libraries. These are distributed only for the purpose of allowing
 Mixxx to run as per the license agreement for Visual Studio 2005/2008 and
 are copyright of Microsoft.
 
+This distribution of Mixxx may include skins that are licensed under a 
+Creative Commons license. Full licensing information is available
+individually for each skin, located in their "skin.xml" file.
+
 The source code for Mixxx itself is licensed under the GPL as follows:
 
 This program is free software; you can redistribute it and/or modify
