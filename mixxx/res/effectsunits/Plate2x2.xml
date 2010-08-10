@@ -1,0 +1,11 @@
+<!DOCTYPE EffectsUnitsPreset>
+<EffectsUnitsPreset>
+	<EffectsUnitsPlugin>Plate2x2</EffectsUnitsPlugin>
+	<BindedPorts>
+		<Port>1</Port>
+		<Port>2</Port>
+		<Port>3</Port>
+		<Port>5</Port>
+	</BindedPorts
+	<WetDryPort>-1</WetDryPort>
+<EffectsUnitsPreset>
