@@ -1,8 +1,8 @@
-  	<!--16 April 2010 13:14:16 CEST-->  
+  	<!--10 August 2010 09:05:57 CEST-->  
   	<!--   
-  	LateNight v0.80beta, Skin for Mixxx 1.8.x
+  	LateNight, Skin for Mixxx 1.8.x
     www.mixxx.org
-    Copyright (C) 2009-2010 jus ; jus/justmail/de
+    Copyright (C) 2009-2010 jus ; jus@justmail.de
   
     This file is part of the "LateNight" Skin for Mixxx 1.8.x
     "LateNight" is licensed under the Attribution-Noncommercial-Share Alike 3.0 licence.
@@ -26,7 +26,11 @@
 
   	<!--
   	CHANGELOG
-  	   
+	v1.00	(10/08/2010)
+  	* Version bump
+  	* some color & spacing corrections
+  	- removed "Preview" watermark
+ 
   	v0.80b	(16/04/2010)
   	- New:
   		*Works with all features of Mixxx 1.8+
@@ -125,28 +129,28 @@
   				
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
 			<Color>#FFFF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#0033FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -160,14 +164,14 @@
   		</Mark>    
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
 			<Color>#70E100</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
 			<Color>#70E100</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -198,35 +202,35 @@
 		
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
 			<Color>#FFFF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#0033FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+    		<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -234,14 +238,14 @@
   		
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
 			<Color>#70E100</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
 			<Color>#70E100</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -265,7 +269,7 @@
 		<Channel>1</Channel>
 		<Pos>1,250</Pos>
 		<Size>407,37</Size>
-		<BgColor>#121212</BgColor>
+		<BgColor>#0E0E0E</BgColor>
 		<SignalColor>#0099FF</SignalColor>
 		<MarkerColor>#70E100</MarkerColor>
 		<Connection>
@@ -278,7 +282,7 @@
 		<Channel>2</Channel>
 		<Pos>804,250</Pos>
 		<Size>407,37</Size>
-		<BgColor>#121212</BgColor>
+		<BgColor>#0E0E0E</BgColor>
 		<SignalColor>#CC6600</SignalColor>
 		<MarkerColor>#70E100</MarkerColor>
 		<Connection>
