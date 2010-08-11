@@ -61,10 +61,10 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
         return false; // can't clash if there are no channels in use
     }
     return (m_channelBase > other.m_channelBase
-        && m_channelBase <= other.m_channelBase + other.m_channels)
+        && m_channelBase < other.m_channelBase + other.m_channels)
         ||
         (other.m_channelBase > m_channelBase
-        && other.m_channelBase <= m_channelBase + m_channels)
+        && other.m_channelBase < m_channelBase + m_channels)
         || m_channelBase == other.m_channelBase;
 }
 
