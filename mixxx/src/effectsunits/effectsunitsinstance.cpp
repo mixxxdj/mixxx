@@ -121,17 +121,21 @@ void EffectsUnitsInstance::applyPreset(EffectsUnitsPreset * Preset){
  * So we process the way the Widget wants.
  */
 void EffectsUnitsInstance::updatePorts(){
-	/* Updating Port Values: */// FIXME for preset, may need to update using wet dry value
 
-
-	int size = m_pBindings->size();
-	for (int i = 0; i < size; i++){
-		if (m_pBindings->at(i) == NULL){
-			// NOP, Audio Port
-		} else {
-			getPlugin()->connect(i, m_pBindings->at(i)->get());
-		}
+	/* Updating Port Values: */
+	int Knobi = 1;
+	int Porti = 0;
+	while (Knobi < m_KnobCount && Porti < m_pBindedPortIndex->size()){
+		getPlugin()->connect(m_pBindedPortIndex->at(Porti), m_pBindings->at(Knobi));
+		Knobi++;
+		Porti++;
 	}
+
+	/* If WetDry is a parameter port, update it as well */
+	if (m_WetDryPort > -1){
+		getPlugin()->connect(m_WetDryPort, m_pBindings->at(m_WetDryPort));
+	}
+
 }
 
 void EffectsUnitsInstance::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize){
