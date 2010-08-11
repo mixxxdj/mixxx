@@ -126,14 +126,14 @@ void EffectsUnitsInstance::updatePorts(){
 	int Knobi = 1;
 	int Porti = 0;
 	while (Knobi < m_KnobCount && Porti < m_pBindedPortIndex->size()){
-		getPlugin()->connect(m_pBindedPortIndex->at(Porti), m_pBindings->at(Knobi));
+		getPlugin()->connect(m_pBindedPortIndex->at(Porti), m_pBindings->at(Knobi)->get());
 		Knobi++;
 		Porti++;
 	}
 
 	/* If WetDry is a parameter port, update it as well */
 	if (m_WetDryPort > -1){
-		getPlugin()->connect(m_WetDryPort, m_pBindings->at(m_WetDryPort));
+		getPlugin()->connect(m_WetDryPort, m_pBindings->at(m_WetDryPort)->get());
 	}
 
 }
@@ -147,9 +147,17 @@ void EffectsUnitsInstance::activate(){
 }
 
 double EffectsUnitsInstance::getWetDry(){
-	// TODO - normalize wet/dry if not on standard port
-	//qDebug() << "FXUNITS: WD: " << m_pWetDry->get();
-	return m_pWetDry->get();
+	if (m_WetDryPort == -1){
+		return m_pWetDry->get();
+	} else {
+
+		/* Normalization of custom WetDry */
+		ControlPotmeter * potmeter = dynamic_cast<ControlPotmeter *>(m_pWetDry);
+		if (potmeter != NULL)
+			return (potmeter->get() - potmeter->getMin()) / (potmeter->getMax() - potmeter->getMin());
+		else
+			return 0;
+	}
 }
 
 bool EffectsUnitsInstance::getEnabled(){
