@@ -9,6 +9,7 @@
 #define EFFECTSUNITSINSTANCE_H_
 
 #include "effectsunitsplugin.h"
+#include "effectsunitspreset.h"
 #include "../controlobject.h"
 #include "../controlpotmeter.h"
 
@@ -16,7 +17,7 @@ class EffectsUnitsPlugin;
 
 class EffectsUnitsInstance {
 public:
-	EffectsUnitsInstance(EffectsUnitsPlugin * Plugin, int WidgetID, int KnobCount);
+	EffectsUnitsInstance(EffectsUnitsPlugin * Plugin, int WidgetID, int KnobCount, EffectsUnitsPreset * Preset);
 	virtual ~EffectsUnitsInstance();
 
 	void updatePorts();

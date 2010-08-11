@@ -5,8 +5,9 @@
  * Appends all our fx backends to a list,
  * loadAllPlugins.
  */
-EffectsUnitsController::EffectsUnitsController() {
+EffectsUnitsController::EffectsUnitsController(EffectsUnitsPresetManager* PresetManager) {
 	m_pEngine = EngineEffectsUnits::getEngine();
+	m_pPresetManager = PresetManager;
 
 	EffectsUnitsBackend * debug = new DEBUGBackend();
 	EffectsUnitsBackend * ladspa = new LADSPABackend();
@@ -76,7 +77,7 @@ EffectsUnitsInstance * EffectsUnitsController::instantiatePluginForWidget(QStrin
 	EffectsUnitsPlugin * current = getPluginByName(PluginName);
 	if (current != NULL){
 		current->activate();
-		EffectsUnitsInstance * instance = new EffectsUnitsInstance(current, Widget, KnobCount);
+		EffectsUnitsInstance * instance = new EffectsUnitsInstance(current, Widget, KnobCount, m_pPresetManager->findPresetForPlugin(PluginName));
 		m_ActiveInstances.append(instance);
 		return (instance);
 	}

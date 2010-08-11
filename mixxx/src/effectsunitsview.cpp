@@ -15,7 +15,8 @@
  */
 EffectsUnitsView::EffectsUnitsView(QWidget * parent) : QWidget(parent)
 {
-	m_EffectsUnitsController = new EffectsUnitsController();
+	m_EffectsUnitsPresetManager = new EffectsUnitsPresetManager();
+	m_EffectsUnitsController = new EffectsUnitsController(m_EffectsUnitsPresetManager);
 	m_EffectsUnitsSlots = new QList<EffectsUnitsSlot *>();
 
     setObjectName("EffectsUnits");

@@ -5,11 +5,12 @@
 #include "debugbackend.h"
 #include "ladspabackend.h"
 #include "effectsunitsinstance.h"
+#include "effectsunitspresetmanager.h"
 
 class EffectsUnitsController {
 
 public:
-	EffectsUnitsController();
+	EffectsUnitsController(EffectsUnitsPresetManager*);
 	~EffectsUnitsController();
 
 	void addInstanceToSource(int InstanceID, QString Source);
@@ -27,6 +28,7 @@ private:
 	QList<EffectsUnitsPlugin *> m_AllPlugins;		// List of every plugin from every backend
 	QStringList m_PluginNames;						// List of plugin names, for dropdown and misc.
 	QList<EffectsUnitsInstance *> m_ActiveInstances;// List of active instances, for instance mgmt
+	EffectsUnitsPresetManager * m_pPresetManager;
 };
 
 #endif

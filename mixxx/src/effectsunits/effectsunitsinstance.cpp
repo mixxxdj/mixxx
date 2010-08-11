@@ -15,7 +15,7 @@ int EffectsUnitsInstance::nextInstanceID = 1;
  * This is done by binding itself to given Widgets ControlObjects.
  * Instances mantain communication with the Plugin, specially for Backend operations.
  */
-EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int WidgetID, int KnobCount) {
+EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int WidgetID, int KnobCount, EffectsUnitsPreset * Preset) {
 	m_pPlugin = Plugin;
 	m_pBindings = new QList<ControlObject *>();
 	m_InstanceID = getNextInstanceID();

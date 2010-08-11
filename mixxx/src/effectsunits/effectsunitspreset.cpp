@@ -12,6 +12,16 @@ EffectsUnitsPreset::EffectsUnitsPreset() {
 
 }
 
+EffectsUnitsPreset::EffectsUnitsPreset(QDomElement Preset){
+
+}
+
 EffectsUnitsPreset::~EffectsUnitsPreset() {
 	// TODO Auto-generated destructor stub
 }
+
+QString EffectsUnitsPreset::presetFor(){
+	return m_PresetFor;
+}
+
+
