@@ -53,6 +53,7 @@ LibraryScannerDlg::~LibraryScannerDlg()
 
 void LibraryScannerDlg::slotUpdate(QString path) {
 
+    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed();
     if (!m_bCancelled && m_timer.elapsed() > 2000) {
         m_progress->setVisible(true);
     }

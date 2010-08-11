@@ -915,8 +915,10 @@ void MixxxApp::slotOptionsBeatMark(bool)
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
+    if (optionsFullScreen)
+        optionsFullScreen->setChecked(toggle);
 
-// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
 #ifdef __LINUX__
@@ -1205,6 +1207,12 @@ void MixxxApp::rebootMixxxView() {
     int oldh = view->height();
     int oldw = view->width();
     qDebug() << "Now in Rebootmixxview...";
+
+    // Workaround for changing skins while fullscreen, just go out of fullscreen
+    // mode. If you change skins while in fullscreen (on Linux, at least) the
+    // window returns to 0,0 but and the backdrop disappears so it looks as if
+    // it is not fullscreen, but acts as if it is.
+    slotOptionsFullScreen(false);
 
     QString qSkinPath = getSkinPath();
 
