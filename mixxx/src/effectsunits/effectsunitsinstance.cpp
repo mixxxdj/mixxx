@@ -19,57 +19,101 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
 	m_pPlugin = Plugin;
 	m_pBindings = new QList<ControlObject *>();
 	m_InstanceID = getNextInstanceID();
+	m_WidgetID = WidgetID;
+	m_KnobCount = KnobCount;
 
 	qDebug() << "FXUNITS: EffectsUnitsIntance: " << m_InstanceID;
 
-	/* Defaults wet/dry to a non-port, but knob0 */
-	m_WetDryPort = -1;
-	ConfigKey * keywd = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "Parameter0");
-    ControlObject * wd = ControlObject::getControl(*keywd);
-    ControlPotmeter * potwd = dynamic_cast<ControlPotmeter *>(wd);
-    if (potwd != NULL){
-    	potwd->setRange(0.0, 1.0);
-    	m_pWetDry = potwd;
-    } else {
-    	qDebug() << "FXUNITS: Something's odd, EffectsUnitsInstance";
-    }
-
-	QList<EffectsUnitsPort *> * ports = Plugin->getPorts();
-	int PortCount = ports->size();
-	int Porti = 0;
-	int Knobi = 1;
-
-	/* Binds every other non-audio port to available knobs */
-	while(Porti < PortCount && Knobi < KnobCount){
-		if (ports->at(Porti)->isAudio){
-
-			m_pBindings->append(NULL);
-			Porti++;
-
-		} else {
-
-		    ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "Parameter" + QString::number(Knobi));
-		    ControlObject * co = ControlObject::getControl(*key);
-		    ControlPotmeter * potmeter = dynamic_cast<ControlPotmeter *>(co);
-
-		    if (potmeter != NULL){
-				potmeter->setRange(ports->at(Porti)->Min, ports->at(Porti)->Max);
-				m_pBindings->append(potmeter);
-				m_BindedPortIndex.append(Porti);
-				Knobi++;
-				Porti++;
-		    } else {
-		    	qDebug() << "FXUNITS: Something's odd, EffectsUnitsInstance";
-		    }
-
-		}
+	/* Initializing our CO's for Ports, WetDry defaults to Parameter0
+	 * Ranges will be defined on applyPreset()
+	 */
+	for (int i = 0; i < m_KnobCount; i++){
+		ConfigKey * key = new ConfigKey("[FX]", "Widget" + QString::number(m_WidgetID) + "Parameter" + QString::number(i));
+		ControlObject * co = ControlObject::getControl(*key);
+		ControlPotmeter * potmeter = dynamic_cast<ControlPotmeter *>(co);
+		if (potmeter != NULL) m_pBindings->append(potmeter);
 	}
+	m_pWetDry = m_pBindings->at(0);
+
+	/* Applies the Preset for Ports/Parameter customization */
+	applyPreset(Preset);
 
 	/* Care for an OnOff button? */
-	ConfigKey * keyb = new ConfigKey("[FX]", "Widget" + QString::number(WidgetID) + "OnOff");
+	ConfigKey * keyb = new ConfigKey("[FX]", "Widget" + QString::number(m_WidgetID) + "OnOff");
 	ControlObject * button = ControlObject::getControl(*keyb);
 	m_pOnOff = button;
 
+}
+
+/* EffectsUnitsInstance::applyPreset
+ * Applies preset preferences to instance or default behavior when there's no preset.
+ */
+void EffectsUnitsInstance::applyPreset(EffectsUnitsPreset * Preset){
+
+	QList<EffectsUnitsPort *> * ports = m_pPlugin->getPorts();
+	int PortCount = ports->size();
+	ControlPotmeter * potmeter;
+
+	/* Defines Wet/Dry Port */
+	if (Preset == NULL){
+
+		/* Defaults wet/dry to a non-port, but knob0 */
+		m_WetDryPort = -1;
+		potmeter = dynamic_cast<ControlPotmeter *>(m_pWetDry);
+		if (potmeter != NULL) potmeter->setRange(0.0, 1.0);
+
+	} else {
+
+		/* Gets the Wet/Dry index from Preset and set according ranges */
+		m_WetDryPort = Preset->getWetDryPortIndex();
+		potmeter = dynamic_cast<ControlPotmeter *>(m_pWetDry);
+		if (potmeter != NULL) potmeter->setRange(ports->at(m_WetDryPort)->Min, ports->at(m_WetDryPort)->Max);
+		//FIXME - BadPreset = SEGFAULT
+
+	}
+
+	/* Defines Parameters Ports */
+	if (Preset == NULL){
+
+		m_pBindedPortIndex = new QList<int>();
+		int Porti = 0;
+		int Knobi = 1;
+
+		/* Binds the first |KnobCount-1| non-audio ports.
+		 * Wet/Dry is Parameter0 so we start at 1.
+		 */
+		while(Porti < PortCount && Knobi < m_KnobCount){
+
+			/* Binds non-audio ports only */
+			if (ports->at(Porti)->isAudio){
+				Porti++;
+			} else {
+				m_pBindedPortIndex->append(Porti);
+				potmeter = dynamic_cast<ControlPotmeter *>(m_pBindings->at(Knobi));
+				if (potmeter != NULL) potmeter->setRange(ports->at(Porti)->Min, ports->at(Porti)->Max);
+				Porti++;
+				Knobi++;
+			}
+		}
+
+	} else {
+
+		/* BindedPortIndex comes from Preset
+		 * Bind ports accordingly.
+		 */
+		m_pBindedPortIndex = new QList<int>(*(Preset->getBindedPortIndex()));
+		int Knobi = 1;
+		int Porti = 0;
+		while (Knobi < m_KnobCount && Porti < m_pBindedPortIndex->size()){
+			potmeter = dynamic_cast<ControlPotmeter *>(m_pBindings->at(Knobi));
+			if (potmeter != NULL)
+				potmeter->setRange(ports->at(m_pBindedPortIndex->at(Porti))->Min, ports->at(m_pBindedPortIndex->at(Porti))->Max);
+			//FIXME - BadPreset = SEGFAULT
+			Porti++;
+			Knobi++;
+		}
+
+	}
 }
 
 /* EffectsUnitsInstance::updatePorts
@@ -77,7 +121,9 @@ EffectsUnitsInstance::EffectsUnitsInstance(EffectsUnitsPlugin * Plugin,  int Wid
  * So we process the way the Widget wants.
  */
 void EffectsUnitsInstance::updatePorts(){
-	/* Updating Port Values: */
+	/* Updating Port Values: */// FIXME for preset, may need to update using wet dry value
+
+
 	int size = m_pBindings->size();
 	for (int i = 0; i < size; i++){
 		if (m_pBindings->at(i) == NULL){
@@ -123,8 +169,8 @@ int EffectsUnitsInstance::getNextInstanceID(){
 }
 
 QString EffectsUnitsInstance::getPortNameByIndex(int Index){
-	if (Index < m_BindedPortIndex.size()){
-		return getPlugin()->getPortNameByIndex(m_BindedPortIndex.at(Index));
+	if (Index < m_pBindedPortIndex->size()){
+		return getPlugin()->getPortNameByIndex(m_pBindedPortIndex->at(Index));
 	} else {
 		return "Not Used";
 	}

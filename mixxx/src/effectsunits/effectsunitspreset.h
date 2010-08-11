@@ -20,9 +20,15 @@ public:
 	QString presetFor();
 	QDomDocument toXML();
 
+	QList<int> * getBindedPortIndex();
+	int getWetDryPortIndex();
+
+
 private:
 	QString m_PresetFor;
-	QList<int> m_BindedPortIndex;
+
+	int m_WetDryPortIndex;
+	QList<int> * m_pBindedPortIndex;
 };
 
 #endif /* EFFECTSUNITSPRESET_H_ */

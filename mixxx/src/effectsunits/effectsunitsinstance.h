@@ -26,6 +26,7 @@ public:
 	bool getEnabled();
 	void activate();
 
+	void applyPreset(EffectsUnitsPreset * Preset);
 	EffectsUnitsPlugin * getPlugin();
 	int getInstanceID();
 	static int getNextInstanceID();
@@ -35,12 +36,15 @@ private:
 
 	static int nextInstanceID;
 	int m_InstanceID;
+	int m_WidgetID;
+	int m_KnobCount;
 	EffectsUnitsPlugin * m_pPlugin;
 
 	ControlObject * m_pOnOff;
 	ControlObject * m_pWetDry;
 	QList<ControlObject *> * m_pBindings;
-	QList<int> m_BindedPortIndex;
+	QList<int> * m_pBindedPortIndex;
+
 
 	int m_WetDryPort;
 };

@@ -24,4 +24,12 @@ QString EffectsUnitsPreset::presetFor(){
 	return m_PresetFor;
 }
 
+QList<int> * EffectsUnitsPreset::getBindedPortIndex(){
+	return m_pBindedPortIndex;
+}
+
+int EffectsUnitsPreset::getWetDryPortIndex(){
+	return m_WetDryPortIndex;
+}
+
 
