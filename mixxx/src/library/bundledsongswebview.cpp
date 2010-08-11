@@ -55,7 +55,8 @@ BundledSongsWebView::BundledSongsWebView(QWidget* parent, QString promoBundlePat
 
     connect(this, SIGNAL(linkClicked(const QUrl&)),
             this, SLOT(handleClickedLink(const QUrl&)));
-
+    connect(this, SIGNAL(loadFinished(bool)),
+            this, SLOT(loadFinished(bool)));
 }
 
 BundledSongsWebView::~BundledSongsWebView()
@@ -74,13 +75,19 @@ void BundledSongsWebView::setup(QDomNode node)
 
 }
 
+void BundledSongsWebView::loadFinished(bool ok)
+{
+    if (m_bFirstRun)
+        page()->mainFrame()->evaluateJavaScript("splash();");
+}
+
 void BundledSongsWebView::onShow()
 {
     qDebug() << ">>>>>>BundledSongsWebView::onShow()";
     //Trigger the splash() function that's defined in our HTML page's javascript
     //Qt rocks!
-    if (firstRun())
-        page()->mainFrame()->evaluateJavaScript("splash();");
+    //if (firstRun())
+    //    page()->mainFrame()->evaluateJavaScript("splash();");
     //else
     //    page()->mainFrame()->evaluateJavaScript("showMainStuff(0, 0);");
 }

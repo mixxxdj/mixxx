@@ -19,7 +19,7 @@ Cue::Cue(int trackId)
           m_iLength(0),
           m_iHotCue(-1),
           m_label("") {
-    qDebug() << "Cue(int)";
+    //qDebug() << "Cue(int)";
 }
 
 
@@ -33,7 +33,7 @@ Cue::Cue(int id, int trackId, Cue::CueType type, int position, int length,
           m_iLength(length),
           m_iHotCue(hotCue),
           m_label(label) {
-    qDebug() << "Cue(...)";
+    //qDebug() << "Cue(...)";
 }
 
 int Cue::getId() {
