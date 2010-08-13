@@ -1370,13 +1370,13 @@
 			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>fwd-on-Ch1.png</Pressed>
-				<Unpressed>fwd-off-Ch1.png</Unpressed>
+				<Pressed>play-on-Ch1.png</Pressed>
+				<Unpressed>play-off-Ch1.png</Unpressed>
 			</State>
 			<State>
 				<Number>1</Number>
-				<Pressed>fwd-on-Ch1.png</Pressed>
-				<Unpressed>fwd-on-Ch1.png</Unpressed>
+				<Pressed>play-on-Ch1.png</Pressed>
+				<Unpressed>play-on-Ch1.png</Unpressed>
 			</State>
 			<Pos>0, 25</Pos>
 			<Connection>
@@ -1384,24 +1384,19 @@
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
+                        <Connection>
+                            <ConfigKey>[Channel3],stop</ConfigKey>
+                            <EmitOnDownPress>false</EmitOnDownPress>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+				<ConfigKey>[Channel3],playstart</ConfigKey>
+				<EmitOnDownPress>true</EmitOnDownPress>
+                                <ButtonState>RightButton</ButtonState>
+			</Connection>
+
 		</PushButton>
 		
-		<PushButton>
-			<Tooltip>Stop</Tooltip>
-			<NumberStates>1</NumberStates>
-			<State>
-				<Number>0</Number>
-				<Pressed>stop-on-Ch1.png</Pressed>
-				<Unpressed>stop-off.png</Unpressed>
-			</State>
-			<Pos>22, 25</Pos>
-			<Connection>
-				<ConfigKey>[Channel3],stop</ConfigKey>
-				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-
 		<Overview>
 			<Tooltip>Overview display of waveform</Tooltip>
 			<Channel>3</Channel>
@@ -1420,7 +1415,7 @@
 			<Tooltip>Sampler 1 Gain</Tooltip>
 			<NumberStates>41</NumberStates>
 			<Path>knobl%1.png</Path>
-			<Pos>70,25</Pos>
+			<Pos>72,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel3],pregain</ConfigKey>
 			</Connection>
@@ -1444,7 +1439,7 @@
 				<Pressed>endoftrack-loop-ch1.png</Pressed>
 				<Unpressed>endoftrack-loop-ch1.png</Unpressed>
 			</State>
-			<Pos>45,25</Pos>
+			<Pos>47,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel3],TrackEndMode</ConfigKey>
 			</Connection>
@@ -1457,8 +1452,8 @@
 			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>fwd-on-Ch2.png</Pressed>
-				<Unpressed>fwd-off-Ch2.png</Unpressed>
+				<Pressed>play-on-Ch2.png</Pressed>
+				<Unpressed>play-off-Ch2.png</Unpressed>
 			</State>
 			<Pos>110, 25</Pos>
 			<Connection>
@@ -1466,24 +1461,18 @@
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
-		</PushButton>
-		
-		<PushButton>
-			<Tooltip>Stop</Tooltip>
-			<NumberStates>1</NumberStates>
-			<State>
-				<Number>0</Number>
-				<Pressed>stop-on-Ch2.png</Pressed>
-				<Unpressed>stop-off.png</Unpressed>
-			</State>
-			<Pos>132, 25</Pos>
-			<Connection>
-				<ConfigKey>[Channel4],stop</ConfigKey>
+                        <Connection>
+                            <ConfigKey>[Channel4],stop</ConfigKey>
+                            <EmitOnDownPress>false</EmitOnDownPress>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+				<ConfigKey>[Channel4],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
+                                <ButtonState>RightButton</ButtonState>
 			</Connection>
 		</PushButton>
-
+		
 		<Overview>
 			<Tooltip>Overview display of waveform</Tooltip>
 			<Channel>4</Channel>
@@ -1502,7 +1491,7 @@
 			<Tooltip>Sampler 2 Gain</Tooltip>
 			<NumberStates>41</NumberStates>
 			<Path>knobr%1.png</Path>
-			<Pos>180,25</Pos>
+			<Pos>182,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel4],pregain</ConfigKey>
 			</Connection>
@@ -1526,7 +1515,7 @@
 				<Pressed>endoftrack-loop-ch2.png</Pressed>
 				<Unpressed>endoftrack-loop-ch2.png</Unpressed>
 			</State>
-			<Pos>155,25</Pos>
+			<Pos>157,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel4],TrackEndMode</ConfigKey>
 			</Connection>
@@ -1539,8 +1528,8 @@
 			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>fwd-on-Ch1.png</Pressed>
-				<Unpressed>fwd-off-Ch1.png</Unpressed>
+				<Pressed>play-on-Ch1.png</Pressed>
+				<Unpressed>play-off-Ch1.png</Unpressed>
 			</State>
 			<Pos>220, 25</Pos>
 			<Connection>
@@ -1548,24 +1537,18 @@
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
-		</PushButton>
-		
-		<PushButton>
-			<Tooltip>Stop</Tooltip>
-			<NumberStates>1</NumberStates>
-			<State>
-				<Number>0</Number>
-				<Pressed>stop-on-Ch1.png</Pressed>
-				<Unpressed>stop-off.png</Unpressed>
-			</State>
-			<Pos>242, 25</Pos>
-			<Connection>
-				<ConfigKey>[Channel5],stop</ConfigKey>
+                        <Connection>
+                            <ConfigKey>[Channel5],stop</ConfigKey>
+                            <EmitOnDownPress>false</EmitOnDownPress>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+				<ConfigKey>[Channel5],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
+                                <ButtonState>RightButton</ButtonState>
 			</Connection>
 		</PushButton>
-
+		
 		<Overview>
 			<Tooltip>Overview display of waveform</Tooltip>
 			<Channel>5</Channel>
@@ -1584,7 +1567,7 @@
 			<Tooltip>Sampler 3 Gain</Tooltip>
 			<NumberStates>41</NumberStates>
 			<Path>knobl%1.png</Path>
-			<Pos>290,25</Pos>
+			<Pos>292,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel5],pregain</ConfigKey>
 			</Connection>
@@ -1608,7 +1591,7 @@
 				<Pressed>endoftrack-loop-ch1.png</Pressed>
 				<Unpressed>endoftrack-loop-ch1.png</Unpressed>
 			</State>
-			<Pos>265,25</Pos>
+			<Pos>267,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel5],TrackEndMode</ConfigKey>
 			</Connection>
@@ -1621,8 +1604,8 @@
 			<NumberStates>1</NumberStates>
 			<State>
 				<Number>0</Number>
-				<Pressed>fwd-on-Ch2.png</Pressed>
-				<Unpressed>fwd-off-Ch2.png</Unpressed>
+				<Pressed>play-on-Ch2.png</Pressed>
+				<Unpressed>play-off-Ch2.png</Unpressed>
 			</State>
 			<Pos>330, 25</Pos>
 			<Connection>
@@ -1630,24 +1613,18 @@
 				<EmitOnDownPress>true</EmitOnDownPress>
 				<ButtonState>LeftButton</ButtonState>
 			</Connection>
-		</PushButton>
-		
-		<PushButton>
-			<Tooltip>Stop</Tooltip>
-			<NumberStates>1</NumberStates>
-			<State>
-				<Number>0</Number>
-				<Pressed>stop-on-Ch2.png</Pressed>
-				<Unpressed>stop-off.png</Unpressed>
-			</State>
-			<Pos>352, 25</Pos>
-			<Connection>
-				<ConfigKey>[Channel6],stop</ConfigKey>
+                        <Connection>
+                            <ConfigKey>[Channel6],stop</ConfigKey>
+                            <EmitOnDownPress>false</EmitOnDownPress>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+				<ConfigKey>[Channel6],playstart</ConfigKey>
 				<EmitOnDownPress>true</EmitOnDownPress>
-				<ButtonState>LeftButton</ButtonState>
+                                <ButtonState>RightButton</ButtonState>
 			</Connection>
 		</PushButton>
-
+		
 		<Overview>
 			<Tooltip>Overview display of waveform</Tooltip>
 			<Channel>6</Channel>
@@ -1666,7 +1643,7 @@
 			<Tooltip>Sampler 1 Gain</Tooltip>
 			<NumberStates>41</NumberStates>
 			<Path>knobr%1.png</Path>
-			<Pos>400,25</Pos>
+			<Pos>402,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel6],pregain</ConfigKey>
 			</Connection>
@@ -1690,7 +1667,7 @@
 				<Pressed>endoftrack-loop-ch2.png</Pressed>
 				<Unpressed>endoftrack-loop-ch2.png</Unpressed>
 			</State>
-			<Pos>375,25</Pos>
+			<Pos>377,25</Pos>
 			<Connection>
 				<ConfigKey>[Channel6],TrackEndMode</ConfigKey>
 			</Connection>
