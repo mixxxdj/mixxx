@@ -45,6 +45,7 @@ WSampler::WSampler(QWidget* parent, SamplerManager* pSamplerManager) :
                     WWidget(parent),
                     m_pSamplerManager(pSamplerManager) {
     
+    //Get pointers to individual samplers to connect to overview widgets
     Sampler* pSampler1 = m_pSamplerManager->getSampler(1);
     Sampler* pSampler2 = m_pSamplerManager->getSampler(2);
     Sampler* pSampler3 = m_pSamplerManager->getSampler(3);
@@ -55,6 +56,8 @@ WSampler::WSampler(QWidget* parent, SamplerManager* pSamplerManager) :
     m_pWaveformRendererCh6 = new WaveformRenderer("[Channel6]");
     
     
+    //Connect each sampler to its respective wavefrom renderer so when a new track is loaded
+    //the waveform will be rendered.
     connect(pSampler1, SIGNAL(newTrackLoaded(TrackPointer)),
             m_pWaveformRendererCh3, SLOT(slotNewTrack(TrackPointer)));
     connect(pSampler1, SIGNAL(unloadingTrack(TrackPointer)),
@@ -105,10 +108,12 @@ WSampler::~WSampler() {
 }
 
 void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
-    
+
+    //Creates new window to contain the sampler widget
     m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
     m_pSamplerWindow->resize(550,60);
     
+    //Sets the background color of the sampler window
     QPalette palette = m_pSamplerWindow->palette();
     palette.setColor(backgroundRole(), QColor(24, 24, 24));
     m_pSamplerWindow->setPalette(palette);
@@ -130,7 +135,8 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
     connect(loadButton, SIGNAL(clicked()), loadSamplerBank, SIGNAL(activated()));
     connect(loadSamplerBank, SIGNAL(activated()), this, SLOT(slotLoadSamplerBank()));
     
-    
+    //Iterates through the skin.xml SamplerView section to instantiate each widget to be
+    //included in the sampler
     QDomNode samplerNode = node.firstChild();
     while (!samplerNode.isNull())
     {
@@ -185,10 +191,7 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
         samplerNode = samplerNode.nextSibling();
         
     }
-    //WWidget::setup(node);
-    
-    
-    
+
     Sampler* pSampler1 = m_pSamplerManager->getSampler(1);
     Sampler* pSampler2 = m_pSamplerManager->getSampler(2);
     Sampler* pSampler3 = m_pSamplerManager->getSampler(3);
