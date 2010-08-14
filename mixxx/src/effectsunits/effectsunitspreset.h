@@ -13,8 +13,7 @@
 
 class EffectsUnitsPreset {
 public:
-	EffectsUnitsPreset();
-	EffectsUnitsPreset(QDomElement Preset);
+	EffectsUnitsPreset(QDomNode Preset);
 	virtual ~EffectsUnitsPreset();
 
 	QString presetFor();
@@ -22,10 +21,10 @@ public:
 
 	QList<int> * getBindedPortIndex();
 	int getWetDryPortIndex();
-
+	void setBindedPortsFromXML(QDomNode node);
 
 private:
-	QString m_PresetFor;
+	QString * m_pPresetFor;
 
 	int m_WetDryPortIndex;
 	QList<int> * m_pBindedPortIndex;

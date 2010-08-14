@@ -6,6 +6,6 @@
 		<Port>2</Port>
 		<Port>3</Port>
 		<Port>5</Port>
-	</BindedPorts
+	</BindedPorts>
 	<WetDryPort>-1</WetDryPort>
 <EffectsUnitsPreset>

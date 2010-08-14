@@ -40,6 +40,6 @@ void EffectsUnitsPresetManager::loadAllPresets(){
 		document.setContent(&file);
 		file.close();
 
-		m_Presets.append(new EffectsUnitsPreset(document.documentElement()));
+		m_Presets.append(new EffectsUnitsPreset(document.documentElement().firstChild()));
 	}
 }
