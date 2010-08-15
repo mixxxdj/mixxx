@@ -1,8 +1,8 @@
-  	<!--20 April 2010 16:36:34 CEST-->  
+  	<!--10 August 2010 12:39:22 CEST-->  
   	<!--   
-  	LateNightBlues v0.80beta, Skin for Mixxx 1.8.x
+  	LateNightBlues, Skin for Mixxx 1.8.x
     www.mixxx.org
-    Copyright (C) 2009-2010 jus ; jus/justmail/de
+    Copyright (C) 2009-2010 jus ; jus@justmail.de
   
     This file is part of the "LateNightBlues" Skin for Mixxx 1.8.x
     "LateNightBlues" is licensed under the Attribution-Noncommercial-Share Alike 3.0 licence.
@@ -26,7 +26,12 @@
 
   	<!--
   	CHANGELOG
-  	   
+ 	v1.00	(10/08/2010)
+  	* Version bump
+  	* corrected small color & spacing errors
+	* corrected button style glitch
+  	- removed "Preview" watermark
+ 	   
   	v0.80b	(20/04/2010)
   	- New:
   		*Works with all features of Mixxx 1.8+
@@ -113,42 +118,42 @@
 		<Channel>1</Channel>
 		<Pos>104,1</Pos>
 		<Size>1054,73</Size>
-		<BgColor>#2D3439</BgColor>
+		<BgColor>#21272B</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
-		<SignalColor>#FFCC33</SignalColor>
+		<SignalColor>#FFC318</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
-		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#FFFF33</MarkerColor>
+		<BeatHighlightColor>#FFFFFF</BeatHighlightColor>
+		<MarkerColor>#00FF00</MarkerColor>
 		<CueColor>#2D3439</CueColor>
 		<!--<FisheyeColor>#404040</FisheyeColor>-->
 		<Zoom>true</Zoom>
   				
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
-			<Color>#FFFF00</Color>
+			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
-			<Color>#0033FF</Color>
+			<Color>#66CCFF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
-			<Color>#FF0000</Color>
+			<Color>#FF6FCF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
-			<Color>#FF00FF</Color>
+			<Color>#FF6666</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
@@ -160,23 +165,23 @@
   		</Mark>    
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
-			<Color>#70E100</Color>
+			<Color>#00FF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
-			<Color>#70E100</Color>
+			<Color>#00FF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<MarkRange>
     		<StartControl>loop_start_position</StartControl>
     		<EndControl>loop_end_position</EndControl>
     		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#70E100</Color>	
+			<Color>#00FF00</Color>	
 			<DisabledColor>#FFFFFF</DisabledColor>
   		</MarkRange>
 	</Visual>
@@ -186,47 +191,47 @@
 		<Channel>2</Channel>
 		<Pos>104,76</Pos>
 		<Size>1054,73</Size>
-		<BgColor>#2D3439</BgColor>
+		<BgColor>#21272B</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#FF9900</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
-		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#FFFF33</MarkerColor>
+		<BeatHighlightColor>#FFFFFF</BeatHighlightColor>
+		<MarkerColor>#00FF00</MarkerColor>
 		<CueColor>#2D3439</CueColor>
 		<!--<FisheyeColor>#404040</FisheyeColor>-->
 		<Zoom>true</Zoom>
 		
 		<Mark>
     		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
+    		<Text> CUEPOINT </Text>
 			<Align>top</Align>
-			<Color>#FFFF00</Color>
+			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+    		<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
-			<Color>#0033FF</Color>
+			<Color>#66CCFF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+    		<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
-			<Color>#FF0000</Color>
+			<Color>#FF6FCF</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+    		<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
-			<Color>#FF00FF</Color>
+			<Color>#FF6666</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+    		<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -234,23 +239,23 @@
   		
   		<Mark>
     		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
+    		<Text> LOOP IN </Text>	
 			<Align>bottom</Align>
-			<Color>#70E100</Color>
+			<Color>#00FF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<Mark>
     		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
+   			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
-			<Color>#70E100</Color>
+			<Color>#00FF00</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
   		<MarkRange>
     		<StartControl>loop_start_position</StartControl>
     		<EndControl>loop_end_position</EndControl>
     		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#70E100</Color>	
+			<Color>#00FF00</Color>	
 			<DisabledColor>#FFFFFF</DisabledColor>
   		</MarkRange>	
 	</Visual>
@@ -266,8 +271,8 @@
 		<Pos>1,250</Pos>
 		<Size>407,37</Size>
 		<BgColor>#2D3439</BgColor>
-		<SignalColor>#FFCC33</SignalColor>
-		<MarkerColor>#70E100</MarkerColor>
+		<SignalColor>#FFC318</SignalColor>
+		<MarkerColor>#00FF00</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -280,7 +285,7 @@
 		<Size>407,37</Size>
 		<BgColor>#2D3439</BgColor>	
 		<SignalColor>#FF9900</SignalColor>
-		<MarkerColor>#70E100</MarkerColor>
+		<MarkerColor>#00FF00</MarkerColor>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -417,7 +422,7 @@
 		<Pos>2,195</Pos>
 		<Size>455,23</Size>
 		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFCC33; text-align: left; padding-left: 1%;
+		background-color: transparent; color: #FFC318; text-align: left; padding-left: 1%;
 		</Style>
 	</Text>	
 	<Text>
@@ -441,7 +446,7 @@
 		<Pos>217,220</Pos>
 		<Size>130,23</Size>
 		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFCC33; text-align: left;padding-left: 1%;
+		background-color: transparent; color: #FFC318; text-align: left;padding-left: 1%;
 		</Style>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
@@ -473,7 +478,7 @@
 		<Pos>2,220</Pos>
 		<Size>210,23</Size>
 		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFCC33; text-align: left;padding-left: 1%;
+		background-color: transparent; color: #FFC318; text-align: left;padding-left: 1%;
 		</Style>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
@@ -505,7 +510,7 @@
 		<Pos>357,220</Pos>
 		<Size>100,23</Size>
 		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFCC33; text-align: right; padding-right: 1%;
+		background-color: transparent; color: #FFC318; text-align: right; padding-right: 1%;
 		</Style>
 		<Alignment>right</Alignment>
 		<NumberOfDigits>4</NumberOfDigits>
@@ -1613,7 +1618,7 @@
 			<Pressed>btn_kill.png</Pressed>
 			<Unpressed>btn_kill_over.png</Unpressed>
 		</State>
-		<Pos>476,204</Pos>
+		<Pos>476,205</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHighKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1633,7 +1638,7 @@
 			<Pressed>btn_kill.png</Pressed>
 			<Unpressed>btn_kill_over.png</Unpressed>
 		</State>
-		<Pos>476,238</Pos>
+		<Pos>476,239</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMidKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1653,7 +1658,7 @@
 			<Pressed>btn_kill.png</Pressed>
 			<Unpressed>btn_kill_over.png</Unpressed>
 		</State>
-		<Pos>476,272</Pos>
+		<Pos>476,273</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLowKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1674,7 +1679,7 @@
 			<Pressed>btn_kill.png</Pressed>
 			<Unpressed>btn_kill_over.png</Unpressed>
 		</State>
-		<Pos>775,204</Pos>
+		<Pos>775,205</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHighKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1694,7 +1699,7 @@
 			<Pressed>btn_kill.png</Pressed>
 			<Unpressed>btn_kill_over.png</Unpressed>
 		</State>
-		<Pos>775,238</Pos>
+		<Pos>775,239</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMidKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1714,7 +1719,7 @@
 			<Pressed>btn_kill.png</Pressed>
 			<Unpressed>btn_kill_over.png</Unpressed>
 		</State>
-		<Pos>775,272</Pos>
+		<Pos>775,273</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLowKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
