@@ -1,0 +1,1452 @@
+Plugin: Aliasing 
+	Port: 0 : Aliasing level 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Allpass delay line, noninterpolating 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Port: 4 : Decay Time (s) 
+	Processable. 
+Plugin: Allpass delay line, linear interpolation 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Port: 4 : Decay Time (s) 
+	Processable. 
+Plugin: Allpass delay line, cubic spline interpolation 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Port: 4 : Decay Time (s) 
+	Processable. 
+Plugin: AM pitchshifter 
+	Port: 0 : Pitch shift 
+	Port: 1 : Buffer size 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : latency 
+	Processable. 
+Plugin: Mono Amplifier 
+	Port: 0 : Gain 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Stereo Amplifier 
+	Port: 0 : Gain 
+	Port: 1 : Input (Left) 
+	Port: 2 : Output (Left) 
+	Port: 3 : Input (Right) 
+	Port: 4 : Output (Right) 
+	Processable. 
+Plugin: Simple amplifier 
+	Port: 0 : Amps gain (dB) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Analogue Oscillator 
+	Port: 0 : Waveform (1=sin, 2=tri, 3=squ, 4=saw) 
+	Port: 1 : Frequency (Hz) 
+	Port: 2 : Warmth 
+	Port: 3 : Instability 
+	Port: 4 : Output 
+	NOT Processable. 
+Plugin: Glame Bandpass Analog Filter 
+	Port: 0 : Center Frequency (Hz) 
+	Port: 1 : Bandwidth (Hz) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Glame Bandpass Filter 
+	Port: 0 : Center Frequency (Hz) 
+	Port: 1 : Bandwidth (Hz) 
+	Port: 2 : Stages(2 poles per stage) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Processable. 
+Plugin: Bode frequency shifter 
+	Port: 0 : Frequency shift 
+	Port: 1 : Input 
+	Port: 2 : Down out 
+	Port: 3 : Up out 
+	Port: 4 : latency 
+	NOT Processable. 
+Plugin: Bode frequency shifter (CV) 
+	Port: 0 : Base shift 
+	Port: 1 : Mix (-1=down, +1=up) 
+	Port: 2 : Input 
+	Port: 3 : CV Attenuation 
+	Port: 4 : Shift CV 
+	Port: 5 : Down out 
+	Port: 6 : Up out 
+	Port: 7 : Mix out 
+	Port: 8 : latency 
+	NOT Processable. 
+Plugin: Glame Butterworth X-over Filter 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Resonance 
+	Port: 2 : Input 
+	Port: 3 : LP-Output 
+	Port: 4 : HP-Output 
+	NOT Processable. 
+Plugin: GLAME Butterworth Lowpass 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Resonance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: GLAME Butterworth Highpass 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Resonance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: C* Eq - 10-band equalizer 
+	Port: 0 : in 
+	Port: 1 : 31 Hz 
+	Port: 2 : 63 Hz 
+	Port: 3 : 125 Hz 
+	Port: 4 : 250 Hz 
+	Port: 5 : 500 Hz 
+	Port: 6 : 1 kHz 
+	Port: 7 : 2 kHz 
+	Port: 8 : 4 kHz 
+	Port: 9 : 8 kHz 
+	Port: 10 : 16 kHz 
+	Port: 11 : out 
+	Processable. 
+Plugin: C* Eq2x2 - stereo 10-band equalizer 
+	Port: 0 : in:l 
+	Port: 1 : in:r 
+	Port: 2 : 31 Hz 
+	Port: 3 : 63 Hz 
+	Port: 4 : 125 Hz 
+	Port: 5 : 250 Hz 
+	Port: 6 : 500 Hz 
+	Port: 7 : 1 kHz 
+	Port: 8 : 2 kHz 
+	Port: 9 : 4 kHz 
+	Port: 10 : 8 kHz 
+	Port: 11 : 16 kHz 
+	Port: 12 : out:l 
+	Port: 13 : out:r 
+	Processable. 
+Plugin: C* Compress - Mono compressor 
+	Port: 0 : in 
+	Port: 1 : gain (dB) 
+	Port: 2 : ratio (1:n) 
+	Port: 3 : attack (s) 
+	Port: 4 : release (s) 
+	Port: 5 : threshold (dB) 
+	Port: 6 : knee radius (dB) 
+	Port: 7 : out 
+	Processable. 
+Plugin: C* Pan - Pan and width 
+	Port: 0 : in 
+	Port: 1 : pan 
+	Port: 2 : width 
+	Port: 3 : t 
+	Port: 4 : mono 
+	Port: 5 : out:l 
+	Port: 6 : out:r 
+	NOT Processable. 
+Plugin: C* PreampIII - Tube preamp emulation 
+	Port: 0 : in 
+	Port: 1 : gain 
+	Port: 2 : temperature 
+	Port: 3 : out 
+	Port: 4 : latency 
+	Processable. 
+Plugin: C* PreampIV - Tube preamp emulation + tone controls 
+	Port: 0 : in 
+	Port: 1 : gain 
+	Port: 2 : temperature 
+	Port: 3 : bass 
+	Port: 4 : mid 
+	Port: 5 : treble 
+	Port: 6 : hi 
+	Port: 7 : out 
+	Port: 8 : latency 
+	Processable. 
+Plugin: C* ToneStack - Tone stack emulation 
+	Port: 0 : in 
+	Port: 1 : model 
+	Port: 2 : bass 
+	Port: 3 : mid 
+	Port: 4 : treble 
+	Port: 5 : out 
+	Processable. 
+Plugin: C* ToneStackLT - Tone stack emulation, lattice filter 44.1 
+	Port: 0 : in 
+	Port: 1 : bass 
+	Port: 2 : mid 
+	Port: 3 : treble 
+	Port: 4 : out 
+	Processable. 
+Plugin: C* AmpIII - Tube amp 
+	Port: 0 : in 
+	Port: 1 : gain 
+	Port: 2 : temperature 
+	Port: 3 : drive 
+	Port: 4 : out 
+	Port: 5 : latency 
+	Processable. 
+Plugin: C* AmpIV - Tube amp + tone controls 
+	Port: 0 : in 
+	Port: 1 : gain 
+	Port: 2 : temperature 
+	Port: 3 : bass 
+	Port: 4 : mid 
+	Port: 5 : treble 
+	Port: 6 : hi 
+	Port: 7 : drive 
+	Port: 8 : out 
+	Port: 9 : latency 
+	Processable. 
+Plugin: C* AmpV - Tube amp 
+	Port: 0 : in 
+	Port: 1 : gain 
+	Port: 2 : bass 
+	Port: 3 : tone 
+	Port: 4 : drive 
+	Port: 5 : watts 
+	Port: 6 : out 
+	Port: 7 : latency 
+	Processable. 
+Plugin: C* AmpVTS - Tube amp + Tone stack 
+	Port: 0 : in 
+	Port: 1 : model 
+	Port: 2 : gain 
+	Port: 3 : bass 
+	Port: 4 : mid 
+	Port: 5 : treble 
+	Port: 6 : drive 
+	Port: 7 : watts 
+	Port: 8 : out 
+	Port: 9 : latency 
+	Processable. 
+Plugin: C* CabinetI - Loudspeaker cabinet emulation 
+	Port: 0 : in 
+	Port: 1 : model 
+	Port: 2 : gain (dB) 
+	Port: 3 : out 
+	Processable. 
+Plugin: C* CabinetII - Refined loudspeaker cabinet emulation 
+	Port: 0 : in 
+	Port: 1 : model 
+	Port: 2 : gain (dB) 
+	Port: 3 : out 
+	Processable. 
+Plugin: C* Clip - Hard clipper, 8x oversampled 
+	Port: 0 : in 
+	Port: 1 : gain (dB) 
+	Port: 2 : out 
+	Port: 3 : latency 
+	Processable. 
+Plugin: C* ChorusI - Mono chorus/flanger 
+	Port: 0 : in 
+	Port: 1 : t (ms) 
+	Port: 2 : width (ms) 
+	Port: 3 : rate (Hz) 
+	Port: 4 : blend 
+	Port: 5 : feedforward 
+	Port: 6 : feedback 
+	Port: 7 : out 
+	Processable. 
+Plugin: C* StereoChorusI - Stereo chorus/flanger 
+	Port: 0 : in 
+	Port: 1 : t (ms) 
+	Port: 2 : width (ms) 
+	Port: 3 : rate (Hz) 
+	Port: 4 : phase 
+	Port: 5 : blend 
+	Port: 6 : feedforward 
+	Port: 7 : feedback 
+	Port: 8 : out:l 
+	Port: 9 : out:r 
+	NOT Processable. 
+Plugin: C* ChorusII - Mono chorus/flanger modulated by a fractal 
+	Port: 0 : in 
+	Port: 1 : t (ms) 
+	Port: 2 : width (ms) 
+	Port: 3 : rate 
+	Port: 4 : blend 
+	Port: 5 : feedforward 
+	Port: 6 : feedback 
+	Port: 7 : out 
+	Processable. 
+Plugin: C* StereoChorusII - Stereo chorus/flanger modulated by a fractal 
+	Port: 0 : in 
+	Port: 1 : t (ms) 
+	Port: 2 : width (ms) 
+	Port: 3 : rate 
+	Port: 4 : blend 
+	Port: 5 : feedforward 
+	Port: 6 : feedback 
+	Port: 7 : out:l 
+	Port: 8 : out:r 
+	NOT Processable. 
+Plugin: C* PhaserI - Mono phaser 
+	Port: 0 : in 
+	Port: 1 : rate (Hz) 
+	Port: 2 : depth 
+	Port: 3 : spread 
+	Port: 4 : feedback 
+	Port: 5 : out 
+	Processable. 
+Plugin: C* PhaserII - Mono phaser modulated by a Lorenz fractal 
+	Port: 0 : in 
+	Port: 1 : rate 
+	Port: 2 : depth 
+	Port: 3 : spread 
+	Port: 4 : feedback 
+	Port: 5 : out 
+	Processable. 
+Plugin: C* SweepVFI - Resonant filter swept by a Lorenz fractal 
+	Port: 0 : in 
+	Port: 1 : f 
+	Port: 2 : Q 
+	Port: 3 : mode 
+	Port: 4 : depth:x 
+	Port: 5 : depth:y 
+	Port: 6 : depth:z 
+	Port: 7 : h 
+	Port: 8 : out 
+	Processable. 
+Plugin: C* SweepVFII - Resonant filter, f and Q swept by a Lorenz fractal 
+	Port: 0 : in 
+	Port: 1 : f 
+	Port: 2 : Q 
+	Port: 3 : mode 
+	Port: 4 : f:depth:x 
+	Port: 5 : f:depth:y 
+	Port: 6 : f:depth:z 
+	Port: 7 : f:h 
+	Port: 8 : Q:depth:x 
+	Port: 9 : Q:depth:y 
+	Port: 10 : Q:depth:z 
+	Port: 11 : Q:h 
+	Port: 12 : out 
+	Processable. 
+Plugin: C* AutoWah - Resonant envelope-following filter 
+	Port: 0 : in 
+	Port: 1 : f 
+	Port: 2 : Q 
+	Port: 3 : depth 
+	Port: 4 : out 
+	Processable. 
+Plugin: C* Scape - Stereo delay + Filters 
+	Port: 0 : in 
+	Port: 1 : bpm 
+	Port: 2 : divider 
+	Port: 3 : feedback 
+	Port: 4 : dry 
+	Port: 5 : blend 
+	Port: 6 : out:l 
+	Port: 7 : out:r 
+	NOT Processable. 
+Plugin: C* VCOs - Virtual 'analogue' oscillator 
+	Port: 0 : f 
+	Port: 1 : tri .. saw 
+	Port: 2 : ~ .. square 
+	Port: 3 : volume 
+	Port: 4 : out 
+	NOT Processable. 
+Plugin: C* VCOd - Double VCO with detune and hard sync options 
+	Port: 0 : f 
+	Port: 1 : 1: tri .. saw 
+	Port: 2 : 1: ~ .. square 
+	Port: 3 : 2: tri .. saw 
+	Port: 4 : 2: ~ .. square 
+	Port: 5 : 2: tune 
+	Port: 6 : sync 
+	Port: 7 : blend 
+	Port: 8 : volume 
+	Port: 9 : out 
+	NOT Processable. 
+Plugin: C* CEO - Chief Executive Oscillator 
+	Port: 0 : mpm 
+	Port: 1 : volume 
+	Port: 2 : damping 
+	Port: 3 : out 
+	NOT Processable. 
+Plugin: C* Sin - Sine wave generator 
+	Port: 0 : f 
+	Port: 1 : volume 
+	Port: 2 : out 
+	NOT Processable. 
+Plugin: C* White - White noise generator 
+	Port: 0 : volume 
+	Port: 1 : out 
+	NOT Processable. 
+Plugin: C* Lorenz - The sound of a Lorenz attractor 
+	Port: 0 : h 
+	Port: 1 : x 
+	Port: 2 : y 
+	Port: 3 : z 
+	Port: 4 : volume 
+	Port: 5 : out 
+	NOT Processable. 
+Plugin: C* Roessler - The sound of a Roessler attractor 
+	Port: 0 : h 
+	Port: 1 : x 
+	Port: 2 : y 
+	Port: 3 : z 
+	Port: 4 : volume 
+	Port: 5 : out 
+	NOT Processable. 
+Plugin: C* JVRev - Stanford-style reverb from STK 
+	Port: 0 : in 
+	Port: 1 : t60 (s) 
+	Port: 2 : blend 
+	Port: 3 : out:l 
+	Port: 4 : out:r 
+	NOT Processable. 
+Plugin: C* Plate - Versatile plate reverb 
+	Port: 0 : in 
+	Port: 1 : bandwidth 
+	Port: 2 : tail 
+	Port: 3 : damping 
+	Port: 4 : blend 
+	Port: 5 : out:l 
+	Port: 6 : out:r 
+	NOT Processable. 
+Plugin: C* Plate2x2 - Versatile plate reverb, stereo inputs 
+	Port: 0 : in:l 
+	Port: 1 : in:r 
+	Port: 2 : bandwidth 
+	Port: 3 : tail 
+	Port: 4 : damping 
+	Port: 5 : blend 
+	Port: 6 : out:l 
+	Port: 7 : out:r 
+	Processable. 
+Plugin: C* Click - Metronome 
+	Port: 0 : bpm 
+	Port: 1 : volume 
+	Port: 2 : damping 
+	Port: 3 : out 
+	NOT Processable. 
+Plugin: C* Dirac - One-sample impulse generator 
+	Port: 0 : ppm 
+	Port: 1 : volume 
+	Port: 2 : damping 
+	Port: 3 : out 
+	NOT Processable. 
+Plugin: C* HRTF - Head-related transfer function at elevation 0 
+	Port: 0 : in 
+	Port: 1 : pan 
+	Port: 2 : out:l 
+	Port: 3 : out:r 
+	NOT Processable. 
+Plugin: Chebyshev distortion 
+	Port: 0 : Distortion 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 0.01s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 0.01s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 0.1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 0.1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 5s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 5s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 60s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Echo Delay Line (Maximum Delay 60s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 0.01s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 0.01s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 0.1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 0.1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 1s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 5s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 5s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 60s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: Feedback Delay Line (Maximum Delay 60s) 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Port: 4 : Feedback 
+	Processable. 
+Plugin: High Pass Filter (One Pole) 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: High Pass Filter (One Pole) 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Low Pass Filter (One Pole) 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Low Pass Filter (One Pole) 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Comb Filter 
+	Port: 0 : Band separation (Hz) 
+	Port: 1 : Feedback 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Comb delay line, noninterpolating 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Port: 4 : Decay Time (s) 
+	Processable. 
+Plugin: Comb delay line, linear interpolation 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Port: 4 : Decay Time (s) 
+	Processable. 
+Plugin: Comb delay line, cubic spline interpolation 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Port: 4 : Decay Time (s) 
+	Processable. 
+Plugin: Comb Splitter 
+	Port: 0 : Band separation (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 1 
+	Port: 3 : Output 2 
+	NOT Processable. 
+Plugin: Constant Signal Generator 
+	Port: 0 : Signal amplitude 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Crossover distortion 
+	Port: 0 : Crossover amplitude 
+	Port: 1 : Smoothing 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: DC Offset Remover 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Processable. 
+Plugin: Exponential signal decay 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Decay Time (s) 
+	Processable. 
+Plugin: Decimator 
+	Port: 0 : Bit depth 
+	Port: 1 : Sample rate (Hz) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Declipper 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Processable. 
+Plugin: Simple Delay Line 
+	Port: 0 : Delay (Seconds) 
+	Port: 1 : Dry/Wet Balance 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Simple delay line, noninterpolating 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Processable. 
+Plugin: Simple delay line, linear interpolation 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Processable. 
+Plugin: Simple delay line, cubic spline interpolation 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Max Delay (s) 
+	Port: 3 : Delay Time (s) 
+	Processable. 
+Plugin: Delayorama 
+	Port: 0 : Random seed 
+	Port: 1 : Input gain (dB) 
+	Port: 2 : Feedback (%) 
+	Port: 3 : Number of taps 
+	Port: 4 : First delay (s) 
+	Port: 5 : Delay range (s) 
+	Port: 6 : Delay change 
+	Port: 7 : Delay random (%) 
+	Port: 8 : Amplitude change 
+	Port: 9 : Amplitude random (%) 
+	Port: 10 : Dry/wet mix 
+	Port: 11 : Input 
+	Port: 12 : Output 
+	Processable. 
+Plugin: Diode Processor 
+	Port: 0 : Mode (0 for none, 1 for half wave, 2 for full wave) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Audio Divider (Suboctave Generator) 
+	Port: 0 : Denominator 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: DJ EQ (mono) 
+	Port: 0 : Lo gain (dB) 
+	Port: 1 : Mid gain (dB) 
+	Port: 2 : Hi gain (dB) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Port: 5 : latency 
+	Processable. 
+Plugin: DJ EQ 
+	Port: 0 : Lo gain (dB) 
+	Port: 1 : Mid gain (dB) 
+	Port: 2 : Hi gain (dB) 
+	Port: 3 : Input L 
+	Port: 4 : Input R 
+	Port: 5 : Output L 
+	Port: 6 : Output R 
+	Port: 7 : latency 
+	Processable. 
+Plugin: DJ flanger 
+	Port: 0 : LFO sync 
+	Port: 1 : LFO period (s) 
+	Port: 2 : LFO depth (ms) 
+	Port: 3 : Feedback (%) 
+	Port: 4 : Input 
+	Port: 5 : Output 
+	Processable. 
+Plugin: Dyson compressor 
+	Port: 0 : Peak limit (dB) 
+	Port: 1 : Release time (s) 
+	Port: 2 : Fast compression ratio 
+	Port: 3 : Compression ratio 
+	Port: 4 : Input 
+	Port: 5 : Output 
+	Processable. 
+Plugin: Fractionally Addressed Delay Line 
+	Port: 0 : Delay (seconds) 
+	Port: 1 : Feedback (dB) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Fast Lookahead limiter 
+	Port: 0 : Input gain (dB) 
+	Port: 1 : Limit (dB) 
+	Port: 2 : Release time (s) 
+	Port: 3 : Attenuation (dB) 
+	Port: 4 : Input 1 
+	Port: 5 : Input 2 
+	Port: 6 : Output 1 
+	Port: 7 : Output 2 
+	Port: 8 : latency 
+	Processable. 
+Plugin: Simple Low Pass Filter 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Simple High Pass Filter 
+	Port: 0 : Cutoff Frequency (Hz) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Flanger 
+	Port: 0 : Delay base (ms) 
+	Port: 1 : Max slowdown (ms) 
+	Port: 2 : LFO frequency (Hz) 
+	Port: 3 : Feedback 
+	Port: 4 : Input 
+	Port: 5 : Output 
+	Processable. 
+Plugin: FM Oscillator 
+	Port: 0 : Waveform (1=sin, 2=tri, 3=squ, 4=saw) 
+	Port: 1 : Frequency (Hz) 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Foldover distortion 
+	Port: 0 : Drive 
+	Port: 1 : Skew 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Fast overdrive 
+	Port: 0 : Drive level 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Frequency tracker 
+	Port: 0 : Tracking speed 
+	Port: 1 : Input 
+	Port: 2 : Frequency (Hz) 
+	Processable. 
+Plugin: Gate 
+	Port: 0 : LF key filter (Hz) 
+	Port: 1 : HF key filter (Hz) 
+	Port: 2 : Threshold (dB) 
+	Port: 3 : Attack (ms) 
+	Port: 4 : Hold (ms) 
+	Port: 5 : Decay (ms) 
+	Port: 6 : Range (dB) 
+	Port: 7 : Output select (-1 = key listen, 0 = gate, 1 = bypass) 
+	Port: 8 : Input 
+	Port: 9 : Output 
+	Processable. 
+Plugin: Giant flange 
+	Port: 0 : Double delay 
+	Port: 1 : LFO frequency 1 (Hz) 
+	Port: 2 : Delay 1 range (s) 
+	Port: 3 : LFO frequency 2 (Hz) 
+	Port: 4 : Delay 2 range (s) 
+	Port: 5 : Feedback 
+	Port: 6 : Dry/Wet level 
+	Port: 7 : Input 
+	Port: 8 : Output 
+	Processable. 
+Plugin: Gong model 
+	Port: 0 : Inner damping 
+	Port: 1 : Outer damping 
+	Port: 2 : Mic position 
+	Port: 3 : Inner size 1 
+	Port: 4 : Inner stiffness 1 + 
+	Port: 5 : Inner stiffness 1 - 
+	Port: 6 : Inner size 2 
+	Port: 7 : Inner stiffness 2 + 
+	Port: 8 : Inner stiffness 2 - 
+	Port: 9 : Inner size 3 
+	Port: 10 : Inner stiffness 3 + 
+	Port: 11 : Inner stiffness 3 - 
+	Port: 12 : Inner size 4 
+	Port: 13 : Inner stiffness 4 + 
+	Port: 14 : Inner stiffness 4 - 
+	Port: 15 : Outer size 1 
+	Port: 16 : Outer stiffness 1 + 
+	Port: 17 : Outer stiffness 1 - 
+	Port: 18 : Outer size 2 
+	Port: 19 : Outer stiffness 2 + 
+	Port: 20 : Outer stiffness 2 - 
+	Port: 21 : Outer size 3 
+	Port: 22 : Outer stiffness 3 + 
+	Port: 23 : Outer stiffness 3 - 
+	Port: 24 : Outer size 4 
+	Port: 25 : Outer stiffness 4 + 
+	Port: 26 : Outer stiffness 4 - 
+	Port: 27 : Input 
+	Port: 28 : Output 
+	Processable. 
+Plugin: Gong beater 
+	Port: 0 : Impulse gain (dB) 
+	Port: 1 : Strike gain (dB) 
+	Port: 2 : Strike duration (s) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Processable. 
+Plugin: GSM simulator 
+	Port: 0 : Dry/wet mix 
+	Port: 1 : Number of passes 
+	Port: 2 : Error rate (bits/block) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Port: 5 : latency 
+	Processable. 
+Plugin: GVerb 
+	Port: 0 : Roomsize (m) 
+	Port: 1 : Reverb time (s) 
+	Port: 2 : Damping 
+	Port: 3 : Input bandwidth 
+	Port: 4 : Dry signal level (dB) 
+	Port: 5 : Early reflection level (dB) 
+	Port: 6 : Tail level (dB) 
+	Port: 7 : Input 
+	Port: 8 : Left output 
+	Port: 9 : Right output 
+	NOT Processable. 
+Plugin: Hard Limiter 
+	Port: 0 : dB limit 
+	Port: 1 : Wet level 
+	Port: 2 : Residue level 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Processable. 
+Plugin: Harmonic generator 
+	Port: 0 : Fundamental magnitude 
+	Port: 1 : 2nd harmonic magnitude 
+	Port: 2 : 3rd harmonic magnitude 
+	Port: 3 : 4th harmonic magnitude 
+	Port: 4 : 5th harmonic magnitude 
+	Port: 5 : 6th harmonic magnitude 
+	Port: 6 : 7th harmonic magnitude 
+	Port: 7 : 8th harmonic magnitude 
+	Port: 8 : 9th harmonic magnitude 
+	Port: 9 : 10th harmonic magnitude 
+	Port: 10 : Input 
+	Port: 11 : Output 
+	Processable. 
+Plugin: Hermes Filter 
+	Port: 0 : LFO1 freq (Hz) 
+	Port: 1 : LFO1 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = s&h) 
+	Port: 2 : LFO2 freq (Hz) 
+	Port: 3 : LFO2 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = s&h) 
+	Port: 4 : Osc1 freq (Hz) 
+	Port: 5 : Osc1 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = noise) 
+	Port: 6 : Osc2 freq (Hz) 
+	Port: 7 : Osc2 wave (0 = sin, 1 = tri, 2 = saw, 3 = squ, 4 = noise) 
+	Port: 8 : Ringmod 1 depth (0=none, 1=AM, 2=RM) 
+	Port: 9 : Ringmod 2 depth (0=none, 1=AM, 2=RM) 
+	Port: 10 : Ringmod 3 depth (0=none, 1=AM, 2=RM) 
+	Port: 11 : Osc1 gain (dB) 
+	Port: 12 : RM1 gain (dB) 
+	Port: 13 : Osc2 gain (dB) 
+	Port: 14 : RM2 gain (dB) 
+	Port: 15 : Input gain (dB) 
+	Port: 16 : RM3 gain (dB) 
+	Port: 17 : Xover lower freq 
+	Port: 18 : Xover upper freq 
+	Port: 19 : Dist1 drive 
+	Port: 20 : Dist2 drive 
+	Port: 21 : Dist3 drive 
+	Port: 22 : Filt1 type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP) 
+	Port: 23 : Filt1 freq 
+	Port: 24 : Filt1 q 
+	Port: 25 : Filt1 resonance 
+	Port: 26 : Filt1 LFO1 level 
+	Port: 27 : Filt1 LFO2 level 
+	Port: 28 : Filt2 type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP) 
+	Port: 29 : Filt2 freq 
+	Port: 30 : Filt2 q 
+	Port: 31 : Filt2 resonance 
+	Port: 32 : Filt2 LFO1 level 
+	Port: 33 : Filt2 LFO2 level 
+	Port: 34 : Filt3 type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP) 
+	Port: 35 : Filt3 freq 
+	Port: 36 : Filt3 q 
+	Port: 37 : Filt3 resonance 
+	Port: 38 : Filt3 LFO1 level 
+	Port: 39 : Filt3 LFO2 level 
+	Port: 40 : Delay1 length (s) 
+	Port: 41 : Delay1 feedback 
+	Port: 42 : Delay1 wetness 
+	Port: 43 : Delay2 length (s) 
+	Port: 44 : Delay2 feedback 
+	Port: 45 : Delay2 wetness 
+	Port: 46 : Delay3 length (s) 
+	Port: 47 : Delay3 feedback 
+	Port: 48 : Delay3 wetness 
+	Port: 49 : Band 1 gain (dB) 
+	Port: 50 : Band 2 gain (dB) 
+	Port: 51 : Band 3 gain (dB) 
+	Port: 52 : Input 
+	Port: 53 : Output 
+	Processable. 
+Plugin: Glame Highpass Filter 
+	Port: 0 : Cutoff Frequency 
+	Port: 1 : Stages(2 poles per stage) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Hilbert transformer 
+	Port: 0 : Input 
+	Port: 1 : 0deg output 
+	Port: 2 : 90deg output 
+	Port: 3 : latency 
+	NOT Processable. 
+Plugin: Impulse convolver 
+	Port: 0 : Impulse ID 
+	Port: 1 : High latency mode 
+	Port: 2 : Gain (dB) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Port: 5 : latency 
+	Processable. 
+Plugin: Nonbandlimited single-sample impulses (Frequency: Control) 
+	Port: 0 : Frequency (Hz) 
+	Port: 1 : Output 
+	NOT Processable. 
+Plugin: Inverter 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Processable. 
+Plugin: Karaoke 
+	Port: 0 : Vocal volume (dB) 
+	Port: 1 : Left in 
+	Port: 2 : Right in 
+	Port: 3 : Left out 
+	Port: 4 : Right out 
+	Processable. 
+Plugin: Artificial latency 
+	Port: 0 : Delay (ms) 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Port: 3 : latency 
+	Processable. 
+Plugin: L/C/R Delay 
+	Port: 0 : L delay (ms) 
+	Port: 1 : L level 
+	Port: 2 : C delay (ms) 
+	Port: 3 : C level 
+	Port: 4 : R delay (ms) 
+	Port: 5 : R level 
+	Port: 6 : Feedback 
+	Port: 7 : High damp (%) 
+	Port: 8 : Low damp (%) 
+	Port: 9 : Spread 
+	Port: 10 : Dry/Wet level 
+	Port: 11 : L input 
+	Port: 12 : R input 
+	Port: 13 : L output 
+	Port: 14 : R output 
+	Processable. 
+Plugin: Glame Lowpass Filter 
+	Port: 0 : Cutoff Frequency 
+	Port: 1 : Stages(2 poles per stage) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: LS Filter 
+	Port: 0 : Filter type (0=LP, 1=BP, 2=HP) 
+	Port: 1 : Cutoff frequency (Hz) 
+	Port: 2 : Resonance 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Processable. 
+Plugin: Matrix: MS to Stereo 
+	Port: 0 : Width 
+	Port: 1 : Mid 
+	Port: 2 : Side 
+	Port: 3 : Left 
+	Port: 4 : Right 
+	Processable. 
+Plugin: Matrix Spatialiser 
+	Port: 0 : Input L 
+	Port: 1 : Input R 
+	Port: 2 : Width 
+	Port: 3 : Output L 
+	Port: 4 : Output R 
+	Processable. 
+Plugin: Matrix: Stereo to MS 
+	Port: 0 : Left 
+	Port: 1 : Right 
+	Port: 2 : Mid 
+	Port: 3 : Side 
+	Processable. 
+Plugin: Multiband EQ 
+	Port: 0 : 50Hz gain (low shelving) 
+	Port: 1 : 100Hz gain 
+	Port: 2 : 156Hz gain 
+	Port: 3 : 220Hz gain 
+	Port: 4 : 311Hz gain 
+	Port: 5 : 440Hz gain 
+	Port: 6 : 622Hz gain 
+	Port: 7 : 880Hz gain 
+	Port: 8 : 1250Hz gain 
+	Port: 9 : 1750Hz gain 
+	Port: 10 : 2500Hz gain 
+	Port: 11 : 3500Hz gain 
+	Port: 12 : 5000Hz gain 
+	Port: 13 : 10000Hz gain 
+	Port: 14 : 20000Hz gain 
+	Port: 15 : Input 
+	Port: 16 : Output 
+	Port: 17 : latency 
+	Processable. 
+Plugin: Modulatable delay 
+	Port: 0 : Base delay (s) 
+	Port: 1 : Delay (s) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	NOT Processable. 
+Plugin: Multivoice Chorus 
+	Port: 0 : Number of voices 
+	Port: 1 : Delay base (ms) 
+	Port: 2 : Voice separation (ms) 
+	Port: 3 : Detune (%) 
+	Port: 4 : LFO frequency (Hz) 
+	Port: 5 : Output attenuation (dB) 
+	Port: 6 : Input 
+	Port: 7 : Output 
+	Processable. 
+Plugin: White Noise Source 
+	Port: 0 : Amplitude 
+	Port: 1 : Output 
+	NOT Processable. 
+Plugin: Mag's Notch Filter 
+	Port: 0 : Center Frequency (Hz) 
+	Port: 1 : Bandwidth (Hz) 
+	Port: 2 : Stages(2 poles per stage) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Processable. 
+Plugin: LFO Phaser 
+	Port: 0 : LFO rate (Hz) 
+	Port: 1 : LFO depth 
+	Port: 2 : Feedback 
+	Port: 3 : Spread (octaves) 
+	Port: 4 : Input 
+	Port: 5 : Output 
+	Processable. 
+Plugin: 4 x 4 pole allpass 
+	Port: 0 : Frequency 1 
+	Port: 1 : Feedback 1 
+	Port: 2 : Frequency 2 
+	Port: 3 : Feedback 2 
+	Port: 4 : Frequency 3 
+	Port: 5 : Feedback 3 
+	Port: 6 : Frequency 4 
+	Port: 7 : Feedback 4 
+	Port: 8 : Input 
+	Port: 9 : Output 
+	Processable. 
+Plugin: Auto phaser 
+	Port: 0 : Attack time (s) 
+	Port: 1 : Decay time (s) 
+	Port: 2 : Modulation depth 
+	Port: 3 : Feedback 
+	Port: 4 : Spread (octaves) 
+	Port: 5 : Input 
+	Port: 6 : Output 
+	Processable. 
+Plugin: Pitch Scaler 
+	Port: 0 : Pitch co-efficient 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Port: 3 : latency 
+	Processable. 
+Plugin: Higher Quality Pitch Scaler 
+	Port: 0 : Pitch co-efficient 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Port: 3 : latency 
+	Processable. 
+Plugin: Plate reverb 
+	Port: 0 : Reverb time 
+	Port: 1 : Damping 
+	Port: 2 : Dry/wet mix 
+	Port: 3 : Input 
+	Port: 4 : Left output 
+	Port: 5 : Right output 
+	NOT Processable. 
+Plugin: Pointer cast distortion 
+	Port: 0 : Effect cutoff freq (Hz) 
+	Port: 1 : Dry/wet mix 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Rate shifter 
+	Port: 0 : Rate 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Retro Flanger 
+	Port: 0 : Average stall (ms) 
+	Port: 1 : Flange frequency (Hz) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Reverse Delay (5s max) 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Delay Time (s) 
+	Port: 3 : Dry Level (dB) 
+	Port: 4 : Wet Level (dB) 
+	Port: 5 : Feedback 
+	Port: 6 : Crossfade samples 
+	Processable. 
+Plugin: Ringmod with two inputs 
+	Port: 0 : Modulation depth (0=none, 1=AM, 2=RM) 
+	Port: 1 : Input 
+	Port: 2 : Modulator 
+	Port: 3 : Output 
+	NOT Processable. 
+Plugin: Ringmod with LFO 
+	Port: 0 : Modulation depth (0=none, 1=AM, 2=RM) 
+	Port: 1 : Frequency (Hz) 
+	Port: 2 : Sine level 
+	Port: 3 : Triangle level 
+	Port: 4 : Sawtooth level 
+	Port: 5 : Square level 
+	Port: 6 : Input 
+	Port: 7 : Output 
+	Processable. 
+Plugin: Barry's Satan Maximiser 
+	Port: 0 : Decay time (samples) 
+	Port: 1 : Knee point (dB) 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: SC1 
+	Port: 0 : Attack time (ms) 
+	Port: 1 : Release time (ms) 
+	Port: 2 : Threshold level (dB) 
+	Port: 3 : Ratio (1:n) 
+	Port: 4 : Knee radius (dB) 
+	Port: 5 : Makeup gain (dB) 
+	Port: 6 : Input 
+	Port: 7 : Output 
+	Processable. 
+Plugin: SC2 
+	Port: 0 : Attack time (ms) 
+	Port: 1 : Release time (ms) 
+	Port: 2 : Threshold level (dB) 
+	Port: 3 : Ratio (1:n) 
+	Port: 4 : Knee radius (dB) 
+	Port: 5 : Makeup gain (dB) 
+	Port: 6 : Sidechain 
+	Port: 7 : Input 
+	Port: 8 : Output 
+	NOT Processable. 
+Plugin: SC3 
+	Port: 0 : Attack time (ms) 
+	Port: 1 : Release time (ms) 
+	Port: 2 : Threshold level (dB) 
+	Port: 3 : Ratio (1:n) 
+	Port: 4 : Knee radius (dB) 
+	Port: 5 : Makeup gain (dB) 
+	Port: 6 : Chain balance 
+	Port: 7 : Sidechain 
+	Port: 8 : Left input 
+	Port: 9 : Right input 
+	Port: 10 : Left output 
+	Port: 11 : Right output 
+	NOT Processable. 
+Plugin: SC4 
+	Port: 0 : RMS/peak 
+	Port: 1 : Attack time (ms) 
+	Port: 2 : Release time (ms) 
+	Port: 3 : Threshold level (dB) 
+	Port: 4 : Ratio (1:n) 
+	Port: 5 : Knee radius (dB) 
+	Port: 6 : Makeup gain (dB) 
+	Port: 7 : Amplitude (dB) 
+	Port: 8 : Gain reduction (dB) 
+	Port: 9 : Left input 
+	Port: 10 : Right input 
+	Port: 11 : Left output 
+	Port: 12 : Right output 
+	Processable. 
+Plugin: SC4 mono 
+	Port: 0 : RMS/peak 
+	Port: 1 : Attack time (ms) 
+	Port: 2 : Release time (ms) 
+	Port: 3 : Threshold level (dB) 
+	Port: 4 : Ratio (1:n) 
+	Port: 5 : Knee radius (dB) 
+	Port: 6 : Makeup gain (dB) 
+	Port: 7 : Amplitude (dB) 
+	Port: 8 : Gain reduction (dB) 
+	Port: 9 : Input 
+	Port: 10 : Output 
+	Processable. 
+Plugin: SE4 
+	Port: 0 : RMS/peak 
+	Port: 1 : Attack time (ms) 
+	Port: 2 : Release time (ms) 
+	Port: 3 : Threshold level (dB) 
+	Port: 4 : Ratio (1:n) 
+	Port: 5 : Knee radius (dB) 
+	Port: 6 : Attenuation (dB) 
+	Port: 7 : Amplitude (dB) 
+	Port: 8 : Gain expansion (dB) 
+	Port: 9 : Left input 
+	Port: 10 : Right input 
+	Port: 11 : Left output 
+	Port: 12 : Right output 
+	Processable. 
+Plugin: Wave shaper 
+	Port: 0 : Waveshape 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Signal sifter 
+	Port: 0 : Sift size 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Sine + cosine oscillator 
+	Port: 0 : Base frequency (Hz) 
+	Port: 1 : Pitch offset 
+	Port: 2 : Sine output 
+	Port: 3 : Cosine output 
+	NOT Processable. 
+Plugin: Sine Oscillator (Freq:audio, Amp:audio) 
+	Port: 0 : Frequency (Hz) 
+	Port: 1 : Amplitude 
+	Port: 2 : Output 
+	NOT Processable. 
+Plugin: Sine Oscillator (Freq:audio, Amp:control) 
+	Port: 0 : Frequency (Hz) 
+	Port: 1 : Amplitude 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Sine Oscillator (Freq:control, Amp:audio) 
+	Port: 0 : Frequency (Hz) 
+	Port: 1 : Amplitude 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Sine Oscillator (Freq:control, Amp:control) 
+	Port: 0 : Frequency (Hz) 
+	Port: 1 : Amplitude 
+	Port: 2 : Output 
+	NOT Processable. 
+Plugin: Single band parametric 
+	Port: 0 : Gain (dB) 
+	Port: 1 : Frequency (Hz) 
+	Port: 2 : Bandwidth (octaves) 
+	Port: 3 : Input 
+	Port: 4 : Output 
+	Processable. 
+Plugin: Sinus wavewrapper 
+	Port: 0 : Wrap degree 
+	Port: 1 : Input 
+	Port: 2 : Output 
+	Processable. 
+Plugin: Smooth Decimator 
+	Port: 0 : Resample rate 
+	Port: 1 : Smoothing 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Mono to Stereo splitter 
+	Port: 0 : Input 
+	Port: 1 : Output 1 
+	Port: 2 : Output 2 
+	NOT Processable. 
+Plugin: Step Demuxer 
+	Port: 0 : Crossfade time (in ms) 
+	Port: 1 : Clock 
+	Port: 2 : Input 1 
+	Port: 3 : Input 2 
+	Port: 4 : Input 3 
+	Port: 5 : Input 4 
+	Port: 6 : Input 5 
+	Port: 7 : Input 6 
+	Port: 8 : Input 7 
+	Port: 9 : Input 8 
+	Port: 10 : Output 
+	NOT Processable. 
+Plugin: Surround matrix encoder 
+	Port: 0 : L 
+	Port: 1 : R 
+	Port: 2 : C 
+	Port: 3 : S 
+	Port: 4 : Lt 
+	Port: 5 : Rt 
+	NOT Processable. 
+Plugin: State Variable Filter 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Port: 2 : Filter type (0=none, 1=LP, 2=HP, 3=BP, 4=BR, 5=AP) 
+	Port: 3 : Filter freq 
+	Port: 4 : Filter Q 
+	Port: 5 : Filter resonance 
+	Processable. 
+Plugin: Tape Delay Simulation 
+	Port: 0 : Tape speed (inches/sec, 1=normal) 
+	Port: 1 : Dry level (dB) 
+	Port: 2 : Tap 1 distance (inches) 
+	Port: 3 : Tap 1 level (dB) 
+	Port: 4 : Tap 2 distance (inches) 
+	Port: 5 : Tap 2 level (dB) 
+	Port: 6 : Tap 3 distance (inches) 
+	Port: 7 : Tap 3 level (dB) 
+	Port: 8 : Tap 4 distance (inches) 
+	Port: 9 : Tap 4 level (dB) 
+	Port: 10 : Input 
+	Port: 11 : Output 
+	Processable. 
+Plugin: Transient mangler 
+	Port: 0 : Attack speed 
+	Port: 1 : Sustain time 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Triple band parametric with shelves 
+	Port: 0 : Low-shelving gain (dB) 
+	Port: 1 : Low-shelving frequency (Hz) 
+	Port: 2 : Low-shelving slope 
+	Port: 3 : Band 1 gain (dB) 
+	Port: 4 : Band 1 frequency (Hz) 
+	Port: 5 : Band 1 bandwidth (octaves) 
+	Port: 6 : Band 2 gain (dB) 
+	Port: 7 : Band 2 frequency (Hz) 
+	Port: 8 : Band 2 bandwidth (octaves) 
+	Port: 9 : Band 3 gain (dB) 
+	Port: 10 : Band 3 frequency (Hz) 
+	Port: 11 : Band 3 bandwidth (octaves) 
+	Port: 12 : High-shelving gain (dB) 
+	Port: 13 : High-shelving frequency (Hz) 
+	Port: 14 : High-shelving slope 
+	Port: 15 : Input 
+	Port: 16 : Output 
+	Processable. 
+Plugin: Valve saturation 
+	Port: 0 : Distortion level 
+	Port: 1 : Distortion character 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: Valve rectifier 
+	Port: 0 : Sag level 
+	Port: 1 : Distortion 
+	Port: 2 : Input 
+	Port: 3 : Output 
+	Processable. 
+Plugin: VyNil (Vinyl Effect) 
+	Port: 0 : Year 
+	Port: 1 : RPM 
+	Port: 2 : Surface warping 
+	Port: 3 : Crackle 
+	Port: 4 : Wear 
+	Port: 5 : Input L 
+	Port: 6 : Input R 
+	Port: 7 : Output L 
+	Port: 8 : Output R 
+	Processable. 
+Plugin: Wave Terrain Oscillator 
+	Port: 0 : x 
+	Port: 1 : y 
+	Port: 2 : z 
+	NOT Processable. 
+Plugin: Crossfade 
+	Port: 0 : Crossfade 
+	Port: 1 : Input A left 
+	Port: 2 : Input A right 
+	Port: 3 : Input B left 
+	Port: 4 : Input B right 
+	Port: 5 : Output left 
+	Port: 6 : Output right 
+	NOT Processable. 
+Plugin: Crossfade (4 outs) 
+	Port: 0 : Crossfade 
+	Port: 1 : Input A left 
+	Port: 2 : Input A right 
+	Port: 3 : Input B left 
+	Port: 4 : Input B right 
+	Port: 5 : Output A left 
+	Port: 6 : Output A right 
+	Port: 7 : Output B left 
+	Port: 8 : Output B right 
+	NOT Processable. 
+Plugin: z-1 
+	Port: 0 : Input 
+	Port: 1 : Output 
+	Processable. 
