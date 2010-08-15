@@ -19,10 +19,7 @@
 #include "dlgprefsounditem.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
-
-/** The number of decks Mixxx has (to be factored out with n-decks). */
-const unsigned int NUM_DECKS = 2; // this is temporary... eventually this shoud come from
-                                  // soundmanager or something
+#include "engine/enginemaster.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
@@ -35,7 +32,9 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
     , m_pConfig(config)
     , m_settingsModified(false)
     , m_loading(false)
-    , m_forceApply(false) {
+    , m_forceApply(false)
+    , m_deckCount(0)
+{
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -61,6 +60,10 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
             this, SLOT(updateLatencies(int)));
     connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(latencyChanged(int)));
+
+    // using math_max to give the signed return value of numChannels a lower
+    // bound so we can safely stick it in the unsigned deckCount -bkgood
+    m_deckCount = math_max(m_pSoundManager->getEngine()->numChannels(), 0);
 
     initializePaths();
     loadSettings();
@@ -150,7 +153,7 @@ void DlgPrefSound::initializePaths() {
     foreach (AudioPathType type, AudioOutput::getSupportedTypes()) {
         DlgPrefSoundItem *toInsert;
         if (AudioPath::isIndexed(type)) {
-            for (unsigned int i = 0; i < NUM_DECKS; ++i) {
+            for (unsigned int i = 0; i < m_deckCount; ++i) {
                 toInsert = new DlgPrefSoundItem(outputScrollAreaContents, type,
                         m_outputDevices, false, i);
                 connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
@@ -170,7 +173,7 @@ void DlgPrefSound::initializePaths() {
     foreach (AudioPathType type, AudioInput::getSupportedTypes()) {
         DlgPrefSoundItem *toInsert;
         if (AudioPath::isIndexed(type)) {
-            for (unsigned int i = 0; i < NUM_DECKS; ++i) {
+            for (unsigned int i = 0; i < m_deckCount; ++i) {
                 toInsert = new DlgPrefSoundItem(inputScrollAreaContents, type,
                         m_inputDevices, true, i);
                 connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),

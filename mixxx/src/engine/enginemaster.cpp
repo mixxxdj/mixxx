@@ -139,12 +139,12 @@ void EngineMaster::setPitchIndpTimeStretch(bool b)
     }
 }
 
-const CSAMPLE* EngineMaster::getMasterBuffer()
+const CSAMPLE* EngineMaster::getMasterBuffer() const
 {
     return m_pMaster;
 }
 
-const CSAMPLE* EngineMaster::getHeadphoneBuffer()
+const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
 {
     return m_pHead;
 }
@@ -318,11 +318,11 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-int EngineMaster::numChannels() {
+int EngineMaster::numChannels() const {
     return m_channels.size();
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) {
+const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
     if (i < numChannels()) {
         return m_channelBuffers[i];
     }

@@ -48,10 +48,10 @@ public:
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* getMasterBuffer();
-    const CSAMPLE* getHeadphoneBuffer();
-    int numChannels();
-    const CSAMPLE* getChannelBuffer(unsigned int i);
+    const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getHeadphoneBuffer() const;
+    int numChannels() const;
+    const CSAMPLE* getChannelBuffer(unsigned int i) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 

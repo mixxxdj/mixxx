@@ -105,6 +105,20 @@ SoundManager::~SoundManager()
     // by clearDeviceList -- bkgood
 }
 
+/**
+ * Returns a pointer to the EngineMaster instance this SoundManager
+ * is using.
+ * @note pointer is const at this point because this is only being inserted
+ *       so that the prefs can find out how many channels there are and I
+ *       feel uneasy about providing mutable access to the engine. Make it
+ *       non-const if you end up needing a non-const pointer to the engine
+ *       where you only have SoundMan.
+ */
+const EngineMaster* SoundManager::getEngine() const
+{
+    return m_pMaster;
+}
+
 /** Returns a list of all the devices we've enumerated through PortAudio.
   *
   * @param filterAPI If filterAPI is the name of an audio API used by PortAudio, this function
