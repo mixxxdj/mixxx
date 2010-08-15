@@ -111,7 +111,7 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
 
     //Creates new window to contain the sampler widget
     m_pSamplerWindow = new QFrame(this, Qt::Window | Qt::Tool);
-    m_pSamplerWindow->resize(550,60);
+    m_pSamplerWindow->resize(640,60);
     
     //Sets the background color of the sampler window
     QPalette palette = m_pSamplerWindow->palette();
@@ -121,15 +121,24 @@ void WSampler::setup(QDomNode node, QList<QObject *> m_qWidgetList){
     
     QPushButton *saveButton = new QPushButton(m_pSamplerWindow);
     saveButton->setText("Save Bank");
-    saveButton->move(435,25);
-    
+    saveButton->move(435,0);
+
+    QPushButton *collectButton = new QPushButton(m_pSamplerWindow);
+    collectButton->setText("Collect and Save");
+    collectButton->move(435, 25);
+    collectButton->hide();
+
     QPushButton *loadButton = new QPushButton(m_pSamplerWindow);
     loadButton->setText("Load Bank");
-    loadButton->move(435,0);
+    loadButton->move(531,0);
     
     saveSamplerBank = new QAction(tr("&Save Sampler Bank"), this);
     connect(saveButton, SIGNAL(clicked()), saveSamplerBank, SIGNAL(activated()));
     connect(saveSamplerBank, SIGNAL(activated()), this, SLOT(slotSaveSamplerBank()));
+    
+    collectSamplerBank = new QAction(tr("&Collect and Save Sampler Bank"), this);
+    connect(collectButton, SIGNAL(clicked()), collectSamplerBank, SIGNAL(activated()));
+    connect(collectSamplerBank, SIGNAL(activated()), this, SLOT(slotCollectSamplerBank()));
     
     loadSamplerBank = new QAction(tr("&Load Sampler Bank"), this);
     connect(loadButton, SIGNAL(clicked()), loadSamplerBank, SIGNAL(activated()));
@@ -261,6 +270,41 @@ void WSampler::slotSaveSamplerBank() {
     root.appendChild(sampler4);
     
     file.write(doc.toString());
+}
+
+void WSampler::slotCollectSamplerBank() {
+    QString s = QFileDialog::getSaveFileName(this, tr("Collect and Save Sampler Bank"));
+    QFile file(s);
+    if(!file.open(IO_WriteOnly)) {
+        qDebug("Cannot write to file.");
+    };
+    QDomDocument doc("SamplerBank");
+    
+    QDomElement root = doc.createElement("samplerbank");
+    doc.appendChild(root);
+    
+    QDomElement sampler1 = doc.createElement( "sampler1" );
+    QString loc1 = m_pSamplerManager->getTrackLocation(1);
+    sampler1.setAttribute( "location", loc1);
+    root.appendChild(sampler1);
+    
+    QDomElement sampler2 = doc.createElement( "sampler2" );
+    QString loc2 = m_pSamplerManager->getTrackLocation(2);
+    sampler2.setAttribute( "location", loc2);
+    root.appendChild(sampler2);
+    
+    QDomElement sampler3 = doc.createElement( "sampler3" );
+    QString loc3 = m_pSamplerManager->getTrackLocation(3);
+    sampler3.setAttribute( "location", loc3);
+    root.appendChild(sampler3);
+    
+    QDomElement sampler4 = doc.createElement( "sampler4" );
+    QString loc4 = m_pSamplerManager->getTrackLocation(4);
+    sampler4.setAttribute( "location", loc4);
+    root.appendChild(sampler4);
+    
+    file.write(doc.toString());
+
 }
 
 void WSampler::slotLoadSamplerBank() {

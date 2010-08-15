@@ -48,11 +48,13 @@ public slots:
     
     /** Saves entire sampler bank as XML file **/
     void slotSaveSamplerBank();
+    void slotCollectSamplerBank();
     void slotLoadSamplerBank();
 private:
     SamplerManager* m_pSamplerManager;
     QFrame* m_pSamplerWindow;
     QAction *saveSamplerBank; 
+    QAction *collectSamplerBank;
     QAction *loadSamplerBank;
 };
 
