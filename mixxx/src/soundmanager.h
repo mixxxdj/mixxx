@@ -46,6 +46,7 @@ class SoundManager : public QObject
     public:
         SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
         ~SoundManager();
+        const EngineMaster* getEngine() const;
         QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
         void closeDevices();
         void clearDeviceList();

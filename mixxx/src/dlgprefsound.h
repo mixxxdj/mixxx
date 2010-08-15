@@ -26,11 +26,11 @@ class ControlObject;
 class SoundDevice;
 
 /*
- * TODO(bkgood) (n-decks) make this class get the number of channels from
- * EngineMaster, perhaps establish a signal/slot connection with a signal
+ * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
  * on EngineMaster that emits every time a channel is added, and a slot here
  * that updates the dialog accordingly.
  */
+
 /**
  * Class representing a preferences pane to configure sound devices for Mixxx.
  */
@@ -63,6 +63,7 @@ private:
     SoundManagerConfig m_config;
     bool m_loading;
     bool m_forceApply;
+    unsigned int m_deckCount;
 private slots:
     void apiChanged(int index);
     void updateAPIs();
