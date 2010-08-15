@@ -91,10 +91,8 @@ const LADSPA_Descriptor * LADSPAPlugin::getDescriptor(){
 bool LADSPAPlugin::isSupported(){
     int inputs = 0;
     int outputs = 0;
-    qDebug() << "FXUNITS: Plugin:" << m_pDescriptor->Name;
     for (unsigned long port = 0; port < m_pDescriptor->PortCount; port++)
     {
-    	qDebug() << "FXUNITS: 	Port:" << port << ":" << m_pDescriptor->PortNames[port];
         if (LADSPA_IS_PORT_AUDIO(m_pDescriptor->PortDescriptors [port]))
         {
             if (LADSPA_IS_PORT_INPUT(m_pDescriptor->PortDescriptors [port]))
@@ -109,10 +107,8 @@ bool LADSPAPlugin::isSupported(){
     }
 
     if ((inputs == 2 && outputs == 2) || (inputs == 1 && outputs == 1)){
-    	qDebug() << "FXUNITS: 	Processable.";
     	return true;
     } else {
-    	qDebug() << "FXUNITS: 	NOT Processable.";
     	return false;
     }
 }
