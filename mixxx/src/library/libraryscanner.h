@@ -41,8 +41,12 @@ class LibraryScanner : public QThread
         void scan(QString libraryPath);
         void scan();
         bool recursiveScan(QString dirPath);
+    public slots:
+        void cancel();   
+        void resetCancel();
     signals:
         void scanFinished();
+        void progressHashing(QString);
     private:
         TrackCollection* m_pCollection;      //The library trackcollection
         QString m_qLibraryPath;               //The path to the library on disk
@@ -54,6 +58,8 @@ class LibraryScanner : public QThread
         QSqlDatabase m_database;            /**Hang on to a different DB connection
                                                since we run in a different thread */
         QStringList nameFilters;
+        bool m_bCancelLibraryScan;
+        QMutex m_libraryScanMutex;
 };
 
 #endif

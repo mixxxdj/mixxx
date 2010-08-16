@@ -363,7 +363,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
         // New scratch behavior overrides old
         if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor/10.;
-        else rate = oldScratchFactor + jogFactor + wheelFactor/10.; // Just remove oldScratchFactor in future
+        else rate = oldScratchFactor + jogFactor*18 + wheelFactor/10.; // Just remove oldScratchFactor in future
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
@@ -374,7 +374,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // Temp: pitch bend
 
         rate = 1. + getRawRate() + getTempRate();
-        rate += wheelFactor/10.;
+        rate += wheelFactor * 10.;
         
         // New scratch behavior - overrides playback speed (and old behavior)
         if (scratchEnable) rate = scratchFactor;

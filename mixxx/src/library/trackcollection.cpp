@@ -131,6 +131,8 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
         QString fileName = file.fileName();
 
         if (fileName.count(m_supportedFileExtensionsRegex)) {
+            //If the track is in the database, mark it as existing. This code gets exectuted
+            //when other files in the same directory have changed (the directory hash has changed).
             trackDao.markTrackLocationAsVerified(absoluteFilePath);
 
             // If the file already exists in the database, continue and go on to
