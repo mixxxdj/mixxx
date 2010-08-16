@@ -2,10 +2,9 @@
 <EffectsUnitsPreset>
 	<EffectsUnitsPlugin>Plate2x2</EffectsUnitsPlugin>
 	<BindedPorts>
-		<Port>1</Port>
 		<Port>2</Port>
 		<Port>3</Port>
-		<Port>5</Port>
+		<Port>4</Port>
 	</BindedPorts>
-	<WetDryPort>-1</WetDryPort>
+	<WetDryPort>5</WetDryPort>
 <EffectsUnitsPreset>

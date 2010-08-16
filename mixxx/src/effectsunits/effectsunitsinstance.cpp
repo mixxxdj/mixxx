@@ -67,7 +67,15 @@ void EffectsUnitsInstance::applyPreset(EffectsUnitsPreset * Preset){
 		/* Gets the Wet/Dry index from Preset and set according ranges */
 		m_WetDryPort = Preset->getWetDryPortIndex();
 		potmeter = dynamic_cast<ControlPotmeter *>(m_pWetDry);
-		if (potmeter != NULL) potmeter->setRange(ports->at(m_WetDryPort)->Min, ports->at(m_WetDryPort)->Max);
+
+		/* Preset might or mightnt bind a custom wetdry
+		 * If, however the preset is wrong, uses default wetdry
+		 */
+		if (m_WetDryPort == -1 || m_WetDryPort > ports->size()){
+			if (potmeter != NULL) potmeter->setRange(0.0, 1.0);
+		} else {
+			if (potmeter != NULL) potmeter->setRange(ports->at(m_WetDryPort)->Min, ports->at(m_WetDryPort)->Max);
+		}
 		//FIXME - BadPreset = SEGFAULT
 
 	}
@@ -133,7 +141,7 @@ void EffectsUnitsInstance::updatePorts(){
 
 	/* If WetDry is a parameter port, update it as well */
 	if (m_WetDryPort > -1){
-		getPlugin()->connect(m_WetDryPort, m_pBindings->at(m_WetDryPort)->get());
+		getPlugin()->connect(m_WetDryPort, m_pWetDry->get());
 	}
 
 }
