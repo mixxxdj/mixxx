@@ -145,6 +145,7 @@ inline unsigned long SoundSourceFLAC::length() {
 int SoundSourceFLAC::parseHeader() {
     open();
     setType("FLAC");
+    // TODO(bkgood) check this next line
     setBitrate(m_iSampleRate * 16 * m_iChannels / 1000); // 16 = bps
     setDuration(m_samples / m_iSampleRate);
     foreach (QString i, m_tags) {
