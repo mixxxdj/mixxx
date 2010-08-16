@@ -18,10 +18,13 @@ EffectsUnitsPresetManager::~EffectsUnitsPresetManager() {
 EffectsUnitsPreset * EffectsUnitsPresetManager::findPresetForPlugin(QString PluginName){
 	int size = m_Presets.size();
 	for (int i = 0; i < size; i++){
+		qDebug() << "FXUNITS:" << m_Presets.at(i)->presetFor();
 		if (m_Presets.at(i)->presetFor() == PluginName){
+			qDebug() << "FXUNITS: Found preset for" << PluginName;
 			return m_Presets.at(i);
 		}
 	}
+	qDebug() << "FXUNITS: Didn't find preset for" << PluginName;
 	return NULL;
 }
 
