@@ -34,13 +34,6 @@ typedef int (*EnableAlsaRT)(PaStream* s, int enable);
 
 class SoundDevicePortAudio;
 
-/** A struct to some stuff we need to pass along to the callback through PortAudio **/
-struct PADeviceCallbackStuff
-{
-	SoundDevicePortAudio *soundDevice;
-	int devIndex;
-};
-
 class SoundDevicePortAudio : public SoundDevice
 {
     public:
@@ -49,7 +42,7 @@ class SoundDevicePortAudio : public SoundDevice
         int open();
         int close();
         QString getError() const;
-        int callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex);
+        int callbackProcess(unsigned long framesPerBuffer, float *output, short *in);
     private:
         /** PortAudio stream for this device. */
         PaStream *m_pStream;
@@ -57,8 +50,6 @@ class SoundDevicePortAudio : public SoundDevice
         PaDeviceIndex m_devId;
         /** Struct containing information about this device. Don't free() it, it belongs to PortAudio.*/
         const PaDeviceInfo *m_deviceInfo;
-        /** A struct to hold some information/pointers we need to pass to our callback function */
-        PADeviceCallbackStuff m_callbackStuff;
         /** Number of buffers */
         int m_iNumberOfBuffers;
         /** Number of active/open soundcards */
@@ -79,6 +70,6 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                         unsigned long framesPerBuffer,
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags,
-                        void *_sounddevice);
+                        void *soundDevice);
 
 #endif

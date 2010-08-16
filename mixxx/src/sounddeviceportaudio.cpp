@@ -155,9 +155,6 @@ int SoundDevicePortAudio::open()
     m_inputParams.suggestedLatency = latencyMSec / 1000.0;
     m_inputParams.hostApiSpecificStreamInfo = NULL;
 
-    m_callbackStuff.soundDevice = this;
-    m_callbackStuff.devIndex = m_devId; //FIXME: No longer necessary?
-
     qDebug() << "Opening stream with id" << m_devId;
 
     //Create the callback function pointer.
@@ -171,7 +168,7 @@ int SoundDevicePortAudio::open()
                         m_framesPerBuffer,                       // Frames per buffer
                         paClipOff,                                      // Stream flags
                         callback,                                       // Stream callback
-                        (void *)&m_callbackStuff);                //Data pointer passed to the callback function
+                        (void*) this); // pointer passed to the callback function
 
     if (err != paNoError)
     {
@@ -294,12 +291,11 @@ QString SoundDevicePortAudio::getError() const {
                  out of samples (ie. when it needs more sound to play)
         -------- ------------------------------------------------------
  */
-int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex)
+int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in)
 {
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     int iFrameSize;
     int iVCGain;
-    int i;
     static ControlObject* pControlObjectVinylControlGain =
         ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
@@ -307,7 +303,6 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     //Initialize some variables.
     iFrameSize = m_outputParams.channelCount;
     iVCGain = 1;
-    i = 0;
 
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
@@ -329,7 +324,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         // TODO(bkgood) move this to vcproxy or something, once we have other
         // inputs we don't want every input getting the vc gain
         iVCGain = pControlObjectVinylControlGain->get();
-        for (i = 0; i < framesPerBuffer * m_inputParams.channelCount; i++)
+        for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
             in[i] *= iVCGain;
 
         //qDebug() << in[0];
@@ -393,11 +388,11 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
    Input:   .
    Output:  -
    -------- ------------------------------------------------------ */
-int paV19Callback(const void * inputBuffer, void * outputBuffer,
+int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo * timeInfo,
+                  const PaStreamCallbackTimeInfo *timeInfo,
                   PaStreamCallbackFlags statusFlags,
-                  void * _callbackStuff)
+                  void *soundDevice)
 {
     /*
        //Variables that are used in the human-readable form of function call from hell (below).
@@ -406,11 +401,15 @@ int paV19Callback(const void * inputBuffer, void * outputBuffer,
        _player = ((PAPlayerCallbackStuff*)_callbackStuff)->player;
        devIndex = ((PAPlayerCallbackStuff*)_callbackStuff)->devIndex;
      */
+    // these two are unused for now, suppressing compiler warnings -bkgood
+    Q_UNUSED(timeInfo);
+    Q_UNUSED(statusFlags);
 
     //Human-readable form of the function call from hell:
     //return _player->callbackProcess(framesPerBuffer, (float *)outputBuffer, devIndex);
 
-    //Function call from hell:
-    return ((PADeviceCallbackStuff *)_callbackStuff)->soundDevice->callbackProcess(framesPerBuffer, (float *)outputBuffer, (short *)inputBuffer, ((PADeviceCallbackStuff *)_callbackStuff)->devIndex);
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(framesPerBuffer,
+            (float*) outputBuffer, (short*) inputBuffer);
+//    return ((SoundDevicePortAudio*)_callbackStuff)->callbackProcess(framesPerBuffer, (float*) outputBuffer, (short*) inputBuffer);
 }
 
