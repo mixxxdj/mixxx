@@ -466,6 +466,7 @@ void SoundManager::sync()
 QHash<AudioOutput, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer)
 {
+    Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
 
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
