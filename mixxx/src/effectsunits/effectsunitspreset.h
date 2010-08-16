@@ -18,16 +18,14 @@ public:
 
 	QString presetFor();
 	QDomDocument toXML();
-
 	QList<int> * getBindedPortIndex();
 	int getWetDryPortIndex();
 	void setBindedPortsFromXML(QDomNode node);
 
 private:
-	QString * m_pPresetFor;
-
-	int m_WetDryPortIndex;
-	QList<int> * m_pBindedPortIndex;
+	QString * m_pPresetFor; 			/* Plugin Name */
+	int m_WetDryPortIndex;				/* Wet/Dry port Index, -1 if none */
+	QList<int> * m_pBindedPortIndex;	/* Knob <--> Port Mappings */
 };
 
 #endif /* EFFECTSUNITSPRESET_H_ */

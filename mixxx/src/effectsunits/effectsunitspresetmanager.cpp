@@ -7,6 +7,10 @@
 
 #include "effectsunitspresetmanager.h"
 
+/* Effects Units Preset Manager
+ * Loads all available presets.
+ * Will find default presets for our Plugins.
+ */
 EffectsUnitsPresetManager::EffectsUnitsPresetManager() {
 	loadAllPresets();
 }
@@ -15,6 +19,9 @@ EffectsUnitsPresetManager::~EffectsUnitsPresetManager() {
 	// TODO Auto-generated destructor stub
 }
 
+/* EffectsUnitsPresetManager::findPresetForPlugin
+ * Gets the default preset for given plugin.
+ */
 EffectsUnitsPreset * EffectsUnitsPresetManager::findPresetForPlugin(QString PluginName){
 	int size = m_Presets.size();
 	for (int i = 0; i < size; i++){
@@ -28,6 +35,9 @@ EffectsUnitsPreset * EffectsUnitsPresetManager::findPresetForPlugin(QString Plug
 	return NULL;
 }
 
+/* EffectsUnitsPresetManager::loadAllPresets
+ * Loads all the presets saved in our res/ folder.
+ */
 void EffectsUnitsPresetManager::loadAllPresets(){
 	QDir dir(WWidget::getPath(QString("../../effectsunits")));
 	QFileInfoList files = dir.entryInfoList();

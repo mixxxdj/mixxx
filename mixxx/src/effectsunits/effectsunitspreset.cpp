@@ -7,6 +7,11 @@
 
 #include "effectsunitspreset.h"
 
+/* Effects Units Preset
+ * Specifies desired Plugin set-up.
+ * Wet/Dry Port (if available)
+ * Knob <--> Port Mappings.
+ */
 EffectsUnitsPreset::EffectsUnitsPreset(QDomNode node){
 	m_pBindedPortIndex = new QList<int>;
 
