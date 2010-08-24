@@ -65,6 +65,13 @@ const int TRACK_END_MODE_NEXT = 1;
 const int TRACK_END_MODE_LOOP = 2;
 const int TRACK_END_MODE_PING = 3;
 
+//vinyl status constants
+//XXX: move this to vinylcontrol.h once thread startup is moved
+const int VINYL_STATUS_DISABLED = 0;
+const int VINYL_STATUS_OK = 1;
+const int VINYL_STATUS_WARNING = 2;
+const int VINYL_STATUS_ERROR = 3;
+
 // Maximum number of samples used to ramp to or from zero when playback is
 // stopped or started.
 const int kiRampLength = 50;
@@ -198,6 +205,7 @@ private:
 
     /** Control used to signal when at end of file */
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
+    ControlObject *m_pVinylStatus;  //Status of vinyl control
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
 

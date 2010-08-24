@@ -61,6 +61,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylMode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylMode")));
     ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
     ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
     ControlObjectThreadMain* pControlObjectVinylControlSignalQuality1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlQuality")));
@@ -74,7 +76,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
 
     pControlObjectLatency->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
-    pControlObjectVinylControlMode->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
+    pControlObjectVinylControlMode1->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
+    pControlObjectVinylControlMode2->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
     pControlObjectVinylControlEnabled->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
     pControlObjectVinylControlGain->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
 
@@ -600,12 +603,20 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
                 Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
                 if (m_VinylControl[0])
                     m_VinylControl[0]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
+                if (m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
+                {
+                	if (m_VinylControl[1])
+                    	m_VinylControl[1]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
+                }
             }
             if (recv.type == RECEIVER_VINYLCONTROL_TWO)
             {
-                Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
-                if (m_VinylControl[1])
-                    m_VinylControl[1]->AnalyseSamples(vinylControlBuffer2, iFramesPerBuffer);
+                if (!m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
+            	{
+	                Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
+	                if (m_VinylControl[1])
+	                    m_VinylControl[1]->AnalyseSamples(vinylControlBuffer2, iFramesPerBuffer);
+	            }
             }
         }
 #endif

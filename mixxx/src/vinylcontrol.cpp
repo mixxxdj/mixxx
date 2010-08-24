@@ -11,17 +11,19 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
 
     // Get Control objects
     playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: 0.0 to 1.0
-    controlScratch      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "scratch")));
+    controlScratch      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "scratch2")));
     rateSlider          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0
     playButton          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "play")));
     reverseButton       = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "reverse")));
     duration            = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "duration")));
-    mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
-    enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
+    mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylMode")));
+	enabled     		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     timecodeQuality     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlQuality")));
     timecodeInputL      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputL")));
     timecodeInputR      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputR")));
+    //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
+    vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
 
 
     dVinylPitch = 0.0f;
@@ -40,10 +42,10 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
 
     //Vinyl control mode
-    iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
+    iVCMode = m_pConfig->getValueString(ConfigKey(group,"VinylMode")).toInt();
 
     //Enabled or not
-    bIsEnabled = m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
+    bIsEnabled = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol")).toInt();
 
 }
 
@@ -51,13 +53,14 @@ void VinylControl::ToggleVinylControl(bool enable)
 {
     bIsEnabled = enable;
     if (m_pConfig)
-        m_pConfig->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)enable));
+        m_pConfig->set(ConfigKey(group,"vinylcontrol"), ConfigValue((int)enable));
 
     enabled->slotSet(enable);
 
     //Reset the scratch control to make sure we don't get stuck moving forwards or backwards.
-    if (!enable)
-        controlScratch->slotSet(0.0f);
+    //actually that might be a good thing
+    //if (!enable)
+    //    controlScratch->slotSet(0.0f);
 }
 
 VinylControl::~VinylControl()

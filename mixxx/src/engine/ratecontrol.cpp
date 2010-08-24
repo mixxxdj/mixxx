@@ -138,6 +138,15 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
+#ifdef __VINYLCONTROL__         
+    //m_pVinylControl = new ControlObject(ConfigKey(_group,"vinylcontrol"));
+    qDebug() << "setting up vinyl control pushbutton";
+    m_pVinylControl = new ControlPushButton(ConfigKey(_group,"vinylcontrol"));
+    m_pVinylControl->set(0);
+    m_pVinylControl->setToggleButton(true);
+    connect(m_pVinylControl, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinyl(double)));
+    connect(m_pVinylControl, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotControlVinyl(double)));
+#endif
 }
 
 RateControl::~RateControl() {
@@ -345,7 +354,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
-    bool scratchEnable = m_pScratchToggle->get() != 0;
+    //bool scratchEnable = m_pScratchToggle->get() != 0;
+    bool scratchEnable = m_bVinylControlEnabled;
     double scratchFactor = m_pScratch->get();
     double oldScratchFactor = m_pOldScratch->get(); // Deprecated
     // Don't trust values from m_pScratch
@@ -362,6 +372,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
     } else if (paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
         // New scratch behavior overrides old
+        
         if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor/10.;
         else rate = oldScratchFactor + jogFactor*18 + wheelFactor/10.; // Just remove oldScratchFactor in future
     } else {
@@ -549,3 +560,9 @@ void RateControl::resetRateTemp(void)
 {
     setRateTemp(0.0);
 }
+
+void RateControl::slotControlVinyl(double toggle)
+{
+	m_bVinylControlEnabled = (bool)toggle;
+}
+

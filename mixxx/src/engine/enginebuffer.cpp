@@ -125,6 +125,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // TrackEndMode determines what to do at the end of a track
     m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
+    
+    m_pVinylStatus = new ControlObject(ConfigKey(group,"VinylStatus"));
 
 #ifdef __VINYLCONTROL__
     // Vinyl Control status indicator
@@ -245,7 +247,7 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 
 void EngineBuffer::setNewPlaypos(double newpos)
 {
-    //qDebug() << "engine new pos " << newpos;
+    qDebug() << "engine new pos " << newpos;
 
     filepos_play = newpos;
 

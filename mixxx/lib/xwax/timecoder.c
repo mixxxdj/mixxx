@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2009 Mark Hills <mark@pogo.org.uk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,10 +26,8 @@
 #include "timecoder.h"
 
 #define ZERO_THRESHOLD 128
-#define SIGNAL_THRESHOLD 256
 
-#define ZERO_AVG 1024
-#define SIGNAL_AVG 256
+#define ZERO_RC 0.001 /* time constant for zero/rumble filter */
 
 #define REF_PEAKS_AVG 48 /* in wave cycles */
 
@@ -45,187 +44,201 @@
 
 /* Timecode definitions */
 
-
-#define POLARITY_NEGATIVE 0
-#define POLARITY_POSITIVE 1
+#define SWITCH_PHASE 0x1 /* tone phase difference of 270 (not 90) degrees */
+#define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
+#define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
 
 
 struct timecode_def_t timecode_def[] = {
     {
-        name: "serato_2a",
-        desc: "Serato 2nd Ed., side A",
-        resolution: 1000,
-        polarity: POLARITY_POSITIVE,
-        bits: 20,
-        seed: 0x59017,
-        tap: {2, 5, 6, 7, 8, 13, 14, 16, 17},
-        ntaps: 9,
-        length: 712000,
-        safe: 707000,
-        lookup: NULL
+        .name = "serato_2a",
+        .desc = "Serato 2nd Ed., side A",
+        .resolution = 1000,
+        .flags = 0,
+        .bits = 20,
+        .seed = 0x59017,
+        .taps = 0x361e4,
+        .length = 712000,
+        .safe = 625000,
+        .lookup = false
     },
     {
-        name: "serato_2b",
-        desc: "Serato 2nd Ed., side B",
-        seed: 0x8f3c6,
-        resolution: 1000,
-        polarity: POLARITY_POSITIVE,
-        bits: 20,
-        tap: {3, 4, 6, 7, 12, 13, 14, 15, 18}, /* reverse of side A */
-        ntaps: 9,
-        length: 922000,
-        safe: 917000,
-        lookup: NULL
+        .name = "serato_2b",
+        .desc = "Serato 2nd Ed., side B",
+        .resolution = 1000,
+        .flags = 0,
+        .bits = 20,
+        .seed = 0x8f3c6,
+        .taps = 0x4f0d8, /* reverse of side A */
+        .length = 922000,
+        .safe = 905000,
+        .lookup = false
     },
     {
-        name: "serato_cd",
-        desc: "Serato CD",
-        resolution: 1000,
-        polarity: POLARITY_POSITIVE,
-        bits: 20,
-        seed: 0xd8b40,
-        tap: {2, 4, 6, 8, 10, 11, 14, 16, 17},
-        ntaps: 9,
-        length: 910000,
-        safe: 900000,
-        lookup: NULL
+        .name = "serato_cd",
+        .desc = "Serato CD",
+        .resolution = 1000,
+        .flags = 0,
+        .bits = 20,
+        .seed = 0xd8b40,
+        .taps = 0x34d54,
+        .length = 950000,
+        .safe = 940000,
+        .lookup = false
     },
     {
-        name: "traktor_a",
-        desc: "Traktor Scratch, side A",
-        resolution: 2000,
-        polarity: POLARITY_POSITIVE,
-        bits: 23,
-        seed: 0x134503,
-        tap: {6, 12, 18},
-        ntaps: 3,
-        length: 1500000,
-        safe: 1480000,
-        lookup: NULL
+        .name = "traktor_a",
+        .desc = "Traktor Scratch, side A",
+        .resolution = 2000,
+        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+        .bits = 23,
+        .seed = 0x134503,
+        .taps = 0x041040,
+        .length = 1500000,
+        .safe = 1480000,
+        .lookup = false        
     },
     {
-        name: "traktor_b",
-        desc: "Traktor Scratch, side B",
-        resolution: 2000,
-        polarity: POLARITY_POSITIVE,
-        bits: 23,
-        seed: 0x32066c,
-        tap: {6, 12, 18},
-        ntaps: 3,
-        length: 2110000,
-        safe: 2090000,
-        lookup: NULL
+        .name = "traktor_b",
+        .desc = "Traktor Scratch, side B",
+        .resolution = 2000,
+        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+        .bits = 23,
+        .seed = 0x32066c,
+        .taps = 0x041040, /* same as side A */
+        .length = 2110000,
+        .safe = 2090000,
+        .lookup = false
     },
     {
-        name: NULL
+        .name = "mixvibes_v2",
+        .desc = "MixVibes V2",
+        .resolution = 1300,
+        .flags = SWITCH_PHASE,
+        .bits = 20,
+        .seed = 0x22c90,
+        .taps = 0x00008,
+        .length = 950000,
+        .safe = 923000,
+        .lookup = false
+    },
+    {
+        .name = "mixvibes_7inch",
+        .desc = "MixVibes V2",
+        .resolution = 1300,
+        .flags = SWITCH_PHASE,
+        .bits = 20,
+        .seed = 0x22c90,
+        .taps = 0x00008,
+        .length = 312000,
+        .safe = 310000,
+        .lookup = false
+    },
+    {
+        .name = NULL
     }
 };
-
-
-//struct timecode_def_t *def;
 
 
 /* Linear Feeback Shift Register in the forward direction. New values
  * are generated at the least-significant bit. */
 
-static inline int lfsr(unsigned int code, struct timecoder_t *timecoder)
+static inline bits_t lfsr(bits_t code, bits_t taps)
 {
-    unsigned int r;
-    char s, n;
+    bits_t taken;
+    int xrs;
 
-    r = code & 1;
-
-    for(n = 0; n < timecoder->tc_table->ntaps; n++) {
-        s = *(timecoder->tc_table->tap + n);
-        r += (code & (1 << s)) >> s;
+    taken = code & taps;
+    xrs = 0;
+    while (taken != 0x0) {
+        xrs += taken & 0x1;
+        taken >>= 1;
     }
-    
-    return r & 0x1;
+
+    return xrs & 0x1;
 }
 
 
-/* Linear Feeback Shift Register in the reverse direction. New values
- * are generated at the most-significant bit. */
-
-static inline int lfsr_rev(unsigned int code, struct timecoder_t *timecoder)
+static inline bits_t fwd(bits_t current, struct timecode_def_t *def)
 {
-    unsigned int r;
-    char s, n;
+    bits_t l;
 
-    r = (code & (1 << (timecoder->tc_table->bits - 1))) >> (timecoder->tc_table->bits - 1);
+    /* New bits are added at the MSB; shift right by one */
 
-    for(n = 0; n < timecoder->tc_table->ntaps; n++) {
-        s = *(timecoder->tc_table->tap + n) - 1;
-        r += (code & (1 << s)) >> s;
-    }
-    
-    return r & 0x1;
+    l = lfsr(current, def->taps | 0x1);
+    return (current >> 1) | (l << (def->bits - 1));
 }
 
 
-/* Setup globally, for a chosen timecode definition */
+static inline bits_t rev(bits_t current, struct timecode_def_t *def)
+{
+    bits_t l, mask;
 
-int timecoder_build_lookup(char *timecode_name, struct timecoder_t *timecoder) {
-    unsigned int n, current;
+    /* New bits are added at the LSB; shift left one and mask */
 
+    mask = (1 << def->bits) - 1;
+    l = lfsr(current, (def->taps >> 1) | (0x1 << (def->bits - 1)));
+    return ((current << 1) & mask) | l;
+}
+
+
+static struct timecode_def_t* find_definition(const char *name)
+{
     struct timecode_def_t *def;
-    def = &timecode_def[0];
 
+    def = &timecode_def[0];
     while(def->name) {
-        if(!strcmp(def->name, timecode_name))
-            break;
+        if(!strcmp(def->name, name))
+            return def;
         def++;
     }
+    return NULL;
+}
 
-    if(!def->name) {
-        fprintf(stderr, "Timecode definition '%s' is not known.\n",
-                timecode_name);
-        return -1;
-    }
 
-    //Copy the lookup table stuff
-    if (timecoder->tc_table == NULL) {
-        timecoder->tc_table = malloc(sizeof(struct timecode_def_t));
-    }
-    memcpy(timecoder->tc_table, def, sizeof(struct timecode_def_t));
+/* Where necessary, build the lookup table required for this timecode */
 
-    fprintf(stderr, "Allocating %d slots (%zuKb) for %d bit timecode (%s)\n",
-            2 << timecoder->tc_table->bits, (2 << timecoder->tc_table->bits) * sizeof(unsigned int) / 1024,
-            timecoder->tc_table->bits, timecoder->tc_table->desc);
+static int build_lookup(struct timecode_def_t *def)
+{
+    unsigned int n;
+    bits_t current, last;
 
-    timecoder->tc_table->lookup = malloc((2 << timecoder->tc_table->bits) * sizeof(unsigned int));
-    if(!timecoder->tc_table->lookup) {
-        perror("malloc");
+    if(def->lookup)
         return 0;
-    }
-   
-    for(n = 0; n < ((unsigned int)2 << timecoder->tc_table->bits); n++)
-        timecoder->tc_table->lookup[n] = -1;
+
+    fprintf(stderr, "Building LUT for %d bit %dHz timecode (%s)\n",
+            def->bits, def->resolution, def->desc);
+
+    if(lut_init(&def->lut, def->length) == -1)
+	return -1;
+
+    current = def->seed;
     
-    current = timecoder->tc_table->seed;
-    
-    for(n = 0; n < timecoder->tc_table->length; n++) {
-        if(timecoder->tc_table->lookup[current] != -1) {
-            fprintf(stderr, "Timecode has wrapped; finishing here.\n");
-            return -1;
-        }
-        
-        timecoder->tc_table->lookup[current] = n;
-        current = (current >> 1) + (lfsr(current, timecoder) << (timecoder->tc_table->bits - 1));
-        //printf("n=%d\n", n);
+    for(n = 0; n < def->length; n++) {
+        /* timecode must not wrap */
+        assert(lut_lookup(&def->lut, current) == (unsigned)-1);
+        lut_push(&def->lut, current);
+        last = current;
+        current = fwd(current, def);
+        assert(rev(current, def) == last);
     }
+
+    def->lookup = true;
     
     return 0;    
 }
 
 
-/* Free the timecoder lookup table when it is no longer needed */
+/* Free the timecoder lookup tables when they are no longer needed */
 
-void timecoder_free_lookup(struct timecoder_t* timecoder) {
-    if (timecoder->tc_table->lookup)
-    {
-        free(timecoder->tc_table->lookup);
-        timecoder->tc_table->lookup = NULL;
+void timecoder_free_lookup(void) {
+    struct timecode_def_t *def;
+
+    def = &timecode_def[0];
+    while(def->name) {
+        if(def->lookup)
+            lut_clear(&def->lut);
+        def++;
     }
 }
 
@@ -234,40 +247,42 @@ static void init_channel(struct timecoder_channel_t *ch)
 {
     ch->positive = 0;
     ch->zero = 0;
-    ch->crossing_ticker = 0;
 }
 
 
 /* Initialise a timecode decoder */
 
-void timecoder_init(struct timecoder_t *tc)
+int timecoder_init(struct timecoder_t *tc, const char *def_name,
+		   unsigned int sample_rate)
 {
-    int c;
+    /* A definition contains a lookup table which can be shared
+     * across multiple timecoders */
+
+    tc->def = find_definition(def_name);
+    if (tc->def == NULL) {
+        fprintf(stderr, "Timecode definition '%s' is not known.\n", def_name);
+        return -1;
+    }
+    if(build_lookup(tc->def) == -1)
+        return -1;
+
+    tc->dt = 1.0 / sample_rate;
+    tc->zero_alpha = tc->dt / (ZERO_RC + tc->dt);
 
     tc->forwards = 1;
-    tc->rate = TIMECODER_RATE;
+    init_channel(&tc->primary);
+    init_channel(&tc->secondary);
+    pitch_init(&tc->pitch, tc->dt);
 
-    tc->half_peak = 0;
-    tc->wave_peak = 0;
-    tc->ref_level = -1;
-    tc->signal_level = 0;
-
-    init_channel(&tc->mono);
-    for(c = 0; c < TIMECODER_CHANNELS; c++)
-        init_channel(&tc->channel[c]);
-        
-    tc->crossings = 0;
-    tc->pitch_ticker = 0;
-
+    tc->ref_level = 32768.0;
     tc->bitstream = 0;
     tc->timecode = 0;
     tc->valid_counter = 0;
     tc->timecode_ticker = 0;
 
     tc->mon = NULL;
-    tc->log_fd = -1;
-    
-    tc->tc_table = NULL;
+
+    return 0;
 }
 
 
@@ -283,13 +298,17 @@ void timecoder_clear(struct timecoder_t *tc)
  * display of the incoming audio. Initialise one for the given
  * timecoder */
 
-void timecoder_monitor_init(struct timecoder_t *tc, int size, int scale)
+int timecoder_monitor_init(struct timecoder_t *tc, int size)
 {
     tc->mon_size = size;
-    tc->mon_scale = scale;
     tc->mon = malloc(SQ(tc->mon_size));
+    if (tc->mon == NULL) {
+        perror("malloc");
+        return -1;
+    }
     memset(tc->mon, 0, SQ(tc->mon_size));
     tc->mon_counter = 0;
+    return 0;
 }
 
 
@@ -304,293 +323,205 @@ void timecoder_monitor_clear(struct timecoder_t *tc)
 }
 
 
-static int detect_zero_crossing(struct timecoder_channel_t *ch,
-                                signed short v, int rate)
+static void detect_zero_crossing(struct timecoder_channel_t *ch,
+                                 signed int v, float alpha)
 {
-    int swapped;
-
     ch->crossing_ticker++;
 
-    swapped = 0;
-    if(v >= ch->zero + ZERO_THRESHOLD && !ch->positive) {
-        swapped = 1;
+    ch->swapped = 0;
+    if(v > ch->zero + ZERO_THRESHOLD && !ch->positive) {
+        ch->swapped = 1;
         ch->positive = 1;
         ch->crossing_ticker = 0;
     } else if(v < ch->zero - ZERO_THRESHOLD && ch->positive) {
-        swapped = 1;
+        ch->swapped = 1;
         ch->positive = 0;
         ch->crossing_ticker = 0;
     }
     
-    ch->zero += (v - ch->zero) * ZERO_AVG / rate;
+    ch->zero += alpha * (v - ch->zero);
+}
+
+
+/* Plot the given sample value in the monitor (scope) */
+
+static void update_monitor(struct timecoder_t *tc, signed int x, signed int y)
+{
+    int px, py, p;
+    float v, w;
+
+    if(!tc->mon)
+        return;
+
+    /* Decay the pixels already in the montior */
+        
+    if(++tc->mon_counter % MONITOR_DECAY_EVERY == 0) {
+        for(p = 0; p < SQ(tc->mon_size); p++) {
+            if(tc->mon[p])
+                tc->mon[p] = tc->mon[p] * 7 / 8;
+        }
+    }
+        
+    v = (float)x / tc->ref_level / 2;
+    w = (float)y / tc->ref_level / 2;
+        
+    px = tc->mon_size / 2 + (v * tc->mon_size / 2);
+    py = tc->mon_size / 2 + (w * tc->mon_size / 2);
+
+    /* Set the pixel value to white */
+            
+    if(px > 0 && px < tc->mon_size && py > 0 && py < tc->mon_size)
+        tc->mon[py * tc->mon_size + px] = 0xff;
+}
+
+
+/* Process a single bitstream reading */
+
+static void process_bitstream(struct timecoder_t *tc, signed int m)
+{
+    bits_t b;
+
+    b = m > tc->ref_level;
+
+    /* Add it to the bitstream, and work out what we were expecting
+     * (timecode). */
+
+    /* tc->bitstream is always in the order it is physically placed on
+     * the vinyl, regardless of the direction. */
+
+    if(tc->forwards) {
+	tc->timecode = fwd(tc->timecode, tc->def);
+	tc->bitstream = (tc->bitstream >> 1)
+	    + (b << (tc->def->bits - 1));
+
+    } else {
+	bits_t mask;
+
+	mask = ((1 << tc->def->bits) - 1);
+	tc->timecode = rev(tc->timecode, tc->def);
+	tc->bitstream = ((tc->bitstream << 1) & mask) + b;
+    }
+
+    if(tc->timecode == tc->bitstream)
+	tc->valid_counter++;
+    else {
+	tc->timecode = tc->bitstream;
+	tc->valid_counter = 0;
+    }
+
+    /* Take note of the last time we read a valid timecode */
     
-    return swapped;
+    tc->timecode_ticker = 0;
+
+    /* Adjust the reference level based on this new peak */
+
+    tc->ref_level = (tc->ref_level * (REF_PEAKS_AVG - 1) + m) / REF_PEAKS_AVG;
+
+#ifdef DEBUG_BITSTREAM
+    fprintf(stderr, "%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)\n",
+	    tc->primary.zero,
+	    m,
+	    tc->ref_level,
+	    b,
+	    tc->valid_counter == 0 ? 'x' : ' ',
+	    tc->valid_counter);
+#endif
+}
+
+
+/* Process a single sample from the incoming audio */
+
+static void process_sample(struct timecoder_t *tc,
+			   signed int primary, signed int secondary)
+{
+    signed int m; /* pcm sample, sum of two shorts */
+
+    detect_zero_crossing(&tc->primary, primary, tc->zero_alpha);
+    detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha);
+
+    m = abs(primary - tc->primary.zero);
+
+    /* If an axis has been crossed, use the direction of the crossing
+     * to work out the direction of the vinyl */
+
+    if(tc->primary.swapped) {
+	tc->forwards = (tc->primary.positive != tc->secondary.positive);
+	if(tc->def->flags & SWITCH_PHASE)
+	    tc->forwards = !tc->forwards;
+    } if(tc->secondary.swapped) {
+	tc->forwards = (tc->primary.positive == tc->secondary.positive);
+	if(tc->def->flags & SWITCH_PHASE)
+	    tc->forwards = !tc->forwards;
+    }
+
+    /* If any axis has been crossed, register movement using the pitch
+     * counters */
+
+    if(!tc->primary.swapped && !tc->secondary.swapped)
+	pitch_dt_observation(&tc->pitch, 0.0);
+    else {
+	float dx;
+
+	dx = 1.0 / tc->def->resolution / 4;
+	if (!tc->forwards)
+	    dx = -dx;
+	pitch_dt_observation(&tc->pitch, dx);
+    }
+
+    /* If we have crossed the primary channel in the right polarity,
+     * it's time to read off a timecode 0 or 1 value */
+
+    if(tc->secondary.swapped &&
+       tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
+    {
+	process_bitstream(tc, m);
+    }
+
+    tc->timecode_ticker++;
 }
 
 
 /* Submit and decode a block of PCM audio data to the timecoder */
 
-int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
+void timecoder_submit(struct timecoder_t *tc, signed short *pcm, size_t npcm)
 {
-    int b, l, /* bitstream and timecode bits */
-        s, c,
-        x, y, p, /* monitor coordinates */
-        v,
-        offset,
-        swapped,
-        monitor_centre;
-    signed short w; /* pcm sample values */
-    unsigned int mask;
-    
-    b = 0;
-    l = 0;
-    
-    mask = ((1 << tc->tc_table->bits) - 1);
-    monitor_centre = tc->mon_size / 2;
+    while (npcm--) {
+	signed int primary, secondary;
 
-    offset = 0;
-
-    for(s = 0; s < samples; s++) {
-        
-        for(c = 0; c < TIMECODER_CHANNELS; c++)
-            detect_zero_crossing(&tc->channel[c], pcm[offset + c], tc->rate);
-
-        /* Read from the mono channel */
-        
-        v = pcm[offset] + pcm[offset + 1];
-        swapped = detect_zero_crossing(&tc->mono, v, tc->rate);
-
-        /* If a sign change in the (zero corrected) audio has
-         * happened, log the peak information */
-        
-        if(swapped) {
-            
-            /* Work out whether half way through a cycle we are
-             * looking for the wave to be positive or negative */
-            
-            if(tc->mono.positive == (tc->tc_table->polarity ^ tc->forwards)) {
-                
-                /* Entering the second half of a wave cycle */
-                
-                tc->half_peak = tc->wave_peak;
-                
-            } else {
-                
-                /* Completed a full wave cycle, so time to analyse the
-                 * level and work out whether it's a 1 or 0 */
-                
-                b = tc->wave_peak + tc->half_peak > tc->ref_level;
-                
-                /* Log binary timecode */
-                
-                if(tc->log_fd != -1)
-                    write(tc->log_fd, b ? "1" : "0", 1);
-                
-                /* Add it to the bitstream, and work out what we were
-                 * expecting (timecode). */
-                
-                /* tc->bitstream is always in the order it is
-                 * physically placed on the vinyl, regardless of the
-                 * direction. */
-                
-                if(tc->forwards) {
-                    l = lfsr(tc->timecode, tc);
-                    
-                    tc->bitstream = (tc->bitstream >> 1)
-                        + (b << (tc->tc_table->bits - 1));
-                    
-                    tc->timecode = (tc->timecode >> 1)
-                        + (l << (tc->tc_table->bits - 1));
-                    
-                } else {
-                    l = lfsr_rev(tc->timecode, tc);
-                    
-                    tc->bitstream = ((tc->bitstream << 1) & mask) + b;
-                    tc->timecode = ((tc->timecode << 1) & mask) + l;
-                }
-                
-                if(b == l) {
-                    tc->valid_counter++;
-                } else {
-                    tc->timecode = tc->bitstream;
-                    tc->valid_counter = 0;
-                }
-                
-                /* Take note of the last time we read a valid timecode */
-                
-                tc->timecode_ticker = 0;
-                
-                /* Adjust the reference level based on the peaks seen
-                 * in this cycle */
-                
-                if(tc->ref_level == -1)
-                    tc->ref_level = tc->half_peak + tc->wave_peak;
-                else {
-                    tc->ref_level = (tc->ref_level * (REF_PEAKS_AVG - 1)
-                                     + tc->half_peak + tc->wave_peak)
-                        / REF_PEAKS_AVG;
-                }
-                
-            }
-            
-            /* Calculate the immediate direction from phase difference,
-             * based on the last channel to cross zero */
-
-            if(tc->channel[0].crossing_ticker > tc->channel[1].crossing_ticker)
-                tc->forwards = 1;
-            else
-                tc->forwards = 0;
-
-            if(tc->forwards)
-                tc->crossings++;
-            else
-                tc->crossings--;
-            
-            tc->pitch_ticker += tc->crossing_ticker;
-            tc->crossing_ticker = 0;
-            tc->wave_peak = 0;
-            
-        } /* swapped */
-        
-        tc->crossing_ticker++;
-        tc->timecode_ticker++;
-        
-        /* Find the zero-normalised sample of the peak value from
-         * the input */
-        
-        w = abs(v - tc->mono.zero);
-        if(w > tc->wave_peak)
-            tc->wave_peak = w;
-        
-        /* Take a rolling average of zero and signal level */
-
-        tc->signal_level += (w - tc->signal_level) * SIGNAL_AVG / tc->rate;
-
-        /* Update the monitor to add the incoming sample */
-        
-        if(tc->mon) {
-            
-            /* Decay the pixels already in the montior */
-            
-            if(++tc->mon_counter % MONITOR_DECAY_EVERY == 0) {
-                for(p = 0; p < SQ(tc->mon_size); p++) {
-                    if(tc->mon[p])
-                        tc->mon[p] = tc->mon[p] * 7 / 8;
-                }
-            }
-            
-            v = pcm[offset]; /* first channel */
-            w = pcm[offset + 1]; /* second channel */
-            
-            x = monitor_centre + (v * tc->mon_size * tc->mon_scale / 32768);
-            y = monitor_centre + (w * tc->mon_size * tc->mon_scale / 32768);
-            
-            /* Set the pixel value to white */
-            
-            if(x > 0 && x < tc->mon_size && y > 0 && y < tc->mon_size)
-                tc->mon[y * tc->mon_size + x] = 0xff;
+        if (tc->def->flags & SWITCH_PRIMARY) {
+            primary = pcm[0];
+            secondary = pcm[1];
+        } else {
+            primary = pcm[1];
+            secondary = pcm[0];
         }
-        
-        offset += TIMECODER_CHANNELS;
-        
-    } /* for each sample */
-    
-    /* Print debugging information */
-    
-#if 0
-    fprintf(stderr, "%+6d +/%4d -/%4d (%4d,%4d)\t= %d (%d) %c %d"
-            "\t[crossings: %d %d]",
-            tc->mono.zero,
-            tc->half_peak,
-            tc->wave_peak,
-            tc->ref_level >> 1,
-            tc->signal_level,
-            b, l, b == l ? ' ' : 'x',
-            tc->valid_counter,
-            tc->crossings,
-            tc->pitch_ticker);
 
-    if(tc->pitch_ticker)
-        fprintf(stderr, " = %d", tc->rate * tc->crossings / tc->pitch_ticker);
+	process_sample(tc, primary, secondary);
 
-    fputc('\n', stderr);
-#endif
-
-    return 0;
-}
-
-
-/* Return the timecode pitch, based on cycles of the sine wave. This
- * function can only be called by one context, at it resets the state
- * of the counter in the timecoder. */
-
-int timecoder_get_pitch(struct timecoder_t *tc, float *pitch)
-{
-    /* Let the caller know if there's no data to gather pitch from */
-
-    if(tc->crossings == 0)
-        return -1;
-
-    /* Value of tc->crossings may be negative in reverse */
-    
-    *pitch = tc->rate * (float)tc->crossings / tc->pitch_ticker
-        / (tc->tc_table->resolution * 2);
-
-    tc->crossings = 0;
-    tc->pitch_ticker = 0;
-
-    return 0;
+        update_monitor(tc, pcm[0], pcm[1]);
+        pcm += TIMECODER_CHANNELS;
+    }
 }
 
 
 /* Return the known position in the timecode, or -1 if not known. If
  * two few bits have been error-checked, then this also counts as
- * invalid. If 'when' is given, return the time, in input samples since
- * this value was read. */
+ * invalid. If 'when' is given, return the time, in seconds since this
+ * value was read. */
 
-signed int timecoder_get_position(struct timecoder_t *tc, int *when)
+signed int timecoder_get_position(struct timecoder_t *tc, float *when)
 {
     signed int r;
 
     if(tc->valid_counter > VALID_BITS) {
-        r = tc->tc_table->lookup[tc->bitstream];
+        r = lut_lookup(&tc->def->lut, tc->bitstream);
 
         if(r >= 0) {
             if(when) 
-                *when = tc->timecode_ticker;
+                *when = tc->timecode_ticker * tc->dt;
             return r;
         }
     }
     
     return -1;
-}
-
-
-/* Return non-zero if there is any timecode signal available */
-
-int timecoder_get_alive(struct timecoder_t *tc)
-{
-    if(tc->signal_level < SIGNAL_THRESHOLD)
-        return 0;
-    
-    return 1;
-}
-
-
-/* Return the last 'safe' timecode value on the record. Beyond this
- * value, we probably want to ignore the timecode values, as we will
- * hit the label of the record. */
-
-unsigned int timecoder_get_safe(struct timecoder_t *tc)
-{
-    return tc->tc_table->safe;
-}
-
-
-/* Return the resolution of the timecode. This is the number of bits
- * per second, which corresponds to the frequency of the sine wave */
-
-int timecoder_get_resolution(struct timecoder_t *tc)
-{
-    return tc->tc_table->resolution;
 }

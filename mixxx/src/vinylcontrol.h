@@ -4,6 +4,8 @@
 #include <qthread.h>
 #include "configobject.h"
 #include "controlobject.h"
+//XXX: this is only so we have access to vinylcontrol status consts
+#include "engine/enginebuffer.h"
 
 class ControlObjectThread;
 
@@ -17,7 +19,8 @@ class ControlObjectThread;
 
 #define MIXXX_VCMODE_ABSOLUTE 0
 #define MIXXX_VCMODE_RELATIVE 1
-#define MIXXX_VCMODE_SCRATCH  2
+#define MIXXX_VCMODE_CONSTANT  2
+#define MIXXX_VCMODE_SCRATCH  3
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 0
 
@@ -53,6 +56,8 @@ class VinylControl : public QThread
     	ControlObjectThread *timecodeQuality;   //The ControlObject used to notify the GUI about the quality of the timecode signal.
         ControlObjectThread *timecodeInputL;    //The ControlObject used to notify the GUI about vinyl control left channel's volume.
         ControlObjectThread *timecodeInputR;    //The ControlObject used to notify the GUI about vinyl control right channel's volume.
+        ControlObjectThread *vinylStatus;
+		//ControlObject *vinylStatus;  //Status of vinyl control
 
     	int iLeadInTime;				//The lead-in time...
     	float dVinylPitch; 			//The speed/pitch of the timecoded vinyl as read by scratchlib.
@@ -67,6 +72,7 @@ class VinylControl : public QThread
 	    bool bIsEnabled;
 	    int iRIAACorrection;
     	int iVCMode;
+    	bool atRecordEnd;
 	QWaitCondition waitForNextInput;
 	QMutex         lockInput;
 	QMutex		   lockSamples;
