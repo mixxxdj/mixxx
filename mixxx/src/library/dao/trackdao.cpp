@@ -242,11 +242,13 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
                   "filetype, location, comment, url, duration, "
                   "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
+                  "datetime_added, "
                   "channels, mixxx_deleted, header_parsed) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
                   ":filetype, :location, :comment, :url, :duration, "
                   ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
+                  ":datetime_added, "
                   ":channels, :mixxx_deleted, :header_parsed)");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -267,7 +269,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
-    //query.bindValue(":datetime_added", pTrack->getDateAdded());
+    query.bindValue(":datetime_added", pTrack->getCreateDate());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":mixxx_deleted", 0);
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);

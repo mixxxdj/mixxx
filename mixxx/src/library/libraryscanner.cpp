@@ -140,15 +140,25 @@ void LibraryScanner::run()
 
     QTime t2;
     t2.start();
+    
     //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
-    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
-    connect(&libImport, SIGNAL(progress(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
-    m_database.transaction();
-    libImport.import();
-    m_database.commit();
-    qDebug("Legacy importer took %d ms", t2.elapsed());
+    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+    qDebug() << "upgrade filename is " << upgrade_filename;
+    QFile upgradefile(upgrade_filename);
+    if (!upgradefile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+	    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
+	    connect(&libImport, SIGNAL(progress(QString)),
+	            m_pProgress, SLOT(slotUpdate(QString)),
+	            Qt::BlockingQueuedConnection);
+	    m_database.transaction();
+	    libImport.import();
+	    m_database.commit();
+	    qDebug("Legacy importer took %d ms", t2.elapsed());
+	    
+	}
+	else
+		upgradefile.close();
 
     //Refresh the name filters in case we loaded new 
     //SoundSource plugins.
