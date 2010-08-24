@@ -47,9 +47,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
 
     int numBufferSamples = buffer->size();
     int iCurPos = 0;
-    if(dPlayPos >= 0) {
-        iCurPos = (int)(dPlayPos*numBufferSamples);
-    }
+    iCurPos = (int)(dPlayPos*numBufferSamples);
 
     if((iCurPos % 2) != 0)
         iCurPos--;
