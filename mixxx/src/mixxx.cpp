@@ -424,7 +424,7 @@ int MixxxApp::noSoundDlg(void)
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle("Sound Device Busy");
-    msgBox.setText( "<html>Mixxx was unable to open all the configured sound devices. "
+    msgBox.setText( "<html>Mixxx was unable to access all the configured sound devices. "
                     "Another application is using a sound device Mixxx is configured to use "
                     "or a device is not plugged in."
                     "<ul>"

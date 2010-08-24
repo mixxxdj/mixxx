@@ -231,6 +231,10 @@ void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
 }
 
+/**
+ * Removes any outputs with devices that do not exist in the given
+ * SoundManager.
+ */
 void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
     QSet<QString> deviceNames;
     QSet<QString> toDelete;
@@ -247,6 +251,10 @@ void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
     }
 }
 
+/**
+ * Removes any inputs with devices that do not exist in the given
+ * SoundManager.
+ */
 void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
     QSet<QString> deviceNames;
     QSet<QString> toDelete;
