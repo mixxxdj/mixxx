@@ -328,6 +328,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Setup state of End of track controls from config database
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol"))->queueFromThread(config->getValueString(ConfigKey("[VinylControl]","EnabledCh1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->queueFromThread(config->getValueString(ConfigKey("[VinylControl]","EnabledCh2")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->queueFromThread(config->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->queueFromThread(config->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
 
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(config);
@@ -438,6 +442,10 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
+    config->set(ConfigKey("[VinylControl]","EnabledCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol"))->get()));
+    config->set(ConfigKey("[VinylControl]","EnabledCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->get()));
+    config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->get()));
+    config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->get()));
 
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
@@ -608,6 +616,11 @@ void MixxxApp::initActions()
     optionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
     optionsVinylControl->setShortcut(tr("Ctrl+Y"));
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
+    
+    //this is temp
+    optionsVinylControl2 = new QAction(tr("Enable &Vinyl Control 2"), this);
+    optionsVinylControl2->setShortcut(tr("Ctrl+U"));
+    optionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
     optionsRecord = new QAction(tr("&Record Mix"), this);
@@ -654,13 +667,22 @@ void MixxxApp::initActions()
 #ifdef __VINYLCONTROL__
     //Either check or uncheck the vinyl control menu item depending on what it was saved as.
     optionsVinylControl->setCheckable(true);
-    if ((bool)config->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt() == true)
+    if ((bool)config->getValueString(ConfigKey("[VinylControl]","EnabledCh1")).toInt() == true)
         optionsVinylControl->setChecked(true);
     else
         optionsVinylControl->setChecked(false);
     optionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
+    
+    optionsVinylControl2->setCheckable(true);
+    if ((bool)config->getValueString(ConfigKey("[VinylControl]","EnabledCh2")).toInt() == true)
+        optionsVinylControl2->setChecked(true);
+    else
+        optionsVinylControl2->setChecked(false);
+    optionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
+    optionsVinylControl2->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    connect(optionsVinylControl2, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl2(bool)));
 #endif
 
     optionsRecord->setCheckable(true);
@@ -716,6 +738,7 @@ void MixxxApp::initMenuBar()
     //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
     optionsMenu->addAction(optionsVinylControl);
+    optionsMenu->addAction(optionsVinylControl2);
 #endif
     optionsMenu->addAction(optionsRecord);
     optionsMenu->addAction(optionsFullScreen);
@@ -994,12 +1017,11 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    //qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
+    qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
 
-    QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"));
-    QString device2 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
+    QString device1 = config->getValueString(ConfigKey("[VinylControl]",QString("DeviceInputDeck1")));
 
-    if (device1 == "" && device2 == "" && (toggle==true))
+    if (device1 == "" && (toggle==true))
     {
         QMessageBox::warning(this, tr("Mixxx"),
                                    tr("No input device(s) select.\n"
@@ -1008,12 +1030,53 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
                                    QMessageBox::Ok);
         prefDlg->show();
         prefDlg->showVinylControlPage();
-        optionsVinylControl->setChecked(false);
+       	optionsVinylControl->setChecked(false);
     }
     else
     {
-        config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
-        ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set((int)toggle);
+        config->set(ConfigKey("[VinylControl]",QString("EnabledCh1")), ConfigValue((int)toggle));
+        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol"))->set((int)toggle);
+    }
+#endif
+}
+
+void MixxxApp::slotOptionsVinylControl2(bool toggle)
+{
+#ifdef __VINYLCONTROL__
+    qDebug() << "slotOptionsVinylControl2: toggle is " << (int)toggle;
+
+	QString device2;
+	
+   	device2 = config->getValueString(ConfigKey("[VinylControl]",QString("DeviceInputDeck2")));
+   	if (device2 == "")
+   	{
+   		device2 = config->getValueString(ConfigKey("[VinylControl]",QString("DeviceInputDeck1")));
+   		if (device2 != "")
+   		{
+	   		qDebug() << "Enabling Single Deck Control mode";
+			config->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), true);
+		}
+    }
+    else //we do have a device
+    {
+    	config->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), false);
+    }
+
+    if (device2 == "" && (toggle==true))
+    {
+        QMessageBox::warning(this, tr("Mixxx"),
+                                   tr("No input device(s) select.\n"
+                                      "Please select your soundcard(s) in vinyl control preferences."),
+                                   QMessageBox::Ok,
+                                   QMessageBox::Ok);
+        prefDlg->show();
+        prefDlg->showVinylControlPage();
+        optionsVinylControl2->setChecked(false);
+    }
+    else
+    {
+        config->set(ConfigKey("[VinylControl]","EnabledCh2"), ConfigValue((int)toggle));
+        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol"))->set((int)toggle);
     }
 #endif
 }

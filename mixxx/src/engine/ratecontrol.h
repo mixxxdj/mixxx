@@ -63,6 +63,7 @@ public slots:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
+    void slotControlVinyl(double);
 private:
     double getJogFactor();
     double getWheelFactor();
@@ -77,6 +78,8 @@ private:
     void resetRateTemp(void);
     /** Get the 'Raw' Temp Rate */
     double getTempRate(void);
+    /** Is vinyl control enabled? **/
+    bool m_bVinylControlEnabled;
     
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
@@ -85,6 +88,7 @@ private:
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
         *buttonRatePermUp, *buttonRatePermUpSmall;
+	ControlPushButton *m_pVinylControl;        	
     ControlObject *m_pRateDir, *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;

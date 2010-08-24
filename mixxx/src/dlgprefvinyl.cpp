@@ -148,7 +148,7 @@ void DlgPrefVinyl::slotUpdate()
     ComboBoxDeviceDeck1->clear();
     ComboBoxDeviceDeck1->insertItem("None");
     ComboBoxDeviceDeck2->clear();
-    ComboBoxDeviceDeck2->insertItem("None");
+    ComboBoxDeviceDeck2->insertItem("None (Single Deck Mode)");
     j = 1;
     while (device_it.hasNext())
     {
@@ -287,10 +287,16 @@ void DlgPrefVinyl::refreshDeck2Channels()
 // Update the config object with parameters from dialog
 void DlgPrefVinyl::slotApply()
 {
+	QString device2;
     qDebug() << "DlgPrefVinyl::Apply";
 
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
-    config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
+    device2 = ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString();
+    if (device2 == "")
+    	config->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), true);
+    else
+    	config->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), false);
+    config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(device2));
     config->set(ConfigKey("[VinylControl]","ChannelInputDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","ChannelInputDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
 
@@ -324,6 +330,8 @@ void DlgPrefVinyl::slotApply()
         iMode = MIXXX_VCMODE_SCRATCH;
 
     ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
+    ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode"))->set(iMode);
+    ControlObject::getControl(ConfigKey("[Channel2]", "VinylMode"))->set(iMode);
     config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","NeedleSkipPrevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
 
@@ -433,7 +441,8 @@ void DlgPrefVinyl::applySoundDeviceChanges()
 
     // Not much to do if the API is None...
     int deviceOpenError = 0;
-	if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None")
+	if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None" &&
+		config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None (Single Deck Mode)")
 	{
 	    deviceOpenError = m_pSoundManager->setupDevices();
 	    if (deviceOpenError == MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL)
