@@ -108,13 +108,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bResetPitchIndpTimeStretch = false;
 
     // Slider to show and change song position
-    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
+    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -1., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)));
 
     // Control used to communicate ratio playpos to GUI thread
     visualPlaypos =
-        new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
+        new ControlPotmeter(ConfigKey(group, "visual_playposition"), -1., 1.);
 
     // m_pTrackEnd is used to signal when at end of file during
     // playback. TODO(XXX) This should not even be a control object because it
@@ -309,7 +309,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > 1.0 || change < 0.0) {
+    if(isnan(change) || change > 1.0 || change < -1.0) {
         // This seek is ridiculous.
         return;
     }
@@ -318,8 +318,8 @@ void EngineBuffer::slotControlSeek(double change)
     double new_playpos = round(change*file_length_old);
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
-    if (new_playpos < 0.)
-        new_playpos = 0.;
+    //if (new_playpos < 0.)
+    //   new_playpos = 0.;
 
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
@@ -450,7 +450,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If we're playing past the end, playing before the start, or standing
         // still then by definition the buffer is paused.
         bCurBufferPaused = rate == 0 ||
-            (at_start && backwards) ||
+            //(at_start && backwards) ||
             (at_end && !backwards);
 
         // If paused, then ramp out.
@@ -494,9 +494,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed.
             filepos_play += idx;
-            filepos_play = math_max(0, filepos_play); 
-            // We need the above protection against negative playpositions
-            // in case SoundTouch/EngineBufferSoundTouch gives us too many samples. 
+            //filepos_play = math_max(0, filepos_play); 
+            //// We need the above protection against negative playpositions
+            //// in case SoundTouch/EngineBufferSoundTouch gives us too many samples. 
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -560,13 +560,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         at_start = filepos_play <= 0;
         at_end = filepos_play >= file_length_old;
 
-        bool end_of_track = (at_start && backwards) ||
+        bool end_of_track = //(at_start && backwards) ||
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
             !m_pTrackEnd->get() &&
-            ((at_start && backwards) ||
+            (//(at_start && backwards) ||
              (at_end && !backwards))) {
 
             // If end of track mode is set to next, signal EndOfTrack to TrackList,
@@ -587,9 +587,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             case TRACK_END_MODE_LOOP:
                 //qDebug() << "loop";
-                if(filepos_play <= 0)
+               /* if(filepos_play <= 0)
                     slotControlSeek(file_length_old);
-                else
+                else*/
+                if (filepos_play > 0)
                     slotControlSeek(0.);
                 break;
 /*
@@ -664,7 +665,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     double fFractionalPlaypos = 0.0;
     if (file_length_old!=0.) {
-        fFractionalPlaypos = math_max(0.,math_min(filepos_play,file_length_old));
+        fFractionalPlaypos = math_min(filepos_play,file_length_old);
         fFractionalPlaypos /= file_length_old;
     } else {
         fFractionalPlaypos = 0.;
