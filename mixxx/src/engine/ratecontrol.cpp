@@ -354,8 +354,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
-    //bool scratchEnable = m_pScratchToggle->get() != 0;
-    bool scratchEnable = m_bVinylControlEnabled;
+    bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
     double scratchFactor = m_pScratch->get();
     double oldScratchFactor = m_pOldScratch->get(); // Deprecated
     // Don't trust values from m_pScratch
