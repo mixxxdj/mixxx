@@ -377,7 +377,7 @@ void VinylControlXwax::run()
 	                else if (fabs(dVinylPosition - filePosition) > 0.1f &&
                 		dVinylPosition < 0.0f)
                     {
-                    	qDebug() << "leadin resyncing";
+                    	qDebug() << "Vinyl leadin";
                     	syncPosition();
                         resetSteadyPitch(dVinylPitch, dVinylPosition);
                     }

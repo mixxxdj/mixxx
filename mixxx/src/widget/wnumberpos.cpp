@@ -45,7 +45,7 @@ void WNumberPos::setValue(double dValue)
 {
     m_dOldValue = dValue;
 
-    double v  = dValue*(m_dDuration/127.);
+    double v  = (dValue - 64)*(m_dDuration/64.);
     double v2 = m_dDuration;
 
     if (m_bRemain)
