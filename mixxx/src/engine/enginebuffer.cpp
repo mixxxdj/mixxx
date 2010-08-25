@@ -247,7 +247,7 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 
 void EngineBuffer::setNewPlaypos(double newpos)
 {
-    qDebug() << "engine new pos " << newpos;
+    //qDebug() << "engine new pos " << newpos;
 
     filepos_play = newpos;
 
