@@ -196,16 +196,18 @@ void VinylControlXwax::run()
 			//also reset timer if they switch the new mode too
 			if ((!bModeSwitch && iVCMode != mode->get()) || (bModeSwitch && iNewMode != mode->get()))
 		    {
-		    	if (playButton->get()) //delayed switch while playing back
+		    	int nextmode = mode->get();
+		    	
+		    	if (playButton->get() && nextmode != MIXXX_VCMODE_CONSTANT) //delayed switch while playing back
 		    	{
 			    	bModeSwitch = true;
-		    		iNewMode = mode->get();
+		    		iNewMode = nextmode;
 			    	dSwitchTime = time(NULL); 
 			    }
 			    else //switch instantly
 			    {
 			    	bModeSwitch = false;
-			    	iVCMode = mode->get();
+			    	iVCMode = nextmode;
 			    	bForceResync = true;
 		   		}	
 		    }
@@ -297,7 +299,12 @@ void VinylControlXwax::run()
 					controlScratch->slotSet(1.0f);
 				else
 					controlScratch->slotSet(0.0f);
+					
+				//is there any reason we'd need to do anything else?
+				continue;
 			}
+			
+			//CONSTANT MODE NO LONGER APPLIES...
 			
             // When there's a timecode signal available
             // This is set when we analyze samples (no need for lock I think)
@@ -382,8 +389,7 @@ void VinylControlXwax::run()
                     	syncPosition();
 	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
                     }
-	                else if (checkSteadyPitch(dVinylPitch, filePosition) &&
-	                		iVCMode != MIXXX_VCMODE_CONSTANT)
+	                else if (checkSteadyPitch(dVinylPitch, filePosition))
 	                {
 	                	togglePlayButton(TRUE);
 	                }
@@ -419,18 +425,15 @@ void VinylControlXwax::run()
 		                continue;
 		        	}*/
 		        	
-		        	if (iVCMode != MIXXX_VCMODE_CONSTANT)
-		        	{
-				    	if (checkSteadyPitch(dVinylPitch, filePosition) &&
-				    		dVinylPitch > 0.2)
-				        {
-			            	togglePlayButton(TRUE);
-			            }
-			            else
-			            {
-			            	togglePlayButton(FALSE);
-			            }
-	                }
+			    	if (checkSteadyPitch(dVinylPitch, filePosition) &&
+			    		dVinylPitch > 0.2)
+			        {
+		            	togglePlayButton(TRUE);
+		            }
+		            else
+		            {
+		            	togglePlayButton(FALSE);
+		            }
 		        }
 
 				//only smooth when we have good position (no smoothing for scratching)
@@ -484,26 +487,23 @@ void VinylControlXwax::run()
             	//if it hasn't been long, and we're preventing needle skips,
             	//let the track play a wee bit more before deciding we've stopped
 
-            	if (iVCMode != MIXXX_VCMODE_CONSTANT)
-            	{
-		        	if(fabs(filePosition - dOldFilePos) >= 0.1 ||
-		        		!m_bNeedleSkipPrevention ||
-		        		filePosition == dOldFilePos)
-		        	{
-		        		//We are not playing any more
-		        		qDebug() << "not playing any more";
-				       	togglePlayButton(FALSE);
-				       	resetSteadyPitch(0.0f, 0.0f);
-				        controlScratch->slotSet(0.0f);
-				        rateSlider->slotSet(0.0f);
-				        //resetSteadyPitch(dVinylPitch, filePosition);
-				        //Notify the UI that the timecode quality is garbage/missing.
-				        timecodeQuality->slotSet(0.0f);
-				        ringPos = 0;
-				        ringFilled = 0;
-				        vinylStatus->slotSet(VINYL_STATUS_OK);
-				    }
-				}
+	        	if(fabs(filePosition - dOldFilePos) >= 0.1 ||
+	        		!m_bNeedleSkipPrevention ||
+	        		filePosition == dOldFilePos)
+	        	{
+	        		//We are not playing any more
+	        		qDebug() << "not playing any more";
+			       	togglePlayButton(FALSE);
+			       	resetSteadyPitch(0.0f, 0.0f);
+			        controlScratch->slotSet(0.0f);
+			        rateSlider->slotSet(0.0f);
+			        //resetSteadyPitch(dVinylPitch, filePosition);
+			        //Notify the UI that the timecode quality is garbage/missing.
+			        timecodeQuality->slotSet(0.0f);
+			        ringPos = 0;
+			        ringFilled = 0;
+			        vinylStatus->slotSet(VINYL_STATUS_OK);
+			    }
             }
         }
     }
