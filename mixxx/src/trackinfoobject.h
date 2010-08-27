@@ -157,8 +157,14 @@ public:
     void setTrackNumber(QString);
     /** Return number of times the track has been played */
     int getTimesPlayed() const;
+    /** Set number of times the track has been played */
+    void setTimesPlayed(int t);
     /** Increment times played with one */
     void incTimesPlayed();
+    /** Returns true if track has been played this instance*/
+    bool getPlayed() const;
+    /** Set Played status*/
+    void setPlayed(bool);
 
     int getId() const;
 
@@ -291,6 +297,8 @@ public:
     int m_iBitrate;
     /** Number of times the track has been played */
     int m_iTimesPlayed;
+    /** Has this track been played this sessions? */
+    bool m_bPlayed;
     /** Beat per minutes (BPM) */
     float m_fBpm;
     /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */

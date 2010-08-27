@@ -19,6 +19,21 @@ TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao)
 
 }
 
+void TrackDAO::finish()
+{
+	//clear out played information on exit
+	//crash prevention: if mixxx crashes, played information will be maintained
+	qDebug() << "Clearing played information for this session";
+	m_database.transaction();
+    
+ 	QSqlQuery query(m_database);
+ 	if (!query.exec("UPDATE library SET played=0"))
+ 	{
+ 		qDebug() << "Error clearing played value";
+ 	}
+ 	m_database.commit();
+}
+
 TrackDAO::~TrackDAO()
 {
 }
@@ -243,12 +258,14 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
                   "filetype, location, comment, url, duration, "
                   "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
                   "datetime_added, "
+                  "timesplayed, "
                   "channels, mixxx_deleted, header_parsed) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
                   ":filetype, :location, :comment, :url, :duration, "
                   ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":datetime_added, "
+                  ":timesplayed, "
                   ":channels, :mixxx_deleted, :header_parsed)");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -268,8 +285,8 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
-    //query.bindValue(":timesplayed", pTrack->getCuePoint());
     query.bindValue(":datetime_added", pTrack->getCreateDate());
+    query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":mixxx_deleted", 0);
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
@@ -388,7 +405,8 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         QString bpm = query.value(query.record().indexOf("bpm")).toString();
         QByteArray* wavesummaryhex = new QByteArray(
             query.value(query.record().indexOf("wavesummaryhex")).toByteArray());
-        //int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
+        int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
+        int played = query.value(query.record().indexOf("played")).toInt();
         int channels = query.value(query.record().indexOf("channels")).toInt();
         int filesize = query.value(query.record().indexOf("filesize")).toInt();
         QString filetype = query.value(query.record().indexOf("filetype")).toString();
@@ -418,7 +436,8 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setBpm(bpm.toFloat());
         track->setWaveSummary(wavesummaryhex, false);
         delete wavesummaryhex;
-        //track->setTimesPlayed //Doesn't exist wtfbbq
+        track->setTimesPlayed(timesplayed);
+        track->setPlayed(played);
         track->setChannels(channels);
         track->setType(filetype);
         track->setLocation(location);
@@ -483,7 +502,7 @@ TrackPointer TrackDAO::getTrack(int id) const
     time.start();
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, filetype, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
+    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, filetype, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed, timesplayed, played FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
     TrackPointer pTrack;
 
     if (query.exec()) {
@@ -520,6 +539,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
                   "comment=:comment, url=:url, duration=:duration, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
+                  "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed "
                   "WHERE id="+QString("%1").arg(trackId));
     query.bindValue(":artist", pTrack->getArtist());
@@ -539,11 +559,12 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
-    //query.bindValue(":timesplayed", pTrack->getCuePoint());
+    query.bindValue(":timesplayed", pTrack->getTimesPlayed());
+    query.bindValue(":played", pTrack->getPlayed());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
-
+    
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();

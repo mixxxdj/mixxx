@@ -1376,6 +1376,11 @@ void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackPointer pTrack)
         m_pPlayer1->slotLoadTrack(pTrack, false);
     else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
         m_pPlayer2->slotLoadTrack(pTrack, false);
+        
+	TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
+	pTrack->incTimesPlayed();
+	trackDao.saveTrack(pTrack);	
+	
 }
 
 void MixxxApp::slotLoadPlayer1(QString location)
@@ -1390,6 +1395,8 @@ void MixxxApp::slotLoadPlayer1(QString location)
     }
     //Load the track into the Player.
     m_pPlayer1->slotLoadTrack(pTrack);
+    pTrack->incTimesPlayed();
+	trackDao.saveTrack(pTrack);	
 }
 
 void MixxxApp::slotLoadPlayer2(QString location)
@@ -1404,6 +1411,8 @@ void MixxxApp::slotLoadPlayer2(QString location)
     }
     //Load the track into the Player.
     m_pPlayer2->slotLoadTrack(pTrack);
+    pTrack->incTimesPlayed();
+	trackDao.saveTrack(pTrack);	
 }
 
 void MixxxApp::slotScanLibrary()

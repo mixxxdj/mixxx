@@ -32,6 +32,7 @@ class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
 
