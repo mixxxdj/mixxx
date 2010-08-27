@@ -63,7 +63,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
     ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylMode")));
     ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylMode")));
-    ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
+    ControlObjectThreadMain* pControlObjectVinylControlEnabled1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "vinylcontrol")));
+    ControlObjectThreadMain* pControlObjectVinylControlEnabled2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "vinylcontrol")));
+//    ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
     ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
     ControlObjectThreadMain* pControlObjectVinylControlSignalQuality1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlQuality")));
     ControlObjectThreadMain* pControlObjectVinylControlSignalQuality2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlQuality")));
@@ -78,7 +80,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
     pControlObjectVinylControlMode1->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
     pControlObjectVinylControlMode2->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
-    pControlObjectVinylControlEnabled->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
+    //pControlObjectVinylControlEnabled->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
+    pControlObjectVinylControlEnabled1->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
+    pControlObjectVinylControlEnabled2->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
     pControlObjectVinylControlGain->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
 
 
