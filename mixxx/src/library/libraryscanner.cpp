@@ -312,6 +312,8 @@ bool LibraryScanner::recursiveScan(QString dirPath)
 
     //Calculate a hash of the directory's file list.
     newHash = qHash(newHashStr);
+    
+    //qDebug() << dirPath << "new hash" << newHash;
 
     //Try to retrieve a hash from the last time that directory was scanned.
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
@@ -321,6 +323,7 @@ bool LibraryScanner::recursiveScan(QString dirPath)
     if (prevHash != newHash)
     {
         if (!prevHashExists) {
+        	qDebug() << "creating hash";
             m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
         }
         else //Just need to update the old hash in the database
