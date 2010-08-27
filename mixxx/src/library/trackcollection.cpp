@@ -43,6 +43,7 @@ TrackCollection::~TrackCollection()
 {
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
+    m_trackDao.finish();
 
     Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
     //The above is an ASSERT because there should never be an outstanding
@@ -64,7 +65,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 4;
+    int requiredSchemaVersion = 5;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),

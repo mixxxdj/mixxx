@@ -28,8 +28,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotPrevTrackInfo()));
 
     m_pMenu = new QMenu(this);
-    //Disable editing
-    //setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //Edit on clicking selected row
+    setEditTriggers(QAbstractItemView::SelectedClicked);
 
     //Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)

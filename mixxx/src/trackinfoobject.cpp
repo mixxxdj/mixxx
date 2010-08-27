@@ -85,6 +85,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iId = -1;
 
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
+    m_bPlayed = false;
 
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
@@ -117,6 +118,7 @@ void TrackInfoObject::initialize() {
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
+    m_bPlayed = false;
     m_fBpm = 0.;
     m_bBpmConfirm = false;
     m_bHeaderParsed = false;
@@ -447,11 +449,47 @@ int TrackInfoObject::getTimesPlayed()  const
     return m_iTimesPlayed;
 }
 
+void TrackInfoObject::setTimesPlayed(int t)
+{
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = t != m_iTimesPlayed;
+    m_iTimesPlayed = t;
+    if (dirty)
+        setDirty(true);
+}
+
 void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
+    m_bPlayed = true;
     ++m_iTimesPlayed;
     setDirty(true);
+}
+
+bool TrackInfoObject::getPlayed() const
+{
+	QMutexLocker lock(&m_qMutex);
+    bool bPlayed = m_bPlayed;
+    return bPlayed;
+}
+
+void TrackInfoObject::setPlayed(bool bPlayed)
+{
+	QMutexLocker lock(&m_qMutex);
+	bool dirty = bPlayed != m_bPlayed;
+	bool last_played = m_bPlayed;
+    m_bPlayed = bPlayed;
+    qDebug() << "set played";
+   	if (m_bPlayed != last_played)
+   	{
+		if (m_bPlayed)
+			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
+		else
+			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
+	}
+	
+	if (dirty)
+        setDirty(true);
 }
 
 QString TrackInfoObject::getComment() const
