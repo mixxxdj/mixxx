@@ -127,6 +127,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pHead = new CSAMPLE[MAX_BUFFER_LEN];
     m_pMaster = new CSAMPLE[MAX_BUFFER_LEN];
 
+    memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     sidechain = new EngineSideChain(_config);
 
