@@ -36,21 +36,19 @@ public:
     WStatusLight(QWidget *parent=0);
     ~WStatusLight();
     void setup(QDomNode node);
-    void setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal=false);
-    
+    void setPixmap(int iState, const QString &filename);
+    void setNoPos(int iNoPos);
+public slots:
+    void setValue(double v);    
 private:
-    /** Set position number to zero and deallocate pixmaps */
-    void resetPositions();
     void paintEvent(QPaintEvent *);
 
     /** Current position */
     int m_iPos;
-    /** Number of positions associated with this knob */
+    /** Number of positions associated with this light */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmap *m_pPixmapBack, *m_pPixmapSL;
-    /** True if it's a horizontal vu meter */
-    bool m_bHorizontal;
+    QPixmap **m_pPixmapSLs;
 };
 
 #endif
