@@ -147,6 +147,8 @@ METADATA
   		
   		UPDATE library SET timesplayed = played;
   		UPDATE library SET played = 0;
+  		DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
+  		DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
   	</sql>
   </revision>
 </schema>
