@@ -44,7 +44,7 @@ QVariant CrateFeature::title() {
 }
 
 QIcon CrateFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_crates.png");
 }
 
 bool CrateFeature::dropAccept(QUrl url) {

@@ -76,7 +76,7 @@ BrandingText " "
 ;!define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
 !define MUI_HEADERIMAGE_BITMAP "${BASE_BUILD_DIR}\res\images\mixxx_install_logo.bmp"
-!define MUI_ICON "${BASE_BUILD_DIR}\res\images\icon.ico"
+!define MUI_ICON "${BASE_BUILD_DIR}\res\images\ic_mixxx.ico"
 
 ; Pages
 !insertmacro MUI_PAGE_LICENSE "${BASE_BUILD_DIR}\LICENSE"
