@@ -138,4 +138,15 @@ METADATA
       ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT "?";
     </sql>
   </revision>
+  <revision version="5">
+  	<description>
+  		Add timesplayed column
+  	</description>
+  	<sql>
+  		ALTER TABLE library ADD COLUMN timesplayed integer DEFAULT 0;
+  		
+  		UPDATE library SET timesplayed = played;
+  		UPDATE library SET played = 0;
+  	</sql>
+  </revision>
 </schema>

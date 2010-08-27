@@ -19,6 +19,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     QSqlQuery query(pTrackCollection->getDatabase());
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
                   "SELECT "
+                  "library." + LIBRARYTABLE_PLAYED + "," + 
+                  "library." + LIBRARYTABLE_TIMESPLAYED + "," + 
                   "library." + LIBRARYTABLE_ID + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
                   "library." + LIBRARYTABLE_TITLE + "," +
@@ -57,6 +59,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     //Set the column heading labels, rename them for translations and have
     //proper capitalization
+	setHeaderData(fieldIndex(LIBRARYTABLE_TIMESPLAYED),
+                  Qt::Horizontal, tr("Played"));                  
     setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
                   Qt::Horizontal, tr("Artist"));
     setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
@@ -156,12 +160,21 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     else {
         QSqlField search("search", QVariant::String);
-        search.setValue("%" + searchText + "%");
-        QString escapedText = database().driver()->formatValue(search);
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR " +
+        
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
+        
+        foreach(QString term, searchText.split(" "))
+        {
+        	search.setValue("%" + term + "%");
+        	QString escapedText = database().driver()->formatValue(search);
+        	filter += " AND (artist LIKE " + escapedText + " OR " +
                 "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + "))";
+                "location LIKE " + escapedText + " OR " + 
+                "comment LIKE " + escapedText + " OR " +
+                "title  LIKE " + escapedText + ")";
+        }
+        
+        filter += ")";
     }
     setFilter(filter);
 }
@@ -180,6 +193,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
+        (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
         return true;
     }
@@ -199,14 +213,43 @@ QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
         value = BaseSqlTableModel::data(item, Qt::DisplayRole);
     else
         value = BaseSqlTableModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
+        
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
+    	if (item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
+		    if (qVariantCanConvert<int>(value)) {
+		        return MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+		    }
+		}
+	}
+	if (role == Qt::DisplayRole) {
+		if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
+			return QString("(%1)").arg(value.toInt());
+		}
+		else if (item.column() == fieldIndex(LIBRARYTABLE_PLAYED)) {
+			if (value == "true") 
+				return true;
+			else
+				return false;
+		}
     }
-
+    else if (role == Qt::EditRole) {
+    	if (item.column() == fieldIndex(LIBRARYTABLE_BPM)) return value.toInt();
+    	else if (item.column() == fieldIndex(LIBRARYTABLE_COMMENT)) return value.toString();
+    	else if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) return item.sibling(item.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+    	else {
+	    	qDebug() << "Can't edit this column" << item.column();
+	    	return QVariant();
+		}
+    }
+    else if (role == Qt::CheckStateRole) {	
+    	if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
+    		bool played = item.sibling(item.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+    		if (played) {
+    			return Qt::Checked;
+    		}
+    		return Qt::Unchecked;
+    	}
+    }
     return value;
 }
 
@@ -247,12 +290,9 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 	//widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    /** FIXME: This doesn't seem to work - Albert */
-    const int bpmColumnIndex = fieldIndex(LIBRARYTABLE_BPM);
-    if (index.column() == bpmColumnIndex)
-    {
-        return defaultFlags | Qt::ItemIsEditable;
-    }
+    if (index.column() == fieldIndex(LIBRARYTABLE_BPM)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    else if (index.column() == fieldIndex(LIBRARYTABLE_COMMENT)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    else if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
     return defaultFlags;
 }
@@ -260,6 +300,29 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
     return TRACKMODELCAPS_RECEIVEDROPS;
+}
+
+bool LibraryTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	//qDebug() << "edited " << index.row() << " " << index.column() << "to " << value << " with role " << role;
+   	if (index.isValid() && role == Qt::CheckStateRole)
+   	{
+   		QString val = value.toInt() > 0 ? QString("true") : QString("false");
+    	if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
+    		QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
+    		return setData(playedIndex, val, Qt::EditRole);
+		}
+   	}
+	else if (BaseSqlTableModel::setData(index, value, role))
+	{
+		submitAll();
+		return true;
+	}
+	/*else
+	{
+		qDebug() << "problem with setdata" << lastError();
+	}*/
+	return false;
 }
 
 /*
