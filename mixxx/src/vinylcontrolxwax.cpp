@@ -377,6 +377,8 @@ void VinylControlXwax::run()
 	                else if (fabs(dVinylPosition - filePosition) > 0.1f &&
                 		dVinylPosition < 0.0f)
                     {
+                    	//At first I thought it was a bug to resync to leadin in absolute mode,
+                    	//but after using it that way it's actually pretty convenient.
                     	qDebug() << "Vinyl leadin";
                     	syncPosition();
                         resetSteadyPitch(dVinylPitch, dVinylPosition);
@@ -492,7 +494,6 @@ void VinylControlXwax::run()
 	        		filePosition == dOldFilePos)
 	        	{
 	        		//We are not playing any more
-	        		qDebug() << "not playing any more";
 			       	togglePlayButton(FALSE);
 			       	resetSteadyPitch(0.0f, 0.0f);
 			        controlScratch->slotSet(0.0f);
