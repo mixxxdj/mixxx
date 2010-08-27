@@ -216,6 +216,8 @@ void MidiDevicePortMidi::run()
                     unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                     unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
                     
+                    //qDebug() << "MIDI signal" << opcode << channel << note << velocity;
+                    
                     MidiDevice::receive((MidiStatusByte)opcode, channel, note, velocity);
 
                 }
