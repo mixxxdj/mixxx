@@ -477,19 +477,16 @@ void TrackInfoObject::setPlayed(bool bPlayed)
 {
 	QMutexLocker lock(&m_qMutex);
 	bool dirty = bPlayed != m_bPlayed;
-	bool last_played = m_bPlayed;
     m_bPlayed = bPlayed;
-    qDebug() << "set played";
-   	if (m_bPlayed != last_played)
+   	if (dirty)
    	{
 		if (m_bPlayed)
 			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
 		else
 			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
+		
+		setDirty(true);
 	}
-	
-	if (dirty)
-        setDirty(true);
 }
 
 QString TrackInfoObject::getComment() const
