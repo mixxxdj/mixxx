@@ -148,7 +148,8 @@ int SoundSourceSndFile::parseHeader()
 {
     QString location = this->getFilename();
     SF_INFO info;
-    info.format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
+    // Must be set to 0 per the API for reading (non-RAW files)
+    memset(&info, 0, sizeof(SF_INFO));
     QByteArray qbaLocation = location.toUtf8();
     SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, &info);
     //const char* err = sf_strerror(0);

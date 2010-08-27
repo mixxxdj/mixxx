@@ -33,6 +33,7 @@ WVuMeter::WVuMeter(QWidget * parent) : WWidget(parent)
     m_pPixmapBack = 0;
     m_pPixmapVu = 0;
     m_iPeakHoldSize = m_iPeakPos = 0;
+    m_iNoPos = 0;
     connect(&m_qTimer, SIGNAL(timeout()), this, SLOT(slotUpdatePeak()));
 }
 
