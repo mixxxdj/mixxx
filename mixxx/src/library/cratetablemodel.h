@@ -34,6 +34,7 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
+	bool setData(const QModelIndex &index, const QVariant &value, int role);                           	
     TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual QItemDelegate* delegateForColumn(const int i);
 
