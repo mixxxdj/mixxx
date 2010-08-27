@@ -19,6 +19,7 @@
 #define TRACKINFOOBJECT_H
 
 #include <QList>
+#include <QDateTime>
 #include <QObject>
 #include <QFileInfo>
 #include <q3memarray.h>
@@ -78,6 +79,8 @@ public:
     QString getDirectory() const;
     // Returns the filename of the file.
     QString getFilename() const;
+    // Returns file creation date
+    QDateTime getCreateDate() const;
     // Returns the length of the file in bytes
     int getLength() const;
     // Returns whether the file exists on disk or not. Updated as of the time
@@ -304,6 +307,8 @@ public:
     int m_iId;
     /** Cue point in samples or something */
     float m_fCuePoint;
+    /** Date. creation date of file */
+    QDateTime m_dCreateDate;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
