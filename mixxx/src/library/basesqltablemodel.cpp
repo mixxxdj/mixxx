@@ -15,6 +15,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
         m_trackDAO(m_pTrackCollection->getTrackDAO()) {
     connect(&m_trackDAO, SIGNAL(trackChanged(int)),
             this, SLOT(trackChanged(int)));
+    m_iSortColumn = 0;
+    m_eSortOrder = Qt::AscendingOrder;
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {

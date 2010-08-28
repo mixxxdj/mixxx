@@ -33,6 +33,7 @@ Q3PtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
 Q3PtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject() :
+    m_dValue(0),
     m_bIgnoreNops(true) {
 }
 

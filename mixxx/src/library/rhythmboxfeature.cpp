@@ -31,7 +31,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/rhythmbox.png");
+    return QIcon(":/images/library/ic_library_rhythmbox.png");
 }
 
 QAbstractItemModel* RhythmboxFeature::getChildModel() {

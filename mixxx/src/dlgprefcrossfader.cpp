@@ -39,6 +39,9 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
     config = _config;
 	m_pxfScene = NULL;
 	
+    m_transform = 0;
+    m_cal = 0;
+
     setupUi(this);
 
 	connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
