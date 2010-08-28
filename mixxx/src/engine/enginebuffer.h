@@ -168,6 +168,8 @@ private:
     double filepos_play;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
     double rate_old;
+    /** Similar, but for tweak value */
+    int tweak_old;
     /** Copy of length of file */
     long int file_length_old;
     /** Copy of file sample rate*/
@@ -190,6 +192,7 @@ private:
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
+    ControlObject *m_pSeekWindowTweak;
 
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;

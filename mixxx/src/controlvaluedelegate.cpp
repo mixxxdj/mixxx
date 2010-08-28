@@ -52,6 +52,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("volume");
         m_channelControlValues.append("wheel");
         m_channelControlValues.append("jog");
+        m_channelControlValues.append("seekwindowtweak");
     }
     if (m_masterControlValues.isEmpty())
     {

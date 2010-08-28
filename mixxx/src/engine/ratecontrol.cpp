@@ -105,7 +105,7 @@ RateControl::RateControl(const char* _group,
         new ControlPushButton(ConfigKey(_group,"rate_temp_up_small"));
     connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUpSmall(double)));
-
+            
     // We need the sample rate so we can guesstimate something close
     // what latency is.
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
