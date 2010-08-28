@@ -26,6 +26,8 @@ double RateControl::m_dPermSmall = 0.05;
 int RateControl::m_iRateRampSensitivity = 250;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
+double RateControl::m_dWheelSensitivity = 0.0;
+
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
@@ -112,6 +114,11 @@ RateControl::RateControl(const char* _group,
 
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
+    
+    // Adjust jog wheel sensitivity factor
+    m_dWheelSensitivity = 0.0;
+    m_pWheelSensitivity = new ControlPotmeter(ConfigKey("[Master]", "wheelsensitivity"), 0., 2.);
+    connect(m_pWheelSensitivity, SIGNAL(valueChanged(double)), this, SLOT(slotWheelSensitivity(double)));
 
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
@@ -310,6 +317,11 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
+void RateControl::slotWheelSensitivity(double val)
+{
+	m_dWheelSensitivity = val;
+}
+
 double RateControl::getRawRate() {
     return m_pRateSlider->get() *
         m_pRateRange->get() *
@@ -318,7 +330,7 @@ double RateControl::getRawRate() {
 
 double RateControl::getWheelFactor() {
     // Calculate wheel (experimental formula)
-    return 40 * m_pWheel->get();
+    return 40 * m_pWheel->get() * m_dWheelSensitivity;
 }
 
 double RateControl::getJogFactor() {
@@ -337,7 +349,7 @@ double RateControl::getJogFactor() {
         jogFactor = 0.0f;
     }
 
-    return jogFactor;
+    return jogFactor * m_dWheelSensitivity;
 }
 
 double RateControl::calculateRate(double baserate, bool paused) {
@@ -373,7 +385,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // Jog: a linear additive effect whose value is filtered (springs back)
         // Temp: pitch bend
 
-        rate = 1. + getRawRate() + getTempRate();
+		rate = 1. + getRawRate() + getTempRate();
         rate += wheelFactor * 10.;
         
         // New scratch behavior - overrides playback speed (and old behavior)
@@ -388,8 +400,9 @@ double RateControl::calculateRate(double baserate, bool paused) {
         }
         
         // FIXME: This divisor needs to adjust for latency. (For 10ms, divide by 10.)
-        rate += jogFactor/10;
-
+        //rate += jogFactor/10;
+        rate += jogFactor;
+        
         // If we are reversing (and not scratching,) flip the rate.
         if (!scratchEnable && m_pReverseButton->get()) {
             rate = -rate;

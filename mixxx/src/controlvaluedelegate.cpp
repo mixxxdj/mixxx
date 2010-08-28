@@ -59,6 +59,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_masterControlValues.append("balance");
         m_masterControlValues.append("crossfader");
         m_masterControlValues.append("volume");
+        m_masterControlValues.append("wheelsensitivity");
     }
     if (m_playlistControlValues.isEmpty())
     {

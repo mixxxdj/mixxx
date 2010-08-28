@@ -46,7 +46,6 @@
 #include <math.h>  // for isnan() everywhere else
 #endif
 
-
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     m_engineLock(QMutex::Recursive),
     group(_group),
@@ -98,7 +97,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     
     // PITS seek window tweak value (added to window size)
     m_pSeekWindowTweak = new ControlPotmeter(ConfigKey(group, "seekwindowtweak"), -50., 50.);
-
+    
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
