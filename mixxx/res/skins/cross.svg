@@ -1,36 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="450"
-   height="450"
+   width="32"
+   height="32"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
+   inkscape:version="0.47+devel r9568"
    version="1.0"
-   inkscape:export-filename="C:\Documents and Settings\Adam\Desktop\cross.png"
-   inkscape:export-xdpi="3.2"
-   inkscape:export-ydpi="3.2"
-   sodipodi:docbase="D:\mixxxsvn\trunk\mixxx\src\skins"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="45"
+   inkscape:export-ydpi="45"
    sodipodi:docname="cross.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   style="display:inline">
   <defs
-     id="defs4">
-    <filter
-       inkscape:collect="always"
-       id="filter3234">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="8.956128"
-         id="feGaussianBlur3236" />
-    </filter>
-  </defs>
+     id="defs4" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -41,18 +33,30 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="375"
-     inkscape:cy="453.1"
+     inkscape:zoom="9.8894544"
+     inkscape:cx="24.407312"
+     inkscape:cy="5.3312761"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g3779"
      height="5in"
      width="5in"
      units="in"
-     inkscape:window-width="744"
-     inkscape:window-height="573"
-     inkscape:window-x="532"
-     inkscape:window-y="-3" />
+     inkscape:window-width="1276"
+     inkscape:window-height="756"
+     inkscape:window-x="4"
+     inkscape:window-y="22"
+     showgrid="true"
+     inkscape:window-maximized="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2997"
+       empspacing="4"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       empcolor="#ae00ff"
+       empopacity="0.25098039" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -61,21 +65,49 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
+     transform="translate(0,-418)"
+     id="g3779"
      inkscape:groupmode="layer"
-     id="layer1">
+     inkscape:label="cross.png"
+     style="display:inline"
+     sodipodi:insensitive="true">
     <path
-       style="opacity:1;fill:#1a1a1a;fill-rule:evenodd;stroke:#323232;stroke-width:72;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3234)"
-       d="M 96.9,92.87744 L 365.14512,361.12256"
-       id="path2162" />
-    <path
-       style="opacity:1;fill:#1a1a1a;fill-rule:evenodd;stroke:#323232;stroke-width:72;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3234)"
-       d="M 90.9,90.854876 L 359.14512,359.1"
-       id="path3238"
-       transform="matrix(0,1,-1,0,456,1.954878)" />
+       style="color:#000000;fill:#b3b3b3;fill-opacity:1;fill-rule:nonzero;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 16,4 C 8.9403602,4 2,10.94036 2,18 2,25.05964 8.9403602,32 16,32 23.05964,32 30,25.05964 30,18 30,10.94036 23.05964,4 16,4 z m -5.65625,6.34375 c 0.511238,0 1.014513,0.202013 1.40625,0.59375 l 4.25,4.25 4.25,-4.25 c 0.783474,-0.783474 2.029026,-0.783474 2.8125,0 0.783474,0.783474 0.783474,2.029026 0,2.8125 l -4.25,4.25 4.25,4.25 c 0.783474,0.783474 0.783474,2.029026 0,2.8125 -0.783474,0.783474 -2.029026,0.783474 -2.8125,0 l -4.25,-4.25 -4.25,4.25 c -0.783474,0.783474 -2.0290257,0.783474 -2.8125,0 -0.7834743,-0.783474 -0.7834743,-2.029026 0,-2.8125 l 4.25,-4.25 -4.25,-4.25 c -0.7834743,-0.783474 -0.7834743,-2.029026 0,-2.8125 0.3917372,-0.391737 0.8950118,-0.59375 1.40625,-0.59375 z"
+       transform="translate(0,418)"
+       id="path3781"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssssscssscssscssscsss"
+       inkscape:export-filename="/Applications/Mixxx 1.8.0 beta2.app/Contents/Resources/skins/path3781.png"
+       inkscape:export-xdpi="45"
+       inkscape:export-ydpi="45" />
+    <g
+       style="fill:#1a1a1a"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,311.57063,117.80195)"
+       id="g3783" />
+    <text
+       xml:space="preserve"
+       style="font-size:4px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0;word-spacing:0;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="16"
+       y="456"
+       id="text3803"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="16"
+         y="456"
+         id="tspan3817">Object is aligned to bottom cause it looks</tspan><tspan
+         sodipodi:role="line"
+         x="16.636719"
+         y="461"
+         id="tspan3821"> better in the skins searchbar </tspan><tspan
+         sodipodi:role="line"
+         x="16"
+         y="466"
+         id="tspan3813">(library widget where cross.png gets loaded)</tspan></text>
   </g>
 </svg>

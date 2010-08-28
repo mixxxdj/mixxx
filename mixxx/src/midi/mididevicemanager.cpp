@@ -132,8 +132,6 @@ void MidiDeviceManager::queryDevices()
         if (deviceInfo->output) {
             qDebug() << " Found output device" << "#" << i << deviceInfo->name;
             QString deviceName = deviceInfo->name;
-            // Ignore "To" text in the device names
-            if (deviceName.indexOf("to",0,Qt::CaseInsensitive)!=-1) deviceName = deviceName.right(deviceName.length()-2);
             unassignedOutputDevices[i] = deviceName;
         }
     }
@@ -159,12 +157,23 @@ void MidiDeviceManager::queryDevices()
             while (j.hasNext()) {
                 j.next();
                 
-                // Ignore "From" text in the device names
                 QString deviceName = inputDeviceInfo->name;
-                if (deviceName.indexOf("from",0,Qt::CaseInsensitive)!=-1) deviceName = deviceName.right(deviceName.length()-4);
+                QString outputName = QString(j.value());
 
-                QByteArray outputName = QString(j.value()).toUtf8();
-                if (strcmp(outputName, deviceName) == 0) {
+                //Some device drivers prepend "To" and "From" to the names
+                //of their MIDI ports. If the output and input device names
+                //don't match, let's try trimming those words from the start,
+                //and seeing if they then match.
+                if (outputName != deviceName) {
+                    // Ignore "From" text in the device names
+                    if (deviceName.indexOf("from",0,Qt::CaseInsensitive)!=-1) 
+                        deviceName = deviceName.right(deviceName.length()-4);
+                    // Ignore "To" text in the device names
+                    if (outputName.indexOf("to",0,Qt::CaseInsensitive)!=-1) 
+                        outputName = outputName.right(outputName.length()-2);
+                }
+
+                if (outputName == deviceName) {
                     outputDevIndex = j.key();
                     outputDeviceInfo = Pm_GetDeviceInfo(outputDevIndex);
                     

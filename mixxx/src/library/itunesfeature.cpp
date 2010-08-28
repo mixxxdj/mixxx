@@ -30,7 +30,7 @@ QVariant ITunesFeature::title() {
 }
 
 QIcon ITunesFeature::getIcon() {
-    return QIcon(":/images/library/rhythmbox.png");
+    return QIcon(":/images/library/ic_library_itunes.png");
 }
 
 void ITunesFeature::activate() {
