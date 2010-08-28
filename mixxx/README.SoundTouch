@@ -1,0 +1,3 @@
+This branch of Mixxx has an updated version of soundtouch.  To build, you'll need to
+go into lib/soundtouch and run ./configure.  (No need to run 'make'.)  After that,
+build Mixxx as normal
