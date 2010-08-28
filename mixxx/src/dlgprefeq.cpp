@@ -56,6 +56,9 @@ DlgPrefEQ::DlgPrefEQ(QWidget * parent, ConfigObject<ConfigValue> * _config) :  Q
 #endif
 	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
 
+	m_lowEqFreq = 0;
+	m_highEqFreq = 0;
+
 	loadSettings();
 }
 

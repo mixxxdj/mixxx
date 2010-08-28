@@ -32,7 +32,7 @@ QVariant PrepareFeature::title() {
 }
 
 QIcon PrepareFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_prepare.png");
 }
 
 void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
