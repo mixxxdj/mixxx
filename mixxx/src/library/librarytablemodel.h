@@ -35,9 +35,11 @@ class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
+    void setLibraryPrefix(QString sPrefix);
 
   private:
     TrackDAO& m_trackDao;
+    QString m_sPrefix;
 
   private slots:
     void slotSearch(const QString& searchText);

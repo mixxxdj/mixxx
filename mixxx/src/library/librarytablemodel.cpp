@@ -214,12 +214,19 @@ QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
     else
         value = BaseSqlTableModel::data(item, role);
         
-    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
-    	if (item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-		    if (qVariantCanConvert<int>(value)) {
-		        return MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-		    }
-		}
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole)
+	{
+		if (item.column() == fieldIndex(LIBRARYTABLE_DURATION)) 
+		{
+	        if (qVariantCanConvert<int>(value)) {
+	            return MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+	        }
+	    }
+	    else if (item.column() == fieldIndex(LIBRARYTABLE_LOCATION))
+	    {
+	    	if (value.toString().startsWith(m_sPrefix))
+				return value.toString().remove(0, m_sPrefix.size() + 1);
+	    }
 	}
 	if (role == Qt::DisplayRole) {
 		if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
@@ -338,3 +345,8 @@ void LibraryTableModel::notifyEndInsertRow(int row)
     endInsertRows();
 }
 */
+
+void LibraryTableModel::setLibraryPrefix(QString sPrefix)
+{
+	m_sPrefix = sPrefix;
+}

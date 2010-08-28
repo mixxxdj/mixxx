@@ -39,7 +39,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
+    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
+    m_pMixxxLibraryFeature->setLibraryPrefix(prefix);
     addFeature(m_pMixxxLibraryFeature);
     if(PromoTracksFeature::isSupported(m_pConfig)) {
         m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
@@ -174,7 +176,9 @@ void Library::slotRestoreSearch(const QString& text) {
 
 void Library::slotRefreshLibraryModels()
 {
-   m_pMixxxLibraryFeature->refreshLibraryModels();
+	QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
+	m_pMixxxLibraryFeature->setLibraryPrefix(prefix);
+	m_pMixxxLibraryFeature->refreshLibraryModels();
 }
 
 void Library::slotCreatePlaylist()

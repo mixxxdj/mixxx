@@ -79,3 +79,8 @@ bool MixxxLibraryFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
     return false;
 }
+
+void MixxxLibraryFeature::setLibraryPrefix(QString sPrefix)
+{
+	m_pLibraryTableModel->setLibraryPrefix(sPrefix);
+}

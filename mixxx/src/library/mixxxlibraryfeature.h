@@ -26,6 +26,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAcceptChild(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+    void setLibraryPrefix(QString sPrefix);
 
     QAbstractItemModel* getChildModel();
 
