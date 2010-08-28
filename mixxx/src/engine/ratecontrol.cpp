@@ -26,7 +26,7 @@ double RateControl::m_dPermSmall = 0.05;
 int RateControl::m_iRateRampSensitivity = 250;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
-double RateControl::m_dWheelSensitivity = 0.0;
+double RateControl::m_dWheelSensitivity = 1.0;
 
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
