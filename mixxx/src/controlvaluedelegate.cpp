@@ -52,12 +52,14 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("volume");
         m_channelControlValues.append("wheel");
         m_channelControlValues.append("jog");
+        m_channelControlValues.append("seekwindowtweak");
     }
     if (m_masterControlValues.isEmpty())
     {
         m_masterControlValues.append("balance");
         m_masterControlValues.append("crossfader");
         m_masterControlValues.append("volume");
+        m_masterControlValues.append("wheelsensitivity");
     }
     if (m_playlistControlValues.isEmpty())
     {

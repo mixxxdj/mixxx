@@ -961,6 +961,8 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
     if (optionsFullScreen)
         optionsFullScreen->setChecked(toggle);
+        
+    QString qSkinPath = getSkinPath();
 
     // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
@@ -978,6 +980,17 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         // Crazy X window managers break this so I'm told by Qt docs
         //         int deskw = app->desktop()->width();
         //         int deskh = app->desktop()->height();
+        
+        if (QDir(qSkinPath+"-fullscreen").exists())
+    	{
+			qDebug() << "fullscreen reshape";
+
+			QString qSkinPath = getSkinPath()+"-fullscreen";
+
+			view->rebootGUI(frame, config, qSkinPath);
+
+			qDebug() << "fullscreen reshape DONE";
+		}
 
         //support for xinerama
         int deskw = app->desktop()->screenGeometry(frame).width();
@@ -995,6 +1008,17 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         view->move(0,0);
         menuBar()->show();
         showNormal();
+        
+        if (QDir(qSkinPath+"-fullscreen").exists())
+    	{
+			qDebug() << "unfullscreen resize";
+
+			QString qSkinPath = getSkinPath();
+
+			view->rebootGUI(frame, config, qSkinPath);
+
+			qDebug() << "unfullscreen DONE";
+		}
 
 #ifdef __LINUX__
         if (size().width() != view->width() ||

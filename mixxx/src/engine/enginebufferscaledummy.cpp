@@ -38,6 +38,10 @@ void EngineBufferScaleDummy::clear()
 {
 }
 
+void EngineBufferScaleDummy::setSeekWindowTweak(int tweak)
+{
+}
+
 /**
  * @param playpos The play position in the EngineBuffer (in samples)
  * @param buf_size The size of the audio buffer to scale (in samples)
