@@ -244,7 +244,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
     //Scan the library for new files and directories.
-    m_pLibraryScanner->scan(config->getValueString(ConfigKey("[Playlist]","Directory")));
+    //OWEN EDIT: don't scan on startup, too goddamn slow.  If I want to rescan,
+    //I'll click rescan
+    //m_pLibraryScanner->scan(config->getValueString(ConfigKey("[Playlist]","Directory")));
 
 
     // Call inits to invoke all other construction parts
