@@ -21,12 +21,12 @@ EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
     order = iOrder;
     coefs = pCoefs;
 
+
     // Reset the yv's:
-    for (int i=0; i<=order; ++i)
-    {
-        yv1[i]=xv1[i]=0;
-        yv2[i]=xv2[i]=0;
-    }
+    memset(yv1, 0, sizeof(yv1));
+    memset(yv2, 0, sizeof(yv2));
+    memset(xv1, 0, sizeof(xv1));
+    memset(xv2, 0, sizeof(xv2));
 }
 
 EngineFilterIIR::~EngineFilterIIR()
