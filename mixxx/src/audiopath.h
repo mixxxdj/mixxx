@@ -56,7 +56,7 @@ public:
         DECK,
         VINYLCONTROL,
         MICROPHONE,
-        PASSTHROUGH,
+        EXTPASSTHROUGH,
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
     AudioPathType getType() const;

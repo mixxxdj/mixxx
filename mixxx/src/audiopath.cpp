@@ -157,7 +157,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Vinyl Control");
     case MICROPHONE:
         return QString::fromAscii("Microphone");
-    case PASSTHROUGH:
+    case EXTPASSTHROUGH:
         return QString::fromAscii("Passthrough");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
@@ -179,8 +179,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::VINYLCONTROL;
     } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
         return AudioPath::MICROPHONE;
-    } else if (string == AudioPath::getStringFromType(AudioPath::PASSTHROUGH).toLower()) {
-        return AudioPath::PASSTHROUGH;
+    } else if (string == AudioPath::getStringFromType(AudioPath::EXTPASSTHROUGH).toLower()) {
+        return AudioPath::EXTPASSTHROUGH;
     } else {
         return AudioPath::INVALID;
     }
@@ -194,7 +194,7 @@ bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
     case DECK:
     case VINYLCONTROL:
-    case PASSTHROUGH:
+    case EXTPASSTHROUGH:
     case MICROPHONE:
         return true;
     default:
@@ -217,8 +217,8 @@ AudioPathType AudioPath::getTypeFromInt(int typeInt) {
         return AudioPath::DECK;
     case AudioPath::VINYLCONTROL:
         return AudioPath::VINYLCONTROL;
-    case AudioPath::PASSTHROUGH:
-        return AudioPath::PASSTHROUGH;
+    case AudioPath::EXTPASSTHROUGH:
+        return AudioPath::EXTPASSTHROUGH;
     case AudioPath::MICROPHONE:
         return AudioPath::MICROPHONE;
     default:
