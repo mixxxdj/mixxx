@@ -675,8 +675,6 @@ void MixxxApp::initActions()
     optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotCheckboxVinylControl(bool)));
 
-    qDebug() << "CONNECTING SIGNALL??????????";
-
     ControlObjectThreadMain *enabled1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol")));
     connect(enabled1, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinylControl(double)));
     
