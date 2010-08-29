@@ -527,10 +527,8 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
         QListIterator<AudioInput> inputItr(inputs);
         while (inputItr.hasNext()) {
             AudioInput in = inputItr.next();
-            if (in.getType() == AudioInput::VINYLCONTROL) {
-                memcpy(m_inputBuffers[in], inputBuffer,
-                        sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
-            }
+            memcpy(m_inputBuffers[in], inputBuffer,
+                    sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
         }
     }
 
