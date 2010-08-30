@@ -26,6 +26,7 @@
 #ifdef __FFMPEGFILE__
 #include "soundsourceffmpeg.h"
 #endif
+#include "soundsourceflac.h"
 
 #include <QLibrary>
 #include <QMutexLocker>
@@ -117,6 +118,8 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 	    return new SoundSourceMp3(qFilename);
     } else if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
 	    return new SoundSourceOggVorbis(qFilename);
+    } else if (SoundSourceFLAC::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceFLAC(qFilename);
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
         if (getter)
