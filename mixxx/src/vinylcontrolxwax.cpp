@@ -536,7 +536,7 @@ void VinylControlXwax::disableRecordEndMode()
 
 void VinylControlXwax::togglePlayButton(bool on)
 {
-	if (bIsEnabled)
+	if (bIsEnabled && playButton->get() != on)
 		playButton->slotSet((float)on);  //and we all float on all right
 }
 
