@@ -349,4 +349,6 @@ void LibraryTableModel::notifyEndInsertRow(int row)
 void LibraryTableModel::setLibraryPrefix(QString sPrefix)
 {
 	m_sPrefix = sPrefix;
+	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
+		m_sPrefix.chop(1);
 }
