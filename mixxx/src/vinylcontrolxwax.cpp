@@ -45,6 +45,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     bModeSwitch		= false;
     bForceResync    = false;
     iNewMode		= -1;
+    dSteadyUpdated = -1.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
     
     //this is all needed because libxwax indexes by C-strings
@@ -137,7 +138,6 @@ void VinylControlXwax::run()
     int ringPos = 0;
     int ringFilled = 0;
     double old_duration = -1.0f;
-    
 
 	float when;
 
@@ -391,9 +391,11 @@ void VinylControlXwax::run()
                     	syncPosition();
 	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
                     }
-	                else if (checkSteadyPitch(dVinylPitch, filePosition))
+	                else if (checkSteadyPitch(dVinylPitch, filePosition) > 0.5)
 	                {
 	                	togglePlayButton(TRUE);
+	                	//if (checkSteadyPitch(dVinylPitch, filePosition) > 2.0)
+	                	//	rateSlider->slotSet((fabs(dSteadyPitch) - 1.0f) / fRateRange);
 	                }
 	                		                    
 	                //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
@@ -427,17 +429,13 @@ void VinylControlXwax::run()
 		                continue;
 		        	}*/
 		        	
-			    	if (checkSteadyPitch(dVinylPitch, filePosition) &&
-			    		dVinylPitch > 0.2)
-			        {
+			    	if (checkSteadyPitch(dVinylPitch, filePosition) > 0.5 &&
+			    		 dVinylPitch > 0.2)
 		            	togglePlayButton(TRUE);
-		            }
 		            else
-		            {
 		            	togglePlayButton(FALSE);
-		            }
 		        }
-
+		        
 				//only smooth when we have good position (no smoothing for scratching)
 				double averagePitch = 0.0f;
 				if (iPosition != -1 && playButton->get())
@@ -459,26 +457,38 @@ void VinylControlXwax::run()
 				{
 		            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 		            {
-		                controlScratch->slotSet(averagePitch + dDriftControl);
 		                //set rate slider only if we have good position.  This prevents
 		                //the waveform from doing stretching annoyingly while scratching
 		                if (playButton->get())
-		                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+		                {
+		                	controlScratch->slotSet(1.0);
+		                	//rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+		                }
 		                else
-		                	rateSlider->slotSet(0.0f);
+		                {
+		                	controlScratch->slotSet(averagePitch + dDriftControl);
+		                	//rateSlider->slotSet(0.0f);
+		                }
 		            }
 		            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 		            {
 		            	//qDebug() << "set pitch" << averagePitch + dDriftControl;
-		                controlScratch->slotSet(averagePitch);
 		                if (playButton->get())
-			                rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
+		                {
+		                	//controlScratch->slotSet(1.0);
+			                //rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
+			                controlScratch->slotSet(averagePitch + dDriftControl);
+			            }
 			            else
-		                	rateSlider->slotSet(0.0f);
+			           	{
+			           		controlScratch->slotSet(averagePitch);
+		                	//rateSlider->slotSet(0.0f);
+		                }
 		            }
 		        }
 		        else
 		        	controlScratch->slotSet(averagePitch);
+		        	
 				dOldPitch = dVinylPitch;
 				dOldFilePos = filePosition;
             }
@@ -546,21 +556,31 @@ void VinylControlXwax::resetSteadyPitch(double pitch, double time)
 	dSteadyPitchTime = time;
 }
 
-bool VinylControlXwax::checkSteadyPitch(double pitch, double time)
+double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 {
 	//return TRUE if we have established 0.5 secs of steady pitch
 	
-	if (fabs(pitch - dSteadyPitch) < 0.2f)
+	if (time < dSteadyPitchTime) //bad values, often happens during resync
 	{
-		if (time < dSteadyPitchTime) //bad values, often happens during resync
-			resetSteadyPitch(pitch, time);
-		else if (time - dSteadyPitchTime > 0.5)
-			return TRUE;
+		resetSteadyPitch(pitch, time);
+		return 0.0;
+	}
+	
+	if (fabs(pitch - dSteadyPitch) < 0.09f)
+	{
+		if (dSteadyUpdated > time || time - dSteadyUpdated > 0.5)
+		{
+			rateSlider->slotSet((fabs(dSteadyPitch) - 1.0f) / fRateRange);
+			dSteadyPitch = pitch;
+			dSteadyUpdated = time;
+		}
+		qDebug() << dSteadyPitch << time - dSteadyPitchTime;
+		return time - dSteadyPitchTime;
 	}
 	else
 		resetSteadyPitch(pitch, time);
 			
-	return FALSE;
+	return 0.0;
 }
 
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
