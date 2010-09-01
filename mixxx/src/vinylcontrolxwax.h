@@ -31,7 +31,7 @@ private:
 	void togglePlayButton(bool on);
 	bool checkEnabled(bool was, bool is);
 	void resetSteadyPitch(double pitch, double time);
-	bool checkSteadyPitch(double pitch, double time);
+	double checkSteadyPitch(double pitch, double time);
 	void enableRecordEndMode();
 	void disableRecordEndMode();
 	void enableConstantMode();
