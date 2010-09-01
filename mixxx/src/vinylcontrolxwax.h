@@ -53,7 +53,6 @@ private:
 	double dOldFilePos;
 	double dSteadyPitch;
 	double dSteadyPitchTime;
-	double dSteadyUpdated;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;
