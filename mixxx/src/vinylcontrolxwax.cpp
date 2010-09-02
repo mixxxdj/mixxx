@@ -439,21 +439,12 @@ void VinylControlXwax::run()
 	            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
-	                //set rate slider only if we have good position.  This prevents
-	                //the waveform from doing stretching annoyingly while scratching
-	                
-	                if (iPosition != -1 && playButton->get())
-	                {
-	                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
-	                }
+	                rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
 	            }
 	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 	            {
 	                controlScratch->slotSet(averagePitch);
-	                if (iPosition != -1 && playButton->get())
-	                {
-		                rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
-		            }
+	                rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
 	            }
 		        	
 				dOldPitch = dVinylPitch;
