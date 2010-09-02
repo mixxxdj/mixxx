@@ -68,6 +68,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_dRate(0),
     m_dRateRange(0),
     m_dRateDir(0),
+    m_bVinylControl(0),
     m_iDupes(0),
     m_dPlayPosAdjust(0),
     m_iLatency(0),
@@ -118,6 +119,13 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     if (m_pRateDir) {
         connect(m_pRateDir, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateRateDir(double)));
+    }
+    
+    m_pVinylControl = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "vinylcontrol")));
+    if (m_pVinylControl) {
+        connect(m_pVinylControl, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateVinylControl(double)));
     }
 
     if(0)
@@ -189,6 +197,10 @@ void WaveformRenderer::slotUpdateRateRange(double v) {
 
 void WaveformRenderer::slotUpdateRateDir(double v) {
     m_dRateDir = v;
+}
+
+void WaveformRenderer::slotUpdateVinylControl(double vinyl_control) {
+    m_bVinylControl = vinyl_control;
 }
 
 void WaveformRenderer::slotUpdateLatency(double v) {
@@ -492,7 +504,14 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     //qDebug() << m_dPlayPosAdjust;
 
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
-    double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
+    double rateAdjust;
+    
+    if (m_bVinylControl)
+    	rateAdjust = 0;
+    else
+     	rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
+     	
+    qDebug() << rateAdjust;
 
     if(m_pSampleBuffer == NULL) {
         fetchWaveformFromTrack();
