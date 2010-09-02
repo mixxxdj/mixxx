@@ -511,8 +511,6 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     else
      	rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
      	
-    qDebug() << rateAdjust;
-
     if(m_pSampleBuffer == NULL) {
         fetchWaveformFromTrack();
     }

@@ -439,12 +439,14 @@ void VinylControlXwax::run()
 	            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
-	                rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+	            	if (iPosition != -1)
+	                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
 	            }
 	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 	            {
 	                controlScratch->slotSet(averagePitch);
-	                rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
+	                if (iPosition != -1)
+	                	rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
 	            }
 		        	
 				dOldPitch = dVinylPitch;
@@ -521,19 +523,16 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 	if (time < dSteadyPitchTime) //bad values, often happens during resync
 	{
 		resetSteadyPitch(pitch, time);
-		qDebug() << "steady" << 0.0;
 		return 0.0;
 	}
 	
 	if (fabs(pitch - dSteadyPitch) < 0.2f)
 	{
-		qDebug() << "steady" << time - dSteadyPitchTime;
 		return time - dSteadyPitchTime;
 	}
 	
 	//else
 	resetSteadyPitch(pitch, time);
-	qDebug() << "steady" << 0.0;
 	return 0.0;
 }
 
