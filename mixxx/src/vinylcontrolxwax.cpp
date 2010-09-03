@@ -45,6 +45,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     bModeSwitch		= false;
     bForceResync    = false;
     iNewMode		= -1;
+    dUiUpdateTime   = -1.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
     
     //this is all needed because libxwax indexes by C-strings
@@ -133,11 +134,12 @@ void VinylControlXwax::run()
     float filePosition = 0.0f;
     //bool bScratchMode = true;
     double dDriftAmt = 0.0f;
-    double dRateUpdateTime = -1.0f;
     double dPitchRing[RING_SIZE];
     int ringPos = 0;
     int ringFilled = 0;
     double old_duration = -1.0f;
+    int reportedMode = 0;
+    bool reportedPlayButton = 0;
 
 	float when;
 
@@ -190,31 +192,31 @@ void VinylControlXwax::run()
         	dDriftControl = 0.0f;
         	dVinylPitch = timecoder_get_pitch(&timecoder);
             filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
+            reportedMode = mode->get();
+            reportedPlayButton = playButton->get();
             
             //if playing, don't switch modes instantly, in case user goes through ABS on the
 			//way to REL
 			//also reset timer if they switch the new mode too
-			if ((!bModeSwitch && iVCMode != mode->get()) || (bModeSwitch && iNewMode != mode->get()))
+			if ((!bModeSwitch && iVCMode != reportedMode) || (bModeSwitch && iNewMode != reportedMode))
 		    {
-		    	int nextmode = mode->get();
-		    	
-		    	if (playButton->get() && nextmode != MIXXX_VCMODE_CONSTANT) //delayed switch while playing back
+		    	if (reportedPlayButton && reportedMode != MIXXX_VCMODE_CONSTANT) //delayed switch while playing back
 		    	{
 			    	bModeSwitch = true;
-		    		iNewMode = nextmode;
+		    		iNewMode = reportedMode;
 			    	dSwitchTime = time(NULL); 
 			    }
 			    else //switch instantly
 			    {
 			    	bModeSwitch = false;
-			    	iVCMode = nextmode;
+			    	iVCMode = reportedMode;
 			    	bForceResync = true;
 		   		}	
 		    }
             
-            if (bModeSwitch && time(NULL) - dSwitchTime > 1.0f && mode->get() == iNewMode)
+            if (bModeSwitch && time(NULL) - dSwitchTime > 1.0f && reportedMode == iNewMode)
             {
-            	if (mode->get() == MIXXX_VCMODE_ABSOLUTE && atRecordEnd)
+            	if (reportedMode == MIXXX_VCMODE_ABSOLUTE && atRecordEnd)
             	{   //override. DJ is dealing with end-of-record, and they
             		//almost certainly do not want absolute mode
             		iVCMode = MIXXX_VCMODE_RELATIVE;
@@ -222,7 +224,7 @@ void VinylControlXwax::run()
             	}
             	else
             	{
-	            	iVCMode = mode->get();
+	            	iVCMode = reportedMode;
 	            	bForceResync = true;
 	            	//reset error light on mode change
 	            	if (vinylStatus->get() == VINYL_STATUS_ERROR)
@@ -238,7 +240,7 @@ void VinylControlXwax::run()
             //but it can also happen in relative mode if the vinylpos is nearing the end
             //If so, change to constant mode so DJ can move the needle safely
 			
-			if (!atRecordEnd && playButton->get())
+			if (!atRecordEnd && reportedPlayButton)
 			{
 				if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 				{
@@ -263,7 +265,7 @@ void VinylControlXwax::run()
 					//if we are in absolute mode and the file position is in a safe zone now
 					disableRecordEndMode();
 				}
-				else if (!playButton->get()) 
+				else if (!reportedPlayButton) 
 				{
 					//if we turned off play button, also disable
 					disableRecordEndMode();
@@ -281,8 +283,8 @@ void VinylControlXwax::run()
 			    if (atRecordEnd)
 			    {
 		        	//ok, it's still valid, blink
-					if ((playButton->get() && (int)(filePosition * 2.0f) % 2) ||
-						(!playButton->get() && (int)(iPosition / 500.0f) % 2))
+					if ((reportedPlayButton && (int)(filePosition * 2.0f) % 2) ||
+						(!reportedPlayButton && (int)(iPosition / 500.0f) % 2))
 						vinylStatus->slotSet(VINYL_STATUS_WARNING);
 					else
 						vinylStatus->slotSet(VINYL_STATUS_DISABLED);
@@ -295,7 +297,7 @@ void VinylControlXwax::run()
 				//now we just either set scratch val to 0 (stops playback)
 				//or 1 (plays back at that rate)
 				
-				if (playButton->get())
+				if (reportedPlayButton)
 					controlScratch->slotSet(1.0f);
 				else
 					controlScratch->slotSet(0.0f);
@@ -382,7 +384,8 @@ void VinylControlXwax::run()
                     	qDebug() << "Vinyl leadin";
                     	syncPosition();
                         resetSteadyPitch(dVinylPitch, dVinylPosition);
-                        rateSlider->slotSet((fabs(dVinylPitch) - 1.0f) / fRateRange);
+                        if (uiUpdateTime(filePosition))
+                        	rateSlider->slotSet((fabs(dVinylPitch) - 1.0f) / fRateRange);
                     }
                     else if (!m_bNeedleSkipPrevention &&
                     	fabs(dVinylPosition - dOldPos) >= 0.1f &&
@@ -413,7 +416,8 @@ void VinylControlXwax::run()
 		            //estimate vinyl position
 		            
 		            dOldPos = filePosition + dDriftAmt;
-		        	timecodeQuality->slotSet(0.75f);
+		            if (uiUpdateTime(filePosition))
+		        		timecodeQuality->slotSet(0.75f);
 		        	
 		        	if (dVinylPitch > 0.2)
 		        	{	
@@ -423,7 +427,7 @@ void VinylControlXwax::run()
 		        
 				//only smooth when we have good position (no smoothing for scratching)
 				double averagePitch = 0.0f;
-				if (iPosition != -1 && playButton->get())
+				if (iPosition != -1 && reportedPlayButton)
 				{
 					for (int i=0; i<ringFilled; i++)
 					{
@@ -439,23 +443,26 @@ void VinylControlXwax::run()
 				
 				
 				if (fabs(dVinylPitch) < 0.005)
-	            	rateSlider->slotSet(0.0);
+				{
+					if (uiUpdateTime(filePosition))
+	            		rateSlider->slotSet(0.0);
+	            }
 	            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
-	            	if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.05))
+	            	if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
 	            	{
 	                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
-	                	dRateUpdateTime = filePosition;
+	                	dUiUpdateTime = filePosition;
 	                }
 	            }
 	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 	            {
 	                controlScratch->slotSet(averagePitch);
-	                if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.05))
+	                if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
 	            	{
 	                	rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
-	                	dRateUpdateTime = filePosition;
+	                	dUiUpdateTime = filePosition;
 	                }
 	            }
 	            
@@ -588,4 +595,14 @@ bool VinylControlXwax::isEnabled()
 void VinylControlXwax::ToggleVinylControl(bool enable)
 {
     bIsEnabled = enable;
+}
+
+bool VinylControlXwax::uiUpdateTime(double now)
+{
+	if (dUiUpdateTime > now || now - dUiUpdateTime > 0.05)
+	{
+		dUiUpdateTime = now;
+		return true;
+	}
+	return false;
 }
