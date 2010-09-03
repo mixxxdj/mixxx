@@ -443,7 +443,7 @@ void VinylControlXwax::run()
 	            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
-	            	if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.1))
+	            	if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.05))
 	            	{
 	                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
 	                	dRateUpdateTime = filePosition;
@@ -452,7 +452,7 @@ void VinylControlXwax::run()
 	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 	            {
 	                controlScratch->slotSet(averagePitch);
-	                if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.1))
+	                if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.05))
 	            	{
 	                	rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
 	                	dRateUpdateTime = filePosition;
