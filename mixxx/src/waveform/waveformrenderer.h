@@ -46,7 +46,6 @@ public slots:
     void slotUpdateRate(double rate);
     void slotUpdateRateRange(double rate_range);
     void slotUpdateRateDir(double rate_dir);
-    void slotUpdateVinylControl(double vinyl_control);
 
 protected:
     void run();
@@ -66,7 +65,6 @@ private:
     int m_iDupes;
     double m_dPlayPosAdjust;
     int m_iLatency;
-    bool m_bVinylControl;
 
     QVector<float> *m_pSampleBuffer;
     QPixmap *m_pPixmap;
@@ -77,7 +75,6 @@ private:
     ControlObjectThreadMain *m_pRate;
     ControlObjectThreadMain *m_pRateRange;
     ControlObjectThreadMain *m_pRateDir;
-    ControlObjectThreadMain *m_pVinylControl;
 
     ControlObject *m_pCOVisualResample;
 
