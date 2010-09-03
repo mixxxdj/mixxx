@@ -35,6 +35,7 @@ private:
 	void enableRecordEndMode();
 	void disableRecordEndMode();
 	void enableConstantMode();
+	bool uiUpdateTime(double time);
 
 	double dFileLength; 			//The length (in samples) of the current song.
 
@@ -53,6 +54,7 @@ private:
 	double dOldFilePos;
 	double dSteadyPitch;
 	double dSteadyPitchTime;
+	double dUiUpdateTime;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;
