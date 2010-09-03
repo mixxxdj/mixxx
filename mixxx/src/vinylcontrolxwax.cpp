@@ -133,6 +133,7 @@ void VinylControlXwax::run()
     float filePosition = 0.0f;
     //bool bScratchMode = true;
     double dDriftAmt = 0.0f;
+    double dRateUpdateTime = -1.0f;
     double dPitchRing[RING_SIZE];
     int ringPos = 0;
     int ringFilled = 0;
@@ -436,19 +437,27 @@ void VinylControlXwax::run()
 				else
 					averagePitch = dVinylPitch;
 				
-	            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
+				if (fabs(dVinylPitch) < 0.005)
+	            	rateSlider->slotSet(0.0);
+	            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
-	            	if (iPosition != -1)
+	            	if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.05))
+	            	{
 	                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+	                	dRateUpdateTime = filePosition;
+	                }
 	            }
 	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 	            {
 	                controlScratch->slotSet(averagePitch);
-	                if (iPosition != -1)
+	                if (iPosition != -1 && playButton->get() && (dRateUpdateTime > filePosition || filePosition - dRateUpdateTime > 0.05))
+	            	{
 	                	rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
+	                	dRateUpdateTime = filePosition;
+	                }
 	            }
-		        	
+	            
 				dOldPitch = dVinylPitch;
 				dOldFilePos = filePosition;
             }
@@ -458,6 +467,8 @@ void VinylControlXwax::run()
             	//if it's been a long time, we're stopped.
             	//if it hasn't been long, and we're preventing needle skips,
             	//let the track play a wee bit more before deciding we've stopped
+            	
+            	rateSlider->slotSet(0.0f);
 
 	        	if(fabs(filePosition - dOldFilePos) >= 0.1 ||
 	        		!m_bNeedleSkipPrevention ||
@@ -467,7 +478,6 @@ void VinylControlXwax::run()
 			       	togglePlayButton(FALSE);
 			       	resetSteadyPitch(0.0f, 0.0f);
 			        controlScratch->slotSet(0.0f);
-			        rateSlider->slotSet(0.0f);
 			        //resetSteadyPitch(dVinylPitch, filePosition);
 			        //Notify the UI that the timecode quality is garbage/missing.
 			        timecodeQuality->slotSet(0.0f);
