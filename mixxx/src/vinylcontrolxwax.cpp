@@ -425,6 +425,9 @@ void VinylControlXwax::run()
 					}		            	
 		        }
 		        
+		        //playbutton status may have changed
+		        reportedPlayButton = playButton->get();
+		        
 				//only smooth when we have good position (no smoothing for scratching)
 				double averagePitch = 0.0f;
 				if (iPosition != -1 && reportedPlayButton)
