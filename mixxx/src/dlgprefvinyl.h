@@ -50,7 +50,6 @@ public slots:
     void refreshDeck1Channels();
     void refreshDeck2Channels();
 	void EnableRelativeModeSlotApply();
-	void EnableScratchModeSlotApply();
 	void VinylTypeSlotApply();
 	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();

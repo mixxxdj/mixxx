@@ -42,7 +42,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     QButtonGroup vinylControlMode;
     vinylControlMode.addButton(AbsoluteMode);
     vinylControlMode.addButton(RelativeMode);
-    vinylControlMode.addButton(ScratchMode);
 
     //Get access to the timecode strength ControlObjects
     m_timecodeQuality1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylControlQuality")));
@@ -184,8 +183,6 @@ void DlgPrefVinyl::slotUpdate()
         AbsoluteMode->setChecked(true);
     else if (iMode == MIXXX_VCMODE_RELATIVE)
         RelativeMode->setChecked(true);
-    else if (iMode == MIXXX_VCMODE_SCRATCH)
-        ScratchMode->setChecked(true);
 
     // Honour the Needle Skip Prevention setting.
     NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "NeedleSkipPrevention") ).toInt() );
@@ -326,8 +323,6 @@ void DlgPrefVinyl::slotApply()
         iMode = MIXXX_VCMODE_ABSOLUTE;
     if (RelativeMode->isChecked())
         iMode = MIXXX_VCMODE_RELATIVE;
-    if (ScratchMode->isChecked())
-        iMode = MIXXX_VCMODE_SCRATCH;
 
     ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
     ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode"))->set(iMode);
@@ -401,11 +396,6 @@ void DlgPrefVinyl::enableValidComboBoxes()
 
 
 void DlgPrefVinyl::EnableRelativeModeSlotApply()
-{
-
-}
-
-void DlgPrefVinyl::EnableScratchModeSlotApply()
 {
 
 }
