@@ -46,7 +46,7 @@ EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractR
 {
     pEngine = engine;
     metaDataTitle = metaDataArtist = NULL;
-    m_pMetaData = NULL;
+    m_pMetaData = TrackPointer(NULL);
 
     m_pConfig = _config;
 }

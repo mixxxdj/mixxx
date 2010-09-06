@@ -26,7 +26,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename),
     mad_stream_init(Stream);
     Synth = new mad_synth;
     mad_synth_init(Synth);
-    Frame = new mad_frame; 
+    Frame = new mad_frame;
     mad_frame_init(Frame);
 }
 
@@ -37,7 +37,7 @@ SoundSourceMp3::~SoundSourceMp3()
     mad_synth_finish(Synth);
     m_file.unmap(inputbuf);
     m_file.close();
-    
+
     //Don't delete because we're using mmapped i/o now.... right?
     //delete [] inputbuf;
 
@@ -139,7 +139,7 @@ int SoundSourceMp3::open()
     framecount = currentframe;
     currentframe = 0;
 
-    //Recalculate the duration by using the average frame size. Our first guess at 
+    //Recalculate the duration by using the average frame size. Our first guess at
     //the duration of VBR MP3s in parseHeader() goes for speed over accuracy
     //since it runs during a library scan. When we open() an MP3 for playback,
     //we had to seek through the entire thing to build a seek table, so we've
@@ -147,10 +147,10 @@ int SoundSourceMp3::open()
     //the length of VBR MP3s.
     if (this->getSampleRate() > 0 && m_iChannels > 0) //protect again divide by zero
     {
-        qDebug() << "SSMP3::open() - Setting duration to:" << framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels;
+        //qDebug() << "SSMP3::open() - Setting duration to:" << framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels;
         this->setDuration(framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels);
     }
-    
+
     //TODO: Emit metadata updated signal?
 
 /*
@@ -524,7 +524,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 int SoundSourceMp3::parseHeader()
 {
-    QString location = m_qFilename; 
+    QString location = m_qFilename;
 
     this->setType("mp3");
 
@@ -600,7 +600,7 @@ int SoundSourceMp3::parseHeader()
         qDebug() << "SSMP3::ParseHeader Open failed:" << location;
         return ERR;
     }
-    inputbuf = new unsigned char[READLENGTH]; 
+    inputbuf = new unsigned char[READLENGTH];
     /*
     inputbuf_len = file.size();
     inputbuf = file.map(0, inputbuf_len);
@@ -626,7 +626,7 @@ int SoundSourceMp3::parseHeader()
 
     while(frames < DESIRED_FRAMES) {
         unsigned int readbytes = file.read((char*)inputbuf, READLENGTH);
-        
+
         if(readbytes != READLENGTH) {
             //qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
             if(readbytes == -1) {
@@ -638,7 +638,7 @@ int SoundSourceMp3::parseHeader()
                 break;
             }
             // otherwise we just have less data to work with, keep going!
-        } 
+        }
 
         // This preserves skiplen, so if we had a buffer error earlier
         // the skip will occur when we give it more data.
@@ -688,7 +688,7 @@ int SoundSourceMp3::parseHeader()
             frames++;
         }
     }
-    
+
     //Calculate the average bitrate over a bunch of frames so we can guess the duration of VBR MP3s better
     if (frames > 0) { //divide by zero protection
         averageBitrate = averageBitrate / frames;
@@ -715,14 +715,14 @@ int SoundSourceMp3::parseHeader()
         this->setBitrate(Header.bitrate/1000);
         //qDebug() << "SSMP3::ParseHeader - Song is CBR";
      }
-     else //Calculate duration for VBR MP3s 
+     else //Calculate duration for VBR MP3s
      {
          // FIXME: We need a fast way to get reasonable VBR MP3 file duration estimates
-         
+
          // In the meantime (and since the below method can be waaaay off)
          // we'd rather show nothing until the track is loaded and the real
          // duration can be calculated - Sean (June 2010)
-         
+
          /*
          //Since this is sort of a crapshoot to begin with unless you want to
          //get really fancy, we're going to just use our estimate at the
