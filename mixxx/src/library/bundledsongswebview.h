@@ -52,6 +52,7 @@ class BundledSongsWebView : public QWebView, public LibraryView
         void setStatTracking(bool statTracking);
         bool statTracking() const; //has to be a slot to get it into javascript land
         void setFirstRun(bool firstRun);
+        void loadFinished(bool ok);
 
     signals:
         void loadTrack(TrackPointer pTrack);

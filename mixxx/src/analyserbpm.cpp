@@ -20,7 +20,6 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
 
     // If BPM detection is not enabled, or the track already has BPM detection done.
     if(bpmEnabled &&
-       tio->getBpmConfirm() == false &&
        tio->getBpm() == 0.) {
         // All SoundSource's return stereo data, no matter the real file's type
         m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
@@ -45,7 +44,7 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
-    qDebug() << "BPM range is" << min << "to" << max;
+    //qDebug() << "BPM range is" << min << "to" << max;
     if ( BPM == 0 ) return BPM;
 
     if (aboveRange == 0) {
@@ -73,10 +72,10 @@ void AnalyserBPM::finalise(TrackPointer tio) {
         //if(pBpmReceiver) {
         //pBpmReceiver->setComplete(tio, false, bpm);
         //}
-        qDebug() << "AnalyserBPM BPM detection successful for" << tio->getFilename();
-        qDebug() << "AnalyserBPM BPM is " << newbpm << " (raw: " << bpm << ")";
+        //qDebug() << "AnalyserBPM BPM detection successful for" << tio->getFilename();
+        //qDebug() << "AnalyserBPM BPM is " << newbpm << " (raw: " << bpm << ")";
     } else {
-        qDebug() << "AnalyserBPM BPM detection failed, setting to 0.";
+        //qDebug() << "AnalyserBPM BPM detection failed, setting to 0.";
     }
 
     // Cleanup the BPM detector
