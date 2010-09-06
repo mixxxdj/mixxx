@@ -16,10 +16,6 @@
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/jquery-ui.js"></script>
     
-    <link rel="stylesheet" type="text/css" href="fancybox/jquery.fancybox/jquery.fancybox.css" media="screen" />
-    <script type="text/javascript" src="fancybox/jquery.fancybox/jquery.easing.1.3.js"></script>
-    <script type="text/javascript" src="fancybox/jquery.fancybox/jquery.fancybox-1.2.1.pack.js"></script>
-    
     <script type="text/javascript">
         $(document).ready(function() {
             $("#getwindlg").dialog({autoOpen : false});
@@ -62,15 +58,15 @@
 		</p>
 	</div>
 
-	<div id="ubuntudlg" style="display: none;" title="Important (Ubuntu 9.04)">
+	<div id="ubuntudlg" style="display: none;" title="Important (Ubuntu 9.04-10.04)">
 	   <center><b>Download:</b><br>
-	   <a href="http://downloads.mixxx.org/mixxx-1.7.2/mixxx-1.7.2-ubuntu-i386.deb">Mixxx 1.7.2 for Ubuntu 9.04+ i386</a><br>
+	   <a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-ubuntu-i386.deb">Mixxx 1.8.0 for Ubuntu 9.10+ i386</a><br>
 	   <a href="http://downloads.mixxx.org/mixxx-1.7.1/mixxx-1.7.1-ubuntu-amd64.deb">Mixxx 1.7.1 for Ubuntu 9.04+ amd64</a></center><br>
 	   <center><b>Important Note:</b></center>
-		<p>A flaw has been discovered in a library provided by Ubuntu 9.04 that can cause <b>critical hangups</b> in Mixxx. Ubuntu 9.04 users are advised to install the version of PortAudio from Ubuntu 8.10, available as .deb packages here:<br><br>
+		<p>Ubuntu users are urged to upgrade to <b>Ubuntu 10.10 or newer</b>.</p><p> Earlier versions of Ubuntu have a flaw in a library provided by Ubuntu 9.04 that can cause <b>critical hangups</b> in Mixxx. Ubuntu 9.04-10.04 users are advised to install the version of PortAudio from Ubuntu 8.10, available as .deb packages here:<br><br>
             <ul>
-                <li><a href="http://packages.ubuntu.com/intrepid/i386/libportaudio2/download">PortAudio for i386</a></li>
-                <li><a href="http://packages.ubuntu.com/intrepid/amd64/libportaudio2/download">PortAudio for amd64</a></li>
+                <li><a href="http://old-releases.ubuntu.com/ubuntu/pool/universe/p/portaudio19/libportaudio2_19+svn20071207-0ubuntu3_i386.deb">PortAudio for i386</a></li>
+                <li><a href="http://old-releases.ubuntu.com/ubuntu/pool/universe/p/portaudio19/libportaudio2_19+svn20071207-0ubuntu3_amd64.deb">PortAudio for amd64</a></li>
             </ul>
    		</p>
 	</div>
@@ -78,8 +74,8 @@
     <!-- ##### Main Copy ##### -->
 
     <div id="main-copy">
-    <div class="rowOfBoxes">
-        <div class="fullWidth noBorderOnLeft" id="download">
+    <div id="main-copy-inside">
+    <br>
 		        <h1>Download</h1>
 		        
 		        <div>
@@ -91,23 +87,26 @@
 			        		
 			        	</div>-->
 					    <div id="windows">
-						    <table>
+						    <table> 
 						        <tr>
-						        	<td rowspan=2>
+						        	<td>
 						        	<img src="images/downloads_win.png">
 						        	</td>
-						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.7.2/mixxx-1.7.2-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/172win32'); ">Mixxx 1.7.2</a><br>(32-bit)
+						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/172win32'); ">Mixxx 1.8.0</a><br>(32-bit)
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.7.2/mixxx-1.7.2-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/172win64'); ">Mixxx 1.7.2</a><br>(64-bit)
-						            </td>
-						            <td rowspan=2><img src="images/windows.png"></td>
-						            
-		        			    </tr>
-		        			    <tr><td colspan=2 style="height: 1px; padding:0px;margin:0px;vertical-align: bottom;">
-		        			    <div style="float:middle; clear:left;">
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/172win64'); ">Mixxx 1.8.0</a><br>(64-bit)
+
+                                    <!--
 		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
 		            			        <a id="getwin" href="#win32vs64">Not sure which to get?</a>
 		            			    </p>
+                                    -->
+						            </td>
+						            <td><img src="images/windows.png"></td>
+						            
+		        			    </tr>
+		        			    <tr><td colspan=2 style="vertical-align: bottom;">
+		        			    <div style="float:middle; clear:left;">
 		        			    </div>
 		        			    </td></tr>
 						    </table>
@@ -116,31 +115,32 @@
 						    <table>
 						        <tr>
 						            <td>
-						            <img src="images/downloads_mac.png">
+						                <img src="images/downloads_mac.png">
 						            </td>
-						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.7.2/mixxx-1.7.2-osx-universal.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/172osxuniversal'); ">Mixxx 1.7.2</a><br>
+						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-osx-universal.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/172osxuniversal'); ">Mixxx 1.8.0</a><br>
 						    		(10.4+, Universal)<br>
 						    		</td>
-						    <td><img src="images/mac.png"></td>
-						    </tr>
+						            <td><img src="images/mac.png"></td>
+						        </tr>
 						    </table>						    
 					    </div>
 					    <div id="linux">
 						    <table>
 						        <tr>
-						        	<td rowspan=2><img src="images/downloads_linux.png"></td>
+						        	<td><img src="images/downloads_linux.png"></td>
 						            <td width="30%">
-						             <a href="http://downloads.mixxx.org/mixxx-1.7.2/mixxx-1.7.2-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/172linuxsrc'); ">Mixxx 1.7.2</a><br>
+						             <a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/172linuxsrc'); ">Mixxx 1.8.0</a><br>
 						    (Source)
 						            </td>
 						            <td width="30%">
-						            <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/172ubuntu'); ">Mixxx 1.7.2</a><br>(Ubuntu)
+						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/172ubuntu'); ">Mixxx 1.8.0</a><br>(Ubuntu)
 						    		</td>
-						    		<td rowspan=2><img src="images/ubuntu.png" align="center" border="0px">
+						    		<td><img src="images/ubuntu.png" align="center" border="0px">
 						    		</td>
 						        </tr>
 						    </table>						   
 					    </div>
+<!--
 <div id="beta">
 							<img src="images/beta.png" style="float: left; padding: 10px">
 							<p>The Mixxx 1.8.0 beta includes a brand new library, looping controls, support for multiple MIDI controllers, and more! <p>If you'd like to try out the latest features and are willing to <a href="https://bugs.launchpad.net/mixxx/">report any bugs</a> you find, try the latest <b>(unstable) beta release</b>:</p>
@@ -153,8 +153,9 @@
 <li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2linuxsrc'); ">Mixxx 1.8.0-beta2 for Linux (source)</a></li>
 </ul>
 </div>
+-->
 						<div id="donate">
-							<h2>Help Us Out</h2><br>
+							<h2>Show your Support</h2><br>
 							<!--<img src="images/face-grin.png" style="float: left; padding: 10px">-->
 							<p>If you enjoy Mixxx or use it professionally, please consider <b>donating to the project</b> using the link below to help support and enhance development. </p>
 <center>
@@ -173,9 +174,9 @@
 						<div id="sourcecode">
 							<h2>Source Code</h2><br>
 							<img src="images/source.png" style="float: right; padding: 10px;">
-							<p>Mixxx is also available as source code. You can grab the latest distribution or get the latest code directly from SVN:</p>
+							<p>Mixxx is also available as source code, licensed under the GPL v2. Please check the LICENSE file for complete licensing information. You can grab the latest distribution or get the latest code directly from BZR:</p>
 							<ul>
-								<li><a href="http://downloads.mixxx.org/mixxx-1.7.2/mixxx-1.7.2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/172linuxsrc'); ">Mixxx 1.7.2 source code</a></li>
+								<li><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/172linuxsrc'); ">Mixxx 1.8.0 source code</a></li>
 		           				<li>Checking out from BZR:
 							<pre>bzr branch lp:mixxx</pre></li>
 							</ul>

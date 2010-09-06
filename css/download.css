@@ -7,14 +7,15 @@
 
 #download h1
 {
-	left: 10%;
+
 }
 
+/**
 #download p {
 	text-align: left;
 	font-size: 0.7em; 
 	line-height: 1.1em;
-}
+}**/
 
 #windows p {
     font-size: 0.6em;
@@ -32,12 +33,12 @@ h4 {
   position: relative;
   float: left;
   color: #eeeeee;
-  width: 594px;
+  width: 97%;
   /*height: 100px;*/
   background-color: #1d1d1d;
   font-size: 1.5em;
   text-align: center;
-  line-height: 1.0em;
+  /*line-height: 1.0em; */
   padding: 0px;
   padding-left: 10px;
   padding-right:10px;
@@ -45,12 +46,12 @@ h4 {
 }
 
 #mac {
-  position: relative;
   float: left;
+  position: relative;
   /*left: 220px; */
   color: #eeeeee;
   background-color: #121212;  
-  width: 594px;
+  width: 97%;
   /*height: 100px;*/
   font-size: 1.5em;
   text-align: center;
@@ -63,7 +64,7 @@ h4 {
 }
 
 #releasenotes {
-  //position: relative;
+  /**position: relative;**/
   width: 594px;
   font-size:1.1em;
   background-color: #1d1d1d;
@@ -83,7 +84,7 @@ h4 {
   /*left: 430px;*/
   color: #dddddd;
   background-color: #101010;  
-  width: 594px;
+  width: 97%;
   /*height: 100px;*/
   font-size:1.5em;
   text-align: center;
@@ -114,11 +115,11 @@ h4 {
 
 #sourcecode {
   position: relative;
-  width: 594px;
-  font-size:1.4em;
+  width: 97%;
+  font-size:1.2em;
+  line-height: 1.4em;
   background-color: #1d1d1d;
   text-align: left;
-  line-height: 1.2em;
   padding: 1ex 10px;
   padding-left: 10px;
   padding-right:10px;
@@ -132,31 +133,30 @@ h4 {
 
 #sourcecode li
 {
-	font-size: 0.7em;
+	font-size: 1.0em;
 	line-height: 0.8em;
 }
 
 #donate {
   position: relative;
-  width: 594px;
-  font-size:1.4em;
+  width: 97%;
+  font-size:1.2em;
   background-color: #1d1d1d;
   text-align: left;
-  line-height: 1.2em;
+  line-height: 1.4em;
   /*padding: 1ex 10px; */
-  padding-left: 10px;
-  padding-right:10px;
+  padding: 10px;
   margin-bottom: 10px;
   clear: left;
 }
 
 #beta {
   //position: relative;
-  width: 594px;
-  font-size:1.4em;
+  width: 97%;
+  font-size:1.2em;
   background-color: #1d1d1d;
   text-align: left;
-  line-height: 1.2em;
+  line-height: 1.4em;
   padding: 1ex 10px;
   padding-left: 10px;
   padding-right:10px;

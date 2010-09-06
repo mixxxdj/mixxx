@@ -1,0 +1,75 @@
+h1. AnythingSlider jQuery Plugin
+
+*Just what the world needs, another jQuery slider. YAWN.* I know, check this one out though, it’s got lots of cool features.
+
+h2. Features
+
+* Slides are HTML Content (can be anything)
+* Next Slide / Previous Slide Arrows
+* Navigation tabs are built and added dynamically (any number of slides)
+* Optional custom function for formatting navigation text
+* Auto-playing (optional feature, can start playing or stopped)
+* Each slide has a hashtag (can link directly to specific slides)
+* Infinite/Continuous sliding (always slides in the direction you are going, even at "last" slide)
+* Multiple sliders allowable per-page (hashtags only work on first)
+* Pauses autoPlay on hover (option)
+* Link to specific slides from static text links
+
+h2. Usage & Options (defaults)
+
+<pre>$('.anythingSlider').anythingSlider({
+   easing: "swing",                // Anything other than "linear" or "swing" requires the easing plugin
+   autoPlay: true,                 // This turns off the entire FUNCTIONALITY, not just if it starts running or not
+   startStopped: false,            // If autoPlay is on, this can force it to start stopped
+   delay: 3000,                    // How long between slide transitions in AutoPlay mode
+   animationTime: 600,             // How long the slide transition takes
+   hashTags: true,                 // Should links change the hashtag in the URL?
+   buildNavigation: true,          // If true, builds and list of anchor links to link to each slide
+   pauseOnHover: true,             // If true, and autoPlay is enabled, the show will pause on hover
+   startText: "Start",             // Start text
+   stopText: "Stop",               // Stop text
+   navigationFormatter: null       // Advanced Use: details below
+});</pre>
+	
+To use the navigationFormatter function, you must have a function that accepts two parameters, and returns a string of HTML text.
+	
+* <code>index</code> = integer index (1 based);
+* <code>panel</code> = jQuery wrapped LI item this tab references
+* Function must return a string of HTML/Text
+
+Here is a sample formatter:
+
+<pre>navigationFormatter: function(index, panel){
+	return index + " Panel"; 		// This would have each tab with the text 'X Panel' where X = index
+}</pre>
+
+h2. Changelog
+
+h3. Version 1.3
+
+* Accessibility improvements by Matt Lawson
+* Some generic JavaScript/HTML/CSS code cleaning
+* Move to GitHub entirely
+* Ensures unique panel ID's
+* Removes navigation if there is only one panel
+
+h3. Version 1.2
+
+* Bug Fix: When autoPlay was set to false, any interaction with the control would cause a javascript error.
+
+h3. Version 1.1
+
+* Changed default easing to "swing" so didn't depend on any other plugins
+* Removed extra junk (other plugins used for design, etc)
+* Added Pause on Hover option
+* Added options for passing in HTML for the start and stop button
+* Added option to use custom function for formatting the titles of the navigation
+* Added public interface for linking directly to certain slides
+
+h3. Version 1.0
+
+* First version
+
+h2. To Do
+
+* Make ID's less generic e.g. "wrapper" should be more like "as_wrapper"

@@ -46,155 +46,71 @@ $(function() {
           <h1>Features</h1>
           <br>
           <div id="main_fade" style="margin:0 auto; text-align: center;">
-            <a class="features_link" features_idx="1" href="javascript:void(0);" style="clear:both">Overview</a> | 
-			<a class="features_link" features_idx="2" href="javascript:void(0);" style="clear:both">Mixing</a> | 
-			<a class="features_link" features_idx="3" href="javascript:void(0);" style="clear:both">Vinyl Control</a> |
-			<a class="features_link" features_idx="4" href="javascript:void(0);" style="clear:both">Hardware Support</a> | 
-			<a class="features_link" features_idx="5" href="javascript:void(0);" style="clear:both">Flexibility</a> | 
-			<a class="features_link" features_idx="6" href="javascript:void(0);" style="clear:both">Performance</a>
-			<br><br>	
 				<div class="features" id="features1"><br> <!-- Splash page -->
-				  <h1>Overview</h1><br>
-				  <center><img src="images/features_overview.png"></center>
-				  <ul>
-                      <li><h2>Complete DJ Solution</h2> 
-                        <p>Mixxx is a complete package for amateur and professional DJs alike, providing everything you
-                           need to create live mixes.</p>
-                      </li>
-                      <li><h2>New to DJing?</h2>
-                        <p>No problem - Mixxx can run without any extra hardware, and is fully functional replacement
-                        for a traditional "turntables and mixer" DJ setup.</p>
-                      </li>
-                      <li><h2>Experienced DJ?</h2>
-                        <p>Mixxx supports advanced features like comprehensive MIDI controller support, vinyl control, and
-                           multi-core CPU support.</p>
-                      </li>
-                  </ul>
+				<center><img src="images/features_mixxxscreen.png"></center><br>
+				  <h1>What is Mixxx?</h1>
+				  <p>Mixxx is <b>free mixing software</b> for DJs, providing everything needed
+				  to create live mixes. It allows you to beatmatch songs and crossfade them together, like you would
+				  with turntables and a mixer. </p> 
+				  <p>If you're new to DJing, don't sweat it - we have you covered. Mixxx runs without any extra
+				  hardware, and is a full replacement for a traditional "turntables and mixer" DJ setup. <b>Thousands
+				  of people learn to DJ using Mixxx each year!</b></p>
+				  <p>For experienced DJs, Mixxx offers a wide range of advanced features. Our comprehensive
+				  <b>MIDI controller and vinyl control support</b> gives you the tactile feel you need for ultimate
+				  control of your mixes. 
+				  To obtain the lowest latency and highest responsiveness, Mixxx uses hardware video acceleration
+				  and takes advantage of multi-core CPUs.</p> 
 				  <br/>
-				</div><br>
-				<div class="features" id="features2" style="display: none;"><br>
-				  <h1>Mixing</h1>
-				  <center><img src="images/features_mixing.png"></center>
-				  <ul>
-                      <li><h2>BPM estimation</h2> 
-                        <p>Mixxx measures the BPM of each song to help you beat match faster.</p>
-                      </li>
-                      <li><h2>Parallel waveform displays</h2>
-                        <p>See the beats in songs line up when mixing and quickly spot drift.</p>
-                      </li>
-                      <li><h2>Waveform summaries</h2>
-                        <p>Visually see the dynamics of an entire track, just like with vinyl.</p>
-                      </li>
-                      <li><h2>MP3 / OGG / WAVE / FLAC playback</h2>
-                        <p>Mix your tracks without converting your collection.</p>
-                      </li>
-                      <li><h2>Pitch-independent time stretch</h2>
-                          <p>Change the speed of a song without altering the pitch.</p>
-                      </li>
-                      <li><h2>Vinyl emulation</h2>
-                        <p>Adjust the pitch of a song, just like on a real turntable.</p>
-                      </li>
-                      <li><h2>Wave Recording</h2>
-                        <p>Save your mixes on-the-fly.</p>
-                      </li>
-                  </ul>
-				  <br/>
-				  
-				</div><br>
-				<div class="features" id="features3" style="display: none;">
-					<h1>Vinyl Control</h1>
-					<br>
-					<center><img src="images/features_vinylcontrol.png"></center>
-					<br>
-                    <ul>
-                        <li><h2>Serato, Traktor Scratch, and FinalScratch too!</h2>
-                        <p>Use your turntables with timecoded vinyl to control Mixxx, without buying expensive hardware. <a href="http://www.mixxx.org/wiki/doku.php/vinyl_control">Read more</a>...</p>
-                        </li>
-                        <li><h2>Serato CD support</h2>
-                        <p>If you've got CDJs, you can use them to control Mixxx with a pair of Serato CDs.</p>
-                        </li>	
-                        <li><h2>Save Money - Use your Existing Soundcard</h2>
-                        <p>Mixxx's vinyl control works with any soundcard that has a stereo line-input jack. This
-                           means that most consumer and professional soundcards can be used for vinyl control
-                           with Mixxx, so there's no need to purchase expensive kits.<p>
-                        </li>	
-                        <li><h2>Absolute Mode</h2>
-                        <p>Absolute mode is available with every timecode supported by Mixxx, so you can needle drop
-                        to seek through a track without losing focus.</p>
-                        </li>
-                    </ul>
-    
-                </div>
-				<div class="features" id="features4" style="display: none;">
-					<h1>Hardware Support</h1>
-					<center><img src="images/features_hardware.png"></center>
-					<br>
-                <ul>
-                    <li><h2>MIDI controller support</h2>
-                        <p>Control Mixxx with your favourite MIDI devices and hardware like the 
-                           Hercules DJ Console MK2 and RMX, M-Audio X-Session Pro, and more!</p>
-                    </li>
-                    <li><h2>Advanced MIDI Scripting Engine</h2>
-                        <p>Script advanced controller functionality using our JavaScript-like language and
-                           take full advantage of your MIDI controller. <a href="http://www.youtube.com/watch?v=8DUpTikA8u0">See it in action!</a></p>
-                    </li>
-                    <li><h2>Multichannel soundcard support</h2>
-                        <p>Use Mixxx with high performance 4x4 soundcards like the <a href="http://www.echoaudio.com/">Echo
-                        AudioFire</a> line.</p>
-                    </li>
-                    <li><h2>Multiple soundcard support</h2>
-                        <p>If you're stuck with single output jack on your laptop or desktop PC, just plug in an extra stereo
-                        soundcard. Mixxx can route your master and headphone outputs to different soundcards for
-                        maximum flexibility, and supports most USB and Firewire soundcards.</p>
-                    </li>
-                </ul>				
-                </div>
+				<center><img src="images/features_mixing.png"></center>
+				<h1>Advanced Mixing Engine</h1>
+				<p>Whether you're blending psy-trance or mashing up
+                    the latest Top 40 tracks, Mixxx's looping and hot
+                    cue controls give you the power to be more creative
+                    with your mixes.</p>
+                <p>Between BPM estimation and the parallel waveform displays, beatmatching
+                   has never been easier. Our new ramping pitchbend buttons allow you to subtley
+                   nudge songs back in sync without anyone noticing.</p>
+                <p>Stretch your music without changing the pitch! Mixxx's pitch-independent
+                   time stretch locks the pitch of your music while you're mixing, so you never
+                   have any awkward detuned moments. Our alternative vinyl emulation mode changes
+                   the pitch you change the tempo, and is perfect for scratching with a MIDI controller
+                   or with vinyl control.</p>
+				<center><img src="images/features_midi.png"></center> 
+ 				<h1>DJ MIDI Controllers</h1>
+				<p>Use the latest and greatest DJ MIDI controllers with Mixxx!
+				  Advanced MIDI controller support is provided by our groundbreaking
+				   <b>MIDI scripting engine</b>. Take advantage of your MIDI controller
+				   with our JavaScript-like language. Check it out:</p>
+				<p>Mixxx supports most popular DJ MIDI controllers like the <b>Hercules DJ 
+				   Console MK2, RMX, and Stanton SCS.3d</b>. In addition to our natively
+				   supported controllers, our <b>MIDI learning wizard</b> helps you set 
+				   up other controllers with Mixxx.</p>
+ 				<center><img src="images/features_vinylcontrol_smaller.png"></center>                   
+                <h1>Vinyl Control</h1>
+                <p>Using a turntable and <b>timecoded vinyl</b>, Mixxx's playback can
+                   be syncronized to the turntable. This let's you scratch and 
+                   mix with your digital music collection as if it were on vinyl!</p>
+                <p>Mixxx supports Serato, Traktor Scratch, and FinalScratch vinyl, as
+                   well as Serato CD for control from CDJ units. Position synchronization
+                   ("Absolute Mode") is fully supported for each of
+                   these timecodes as well.</p>
+                <p>Even better, you can <b>save money and use your existing soundcard</b>.
+                   Mixxx's vinyl control works 
+                   with any soundcard that has a stereo line-input jack. This
+                   means most consumer and professional soundcards can be used for vinyl control
+                   with Mixxx, so there's no need to purchase expensive vinyl control hardware.
+                </p>
+                <center><iframe class="youtube-player" type="text/html" width="445" height="364" src="http://www.youtube.com/embed/nAqI4HAcQi4" frameborder="0"></iframe></center>
+				<center><img src="images/features_flexibility.png"</img></center>
+				<h1>Flexibility and Freedom</h1>
+				<p>We love to customize and tinker, and so we've made Mixxx as 
+				   flexible as we can. From our cross-platform approach, to Mixxx's
+				   skinnable interface and customizable EQ shelves, we've tried to
+				   give power users more options. Did we mention our crossfader curve control
+				   let's you adjust for mixing, scratching, or anywhere in between?
 				
-				<div class="features" id="features5" style="display: none;">
-				    <h1>Flexibility</h1>
-					<center><img src="images/features_flexibility.png"></center>
-				<ul>
-                    <li><h2>Cross-platform</h2>
-                        <p>Mixxx runs on Windows XP, Windows Vista, Mac OS X Leopard, Ubuntu, and other distributions of Linux.</p>
-                    </li>
-                    <li><h2>Free and Open Source</h2>
-                        <p>If you don't like something the way it is, change it! Mixxx is licensed under the GPL v2.</p>
-                    </li>
-                    <li><h2>Custom EQ Shelves</h2>
-                    <p>Adjust the equalizer bands to suite your taste.</p>
-                    </li>
-                    <li><h2>Crossfader curve control</h2>
-                    <p>Slow fade, fast cut, or anywhere in between - Adjust your crossfader curve like on a hardware DJ mixer.</p>
-                    </li>
-                    <li><h2>Skinnable Interface</h2>
-                    <p>Customize Mixxx with the bundled skins or make your own.</p>
-                    </li>
-                    <li><h2>Adjustable pitch range</h2>
-                    <p>Decrease the range for more precise control or increase it for wilder mixes.</p>
-                    </li>
-                </ul>
-				</div>
-				<div class="features" id="features6" style="display: none;">
-				<h1>Performance</h1>
-				<ul>
-                    <li><h2>Multi-core support</h2>
-                        <p>Fully utilize your CPU for maximum performance and lower latencies.</p>
-                    </li>
-                    <li><h2>Sub 10-ms latency</h2>
-                        <p>Achieve maximum responsiveness for better mixing with Intel Core and newer CPUs.</p>
-                    </li>
-                    <li><h2>24-bit/96000 Hz playback and capture</h2>
-                        <p>Crystal-clear audio for all setups, from cafe gigs to the biggest clubs.</p>
-                    </li>
-                    <li><h2>Club-worthy sound quality</h2>
-                        <p>Our superior mixing engine is designed for fully-accurate audio reproduction.</p>
-                    </li>
-                    <li><h2>Hardware acceleration</h2>
-                        <p>Harness the power of your videocard for faster performance through OpenGL.</p>
-                    </li>
-				</ul>
-				
-				</div>
+				</div><br>
+
 			</div>
  
 	  	 <ul>
@@ -205,41 +121,51 @@ $(function() {
         <div class="oneThird">
           <h1>Full Feature List</h1>
           <ul>
+          <li>Cross-platform (Windows XP/Vista/7, Mac OS X, Linux)</li>
+          <li>Free and open source (GPL v2)</li>          
           <li>Parallel waveform displays</li>
           <li>Waveform summaries</li>
           <li>MP3, OGG, WAVE, and FLAC playback</li>
+          <li>Extra playback formats through plugins</li>
+          <li>Fast, database-powered library</li>
+          <li>Automatic crossfading with Auto DJ</li>
+          <li>Crates and playlists</li>
+          <li>Reads iTunes and Rhythmbox libraries</li>
           <li>Pitch-independent time stretch (key lock)</li>
           <li>Vinyl emulation</li>
+          <li>Hot cues</li>
+          <li>Looping</li>
           <li>Wave recording</li>
-          <li>Free, open source software</li>
           <li>BPM detection and estimation</li>
-          <li>Supported MIDI controllers:
+          <li>Bulk BPM analysis</li>
+          <li>Community Supported MIDI Controllers:
             <ul>
+            <li>Stanton SCS.3d</li>
+            <li>Stanton SCS.3m</li>
             <li>Hercules DJ Console MK2</li>
             <li>Hercules DJ MP3 Control</li>
             <li>Hercules DJ Console RMX</li>
-            <li>Hercules DJ Console Steel
-            <li>Stanton SCS.3d</li>
+            <li>Hercules DJ Console Steel</li>
             <li>Stanton SCS.1m</li>
             <li>Mixman DM2</li>
             <li>Tascam US-428</li>
             <li>M-Audio X-Session Pro</li>
-            <li>M-Audio Xponent</li>
             <li>Evolution X-Session</li>
             <li>FaderFox DJ2</li>
             <li>Vestax VCI-100</li>
             <li>Numark Total Control</li>
-            <li>... and more - See our <a href="http://mixxx.org/wiki/doku.php/hardware_compatibility">Hardware Compatibility</a> page.</li>
+            <li>... and more! See our <a href="http://mixxx.org/wiki/doku.php/hardware_compatibility">Hardware Compatibility</a> page.</li>
             </ul>
           </li>  
             <li>Multichannel soundcard support (playback and capture)</li>
             <li>Multiple soundcard support</li>
-            <li>Cross-platform (Windows XP and Vista, Mac OS X, Linux)</li>
             <li>Adjustable EQ shelves</li>
             <li>Crossfader curve control</li>
             <li>Skinnable interface with extra skins bundled</li>
             <li>Advanced MIDI scripting engine</li>
+            <li>Multiple simultaneous MIDI controllers</li>
             <li>Adjustable pitch range</li>
+            <li>Ramping pitchbend controls</li>
             <li>Multi-core CPU support</li>
             <li>24-bit/96000 Hz playback and capture</li>
             <li>Crystal clear audio</li>

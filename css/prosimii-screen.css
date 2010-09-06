@@ -7,11 +7,12 @@
 
 /* ##### Common Styles ##### */
 
+
 body {
   background-color: #000000;
   font-family: verdana, helvetica, arial, sans-serif;
   font-size: 73%;  /* Enables font size scaling in MSIE */
-  color: #ffffff;
+  color: #AAAAAA;
   margin: 0;
   padding: 0;
 }
@@ -32,7 +33,31 @@ a {
   background-color: transparent;
   text-decoration: underline;
   margin: 0;
-  padding: 0 1px 2px 1px;
+  /**padding: 0 1px 2px 1px;  **/
+}
+
+/** Stop Firefox from putting a dotted border around clicked links.
+    Makes our AnythingSlider look super ugly.*/
+a:active
+{
+outline: none;
+}
+
+a:focus
+{
+-moz-outline-style: none;
+}
+/** End of stopping Firefox from putting dotted border around stuff */
+
+/** Hack to force browsers to always display a scrollbar. Because we
+    use automatic margins to center our fixed-width layout, a scrollbar
+    will change the viewport size, which causes the page to look like
+    it jumps sideways when you go to a page that is short enough to
+    not have a scrollbar. 
+    See: http://css-tricks.com/eliminate-jumps-in-horizontal-centering-by-forcing-a-scroll-bar/ 
+*/
+html {
+	overflow-y: scroll;
 }
 
 a:hover {
@@ -78,6 +103,10 @@ dd {
   line-height: 1.75em;
   margin: 0 0 1.5em 1.5em;
   padding: 0;
+}
+
+img {
+  border: 0px;
 }
 
 .doNotDisplay {
@@ -135,6 +164,9 @@ dd {
   margin: 0px;
   padding: 0px;
   height: 80px;
+  width: 760px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .headerTitle {
@@ -200,7 +232,7 @@ dd {
   /*font-weight: bold; */
   text-decoration: none;
   margin: 0;
-  padding: 0ex 1.15ex 0px 12px;    
+  padding: 0ex 0.9ex 0px 12px;    
 }
 
 .subHeaderFloatLeft {
@@ -210,7 +242,7 @@ dd {
   background-position: right;
   float: left;
   padding-left: 10px;
-  padding-right: 0
+  padding-right: 0px;
   margin-left: 0;
   padding-top: 0px;
   margin-top: 0;
@@ -225,7 +257,7 @@ dd {
   /*font-weight: bold; */
   text-decoration: none;
   margin: 0;
-  padding: 0ex 1.15ex 0 1.15ex;
+  padding: 0ex 0.7ex 0 0.7ex;
 }
 
 .subHeader a:hover, .subHeader .highlight, .subHeaderCommunity a:hover {
@@ -238,18 +270,21 @@ dd {
 /* ##### Main Copy ##### */
 
 #main-copy {
-  margin: 0;
-  padding: 2em 10px;
-  clear: left;
+  margin-left: auto;
+  margin-right: auto;
+  /**padding: 2em 10px; 
+  clear: left;**/
+  width: 760px;
+  background-color: #0A0A0A;
 }
 
 #main-copy h1 {
-  color: #cccccc;
+  color: #DDDDDD;
   background-color: transparent;
   font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
-  font-size: 200%;
+  font-size: 1.8em;
   margin: 0;
-  padding: 0;
+  padding-bottom: 5px;
 }
 
 #main-copy h2 {
@@ -261,12 +296,36 @@ dd {
   margin: 0;
   padding: 1ex 0 0 0;
 }
-
+/*
 #main-copy p {
   color: #ffffff;
-  /*line-height: 1.4em;*/
   margin: 1em 0 1.5em 0;
   padding: 0;
+  font-size: 1.5em;
+} **/
+
+#main-copy-inside {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+
+#middletextbox {
+  width: 60%;
+  float: left;
+  /**padding-left: 20px; */
+}
+
+#middletextbox p {
+  font-size: 1.2em;
+  margin: 9px;
+  padding-bottom: 15px;
+}
+
+#newsbox {
+  width: 95%;
+  background-color: #111111;
+  padding: 20px;
 }
 
 .newsHeading {
@@ -306,7 +365,7 @@ dd {
 .more a {
   color: rgb(61,92,122);
   background-color: transparent;
-  font-size: 92%;
+  font-size: 1.2em;
   text-decoration: underline;
   margin: 0;
   padding: 0.25ex 0.75ex;
@@ -333,8 +392,8 @@ dd {
 }
 
 .oneThird {
-  width: 28%;
-  padding: 0 1.9%;
+  width: 26%;
+  padding: 0 20px;
 }
 
 .half {
@@ -345,14 +404,14 @@ dd {
 
 .twoThirds {
   text-align: justify;
-  width: 63%;
-  padding: 0 1.9%;
+  width: 60%;
+  padding: 0 20px;
 }
 
 .fullWidth {
   text-align: justify;
-  width: 96%;
-  padding: 0 1.9%;
+  width: 90%;
+  padding: 0 20px;
   border-left: none;
 }
 
@@ -368,25 +427,29 @@ dd {
   border-top: 1px solid #3a3a3a;
 }
 
+
+
 .downloadFloat { /* Floating download box on index page */
-  display: block;
+  text-align: center;
+  float: right;
   /*width: 260px;*/
   /*background-color: #202020; */
-  margin: 0 auto; /** Centres the box horizontally */
-  line-height: 0em;
+  /*margin: 0 auto;  Centres the box horizontally */
+  /*line-height: 0em;*/
   /*border: 2px solid #aaaaaa;*/
   /*
   font-size: 1.7em;
   text-align: center;
   */
-  
+  /*
   padding: 1ex 10px;
-  margin-top: 30px;
+  margin-top: 30px; */
 }
+/**
 .downloadFloat:hover {
 	background: #505050;
 	color: #FFFFFF;
-}
+}*/
 
 .downloadFloat p {
 	text-align: center;
@@ -417,44 +480,30 @@ p.downloadSmall {
 .features {
     text-align: left;
 }
+.features p {
+    font-size: 1.2em;
+    line-height: 1.3em;
+    text-indent:50px;
+}
 .features h1 {
     text-align: center;
 }
 
-.communityFloat { /* Floating community box on index page */
-  /*position: relative; */
-  /*float: middle;*/
-  display: block;
-  vertical-align: middle;
-  width: 260px;
-  height: 65px;
-  /*border: 2px solid #828282;  */
-  background-color: #0d0d0d;
-  /*font-size: 1.3em;*/
-  text-align: center;
-  line-height: 3em;
-  padding: 1ex 10px;
-  /*padding-left: 10px;
-  padding-right:0px;*/
-  margin: 0 auto;
-  margin-top: 30px;
-  /*margin-left: 5px;
-  margin-right: 10px;*/
-  padding-bottom: 30px;
+.support p {
+    font-size: 1.2em;
+    line-height: 1.3em;  
 }
 
-.communityFloat p {
-    font-size: 1.3em;
-    font-weight: bold;
+p.pressquote {
+    text-align: center;
+    text-indent: 0px;
 }
-.communityFloat a {
-    font-size: 1.0em;
-    text-decoration: none;
-    color: #cecece;
+
+p.credits {
+    text-align: center;
+    text-indent: 0px;
 }
-.communityFloat a:hover {
-    color: #ffffff;
-}
+
 
 /* More elegant alternatives to .noBorderOnLeft & .dividingBorderAbove
  * that don't require the creation of new classes - but which are not
