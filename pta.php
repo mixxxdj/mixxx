@@ -25,7 +25,8 @@
         var action = "<?php echo $_GET["a"]; ?>";
         var label = "<?php echo $_GET["l"]; ?>";
         
-        alert(action);
+        //Useful for debugging to make sure the iframe is being loaded.
+        //alert(action);
                         
         window.onload = function() {
             _gaq.push(['_trackEvent', 
