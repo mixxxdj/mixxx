@@ -37,7 +37,9 @@ EngineVuMeter::EngineVuMeter(const char * group)
     // Initialize the calculation:
     m_iSamplesCalculated = 0;
     m_fRMSvolumeL = 0;
+    m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
+    m_fRMSvolumeSumR = 0;
 }
 
 EngineVuMeter::~EngineVuMeter()

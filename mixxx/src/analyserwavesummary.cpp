@@ -77,5 +77,5 @@ void AnalyserWavesummary::finalise(TrackPointer tio) {
     //to delete the pointer.
     delete m_pData;
     m_pData = NULL;
-    qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
+    //qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
 }
