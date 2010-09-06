@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8+">
 <info><!-- Optional - information about the preset file -->
-        <name>Example MIDI Preset for Mixxx</name>
-        <author>Tom Care</author>
-        <description>This is an example XML MIDI preset for Mixxx. The scope of the preset could be from a small functionality addition, to a complete mapping for a controller, to a complex personal setup with multiple controllers. This description is intended for distribution and could include comments about the extent of the functionality.</description>
+        <name>M-audio Xponent MIDI Preset for Mixxx</name>
+        <author>Luca Franceschini, Juan Pedro Bolívar Puente</author>
+        <description>This is a midi present of Xponent.</description>
         <deviceid>Xponent Port 1</deviceid>
         <deviceid>Xponent Port 2</deviceid>
 </info>
 <controller id="Xponent Port 1">
+<scriptfiles>
+  <file filename="M-Audio-Xponent-scripts.js" functionprefix="MaudioXponent"/>
+</scriptfiles>
   <controls>
     <control>
       <group>[Master]</group>
@@ -21,112 +24,104 @@
       <key>headMix</key>
       <status>0xB2</status>
       <midino>13</midino>
-      <controltype>knob</controltype>
+      <controltype>fader</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>transform</key>
+      <key>MaudioXponent.faderbuttonon</key>
       <status>0x90</status>
       <midino>7</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>transform</key>
+      <key>MaudioXponent.faderbuttonoff</key>
       <status>0x80</status>
       <midino>7</midino>
-      <controltype>button</controltype>
-    </control>    
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.actbin</key>
+      <status>0x90</status>
+      <midino>36</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel1]</group>
       <key>play</key>
-      <status>0x90</status>
+      <status>0x80</status>
       <midino>36</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>play</key>
-      <status>0x80</status>
-      <midino>36</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>cue_default</key>
+      <key>MaudioXponent.cuedefon</key>
       <status>0x90</status>
       <midino>35</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>cue_default</key>
+      <key>MaudioXponent.cuedefoff</key>
       <status>0x80</status>
       <midino>35</midino>
-      <controltype>button</controltype>
-    </control>    
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel1]</group>
-      <key>back</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x90</status>
       <midino>33</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>back</key>
+      <key>MaudioXponent.actbinstop</key>
       <status>0x80</status>
       <midino>33</midino>
-      <controltype>button</controltype>
-    </control>    
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel1]</group>
-      <key>fwd</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x90</status>
       <midino>34</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>fwd</key>
+      <key>MaudioXponent.actbinstop</key>
       <status>0x80</status>
       <midino>34</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>start</key>
-      <status>0x90</status>
-      <midino>28</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>start</key>
-      <status>0x80</status>
-      <midino>28</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>end</key>
-      <status>0x90</status>
-      <midino>29</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>end</key>
-      <status>0x80</status>
-      <midino>29</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>reverse</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x90</status>
       <midino>19</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -134,7 +129,7 @@
       <status>0x80</status>
       <midino>19</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel1]</group>
       <key>cue_gotoandstop</key>
@@ -148,7 +143,7 @@
       <status>0x80</status>
       <midino>18</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel1]</group>
       <key>volume</key>
@@ -158,68 +153,63 @@
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>rate</key>
+      <key>MaudioXponent.pitch</key>
       <status>0xE0</status>
       <midino>0</midino>
-      <controltype>fader</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>wheel</key>
-      <status>0xB0</status>
-      <midino>22</midino>
-      <controltype>wheel</controltype>
       <options>
-        <spread64/>
-        <sensitivity>30</sensitivity>
-      <translations>
-        <!-- <single value="66">64</single> -->
-        <range lower="63" upper="65">64</range>
-      </translations>
+        <Script-Binding/>
       </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>wheel_touch_sensor</key>
-      <status>0x90</status>
+      <key>MaudioXponent.wheel</key>
+      <status>0xB0</status>
       <midino>22</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>wheel_touch_sensor</key>
-      <status>0x80</status>
-      <midino>22</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>wheel_touch_switch</key>
+      <key>MaudioXponent.wheelbuton</key>
       <status>0x90</status>
-      <midino>21</midino>
-      <controltype>button</controltype>
+      <midino>22</midino>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>wheel_touch_switch</key>
+      <key>MaudioXponent.wheelbutoff</key>
       <status>0x80</status>
-      <midino>21</midino>
-      <controltype>button</controltype>
-    </control>    
+      <midino>22</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.actbin</key>
+      <status>0x90</status>
+      <midino>20</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel1]</group>
       <key>pfl</key>
-      <status>0x90</status>
+      <status>0x80</status>
       <midino>20</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>pfl</key>
-      <status>0x80</status>
-      <midino>20</midino>
-      <controltype>button</controltype>
-    </control>    
+      <key>pregain</key>
+      <status>0xB0</status>
+      <midino>11</midino>
+      <controltype>fader</controltype>
+    </control>
     <control>
       <group>[Channel1]</group>
       <key>filterLow</key>
@@ -243,38 +233,44 @@
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>filterLowKill</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x90</status>
       <midino>8</midino>
-      <controltype>fader</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterLowKill</key>
       <status>0x80</status>
       <midino>8</midino>
-      <controltype>fader</controltype>
-    </control>    
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.actbin</key>
+      <status>0x90</status>
+      <midino>9</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel1]</group>
       <key>filterMidKill</key>
-      <status>0x90</status>
+      <status>0x80</status>
       <midino>9</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>filterMidKill</key>
-      <status>0x80</status>
-      <midino>9</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>filterHighKill</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x90</status>
       <midino>10</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -282,90 +278,282 @@
       <status>0x80</status>
       <midino>10</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel1]</group>
-      <key>pregain</key>
-      <status>0xB0</status>
+      <key>rate_temp_up</key>
+      <status>0x90</status>
+      <midino>16</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
+      <midino>16</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x90</status>
+      <midino>17</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>17</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>beatsync</key>
+      <status>0x90</status>
+      <midino>2</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>beatsync</key>
+      <status>0x80</status>
+      <midino>2</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.loopin</key>
+      <status>0x90</status>
+      <midino>41</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.loopexit</key>
+      <status>0x90</status>
+      <midino>42</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.loopout</key>
+      <status>0x90</status>
+      <midino>43</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x90</status>
+      <midino>23</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x90</status>
+      <midino>24</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x90</status>
+      <midino>25</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x90</status>
+      <midino>26</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x90</status>
+      <midino>27</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.secondaryon</key>
+      <status>0x90</status>
+      <midino>44</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.secondaryoff</key>
+      <status>0x80</status>
+      <midino>44</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.scrmode</key>
+      <status>0x90</status>
+      <midino>21</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x90</status>
+      <midino>28</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x80</status>
+      <midino>28</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x90</status>
+      <midino>29</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x80</status>
+      <midino>29</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x90</status>
+      <midino>30</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x80</status>
+      <midino>30</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x90</status>
+      <midino>31</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x80</status>
+      <midino>31</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x90</status>
+      <midino>32</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x80</status>
+      <midino>32</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.volbuttonon</key>
+      <status>0x90</status>
       <midino>11</midino>
-      <controltype>knob</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>rate_temp_up</key>
-      <status>0x90</status>
-      <midino>16</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>rate_temp_up</key>
+      <key>MaudioXponent.volbuttonoff</key>
       <status>0x80</status>
-      <midino>16</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>rate_temp_down</key>
-      <status>0x90</status>
-      <midino>17</midino>
-      <controltype>button</controltype>
+      <midino>11</midino>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>rate_temp_down</key>
-      <status>0x80</status>
-      <midino>17</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>beatsync</key>
-      <status>0x90</status>
-      <midino>2</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>beatsync</key>
-      <status>0x80</status>
-      <midino>2</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel1]</group>
-      <key>loop</key>
-      <status>0x90</status>
-      <midino>42</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>loop</key>
-      <status>0x80</status>
-      <midino>42</midino>
-      <controltype>button</controltype>
-    </control>    
     <control>
       <group>[Channel2]</group>
-      <key>transform</key>
+      <key>MaudioXponent.faderbuttonon</key>
       <status>0x91</status>
       <midino>7</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>transform</key>
+      <key>MaudioXponent.faderbuttonoff</key>
       <status>0x81</status>
       <midino>7</midino>
-      <controltype>button</controltype>
-    </control>    
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel2]</group>
-      <key>play</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>36</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -373,76 +561,69 @@
       <status>0x81</status>
       <midino>36</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel2]</group>
-      <key>cue_default</key>
+      <key>MaudioXponent.cuedefon</key>
       <status>0x91</status>
       <midino>35</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>back</key>
+      <key>MaudioXponent.cuedefoff</key>
+      <status>0x81</status>
+      <midino>35</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>33</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>back</key>
+      <key>MaudioXponent.actbinstop</key>
       <status>0x81</status>
       <midino>33</midino>
-      <controltype>button</controltype>
-    </control>    
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
     <control>
       <group>[Channel2]</group>
-      <key>fwd</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>34</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>fwd</key>
+      <key>MaudioXponent.actbinstop</key>
       <status>0x81</status>
       <midino>34</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>start</key>
-      <status>0x91</status>
-      <midino>28</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>start</key>
-      <status>0x81</status>
-      <midino>28</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>end</key>
-      <status>0x91</status>
-      <midino>29</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>end</key>
-      <status>0x81</status>
-      <midino>29</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>reverse</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>19</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -450,7 +631,7 @@
       <status>0x81</status>
       <midino>19</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel2]</group>
       <key>cue_gotoandstop</key>
@@ -464,7 +645,7 @@
       <status>0x81</status>
       <midino>18</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel2]</group>
       <key>volume</key>
@@ -474,60 +655,48 @@
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>rate</key>
+      <key>MaudioXponent.pitch</key>
       <status>0xE1</status>
       <midino>0</midino>
-      <controltype>fader</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>wheel</key>
+      <key>MaudioXponent.wheel</key>
       <status>0xB1</status>
       <midino>22</midino>
       <options>
-        <spread64/>
-        <sensitivity>30</sensitivity>
-        <translations>
-          <!-- <single value="66">64</single> -->
-          <range lower="63" upper="65">64</range>
-        </translations>
+        <Script-Binding/>
       </options>
-      <controltype>wheel</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>wheel_touch_sensor</key>
+      <key>MaudioXponent.wheelbuton</key>
       <status>0x91</status>
       <midino>22</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>wheel_touch_sensor</key>
+      <key>MaudioXponent.wheelbutoff</key>
       <status>0x81</status>
       <midino>22</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>wheel_touch_switch</key>
-      <status>0x91</status>
-      <midino>21</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>wheel_touch_switch</key>
-      <status>0x81</status>
-      <midino>21</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>pfl</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>20</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -535,7 +704,14 @@
       <status>0x81</status>
       <midino>20</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>pregain</key>
+      <status>0xB1</status>
+      <midino>11</midino>
+      <controltype>fader</controltype>
+    </control>
     <control>
       <group>[Channel2]</group>
       <key>filterLow</key>
@@ -559,24 +735,28 @@
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>filterLowKill</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
+      <midino>8</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>filterLowKill</key>
+      <status>0x81</status>
       <midino>8</midino>
       <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>filterLowKill</key>
-      <status>0x81</status>
-      <midino>8</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>filterMidKill</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>9</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -584,13 +764,15 @@
       <status>0x81</status>
       <midino>9</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel2]</group>
-      <key>filterHighKill</key>
+      <key>MaudioXponent.actbin</key>
       <status>0x91</status>
       <midino>10</midino>
-      <controltype>button</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -598,70 +780,295 @@
       <status>0x81</status>
       <midino>10</midino>
       <controltype>button</controltype>
-    </control>    
+    </control>
     <control>
       <group>[Channel2]</group>
-      <key>pregain</key>
+      <key>rate_temp_up</key>
+      <status>0x91</status>
+      <midino>16</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_up</key>
+      <status>0x81</status>
+      <midino>16</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x91</status>
+      <midino>17</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x81</status>
+      <midino>17</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>beatsync</key>
+      <status>0x91</status>
+      <midino>2</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>beatsync</key>
+      <status>0x81</status>
+      <midino>2</midino>
+      <controltype>button</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.loopin</key>
+      <status>0x91</status>
+      <midino>41</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.loopexit</key>
+      <status>0x91</status>
+      <midino>42</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.loopout</key>
+      <status>0x91</status>
+      <midino>43</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x91</status>
+      <midino>23</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x91</status>
+      <midino>24</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x91</status>
+      <midino>25</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x91</status>
+      <midino>26</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.hotcueset</key>
+      <status>0x91</status>
+      <midino>27</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.secondaryon</key>
+      <status>0x91</status>
+      <midino>44</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.secondaryoff</key>
+      <status>0x81</status>
+      <midino>44</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.flanger</key>
+      <status>0x91</status>
+      <midino>12</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.flanger</key>
+      <status>0x91</status>
+      <midino>13</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Flanger]</group>
+      <key>lfoDepth</key>
       <status>0xB1</status>
+      <midino>12</midino>
+      <controltype>fader</controltype>
+    </control>
+    <control>
+      <group>[Flanger]</group>
+      <key>lfoDelay</key>
+      <status>0xB1</status>
+      <midino>13</midino>
+      <controltype>fader</controltype>
+    </control>
+    <control>
+      <group>[Flanger]</group>
+      <key>lfoPeriod</key>
+      <status>0xB1</status>
+      <midino>14</midino>
+      <controltype>fader</controltype>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.scrmode</key>
+      <status>0x91</status>
+      <midino>21</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x91</status>
+      <midino>28</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x81</status>
+      <midino>28</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x91</status>
+      <midino>29</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x81</status>
+      <midino>29</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x91</status>
+      <midino>30</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x81</status>
+      <midino>30</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x91</status>
+      <midino>31</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x81</status>
+      <midino>31</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlist</key>
+      <status>0x91</status>
+      <midino>32</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.playlistoff</key>
+      <status>0x81</status>
+      <midino>32</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.volbuttonon</key>
+      <status>0x91</status>
       <midino>11</midino>
-      <controltype>knob</controltype>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>rate_temp_up</key>
-      <status>0x91</status>
-      <midino>16</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>rate_temp_up</key>
+      <key>MaudioXponent.volbuttonoff</key>
       <status>0x81</status>
-      <midino>16</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>rate_temp_down</key>
-      <status>0x91</status>
-      <midino>17</midino>
-      <controltype>button</controltype>
+      <midino>11</midino>
+      <options>
+        <Script-Binding/>
+      </options>
     </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>rate_temp_down</key>
-      <status>0x81</status>
-      <midino>17</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>beatsync</key>
-      <status>0x91</status>
-      <midino>2</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>beatsync</key>
-      <status>0x81</status>
-      <midino>2</midino>
-      <controltype>button</controltype>
-    </control>    
-    <control>
-      <group>[Channel2]</group>
-      <key>loop</key>
-      <status>0x91</status>
-      <midino>42</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>loop</key>
-      <status>0x81</status>
-      <midino>42</midino>
-      <controltype>button</controltype>
-    </control>    
   </controls>
 </controller>
 </MixxxMIDIPreset>
