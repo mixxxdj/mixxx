@@ -496,8 +496,6 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     if(m_pSampleBuffer == NULL) {
         fetchWaveformFromTrack();
-        if(m_pSampleBuffer != NULL)
-            qDebug() << "Received waveform from track";
     }
 
     m_pRenderBackground->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);

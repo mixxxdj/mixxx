@@ -17,6 +17,7 @@ class LibraryHashDAO : public DAO {
     void updateDirectoryHash(QString dirPath, int newHash, int dir_deleted);
     void markAsExisting(QString dirPath);
     void markAllDirectoriesAsDeleted();
+    void removeDeletedDirectoryHashes();
   private:
     QSqlDatabase &m_database;
     

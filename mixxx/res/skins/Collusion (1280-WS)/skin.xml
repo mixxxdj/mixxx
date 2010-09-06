@@ -1,4 +1,23 @@
 <!DOCTYPE skin>
+<!--
+Collusion, Skin for Mixxx
+www.mixxx.org
+Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
 <skin>
 
 <!-- ***** COLOR SCHEMES ***** -->
@@ -25,7 +44,7 @@
 </Schemes>
 
  <Background>
-  <Path>scene.png</Path>
+  <Path>scene1.8.png</Path>
  </Background>
 
 <!-- ***** SLIDERS ***** -->
@@ -1232,7 +1251,10 @@
  <NumberRate>
   <Tooltip>Deck A: Playback rate factor</Tooltip>
   <Channel>1</Channel>
+  <!-- update Mixxx 1.8 
   <Pos>441,261</Pos>
+  -->
+  <Pos>384,241</Pos>
   <Size>40,16</Size>
   <NumberOfDigits>3</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1245,7 +1267,10 @@
  <NumberRate>
   <Tooltip>Deck B: Playback rate factor</Tooltip>
   <Channel>2</Channel>
+  <!-- update Mixxx 1.8 
   <Pos>800,261</Pos>
+  -->
+  <Pos>872,241</Pos>
   <Size>40,16</Size>
   <NumberOfDigits>3</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1256,6 +1281,7 @@
  </NumberRate>
 
 <!-- ***** MEDIA LIBRARY ***** -->
+<!-- update Mixxx 1.8 
  <ComboBox>
   <Pos>26,273</Pos>
   <Size>164,20</Size>
@@ -1269,10 +1295,15 @@
   <FgColor>#EEEEEE</FgColor>
   <BgColor>#2c2c2c</BgColor>
  </Search>
-
+-->
+ 
  <TableView>
+<!-- update Mixxx 1.8 
   <Pos>27,305</Pos>
   <Size>1226,350</Size>
+ -->
+  <Pos>27,283</Pos>
+  <Size>1226,391</Size>
   <FgColor>#dedede</FgColor>
   <BgColor>#2c2c2c</BgColor>
   <BgColorRowEven>#3c3c3c</BgColorRowEven>
@@ -1313,4 +1344,3 @@
  </StatusLight>
 
 </skin>
-

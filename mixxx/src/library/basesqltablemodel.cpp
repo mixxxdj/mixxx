@@ -15,13 +15,15 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
         m_trackDAO(m_pTrackCollection->getTrackDAO()) {
     connect(&m_trackDAO, SIGNAL(trackChanged(int)),
             this, SLOT(trackChanged(int)));
+    m_iSortColumn = 0;
+    m_eSortOrder = Qt::AscendingOrder;
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
 }
 
 bool BaseSqlTableModel::select() {
-    qDebug() << "select()";
+    //qDebug() << "select()";
     bool result = QSqlTableModel::select();
     m_rowToTrackId.clear();
     m_trackIdToRow.clear();
@@ -35,7 +37,6 @@ bool BaseSqlTableModel::select() {
 
         // TODO(XXX) let child specify this
         int idColumn = record().indexOf("id");
-        qDebug() << "idColumn" << idColumn;
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex ind = index(row, idColumn);
             int trackId = QSqlTableModel::data(ind).toInt();
@@ -62,7 +63,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     int trackId = m_rowToTrackId[row];
 
     if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
-        qDebug() << "Returning override for track" << trackId;
+        //qDebug() << "Returning override for track" << trackId;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
         // TODO(XXX) Qt properties could really help here.
@@ -97,10 +98,9 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 
 void BaseSqlTableModel::trackChanged(int trackId) {
     m_trackOverrides.insert(trackId);
-    qDebug() << "trackChanged" << trackId;
     if (m_trackIdToRow.contains(trackId)) {
         int row = m_trackIdToRow[trackId];
-        qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
+        //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
         QModelIndex left = index(row, 0);
         QModelIndex right = index(row, columnCount());
         emit(dataChanged(left, right));
