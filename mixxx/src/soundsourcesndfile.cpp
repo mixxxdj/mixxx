@@ -51,13 +51,13 @@ int SoundSourceSndFile::open()
 {
     QByteArray qbaFilename = m_qFilename.toUtf8();
     fh = sf_open( qbaFilename.data(), SFM_READ, info );
-    
-    if (fh == NULL) {   // sf_format_check is only for writes                      
+
+    if (fh == NULL) {   // sf_format_check is only for writes
         qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
-        return -1;                                                                        
-    }                                                                                  
-    
-    if (sf_error(fh)>0) {                                                              
+        return -1;
+    }
+
+    if (sf_error(fh)>0) {
         qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
         return -1;
     }
@@ -126,7 +126,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
             // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
             // so the first iteration touches the very ends of destination
             // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
-            
+
             for(int i=(readNo-1); i>=0; i--) {
                 dest[i*2]     = dest[i];
                 dest[(i*2)+1] = dest[i];
@@ -153,12 +153,12 @@ int SoundSourceSndFile::parseHeader()
     QByteArray qbaLocation = location.toUtf8();
     SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, &info);
     //const char* err = sf_strerror(0);
-    if (fh == NULL) {   // sf_format_check is only for writes                          
-        qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);     
-        return ERR;                                                                    
-    }                                                                                  
-    
-    if (sf_error(fh)>0) {                                                              
+    if (fh == NULL) {   // sf_format_check is only for writes
+        qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);
+        return ERR;
+    }
+
+    if (sf_error(fh)>0) {
         qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);
         if (fh) sf_close(fh);
         return ERR;
@@ -172,20 +172,24 @@ int SoundSourceSndFile::parseHeader()
 
     const char *string;
     string = sf_get_string(fh, SF_STR_ARTIST);
-//    qDebug() << location << "SF_STR_ARTIST" << string;
     if(string && strlen(string))
-        this->setArtist(string);
+        setArtist(string);
+
     string = sf_get_string(fh, SF_STR_TITLE);
     if(string && strlen(string))
-        this->setTitle(string);
-//    qDebug() << location << "SF_STR_TITLE" << string;
+        setTitle(string);
+
     string = sf_get_string(fh, SF_STR_DATE);
     if (string && strlen(string))
-        this->setYear(string);
+        setYear(string);
+
+    string = sf_get_string(fh, SF_STR_COMMENT);
+    if (string && strlen(string))
+        setComment(string);
 
     if (fh)
         sf_close(fh);
-    
+
     return OK;
 }
 
