@@ -22,6 +22,7 @@
 #include "midideviceportmidi.h"
 #include "dlgprefmidibindings.h"
 #include "mididevicemanager.h"
+#include "midiledhandler.h"
 #include "../mixxxcontrol.h"
 #include "midimapping.h"
 
@@ -36,6 +37,7 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 MidiDeviceManager::~MidiDeviceManager()
 {
     closeDevices();
+    MidiLedHandler::destroyHandlers();
 }
 
 void MidiDeviceManager::saveMappings(bool onlyActive) {

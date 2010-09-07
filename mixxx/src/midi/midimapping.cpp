@@ -719,7 +719,6 @@ void MidiMapping::savePreset(QString path) {
 void MidiMapping::applyPreset() {
     qDebug() << "MidiMapping::applyPreset()";
     m_mappingLock.lock();
-    MidiLedHandler::destroyHandlers();
 
 #ifdef __MIDISCRIPT__
     // Since this can be called after re-enabling a device without reloading the XML preset,
@@ -1159,6 +1158,7 @@ void MidiMapping::restartScriptEngine()
 void MidiMapping::reset() {
 #ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
     restartScriptEngine();
+    MidiLedHandler::destroyHandlers();
     applyPreset();
 #endif
 }

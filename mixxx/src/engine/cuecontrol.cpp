@@ -304,7 +304,7 @@ int CueControl::senderHotcue(QObject* pSender) {
 void CueControl::hotcueSet(double v) {
     //qDebug() << "CueControl::hotcueSet" << v;
 
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -323,7 +323,7 @@ void CueControl::hotcueSet(double v) {
 }
 
 void CueControl::hotcueGoto(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -345,7 +345,7 @@ void CueControl::hotcueGoto(double v) {
 }
 
 void CueControl::hotcueGotoAndStop(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -382,7 +382,7 @@ void CueControl::hotcueActivate(double v) {
     lock.unlock();
 
     if (pCue) {
-        if (v == 1.0f) {
+        if (v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(v);
             } else {
@@ -398,7 +398,7 @@ void CueControl::hotcueActivate(double v) {
             }
         }
     } else {
-        if (v == 1.0f) {
+        if (v) {
             hotcueSet(v);
         }
     }
@@ -411,7 +411,7 @@ void CueControl::hotcueActivatePreview(double v) {
     int hotcue = senderHotcue(sender());
     Cue* pCue = m_hotcue[hotcue];
 
-    if (v == 1.0) {
+    if (v) {
         if (pCue && pCue->getPosition() != -1) {
             int iPosition = pCue->getPosition();
             m_pPlayButton->set(1.0);
@@ -437,7 +437,7 @@ void CueControl::hotcueActivatePreview(double v) {
 }
 
 void CueControl::hotcueClear(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -488,7 +488,7 @@ void CueControl::saveCuePoint(double cuePoint) {
 }
 
 void CueControl::cueSet(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -501,7 +501,7 @@ void CueControl::cueSet(double v) {
 
 void CueControl::cueGoto(double v)
 {
-    if (v != 1.0f)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -523,7 +523,7 @@ void CueControl::cueGoto(double v)
 
 void CueControl::cueGotoAndStop(double v)
 {
-    if (v != 1.0f)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -540,10 +540,10 @@ void CueControl::cuePreview(double v)
 {
     QMutexLocker lock(&m_mutex);
 
-    if (v == 1.0f) {
+    if (v) {
         m_pPlayButton->set(1.0);
         m_bPreviewing = true;
-    } else if (v == 0.0f && m_bPreviewing) {
+    } else if (!v && m_bPreviewing) {
         m_pPlayButton->set(0.0);
         m_bPreviewing = false;
     }
@@ -557,7 +557,7 @@ void CueControl::cuePreview(double v)
 }
 
 void CueControl::cueSimple(double v) {
-    if (v != 1.0f)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -587,7 +587,7 @@ void CueControl::cueCDJ(double v) {
     bool playing = (m_pPlayButton->get() == 1.0);
     double cuePoint = m_pCuePoint->get();
 
-    if (v == 1.0f) {
+    if (v) {
         if (playing) {
             m_pPlayButton->set(0.0);
 
