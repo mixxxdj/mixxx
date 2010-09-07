@@ -27,7 +27,7 @@ WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWavef
 
     // Start a timer based on our desired FPS
     // TODO Eventually make this user-configurable.
-    int desired_fps = 40;
+    int desired_fps = 30;
     int update_interval = 1000 / desired_fps;
     m_iTimerID = startTimer(update_interval);
 
@@ -156,7 +156,7 @@ void WGLWaveformViewer::dropEvent(QDropEvent * event)
         QString name = url.toLocalFile();
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "")
-            name = url.toString(); 
+            name = url.toString();
 
         event->accept();
         emit(trackDropped(name));
