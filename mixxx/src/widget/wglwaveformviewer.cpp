@@ -25,12 +25,6 @@ WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWavef
 
     installEventFilter(this);
 
-    // Start a timer based on our desired FPS
-    // TODO Eventually make this user-configurable.
-    int desired_fps = 30;
-    int update_interval = 1000 / desired_fps;
-    m_iTimerID = startTimer(update_interval);
-
     m_painting = false;
 }
 
@@ -41,8 +35,6 @@ bool WGLWaveformViewer::directRendering()
 
 
 WGLWaveformViewer::~WGLWaveformViewer() {
-    // Stop the timer we started
-    killTimer(m_iTimerID);
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
@@ -85,7 +77,7 @@ void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     // QPainter goes out of scope and is destructed
 }
 
-void WGLWaveformViewer::timerEvent(QTimerEvent *qte) {
+void WGLWaveformViewer::refresh() {
     //m_paintMutex.lock();
     if(!m_painting) {
         m_painting = true;
