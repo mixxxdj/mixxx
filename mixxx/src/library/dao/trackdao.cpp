@@ -104,7 +104,7 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             emit(trackClean(trackId));
         } else {
             Q_ASSERT(!m_dirtyTracks.contains(trackId));
-            qDebug() << "Skipping track update for track" << pTrack->getId();
+            //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
     } else {
         addTrack(pTrack);
@@ -319,13 +319,13 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
 
     //Commit the transaction
     m_database.commit();
-    qDebug() << "addTrack took" << time.elapsed() << "ms";
+    //qDebug() << "addTrack took" << time.elapsed() << "ms";
 }
 
   /** Removes a track from the library track collection. */
 void TrackDAO::removeTrack(int id)
 {
-    qDebug() << "TrackDAO::removeTrack" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::removeTrack" << QThread::currentThread() << m_database.connectionName();
     Q_ASSERT(id >= 0);
     QSqlQuery query(m_database);
 
@@ -346,7 +346,7 @@ void TrackDAO::removeTrack(int id)
 void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
     Q_ASSERT(pTrack);
 
-    qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
+    //qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
 
     // Save dirty tracks.
     pTrack->save();
@@ -492,7 +492,7 @@ TrackPointer TrackDAO::getTrack(int id) const
     } else {
         qDebug() << QString("getTrack(%1)").arg(id) << query.lastError();
     }
-    qDebug() << "getTrack hit the database, took " << time.elapsed() << "ms";
+    //qDebug() << "getTrack hit the database, took " << time.elapsed() << "ms";
 
     return pTrack;
 }
@@ -559,15 +559,15 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
 
     //query.finish();
 
-    qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
+    //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
     time.start();
     m_cueDao.saveTrackCues(trackId, pTrack);
     m_database.commit();
 
-    qDebug() << "Update track in database took: " << time.elapsed() << "ms";
+    //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
     time.start();
     pTrack->setDirty(false);
-    qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
+    //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
 /** Mark all the tracks whose paths begin with libraryPath as invalid.

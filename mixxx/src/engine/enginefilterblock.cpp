@@ -26,6 +26,10 @@
 
 EngineFilterBlock::EngineFilterBlock(const char * group)
 {
+    ilowFreq = 0;
+    ihighFreq = 0;
+    blofi = false;
+
 #ifdef __LOFI__
     low = new EngineFilterIIR(bessel_lowpass4_DJM800,4);
     band = new EngineFilterIIR(bessel_bandpass8_DJM800,8);
@@ -82,6 +86,10 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
+
+    memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 }
 
 EngineFilterBlock::~EngineFilterBlock()

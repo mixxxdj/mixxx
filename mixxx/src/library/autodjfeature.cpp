@@ -32,7 +32,7 @@ QVariant AutoDJFeature::title() {
 }
 
 QIcon AutoDJFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_autodj.png");
 }
 
 void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
