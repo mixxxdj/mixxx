@@ -2,6 +2,7 @@
 #include <QMessageBox>
 
 #include "player.h"
+#include "playerinfo.h"
 
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
@@ -158,6 +159,10 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
     m_pLoadedTrack.clear();
+
+    // Update the PlayerInfo class that is used in EngineShoutcast to replace
+    // the metadata of a stream
+    PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
 }
 
 void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
@@ -178,8 +183,9 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
 
-    // Update TrackInfoObject of the helper class //FIXME
-    //PlayerInfo::Instance().setTrackInfo(1, m_pLoadedTrack);
+    // Update the PlayerInfo class that is used in EngineShoutcast to replace
+    // the metadata of a stream
+    PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
 
     // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);

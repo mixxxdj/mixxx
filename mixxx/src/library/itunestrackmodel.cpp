@@ -298,3 +298,15 @@ QString ITunesTrackModel::getiTunesMusicPath() {
     qDebug() << "ITunesLibrary=[" << musicFolder << "]";
     return musicFolder;
 }
+
+//OwenB - for use by the playlistmodel
+QDomNode ITunesTrackModel::getTrackNodeById(const QString& id) const
+{
+    if ( !m_mTracksById.contains(id))
+        return QDomNode();
+
+    QDomNode songNode = m_mTracksById[id];
+    return songNode;
+}
+
+

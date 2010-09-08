@@ -121,7 +121,7 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
             // start at the middle of 0-127, and emit values based on
             // how far the mouse has travelled horizontally
-            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
+            double v = 64 + (double)(m->x()-m_iMouseStart)/100;
             // clamp to 0-127
             if(v<0)
                 v = 0;

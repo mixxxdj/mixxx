@@ -38,10 +38,10 @@ int LibraryHashDAO::getDirectoryHash(QString dirPath)
     //Grab a hash for this directory from the database, from the last time it was scanned.
     if (query.next()) {
         hash = query.value(query.record().indexOf("hash")).toInt();
-        qDebug() << "prev hash exists" << hash << dirPath;
+        //qDebug() << "prev hash exists" << hash << dirPath;
     }
     else {
-        qDebug() << "prev hash does not exist" << dirPath;
+        //qDebug() << "prev hash does not exist" << dirPath;
     }
 
     return hash;

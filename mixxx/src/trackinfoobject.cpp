@@ -273,7 +273,7 @@ void TrackInfoObject::setBpm(float f)
     lock.unlock();
 
     //Tell the GUI to update the bpm label...
-    qDebug() << "TrackInfoObject signaling BPM update to" << f;
+    //qDebug() << "TrackInfoObject signaling BPM update to" << f;
     emit(bpmUpdated(f));
 }
 
