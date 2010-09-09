@@ -62,7 +62,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 
     int trackId = m_rowToTrackId[row];
 
-    if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
+    if ((role == Qt::DisplayRole || role == Qt::EditRole) && m_trackOverrides.contains(trackId)) {
         //qDebug() << "Returning override for track" << trackId;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
