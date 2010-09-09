@@ -252,11 +252,11 @@ void LibraryScanner::scan(QString libraryPath)
     //BlockingQueuedConnection. (DirectConnection isn't an option for sending
     //signals across threads.)
     connect(m_pCollection, SIGNAL(progressLoading(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
+            m_pProgress, SLOT(slotUpdate(QString)));
+            //Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(progressHashing(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
+            m_pProgress, SLOT(slotUpdate(QString)));
+            //Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(scanFinished()),
             m_pProgress, SLOT(slotScanFinished()));
     connect(m_pProgress, SIGNAL(scanCancelled()),
