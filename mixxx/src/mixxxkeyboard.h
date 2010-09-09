@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Dec 2 2003
     copyright            : (C) 2003 by Tue Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -42,7 +42,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *e);
 
 private:
-    bool kbdPress(QKeySequence k, bool release);
+    bool kbdPress(QKeySequence k, bool release, bool autoRepeat);
     /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */
     QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
