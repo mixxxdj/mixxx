@@ -82,13 +82,13 @@ class MidiDeviceManager;
   */
 class MixxxApp : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     /** Construtor. files is a list of command line arguments */
     MixxxApp(QApplication *app, struct CmdlineArgs args);
     /** destructor */
-    ~MixxxApp();
+    virtual ~MixxxApp();
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
@@ -132,7 +132,7 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-	QString getSkinPath();
+    QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
     // Load a track into the next available (non-playing) Player
@@ -143,11 +143,15 @@ class MixxxApp : public QMainWindow
     /** Load a track into Player 1 */
     void slotLoadPlayer1(QString location);
     /** Load a track into Player 2 */
-	void slotLoadPlayer2(QString location);
-	/** Scan or rescan the music library directory */
-	void slotScanLibrary();
-	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
-	void slotEnableRescanLibraryAction();
+    void slotLoadPlayer2(QString location);
+    /** Scan or rescan the music library directory */
+    void slotScanLibrary();
+    /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+    void slotEnableRescanLibraryAction();
+    /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+    void slotOptionsMenuShow();
+    /** toggles Livebroadcasting **/
+    void slotOptionsShoutcast(bool value);
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -232,6 +236,9 @@ class MixxxApp : public QMainWindow
     QAction *optionsRecord;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
+#ifdef __SHOUTCAST__
+    QAction *optionsShoutcast;
+#endif
 
     QAction *helpAboutApp;
     QAction *helpSupport;

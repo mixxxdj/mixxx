@@ -625,6 +625,12 @@ void MixxxApp::initActions()
     optionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
+#ifdef __SHOUTCAST__
+    optionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    optionsShoutcast->setShortcut(tr("Ctrl+L"));
+    optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
+#endif
+
     optionsRecord = new QAction(tr("&Record Mix"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
     optionsRecord->setShortcutContext(Qt::ApplicationShortcut);
@@ -693,6 +699,18 @@ void MixxxApp::initActions()
     connect(enabled2, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinylControl2(double)));
 #endif
 
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setCheckable(true);
+    bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+
+    optionsShoutcast->setChecked(broadcastEnabled);
+
+    optionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
+    optionsShoutcast->setWhatsThis(tr("Stream your mixes to a shoutcast or icecast server"));
+
+    connect(optionsShoutcast, SIGNAL(toggled(bool)), this, SLOT(slotOptionsShoutcast(bool)));
+#endif
+
     optionsRecord->setCheckable(true);
     optionsRecord->setStatusTip(tr("Start Recording your Mix"));
     optionsRecord->setWhatsThis(tr("Record your mix to a file"));
@@ -734,7 +752,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroMenu=new QMenu("&Macro");
 #endif
-
+	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
@@ -749,6 +767,9 @@ void MixxxApp::initMenuBar()
     optionsMenu->addAction(optionsVinylControl2);
 #endif
     optionsMenu->addAction(optionsRecord);
+#ifdef __SHOUTCAST__
+    optionsMenu->addAction(optionsShoutcast);
+#endif
     optionsMenu->addAction(optionsFullScreen);
     optionsMenu->addSeparator();
     optionsMenu->addAction(optionsPreferences);
@@ -1519,4 +1540,26 @@ void MixxxApp::slotScanLibrary()
 void MixxxApp::slotEnableRescanLibraryAction()
 {
     libraryRescan->setEnabled(true);
+}
+void MixxxApp::slotOptionsMenuShow(){
+	ControlObjectThread* ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
+
+	if(ctrlRec->get() == RECORD_OFF){
+		//uncheck Recording
+		optionsRecord->setChecked(false);
+	}
+
+#ifdef __SHOUTCAST__
+	bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);	if(broadcastEnabled)
+      optionsShoutcast->setChecked(true);
+	else
+      optionsShoutcast->setChecked(false);
+#endif
+}
+
+void MixxxApp::slotOptionsShoutcast(bool value){
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setChecked(value);
+    config->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue(value));
+#endif
 }

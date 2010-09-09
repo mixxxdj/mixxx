@@ -15,7 +15,7 @@
 ***************************************************************************/
 
 /* This class provides a way to do audio processing that does not need
- * to be executed in real-time. For example, shoutcast encoding/broadcasting
+ * to be executed in real-time. For example, m_shoutcast encoding/broadcasting
  * and recording encoding can be done here. This class uses double-buffering
  * to increase the amount of time the CPU has to do whatever work needs to
  * be done, and that work is executed in a separate thread. (Threading
@@ -26,17 +26,16 @@
 
 #include <QtCore>
 #include <QtDebug>
-#include "enginesidechain.h"
-#include "enginebuffer.h"
 
-#ifdef __SHOUTCAST__
-#include "engineshoutcast.h"
-#endif
-
+#include "engine/enginesidechain.h"
+#include "engine/enginebuffer.h"
 #include "recording/enginerecord.h"
 
-EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
-{
+#ifdef __SHOUTCAST__
+#include "engine/engineshoutcast.h"
+#endif
+
+EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig) {
     m_pConfig = pConfig;
     m_bStopThread = false;
 
@@ -48,19 +47,15 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 
 #ifdef __SHOUTCAST__
     // Shoutcast
-    shoutcast = NULL;
-//    shoutcast = new EngineShoutcast(m_pConfig);
-    ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
-    m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
+	m_shoutcast = new EngineShoutcast(m_pConfig);
 #endif
 
-    rec = new EngineRecord(m_pConfig);
+    m_rec = new EngineRecord(m_pConfig);
 
-    start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
+   	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
 }
 
-EngineSideChain::~EngineSideChain()
-{
+EngineSideChain::~EngineSideChain() {
     m_backBufferLock.lock();
 
     m_stopLock.lock();
@@ -74,8 +69,8 @@ EngineSideChain::~EngineSideChain()
     wait(); //Wait until the thread has finished.
 
 #ifdef __SHOUTCAST__
-    if (shoutcast)
-        shoutcast->shutdown();
+    if (m_shoutcast)
+        m_shoutcast->shutdown();
 #endif
 
     //Free up memory
@@ -83,9 +78,10 @@ EngineSideChain::~EngineSideChain()
     delete [] m_bufferBack;
 
 #ifdef __SHOUTCAST__
-    delete shoutcast;
+    delete m_shoutcast;
 #endif
-    delete rec;
+
+    if(m_rec) delete m_rec;
 
     m_backBufferLock.unlock();
 }
@@ -153,6 +149,7 @@ void EngineSideChain::run()
 {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
+
     while (true)
     {
         m_waitLock.lock();
@@ -189,35 +186,12 @@ void EngineSideChain::run()
         m_backBufferLock.unlock();
 
 #ifdef __SHOUTCAST__
-
-        //Important note: We're "allowed" to access a ConfigKey here (below) because it doesn't take place
-        //                in the callback thread. ConfigKey access is slow, but we can afford the performance
-        //                hit here.
-
-        //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-
-        bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
-        bool shoutcastEnabled = (shoutcast != NULL);
-
-        if (prefEnabled != shoutcastEnabled) {
-            if (prefEnabled) {
-                shoutcast = new EngineShoutcast(m_pConfig);
-            } else {
-                delete shoutcast;
-                shoutcast = NULL;
-            }
-        }
-        if (shoutcast) {
-            if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f)
-                shoutcast->updateFromPreferences();
-            shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-        }
+        m_shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
 #endif
-
-        rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-
+        m_rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
         //m_backBufferLock.unlock();
-
     }
 
 }
+
+
