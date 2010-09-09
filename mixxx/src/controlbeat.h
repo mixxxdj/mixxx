@@ -37,11 +37,11 @@ const int maxBPM = 240;
 /** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBPM));
 /** Filter length */
-const int filterLength = 4;
-  
+const int filterLength = 5;
+
 class ControlBeat : public ControlObject
 {
-public: 
+public:
     ControlBeat(ConfigKey key, bool bMidiSimulateLatching=false);
     ~ControlBeat();
 
