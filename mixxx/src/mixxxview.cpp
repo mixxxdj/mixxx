@@ -188,7 +188,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
   connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
           m_pLineEditSearch, SLOT(restoreSearch(const QString&)));
 
-  int desired_fps = 30;
+  int desired_fps = 40;
   float update_interval = 1000.0f / desired_fps;
   m_guiTimer.start(update_interval);
 }
