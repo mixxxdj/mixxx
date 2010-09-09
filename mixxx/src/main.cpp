@@ -91,7 +91,7 @@ void MessageHandler( QtMsgType type, const char * input )
 
     if(!Logfile.isOpen())
     {
-    Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
+    Logfile.setFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
 
 #ifdef QT3_SUPPORT
     Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
