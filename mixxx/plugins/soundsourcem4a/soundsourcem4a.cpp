@@ -57,7 +57,7 @@ int SoundSourceM4A::open()
     //Initialize the FAAD2 decoder...
     initializeDecoder();
 
-    qDebug() << "SSM4A: channels:" << m_iChannels 
+    qDebug() << "SSM4A: channels:" << m_iChannels
              << "filelength:" << filelength
              << "Sample Rate:" << m_iSampleRate;
     return OK;
@@ -175,7 +175,7 @@ inline long unsigned SoundSourceM4A::length(){
 int SoundSourceM4A::parseHeader(){
 
     //Disclaimer: This code sucks because we're opening the file twice.
-    //            Once in the MP4Read(..) below, and once in the 
+    //            Once in the MP4Read(..) below, and once in the
     //            initializeDecoder() call at the bottom of this function.
 
     QString mp4FileName = this->getFilename();
@@ -190,43 +190,43 @@ int SoundSourceM4A::parseHeader(){
 
     this->setType("m4a");
     char* value = NULL;
-    
+
     if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
-        this->setTitle(QString::fromUtf8(value));
+        setTitle(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
 
     if (MP4GetMetadataArtist(mp4file, &value) && value != NULL) {
-        this->setArtist(QString::fromUtf8(value));
+        setArtist(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
-    
+
     if (MP4GetMetadataAlbum(mp4file, &value) && value != NULL) {
-        this->setAlbum(value);
+        setAlbum(value);
         MP4Free(value);
         value = NULL;
     }
 
     if (MP4GetMetadataComment(mp4file, &value) && value != NULL) {
-        this->setComment(QString::fromUtf8(value));
+        setComment(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
-    
+
     if (MP4GetMetadataYear(mp4file, &value) && value != NULL) {
-        this->setYear(QString::fromUtf8(value));
+        setYear(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
-    
+
     if (MP4GetMetadataGenre(mp4file, &value) && value != NULL) {
-        this->setGenre(QString::fromUtf8(value));
+        setGenre(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
-    
+
 #ifndef _MSC_VER
     u_int16_t bpm = 0;
     u_int16_t track = 0;
