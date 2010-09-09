@@ -2,6 +2,7 @@
                    encoder.h  - encoder API for mixxx
                              -------------------
     copyright            : (C) 2009 by Phillip Whelan
+    copyright            : (C) 2010 by Tobias Rafreider
  ***************************************************************************/
 
 /***************************************************************************
@@ -31,13 +32,18 @@
 class Encoder : public QObject {
     Q_OBJECT
 
-public:
+  public:
     Encoder();
-    ~Encoder();
-    virtual int initEncoder() = 0;
-    virtual int initEncoder(float quality) = 0;
+    virtual ~Encoder();
+    /*
+     * General Encoder methods
+     */
     virtual int initEncoder(int bitrate) = 0;
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
+    virtual void updateMetaData(char* artist, char* title, char* album) = 0;
+    virtual void flush() = 0;
+    /**converts an OGG quality measure from 1..10 to a bitrate **/
+    static int convertToBitrate(int quality);
 };
 
 #endif // ENCODER_H

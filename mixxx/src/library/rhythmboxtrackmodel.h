@@ -50,6 +50,7 @@ public:
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual bool isColumnInternal(int column);
     virtual QVariant data(const QModelIndex& item, int role) const;
+    QDomNode getTrackNodeByLocation(const QString& ) const;
 
 protected:
     virtual TrackPointer parseTrackNode(QDomNode node) const;
@@ -63,6 +64,8 @@ signals:
  	void startedLoading();
  	void progressLoading(QString path);
  	void finishedLoading();
+
+ 	friend class RhythmboxPlaylistModel;
 };
 
 #endif
