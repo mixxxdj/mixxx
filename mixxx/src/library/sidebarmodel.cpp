@@ -6,8 +6,8 @@
 #include "library/sidebarmodel.h"
 
 SidebarModel::SidebarModel(QObject* parent)
-    : m_iDefaultSelectedIndex(0),
-      QAbstractItemModel(parent) {
+        : QAbstractItemModel(parent),
+          m_iDefaultSelectedIndex(0) {
 }
 
 SidebarModel::~SidebarModel() {

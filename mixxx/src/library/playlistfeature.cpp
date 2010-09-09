@@ -14,9 +14,9 @@
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
          // m_pTrackCollection(pTrackCollection),
-          m_playlistTableModel(this, pTrackCollection->getDatabase()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()) {
+          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_playlistTableModel(this, pTrackCollection->getDatabase()) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
@@ -144,10 +144,10 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     QString location = url.toString();
 
     //XXX: Possible WTF alert - Windows needs .toString() in the above in order
-    //     for drag and drop to work, at least for attached drives. 
+    //     for drag and drop to work, at least for attached drives.
     //     The code was .toLocalFile() in 1.8.0 Beta2, and that totally broke
     //     drag and drop on Windows, but I don't know if there was a particular
-    //     reason why we used .toLocalFile() in the first place. 
+    //     reason why we used .toLocalFile() in the first place.
     //     If you find that you need to change this to fix drag and drop for
     //     a particular platform, please comment and/or platform #ifdef it.
     //      -- Albert, July 05/2010
