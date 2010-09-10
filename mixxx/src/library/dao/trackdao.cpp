@@ -393,7 +393,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         QString location = query.value(query.record().indexOf("location")).toString();
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
 
-        TrackInfoObject* track = new TrackInfoObject(location);
+        TrackInfoObject* track = new TrackInfoObject(location, false);
 
         // TIO already stats the file to see if it exists, what its length is,
         // etc. So don't bother setting it.
@@ -438,6 +438,13 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         // Automatic conversion to a weak pointer
         m_tracks[trackId] = pTrack;
         m_trackCache.insert(trackId, new TrackPointer(pTrack));
+
+        // If the header hasn't been parsed, parse it but only after we set the
+        // track clean and hooked it up to the track cache, because this will
+        // dirty it.
+        if (header_parsed) {
+            pTrack->parse();
+        }
 
         return pTrack;
     }
