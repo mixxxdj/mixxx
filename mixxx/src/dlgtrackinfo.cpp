@@ -36,6 +36,9 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
 
+    connect(btnReloadFromFile, SIGNAL(clicked()),
+            this, SLOT(reloadTrackMetadata()));
+
     m_bpmTapTimer.start();
     for (int i = 0; i < filterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
@@ -93,6 +96,25 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
+void DlgTrackInfo::populateFields(TrackPointer pTrack) {
+    // Editable fields
+    lblSong->setText(pTrack->getTitle());
+    txtTrackName->setText(pTrack->getTitle());
+    txtArtist->setText(pTrack->getArtist());
+    txtAlbum->setText(pTrack->getAlbum());
+    txtGenre->setText(pTrack->getGenre());
+    txtYear->setText(pTrack->getYear());
+    txtTrackNumber->setText(pTrack->getTrackNumber());
+    txtComment->setText(pTrack->getComment());
+    spinBpm->setValue(pTrack->getBpm());
+
+    // Non-editable fields
+    txtDuration->setText(pTrack->getDurationStr());
+    txtFilepath->setText(pTrack->getFilename());
+    txtFilepath->setCursorPosition(0);
+    txtType->setText(pTrack->getType());
+}
+
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = pTrack;
     clear();
@@ -100,28 +122,15 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     if (m_pLoadedTrack == NULL)
         return;
 
-    lblSong->setText(m_pLoadedTrack->getTitle());
+    populateFields(m_pLoadedTrack);
+    populateCues(m_pLoadedTrack);
+}
 
-    // Editable fields
-    txtTrackName->setText(m_pLoadedTrack->getTitle());
-    txtArtist->setText(m_pLoadedTrack->getArtist());
-    txtAlbum->setText(m_pLoadedTrack->getAlbum());
-    txtGenre->setText(m_pLoadedTrack->getGenre());
-    txtYear->setText(m_pLoadedTrack->getYear());
-    txtTrackNumber->setText(m_pLoadedTrack->getTrackNumber());
-    txtComment->setText(m_pLoadedTrack->getComment());
-    spinBpm->setValue(m_pLoadedTrack->getBpm());
-
-    // Non-editable fields
-    txtDuration->setText(m_pLoadedTrack->getDurationStr());
-    txtFilepath->setText(m_pLoadedTrack->getFilename());
-    txtFilepath->setCursorPosition(0);
-    txtType->setText(m_pLoadedTrack->getType());
-
-    int sampleRate = m_pLoadedTrack->getSampleRate();
+void DlgTrackInfo::populateCues(TrackPointer pTrack) {
+    int sampleRate = pTrack->getSampleRate();
 
     QList<Cue*> listPoints;
-    const QList<Cue*>& cuePoints = m_pLoadedTrack->getCuePoints();
+    const QList<Cue*>& cuePoints = pTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
     while (it.hasNext()) {
         Cue* pCue = it.next();
@@ -278,5 +287,12 @@ void DlgTrackInfo::slotBpmTap() {
         }
         temp /= filterLength;
         spinBpm->setValue(temp);
+    }
+}
+
+void DlgTrackInfo::reloadTrackMetadata() {
+    if (m_pLoadedTrack) {
+        TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation()));
+        populateFields(pTrack);
     }
 }

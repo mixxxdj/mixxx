@@ -578,6 +578,10 @@ void MixxxApp::initActions()
     playlistsNew->setShortcut(tr("Ctrl+N"));
     playlistsNew->setShortcutContext(Qt::ApplicationShortcut);
 
+    cratesNew = new QAction(tr("Add new &crate"), this);
+    cratesNew->setShortcut(tr("Ctrl+C"));
+    cratesNew->setShortcutContext(Qt::ApplicationShortcut);
+
     playlistsImport = new QAction(tr("&Import playlist"), this);
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
@@ -645,6 +649,10 @@ void MixxxApp::initActions()
     playlistsNew->setStatusTip(tr("Create a new playlist"));
     playlistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreatePlaylist()));
+
+    cratesNew->setStatusTip(tr("Create a new crate"));
+    cratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
+    connect(cratesNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreateCrate()));
 
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));
@@ -747,6 +755,7 @@ void MixxxApp::initMenuBar()
     libraryMenu->addAction(libraryRescan);
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
+    libraryMenu->addAction(cratesNew);
     //libraryMenu->addAction(playlistsImport);
 
 #ifdef __IPOD__
