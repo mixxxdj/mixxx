@@ -242,6 +242,13 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         }
     }
 
+    TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
+    if (!keyFrame.isEmpty()) {
+        QString sKey = TStringToQString(keyFrame.front()->toString());
+        qDebug() << "KEY" << sKey;
+        // TODO(XXX) write key to SoundSource and copy that to the Track
+    }
+
     return true;
 }
 
