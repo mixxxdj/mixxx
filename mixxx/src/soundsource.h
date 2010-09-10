@@ -119,6 +119,7 @@ protected:
     int m_iChannels;
     //Dontcha be forgettin' to initialize these variables.... arr
 
+    static const bool s_bDebugMetadata;
 };
 
 #endif
