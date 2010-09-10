@@ -1,6 +1,5 @@
-  	<!--6 August 2010 18:32:11 CEST-->  
   	<!--   
-  	Phoney, Skin for Mixxx 1.8.x
+  	Phoney , Skin for Mixxx 1.8.x
     www.mixxx.org
     Copyright (C) 2010 jus ; jus@justmail.de
   
@@ -26,7 +25,12 @@
 
   	<!--
   	CHANGELOG
-	v1.00	(06/08/2010)
+  	v1.01	(10/09/2010)
+	* (Hot)Cue marker now drawn on top of loop overlay for better visibility
+	* Finetuning on various VUmeter keys
+	- Removed some orphaned keys no longer in Mixxx codebase
+
+	v1.00	(10/08/2010)
   	* Version bump
   	* some alignment & positioning corrections
   	* fine-tuned some buttons and background graphic's
@@ -110,16 +114,30 @@
 		<BeatHighlightColor>#FF0000</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<CueColor>#000000</CueColor>
-		<!--<FisheyeColor>#404040</FisheyeColor>-->
-		<Zoom>true</Zoom>
-  				
-		<Mark>
-    		<Control>cue_point</Control>
-    		<Text> CUEPOINT </Text>
-			<Align>top</Align>
-			<Color>#FF0000</Color>
+
+  		<MarkRange>
+    		<StartControl>loop_start_position</StartControl>
+    		<EndControl>loop_end_position</EndControl>
+    		<EnabledControl>loop_enabled</EnabledControl>
+			<Color>#B800C2</Color>
+			<DisabledColor>#FF6FCF</DisabledColor>
+  		</MarkRange>
+
+  		<Mark>
+    		<Control>loop_start_position</Control>
+    		<Text> LOOP IN </Text>	
+			<Align>bottom</Align>
+			<Color>#333333</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>  		
+  		</Mark>
+		<Mark>
+    		<Control>loop_end_position</Control>
+   			<Text> LOOP OUT </Text>
+			<Align>bottom</Align>
+			<Color>#333333</Color>
+			<TextColor>#FFFFFF</TextColor>
+  		</Mark>
+  		
   		<Mark>
     		<Control>hotcue_1_position</Control>
     		<Text> HOTCUE 1 </Text>
@@ -162,27 +180,14 @@
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
-  		<Mark>
-    		<Control>loop_start_position</Control>
-    		<Text> LOOP IN </Text>	
-			<Align>bottom</Align>
-			<Color>#333333</Color>
+
+		<Mark>
+    		<Control>cue_point</Control>
+    		<Text> CUEPOINT </Text>
+			<Align>top</Align>
+			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
-  		<Mark>
-    		<Control>loop_end_position</Control>
-   			<Text> LOOP OUT </Text>
-			<Align>bottom</Align>
-			<Color>#333333</Color>
-			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<MarkRange>
-    		<StartControl>loop_start_position</StartControl>
-    		<EndControl>loop_end_position</EndControl>
-    		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#B800C2</Color>
-			<DisabledColor>#FF6FCF</DisabledColor>
-  		</MarkRange>
 	</Visual>
 	
 	<Visual>
@@ -197,16 +202,30 @@
 		<BeatHighlightColor>#FF0000</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<CueColor>#000000</CueColor>
-		<!--<FisheyeColor>#404040</FisheyeColor>-->
-		<Zoom>true</Zoom>
-		
-		<Mark>
-    		<Control>cue_point</Control>
-    		<Text> CUEPOINT </Text>
-			<Align>top</Align>
-			<Color>#FF0000</Color>
+
+		<MarkRange>
+    		<StartControl>loop_start_position</StartControl>
+    		<EndControl>loop_end_position</EndControl>
+    		<EnabledControl>loop_enabled</EnabledControl>
+			<Color>#B800C2</Color>
+			<DisabledColor>#FF6FCF</DisabledColor>
+  		</MarkRange>
+ 		
+  		<Mark>
+    		<Control>loop_start_position</Control>
+    		<Text> LOOP IN </Text>	
+			<Align>bottom</Align>
+			<Color>#333333</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>  		
+  		</Mark>
+  		<Mark>
+    		<Control>loop_end_position</Control>
+   			<Text> LOOP OUT </Text>
+			<Align>bottom</Align>
+			<Color>#333333</Color>
+			<TextColor>#FFFFFF</TextColor>
+  		</Mark>
+ 		
   		<Mark>
     		<Control>hotcue_1_position</Control>
     		<Text> HOTCUE 1 </Text>
@@ -249,28 +268,14 @@
 			<Color>#191919</Color>
 			<TextColor>#FFFFFF</TextColor>
   		</Mark>
-  		
-  		<Mark>
-    		<Control>loop_start_position</Control>
-    		<Text> LOOP IN </Text>	
-			<Align>bottom</Align>
-			<Color>#333333</Color>
+
+		<Mark>
+    		<Control>cue_point</Control>
+    		<Text> CUEPOINT </Text>
+			<Align>top</Align>
+			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>loop_end_position</Control>
-   			<Text> LOOP OUT </Text>
-			<Align>bottom</Align>
-			<Color>#333333</Color>
-			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<MarkRange>
-    		<StartControl>loop_start_position</StartControl>
-    		<EndControl>loop_end_position</EndControl>
-    		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#B800C2</Color>
-			<DisabledColor>#FF6FCF</DisabledColor>
-  		</MarkRange>	
+  		</Mark> 
 	</Visual>
 
 	<!--
@@ -317,11 +322,9 @@
 		<Pos>570,80</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
-		<!--
-		<PeakFallTime>80</PeakFallTime>
-  		<PeakFallStep>5</PeakFallStep>
-  		-->
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+  		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Channel1],VuMeter</ConfigKey>
 		</Connection>
@@ -333,11 +336,9 @@
 		<Pos>570,254</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
-		<!--  
-		<PeakFallTime>80</PeakFallTime>
-  		<PeakFallStep>5</PeakFallStep>
-		-->
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+  		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Channel2],VuMeter</ConfigKey>
 		</Connection>
@@ -352,9 +353,9 @@
 		<Pos>505,159</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
-		<PeakFallTime>80</PeakFallTime>
-		<PeakFallStep>5</PeakFallStep>
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeter</ConfigKey>
 		</Connection>
@@ -367,7 +368,9 @@
 		<PathBack>btn_volume_display_master1.png</PathBack>
 		<Pos>225,184</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+  		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeterL</ConfigKey>
 		</Connection>
@@ -378,7 +381,9 @@
 		<PathBack>btn_volume_display_master2.png</PathBack>
 		<Pos>239,184</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+  		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeterR</ConfigKey>
 		</Connection>
@@ -1628,7 +1633,7 @@
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
 		</Connection>
-	</PushButton>>
+	</PushButton>
 
 	<!--
 	**********************************************

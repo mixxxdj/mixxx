@@ -58,7 +58,6 @@ Copyright (C) 2010 Mixxx
 				 <SConst>120</SConst>
 				 <VConst>-10</VConst>
 			 </HSVTweak>
-
 		 </Filters>
 	 </Scheme>
 	 <Scheme>
@@ -77,7 +76,6 @@ Copyright (C) 2010 Mixxx
 		 </Filters>
 	 </Scheme>
  </Schemes>
-
 
  <Background>
   <Path>scene.png</Path>
@@ -519,8 +517,8 @@ Copyright (C) 2010 Mixxx
   <Horizontal>true</Horizontal>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
-<!--  <PeakFallTime>80</PeakFallTime>
-  <PeakFallStep>5</PeakFallStep> -->
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Master],VuMeterL</ConfigKey>
   </Connection>
@@ -548,6 +546,8 @@ Copyright (C) 2010 Mixxx
   <Pos>107,525</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -560,6 +560,8 @@ Copyright (C) 2010 Mixxx
   <Pos>995,525</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
@@ -1139,13 +1141,15 @@ Copyright (C) 2010 Mixxx
   </Connection>
  </Knob>
 
+<!-- Track display -->
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>1</Channel>
   <Pos>139,50</Pos>
   <Size>747,74</Size>
   <BgColor>#ffffff</BgColor>
-  <SignalColor>#00ff00</SignalColor><HfcColor>#FFC115</HfcColor>
+  <SignalColor>#00ff00</SignalColor>
+  <HfcColor>#FFC115</HfcColor>
   <BeatColor>#0000f0</BeatColor>
   <MarkerColor>#0000ff</MarkerColor>
   <Mark>
@@ -1173,7 +1177,8 @@ Copyright (C) 2010 Mixxx
   <Pos>139,126</Pos>
   <Size>747,74</Size>
   <BgColor>#ffffff</BgColor>
-  <SignalColor>#00ff00</SignalColor><HfcColor>#FFC115</HfcColor>
+  <SignalColor>#00ff00</SignalColor>
+  <HfcColor>#FFC115</HfcColor>
   <BeatColor>#f00000</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <Mark>
@@ -1195,6 +1200,7 @@ Copyright (C) 2010 Mixxx
   </Mark>
  </Visual>
 
+<!-- Track title display -->
  <Text>
   <Channel>1</Channel>
   <Pos>144,0</Pos>
@@ -1358,8 +1364,8 @@ Copyright (C) 2010 Mixxx
  </Search>
 
  <TableView>
-  <Pos>139,392</Pos>
-  <Size>746,364</Size>
+  <Pos>140,365</Pos>
+  <Size>745,391</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
