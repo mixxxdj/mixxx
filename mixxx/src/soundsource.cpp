@@ -280,8 +280,19 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
     }
 
+    // Some tags use "BPM" so check for that.
     if (xiph->fieldListMap().contains("BPM")) {
         TagLib::StringList bpmString = xiph->fieldListMap()["BPM"];
+        QString sBpm = TStringToQString(bpmString.toString());
+        float bpm = str2bpm(sBpm);
+        if(bpm > 0.0f) {
+            setBPM(bpm);
+        }
+    }
+
+    // Give preference to the "TEMPO" tag which seems to be more standard
+    if (xiph->fieldListMap().contains("TEMPO")) {
+        TagLib::StringList bpmString = xiph->fieldListMap()["TEMPO"];
         QString sBpm = TStringToQString(bpmString.toString());
         float bpm = str2bpm(sBpm);
         if(bpm > 0.0f) {
@@ -296,6 +307,15 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
     for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
         it != mp4->itemListMap().end(); ++it) {
         qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
+    }
+
+    // Get BPM
+    if (mp4->itemListMap().contains("tmpo")) {
+        QString sBpm = TStringToQString(mp4->itemListMap()["tmpo"].toStringList().toString());
+        float bpm = str2bpm(sBpm);
+        if(bpm > 0.0f) {
+            setBPM(bpm);
+        }
     }
     return true;
 }
