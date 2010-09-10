@@ -14,6 +14,11 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <taglib/flacfile.h>
+#include <taglib/aifffile.h>
+#include <taglib/rifffile.h>
+#include <taglib/wavfile.h>
+
 #include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
 #include <qstring.h>
@@ -146,51 +151,47 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
 
 int SoundSourceSndFile::parseHeader()
 {
-    QString location = this->getFilename();
-    SF_INFO info;
-    // Must be set to 0 per the API for reading (non-RAW files)
-    memset(&info, 0, sizeof(SF_INFO));
-    QByteArray qbaLocation = location.toUtf8();
-    SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, &info);
-    //const char* err = sf_strerror(0);
-    if (fh == NULL) {   // sf_format_check is only for writes
-        qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);
-        return ERR;
+    QString location = getFilename();
+    setType(location.section(".",-1).toLower());
+
+    qDebug() << "Parsing" << location;
+
+    bool result;
+    bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
+    bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
+
+    if (is_flac) {
+        TagLib::FLAC::File f(location);
+        result = processTaglibFile(f);
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        TagLib::Ogg::XiphComment* xiph = f.xiphComment();
+        if (id3v2) {
+            processID3v2Tag(id3v2);
+        }
+        if (xiph) {
+            processXiphComment(xiph);
+        }
+    } else if (is_wav) {
+        TagLib::RIFF::WAV::File f(location);
+        result = processTaglibFile(f);
+
+        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (id3v2) {
+            processID3v2Tag(id3v2);
+        }
+    } else {
+        // Try AIFF
+        TagLib::RIFF::AIFF::File f(location);
+        result = processTaglibFile(f);
+
+        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (id3v2) {
+            processID3v2Tag(id3v2);
+        }
     }
 
-    if (sf_error(fh)>0) {
-        qDebug() << "sndfile::ParseHeader: libsndfile error:" << sf_strerror(fh);
-        if (fh) sf_close(fh);
-        return ERR;
-    }
-
-    this->setType(location.section(".",-1).toLower());
-    this->setBitrate((int)(info.samplerate*32./1000.));
-    this->setDuration(info.frames/info.samplerate);
-    this->setSampleRate(info.samplerate);
-    this->setChannels(info.channels);
-
-    const char *string;
-    string = sf_get_string(fh, SF_STR_ARTIST);
-    if(string && strlen(string))
-        setArtist(string);
-
-    string = sf_get_string(fh, SF_STR_TITLE);
-    if(string && strlen(string))
-        setTitle(string);
-
-    string = sf_get_string(fh, SF_STR_DATE);
-    if (string && strlen(string))
-        setYear(string);
-
-    string = sf_get_string(fh, SF_STR_COMMENT);
-    if (string && strlen(string))
-        setComment(string);
-
-    if (fh)
-        sf_close(fh);
-
-    return OK;
+    if (result)
+        return OK;
 }
 
 /*
