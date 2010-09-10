@@ -101,19 +101,23 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
 void PlaylistFeature::slotCreatePlaylist() {
     QString name = QInputDialog::getText(NULL, tr("New Playlist"), tr("Playlist name:"), QLineEdit::Normal, tr("New Playlist"));
-    if (name == "")
+    if (name == "") {
         return;
-    else {
-        m_playlistDao.createPlaylist(name);
+    } else if (m_playlistDao.createPlaylist(name)) {
         m_playlistTableModel.select();
-    }
-    emit(featureUpdated());
+        emit(featureUpdated());
 
-    //Switch the view to the new playlist.
-    int playlistId = m_playlistDao.getPlaylistIdFromName(name);
-    m_pPlaylistTableModel->setPlaylist(playlistId);
-    // TODO(XXX) set sidebar selection
-    emit(showTrackModel(m_pPlaylistTableModel));
+        //Switch the view to the new playlist.
+        int playlistId = m_playlistDao.getPlaylistIdFromName(name);
+        m_pPlaylistTableModel->setPlaylist(playlistId);
+        // TODO(XXX) set sidebar selection
+        emit(showTrackModel(m_pPlaylistTableModel));
+    } else {
+        qDebug() << "Error creating playlist (may already exist) with name " << name;
+            QMessageBox::warning(NULL,
+                                 tr("Creating Playlist Failed"),
+                                 tr("A playlist by that name already exists."));
+    }
 }
 
 void PlaylistFeature::slotDeletePlaylist()
