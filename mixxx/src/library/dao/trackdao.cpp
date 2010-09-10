@@ -442,7 +442,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         // If the header hasn't been parsed, parse it but only after we set the
         // track clean and hooked it up to the track cache, because this will
         // dirty it.
-        if (header_parsed) {
+        if (!header_parsed) {
             pTrack->parse();
         }
 
