@@ -116,7 +116,7 @@ RateControl::RateControl(const char* _group,
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
     
     // Adjust jog wheel sensitivity factor
-    m_dWheelSensitivity = 0.0;
+    m_dWheelSensitivity = 1.0;
     m_pWheelSensitivity = new ControlPotmeter(ConfigKey("[Master]", "wheelsensitivity"), 0., 2.);
     connect(m_pWheelSensitivity, SIGNAL(valueChanged(double)), this, SLOT(slotWheelSensitivity(double)));
 
