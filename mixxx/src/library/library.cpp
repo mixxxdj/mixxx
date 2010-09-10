@@ -52,7 +52,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
-    addFeature(new CrateFeature(this, m_pTrackCollection));
+    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection);
+    addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
     addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
@@ -62,7 +63,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
         addFeature(new ITunesFeature(this));
-    
+
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
         qDebug() << "First Run, switching to PROMO view!";
@@ -181,6 +182,12 @@ void Library::slotCreatePlaylist()
 {
     m_pPlaylistFeature->slotCreatePlaylist();
 }
+
+void Library::slotCreateCrate()
+{
+    m_pCrateFeature->slotCreateCrate();
+}
+
 
 QList<TrackPointer> Library::getTracksToAutoLoad()
 {

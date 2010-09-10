@@ -10,6 +10,7 @@
 #include "ui_dlgtrackinfo.h"
 
 #include "trackinfoobject.h"
+#include "controlbeat.h"
 
 class Cue;
 
@@ -42,13 +43,22 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTap();
 
+    void reloadTrackMetadata();
+
   private:
+    void populateFields(TrackPointer pTrack);
+    void populateCues(TrackPointer pTrack);
     void unloadTrack(bool save);
     void clear();
 
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
+
+    CSAMPLE m_bpmTapFilter[filterLength];
+    QTime m_bpmTapTimer;
+
     QMutex m_mutex;
+
 };
 
 #endif /* DLGTRACKINFO_H */
