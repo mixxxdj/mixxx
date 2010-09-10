@@ -58,7 +58,6 @@ Copyright (C) 2010 Mixxx
 				 <SConst>120</SConst>
 				 <VConst>-10</VConst>
 			 </HSVTweak>
-
 		 </Filters>
 	 </Scheme>
 	 <Scheme>
@@ -277,7 +276,6 @@ Copyright (C) 2010 Mixxx
    <ButtonState>LeftButton</ButtonState>
   </Connection>
  </PushButton>
-
 
  <PushButton>
   <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
@@ -519,9 +517,8 @@ Copyright (C) 2010 Mixxx
   <Horizontal>true</Horizontal>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
- <!--
   <PeakFallTime>80</PeakFallTime>
-  <PeakFallStep>5</PeakFallStep> -->
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Master],VuMeterL</ConfigKey>
   </Connection>
@@ -535,9 +532,8 @@ Copyright (C) 2010 Mixxx
   <Horizontal>true</Horizontal>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
- <!--
   <PeakFallTime>80</PeakFallTime>
-  <PeakFallStep>5</PeakFallStep> -->
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Master],VuMeterR</ConfigKey>
   </Connection>
@@ -550,6 +546,8 @@ Copyright (C) 2010 Mixxx
   <Pos>78,363</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -562,11 +560,13 @@ Copyright (C) 2010 Mixxx
   <Pos>981,363</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
- 
+
  <StatusLight>
   <Tooltip>Clipping Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
@@ -596,7 +596,7 @@ Copyright (C) 2010 Mixxx
    <ConfigKey>[Master],PeakIndicator</ConfigKey>
   </Connection>
  </StatusLight>
- 
+
  <PushButton>
   <Tooltip>End of track mode</Tooltip>
   <NumberStates>3</NumberStates>
@@ -1369,10 +1369,7 @@ Copyright (C) 2010 Mixxx
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#0000f0</BeatColor>
   <MarkerColor>#0000ff</MarkerColor>
-  <Mark>
-    <Control>cue_point</Control>
-    <Text>CUE</Text>
-  </Mark>
+
   <MarkRange>
     <StartControl>loop_start_position</StartControl>
     <EndControl>loop_end_position</EndControl>
@@ -1414,6 +1411,11 @@ Copyright (C) 2010 Mixxx
       <Color>#009900</Color>
       <TextColor>#FFFFFF</TextColor>
     </Mark>
+
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+  </Mark>
   </Visual>
 
  <Visual>
@@ -1425,10 +1427,7 @@ Copyright (C) 2010 Mixxx
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#f00000</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
-  <Mark>
-    <Control>cue_point</Control>
-    <Text>CUE</Text>
-  </Mark>
+
   <MarkRange>
     <StartControl>loop_start_position</StartControl>
     <EndControl>loop_end_position</EndControl>
@@ -1441,6 +1440,40 @@ Copyright (C) 2010 Mixxx
   <Mark>
     <Control>loop_end_position</Control>
     <Text>OUT</Text>
+  </Mark>
+
+    <Mark>
+      <Control>hotcue_1_position</Control>
+      <Text>HOTCUE 1</Text>
+      <Align>center</Align>
+      <Color>#0033FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>hotcue_2_position</Control>
+      <Text>HOTCUE 2</Text>
+      <Align>center</Align>
+      <Color>#FF0000</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>hotcue_3_position</Control>
+      <Text>HOTCUE 3</Text>
+      <Align>center</Align>
+      <Color>#FF00FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>hotcue_4_position</Control>
+      <Text>HOTCUE 4</Text>
+      <Align>center</Align>
+      <Color>#009900</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
   </Mark>
  </Visual>
 
@@ -1613,7 +1646,5 @@ Copyright (C) 2010 Mixxx
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
  </TableView>
-  </skin>
+</skin>

@@ -23,6 +23,22 @@ Copyright (C) 2010 Mixxx
 
  <Schemes>
   <Scheme>
+   <Name>11pm (Dark Mixxx)</Name>
+   <Filters>
+    <Invert/>
+	<HueInv/>
+    <Add>
+     <Amount>50</Amount>
+    </Add>
+    <ScaleWhite>
+     <Amount>1.5</Amount>
+    </ScaleWhite>
+    <Add>
+     <Amount>-50</Amount>
+    </Add>
+   </Filters>
+  </Scheme>
+  <Scheme>
    <Name>5pm (Classic Mixxx)</Name>
    <Filters>
    </Filters>
@@ -43,25 +59,8 @@ Copyright (C) 2010 Mixxx
 				 <SConst>120</SConst>
 				 <VConst>-10</VConst>
 			 </HSVTweak>
-
 		 </Filters>
 	 </Scheme>
-  <Scheme>
-   <Name>11pm (Dark Mixxx)</Name>
-   <Filters>
-    <Invert/>
-	<HueInv/>
-    <Add>
-     <Amount>50</Amount>
-    </Add>
-    <ScaleWhite>
-     <Amount>1.5</Amount>
-    </ScaleWhite>
-    <Add>
-     <Amount>-50</Amount>
-    </Add>
-   </Filters>
-  </Scheme>
 	 <Scheme>
 		 <Name>3am (Still Awake Mixxx)</Name>
 		 <Filters>
@@ -398,6 +397,8 @@ Copyright (C) 2010 Mixxx
   <Pos>305,126</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>5</PeakFallStep>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],VuMeter</ConfigKey>
@@ -411,6 +412,8 @@ Copyright (C) 2010 Mixxx
   <Pos>79,227</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -423,6 +426,8 @@ Copyright (C) 2010 Mixxx
   <Pos>766,224</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
@@ -1205,22 +1210,11 @@ Right click: Start of track</Tooltip>
  </Search>
 
  <TableView>
-  <Pos>100,219</Pos>
-  <Size>582,180</Size>
+  <Pos>101,196</Pos>
+  <Size>581,205</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
-<!--
-  <ColWidthTitle>100</ColWidthTitle>
-  <ColWidthArtist>100</ColWidthArtist>
-  <ColWidthComment>85</ColWidthComment>
-  <ColWidthType>30</ColWidthType>
-  <ColWidthDuration>55</ColWidthDuration>
-  <ColWidthBpm>35</ColWidthBpm>
-  <ColWidthBitrate>40</ColWidthBitrate>
--->
  </TableView>
 </skin>

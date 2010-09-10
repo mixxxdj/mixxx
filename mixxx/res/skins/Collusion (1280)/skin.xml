@@ -116,6 +116,8 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
   <Pos>1093,162</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],VuMeter</ConfigKey>
@@ -129,6 +131,8 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
   <Pos>230,113</Pos>
   <PeakHoldSize>5</PeakHoldSize>
   <PeakHoldTime>400</PeakHoldTime>
+  <PeakFallTime>80</PeakFallTime>
+  <PeakFallStep>1</PeakFallStep>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
