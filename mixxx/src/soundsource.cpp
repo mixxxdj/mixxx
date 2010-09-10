@@ -29,6 +29,9 @@
 
 #include "soundsource.h"
 
+// static
+const bool SoundSource::s_bDebugMetadata = true;
+
 /*
    SoundSource is an Uber-class for the reading and decoding of audio-files.
    Each class must have the following member functions:
@@ -180,6 +183,9 @@ void SoundSource::setChannels(int channels)
 }
 
 bool SoundSource::processTaglibFile(TagLib::File& f) {
+    if (s_bDebugMetadata)
+        qDebug() << "Parsing" << getFilename();
+
     if (f.isValid()) {
         TagLib::Tag *tag = f.tag();
         if (tag) {
@@ -212,7 +218,8 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
                 setTrackNumber(trackNumber);
             }
 
-            qDebug() << "TagLib" << "title" << title << "artist" << artist << "album" << album << "comment" << comment << "genre" << genre << "year" << year << "trackNumber" << trackNumber;
+            if (s_bDebugMetadata)
+                qDebug() << "TagLib" << "title" << title << "artist" << artist << "album" << album << "comment" << comment << "genre" << genre << "year" << year << "trackNumber" << trackNumber;
         }
 
         TagLib::AudioProperties *properties = f.audioProperties();
@@ -222,7 +229,8 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
             int sampleRate = properties->sampleRate();
             int channels = properties->channels();
 
-            qDebug() << "TagLib" << "length" << lengthSeconds << "bitrate" << bitrate << "sampleRate" << sampleRate << "channels" << channels;
+            if (s_bDebugMetadata)
+                qDebug() << "TagLib" << "length" << lengthSeconds << "bitrate" << bitrate << "sampleRate" << sampleRate << "channels" << channels;
 
             setDuration(lengthSeconds);
             setBitrate(bitrate);
@@ -239,16 +247,19 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
 bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     // Print every frame in the file.
-    TagLib::ID3v2::FrameList::ConstIterator it = id3v2->frameList().begin();
-    for(; it != id3v2->frameList().end(); it++) {
-        qDebug() << "ID3V2" << (*it)->frameID().data() << "-"
-                 << TStringToQString((*it)->toString());
+    if (s_bDebugMetadata) {
+        TagLib::ID3v2::FrameList::ConstIterator it = id3v2->frameList().begin();
+        for(; it != id3v2->frameList().end(); it++) {
+            qDebug() << "ID3V2" << (*it)->frameID().data() << "-"
+                     << TStringToQString((*it)->toString());
+        }
     }
 
     TagLib::ID3v2::FrameList bpmFrame = id3v2->frameListMap()["TBPM"];
     if (!bpmFrame.isEmpty()) {
         QString sBpm = TStringToQString(bpmFrame.front()->toString());
-        qDebug() << "BPM" << sBpm;
+        if (s_bDebugMetadata)
+            qDebug() << "BPM" << sBpm;
         if (sBpm.length() > 0) {
             float fBpm = str2bpm(sBpm);
             if (fBpm > 0)
@@ -259,7 +270,8 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
     if (!keyFrame.isEmpty()) {
         QString sKey = TStringToQString(keyFrame.front()->toString());
-        qDebug() << "KEY" << sKey;
+        if (s_bDebugMetadata)
+            qDebug() << "KEY" << sKey;
         // TODO(XXX) write key to SoundSource and copy that to the Track
     }
 
@@ -267,13 +279,17 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 }
 
 bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
-    for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
-        it != ape->itemListMap().end(); ++it) {
-        qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+    if (s_bDebugMetadata) {
+        for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
+            it != ape->itemListMap().end(); ++it) {
+            qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+        }
     }
 
     if (ape->itemListMap().contains("BPM")) {
         QString sBpm = TStringToQString(ape->itemListMap()["BPM"].toString());
+        if (s_bDebugMetadata)
+            qDebug() << "BPM" << sBpm;
         float bpm = str2bpm(sBpm);
         if(bpm > 0.0f) {
             setBPM(bpm);
@@ -283,15 +299,19 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
 }
 
 bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
-    for (TagLib::Ogg::FieldListMap::ConstIterator it = xiph->fieldListMap().begin();
-         it != xiph->fieldListMap().end(); ++it) {
-        qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+    if (s_bDebugMetadata) {
+        for (TagLib::Ogg::FieldListMap::ConstIterator it = xiph->fieldListMap().begin();
+             it != xiph->fieldListMap().end(); ++it) {
+            qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+        }
     }
 
     // Some tags use "BPM" so check for that.
     if (xiph->fieldListMap().contains("BPM")) {
         TagLib::StringList bpmString = xiph->fieldListMap()["BPM"];
         QString sBpm = TStringToQString(bpmString.toString());
+        if (s_bDebugMetadata)
+            qDebug() << "BPM" << sBpm;
         float bpm = str2bpm(sBpm);
         if(bpm > 0.0f) {
             setBPM(bpm);
@@ -302,6 +322,8 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     if (xiph->fieldListMap().contains("TEMPO")) {
         TagLib::StringList bpmString = xiph->fieldListMap()["TEMPO"];
         QString sBpm = TStringToQString(bpmString.toString());
+        if (s_bDebugMetadata)
+            qDebug() << "BPM" << sBpm;
         float bpm = str2bpm(sBpm);
         if(bpm > 0.0f) {
             setBPM(bpm);
@@ -312,14 +334,18 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
 }
 
 bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
-    for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
-        it != mp4->itemListMap().end(); ++it) {
-        qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
+    if (s_bDebugMetadata) {
+        for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
+            it != mp4->itemListMap().end(); ++it) {
+            qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
+        }
     }
 
     // Get BPM
     if (mp4->itemListMap().contains("tmpo")) {
         QString sBpm = TStringToQString(mp4->itemListMap()["tmpo"].toStringList().toString());
+        if (s_bDebugMetadata)
+            qDebug() << "BPM" << sBpm;
         float bpm = str2bpm(sBpm);
         if(bpm > 0.0f) {
             setBPM(bpm);

@@ -227,8 +227,6 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
  */
 int SoundSourceOggVorbis::parseHeader()
 {
-    qDebug() << "Parsing" << getFilename();
-
     setType("ogg");
     TagLib::Ogg::Vorbis::File f(getFilename());
 

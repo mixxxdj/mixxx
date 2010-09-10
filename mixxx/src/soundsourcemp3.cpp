@@ -526,8 +526,6 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 int SoundSourceMp3::parseHeader()
 {
-    qDebug() << "Parsing" << getFilename();
-
     setType("mp3");
     TagLib::MPEG::File f(getFilename());
 

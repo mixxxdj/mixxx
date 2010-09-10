@@ -154,8 +154,6 @@ int SoundSourceSndFile::parseHeader()
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
 
-    qDebug() << "Parsing" << location;
-
     bool result;
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);

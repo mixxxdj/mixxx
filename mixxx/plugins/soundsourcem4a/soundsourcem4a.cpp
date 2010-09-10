@@ -174,7 +174,6 @@ inline long unsigned SoundSourceM4A::length(){
 }
 
 int SoundSourceM4A::parseHeader(){
-
     setType("m4a");
 
     TagLib::MP4::File f(getFilename());
