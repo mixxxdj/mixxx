@@ -264,20 +264,22 @@ int SoundSourceOggVorbis::parseHeader()
     const char* year_p = vorbis_comment_query(comment, (char*)"date", 0);
     const char* genre_p = vorbis_comment_query(comment, (char*)"genre", 0);
     const char* track_p = vorbis_comment_query(comment, (char*)"tracknumber", 0);
-
+    const char* comment_p = vorbis_comment_query(comment, (char*)"description", 0);
 
     if(title_p)
-      this->setTitle(QString::fromUtf8(title_p));
+        setTitle(QString::fromUtf8(title_p));
     if(artist_p)
-      this->setArtist(QString::fromUtf8(artist_p));
+        setArtist(QString::fromUtf8(artist_p));
     if(album_p)
-      this->setAlbum(QString::fromUtf8(album_p));
+        setAlbum(QString::fromUtf8(album_p));
     if(year_p)
-      this->setYear(QString::fromUtf8(year_p));
+        setYear(QString::fromUtf8(year_p));
     if(genre_p)
-      this->setGenre(QString::fromUtf8(genre_p));
+        setGenre(QString::fromUtf8(genre_p));
     if(track_p)
-      this->setTrackNumber(QString::fromUtf8(track_p));
+        setTrackNumber(QString::fromUtf8(track_p));
+    if (comment_p)
+        setComment(QString::fromUtf8(comment_p));
     if (bpm_p) {
         float bpm = str2bpm(bpm_p);
         if(bpm > 0.0f) {
@@ -285,7 +287,7 @@ int SoundSourceOggVorbis::parseHeader()
             //Track->setBpmConfirm(true);
         }
     }
-    //this->setHeaderParsed(true); 
+    //this->setHeaderParsed(true);
 
     this->setType("ogg");
     int duration = (int)ov_time_total(&vf, -1);
