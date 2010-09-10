@@ -271,6 +271,14 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         it != ape->itemListMap().end(); ++it) {
         qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
     }
+
+    if (ape->itemListMap().contains("BPM")) {
+        QString sBpm = TStringToQString(ape->itemListMap()["BPM"].toString());
+        float bpm = str2bpm(sBpm);
+        if(bpm > 0.0f) {
+            setBPM(bpm);
+        }
+    }
     return true;
 }
 
