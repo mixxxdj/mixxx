@@ -15,6 +15,18 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
+
+#include <taglib/tag.h>
+#include <taglib/audioproperties.h>
+#include <taglib/vorbisfile.h>
+#include <taglib/id3v2frame.h>
+#include <taglib/id3v2header.h>
+#include <taglib/id3v1tag.h>
+#include <taglib/tmap.h>
+#include <taglib/tstringlist.h>
+
+
 #include "soundsource.h"
 
 /*
@@ -165,4 +177,104 @@ void SoundSource::setSampleRate(unsigned int samplerate)
 void SoundSource::setChannels(int channels)
 {
     m_iChannels = channels;
+}
+
+bool SoundSource::processTaglibFile(TagLib::File& f) {
+    if (f.isValid()) {
+        TagLib::Tag *tag = f.tag();
+        if (tag) {
+            QString title = TStringToQString(tag->title());
+            QString artist = TStringToQString(tag->artist());
+            QString album = TStringToQString(tag->album());
+            QString comment = TStringToQString(tag->comment());
+            QString genre = TStringToQString(tag->genre());
+            QString year = QString("%1").arg(tag->year());
+            QString trackNumber = QString("%1").arg(tag->track());
+            qDebug() << "TagLib" << "title" << title << "artist" << artist << "album" << album << "comment" << comment << "genre" << genre << "year" << year << "trackNumber" << trackNumber;
+
+            setTitle(title);
+            setArtist(artist);
+            setAlbum(album);
+            setComment(comment);
+            setGenre(genre);
+            setYear(year);
+            setTrackNumber(trackNumber);
+        }
+
+        TagLib::AudioProperties *properties = f.audioProperties();
+        if (properties) {
+            int length = properties->length();
+            int bitrate = properties->bitrate();
+            int sampleRate = properties->sampleRate();
+            int channels = properties->channels();
+
+            qDebug() << "TagLib" << "length" << length << "bitrate" << bitrate << "sampleRate" << sampleRate << "channels" << channels;
+
+            setDuration(length);
+            setBitrate(bitrate);
+            setSampleRate(sampleRate);
+            setChannels(channels);
+        }
+
+        // If we didn't get any audio properties, this was a failure.
+        return properties;
+    }
+    return false;
+}
+
+bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
+
+    // Print every frame in the file.
+    TagLib::ID3v2::FrameList::ConstIterator it = id3v2->frameList().begin();
+    for(; it != id3v2->frameList().end(); it++) {
+        qDebug() << "ID3V2" << (*it)->frameID().data() << "-"
+                 << TStringToQString((*it)->toString());
+    }
+
+    TagLib::ID3v2::FrameList bpmFrame = id3v2->frameListMap()["TBPM"];
+    if (!bpmFrame.isEmpty()) {
+        QString sBpm = TStringToQString(bpmFrame.front()->toString());
+        qDebug() << "BPM" << sBpm;
+        if (sBpm.length() > 0) {
+            float fBpm = str2bpm(sBpm);
+            if (fBpm > 0)
+                setBPM(fBpm);
+        }
+    }
+
+    return true;
+}
+
+bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
+    for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
+        it != ape->itemListMap().end(); ++it) {
+        qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+    }
+    return true;
+}
+
+bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
+    for (TagLib::Ogg::FieldListMap::ConstIterator it = xiph->fieldListMap().begin();
+         it != xiph->fieldListMap().end(); ++it) {
+        qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+    }
+
+    if (xiph->fieldListMap().contains("BPM")) {
+        TagLib::StringList bpmString = xiph->fieldListMap()["BPM"];
+        QString sBpm = TStringToQString(bpmString.toString());
+        float bpm = str2bpm(sBpm);
+        if(bpm > 0.0f) {
+            setBPM(bpm);
+        }
+    }
+
+    return true;
+}
+
+bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
+    for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
+        it != mp4->itemListMap().end(); ++it) {
+        qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
+    }
+    return true;
 }
