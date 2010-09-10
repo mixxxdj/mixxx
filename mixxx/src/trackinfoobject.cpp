@@ -107,6 +107,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_sTitle = "";
     m_sType= "";
     m_sComment = "";
+    m_sYear = "";
     m_sURL = "";
     m_iDuration = 0;
     m_iBitrate = 0;
@@ -307,7 +308,10 @@ bool TrackInfoObject::getHeaderParsed()  const
 void TrackInfoObject::setHeaderParsed(bool parsed)
 {
     QMutexLocker lock(&m_qMutex);
+    bool dirty = m_bHeaderParsed != parsed;
     m_bHeaderParsed = parsed;
+    if (dirty)
+        setDirty(true);
 }
 
 QString TrackInfoObject::getInfo()  const
