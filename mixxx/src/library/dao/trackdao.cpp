@@ -40,7 +40,7 @@ TrackDAO::~TrackDAO()
 
 void TrackDAO::initialize()
 {
-    qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 /** Retrieve the track id for the track that's located at "location" on disk.
@@ -73,8 +73,8 @@ int TrackDAO::getTrackId(QString absoluteFilePath)
     not worth retrieving a whole TrackInfoObject.*/
 QString TrackDAO::getTrackLocation(int trackId)
 {
-    qDebug() << "TrackDAO::getTrackLocation"
-             << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "TrackDAO::getTrackLocation"
+    //         << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     QString trackLocation = "";
     query.prepare("SELECT track_locations.location FROM track_locations INNER JOIN library ON library.location = track_locations.id WHERE library.id=:id");
@@ -572,7 +572,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     }
 
     if (query.numRowsAffected() == 0) {
-        qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
+        //qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
         m_database.rollback();
         return;
     }
@@ -711,7 +711,7 @@ void TrackDAO::detectMovedFiles()
         //If we found a moved track...
         if (newTrackLocationId >= 0)
         {
-            qDebug() << "Found moved track!" << filename;
+            //qDebug() << "Found moved track!" << filename;
 
             //Remove old row from track_locations table
             query2.prepare("DELETE FROM track_locations WHERE "

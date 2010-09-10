@@ -317,10 +317,10 @@ void WaveformRenderer::precomputePixmap() {
     if(m_pSampleBuffer == NULL || m_iNumSamples == 0 || !m_pImage.isNull())
         return;
 
-    qDebug() << "Generating a image!";
+    //qDebug() << "Generating a image!";
 
     int monoSamples = (m_iNumSamples >> 3);
-    qDebug() << monoSamples << " samples for qimage";
+    //qDebug() << monoSamples << " samples for qimage";
     QImage qi(monoSamples, m_iHeight, QImage::Format_RGB32);
 
     QPainter paint;
@@ -328,7 +328,7 @@ void WaveformRenderer::precomputePixmap() {
 
     paint.fillRect(qi.rect(), QBrush(QColor(255,0,0)));//bgColor));//QColor(0,0,0)));
     paint.setPen(QColor(0,255,0));//signalColor);//QColor(0,255,0));
-    qDebug() << "height " << m_iHeight;
+    //qDebug() << "height " << m_iHeight;
     paint.translate(0,m_iHeight/2);
     paint.scale(1.0,-1.0);
     paint.drawLine(QLine(0,0,monoSamples,0));
@@ -346,7 +346,7 @@ void WaveformRenderer::precomputePixmap() {
         //paint.drawLine(QLine(i,-sampr,i,sampl));
     }
     paint.end();
-    qDebug() << "done with image";
+    //qDebug() << "done with image";
     qi.save("/home/rryan/foo.bmp", "BMP", 100);
     m_pImage = qi;
 
