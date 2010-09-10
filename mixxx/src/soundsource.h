@@ -98,6 +98,7 @@ protected:
     bool processAPETag(TagLib::APE::Tag* ape);
     bool processXiphComment(TagLib::Ogg::XiphComment* xiph);
     bool processMP4Tag(TagLib::MP4::Tag* mp4);
+    void processBpmString(QString tagName, QString sBpm);
 
 
     /** File name */
