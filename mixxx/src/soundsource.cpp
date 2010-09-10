@@ -184,33 +184,47 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
         TagLib::Tag *tag = f.tag();
         if (tag) {
             QString title = TStringToQString(tag->title());
-            QString artist = TStringToQString(tag->artist());
-            QString album = TStringToQString(tag->album());
-            QString comment = TStringToQString(tag->comment());
-            QString genre = TStringToQString(tag->genre());
-            QString year = QString("%1").arg(tag->year());
-            QString trackNumber = QString("%1").arg(tag->track());
-            qDebug() << "TagLib" << "title" << title << "artist" << artist << "album" << album << "comment" << comment << "genre" << genre << "year" << year << "trackNumber" << trackNumber;
-
             setTitle(title);
+
+            QString artist = TStringToQString(tag->artist());
             setArtist(artist);
+
+            QString album = TStringToQString(tag->album());
             setAlbum(album);
+
+            QString comment = TStringToQString(tag->comment());
             setComment(comment);
+
+            QString genre = TStringToQString(tag->genre());
             setGenre(genre);
-            setYear(year);
-            setTrackNumber(trackNumber);
+
+            int iYear = tag->year();
+            QString year = "";
+            if (iYear > 0) {
+                year = QString("%1").arg(iYear);
+                setYear(year);
+            }
+
+            int iTrack = tag->track();
+            QString trackNumber = "";
+            if (iTrack > 0) {
+                trackNumber = QString("%1").arg(tag->track());
+                setTrackNumber(trackNumber);
+            }
+
+            qDebug() << "TagLib" << "title" << title << "artist" << artist << "album" << album << "comment" << comment << "genre" << genre << "year" << year << "trackNumber" << trackNumber;
         }
 
         TagLib::AudioProperties *properties = f.audioProperties();
         if (properties) {
-            int length = properties->length();
+            int lengthSeconds = properties->length();
             int bitrate = properties->bitrate();
             int sampleRate = properties->sampleRate();
             int channels = properties->channels();
 
-            qDebug() << "TagLib" << "length" << length << "bitrate" << bitrate << "sampleRate" << sampleRate << "channels" << channels;
+            qDebug() << "TagLib" << "length" << lengthSeconds << "bitrate" << bitrate << "sampleRate" << sampleRate << "channels" << channels;
 
-            setDuration(length);
+            setDuration(lengthSeconds);
             setBitrate(bitrate);
             setSampleRate(sampleRate);
             setChannels(channels);
