@@ -13,6 +13,7 @@
 
 
 class DlgTrackInfo;
+class TrackCollection;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
@@ -22,7 +23,8 @@ class WTrackTableView : public WLibraryTableView
 {
     Q_OBJECT
  	public:
-    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig);
+    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+                    TrackCollection* pTrackCollection);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
     void onSearchStarting();
@@ -41,6 +43,7 @@ private slots:
     void slotShowTrackInfo();
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
+    void slotSendToAutoDJ();
 signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, int player);
@@ -57,6 +60,7 @@ private:
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
 
     ConfigObject<ConfigValue> * m_pConfig;
+    TrackCollection* m_pTrackCollection;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
 
@@ -68,8 +72,8 @@ private:
     //Used for right-click operations
     /** Right-click menu */
     QMenu *m_pMenu;
-    /**Send to Play Queue Action**/
-    QAction *m_pPlayQueueAct;
+    /**Send to AutoDJ Action**/
+    QAction *m_pAutoDJAct;
     /**Send to Player 1 Action**/
     QAction *m_pPlayer1Act;
     /**Send to Player 2 Action**/

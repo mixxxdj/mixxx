@@ -263,7 +263,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS;
+    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
 }
 
 /*

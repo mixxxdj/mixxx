@@ -8,17 +8,20 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
 #include "library/librarytablemodel.h"
+#include "library/trackcollection.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "wtracktableview.h"
 #include "dlgtrackinfo.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
-                                 ConfigObject<ConfigValue> * pConfig)
+                                 ConfigObject<ConfigValue> * pConfig,
+                                 TrackCollection* pTrackCollection)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
           m_searchThread(this) {
 
     pTrackInfo = new DlgTrackInfo(this);
@@ -49,7 +52,7 @@ WTrackTableView::~WTrackTableView()
         pHeader->saveHeaderState();
     }
 
-    delete m_pPlayQueueAct;
+    delete m_pAutoDJAct;
     delete m_pPlayer1Act;
     delete m_pPlayer2Act;
     delete m_pRemoveAct;
@@ -159,20 +162,14 @@ void WTrackTableView::createActions()
     m_pPropertiesAct = new QAction(tr("Properties..."), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowTrackInfo()));
 
-    m_pPlayQueueAct = new QAction(tr("Add to Play Queue"),this);
-    //connect(m_pPlayQueueAct, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
+    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue"),this);
+    connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
  	//m_pRenamePlaylistAct = new QAction(tr("Rename..."), this);
  	//connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
 
  	//Create all the "send to->playlist" actions.
  	//updatePlaylistActions();
-
-    m_pMenu->addAction(m_pPlayer1Act);
-    m_pMenu->addAction(m_pPlayer2Act);
-    m_pMenu->addSeparator();
-    m_pMenu->addAction(m_pRemoveAct);
-    m_pMenu->addAction(m_pPropertiesAct);
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
@@ -291,6 +288,18 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pPlayer1Act->setEnabled(false);
     if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
         m_pPlayer2Act->setEnabled(false);
+
+    m_pMenu->clear();
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        m_pMenu->addAction(m_pAutoDJAct);
+        m_pMenu->addSeparator();
+    }
+    m_pMenu->addAction(m_pPlayer1Act);
+    m_pMenu->addAction(m_pPlayer2Act);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pRemoveAct);
+    m_pMenu->addAction(m_pPropertiesAct);
 
     //Create the right-click menu
     m_pMenu->popup(event->globalPos());
@@ -529,7 +538,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 //Add all the dropped URLs/tracks to the track model (playlist/crate)
                 foreach (url, urls)
                 {
-                    QFileInfo file(url.toString());
+                    QFileInfo file(url.toLocalFile());
                     if (!trackModel->addTrack(destIndex, file.absoluteFilePath()))
                         numNewRows--; //# of rows to select must be decremented if we skipped some tracks
                 }
@@ -586,4 +595,27 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
     }
     else
         QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::slotSendToAutoDJ() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ))
+        return;
+
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+
+    if (iAutoDJPlaylistId == -1)
+        return;
+
+    TrackModel* trackModel = getTrackModel();
+    foreach (QModelIndex index, m_selectedIndices) {
+        TrackPointer pTrack;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            int iTrackId = pTrack->getId();
+            if (iTrackId != -1) {
+                playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+            }
+        }
+    }
 }

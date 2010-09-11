@@ -377,5 +377,11 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER;
+    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOPLAYLIST;
+
+    // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
+    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE))
+        caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+
+    return caps;
 }
