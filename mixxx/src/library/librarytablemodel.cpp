@@ -105,6 +105,13 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
     //      and there's no arbitrary "unsorted" view.
     QFileInfo fileInfo(location);
     if (m_trackDao.trackExistsInDatabase(fileInfo.absoluteFilePath())) {
+        
+        //If the track is already in the library, make sure it's marked as 
+        //not deleted. (This lets the user unremove a track from the library
+        //by dragging-and-dropping it back into the library view.)
+        int id = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
+        m_trackDao.unremoveTrack(id);
+        select();
         return true;
     }
 
