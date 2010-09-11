@@ -328,7 +328,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         Chunk* current = getChunk(chunk_num, &cache_miss);
 
         if (cache_miss) {
-            qDebug() << "Cache miss in read() on chunk" << chunk_num;
+            //qDebug() << "Cache miss in read() on chunk" << chunk_num;
         }
 
         // getChunk gets a chunk at any cost. If it has failed to lookup the
