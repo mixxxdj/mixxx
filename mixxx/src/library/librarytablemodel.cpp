@@ -100,16 +100,20 @@ LibraryTableModel::~LibraryTableModel()
 
 bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 {
-	//Note: The model index is ignored when adding to the library track collection.
-	//      The position in the library is determined by whatever it's being sorted by,
-	//      and there's no arbitrary "unsorted" view.
+    //Note: The model index is ignored when adding to the library track collection.
+    //      The position in the library is determined by whatever it's being sorted by,
+    //      and there's no arbitrary "unsorted" view.
     QFileInfo fileInfo(location);
-	int trackId = m_trackDao.addTrack(fileInfo.absoluteFilePath());
-	select(); //Repopulate the data model.
+    if (m_trackDao.trackExistsInDatabase(fileInfo.absoluteFilePath())) {
+        return true;
+    }
+
+    int trackId = m_trackDao.addTrack(fileInfo);
+    select(); //Repopulate the data model.
+
     if (trackId >= 0)
         return true;
-    else
-        return false;
+    return false;
 }
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
