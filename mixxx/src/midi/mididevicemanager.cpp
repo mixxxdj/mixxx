@@ -18,6 +18,7 @@
 #include "mididevice.h"
 #include "dlgprefmidibindings.h"
 #include "mididevicemanager.h"
+#include "midiledhandler.h"
 #include "../mixxxcontrol.h"
 #include "midimapping.h"
 
@@ -38,6 +39,7 @@ MidiDeviceManager::~MidiDeviceManager()
 {
     //Delete enumerators and they'll delete their Devices
     delete m_pPMEnumerator;
+    MidiLedHandler::destroyHandlers();
 #ifdef __HSS1394__
     delete m_pHSSEnumerator;
 #endif

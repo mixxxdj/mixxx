@@ -22,7 +22,11 @@
 #include <qobject.h>
 
 #define MAX_SEEK_SPEED 4.0f
-#define MIN_SEEK_SPEED 0.0001f
+#define MIN_SEEK_SPEED 0.010f 
+// I'll hurt you if you change MIN_SEEK_SPEED. SoundTouch freaks out and
+// just gives us stuttering if you set the speed to be lower than this.
+// This took me ages to figure out. 
+// -- Albert July 17, 2010.
 
 class ReaderExtractWave;
 

@@ -25,22 +25,25 @@
 #include <q3valuelist.h>
 #include <QMutex>
 #include <QVector>
+#include <QSharedPointer>
+#include <QWeakPointer>
 
 #include "defs.h"
 
 #include "library/dao/cue.h"
-#include "library/dao/trackdao.h"
 
 class QString;
 class QDomElement;
 class QDomDocument;
 class QDomNode;
 class ControlObject;
-class BpmDetector;
-class BpmReceiver;
-class BpmScheme;
 class TrackPlaylist;
 class Cue;
+
+class TrackInfoObject;
+
+typedef QSharedPointer<TrackInfoObject> TrackPointer;
+typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
 #include "segmentation.h"
 
@@ -49,9 +52,9 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString sLocation="");
+    TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(QFileInfo& fileInfo);
+    TrackInfoObject(QFileInfo& fileInfo, bool parseHeader=true);
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
@@ -192,6 +195,10 @@ public:
 
     bool isDirty();
 
+    // Signals to the creator of this TrackInfoObject to save the Track as it
+    // may be deleted.
+    void doSave();
+
     // Returns true if the track location has changed
     bool locationChanged();
 
@@ -211,11 +218,12 @@ public:
     void changed();
     void dirty();
     void clean();
+    void save();
 
   private:
 
     // Common initialization function between all TIO constructors.
-    void initialize();
+    void initialize(bool parseHeader);
 
     // Initialize all the location variables.
     void populateLocation(QFileInfo& fileInfo);

@@ -32,14 +32,13 @@
   */
 
 class WaveformRenderer;
-class TrackInfoObject;
 
 class WVisualSimple : public WWidget
 {
     Q_OBJECT
-public:
+  public:
     WVisualSimple(const char* group, QWidget *parent=0);
-    ~WVisualSimple();
+    virtual ~WVisualSimple();
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
@@ -48,14 +47,14 @@ public:
     void mouseReleaseEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
 
-signals:
+  signals:
     void trackDropped(QString filename);
 
-public slots:
+  public slots:
     void setValue(double) {};
-    void slotNewTrack(TrackInfoObject* track);
-    
-protected:
+    void refresh();
+
+  protected:
     int m_iStartPosX, m_iValue;
     QPoint m_qMarkerPos1, m_qMarkerPos2, m_qMousePos;
 

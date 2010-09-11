@@ -178,7 +178,7 @@ void WTrackTableView::createActions()
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 {
     TrackModel* trackModel = getTrackModel();
-    TrackInfoObject* pTrack = NULL;
+    TrackPointer pTrack;
     if (trackModel && (pTrack = trackModel->getTrack(index))) {
         emit(loadTrack(pTrack));
     }
@@ -188,7 +188,7 @@ void WTrackTableView::slotLoadPlayer1() {
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
-        TrackInfoObject* pTrack = NULL;
+        TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
             emit(loadTrackToPlayer(pTrack, 1));
@@ -200,7 +200,7 @@ void WTrackTableView::slotLoadPlayer2() {
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
-        TrackInfoObject* pTrack = NULL;
+        TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
             emit(loadTrackToPlayer(pTrack, 2));
@@ -263,7 +263,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     if (!trackModel)
         return;
 
-    TrackInfoObject* pTrack = trackModel->getTrack(index);
+    TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
     pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;

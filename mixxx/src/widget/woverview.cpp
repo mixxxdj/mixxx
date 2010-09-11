@@ -161,6 +161,11 @@ void WOverview::setValue(double fValue)
     }
 }
 
+void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
+{
+    slotLoadNewWaveform(pTrack.data());
+}
+
 void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
 {
     //Update this widget with new waveform summary data from the new track.
@@ -169,14 +174,14 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
     update();
 }
 
-void WOverview::slotUnloadTrack(TrackInfoObject* pTrack) {
+void WOverview::slotUnloadTrack(TrackPointer pTrack) {
     QByteArray ba;
     setData(&ba, 0);
     update();
 }
 
 void WOverview::cueChanged(double v) {
-    qDebug() << "WOverview::cueChanged()";
+    //qDebug() << "WOverview::cueChanged()";
     QObject* pSender = sender();
     if (!pSender)
         return;
@@ -186,7 +191,7 @@ void WOverview::cueChanged(double v) {
 
     int hotcue = m_hotcueMap[pSender];
     m_hotcues[hotcue] = v;
-    qDebug() << "hotcue" << hotcue << "position" << v;
+    //qDebug() << "hotcue" << hotcue << "position" << v;
     update();
 }
 

@@ -23,7 +23,7 @@
 #include <qstring.h>
 //Added by qt3to4:
 #include <QPaintEvent>
-#include <QTimer>
+#include <QTime>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -31,7 +31,7 @@
 
 class WVuMeter : public WWidget  {
    Q_OBJECT
-public: 
+public:
     WVuMeter(QWidget *parent=0);
     ~WVuMeter();
     void setup(QDomNode node);
@@ -39,7 +39,7 @@ public:
     void setValue(double fValue);
 
 protected slots:
-    void slotUpdatePeak();
+    void updateState(int msecsElapsed);
 
 private:
     /** Set position number to zero and deallocate pixmaps */
@@ -61,8 +61,9 @@ private:
     int m_iPeakHoldTime;
     int m_iPeakFallTime;
     int m_iPeakPos;
+    int m_iPeakHoldCountdown;
 
-    QTimer m_qTimer;
+    QTime m_lastUpdate;
 };
 
 #endif

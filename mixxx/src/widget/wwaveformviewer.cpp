@@ -16,7 +16,6 @@
 
 WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) : QWidget(parent, f)
 {
-
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
 
@@ -25,19 +24,10 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
     setAcceptDrops(true);
 
     installEventFilter(this);
-
-    // Start a timer based on our desired FPS
-    // TODO Eventually make this user-configurable.
-    int desired_fps = 1;
-    int update_interval = 1000 / desired_fps;
-    m_iTimerID = startTimer(update_interval);
-
     m_painting = false;
 }
 
 WWaveformViewer::~WWaveformViewer() {
-    // Stop the timer we started
-    killTimer(m_iTimerID);
 }
 
 void WWaveformViewer::setup(QDomNode node) {
@@ -76,7 +66,7 @@ void WWaveformViewer::paintEvent(QPaintEvent *event) {
     // QPainter goes out of scope and is destructed
 }
 
-void WWaveformViewer::timerEvent(QTimerEvent *qte) {
+void WWaveformViewer::refresh() {
     //m_paintMutex.lock();
     if(!m_painting) {
         m_painting = true;
@@ -105,7 +95,7 @@ bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
             // start at the middle of 0-127, and emit values based on
             // how far the mouse has travelled horizontally
-            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
+            double v = 64 + (double)(m->x()-m_iMouseStart)/100;
             // clamp to 0-127
             if(v<0)
                 v = 0;
@@ -140,7 +130,7 @@ void WWaveformViewer::dropEvent(QDropEvent * event)
         QString name = url.toLocalFile();
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "")
-            name = url.toString(); 
+            name = url.toString();
 
         event->accept();
         emit(trackDropped(name));

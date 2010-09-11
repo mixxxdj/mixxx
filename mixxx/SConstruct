@@ -1,74 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 
-import sys, os, platform
+#Run our configuration stuff to setup our build environment (detect platform/arch, find libraries, etc)
+SConscript(File('src/SConscript.env'), duplicate=0) 
 
-architecture = platform.architecture()
-machine = platform.machine()
-Export('architecture')
+#Grab some variables, created by SConscript.env, that we'll need to do the rest of the build
+#and installation.
+Import('env', 'sources', 'flags') 
+Import('build_dir', 'platformString')
 
-bitwidth = architecture[0][0:2];	# "32" or "64"
+# Make the main src directory accessible to the SoundSourceM4A, so
+# SoundSourceM4A can get at sounddevice.cpp, which it needs to build
+# and link properly. This sucks but it's the best way I can find -- bkgood
+VariantDir("plugins/soundsourcem4a", "src", duplicate=0)
+#Build our soundsource plugins
+soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0, exports=['env', 'flags', 'platformString'])
 
-if os.name == 'nt':
-	print 'Platform: Windows ' + machine + ' (' + architecture[0] + ')'
-	platform = 'windows'
-elif sys.platform == 'linux2':
-     print 'Platform: Linux ' + machine + ' (' + architecture[0] + ')'
-     platform = 'linux'
-elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
-     print 'Platform: BSD ' + machine + ' (' + architecture[0] + ')'
-     platform = 'bsd'
-elif sys.platform == 'darwin':
-     print 'Platform: OS X ' + machine + ' (' + architecture[0] + ')'
-     platform = 'osx'
-else:
-	print 'Platform: Unknown (assuming Linux-like,) ' + machine + ' (' + architecture[0] + ')'
-	platform = 'linux'
-
-# Allow to override auto-detection (environment variables must already be set appropriately with SETENV.CMD /xp /x86 or /x64)
-# (Auto-detection of 64-bit only works correctly if you're running a 64-bit version of Python, otherwise it'll see an x86 system)
-flags_force32 = ARGUMENTS.get('force32', 0)
-flags_force64 = ARGUMENTS.get('force64', 0)
-if int(flags_force32) and not int(flags_force64):
-	if 'win' in platform:
-		machine = 'x86'
-	else:
-		env.Append(CCFLAGS = '-m32')
-		env.Append(CXXFLAGS = '-m32')
-		env.Append(LINKFLAGS = '-m32')
-	bitwidth = '32'
-	print 'FORCING ' +bitwidth+ '-BIT BUILD: ' + platform + ' ' + machine + ' (' + bitwidth + 'bit)'
-
-#force 64-bit compile
-if int(flags_force64) and not int(flags_force32):
-	if 'win' in platform:
-		machine = 'AMD64'
-	else:
-		env.Append(CCFLAGS = '-m64')
-		env.Append(CXXFLAGS = '-m64')
-		env.Append(LINKFLAGS = '-m64')
-	bitwidth = '64'
-	print 'FORCING ' +bitwidth+ '-BIT BUILD: ' + platform + ' ' + machine + ' (' + bitwidth + 'bit)'
-
-print 'Binary format: ' + architecture[1]
-
-build_dir = '%s%s_build' % (platform[0:3],bitwidth)
-
-Export('machine')	#So architecture-specific decisions & optimizations can be made in the SConscript
-Export('bitwidth')
-Export('platform')
-Export('build_dir')
-
-SConscript(File('src/SConscript.env'), build_dir=Dir(build_dir), duplicate=0) 
-Import('env', 'sources', 'flags') #Grab these, created by SConscript.env
-soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0, exports=['env', 'flags'])
+#Setup and build the "mixxx" executable target. Also sets up our install targets for each platform.
 SConscript(File('src/SConscript'), build_dir=Dir(build_dir), duplicate=0, exports=['env', 'sources', 'flags', 'soundsource_plugins']) 
 
+
+#Conveniece - Copy over the Mixxx executable out of the build directory and into the bottom of the source
+#             tree. (That should be the directory where you run "scons".)
 #wtf doesn't this work on win32 (works on Linux, OS X):
 Command("mixxx", os.path.join(build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
-
 #hack for windows:
 Copy("mixxx", os.path.join(build_dir, "mixxx"))
 
-#on OS X, if the bundle has been built, copy it up:
+#On OS X, if the bundle has been built, copy it up:
 #Command("Mixxx.app", os.path.join(build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))

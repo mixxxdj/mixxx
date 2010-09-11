@@ -20,8 +20,6 @@ class CrateDAO : public virtual DAO {
     // Initialize this DAO, create the tables it relies on, etc.
     void initialize();
 
-
-
     unsigned int crateCount();
     bool createCrate(const QString& name);
     bool deleteCrate(int crateId);
