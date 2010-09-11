@@ -129,11 +129,12 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
     location = fileInfo.absoluteFilePath();
+
+    int trackId = -1;
     if (!m_trackDao.trackExistsInDatabase(location))
-    {
-        m_trackDao.addTrack(location);
-    }
-    int trackId = m_trackDao.getTrackId(location);
+        trackId = m_trackDao.addTrack(location);
+    else
+        trackId = m_trackDao.getTrackId(location);
 
     // Do nothing if the location still isn't in the database.
     if (trackId == -1)
