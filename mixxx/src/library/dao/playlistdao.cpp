@@ -22,7 +22,7 @@ void PlaylistDAO::initialize()
 /** Create a playlist with the given name.
     @param name The name of the playlist to be created.
 */
-void PlaylistDAO::createPlaylist(QString name, bool hidden)
+bool PlaylistDAO::createPlaylist(QString name, bool hidden)
 {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
@@ -38,7 +38,7 @@ void PlaylistDAO::createPlaylist(QString name, bool hidden)
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();
-        return;
+        return false;
     }
     //query.finish();
 
@@ -61,11 +61,13 @@ void PlaylistDAO::createPlaylist(QString name, bool hidden)
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();
+        return false;
     }
     //query.finish();
 
     //Commit the transaction
     m_database.commit();
+    return true;
 }
 
 /** Find out the name of the playlist at the given position */
