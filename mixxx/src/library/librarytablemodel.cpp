@@ -104,22 +104,22 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
     //      The position in the library is determined by whatever it's being sorted by,
     //      and there's no arbitrary "unsorted" view.
     QFileInfo fileInfo(location);
-    if (m_trackDao.trackExistsInDatabase(fileInfo.absoluteFilePath())) {
-        
-        //If the track is already in the library, make sure it's marked as 
+
+    int trackId = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
+    if (trackId >= 0) {
+        //If the track is already in the library, make sure it's marked as
         //not deleted. (This lets the user unremove a track from the library
         //by dragging-and-dropping it back into the library view.)
-        int id = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
-        m_trackDao.unremoveTrack(id);
+        m_trackDao.unremoveTrack(trackId);
         select();
         return true;
     }
 
-    int trackId = m_trackDao.addTrack(fileInfo);
-    select(); //Repopulate the data model.
-
-    if (trackId >= 0)
+    trackId = m_trackDao.addTrack(fileInfo);
+    if (trackId >= 0) {
+        select(); //Repopulate the data model.
         return true;
+    }
     return false;
 }
 
