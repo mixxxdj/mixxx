@@ -255,5 +255,6 @@ QVariant CrateTableModel::data(const QModelIndex& item, int role) const {
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_RECEIVEDROPS;
+    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
 }
