@@ -8,9 +8,13 @@
 #include <QSet>
 #include <QHash>
 #include <QSqlDatabase>
+#include <QSharedPointer>
+#include <QWeakPointer>
+#include <QCache>
+
+#include "trackinfoobject.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
-class TrackInfoObject;
 
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
@@ -19,6 +23,7 @@ const QString LIBRARYTABLE_ALBUM = "album";
 const QString LIBRARYTABLE_YEAR = "year";
 const QString LIBRARYTABLE_GENRE = "genre";
 const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
+const QString LIBRARYTABLE_FILETYPE = "filetype";
 const QString LIBRARYTABLE_LOCATION = "location";
 const QString LIBRARYTABLE_COMMENT = "comment";
 const QString LIBRARYTABLE_DURATION = "duration";
@@ -48,11 +53,12 @@ Q_OBJECT
     int addTrack(QString absoluteFilePath);
     int addTrack(QFileInfo& fileInfo);
     void removeTrack(int id);
-    TrackInfoObject *getTrack(int id) const;
+    TrackPointer getTrack(int id) const;
     bool isDirty(int trackId);
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
+    void markTracksInDirectoryAsVerified(QString directory);
     void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
@@ -64,22 +70,37 @@ Q_OBJECT
     void trackChanged(int trackId);
 
   public slots:
-    void saveTrack(TrackInfoObject* pTrack);
+    // The public interface to the TrackDAO requires a TrackPointer so that we
+    // have a guarantee that the track will not be deleted while we are working
+    // on it. However, private parts of TrackDAO can use the raw saveTrack(TIO*)
+    // call.
+    void saveTrack(TrackPointer pTrack);
 
     // TrackDAO provides a cache of TrackInfoObject's that have been requested
     // via getTrack(). saveDirtyTracks() saves all cached tracks marked dirty
     // to the database.
     void saveDirtyTracks();
 
+    // Clears the cached TrackInfoObjects, which can be useful when the 
+    // underlying database tables change (eg. during a library rescan,
+    // we might detect that a track has been moved and modify the update
+    // the tables directly.)
+    void clearCache();
+
   private slots:
     void slotTrackDirty();
     void slotTrackChanged();
+    void slotTrackSave();
 
   private:
+    void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
-    void addTrack(TrackInfoObject * pTrack);
-    TrackInfoObject *getTrackFromDB(QSqlQuery &query) const;
+    void addTrack(TrackInfoObject* pTrack);
+    TrackPointer getTrackFromDB(QSqlQuery &query) const;
     QString absoluteFilePath(QString location);
+
+    // Called when the TIO reference count drops to 0
+    static void deleteTrack(TrackInfoObject* pTrack);
 
     // Prevents evil copy constructors! (auto-generated ones by the compiler
     // that don't compile)
@@ -98,8 +119,9 @@ Q_OBJECT
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
-    mutable QHash<int, TrackInfoObject*> m_tracks;
+    mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;
+    mutable QCache<int,TrackPointer> m_trackCache;
 };
 
 #endif //TRACKDAO_H

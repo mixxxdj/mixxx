@@ -13,8 +13,9 @@
 #include <QAbstractItemModel>
 #include <QUrl>
 
+#include "trackinfoobject.h"
+
 class TrackModel;
-class TrackInfoObject;
 class WLibrarySidebar;
 class WLibrary;
 class MixxxKeyboard;
@@ -33,9 +34,9 @@ class LibraryFeature : public QObject {
     virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) = 0;
 
     // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrarySidebar* sidebarWidget,
-                            WLibrary* libraryWidget,
-                            MixxxKeyboard* keyboard) {
+    virtual void bindWidget(WLibrarySidebar* /* sidebarWidget */,
+                            WLibrary* /* libraryWidget */,
+                            MixxxKeyboard* /* keyboard */) {
     }
     virtual QAbstractItemModel* getChildModel() = 0;
 
@@ -48,8 +49,8 @@ class LibraryFeature : public QObject {
     void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void loadTrack(TrackInfoObject* pTrack);
-    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, int player);
     void restoreSearch(const QString&);
 };
 

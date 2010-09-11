@@ -228,7 +228,7 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
                 list.append(QString("%1,").arg(cue->getId()));
         }
     }
-    qDebug() << "Saving cues took " << time.elapsed() << "ms";
+    //qDebug() << "Saving cues took " << time.elapsed() << "ms";
     time.start();
 
     // Strip the last ,
@@ -244,5 +244,5 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
         qDebug() << "Delete cues failed:" << query.lastError();
         qDebug() << query.executedQuery();
     }
-    qDebug() << "Deleting cues took " << time.elapsed() << "ms";
+    //qDebug() << "Deleting cues took " << time.elapsed() << "ms";
 }

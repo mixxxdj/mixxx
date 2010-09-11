@@ -38,7 +38,7 @@ plugins = []
 
 
 Import('build_dir')
-Import('platform')
+Import('platformString')
 Import('env')
 Import('sources')
 Import('flags')
@@ -49,7 +49,7 @@ Import('bitwidth')
 
 #Tell SCons to build Mixxx
 #=========================
-if 'win' in platform:
+if 'win' in platformString:
 	dist_dir = 'dist'+bitwidth
 	mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
@@ -118,7 +118,7 @@ if int(flags['script']) or int(flags['midiscript']):
 
 
 
-if platform in ('linux', 'bsd'):
+if platformString in ('linux', 'bsd'):
 	flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
 	if not os.path.exists(flags['prefix']):
 		print "Error: Prefix path does not exist!"
@@ -179,7 +179,7 @@ if platform in ('linux', 'bsd'):
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
-if platform == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
+if platformString == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
 	ARCH="macintel" #XXX should get this from scons or the system somehow?
@@ -213,7 +213,7 @@ if platform == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
-if 'win' in platform:
+if 'win' in platformString:
 	skins = env.Install("#"+dist_dir+"/skins", skin_files)
 	resource = env.Install("#"+dist_dir+"/", resource_files)
 	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)

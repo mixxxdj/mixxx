@@ -154,10 +154,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     addControl(m_pBpmControl);
 
     m_pReader = new CachingReader(_group, _config);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackInfoObject*, int, int)),
-            this, SLOT(slotTrackLoaded(TrackInfoObject*, int, int)));
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackInfoObject*, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackInfoObject*, QString)));
+    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -277,7 +277,7 @@ double EngineBuffer::getRate()
     return m_pRateControl->getRawRate();
 }
 
-void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
+void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     pause.lock();
@@ -294,7 +294,7 @@ void EngineBuffer::slotTrackLoaded(TrackInfoObject *pTrack,
     emit(trackLoaded(pTrack));
 }
 
-void EngineBuffer::slotTrackLoadFailed(TrackInfoObject* pTrack,
+void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     pause.lock();
     file_srate_old = 0;
@@ -494,6 +494,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed.
             filepos_play += idx;
+            filepos_play = math_max(0, filepos_play); 
+            // We need the above protection against negative playpositions
+            // in case SoundTouch/EngineBufferSoundTouch gives us too many samples. 
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -577,7 +580,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 playButton->set(0.);
                 break;
             case TRACK_END_MODE_NEXT:
-                m_pTrackEnd->set(1.);
+                //m_pTrackEnd->set(1.);
+                playButton->set(0.);
                 emit(loadNextTrack());
                 break;
 
@@ -701,10 +705,10 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
-void EngineBuffer::loadTrack(TrackInfoObject *pTrack) {
+void EngineBuffer::loadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
-    
+
     //Stop playback
     playButtonCOT->slotSet(0.0);
 

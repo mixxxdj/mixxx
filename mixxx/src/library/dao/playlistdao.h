@@ -3,7 +3,6 @@
 
 #include <QSqlDatabase>
 #include "library/dao/dao.h"
-class TrackInfoObject;
 
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
@@ -15,7 +14,7 @@ class PlaylistDAO : public virtual DAO {
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     /** Create a playlist */
-    void createPlaylist(QString name, bool hidden = false);
+    bool createPlaylist(QString name, bool hidden = false);
     /** Delete a playlist */
     void deletePlaylist(int playlistId);
     /** Append a track to a playlist */

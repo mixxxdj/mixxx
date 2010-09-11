@@ -4,6 +4,7 @@
 #include <QItemSelection>
 #include "ui_dlgautodj.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
@@ -30,8 +31,8 @@ public slots:
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
 signals:
-    void loadTrack(TrackInfoObject* tio);
-    void loadTrackToPlayer(TrackInfoObject* tio, int player);
+    void loadTrack(TrackPointer tio);
+    void loadTrackToPlayer(TrackPointer tio, int player);
 private:
     bool loadNextTrackFromQueue(bool removeTopMostBeforeLoading);
 

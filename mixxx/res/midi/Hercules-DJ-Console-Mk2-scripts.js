@@ -251,7 +251,22 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
 
     case "cue": 
     case "loop":
-	print("HerculesMk2.buttons123: " + mode + " mode not supported yet");
+        if (value) { // Button pressed.
+            switch (HerculesMk2.controls.inputs[control].name) {
+            case "fx 1": // "fx 1,2,3" should be globally renamed as said before?...
+                // trigger loop in
+                engine.setValue(group,"loop_in", !engine.getValue(group,"start")); // Am I correct?
+                break;
+            case "fx 2":
+                // trigger loop out
+                engine.setValue(group,"loop_out", !engine.getValue(group,"end")); // Am I correct?
+                break;
+            case "fx 3":
+                // trigger loop exit
+                engine.setValue(group,"reloop_exit", !engine.getValue(group,"loop")); // Am I correct?
+                break;
+           }
+        }
 	break;
 
     default: 
@@ -278,7 +293,7 @@ HerculesMk2.buttons123mode = function (group, control, value, status) {
 	    print("HerculesMk2.buttons123mode: " + sNextMode + " mode not supported yet");
 	    break;
 	default:
-	    print("HerculesMk2.buttons123mode: " + sNextMode + " mode unsupported");
+	    print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");
 	}
 
 	// Only turn on/off leds for non-zero modes as 0 is kill mode which

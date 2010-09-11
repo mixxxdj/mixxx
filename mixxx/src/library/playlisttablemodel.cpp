@@ -50,6 +50,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
@@ -91,6 +92,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
     setHeaderData(fieldIndex("location"),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -143,7 +146,7 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     return true;
 }
 
-TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
+TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 

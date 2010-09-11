@@ -9,7 +9,9 @@
 
 #include "ui_dlgtrackinfo.h"
 
-class TrackInfoObject;
+#include "trackinfoobject.h"
+#include "controlbeat.h"
+
 class Cue;
 
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
@@ -21,7 +23,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
-    void loadTrack(TrackInfoObject* pTrack);
+    void loadTrack(TrackPointer pTrack);
 
   signals:
     void next();
@@ -41,13 +43,22 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTap();
 
+    void reloadTrackMetadata();
+
   private:
+    void populateFields(TrackPointer pTrack);
+    void populateCues(TrackPointer pTrack);
     void unloadTrack(bool save);
     void clear();
 
     QHash<int, Cue*> m_cueMap;
-    TrackInfoObject* m_pLoadedTrack;
+    TrackPointer m_pLoadedTrack;
+
+    CSAMPLE m_bpmTapFilter[filterLength];
+    QTime m_bpmTapTimer;
+
     QMutex m_mutex;
+
 };
 
 #endif /* DLGTRACKINFO_H */

@@ -34,7 +34,7 @@ void WaveformRenderSignalPixmap::resize(int w, int h) {
     m_screenPixmap.fill(QColor(0,0,0,0));
 }
 
-void WaveformRenderSignalPixmap::newTrack(TrackInfoObject* pTrack) {
+void WaveformRenderSignalPixmap::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
 }
 
@@ -60,7 +60,7 @@ void WaveformRenderSignalPixmap::updatePixmap(QVector<float> *buffer, double dPl
     if(dPlayPos >= 0) {
         iCurPos = (int)(dPlayPos*numBufferSamples);
     }
-        
+
     if((iCurPos % 2) != 0)
         iCurPos--;
 
@@ -112,7 +112,7 @@ void WaveformRenderSignalPixmap::updatePixmap(QVector<float> *buffer, double dPl
 
     //qDebug() << "startPixel " << startPixel;
     //qDebug() << "endPixel " << endPixel;
-    
+
     painter.scale(1.0/subpixelsPerPixel,m_iHeight*0.40);
 
     // If the array is not large enough, expand it.
@@ -121,12 +121,12 @@ void WaveformRenderSignalPixmap::updatePixmap(QVector<float> *buffer, double dPl
         m_lines.resize(2*subpixelWidth);
     }
 
-    
+
     painter.drawPixmap(oldPoint, m_screenPixmap);
     painter.eraseRect(newRect);
-    
+
     //painter.fillRect(newRect, QColor(0,0,0,0));
-    
+
     int halfw = subpixelWidth/2;
     for(int i=startPixel;i<endPixel;i++) {
         // Start at curPos minus half the waveform viewer
@@ -142,9 +142,9 @@ void WaveformRenderSignalPixmap::updatePixmap(QVector<float> *buffer, double dPl
 
     // Only draw lines that we have provided
     painter.drawLines(m_lines.data()+startPixel, endPixel-startPixel);
-    
+
     painter.end();
-    
+
     m_iLastPlaypos = iCurPos;
 
 }

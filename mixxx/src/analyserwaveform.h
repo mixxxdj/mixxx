@@ -5,16 +5,16 @@
 
 class AnalyserWaveform : public Analyser {
 
-public:
-	AnalyserWaveform();
-	void initialise(TrackInfoObject* tio, int sampleRate, int totalSamples);
-	void process(const CSAMPLE *pIn, const int iLen);
-	void finalise(TrackInfoObject* tio);
+  public:
+    AnalyserWaveform();
+    void initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    void process(const CSAMPLE *pIn, const int iLen);
+    void finalise(TrackPointer tio);
 
-private:
-	QVector<float> *downsample;
+  private:
+    QVector<float> *downsample;
     float *downsampleVector;
-    
+
     int m_iStartTime;
     int m_iStrideLength;
     int m_iCurPos;

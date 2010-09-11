@@ -15,7 +15,6 @@ LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
 
 LibraryHashDAO::~LibraryHashDAO()
 {
-
 }
 
 void LibraryHashDAO::initialize()
@@ -62,7 +61,7 @@ void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
     if (!query.exec()) {
         qDebug() << "Creating new dirhash failed:" << query.lastError();
     }
-    qDebug() << "created new hash" << hash;
+    //qDebug() << "created new hash" << hash;
 }
 
 void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_deleted)
@@ -79,7 +78,7 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
     if (!query.exec()) {
         qDebug() << "Updating existing dirhash failed:" << query.lastError();
     }
-    qDebug() << "updated old existing hash" << newHash << dirPath << dir_deleted;
+    //qDebug() << "updated old existing hash" << newHash << dirPath << dir_deleted;
 
     //DEBUG: Print out the directory hash we just saved to verify...
     //qDebug() << getDirectoryHash(dirPath);
@@ -110,4 +109,13 @@ void LibraryHashDAO::markAllDirectoriesAsDeleted()
     if (!query.exec()) {
         qDebug() << query.lastError();
     }
+}
+
+void LibraryHashDAO::removeDeletedDirectoryHashes()
+{
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM LibraryHashes WHERE "
+               "directory_deleted=:directory_deleted");
+    query.bindValue(":directory_deleted", 1);
+    Q_ASSERT(query.exec());
 }
