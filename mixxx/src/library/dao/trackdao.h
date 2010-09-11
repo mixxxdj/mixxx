@@ -53,6 +53,7 @@ Q_OBJECT
     int addTrack(QString absoluteFilePath);
     int addTrack(QFileInfo& fileInfo);
     void removeTrack(int id);
+    void unremoveTrack(int trackId);
     TrackPointer getTrack(int id) const;
     bool isDirty(int trackId);
 
