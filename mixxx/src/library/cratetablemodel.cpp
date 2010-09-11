@@ -102,24 +102,22 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     QFileInfo fileInfo(location);
     location = fileInfo.absoluteFilePath();
 
-    int iTrackId = -1;
     TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-    if (!trackDao.trackExistsInDatabase(location))
+    int iTrackId = trackDao.getTrackId(location);
+
+    // If the track is not in the library, add it
+    if (iTrackId < 0)
         iTrackId = trackDao.addTrack(fileInfo);
-    else
-        iTrackId = trackDao.getTrackId(location);
 
     bool success = false;
     if (iTrackId >= 0) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId,
-                                                                    m_iCrateId);
+        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
     }
 
     if (success) {
         select();
         return true;
     } else {
-        // TODO(XXX) feedback
         qDebug() << "CrateTableModel::addTrack could not add track"
                  << location << "to crate" << m_iCrateId;
         return false;
