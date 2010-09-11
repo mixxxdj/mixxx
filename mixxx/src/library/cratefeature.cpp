@@ -132,21 +132,24 @@ void CrateFeature::slotCreateCrate() {
                                          tr("New Crate"),
                                          tr("Crate name:"),
                                          QLineEdit::Normal, tr("New Crate"));
-    if (name == "")
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+
+    if (name == "") {
         return;
-    else {
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        if (crateDao.createCrate(name)) {
-            m_crateListTableModel.select();
-            // Switch to the new crate.
-            int crate_id = crateDao.getCrateIdByName(name);
-            m_crateTableModel.setCrate(crate_id);
-            emit(showTrackModel(&m_crateTableModel));
-            // TODO(XXX) set sidebar selection
-            emit(featureUpdated());
-        } else {
-            qDebug() << "Error creating crate (may already exist) with name " << name;
-        }
+    } else if (crateDao.createCrate(name)) {
+        m_crateListTableModel.select();
+        // Switch to the new crate.
+        int crate_id = crateDao.getCrateIdByName(name);
+        m_crateTableModel.setCrate(crate_id);
+        emit(showTrackModel(&m_crateTableModel));
+        // TODO(XXX) set sidebar selection
+        emit(featureUpdated());
+    } else {
+        qDebug() << "Error creating crate (may already exist) with name " << name;
+        QMessageBox::warning(NULL,
+                             tr("Creating Crate Failed"),
+                             tr("A crate by that name already exists."));
+
     }
 }
 
