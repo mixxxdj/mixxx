@@ -641,6 +641,12 @@ void MixxxApp::initActions()
     optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
+#ifdef __SHOUTCAST__
+    optionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    optionsShoutcast->setShortcut(tr("Ctrl+L"));
+    optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
+#endif
+
     optionsRecord = new QAction(tr("&Record Mix"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
     optionsRecord->setShortcutContext(Qt::ApplicationShortcut);
@@ -711,6 +717,18 @@ void MixxxApp::initActions()
     
     ControlObjectThreadMain *enabled2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol")));
     connect(enabled2, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinylControl2(double)));
+#endif
+
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setCheckable(true);
+    bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+
+    optionsShoutcast->setChecked(broadcastEnabled);
+
+    optionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
+    optionsShoutcast->setWhatsThis(tr("Stream your mixes to a shoutcast or icecast server"));
+
+    connect(optionsShoutcast, SIGNAL(toggled(bool)), this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
 #ifdef __SHOUTCAST__
