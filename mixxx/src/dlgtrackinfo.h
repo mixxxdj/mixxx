@@ -43,7 +43,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTap();
 
+    void reloadTrackMetadata();
+
   private:
+    void populateFields(TrackPointer pTrack);
+    void populateCues(TrackPointer pTrack);
     void unloadTrack(bool save);
     void clear();
 
