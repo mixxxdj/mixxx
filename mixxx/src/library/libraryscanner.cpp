@@ -112,6 +112,9 @@ void LibraryScanner::run()
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
+    //Lower our priority to help not grind crappy computers.
+    setPriority(QThread::LowPriority);
+
     if (!m_database.isOpen()) {
         m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
         m_database.setHostName("localhost");
