@@ -7,7 +7,7 @@
 
 #include "mixxxutils.cpp"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
+const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -31,6 +31,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " " +
                   "FROM library " +
