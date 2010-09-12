@@ -31,6 +31,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotPrevTrackInfo()));
 
     m_pMenu = new QMenu(this);
+    m_pPlaylistMenu = new QMenu(this);
+    m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
+    m_pCrateMenu = new QMenu(this);
+    m_pCrateMenu->setTitle(tr("Add to Crate"));
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -42,6 +46,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
 
+    connect(&m_playlistMapper, SIGNAL(mapped(int)),
+            this, SLOT(addSelectionToPlaylist(int)));
+    connect(&m_crateMapper, SIGNAL(mapped(int)),
+            this, SLOT(addSelectionToCrate(int)));
 }
 
 WTrackTableView::~WTrackTableView()
@@ -57,6 +65,9 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlayer2Act;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
+    delete m_pMenu;
+    delete m_pPlaylistMenu;
+    delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
 }
 
@@ -295,8 +306,51 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addAction(m_pAutoDJAct);
         m_pMenu->addSeparator();
     }
+
     m_pMenu->addAction(m_pPlayer1Act);
     m_pMenu->addAction(m_pPlayer2Act);
+
+    m_pMenu->addSeparator();
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST)) {
+        m_pPlaylistMenu->clear();
+
+        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        int numPlaylists = playlistDao.playlistCount();
+        for (int i = 0; i < numPlaylists; ++i) {
+            int iPlaylistId = playlistDao.getPlaylistId(i);
+            if (playlistDao.isHidden(iPlaylistId))
+                continue;
+            QString playlistName = playlistDao.getPlaylistName(iPlaylistId);
+            // No leak because making the menu the parent means they will be
+            // auto-deleted
+            QAction* pAction = new QAction(playlistName, m_pPlaylistMenu);
+            m_pPlaylistMenu->addAction(pAction);
+            m_playlistMapper.setMapping(pAction, iPlaylistId);
+            connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+        }
+
+        m_pMenu->addMenu(m_pPlaylistMenu);
+    }
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
+        m_pCrateMenu->clear();
+
+        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+        int numCrates = crateDao.crateCount();
+        for (int i = 0; i < numCrates; ++i) {
+            int iCrateId = crateDao.getCrateId(i);
+            // No leak because making the menu the parent means they will be
+            // auto-deleted
+            QAction* pAction = new QAction(crateDao.crateName(iCrateId), m_pCrateMenu);
+            m_pCrateMenu->addAction(pAction);
+            m_crateMapper.setMapping(pAction, iCrateId);
+            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+        }
+
+        m_pMenu->addMenu(m_pCrateMenu);
+    }
+
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
     m_pMenu->addAction(m_pPropertiesAct);
@@ -615,6 +669,38 @@ void WTrackTableView::slotSendToAutoDJ() {
             int iTrackId = pTrack->getId();
             if (iTrackId != -1) {
                 playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+            }
+        }
+    }
+}
+
+void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    TrackModel* trackModel = getTrackModel();
+
+    foreach (QModelIndex index, m_selectedIndices) {
+        TrackPointer pTrack;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            int iTrackId = pTrack->getId();
+            if (iTrackId != -1) {
+                playlistDao.appendTrackToPlaylist(iTrackId, iPlaylistId);
+            }
+        }
+    }
+}
+
+void WTrackTableView::addSelectionToCrate(int iCrateId) {
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+    TrackModel* trackModel = getTrackModel();
+
+    foreach (QModelIndex index, m_selectedIndices) {
+        TrackPointer pTrack;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            int iTrackId = pTrack->getId();
+            if (iTrackId != -1) {
+                crateDao.addTrackToCrate(iTrackId, iCrateId);
             }
         }
     }

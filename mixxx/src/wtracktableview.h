@@ -44,6 +44,8 @@ private slots:
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
+    void addSelectionToPlaylist(int iPlaylistId);
+    void addSelectionToCrate(int iCrateId);
 signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, int player);
@@ -71,7 +73,8 @@ private:
 
     //Used for right-click operations
     /** Right-click menu */
-    QMenu *m_pMenu;
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu;
+    QSignalMapper m_playlistMapper, m_crateMapper;
     /**Send to AutoDJ Action**/
     QAction *m_pAutoDJAct;
     /**Send to Player 1 Action**/
