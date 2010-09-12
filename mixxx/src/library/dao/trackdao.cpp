@@ -166,7 +166,181 @@ void TrackDAO::saveDirtyTracks() {
         }
     }
 }
+/**
+  * DON'T a track to the batch list if it is already in the database
+  */
+void TrackDAO::addToBatchList(QString absoluteFilePath)
+{
+    QFileInfo fileInfo(absoluteFilePath);
+    addToBatchList(fileInfo);
+   
+}
+/**
+  * DON'T a track to the batch list if it is already in the database
+  */
+void TrackDAO::addToBatchList(QFileInfo& fileInfo)
+{
+     //We don't delete the TIO here, see method executeBatch()
+    TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
+    if(pTrack)
+        m_batch_list.append(pTrack);
 
+}
+void TrackDAO::executeBatch()
+{
+    QTime time;
+    time.start();
+
+    //Start the transaction
+    m_database.transaction();
+
+    QSqlQuery query(m_database);
+    
+    /*
+     * We first insert all TIOs to the tracl_location table
+     */
+     query.prepare("INSERT INTO track_locations (location, directory, filename, filesize, fs_deleted, needs_verification) "
+                  "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification)");
+    for (int i = 0; i < m_batch_list.size(); ++i){
+        TrackInfoObject* pTrack = m_batch_list.at(i);
+        query.bindValue(":location", pTrack->getLocation());
+        query.bindValue(":directory", pTrack->getDirectory());
+        query.bindValue(":filename", pTrack->getFilename());
+        query.bindValue(":filesize", pTrack->getLength());
+        // Should this check pTrack->exists()?
+        query.bindValue(":fs_deleted", 0);
+        query.bindValue(":needs_verification", 0);
+        
+        //execute insertion
+        if (!query.exec()) {
+            qDebug() << "Track " << pTrack->getFilename() << " is already in the DB";
+        }    
+    }
+    
+    /*
+     * Now we add the TIOs to the library table
+     */
+   
+
+    query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
+                  "filetype, location, comment, url, duration, "
+                  "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
+                  "channels, mixxx_deleted, header_parsed) "
+                  "VALUES (:artist, "
+                  ":title, :album, :year, :genre, :tracknumber, "
+                  ":filetype, :location, :comment, :url, :duration, "
+                  ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
+                  ":channels, :mixxx_deleted, :header_parsed)");
+    
+    QSqlQuery query_finder(m_database);
+    query_finder.prepare("SELECT id FROM track_locations WHERE location=:location");
+    
+    //iterate over the TIOs again
+    for (int i = 0; i < m_batch_list.size(); ++i){
+        TrackInfoObject* pTrack = m_batch_list.at(i);
+        int trackLocationId = -1;
+
+        //query the id of the tio in the track_location tabel
+        
+        query_finder.bindValue(":location", pTrack->getLocation());
+
+        if (!query_finder.exec()) {
+            // We can't even select this, something is wrong.
+            qDebug() << query_finder.lastError() << __FILE__ << __LINE__;
+            m_database.rollback();
+            
+            // Cleaning up the list before we return            
+            for (int k = 0; k < m_batch_list.size(); ++k){
+                 TrackInfoObject* pTrackItem = m_batch_list.at(i);                
+                 delete pTrackItem;
+            }
+            m_batch_list.clear();
+
+            return;
+        }
+        while (query_finder.next()) {
+            trackLocationId = query_finder.value(0).toInt();
+        }
+        
+        query.bindValue(":artist", pTrack->getArtist());
+		query.bindValue(":title", pTrack->getTitle());
+		query.bindValue(":album", pTrack->getAlbum());
+		query.bindValue(":year", pTrack->getYear());
+		query.bindValue(":genre", pTrack->getGenre());
+		query.bindValue(":tracknumber", pTrack->getTrackNumber());
+		query.bindValue(":filetype", pTrack->getType());
+		query.bindValue(":location", trackLocationId);
+		query.bindValue(":comment", pTrack->getComment());
+		query.bindValue(":url", pTrack->getURL());
+		query.bindValue(":duration", pTrack->getDuration());
+		query.bindValue(":bitrate", pTrack->getBitrate());
+		query.bindValue(":samplerate", pTrack->getSampleRate());
+		query.bindValue(":cuepoint", pTrack->getCuePoint());
+		query.bindValue(":bpm", pTrack->getBpm());
+		const QByteArray* pWaveSummary = pTrack->getWaveSummary();
+		if (pWaveSummary) //Avoid null pointer deref
+			query.bindValue(":wavesummaryhex", *pWaveSummary);
+		//query.bindValue(":timesplayed", pTrack->getCuePoint());
+		//query.bindValue(":datetime_added", pTrack->getDateAdded());
+		query.bindValue(":channels", pTrack->getChannels());
+		query.bindValue(":mixxx_deleted", 0);
+		query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
+        
+        if (!query.exec())
+        {
+             qDebug() << "Failed to INSERT new track into library"
+                      << __FILE__ << __LINE__ << query.lastError();
+             m_database.rollback();
+            
+             // Cleaning up the list before we return            
+             for (int k = 0; k < m_batch_list.size(); ++k){
+                 TrackInfoObject* pTrackItem = m_batch_list.at(i);                
+                 delete pTrackItem;
+             }
+             m_batch_list.clear();
+
+             return;       
+        }
+        
+    }
+    // Add track cue points    
+    for (int i = 0; i < m_batch_list.size(); ++i){
+        
+        TrackInfoObject* pTrack = m_batch_list.at(i);
+
+        
+        int trackLocationId = -1;
+        query_finder.bindValue(":location", pTrack->getLocation());
+        
+        if (!query_finder.exec()) {
+            // We can't even select this, something is wrong.
+            qDebug() << query_finder.lastError();
+            m_database.rollback();
+            return;
+        }
+         while (query_finder.next()) {
+            trackLocationId = query_finder.value(query_finder.record().indexOf("id")).toInt();
+        }
+        if (trackLocationId >= 0) {
+            m_cueDao.saveTrackCues(trackLocationId, pTrack);
+        } 
+        else 
+        {
+            qDebug() << "Could not get track ID to save the track cue points:"
+                 << query.lastError();
+        }
+
+        
+        delete pTrack;
+     }
+
+    //clear the batch_list
+    m_batch_list.clear();
+    
+    m_database.commit();
+    qDebug() << "Wirting tracks to database by TrackDAO::executeBatch() took " << time.elapsed() << " ms";
+    return;
+}
 int TrackDAO::addTrack(QFileInfo& fileInfo) {
     int trackId = -1;
     TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);

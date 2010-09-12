@@ -64,6 +64,11 @@ Q_OBJECT
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
     void detectMovedFiles();
+	
+	//Methods for batch processing
+	void addToBatchList(QString absoluteFilePath);
+    void addToBatchList(QFileInfo& fileInfo);
+    void executeBatch();
 
   signals:
     void trackDirty(int trackId);
@@ -123,6 +128,7 @@ Q_OBJECT
     mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;
     mutable QCache<int,TrackPointer> m_trackCache;
+	QList<TrackInfoObject*> m_batch_list;
 };
 
 #endif //TRACKDAO_H
