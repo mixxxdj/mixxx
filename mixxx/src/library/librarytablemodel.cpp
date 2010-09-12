@@ -100,16 +100,27 @@ LibraryTableModel::~LibraryTableModel()
 
 bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 {
-	//Note: The model index is ignored when adding to the library track collection.
-	//      The position in the library is determined by whatever it's being sorted by,
-	//      and there's no arbitrary "unsorted" view.
+    //Note: The model index is ignored when adding to the library track collection.
+    //      The position in the library is determined by whatever it's being sorted by,
+    //      and there's no arbitrary "unsorted" view.
     QFileInfo fileInfo(location);
-	int trackId = m_trackDao.addTrack(fileInfo.absoluteFilePath());
-	select(); //Repopulate the data model.
-    if (trackId >= 0)
+
+    int trackId = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
+    if (trackId >= 0) {
+        //If the track is already in the library, make sure it's marked as
+        //not deleted. (This lets the user unremove a track from the library
+        //by dragging-and-dropping it back into the library view.)
+        m_trackDao.unremoveTrack(trackId);
+        select();
         return true;
-    else
-        return false;
+    }
+
+    trackId = m_trackDao.addTrack(fileInfo);
+    if (trackId >= 0) {
+        select(); //Repopulate the data model.
+        return true;
+    }
+    return false;
 }
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
@@ -259,7 +270,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS;
+    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
 }
 
 /*
