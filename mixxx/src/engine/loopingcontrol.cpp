@@ -144,7 +144,7 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
 }
 
 void LoopingControl::slotLoopIn(double val) {
-    if (val == 1.0f) {
+    if (val) {
         // set loop in position
         m_iLoopStartSample = m_iCurrentSample;
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
@@ -160,7 +160,7 @@ void LoopingControl::slotLoopIn(double val) {
 }
 
 void LoopingControl::slotLoopOut(double val) {
-    if (val == 1.0f) {
+    if (val) {
 
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
@@ -182,7 +182,7 @@ void LoopingControl::slotLoopOut(double val) {
 }
 
 void LoopingControl::slotReloopExit(double val) {
-    if (val == 1.0f) {
+    if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
             setLoopingEnabled(false);
