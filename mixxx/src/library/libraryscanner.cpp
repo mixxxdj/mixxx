@@ -180,7 +180,22 @@ void LibraryScanner::run()
     } else {
         qDebug() << "Recursive scan finished cleanly.";
     }
-
+	/*
+     * We store the scanned files in the database:
+     * Note that the recursiveScan() method used
+     * TrackCollection::importDirectory() to scan 
+     * the folders. The method TrackCollection::importDirectory()
+     * has added all the scanned files to a 'batch list'. 
+     * 
+     * The following statement writes all the scanned tracks in
+     * the batch list to the database at once. We don't care,
+     * if the scan has been canelled or not.
+     *
+     * This new approach accelerates the scanning process massively
+     * by a factor of 3-4 !!!
+     */
+    
+    m_trackDao.executeBatch(); //is a own DB transaction
     //Start a transaction for all the library hashing (moved file detection)
     //stuff.
     m_database.transaction();

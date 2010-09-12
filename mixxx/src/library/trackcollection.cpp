@@ -149,7 +149,8 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
                 emit(progressLoading(fileName));
 
                 // addTrack uses this QFileInfo instead of making a new one now.
-                trackDao.addTrack(file);
+                trackDao.addToBatchList(file);
+                //trackDao.addTrack(file);
             }
         } else {
             //qDebug() << "Skipping" << file.fileName() <<
