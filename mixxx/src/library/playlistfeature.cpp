@@ -100,10 +100,27 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 }
 
 void PlaylistFeature::slotCreatePlaylist() {
+    int err = 0;
     QString name = QInputDialog::getText(NULL, tr("New Playlist"), tr("Playlist name:"), QLineEdit::Normal, tr("New Playlist"));
+    //Ensure the name isn't blank
     if (name == "") {
+        QMessageBox::warning(NULL,
+                             tr("Playlist Creation Failed"),
+                             tr("A playlist cannot have a blank name."));
         return;
-    } else if (m_playlistDao.createPlaylist(name)) {
+    }
+    //Ensure that a playlist with this name doesn't exist already
+    if (m_playlistDao.getPlaylistIdFromName(name) == -1) {
+        //Ensure the creation works at the DAO level...
+        if (!m_playlistDao.createPlaylist(name))
+        {
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("An unknown error occurred while creating playlist: ")
+                                 + name);
+            return;
+        }
+
         m_playlistTableModel.select();
         emit(featureUpdated());
 
@@ -113,9 +130,8 @@ void PlaylistFeature::slotCreatePlaylist() {
         // TODO(XXX) set sidebar selection
         emit(showTrackModel(m_pPlaylistTableModel));
     } else {
-        qDebug() << "Error creating playlist (may already exist) with name " << name;
             QMessageBox::warning(NULL,
-                                 tr("Creating Playlist Failed"),
+                                 tr("Playlist Creation Failed"),
                                  tr("A playlist by that name already exists."));
     }
 }
