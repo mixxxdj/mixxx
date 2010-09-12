@@ -619,7 +619,7 @@ void TrackDAO::markTracksInDirectoryAsVerified(QString directory)
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET needs_verification=0, fs_deleted=0 "
+                  "SET needs_verification=0 "
                   "WHERE directory=:directory");
     query.bindValue(":directory", directory);
     if (!query.exec()) {
@@ -634,7 +634,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted()
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET fs_deleted=1 "
+                  "SET fs_deleted=1, needs_verification=0 "
                   "WHERE needs_verification=1");
     if (!query.exec()) {
         qDebug() << "Couldn't mark unverified tracks as deleted." << query.lastError();

@@ -158,10 +158,10 @@ void LibraryScanner::run()
     QTime t;
     t.start();
 
-    //First, we're going to temporarily mark all the directories that we've
-    //previously hashed as "deleted". As we search through the directory tree
-    //when we rescan, we'll mark any directory that does still exist as such.
-    m_libraryHashDao.markAllDirectoriesAsDeleted();
+    //First, we're going to mark all the directories that we've
+    //previously hashed as needing verification. As we search through the directory tree
+    //when we rescan, we'll mark any directory that does still exist as verified.
+    m_libraryHashDao.invalidateAllDirectories();
 
     //Mark all the tracks in the library as needing
     //verification of their existance...
@@ -185,16 +185,18 @@ void LibraryScanner::run()
     //stuff.
     m_database.transaction();
 
-    //At the end of a scan, mark all tracks that weren't "verified" as "deleted"
-    //(as long as the scan wasn't cancelled half way through. This condition is
-    //important because our rescanning algorithm starts by marking all tracks as
-    //unverified, so a cancelled scan might leave half of your library as
-    //unverified. Don't want to mark those tracks as deleted in that case) :)
+    //At the end of a scan, mark all tracks and directories that 
+    //weren't "verified" as "deleted" (as long as the scan wasn't cancelled 
+    //half way through. This condition is important because our rescanning 
+    //algorithm starts by marking all tracks and dirs as unverified, so a 
+    //cancelled scan might leave half of your library as unverified. Don't 
+    //want to mark those tracks/dirs as deleted in that case) :)
     if (bScanFinishedCleanly)
     {
-        
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
+        qDebug() << "Marking unverified directories as deleted.";
+        m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
         
         //Check to see if the "deleted" tracks showed up in another location,
         //and if so, do some magic to update all our tables.
@@ -310,10 +312,12 @@ bool LibraryScanner::recursiveScan(QString dirPath)
     //Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash)
     {
+        //If we didn't know about this directory before...
         if (!prevHashExists) {
             m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
         }
-        else //Just need to update the old hash in the database
+        else //Contents of a known directory have changed.
+             //Just need to update the old hash in the database and then rescan it.
         {
             qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
             m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
@@ -330,9 +334,11 @@ bool LibraryScanner::recursiveScan(QString dirPath)
         //rows about deleted directories around. :)
         //qDebug() << "prevHash == newHash";
         m_libraryHashDao.markAsExisting(dirPath);
+        m_libraryHashDao.markAsVerified(dirPath);
 
-        //We also need to mark the tracks _inside_ this directory as verified 
-        //and still existing!
+        //We also need to mark the tracks _inside_ this directory as verified.
+        //Note that this doesn't mark the tracks as existing, just that they're in 
+        //the same state as the last time we scanned this directory. 
         m_trackDao.markTracksInDirectoryAsVerified(dirPath);
 
         emit(progressHashing(dirPath));
