@@ -101,18 +101,23 @@ void CrateTableModel::setCrate(int crateId) {
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     QFileInfo fileInfo(location);
     location = fileInfo.absoluteFilePath();
-    int iTrackId = m_pTrackCollection->getTrackDAO().getTrackId(location);
+
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+    int iTrackId = trackDao.getTrackId(location);
+
+    // If the track is not in the library, add it
+    if (iTrackId < 0)
+        iTrackId = trackDao.addTrack(fileInfo);
+
     bool success = false;
     if (iTrackId >= 0) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId,
-                                                                    m_iCrateId);
+        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
     }
 
     if (success) {
         select();
         return true;
     } else {
-        // TODO(XXX) feedback
         qDebug() << "CrateTableModel::addTrack could not add track"
                  << location << "to crate" << m_iCrateId;
         return false;
@@ -248,5 +253,6 @@ QVariant CrateTableModel::data(const QModelIndex& item, int role) const {
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_RECEIVEDROPS;
+    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
 }
