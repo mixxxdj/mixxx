@@ -84,6 +84,21 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
     //qDebug() << getDirectoryHash(dirPath);
 }
 
+void LibraryHashDAO::updateDirectoryStatus(QString dirPath, bool deleted, bool verified) {
+    //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE LibraryHashes "
+                  "SET directory_deleted=:directory_deleted, "
+                  "needs_verification=:needs_verification "
+                  "WHERE directory_path=:directory_path");
+    query.bindValue(":directory_deleted", deleted);
+    query.bindValue(":needs_verification", !verified);
+    query.bindValue(":directory_path", dirPath);
+    if (!query.exec()) {
+        qDebug() << "Updating directory status failed: " << query.lastError();
+    }
+}
+
 void LibraryHashDAO::markAsExisting(QString dirPath)
 {
     //qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();

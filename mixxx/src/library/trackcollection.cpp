@@ -100,7 +100,7 @@ QSqlDatabase& TrackCollection::getDatabase()
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
                                       QList<TrackInfoObject*>& tracksToAdd)
 {
-    qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
+    //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
     QFileInfoList files;
