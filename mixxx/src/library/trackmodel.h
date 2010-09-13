@@ -43,6 +43,7 @@ public:
     virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
     virtual void removeTrack(const QModelIndex& index) = 0;
+    virtual void removeTracks(const QModelIndexList& indices) = 0;
     virtual bool addTrack(const QModelIndex& index, QString location) = 0;
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex) = 0;
