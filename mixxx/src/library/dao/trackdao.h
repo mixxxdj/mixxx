@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QSet>
 #include <QHash>
+#include <QList>
 #include <QSqlDatabase>
 #include <QSharedPointer>
 #include <QWeakPointer>
@@ -52,6 +53,7 @@ Q_OBJECT
     QString getTrackLocation(int id);
     int addTrack(QString absoluteFilePath);
     int addTrack(QFileInfo& fileInfo);
+    void addTracks(QList<TrackInfoObject*> tracksToAdd);
     void removeTrack(int id);
     void unremoveTrack(int trackId);
     TrackPointer getTrack(int id) const;
@@ -82,7 +84,7 @@ Q_OBJECT
     // to the database.
     void saveDirtyTracks();
 
-    // Clears the cached TrackInfoObjects, which can be useful when the 
+    // Clears the cached TrackInfoObjects, which can be useful when the
     // underlying database tables change (eg. during a library rescan,
     // we might detect that a track has been moved and modify the update
     // the tables directly.)
@@ -99,6 +101,12 @@ Q_OBJECT
     void addTrack(TrackInfoObject* pTrack);
     TrackPointer getTrackFromDB(QSqlQuery &query) const;
     QString absoluteFilePath(QString location);
+
+    void prepareTrackLocationsInsert(QSqlQuery& query);
+    void bindTrackToTrackLocationsInsert(QSqlQuery& query, TrackInfoObject* pTrack);
+    void prepareLibraryInsert(QSqlQuery& query);
+    void bindTrackToLibraryInsert(QSqlQuery& query,
+                                  TrackInfoObject* pTrack, int trackLocationId);
 
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);

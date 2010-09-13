@@ -22,12 +22,16 @@
 
 #include <QThread>
 #include <QtCore>
+#include <QList>
+
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "trackcollection.h"
 #include "libraryscannerdlg.h"
+
+class TrackInfoObject;
 
 class LibraryScanner : public QThread
 {
@@ -40,9 +44,9 @@ class LibraryScanner : public QThread
         void run();
         void scan(QString libraryPath);
         void scan();
-        bool recursiveScan(QString dirPath);
+        bool recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd);
     public slots:
-        void cancel();   
+        void cancel();
         void resetCancel();
     signals:
         void scanFinished();
@@ -54,7 +58,7 @@ class LibraryScanner : public QThread
         LibraryHashDAO m_libraryHashDao;
         CueDAO m_cueDao;
         TrackDAO m_trackDao;
-        PlaylistDAO m_playlistDao;          
+        PlaylistDAO m_playlistDao;
         QSqlDatabase m_database;            /**Hang on to a different DB connection
                                                since we run in a different thread */
         QStringList nameFilters;
