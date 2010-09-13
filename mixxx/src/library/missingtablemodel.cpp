@@ -36,7 +36,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
-                  "track_locations.fs_deleted," + 
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " "
                   "FROM library "
@@ -124,6 +124,10 @@ QString MissingTableModel::getTrackLocation(const QModelIndex& index) const
 }
 
 void MissingTableModel::removeTrack(const QModelIndex& index)
+{
+}
+
+void MissingTableModel::removeTracks(const QModelIndexList& indices)
 {
 }
 

@@ -135,6 +135,10 @@ void ITunesPlaylistModel::removeTrack(const QModelIndex& index)
     //Should do nothing... hmmm
 }
 
+void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices)
+{
+}
+
 void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
     //Should do nothing... hmmm

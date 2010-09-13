@@ -137,6 +137,19 @@ QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 	return location;
 }
 
+void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+
+    foreach (QModelIndex index, indices) {
+        int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+        trackIds.append(trackId);
+    }
+
+    m_trackDao.removeTracks(trackIds);
+
+    select(); //Repopulate the data model.
+}
+
 void LibraryTableModel::removeTrack(const QModelIndex& index)
 {
 	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();

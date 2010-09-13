@@ -137,6 +137,23 @@ QString CrateTableModel::getTrackLocation(const QModelIndex& index) const {
     return location;
 }
 
+void CrateTableModel::removeTracks(const QModelIndexList& indices) {
+    const int trackIdIndex = fieldIndex(LIBRARYTABLE_ID);
+
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+        trackIds.append(trackId);
+    }
+
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+    foreach (int trackId, trackIds) {
+        crateDao.removeTrackFromCrate(trackId, m_iCrateId);
+    }
+
+    select();
+}
+
 void CrateTableModel::removeTrack(const QModelIndex& index) {
     const int trackIdIndex = fieldIndex(LIBRARYTABLE_ID);
     int trackId = index.sibling(index.row(), trackIdIndex).data().toInt();
