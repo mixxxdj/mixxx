@@ -30,7 +30,7 @@
 #include "soundsource.h"
 
 // static
-const bool SoundSource::s_bDebugMetadata = true;
+const bool SoundSource::s_bDebugMetadata = false;
 
 /*
    SoundSource is an Uber-class for the reading and decoding of audio-files.

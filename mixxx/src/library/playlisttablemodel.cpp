@@ -129,14 +129,13 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
     location = fileInfo.absoluteFilePath();
-    if (!m_trackDao.trackExistsInDatabase(location))
-    {
-        m_trackDao.addTrack(location);
-    }
+
     int trackId = m_trackDao.getTrackId(location);
+    if (trackId < 0)
+        trackId = m_trackDao.addTrack(location);
 
     // Do nothing if the location still isn't in the database.
-    if (trackId == -1)
+    if (trackId < 0)
         return false;
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
@@ -376,5 +375,11 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER;
+    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOPLAYLIST;
+
+    // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
+    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE))
+        caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+
+    return caps;
 }

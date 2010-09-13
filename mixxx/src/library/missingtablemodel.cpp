@@ -7,6 +7,8 @@
 
 #include "mixxxutils.cpp"
 
+const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
@@ -33,7 +35,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
-                  "track_locations.location" + "," +
+                  "track_locations.location," +
+                  "track_locations.fs_deleted," + 
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " "
                   "FROM library "
@@ -142,12 +145,12 @@ void MissingTableModel::slotSearch(const QString& searchText) {
 
     QString filter;
     if (searchText == "")
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+        filter = "(" + MissingTableModel::MISSINGFILTER + ")";
     else {
         QSqlField search("search", QVariant::String);
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+        filter = "(" + MissingTableModel::MISSINGFILTER + " AND " +
                 "(artist LIKE " + escapedText + " OR " +
                 "album LIKE " + escapedText + " OR " +
                 "title  LIKE " + escapedText + "))";

@@ -199,4 +199,3 @@ inline long unsigned SoundSourceSndFile::length()
 {
     return filelength;
 }
-
