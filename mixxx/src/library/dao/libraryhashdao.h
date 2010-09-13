@@ -1,4 +1,4 @@
-#ifndef LIBRARYHASHDAO_H 
+#ifndef LIBRARYHASHDAO_H
 #define LIBRARYHASHDAO_H
 
 #include <QObject>
@@ -10,7 +10,7 @@ class LibraryHashDAO : public DAO {
     LibraryHashDAO(QSqlDatabase& database);
     virtual ~LibraryHashDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
-    
+
     void initialize();
     int getDirectoryHash(QString dirPath);
     void saveDirectoryHash(QString dirPath, int hash);
@@ -21,9 +21,10 @@ class LibraryHashDAO : public DAO {
     void invalidateAllDirectories();
     void markUnverifiedDirectoriesAsDeleted();
     void removeDeletedDirectoryHashes();
+    void updateDirectoryStatus(QString dirPath, bool deleted, bool verified);
   private:
     QSqlDatabase &m_database;
-    
+
 };
 
-#endif //LIBRARYHASHDAO_H 
+#endif //LIBRARYHASHDAO_H

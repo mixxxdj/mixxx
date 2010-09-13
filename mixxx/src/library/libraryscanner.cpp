@@ -355,8 +355,11 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
         //keep track of directories that have been deleted to stop the database from keeping
         //rows about deleted directories around. :)
         //qDebug() << "prevHash == newHash";
-        m_libraryHashDao.markAsExisting(dirPath);
-        m_libraryHashDao.markAsVerified(dirPath);
+
+        // Mark the directory as verified and not deleted.
+        // m_libraryHashDao.markAsExisting(dirPath);
+        // m_libraryHashDao.markAsVerified(dirPath);
+        m_libraryHashDao.updateDirectoryStatus(dirPath, false, true);
 
         //We also need to mark the tracks _inside_ this directory as verified.
         //Note that this doesn't mark the tracks as existing, just that they're in
