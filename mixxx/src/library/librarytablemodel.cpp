@@ -192,7 +192,8 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
-        (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
+        (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
+        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
     }
     return false;
