@@ -26,6 +26,9 @@ public:
         TRACKMODELCAPS_NONE           = 0x0000,
         TRACKMODELCAPS_REORDER        = 0x0001,
         TRACKMODELCAPS_RECEIVEDROPS   = 0x0002,
+        TRACKMODELCAPS_ADDTOPLAYLIST  = 0x0004,
+        TRACKMODELCAPS_ADDTOCRATE     = 0x0008,
+        TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
                                     //0x0004
     };
 

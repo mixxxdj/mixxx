@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.7.0">
+<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.8.0">
     <info>
         <name>Hercules DJ Console RMX</name>
-        <author>Garth Dahlstrom</author>
-        <description>This is a complete mapping for a Hercules DJ Console RMX. Requires scripting.</description>
+        <author>Anders Gunnarsson</author>
+        <description>Hercules DJ Console RMX controller mapping, v1.8.0. Requires script v1.8.0</description>
     </info>
     <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>
             <file filename="Hercules-DJ-Console-RMX-scripts.js" functionprefix="HerculesRMX"/>
         </scriptfiles>
         <controls>
+<!-- TODO: Organization and cleanup -->
 <!-- Headphone Cue/Mix POTS Control -->
                <control>
                    <status>0xB0</status>
                    <midino>0x3A</midino>
                    <group>[Master]</group>
-                   <key>headMix</key>
+                   <key>HerculesRMX.headPhoneMix</key>
                    <options>
-                       <normal/>
+                       <Script-Binding/>
                    </options>
                </control>
 
@@ -45,39 +46,39 @@
 <!-- Play and CuePlay -->
             <control>
                 <group>[Channel1]</group>
-                <key>HerculesRMX.cue</key>
+                <key>cue_default</key>
                 <status>0xB0</status>
                 <midino>0x0C</midino>
                 <options>
-                    <Script-Binding/>
+                    <Button />
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>HerculesRMX.cue</key>
+                <key>cue_default</key>
                 <status>0xB0</status>
                 <midino>0x24</midino>
                 <options>
-                    <Script-Binding/>
+                    <Button/>
                 </options>
             </control>
 
             <control>
                 <group>[Channel1]</group>
-                <key>HerculesRMX.play</key>
+                <key>play</key>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
-                    <Script-Binding/>
+                    <Button />
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>HerculesRMX.play</key>
+                <key>play</key>
                 <status>0xB0</status>
                 <midino>0x23</midino>
                 <options>
-                    <Script-Binding/>
+                    <Button />
                 </options>
             </control>
 
@@ -85,28 +86,28 @@
 <!-- Load Deck A/B -->
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>HerculesRMX.load</key>
                 <status>0xB0</status>
                 <midino>0x12</midino>
                 <options>
-                    <Buttton/>
+                    <Script-Binding/>
                 </options>
             </control>
 
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>HerculesRMX.load</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
                 <options>
-                    <Buttton/>
+                    <Script-Binding/>
                 </options>
             </control>
 
 <!-- Stop and Reset button -->
             <control>
                 <group>[Channel1]</group>
-                <key>HerculesRMX.stop_and_reset_track</key>
+                <key>HerculesRMX.stop</key>
                 <status>0xB0</status>
                 <midino>0x0D</midino>
                 <options>
@@ -116,7 +117,7 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>HerculesRMX.stop_and_reset_track</key>
+                <key>HerculesRMX.stop</key>
                 <status>0xB0</status>
                 <midino>0x25</midino>
                 <options>
@@ -127,261 +128,308 @@
 <!-- Flanger -->
             <control>
                 <group>[Channel1]</group>
-                <key>flanger</key>
+                <key>HerculesRMX.keypad1</key>
                 <status>0xB0</status>
                 <midino>0x01</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
 
             <control>
                 <group>[Channel2]</group>
-                <key>flanger</key>
+                <key>HerculesRMX.keypad1</key>
                 <status>0xB0</status>
                 <midino>0x19</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
 
             <control>
                 <group>[Master]</group>
-                <key>crossfader</key>
+                <key>HerculesRMX.crossFader</key>
                 <status>0xB0</status>
                 <midino>0x39</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Master]</group>
-                <key>balance</key>
+                <key>HerculesRMX.balance</key>
                 <status>0xB0</status>
                 <midino>0x37</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PrevTrack</key>
+                <key>HerculesRMX.previous</key>
                 <status>0xB0</status>
                 <midino>0x09</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>NextTrack</key>
+                <key>HerculesRMX.next</key>
                 <status>0xB0</status>
                 <midino>0x0A</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>volume</key>
+                <key>HerculesRMX.deckVolume</key>
                 <status>0xB0</status>
                 <midino>0x32</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
+                <key>HerculesRMX.rate</key>
                 <status>0xB0</status>
                 <midino>0x31</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
-
             <control>
                 <group>[Master]</group>
-                <key>volume</key>
+                <key>HerculesRMX.volume</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>HerculesRMX.cueSelect</key>
                 <status>0xB0</status>
                 <midino>0x14</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterLow</key>
+                <key>HerculesRMX.bass</key>
                 <status>0xB0</status>
                 <midino>0x36</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterMid</key>
+                <key>HerculesRMX.medium</key>
                 <status>0xB0</status>
                 <midino>0x35</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterHigh</key>
+                <key>HerculesRMX.treble</key>
                 <status>0xB0</status>
                 <midino>0x34</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterLowKill</key>
+                <key>HerculesRMX.killLow</key>
                 <status>0xB0</status>
                 <midino>0x10</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterMidKill</key>
+                <key>HerculesRMX.killMid</key>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterHighKill</key>
+                <key>HerculesRMX.killHigh</key>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PrevTrack</key>
+                <key>HerculesRMX.previous</key>
                 <status>0xB0</status>
                 <midino>0x21</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>NextTrack</key>
+                <key>HerculesRMX.next</key>
                 <status>0xB0</status>
                 <midino>0x22</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>volume</key>
+                <key>HerculesRMX.deckVolume</key>
                 <status>0xB0</status>
                 <midino>0x3C</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>rate</key>
+                <key>HerculesRMX.rate</key>
                 <status>0xB0</status>
                 <midino>0x3B</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>HerculesRMX.cueSelect</key>
                 <status>0xB0</status>
                 <midino>0x18</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterLow</key>
+                <key>HerculesRMX.bass</key>
                 <status>0xB0</status>
                 <midino>0x40</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMid</key>
+                <key>HerculesRMX.medium</key>
                 <status>0xB0</status>
                 <midino>0x3F</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHigh</key>
+                <key>HerculesRMX.treble</key>
                 <status>0xB0</status>
                 <midino>0x3E</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterLowKill</key>
+                <key>HerculesRMX.killLow</key>
                 <status>0xB0</status>
                 <midino>0x28</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMidKill</key>
+                <key>HerculesRMX.killMid</key>
                 <status>0xB0</status>
                 <midino>0x27</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHighKill</key>
+                <key>HerculesRMX.killHigh</key>
                 <status>0xB0</status>
                 <midino>0x26</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
 <!-- A/B Gain  -->
             <control>
                 <group>[Channel1]</group>
-                <key>pregain</key>
+                <key>HerculesRMX.gain</key>
                 <status>0xB0</status>
                 <midino>0x33</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pregain</key>
+                <key>HerculesRMX.gain</key>
                 <status>0xB0</status>
                 <midino>0x3D</midino>
-                <options/>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
 <!-- Sync Buttons -->
             <control>
                 <group>[Channel1]</group>
-                <key>beatsync</key>
+                <key>HerculesRMX.beatSync</key>
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>HerculesRMX.beatSync</key>
                 <status>0xB0</status>
                 <midino>0x1F</midino>
                 <options>
-                    <Button/>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.rateReset</key>
+                <status>0xB0</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.rateReset</key>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Master]</group>
-                <key>HerculesRMX.toggle_scratch_mode</key>
+                <key>HerculesRMX.scratch</key>
                 <status>0xB0</status>
                 <midino>0x29</midino>
                 <options>
@@ -389,7 +437,7 @@
                 </options>
             </control>
             <control>
-                <key>HerculesRMX.up_down_arrows</key>
+                <key>HerculesRMX.up</key>
                 <group>[Playlist]</group>
                 <status>0xB0</status>
                 <midino>0x2A</midino>
@@ -398,7 +446,7 @@
                 </options>
             </control>
             <control>
-                <key>HerculesRMX.up_down_arrows</key>
+                <key>HerculesRMX.down</key>
                 <group>[Playlist]</group>
                 <status>0xB0</status>
                 <midino>0x2B</midino>
@@ -407,171 +455,152 @@
                 </options>
             </control>
             <control>
+                <key>HerculesRMX.left</key>
+                <group>[Playlist]</group>
+                <status>0xB0</status>
+                <midino>0x2C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>HerculesRMX.right</key>
+                <group>[Playlist]</group>
+                <status>0xB0</status>
+                <midino>0x2D</midino>
+                <options>
+                   <Script-Binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>reverse</key>
+                <key>HerculesRMX.keypad4</key>
                 <status>0xB0</status>
                 <midino>0x04</midino>
                 <options>
-                    <Switch/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverse</key>
+                <key>HerculesRMX.keypad4</key>
                 <status>0xB0</status>
                 <midino>0x1C</midino>
                 <options>
-                    <Switch/>
+                    <Script-Binding/>
                 </options>
             </control>
-
-<!--
-            <control>
-                <group>[Master]</group>
-                <key>headMix</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
             <control>
                 <group>[Channel1]</group>
-                <key>transform</key>
+                <key>HerculesRMX.keypad2</key>
                 <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>start</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>end</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>cue_gotoandstop</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>wheel_touch_switch</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>rate_temp_up</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>rate_temp_down</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>loop</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>transform</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>start</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>end</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>cue_gotoandstop</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>wheel_touch_sensor</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>wheel_touch_switch</key>
-                <status>0xB0</status>
-                <midino>40x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>rate_temp_up</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>rate_temp_down</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
+                <midino>0x02</midino>
                 <options>
-                    <Invert/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop</key>
+                <key>HerculesRMX.keypad2</key>
                 <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options/>
+                <midino>0x1A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
--->
-        </controls>
-
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.keypad5</key>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.keypad5</key>
+                <status>0xB0</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.keypad6</key>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.keypad6</key>
+                <status>0xB0</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+	    <control>
+                <key>HerculesRMX.keypad3</key>
+                <group>[Channel1]</group>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+	    <control>
+                <key>HerculesRMX.keypad3</key>
+                <group>[Channel2]</group>
+                <status>0xB0</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+        </control>
+        <control>
+                <key>HerculesRMX.keypad1</key>
+                <group>[Channel1]</group>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+        </control>
+    </controls>
     <outputs>
-        <output>
-            <group>[Channel1]</group>
-            <key>play</key>
-            <status>0xB0</status>
-            <midino>0x0B</midino>
-            <minimum>0.5</minimum>
-        </output>
-        <output>
-            <group>[Channel2]</group>
-            <key>play</key>
-            <status>0xB0</status>
-            <midino>0x23</midino>
-            <minimum>0.5</minimum>
-        </output>
+		<output>
+		    <group>[Channel1]</group>
+		    <key>play</key>
+		    <status>0xB0</status>
+		    <midino>0x0B</midino>
+		    <minimum>0.5</minimum>
+		</output>
+		<output>
+		    <group>[Channel2]</group>
+		    <key>play</key>
+		    <status>0xB0</status>
+		    <midino>0x23</midino>
+		    <minimum>0.5</minimum>
+		</output>
+		    <output>
+          <group>[Channel1]</group>
+          <key>cue_default</key>
+          <status>0xB0</status>
+          <midino>0x0C</midino>
+          <minimum>0.5</minimum>
+      </output>
+      <output>
+          <group>[Channel2]</group>
+          <key>cue_default</key>
+          <status>0xB0</status>
+          <midino>0x24</midino>
+          <minimum>0.5</minimum>
+      </output>
       <output>
         <group>[Channel1]</group>
         <key>playposition</key>
@@ -590,20 +619,20 @@
       </output>
 
 <!-- Headphone Cue -->
-        <output>
-            <group>[Channel1]</group>
-            <key>pfl</key>
-            <status>0xB0</status>
-            <midino>0x14</midino>
-            <minimum>0.5</minimum>
-        </output>
-        <output>
-            <group>[Channel2]</group>
-            <key>pfl</key>
-            <status>0xB0</status>
-            <midino>0x18</midino>
-            <minimum>0.5</minimum>
-        </output>
+		<output>
+		    <group>[Channel1]</group>
+		    <key>pfl</key>
+		    <status>0xB0</status>
+		    <midino>0x14</midino>
+		    <minimum>0.5</minimum>
+		</output>
+		<output>
+		    <group>[Channel2]</group>
+		    <key>pfl</key>
+		    <status>0xB0</status>
+		    <midino>0x18</midino>
+		    <minimum>0.5</minimum>
+		</output>
     </outputs>
   </controller>
 </MixxxMIDIPreset>

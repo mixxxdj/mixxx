@@ -79,21 +79,27 @@ bool AutoDJFeature::dropAccept(QUrl url) {
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-    QString location = url.toString();
-    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toString()
-    //     instead of toLocalFile()
 
-    if (!trackDao.trackExistsInDatabase(location))
-    {
-        trackDao.addTrack(location);
-    }
+    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
+    //     instead of toString()
+    QFileInfo file(url.toLocalFile());
+    QString location = file.absoluteFilePath();
+
     //Get id of track
     int trackId = trackDao.getTrackId(location);
 
+    if (trackId < 0) {
+        trackId = trackDao.addTrack(file);
+    }
+
+    if (trackId < 0) {
+        return false;
+    }
+
+    // TODO(XXX) No feedback on whether this worked.
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
     return true;
-
 }
 
 bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {

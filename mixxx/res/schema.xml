@@ -31,7 +31,8 @@ METADATA
       CREATE TABLE IF NOT EXISTS LibraryHashes (
         directory_path VARCHAR(256) primary key,
         hash INTEGER,
-        directory_deleted INTEGER);
+        directory_deleted INTEGER,
+        needs_verification INTEGER);
 
       CREATE TABLE IF NOT EXISTS library (
         id INTEGER primary key AUTOINCREMENT,
@@ -136,6 +137,14 @@ METADATA
     </description>
     <sql>
       ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT "?";
+    </sql>
+  </revision>
+  <revision version="5">
+    <description>
+      Add needs_verification column to library hashes table.
+    </description>
+    <sql>
+      ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
     </sql>
   </revision>
 </schema>
