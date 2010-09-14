@@ -45,6 +45,22 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
 
+    /* The "Album Artwork" folder within iTunes stores Album Arts.
+     * It has numerous hundreds of sub folders but no audio files
+     * We put this folder on a "black list"
+     * On Windows, the iTunes folder is contained within the standard music folder
+     * Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
+     */
+    m_iTunesArtFolder = "";
+#if defined(__WINDOWS__)
+		QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
+		// if the value method fails it returns QTDir::homePath
+		m_iTunesArtFolder = settings.value("My Music", QDir::homePath()).toString();
+		m_iTunesArtFolder += "\\iTunes\\Album Artwork";
+		m_iTunesArtFolder.replace(QString("\\"), QString("/"));
+#elif defined(__APPLE__)
+		m_iTunesArtFolder = QDir::homePath() + "/Music/iTunes/Album Artwork";
+#endif
 }
 
 LibraryScanner::~LibraryScanner()
@@ -202,6 +218,13 @@ void LibraryScanner::run()
 
     // Runs inside a transaction
     m_trackDao.addTracks(tracksToAdd);
+
+    QMutableListIterator<TrackInfoObject*> it(tracksToAdd);
+    while (it.hasNext()) {
+        TrackInfoObject* pTrack = it.next();
+        it.remove();
+        delete pTrack;
+    }
 
     //Start a transaction for all the library hashing (moved file detection)
     //stuff.
@@ -382,7 +405,14 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
     QDirIterator dirIt(dirPath, QDir::Dirs | QDir::NoDotAndDotDot);
     while (dirIt.hasNext() && bScanFinishedCleanly)
     {
-        if (!recursiveScan(dirIt.next(), tracksToAdd))
+        QString nextPath = dirIt.next();
+
+        // Skip the iTunes Album Art Folder since it is probably a waste of
+        // time.
+        if (nextPath == m_iTunesArtFolder)
+            continue;
+
+        if (!recursiveScan(nextPath, tracksToAdd))
             bScanFinishedCleanly = false;
     }
 
