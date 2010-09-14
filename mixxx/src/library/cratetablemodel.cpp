@@ -44,6 +44,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_BPM + "," +
                                   LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
+                                  "track_locations.fs_deleted," +
                                   LIBRARYTABLE_COMMENT + "," +
                                   LIBRARYTABLE_MIXXXDELETED + " " +
                                   "FROM library "
@@ -202,7 +203,8 @@ const QString CrateTableModel::currentSearch() {
 
 bool CrateTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) {
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
     return false;
