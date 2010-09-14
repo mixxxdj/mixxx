@@ -187,6 +187,11 @@ void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index)
     //Should do nothing... hmmm
 }
 
+void RhythmboxPlaylistModel::removeTracks(const QModelIndexList& indices)
+{
+    //Should do nothing... hmmm
+}
+
 void RhythmboxPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
     //Should do nothing... hmmm

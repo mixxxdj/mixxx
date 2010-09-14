@@ -26,28 +26,32 @@ ControlObjectThreadWidget::~ControlObjectThreadWidget()
 {
 }
 
-void ControlObjectThreadWidget::setWidget(QWidget * widget, bool emitOnDownPress, Qt::ButtonState state)
+void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFromWidget, bool connectValueToWidget, bool emitOnDownPress, Qt::ButtonState state)
 {
-    if (emitOnDownPress)
-    {
-        if (state == Qt::NoButton)
-            QApplication::connect(widget, SIGNAL(valueChangedDown(double)), this,   SLOT(slotSet(double)));
-        else if (state == Qt::LeftButton)
-            QApplication::connect(widget, SIGNAL(valueChangedLeftDown(double)), this,   SLOT(slotSet(double)));
-        else if (state == Qt::RightButton)
-            QApplication::connect(widget, SIGNAL(valueChangedRightDown(double)), this,   SLOT(slotSet(double)));
-    }
-    else
-    {
-        if (state == Qt::NoButton)
-            QApplication::connect(widget, SIGNAL(valueChangedUp(double)), this,   SLOT(slotSet(double)));
-        else if (state == Qt::LeftButton)
-            QApplication::connect(widget, SIGNAL(valueChangedLeftUp(double)), this,   SLOT(slotSet(double)));
-        else if (state == Qt::RightButton)
-            QApplication::connect(widget, SIGNAL(valueChangedRightUp(double)), this,   SLOT(slotSet(double)));
+
+    if (connectValueFromWidget) {
+        if (emitOnDownPress)
+        {
+            if (state == Qt::NoButton)
+                QApplication::connect(widget, SIGNAL(valueChangedDown(double)), this,   SLOT(slotSet(double)));
+            else if (state == Qt::LeftButton)
+                QApplication::connect(widget, SIGNAL(valueChangedLeftDown(double)), this,   SLOT(slotSet(double)));
+            else if (state == Qt::RightButton)
+                QApplication::connect(widget, SIGNAL(valueChangedRightDown(double)), this,   SLOT(slotSet(double)));
+        }
+        else
+        {
+            if (state == Qt::NoButton)
+                QApplication::connect(widget, SIGNAL(valueChangedUp(double)), this,   SLOT(slotSet(double)));
+            else if (state == Qt::LeftButton)
+                QApplication::connect(widget, SIGNAL(valueChangedLeftUp(double)), this,   SLOT(slotSet(double)));
+            else if (state == Qt::RightButton)
+                QApplication::connect(widget, SIGNAL(valueChangedRightUp(double)), this,   SLOT(slotSet(double)));
+        }
     }
 
-    QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setValue(double)));
+    if (connectValueToWidget)
+        QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setValue(double)));
     emitValueChanged();
 }
 

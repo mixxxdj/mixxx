@@ -163,10 +163,26 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
+}
+
+void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+
+    QList<int> trackPositions;
+    foreach (QModelIndex index, indices) {
+        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        trackPositions.append(trackPosition);
+    }
+
+    foreach (int trackPosition, trackPositions) {
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, trackPosition);
+    }
+
+    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
