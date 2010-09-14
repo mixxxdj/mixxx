@@ -222,24 +222,7 @@ void WTrackTableView::slotRemove()
     {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
-
-            QModelIndex curIndex;
-            //The model indices are sorted so that we remove the tracks from the
-            //table in ascending order. This is necessary because if track A is
-            //above track B in the table, and you remove track A, the model
-            //index for track B will change.  Sorting the indices first means we
-            //don't have to worry about this.
-            qSort(m_selectedIndices);
-
-            //Going through the model indices in descending order (see above
-            //comment for explanation).
-            QListIterator<QModelIndex> it(m_selectedIndices);
-            it.toBack();
-            while (it.hasPrevious())
-            {
-                curIndex = it.previous();
-                trackModel->removeTrack(curIndex);
-            }
+            trackModel->removeTracks(m_selectedIndices);
         }
     }
 }

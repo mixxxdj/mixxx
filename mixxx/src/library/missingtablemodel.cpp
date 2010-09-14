@@ -36,7 +36,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
-                  "track_locations.fs_deleted," + 
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " "
                   "FROM library "
@@ -127,6 +127,10 @@ void MissingTableModel::removeTrack(const QModelIndex& index)
 {
 }
 
+void MissingTableModel::removeTracks(const QModelIndexList& indices)
+{
+}
+
 void MissingTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
 }
@@ -153,7 +157,7 @@ void MissingTableModel::slotSearch(const QString& searchText) {
         filter = "(" + MissingTableModel::MISSINGFILTER + " AND " +
                 "(artist LIKE " + escapedText + " OR " +
                 "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + "))";
+                "title LIKE " + escapedText + "))";
     }
     setFilter(filter);
 }
@@ -164,7 +168,8 @@ const QString MissingTableModel::currentSearch() {
 
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED))
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) || 
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
         return true;
     else
         return false;

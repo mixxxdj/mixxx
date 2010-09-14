@@ -131,6 +131,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
     m_pBundledSongsView = new BundledSongsWebView(libraryWidget, PROMO_BUNDLE_PATH, m_sPromoLocalHTMLLocation, m_bFirstRun, m_pConfig);
+    m_pBundledSongsView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
     connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),

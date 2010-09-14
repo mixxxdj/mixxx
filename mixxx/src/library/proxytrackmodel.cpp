@@ -55,6 +55,15 @@ void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     m_pTrackModel->removeTrack(indexSource);
 }
 
+void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
+    QModelIndexList translatedList;
+    foreach (QModelIndex index, indices) {
+        QModelIndex indexSource = mapToSource(index);
+        translatedList.append(indexSource);
+    }
+    m_pTrackModel->removeTracks(translatedList);
+}
+
 bool ProxyTrackModel::addTrack(const QModelIndex& index, QString location) {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->addTrack(indexSource, location);

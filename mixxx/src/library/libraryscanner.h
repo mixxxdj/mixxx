@@ -37,33 +37,34 @@ class LibraryScanner : public QThread
 {
     Q_OBJECT
 
-    public:
-        LibraryScanner();
-        LibraryScanner(TrackCollection* collection);
-        virtual ~LibraryScanner();
-        void run();
-        void scan(QString libraryPath);
-        void scan();
-        bool recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd);
-    public slots:
-        void cancel();
-        void resetCancel();
-    signals:
-        void scanFinished();
-        void progressHashing(QString);
-    private:
-        TrackCollection* m_pCollection;      //The library trackcollection
-        QString m_qLibraryPath;               //The path to the library on disk
-        LibraryScannerDlg* m_pProgress;       //The library scanning window
-        LibraryHashDAO m_libraryHashDao;
-        CueDAO m_cueDao;
-        TrackDAO m_trackDao;
-        PlaylistDAO m_playlistDao;
-        QSqlDatabase m_database;            /**Hang on to a different DB connection
-                                               since we run in a different thread */
-        QStringList nameFilters;
-        bool m_bCancelLibraryScan;
-        QMutex m_libraryScanMutex;
+  public:
+    LibraryScanner();
+    LibraryScanner(TrackCollection* collection);
+    virtual ~LibraryScanner();
+    void run();
+    void scan(QString libraryPath);
+    void scan();
+    bool recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd);
+  public slots:
+    void cancel();
+    void resetCancel();
+  signals:
+    void scanFinished();
+    void progressHashing(QString);
+  private:
+    TrackCollection* m_pCollection;      //The library trackcollection
+    QString m_qLibraryPath;               //The path to the library on disk
+    LibraryScannerDlg* m_pProgress;       //The library scanning window
+    LibraryHashDAO m_libraryHashDao;
+    CueDAO m_cueDao;
+    TrackDAO m_trackDao;
+    PlaylistDAO m_playlistDao;
+    QSqlDatabase m_database;            /**Hang on to a different DB connection
+                                           since we run in a different thread */
+    QStringList nameFilters;
+    bool m_bCancelLibraryScan;
+    QMutex m_libraryScanMutex;
+    QString m_iTunesArtFolder;
 };
 
 #endif

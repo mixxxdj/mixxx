@@ -39,6 +39,14 @@ const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
 const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
 const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 
+const QString TRACKLOCATIONSTABLE_ID = "id";
+const QString TRACKLOCATIONSTABLE_LOCATION = "location";
+const QString TRACKLOCATIONSTABLE_FILENAME = "filename";
+const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
+const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
+const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
+const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
+
 class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT
   public:
@@ -55,6 +63,7 @@ Q_OBJECT
     int addTrack(QFileInfo& fileInfo);
     void addTracks(QList<TrackInfoObject*> tracksToAdd);
     void removeTrack(int id);
+    void removeTracks(QList<int> ids);
     void unremoveTrack(int trackId);
     TrackPointer getTrack(int id) const;
     bool isDirty(int trackId);
