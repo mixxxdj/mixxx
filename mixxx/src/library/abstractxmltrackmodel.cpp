@@ -47,8 +47,41 @@ AbstractXmlTrackModel::~AbstractXmlTrackModel()
 
 Qt::ItemFlags AbstractXmlTrackModel::flags ( const QModelIndex & index ) const
 {
-    return QAbstractTableModel::flags(index);
+    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+
+    if (!index.isValid())
+        return Qt::ItemIsEnabled;
+
+    defaultFlags |= Qt::ItemIsDragEnabled;
+
+    return defaultFlags;
 }
+
+QMimeData* AbstractXmlTrackModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+
+    //Ok, so the list of indexes we're given contains separates indexes for
+    //each column, so even if only one row is selected, we'll have like 7 indexes.
+    //We need to only count each row once:
+    QList<int> rows;
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            if (!rows.contains(index.row())) {
+                rows.push_back(index.row());
+                QUrl url(getTrackLocation(index));
+                if (!url.isValid())
+                    qDebug() << "ERROR invalid url\n";
+                else
+                    urls.append(url);
+            }
+        }
+    }
+    mimeData->setUrls(urls);
+    return mimeData;
+}
+
 
 QVariant AbstractXmlTrackModel::data ( const QModelIndex & index, int role ) const
 {
