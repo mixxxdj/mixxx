@@ -225,42 +225,66 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Reloop/Exit</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
-			<Pressed>reloop-on-Ch1.png</Pressed>
+			<Pressed>reloop-off.png</Pressed>
 			<Unpressed>reloop-off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>reloop-on-Ch1.png</Pressed>
+			<Unpressed>reloop-on-Ch1.png</Unpressed>
 		</State>
 		<Pos>50,148</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],loop_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Reloop/Exit</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
-			<Pressed>reloop-on-Ch2.png</Pressed>
+			<Pressed>reloop-off.png</Pressed>
 			<Unpressed>reloop-off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>reloop-on-Ch2.png</Pressed>
+			<Unpressed>reloop-on-Ch2.png</Unpressed>
 		</State>
 		<Pos>953,148</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],loop_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
