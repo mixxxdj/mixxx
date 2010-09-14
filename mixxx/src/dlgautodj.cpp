@@ -19,7 +19,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bAutoDJEnabled = false;
     m_bPlayer1Primed = false;
     m_bPlayer2Primed = false;
-    m_pTrackTableView = new WTrackTableView(this, pConfig);
+    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));

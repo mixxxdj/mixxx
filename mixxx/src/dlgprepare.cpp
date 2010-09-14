@@ -21,7 +21,7 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig,
+    m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig, pTrackCollection,
                                                             ConfigKey(), ConfigKey());
     connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
