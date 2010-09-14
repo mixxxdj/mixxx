@@ -31,8 +31,7 @@ METADATA
       CREATE TABLE IF NOT EXISTS LibraryHashes (
         directory_path VARCHAR(256) primary key,
         hash INTEGER,
-        directory_deleted INTEGER,
-        needs_verification INTEGER);
+        directory_deleted INTEGER);
 
       CREATE TABLE IF NOT EXISTS library (
         id INTEGER primary key AUTOINCREMENT,
