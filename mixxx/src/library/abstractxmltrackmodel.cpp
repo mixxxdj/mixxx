@@ -113,6 +113,10 @@ void AbstractXmlTrackModel::removeTrack(const QModelIndex& index)
     //Should do nothing... hmmm
 }
 
+void AbstractXmlTrackModel::removeTracks(const QModelIndexList& indices)
+{
+}
+
 void AbstractXmlTrackModel::moveTrack(const QModelIndex& sourceIndex,
                                       const QModelIndex& destIndex)
 {

@@ -59,6 +59,11 @@ void BrowseTableModel::removeTrack(const QModelIndex& index)
 	//TODO
 }
 
+void BrowseTableModel::removeTracks(const QModelIndexList& indices)
+{
+	//TODO
+}
+
 bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
 {
 	//TODO
