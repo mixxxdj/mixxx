@@ -184,6 +184,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
+			<ConfigKey>[Channel1],cue_default</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
 			<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
@@ -372,6 +377,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel2],cue_default</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],cue_default</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
