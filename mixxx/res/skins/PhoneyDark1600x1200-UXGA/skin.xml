@@ -22,6 +22,7 @@
 	CHANGELOG
 	v1.03	(14/09/2010)
 	* Corrected errors in (Hot)cues resulting in unexpected behaviour
+	* Reloop button now reflect its toggle state
 	
 	v1.02	(13/09/2010)
 	* Change skin license to Creative Commons Attribution-ShareAlike 3.0 Unported
@@ -1197,42 +1198,66 @@
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_reloop1_over.png</Pressed>
+			<Pressed>btn_reloop1.png</Pressed>
 			<Unpressed>btn_reloop1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_reloop1_over.png</Pressed>
+			<Unpressed>btn_reloop1_over.png</Unpressed>
 		</State>
 		<Pos>858,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],loop_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_reloop2_over.png</Pressed>
+			<Pressed>btn_reloop2.png</Pressed>
 			<Unpressed>btn_reloop2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_reloop2_over.png</Pressed>
+			<Unpressed>btn_reloop2_over.png</Unpressed>
 		</State>
 		<Pos>858,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],loop_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 
