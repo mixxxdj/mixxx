@@ -152,7 +152,7 @@ MaudioXponent.wheel = function (channel, control, value, status) {
         if (MaudioXponent.state["scratching"+currentdeck] == 1) { //scratch mode on
 	    engine.scratchTick(currentdeck, value-64);
         } else {  //normal wheel mode
-            engine.setValue("[Channel"+currentdeck+"]", "jog", (value-64)*4);
+            engine.setValue("[Channel"+currentdeck+"]", "jog", (value-64)/8);
         }
     }
 };
