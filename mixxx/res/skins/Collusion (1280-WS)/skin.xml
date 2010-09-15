@@ -147,6 +147,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 	<PushButton>
 		<Tooltip>Deck A: Left click: Pause/play, Right click: Set cue point</Tooltip>
 		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>b-play-1.png</Pressed>
@@ -167,6 +168,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel1],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -343,6 +345,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 	<PushButton>
 		<Tooltip>Deck B: Left click: Pause/play, Right click: Set cue point</Tooltip>
 		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>b-play-1.png</Pressed>
@@ -363,6 +366,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel2],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
