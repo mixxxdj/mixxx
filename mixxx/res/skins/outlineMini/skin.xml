@@ -454,6 +454,7 @@ Copyright (C) 2010 Mixxx
 	<PushButton>
 		<Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
 		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>play-off-Ch1.png</Pressed>
@@ -474,11 +475,13 @@ Copyright (C) 2010 Mixxx
 			<ConfigKey>[Channel1],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
 		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>play-off-Ch2.png</Pressed>
@@ -499,6 +502,7 @@ Copyright (C) 2010 Mixxx
 			<ConfigKey>[Channel2],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
