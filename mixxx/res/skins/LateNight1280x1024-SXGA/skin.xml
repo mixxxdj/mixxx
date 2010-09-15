@@ -101,7 +101,7 @@
 		<Pos>6,346</Pos>
 		<Size>1251,570</Size>
 		<BgColor>#121212</BgColor>
-		<FgColor>#C1C1C1</FgColor>
+		<FgColor>#DFDFDF</FgColor>
 		<BgColorRowEven>#121212</BgColorRowEven>
 		<BgColorRowUneven>#121212</BgColorRowUneven>
 	</TableView>
