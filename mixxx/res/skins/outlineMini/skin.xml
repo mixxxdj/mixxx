@@ -629,6 +629,11 @@ Copyright (C) 2010 Mixxx
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
@@ -652,6 +657,11 @@ Copyright (C) 2010 Mixxx
 		<Connection>
 			<ConfigKey>[Channel1],start</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -679,6 +689,11 @@ Copyright (C) 2010 Mixxx
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
@@ -702,6 +717,11 @@ Copyright (C) 2010 Mixxx
 		<Connection>
 			<ConfigKey>[Channel2],start</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
