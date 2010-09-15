@@ -354,6 +354,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatsync</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
 	</PushButton>
 	
 	<!-- ***** PLAYER 2 CONTROL BUTTONS ***** -->
@@ -567,6 +572,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatsync</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
 	</PushButton>
 	
 	<!-- ***** PLAYER 1 TEMPO BUTTONS ***** -->
@@ -585,8 +595,18 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
+			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -687,8 +707,18 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
+			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
