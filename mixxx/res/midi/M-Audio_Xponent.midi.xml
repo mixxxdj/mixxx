@@ -198,13 +198,6 @@
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>pfl</key>
-      <status>0x80</status>
-      <midino>20</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
       <key>pregain</key>
       <status>0xB0</status>
       <midino>11</midino>
@@ -697,13 +690,6 @@
       <options>
         <Script-Binding/>
       </options>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>pfl</key>
-      <status>0x81</status>
-      <midino>20</midino>
-      <controltype>button</controltype>
     </control>
     <control>
       <group>[Channel2]</group>
