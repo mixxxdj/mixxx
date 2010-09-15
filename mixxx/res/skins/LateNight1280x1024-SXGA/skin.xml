@@ -1217,6 +1217,11 @@
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
@@ -1240,6 +1245,11 @@
 		<Connection>
 			<ConfigKey>[Channel1],start</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1267,6 +1277,11 @@
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
@@ -1290,6 +1305,11 @@
 		<Connection>
 			<ConfigKey>[Channel2],start</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>

@@ -225,6 +225,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Deck A: Left click: Fast forward, Right click: End of track</Tooltip>
@@ -248,6 +253,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel1],end</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -428,6 +438,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Deck B: Left click: Fast forward, Right click: End of track</Tooltip>
@@ -451,6 +466,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel2],end</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
