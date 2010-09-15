@@ -167,13 +167,16 @@ QString ITunesTrackModel::findValueByKey(QDomNode dictNode, QString key) const
 {
     QDomElement curElem;
 
-
     curElem = dictNode.firstChildElement("key");
     while(!curElem.isNull()) {
         if ( curElem.text() == key ) {
             QDomElement value;
             value = curElem.nextSiblingElement();
-            return value.text();
+            QString textValue = value.text();
+            //Either iTunes lies about the text encoding in its XML file or 
+            //Qt misdetects it. We workaround this explicitly sayi it's UTF-8.
+            textValue = QString::fromUtf8(textValue.toAscii().data(), textValue.size());
+            return textValue;
         }
 
         curElem = curElem.nextSiblingElement("key");
