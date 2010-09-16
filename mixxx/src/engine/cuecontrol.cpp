@@ -65,7 +65,8 @@ CueControl::~CueControl() {
 ConfigKey CueControl::keyForControl(int hotcue, QString name) {
     ConfigKey key;
     key.group = getGroup();
-    key.item = QString("hotcue_%1_%2").arg(hotcue).arg(name);
+    // Add one to hotcue so that we dont have a hotcue_0
+    key.item = QString("hotcue_%1_%2").arg(hotcue+1).arg(name);
     return key;
 }
 
