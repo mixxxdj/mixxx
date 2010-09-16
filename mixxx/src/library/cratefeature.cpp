@@ -137,6 +137,9 @@ void CrateFeature::slotCreateCrate() {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
 
     if (name == "") {
+		QMessageBox::warning(NULL,
+                             tr("Crate Creation Failed"),
+                             tr("A crate cannot have a blank name."));
         return;
     } else if (crateDao.createCrate(name)) {
         m_crateListTableModel.select();

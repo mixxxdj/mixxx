@@ -972,7 +972,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
          winpos = pos();
          // Can't set max to -1,-1 or 0,0 for unbounded?
          setMaximumSize(32767,32767);
@@ -981,7 +981,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
         // Crazy X window managers break this so I'm told by Qt docs
         //         int deskw = app->desktop()->width();
         //         int deskh = app->desktop()->height();
