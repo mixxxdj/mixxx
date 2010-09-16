@@ -139,6 +139,14 @@ METADATA
     </sql>
   </revision>
   <revision version="5">
+   <description>
+      Add needs_verification column to library hashes table.
+    </description>
+    <sql>
+      ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
+    </sql>
+  </revision>
+  <revision version="6">
   	<description>
   		Add timesplayed column
   	</description>
@@ -150,13 +158,5 @@ METADATA
   		DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
   		DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
   	</sql>
-  </revision>
-  <revision version="6">
-   <description>
-      Add needs_verification column to library hashes table.
-    </description>
-    <sql>
-      ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
-    </sql>
   </revision>
 </schema>
