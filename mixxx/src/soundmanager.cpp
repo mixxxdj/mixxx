@@ -61,8 +61,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylMode")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylMode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylMode")));
     //ControlObjectThreadMain* pControlObjectVinylControlEnabled1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "vinylcontrol")));
     //ControlObjectThreadMain* pControlObjectVinylControlEnabled2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "vinylcontrol")));
 //    ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
