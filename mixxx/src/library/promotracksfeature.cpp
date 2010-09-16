@@ -62,12 +62,12 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
     {
         QTextStream extra(&file);
 
-        qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
+        //qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
         while (!extra.atEnd())
         {
             QString trackPath = extra.readLine();
             trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
-            qDebug() << "PROMO: Auto-loading track" << trackPath;
+            //qDebug() << "PROMO: Auto-loading track" << trackPath;
 
             TrackInfoObject* track = new TrackInfoObject(trackPath);
             // TODO(XXX) These tracks are probably getting leaked b/c
@@ -131,6 +131,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
     m_pBundledSongsView = new BundledSongsWebView(libraryWidget, PROMO_BUNDLE_PATH, m_sPromoLocalHTMLLocation, m_bFirstRun, m_pConfig);
+    m_pBundledSongsView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
     connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),
