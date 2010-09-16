@@ -945,7 +945,7 @@
 	**********************************************
 	-->
 	<SliderComposed>
-		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;</Tooltip>
+		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>knob_volume1.png</Handle>
 		<Slider>slider_volume1.png</Slider>
 		<Pos>453,97</Pos>
@@ -956,7 +956,7 @@
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;</Tooltip>
+		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>knob_volume2.png</Handle>
 		<Slider>slider_volume2.png</Slider>
 		<Pos>543,97</Pos>
@@ -973,7 +973,7 @@
 	**********************************************
 	-->
 	<SliderComposed>
-		<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
+		<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Right-click: Reset to default value&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
 		<Handle>knob_crossfader.png</Handle>
 		<Slider>slider_crossfader.png</Slider>
 		<Pos>444,230</Pos>
@@ -990,7 +990,7 @@
 	**********************************************
 	-->
 	<SliderComposed>
-		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;</Tooltip>
+		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>knob_pitch1.png</Handle>
 		<Slider>slider_pitch1.png</Slider>
 		<Pos>340,44</Pos>
@@ -1001,7 +1001,7 @@
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;</Tooltip>
+		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>knob_pitch2.png</Handle>
 		<Slider>slider_pitch2.png</Slider>
 		<Pos>654,44</Pos>
@@ -2388,7 +2388,7 @@
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;</Tooltip>
+		<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>580,22</Pos>
@@ -2397,7 +2397,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;</Tooltip>
+		<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>519,22</Pos>
@@ -2412,7 +2412,7 @@
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;</Tooltip>
+		<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>538,62</Pos>
@@ -2421,7 +2421,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;</Tooltip>
+		<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>489,62</Pos>
@@ -2430,7 +2430,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger period&#10;Adjusts the wavelength of the flange effect (when active).&#10;</Tooltip>
+		<Tooltip>Flanger period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>439,62</Pos>
@@ -2445,7 +2445,7 @@
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;</Tooltip>
+		<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>397,22</Pos>
@@ -2454,7 +2454,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;</Tooltip>
+		<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>458,22</Pos>
@@ -2469,7 +2469,7 @@
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;</Tooltip>
+		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,98</Pos>
@@ -2478,7 +2478,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;</Tooltip>
+		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,127</Pos>
@@ -2487,7 +2487,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;</Tooltip>
+		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,155</Pos>
@@ -2496,7 +2496,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;</Tooltip>
+		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,184</Pos>
@@ -2505,7 +2505,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;</Tooltip>
+		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,98</Pos>
@@ -2514,7 +2514,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;</Tooltip>
+		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,127</Pos>
@@ -2523,7 +2523,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;</Tooltip>
+		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,155</Pos>
@@ -2532,7 +2532,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;</Tooltip>
+		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,184</Pos>
