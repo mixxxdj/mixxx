@@ -35,6 +35,7 @@ class ITunesPlaylistModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags flags(const QModelIndex& index) const;
     virtual QVariant data(const QModelIndex & index,
                           int role = Qt::DisplayRole) const;
+    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
     virtual QVariant headerData(int section,
                                 Qt::Orientation orientation,
                                 int role = Qt::DisplayRole) const;
@@ -49,6 +50,7 @@ class ITunesPlaylistModel : public QAbstractTableModel, public TrackModel {
     virtual const QList<int>& searchColumns() const;
     virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
+    virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);

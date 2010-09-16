@@ -382,10 +382,6 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // Jog: a linear additive effect whose value is filtered (springs back)
         // Temp: pitch bend
 
-        // Multiply reverse direction to make it feel more real
-        if (jogFactor < 0.0f)
-            jogFactor *= 2.0;
-
         rate = 1. + getRawRate() + getTempRate();
         rate += wheelFactor * 10.;
 
