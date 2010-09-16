@@ -95,6 +95,23 @@ int CrateDAO::getCrateIdByName(const QString& name) {
     return -1;
 }
 
+int CrateDAO::getCrateId(int position) {
+    QSqlQuery query;
+    query.prepare("SELECT id FROM " CRATE_TABLE);
+    if (query.exec()) {
+        int currentRow = 0;
+        while(query.next()) {
+            if (currentRow++ == position) {
+                int id = query.value(0).toInt();
+                return id;
+            }
+        }
+    } else {
+        qDebug() << query.lastError();
+    }
+    return -1;
+}
+
 QString CrateDAO::crateName(int crateId) {
     QSqlQuery query;
     query.prepare("SELECT name FROM " CRATE_TABLE " WHERE id = (:id)");

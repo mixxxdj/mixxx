@@ -1,54 +1,61 @@
-  	<!--1 August 2010 17:54:32 CEST-->  
-  	<!--   
-  	Shade, Skin for Mixxx 1.8.x
-    www.mixxx.org
-    Copyright (C) 2010 jus ; jus/justmail/de
-  
-    This file is part of the "Shade" Skin for Mixxx 1.8.x
-    "Shade" is licensed under the Attribution-Noncommercial-Share Alike 3.0 licence.
-    http://creativecommons.org/licenses/by-nc-sa/3.0/us/
-     
+	<!--
+	Shade , Skin for Mixxx 1.8.x
+	www.mixxx.org
+	Copyright (C) 2010 jus ; jus@justmail.de
+	This file is part of the "Shade" Skin for Mixxx 1.8.x
+	"Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+	http://creativecommons.org/licenses/by-sa/3.0/
+
 	You are free:
 	to Share - to copy, distribute and transmit the work
 	to Remix - to adapt the work
-		
+
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor 
 	(but not in any way that suggests that they endorse you or your use of the work).
-	What does "Attribute this work" mean?
-	You must attribute the work in the manner specified by the author or licensor 
-	(but not in any way that suggests that they endorse you or your use of the work).
 
-	Noncommercial - You may not use this work for commercial purposes. 
-	Share Alike - If you alter, transform, or build upon this work, you may distribute 
+	Share Alike — If you alter, transform, or build upon this work, you may distribute
 	the resulting work only under the same or similar license to this one.
- 	-->
+	-->
 
-  	<!--
-  	CHANGELOG
-  	v0.84b	(01/08/2010)
-  	# corrected Headphone button positioning  	
-  	
-  	v0.83b	(13/06/2010)
-  	# corrected FX button positioning
-
-  	v0.82b	(20/05/2010)
-  	# reduced height, application window now fits Linux/Gnome too,
-  	  this means less space for library widget :-(
-  	# Gfx cleanup
-  	- removed "Preview" watermark  	
-
-  	v0.81b	(18/02/2010)
-  	+ Hotcues preview the Cue when the player is stopped  	   
-
-  	v0.80b	(11/02/2010)
-	Initial Developer Preview for Mixxx 1.8.x
-  	-->
-
-<!DOCTYPE skin>           
-<skin>
-
+	<!--
+	CHANGELOG
+	v1.03	(14/09/2010)
+	* Corrected errors in (Hot)cues resulting in unexpected behaviour
+	* Reloop button now reflect its toggle state
 	
+	v1.02	(13/09/2010)
+	* Change skin license to Creative Commons Attribution-ShareAlike 3.0 Unported
+	  Skin now DFSG-compatible see http://wiki.debian.org/DebianFreeSoftwareGuidelines
+	* Major Tooltips overhault, they provide more helpful informations now
+
+	v1.01	(10/09/2010)
+	* (Hot)Cue marker now drawn on top of loop overlay for better visibility
+	* Finetuning on various VUmeter keys
+	* Version bump
+	- Removed some orphaned keys no longer in Mixxx codebase
+
+	v0.84b	(01/08/2010)
+	# corrected Headphone button positioning  	
+
+	v0.83b	(13/06/2010)
+	# corrected FX button positioning
+
+	v0.82b	(20/05/2010)
+	# reduced height, application window now fits Linux/Gnome too,
+	  this means less space for library widget :-(
+	# Gfx cleanup
+	- removed "Preview" watermark  	
+
+	v0.81b	(18/02/2010)
+	+ Hotcues preview the Cue when the player is stopped
+
+	v0.80b	(11/02/2010)
+	Initial Developer Preview for Mixxx 1.8.x
+	-->
+
+<!DOCTYPE skin>
+<skin>
 	<!--
 	############################################################################################
 	############################################################################################
@@ -56,7 +63,7 @@
 	############################################################################################
 	############################################################################################
 	-->
-	
+
 	<!--
 	**********************************************
 	General- Skin Colour Scheme (Option not used by this skin)
@@ -67,7 +74,7 @@
 	**********************************************	
 	General- Main background picture
 	**********************************************
-	-->	
+	-->
 	<Background>
 		<Path>background1024x600.png</Path>
 		<BgColor>#000000</BgColor>
@@ -86,7 +93,7 @@
 		<BgColorRowEven>#191F24</BgColorRowEven>
 		<BgColorRowUneven>#191F24</BgColorRowUneven>
 	</TableView>
-	
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -94,14 +101,14 @@
 	############################################################################################
 	############################################################################################
 	-->
-	
+
 	<!--
 	**********************************************
 	Visual- Waveform
 	**********************************************
 	-->
 	<Visual>
-		<Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>11,65</Pos>
 		<Size>314,104</Size>
@@ -112,70 +119,65 @@
 		<BeatHighlightColor>#FF0000</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<CueColor>#000000</CueColor>
-		<!--<FisheyeColor>#404040</FisheyeColor>-->
-		<Zoom>true</Zoom>
-  				
+		<MarkRange>
+			<StartControl>loop_start_position</StartControl>
+			<EndControl>loop_end_position</EndControl>
+			<EnabledControl>loop_enabled</EnabledControl>
+			<Color>#FD0564</Color>
+			<DisabledColor>#FA77FF</DisabledColor>
+		</MarkRange>
 		<Mark>
-    		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
-			<Align>top</Align>
-			<Color>#FFFF00</Color>
+			<Control>loop_start_position</Control>
+			<Text>LOOP IN</Text>
+			<Align>bottom</Align>
+			<Color>#EB4123</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>  		
-  		<Mark>
-    		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+		</Mark>
+		<Mark>
+			<Control>loop_end_position</Control>
+			<Text>LOOP OUT</Text>
+			<Align>bottom</Align>
+			<Color>#EB4123</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_1_position</Control>
+			<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#0033FF</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+		</Mark>
+		<Mark>
+			<Control>hotcue_2_position</Control>
+			<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+		</Mark>
+		<Mark>
+			<Control>hotcue_3_position</Control>
+			<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+		</Mark>
+		<Mark>
+			<Control>hotcue_4_position</Control>
+			<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark> 
-   
-  		<Mark>
-    		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
-			<Align>bottom</Align>
-			<Color>#EB4123</Color>
+		</Mark>
+		<Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
+			<Align>top</Align>
+			<Color>#FFFF00</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
-			<Align>bottom</Align>
-			<Color>#EB4123</Color>
-			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<MarkRange>
-    		<StartControl>loop_start_position</StartControl>
-    		<EndControl>loop_end_position</EndControl>
-    		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#FD0564</Color>	
-			<DisabledColor>#FA77FF</DisabledColor>
-  		</MarkRange>
+		</Mark>
 	</Visual>
-	
 	<Visual>
-		<Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>682,65</Pos>
 		<Size>314,104</Size>
@@ -186,66 +188,62 @@
 		<BeatHighlightColor>#FF0000</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<CueColor>#000000</CueColor>
-		<!--<FisheyeColor>#404040</FisheyeColor>-->
-		<Zoom>true</Zoom>
-		
+		<MarkRange>
+			<StartControl>loop_start_position</StartControl>
+			<EndControl>loop_end_position</EndControl>
+			<EnabledControl>loop_enabled</EnabledControl>
+			<Color>#FD0564</Color>
+			<DisabledColor>#FA77FF</DisabledColor>
+		</MarkRange>
 		<Mark>
-    		<Control>cue_point</Control>
-    		<Text>CUEPOINT</Text>
-			<Align>top</Align>
-			<Color>#FFFF00</Color>
+			<Control>loop_start_position</Control>
+			<Text>LOOP IN</Text>
+			<Align>bottom</Align>
+			<Color>#EB4123</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>  		
-  		<Mark>
-    		<Control>hotcue_1_position</Control>
-    		<Text>HOTCUE 1</Text>
+		</Mark>
+		<Mark>
+			<Control>loop_end_position</Control>
+			<Text>LOOP OUT</Text>
+			<Align>bottom</Align>
+			<Color>#EB4123</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_1_position</Control>
+			<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
 			<Color>#0033FF</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>hotcue_2_position</Control>
-    		<Text>HOTCUE 2</Text>
+		</Mark>
+		<Mark>
+			<Control>hotcue_2_position</Control>
+			<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
 			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>hotcue_3_position</Control>
-    		<Text>HOTCUE 3</Text>
+		</Mark>
+		<Mark>
+			<Control>hotcue_3_position</Control>
+			<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
 			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>hotcue_4_position</Control>
-    		<Text>HOTCUE 4</Text>
+		</Mark>
+		<Mark>
+			<Control>hotcue_4_position</Control>
+			<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
 			<Color>#009900</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark> 
- 				
-  		<Mark>
-    		<Control>loop_start_position</Control>
-    		<Text>LOOP IN</Text>	
-			<Align>bottom</Align>
-			<Color>#EB4123</Color>
+		</Mark>
+		<Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
+			<Align>top</Align>
+			<Color>#FFFF00</Color>
 			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<Mark>
-    		<Control>loop_end_position</Control>
-   			<Text>LOOP OUT</Text>
-			<Align>bottom</Align>
-			<Color>#EB4123</Color>
-			<TextColor>#FFFFFF</TextColor>
-  		</Mark>
-  		<MarkRange>
-    		<StartControl>loop_start_position</StartControl>
-    		<EndControl>loop_end_position</EndControl>
-    		<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#FD0564</Color>	
-			<DisabledColor>#FA77FF</DisabledColor>
-  		</MarkRange>	
+		</Mark>
 	</Visual>
 
 	<!--
@@ -254,7 +252,7 @@
 	**********************************************
 	-->
 	<Overview>
-		<Tooltip>Overview display of waveform</Tooltip>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>11,174</Pos>
 		<Size>269,33</Size>
@@ -267,11 +265,11 @@
 		</Connection>
 	</Overview>
 	<Overview>
-		<Tooltip>Overview display of waveform</Tooltip>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>682,174</Pos>
 		<Size>269,33</Size>
-		<BgColor>#8D98A3</BgColor>	
+		<BgColor>#8D98A3</BgColor>
 		<SignalColor>#212930</SignalColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<Connection>
@@ -279,79 +277,80 @@
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</Overview>
-	
+
 	<!--
 	**********************************************
 	Visual - Volume level display
 	**********************************************
-	-->	
+	-->
 	<VuMeter>
-		<Tooltip>Channel volume display</Tooltip>
+		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
 		<PathVu>btn_volume_display1_over.png</PathVu>
 		<PathBack>btn_volume_display1.png</PathBack>
 		<Pos>484,108</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
-		<!--
-		<PeakFallTime>80</PeakFallTime>
-  		<PeakFallStep>5</PeakFallStep>
-  		-->
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Channel1],VuMeter</ConfigKey>
 		</Connection>
 	</VuMeter>
 	<VuMeter>
-		<Tooltip>Channel volume display</Tooltip>
+		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
 		<PathVu>btn_volume_display2_over.png</PathVu>
 		<PathBack>btn_volume_display2.png</PathBack>
 		<Pos>520,108</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
-		<!--  <PeakFallTime>80</PeakFallTime>
-  		<PeakFallStep>5</PeakFallStep> -->
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Channel2],VuMeter</ConfigKey>
 		</Connection>
 	</VuMeter>
-	
+
 	<!--***Usage for single Master volume display***-->
 	<!--
 	<VuMeter>
-		<Tooltip>Master volume display</Tooltip>
+		<Tooltip>Master channel volume&#10;Outputs the current instantaneous master volume (composite).&#10;</Tooltip>
 		<PathVu>btn_volume_display_master1_over.png</PathVu>
 		<PathBack>btn_volume_display_master1.png</PathBack>
 		<Pos>505,159</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
-		<PeakFallTime>80</PeakFallTime>
-		<PeakFallStep>5</PeakFallStep>
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeter</ConfigKey>
 		</Connection>
 	</VuMeter>
 	-->
-	
 	<VuMeter>
-		<Tooltip>Left Channel Master Volume</Tooltip>
+		<Tooltip>Master channel volume&#10;Outputs the current instantaneous master volume for the left channel.&#10;</Tooltip>
 		<PathVu>btn_volume_display_master1_over.png</PathVu>
 		<PathBack>btn_volume_display_master1.png</PathBack>
 		<Pos>499,108</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeterL</ConfigKey>
 		</Connection>
 	</VuMeter>
 	<VuMeter>
-		<Tooltip>Right Channel Master Volume</Tooltip>
+		<Tooltip>Master channel volume&#10;Outputs the current instantaneous master volume for the right channel.&#10;</Tooltip>
 		<PathVu>btn_volume_display_master2_over.png</PathVu>
 		<PathBack>btn_volume_display_master2.png</PathBack>
 		<Pos>505,108</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
-		<PeakHoldTime>400</PeakHoldTime>
+		<PeakHoldTime>500</PeakHoldTime>
+		<PeakFallTime>50</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeterR</ConfigKey>
 		</Connection>
@@ -363,16 +362,16 @@
 	**********************************************
 	-->
 	<StatusLight>
-	    <Tooltip>Peak Indicator</Tooltip>
+		<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
 		<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 		<PathBack>btn_clipping1.png</PathBack>
 		<Pos>484,97</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 		</Connection>
-    </StatusLight>				
+	</StatusLight>
 	<StatusLight>
-		<Tooltip>Peak Indicator</Tooltip>
+		<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
 		<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 		<PathBack>btn_clipping2.png</PathBack>
 		<Pos>520,97</Pos>
@@ -380,9 +379,8 @@
 			<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 		</Connection>
 	</StatusLight>
-	
 	<StatusLight>
-		<Tooltip>Peak Indicator</Tooltip>
+		<Tooltip>Master Peak Indicator&#10;Indicates when the signal on the Master output is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
 		<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 		<PathBack>btn_clipping_master.png</PathBack>
 		<Pos>499,97</Pos>
@@ -390,7 +388,7 @@
 			<ConfigKey>[Master],PeakIndicator</ConfigKey>
 		</Connection>
 	</StatusLight>
-	
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -405,16 +403,16 @@
 	**********************************************
 	-->
 	<Text>
-		<Tooltip>Track information display</Tooltip>
+		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>12,13</Pos>
 		<Size>310,24</Size>
 		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #191F24; text-align: left; padding-left: 1%;
 		</Style>
-	</Text>	
+	</Text>
 	<Text>
-		<Tooltip>Track information display</Tooltip>
+		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>683,13</Pos>
 		<Size>310,24</Size>
@@ -427,9 +425,9 @@
 	**********************************************
 	Text- BPM number display
 	**********************************************
-	-->	
+	-->
 	<NumberBpm>
-		<Tooltip>Tempo display (BPM=Beat Per Minute)</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>173,40</Pos>
 		<Size>90,24</Size>
@@ -442,7 +440,7 @@
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
-		<Tooltip>Tempo display (BPM=Beat Per Minute)</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>847,40</Pos>
 		<Size>90,24</Size>
@@ -459,9 +457,9 @@
 	**********************************************
 	Text- Playing position / Time remaining
 	**********************************************
-	-->	
+	-->
 	<NumberPos>
-		<Tooltip>Play position/remaining time</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>12,40</Pos>
 		<Size>160,24</Size>
@@ -474,7 +472,7 @@
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Play position/remaining time</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>683,40</Pos>
 		<Size>160,24</Size>
@@ -493,7 +491,7 @@
 	**********************************************
 	-->
 	<NumberRate>
-		<Tooltip>Pitch rate display</Tooltip>
+		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>268,40</Pos>
 		<Size>55,24</Size>
@@ -507,7 +505,7 @@
 		</Connection>
 	</NumberRate>
 	<NumberRate>
-		<Tooltip>Pitch rate display</Tooltip>
+		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>941,40</Pos>
 		<Size>55,24</Size>
@@ -520,7 +518,7 @@
 			<ConfigKey>[Channel2],rate</ConfigKey>
 		</Connection>
 	</NumberRate>
-	
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -535,7 +533,7 @@
 	**********************************************
 	-->
 	<SliderComposed>
-		<Tooltip>Channel 1 volume control</Tooltip>
+		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;</Tooltip>
 		<Handle>knob_volume1.png</Handle>
 		<Slider>slider_volume1.png</Slider>
 		<Pos>453,97</Pos>
@@ -546,7 +544,7 @@
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Channel 2 volume control</Tooltip>
+		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;</Tooltip>
 		<Handle>knob_volume2.png</Handle>
 		<Slider>slider_volume2.png</Slider>
 		<Pos>543,97</Pos>
@@ -556,14 +554,14 @@
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</SliderComposed>
-	
+
 	<!--
 	**********************************************
 	Slider- Crossfader
 	**********************************************
-	-->	
+	-->
 	<SliderComposed>
-		<Tooltip>Crossfader</Tooltip>
+		<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
 		<Handle>knob_crossfader.png</Handle>
 		<Slider>slider_crossfader.png</Slider>
 		<Pos>444,230</Pos>
@@ -573,14 +571,14 @@
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</SliderComposed>
-	
-    <!--
+
+	<!--
 	**********************************************	
 	Slider- Pitch control
 	**********************************************
 	-->
 	<SliderComposed>
-		<Tooltip>Pitch control</Tooltip>
+		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;</Tooltip>
 		<Handle>knob_pitch1.png</Handle>
 		<Slider>slider_pitch1.png</Slider>
 		<Pos>340,44</Pos>
@@ -591,7 +589,7 @@
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Pitch control</Tooltip>
+		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;</Tooltip>
 		<Handle>knob_pitch2.png</Handle>
 		<Slider>slider_pitch2.png</Slider>
 		<Pos>654,44</Pos>
@@ -601,7 +599,7 @@
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</SliderComposed>
-	
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -609,14 +607,14 @@
 	############################################################################################
 	############################################################################################
 	-->
-	
-    <!--
+
+	<!--
     ****************************************
      Button- Play
     ****************************************
     -->
 	<PushButton>
-		<Tooltip>Left Click: Pause/play, Right Click: Set cue point</Tooltip>
+		<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -638,10 +636,10 @@
 			<ConfigKey>[Channel1],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
-			</Connection>
-    </PushButton>    
+		</Connection>
+	</PushButton>
 	<PushButton>
-		<Tooltip>Left Click: Pause/play, Right Click: Set cue point</Tooltip>
+		<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -663,7 +661,7 @@
 			<ConfigKey>[Channel2],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
-			</Connection>
+		</Connection>
 	</PushButton>
 
 	<!--
@@ -671,397 +669,467 @@
 	Button- Cue
 	**********************************************
 	-->
-    <PushButton>
-        <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_cue1_over.png</Pressed>
-            <Unpressed>btn_cue1.png</Unpressed>
-        </State>
-        <Pos>16,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel1],cue_default</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_cue2_over.png</Pressed>
-            <Unpressed>btn_cue2.png</Unpressed>
-        </State>
-        <Pos>644,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel2],cue_default</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    
-      <!--
+	<PushButton>
+		<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_cue1_over.png</Pressed>
+			<Unpressed>btn_cue1.png</Unpressed>
+		</State>
+		<Pos>16,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],cue_default</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],cue_default</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_cue2_over.png</Pressed>
+			<Unpressed>btn_cue2.png</Unpressed>
+		</State>
+		<Pos>644,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],cue_default</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],cue_default</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
 	**********************************************
 	Button- Hotcue
 	**********************************************
 	-->
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue1_over.png</Pressed>
-            <Unpressed>btn_hotcue1.png</Unpressed>
-        </State>
-        <Pos>280,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue2_over.png</Pressed>
-            <Unpressed>btn_hotcue2.png</Unpressed>
-        </State>
-        <Pos>301,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>        
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue3_over.png</Pressed>
-            <Unpressed>btn_hotcue3.png</Unpressed>
-        </State>
-        <Pos>322,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue4_over.png</Pressed>
-            <Unpressed>btn_hotcue4.png</Unpressed>
-        </State>
-        <Pos>343,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue1_over.png</Pressed>
-            <Unpressed>btn_hotcue1.png</Unpressed>
-        </State>
-        <Pos>908,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue2_over.png</Pressed>
-            <Unpressed>btn_hotcue2.png</Unpressed>
-        </State>
-        <Pos>929,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue3_over.png</Pressed>
-            <Unpressed>btn_hotcue3.png</Unpressed>
-        </State>
-        <Pos>950,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
-    <PushButton>
-        <Tooltip>Set and activate Hotcue, delete Hotcue (right-click)</Tooltip>
-        <NumberStates>1</NumberStates>
-        <State>
-            <Number>0</Number>
-            <Pressed>btn_hotcue4_over.png</Pressed>
-            <Unpressed>btn_hotcue4.png</Unpressed>
-        </State>
-        <Pos>971,221</Pos>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
-            <EmitOnDownPress>false</EmitOnDownPress>
-            <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-            <ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
-            <EmitOnDownPress>true</EmitOnDownPress>
-            <ButtonState>RightButton</ButtonState>
-        </Connection>
-    </PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue1_over.png</Pressed>
+			<Unpressed>btn_hotcue1.png</Unpressed>
+		</State>
+		<Pos>280,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue2_over.png</Pressed>
+			<Unpressed>btn_hotcue2.png</Unpressed>
+		</State>
+		<Pos>301,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue3_over.png</Pressed>
+			<Unpressed>btn_hotcue3.png</Unpressed>
+		</State>
+		<Pos>322,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue4_over.png</Pressed>
+			<Unpressed>btn_hotcue4.png</Unpressed>
+		</State>
+		<Pos>343,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue1_over.png</Pressed>
+			<Unpressed>btn_hotcue1.png</Unpressed>
+		</State>
+		<Pos>908,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue2_over.png</Pressed>
+			<Unpressed>btn_hotcue2.png</Unpressed>
+		</State>
+		<Pos>929,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue3_over.png</Pressed>
+			<Unpressed>btn_hotcue3.png</Unpressed>
+		</State>
+		<Pos>950,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_hotcue4_over.png</Pressed>
+			<Unpressed>btn_hotcue4.png</Unpressed>
+		</State>
+		<Pos>971,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
 
-    
-    <!--
+	<!--
 	**********************************************
 	Button- Looping
 	**********************************************
 	-->
 	<PushButton>
-  		<Tooltip>Loop-In</Tooltip>
- 		<NumberStates>1</NumberStates>
-  		<State>
-   			<Number>0</Number>
-   			<Pressed>btn_loop_in1_over.png</Pressed>
-   			<Unpressed>btn_loop_in1.png</Unpressed>
-  		</State>
-  		<Pos>183,221</Pos>
-  		<Connection>
-   			<ConfigKey>[Channel1],loop_in</ConfigKey>
-   			<EmitOnDownPress>true</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  		<Connection>
-   			<ConfigKey>[Channel1],loop_in</ConfigKey>
-   			<EmitOnDownPress>false</EmitOnDownPress>
-  			 <ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  	</PushButton>
+		<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_loop_in1_over.png</Pressed>
+			<Unpressed>btn_loop_in1.png</Unpressed>
+		</State>
+		<Pos>183,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],loop_in</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],loop_in</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
 	<PushButton>
-  		<Tooltip>Loop-In</Tooltip>
-  		<NumberStates>1</NumberStates>
-  		<State>
-   			<Number>0</Number>
-   			<Pressed>btn_loop_in2_over.png</Pressed>
-   			<Unpressed>btn_loop_in2.png</Unpressed>
-  		</State>
-  		<Pos>811,221</Pos>
-  		<Connection>
-   			<ConfigKey>[Channel2],loop_in</ConfigKey>
-   			<EmitOnDownPress>true</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  		<Connection>
-   			<ConfigKey>[Channel2],loop_in</ConfigKey>
-   			<EmitOnDownPress>false</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
+		<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_loop_in2_over.png</Pressed>
+			<Unpressed>btn_loop_in2.png</Unpressed>
+		</State>
+		<Pos>811,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],loop_in</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],loop_in</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_loop_out1_over.png</Pressed>
+			<Unpressed>btn_loop_out1.png</Unpressed>
+		</State>
+		<Pos>210,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],loop_out</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],loop_out</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_loop_out2_over.png</Pressed>
+			<Unpressed>btn_loop_out2.png</Unpressed>
+		</State>
+		<Pos>838,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],loop_out</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],loop_out</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_reloop1.png</Pressed>
+			<Unpressed>btn_reloop1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_reloop1_over.png</Pressed>
+			<Unpressed>btn_reloop1_over.png</Unpressed>
+		</State>
+		<Pos>237,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],loop_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_reloop2.png</Pressed>
+			<Unpressed>btn_reloop2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_reloop2_over.png</Pressed>
+			<Unpressed>btn_reloop2_over.png</Unpressed>
+		</State>
+		<Pos>865,221</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],loop_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
 	</PushButton>
 
- 	<PushButton>
-  		<Tooltip>Loop-Out</Tooltip>
-  		<NumberStates>1</NumberStates>
-  		<State>
-   			<Number>0</Number>
-   			<Pressed>btn_loop_out1_over.png</Pressed>
-   			<Unpressed>btn_loop_out1.png</Unpressed>
-  		</State>
-  		<Pos>210,221</Pos>
-  		<Connection>
-   			<ConfigKey>[Channel1],loop_out</ConfigKey>
-   			<EmitOnDownPress>true</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  		<Connection>
-   			<ConfigKey>[Channel1],loop_out</ConfigKey>
-   			<EmitOnDownPress>false</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  			</Connection>
- 	</PushButton>
- 	<PushButton>
-  		<Tooltip>Loop-Out</Tooltip>
-  		<NumberStates>1</NumberStates>
-  		<State>
-   			<Number>0</Number>
-   			<Pressed>btn_loop_out2_over.png</Pressed>
-   			<Unpressed>btn_loop_out2.png</Unpressed>
-  		</State>
-  		<Pos>838,221</Pos>
-  		<Connection>
-   			<ConfigKey>[Channel2],loop_out</ConfigKey>
-  			<EmitOnDownPress>true</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  		<Connection>
-   			<ConfigKey>[Channel2],loop_out</ConfigKey>
-   			<EmitOnDownPress>false</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
- 	</PushButton>
-
- 	<PushButton>
-  		<Tooltip>Reloop/Exit</Tooltip>
-  		<NumberStates>1</NumberStates>
-  		<State>
-   			<Number>0</Number>
-   			<Pressed>btn_reloop1_over.png</Pressed>
-   			<Unpressed>btn_reloop1.png</Unpressed>
-  		</State>
-  		<Pos>237,221</Pos>
-  		<Connection>
-   			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
-   			<EmitOnDownPress>true</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  		<Connection>
-   		<ConfigKey>[Channel1],reloop_exit</ConfigKey>
-   			<EmitOnDownPress>false</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
- 	</PushButton>
-	<PushButton>
-  		<Tooltip>Reloop/Exit</Tooltip>
-  		<NumberStates>1</NumberStates>
-  		<State>
-   			<Number>0</Number>
-   			<Pressed>btn_reloop2_over.png</Pressed>
-   			<Unpressed>btn_reloop2.png</Unpressed>
-  		</State>
-  		<Pos>865,221</Pos>
-  		<Connection>
-   			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
-   			<EmitOnDownPress>true</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
-  		<Connection>
-   			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
-   			<EmitOnDownPress>false</EmitOnDownPress>
-   			<ButtonState>LeftButton</ButtonState>
-  		</Connection>
- 	</PushButton>
-
-    <!--
+	<!--
     ****************************************
     Button- Reverse playback
     ****************************************
     -->
 	<PushButton>
-		<Tooltip>Reverse playback Channel 1</Tooltip>
+		<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_reverse1_over.png</Pressed>
 			<Unpressed>btn_reverse1.png</Unpressed>
 		</State>
-		<Pos>92,221</Pos>
+		<Pos>119,221</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reverse</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1074,14 +1142,14 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Reverse playback Channel 2</Tooltip>
+		<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_reverse2_over.png</Pressed>
 			<Unpressed>btn_reverse2.png</Unpressed>
 		</State>
-		<Pos>720,221</Pos>
+		<Pos>747,221</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reverse</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1100,7 +1168,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Left: Fast forward, Right: Jump to end of track</Tooltip>
+		<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1123,16 +1191,16 @@
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
-	</PushButton>	
+	</PushButton>
 	<PushButton>
-		<Tooltip>Left: Fast rewind, Right: Jump to begin of track</Tooltip>
+		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_rewind1_over.png</Pressed>
 			<Unpressed>btn_rewind1.png</Unpressed>
 		</State>
-		<Pos>119,221</Pos>
+		<Pos>92,221</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],back</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1149,9 +1217,8 @@
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
 	<PushButton>
-		<Tooltip>Left: Fast forward, Right: Jump to end of track</Tooltip>
+		<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1176,14 +1243,14 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left: Fast rewind, Right: Jump to begin of track</Tooltip>
+		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_rewind2_over.png</Pressed>
 			<Unpressed>btn_rewind2.png</Unpressed>
 		</State>
-		<Pos>747,221</Pos>
+		<Pos>720,221</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],back</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1207,7 +1274,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Synchronize tempo with Channel 2</Tooltip>
+		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1222,7 +1289,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left: Synchronize tempo with Channel 1</Tooltip>
+		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1236,7 +1303,6 @@
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
 
 	<!--
 	**********************************************	
@@ -1244,7 +1310,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Left Click: Increase pitch, Right Click: Increase pitch in small step</Tooltip>
+		<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1264,7 +1330,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left Click: Increase pitch, Right Click: Increase pitch in small step</Tooltip>
+		<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1283,9 +1349,8 @@
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
 	<PushButton>
-		<Tooltip>Left Click: Decrease pitch, Right Click: Decrease pitch in small step</Tooltip>
+		<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1305,7 +1370,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left: Decrease pitch, Right: Decrease pitch in small step</Tooltip>
+		<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1331,7 +1396,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Left: Temporary increase pitch, Right: Temporary increase pitch in small step</Tooltip>
+		<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1361,7 +1426,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left: Temporary increase pitch, Right: Temporary increase pitch in small step</Tooltip>
+		<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1390,9 +1455,8 @@
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
 	<PushButton>
-		<Tooltip>Left Click: Temporary decrease pitch, Right Click: Temporary decrease pitch in small step</Tooltip>
+		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1422,7 +1486,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left Click: Temporary decrease pitch, Right Click: Temporary decrease pitch in small step</Tooltip>
+		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1458,7 +1522,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Headphone prelisten for Channel 1</Tooltip>
+		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1474,9 +1538,9 @@
 		<Connection>
 			<ConfigKey>[Channel1],pfl</ConfigKey>
 		</Connection>
-	</PushButton>	
+	</PushButton>
 	<PushButton>
-		<Tooltip>Headphone prelisten for Channel 2</Tooltip>
+		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1492,7 +1556,7 @@
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
 		</Connection>
-	</PushButton>>
+	</PushButton>
 
 	<!--
 	**********************************************
@@ -1500,7 +1564,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>End of track mode control</Tooltip>
+		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
 		<NumberStates>3</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1521,9 +1585,9 @@
 		<Connection>
 			<ConfigKey>[Channel1],TrackEndMode</ConfigKey>
 		</Connection>
-	</PushButton>	
+	</PushButton>
 	<PushButton>
-		<Tooltip>End of track mode control</Tooltip>
+		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
 		<NumberStates>3</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1545,14 +1609,14 @@
 			<ConfigKey>[Channel2],TrackEndMode</ConfigKey>
 		</Connection>
 	</PushButton>
-	
+
 	<!--
 	**********************************************
 	Button- FX (Flanger)
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Apply flanger effect</Tooltip>
+		<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1570,7 +1634,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Apply flanger effect</Tooltip>
+		<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1587,14 +1651,14 @@
 			<ConfigKey>[Channel2],flanger</ConfigKey>
 		</Connection>
 	</PushButton>
-	
+
 	<!--
 	**********************************************
 	Button- Frequency Kill
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Temporary treble kill</Tooltip>
+		<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1614,7 +1678,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary mid kill</Tooltip>
+		<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1634,7 +1698,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary bass kill</Tooltip>
+		<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1653,9 +1717,8 @@
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-		
 	<PushButton>
-		<Tooltip>Temporary treble kill</Tooltip>
+		<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1675,7 +1738,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary mid kill</Tooltip>
+		<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1695,7 +1758,7 @@
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary bass kill</Tooltip>
+		<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1715,7 +1778,6 @@
 		</Connection>
 	</PushButton>
 
-	
 	<!--
 	############################################################################################
 	############################################################################################
@@ -1723,14 +1785,14 @@
 	############################################################################################
 	############################################################################################
 	-->
-	
+
 	<!--
 	**********************************************
 	RotaryFader- Master volume & balance
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Master volume control</Tooltip>
+		<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>580,22</Pos>
@@ -1739,7 +1801,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Master balance control</Tooltip>
+		<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>519,22</Pos>
@@ -1747,14 +1809,14 @@
 			<ConfigKey>[Master],balance</ConfigKey>
 		</Connection>
 	</Knob>
-	
+
 	<!--
 	**********************************************
 	RotaryFader- Flanger (FX) setting
 	**********************************************
-	-->	
+	-->
 	<Knob>
-		<Tooltip>Flanger delay control</Tooltip>
+		<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>538,62</Pos>
@@ -1763,7 +1825,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger depth control</Tooltip>
+		<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>489,62</Pos>
@@ -1772,7 +1834,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger period control</Tooltip>
+		<Tooltip>Flanger period&#10;Adjusts the wavelength of the flange effect (when active).&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>439,62</Pos>
@@ -1780,23 +1842,23 @@
 			<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
 		</Connection>
 	</Knob>
-	
+
 	<!--
 	**********************************************
 	RotaryFader- Headphone volume and mix
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Headphone volume control</Tooltip>
+		<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>397,22</Pos>
 		<Connection>
 			<ConfigKey>[Master],headVolume</ConfigKey>
 		</Connection>
-	</Knob>	
+	</Knob>
 	<Knob>
-		<Tooltip>Headphone mix control</Tooltip>
+		<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>458,22</Pos>
@@ -1804,14 +1866,14 @@
 			<ConfigKey>[Master],headMix</ConfigKey>
 		</Connection>
 	</Knob>
-	
+
 	<!--
 	**********************************************
 	RotaryFader- Channel filter and gain
 	**********************************************
 	-->
 	<Knob>
-		<Tooltip>Gain control</Tooltip>
+		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,98</Pos>
@@ -1820,7 +1882,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Treble filter control</Tooltip>
+		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,127</Pos>
@@ -1829,7 +1891,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Mid filter control</Tooltip>
+		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,155</Pos>
@@ -1838,7 +1900,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Bass filter control</Tooltip>
+		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>416,184</Pos>
@@ -1846,9 +1908,8 @@
 			<ConfigKey>[Channel1],filterLow</ConfigKey>
 		</Connection>
 	</Knob>
-		
 	<Knob>
-		<Tooltip>Gain control</Tooltip>
+		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,98</Pos>
@@ -1857,7 +1918,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Treble filter control</Tooltip>
+		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,127</Pos>
@@ -1866,7 +1927,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Mid filter control</Tooltip>
+		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,155</Pos>
@@ -1875,7 +1936,7 @@
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Bass filter control</Tooltip>
+		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;</Tooltip>
 		<NumberStates>39</NumberStates>
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>565,184</Pos>
@@ -1883,5 +1944,4 @@
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
 		</Connection>
 	</Knob>
-
 </skin>

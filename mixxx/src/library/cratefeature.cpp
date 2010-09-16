@@ -54,15 +54,17 @@ bool CrateFeature::dropAccept(QUrl url) {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     QString crateName = index.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
-    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(url.toString());
 
     //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
     //     QUrl::toLocalFile() vs. QUrl::toString() usage.
+    QFileInfo file(url.toLocalFile());
+    QString trackLocation = file.absoluteFilePath();
 
+    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(trackLocation);
     //If the track wasn't found in the database, add it to the DB first.
     if (trackId <= 0)
     {
-        trackId = m_pTrackCollection->getTrackDAO().addTrack(url.toString());
+        trackId = m_pTrackCollection->getTrackDAO().addTrack(trackLocation);
     }
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
@@ -135,6 +137,9 @@ void CrateFeature::slotCreateCrate() {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
 
     if (name == "") {
+		QMessageBox::warning(NULL,
+                             tr("Crate Creation Failed"),
+                             tr("A crate cannot have a blank name."));
         return;
     } else if (crateDao.createCrate(name)) {
         m_crateListTableModel.select();
