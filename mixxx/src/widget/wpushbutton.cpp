@@ -116,11 +116,15 @@ void WPushButton::setup(QDomNode node)
             // has not been forced to remain a push button by the
             // Right/LeftClickIsPushButton directive above. Do this by checking
             // whether this control is mapped to the RightButton or LeftButton
-            // and check it against the value of m_bLeft/RightClickForcePush.
+            // and check it against the value of m_bLeft/RightClickForcePush. We
+            // have to handle the case where no ButtonState is provided for the
+            // control. If no button is provided, then we have to assume the
+            // connected control should be a toggle.
 
             bool setAsToggleButton = iNumStates == 2 &&
-                    ( (isLeftButton && !m_bLeftClickForcePush) ||
-                      (isRightButton && !m_bRightClickForcePush) );
+                    ((!isLeftButton && !isRightButton) ||
+                     ( (isLeftButton && !m_bLeftClickForcePush) ||
+                       (isRightButton && !m_bRightClickForcePush) ) );
 
             if (setAsToggleButton)
                 p->setToggleButton(true);
