@@ -1,4 +1,4 @@
-	<!--   
+	<!--
 	Deere , Skin for Mixxx 1.8.x
 	www.mixxx.org
 	Copyright (C) 2010 jus ; jus@justmail.de
@@ -9,17 +9,21 @@
 	You are free:
 	to Share - to copy, distribute and transmit the work
 	to Remix - to adapt the work
-		
+
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor 
 	(but not in any way that suggests that they endorse you or your use of the work).
 
-	Share Alike — If you alter, transform, or build upon this work, you may distribute
+	Share Alike - If you alter, transform, or build upon this work, you may distribute
 	the resulting work only under the same or similar license to this one.
 	-->
 
 	<!--
 	CHANGELOG
+	v1.04	(16/09/2010)
+	* Added support for up to 32 Hotcues with MIDI-controllers
+	* Hotcue buttons now reflect its toggle state
+
 	v1.03	(14/09/2010)
 	* Corrected errors in (Hot)cues resulting in unexpected behaviour
 	* Reloop button now reflect its toggle state
@@ -28,7 +32,7 @@
 	* Change skin license to Creative Commons Attribution-ShareAlike 3.0 Unported
 	  Skin now DFSG-compatible see http://wiki.debian.org/DebianFreeSoftwareGuidelines
 	* Major Tooltips overhault, they provide more helpful informations now
-	
+
 	v1.01	(10/09/2010)
 	* (Hot)Cue marker now drawn on top of loop overlay for better visibility
 	* Finetuning on various VUmeter keys
@@ -48,10 +52,11 @@
 
 	v0.80b	(07/02/2010)
 	Initial Developer Preview for Mixxx 1.8.x
-	--> 
+	-->
 
 <!DOCTYPE skin>
-<skin><!--
+<skin>
+	<!--
 	############################################################################################
 	############################################################################################
 	Section: General
@@ -139,7 +144,7 @@
 		</Mark>
 		<!-- 
 		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin (and has them activated)
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
 		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
@@ -419,7 +424,7 @@
 		</Mark>
 		<!-- 
 		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin (and has them activated)
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
 		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
@@ -1158,242 +1163,362 @@
 	-->
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue1_over.png</Pressed>
 			<Unpressed>btn_hotcue1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue1.png</Pressed>
+			<Unpressed>btn_hotcue1_over.png</Unpressed>
 		</State>
 		<Pos>305,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue2_over.png</Pressed>
 			<Unpressed>btn_hotcue2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue2.png</Pressed>
+			<Unpressed>btn_hotcue2_over.png</Unpressed>
 		</State>
 		<Pos>328,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue3_over.png</Pressed>
 			<Unpressed>btn_hotcue3.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue3.png</Pressed>
+			<Unpressed>btn_hotcue3_over.png</Unpressed>
 		</State>
 		<Pos>351,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue4_over.png</Pressed>
 			<Unpressed>btn_hotcue4.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue4.png</Pressed>
+			<Unpressed>btn_hotcue4_over.png</Unpressed>
 		</State>
 		<Pos>374,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue1_over.png</Pressed>
 			<Unpressed>btn_hotcue1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue1.png</Pressed>
+			<Unpressed>btn_hotcue1_over.png</Unpressed>
 		</State>
 		<Pos>1160,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue2_over.png</Pressed>
 			<Unpressed>btn_hotcue2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue2.png</Pressed>
+			<Unpressed>btn_hotcue2_over.png</Unpressed>
 		</State>
 		<Pos>1183,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue3_over.png</Pressed>
 			<Unpressed>btn_hotcue3.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue3.png</Pressed>
+			<Unpressed>btn_hotcue3_over.png</Unpressed>
 		</State>
 		<Pos>1206,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_hotcue4_over.png</Pressed>
 			<Unpressed>btn_hotcue4.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_hotcue4.png</Pressed>
+			<Unpressed>btn_hotcue4_over.png</Unpressed>
 		</State>
 		<Pos>1229,256</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 

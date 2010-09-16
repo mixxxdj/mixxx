@@ -1202,7 +1202,7 @@ Copyright (C) 2010 Mixxx
 		</Mark>
 		<!-- 
 		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin (and has them activated)
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
 		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
@@ -1462,7 +1462,7 @@ Copyright (C) 2010 Mixxx
 		</Mark>
 		<!-- 
 		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin (and has them activated)
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
 		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
