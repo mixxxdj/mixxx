@@ -58,6 +58,7 @@ class CueControl : public EngineControl {
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
+    int m_iCurrentlyPreviewingHotcues;
 
     const int m_iNumHotCues;
     // Hotcue state controls
