@@ -150,6 +150,7 @@ RateControl::RateControl(const char* _group,
     //qDebug() << "setting up vinyl control pushbutton";
     m_pVinylControl = new ControlPushButton(ConfigKey(_group,"vinylcontrol"));
     m_pVinylControl->set(0);
+    m_pVinylMode = new ControlPushButton(ConfigKey(_group,"VinylMode"));
     //m_pVinylControl->setToggleButton(true);
     connect(m_pVinylControl, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinyl(double)));
     connect(m_pVinylControl, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotControlVinyl(double)));
