@@ -53,6 +53,7 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
 
     //QAbstractTableModel stuff
     virtual Qt::ItemFlags flags(const QModelIndex& index) const;
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
     virtual QVariant data(const QModelIndex & index,
                           int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section,

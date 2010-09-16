@@ -87,7 +87,8 @@ void WPushButton::setup(QDomNode node)
         configKey.group = key.left(key.indexOf(","));
         configKey.item = key.mid(key.indexOf(",")+1);
 
-        ControlPushButton * p = (ControlPushButton *)ControlObject::getControl(configKey);
+        ControlPushButton* p =
+                dynamic_cast<ControlPushButton*>(ControlObject::getControl(configKey));
 
         if (p == NULL) {
             qWarning() << "WPushButton for control " << key << "is null, skipping.";
@@ -115,11 +116,15 @@ void WPushButton::setup(QDomNode node)
             // has not been forced to remain a push button by the
             // Right/LeftClickIsPushButton directive above. Do this by checking
             // whether this control is mapped to the RightButton or LeftButton
-            // and check it against the value of m_bLeft/RightClickForcePush.
+            // and check it against the value of m_bLeft/RightClickForcePush. We
+            // have to handle the case where no ButtonState is provided for the
+            // control. If no button is provided, then we have to assume the
+            // connected control should be a toggle.
 
             bool setAsToggleButton = iNumStates == 2 &&
-                    ( (isLeftButton && !m_bLeftClickForcePush) ||
-                      (isRightButton && !m_bRightClickForcePush) );
+                    ((!isLeftButton && !isRightButton) ||
+                     ( (isLeftButton && !m_bLeftClickForcePush) ||
+                       (isRightButton && !m_bRightClickForcePush) ) );
 
             if (setAsToggleButton)
                 p->setToggleButton(true);
@@ -229,13 +234,22 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
         } else {
             m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
         }
-    } else if (rightClick) {
-        if (m_bRightClickForcePush) {
-            emitValue = 1.0f;
-        } else {
-            m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
-        }
     }
+
+    // Do not allow right-clicks to change the state of the button. This is how
+    // Mixxx <1.8.0 worked so keep it that way. For a multi-state button, really
+    // only one click type (left/right) should be able to change the state. One
+    // problem with this is that you can get the button out of sync with its
+    // underlying control. For example the PFL buttons on Jus's skins could get
+    // out of sync with the button state. rryan 9/2010
+
+    // else if (rightClick) {
+    //     if (m_bRightClickForcePush) {
+    //         emitValue = 1.0f;
+    //     } else {
+    //         m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
+    //     }
+    // }
 
     if (leftClick) {
         emit(valueChangedLeftDown(emitValue));

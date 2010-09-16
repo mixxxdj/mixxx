@@ -62,12 +62,12 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
     {
         QTextStream extra(&file);
 
-        qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
+        //qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
         while (!extra.atEnd())
         {
             QString trackPath = extra.readLine();
             trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
-            qDebug() << "PROMO: Auto-loading track" << trackPath;
+            //qDebug() << "PROMO: Auto-loading track" << trackPath;
 
             TrackInfoObject* track = new TrackInfoObject(trackPath);
             // TODO(XXX) These tracks are probably getting leaked b/c

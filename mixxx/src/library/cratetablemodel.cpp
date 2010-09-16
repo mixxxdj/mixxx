@@ -44,6 +44,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_BPM + "," +
                                   LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
+                                  "track_locations.fs_deleted," +
                                   LIBRARYTABLE_COMMENT + "," +
                                   LIBRARYTABLE_MIXXXDELETED + " " +
                                   "FROM library "
@@ -202,7 +203,8 @@ const QString CrateTableModel::currentSearch() {
 
 bool CrateTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) {
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
     return false;
@@ -221,7 +223,7 @@ QMimeData* CrateTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url(getTrackLocation(index));
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
                 if (!url.isValid())
                     qDebug() << "ERROR invalid url\n";
                 else
