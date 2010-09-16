@@ -170,21 +170,20 @@ int SoundSourceSndFile::parseHeader()
     this->setSampleRate(info.samplerate);
     this->setChannels(info.channels);
 
-    const char *string;
-    string = sf_get_string(fh, SF_STR_ARTIST);
-    if(string && strlen(string))
+    QString string = QString::fromUtf8(sf_get_string(fh, SF_STR_ARTIST));
+    if(!string.isEmpty())
         setArtist(string);
 
-    string = sf_get_string(fh, SF_STR_TITLE);
-    if(string && strlen(string))
+    string = QString::fromUtf8(sf_get_string(fh, SF_STR_TITLE));
+    if(!string.isEmpty())
         setTitle(string);
 
-    string = sf_get_string(fh, SF_STR_DATE);
-    if (string && strlen(string))
+    string = QString::fromUtf8(sf_get_string(fh, SF_STR_DATE));
+    if(!string.isEmpty())
         setYear(string);
 
-    string = sf_get_string(fh, SF_STR_COMMENT);
-    if (string && strlen(string))
+    string = QString::fromUtf8(sf_get_string(fh, SF_STR_COMMENT));
+    if(!string.isEmpty())
         setComment(string);
 
     if (fh)

@@ -364,10 +364,10 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 			//QListIterator<AudioSource> devItr(m_audioSources);
 			int iChannel;
 			//while(devItr.hasNext())
-			for (int i = 0; i < m_audioSources.length(); ++i)
+            for (int i = 0; i < m_audioSources.length(); ++i)
 			{
-				//AudioSource src = devItr.next();
-				const AudioSource& src = m_audioSources.at(i);
+				//const AudioSource& src = devItr.next();
+                const AudioSource& src = m_audioSources.at(i);
 				int iLocalFrameBase = (iFrameBase/iFrameSize) * src.channels;
 				for(iChannel = 0; iChannel < src.channels; iChannel++)	//this will make sure a sample from each channel is copied
 				{

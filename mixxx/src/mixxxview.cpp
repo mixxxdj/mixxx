@@ -560,7 +560,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    p->setWidget((QWidget *)m_pVisualCh1, true, true, true, Qt::LeftButton);
 
                     //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 
@@ -589,7 +589,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    p->setWidget((QWidget *)m_pVisualCh2, true, true, true, Qt::LeftButton);
 
                     //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 

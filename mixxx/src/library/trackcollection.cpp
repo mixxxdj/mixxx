@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "soundsourceproxy.h"
 #include "library/schemamanager.h"
+#include "trackinfoobject.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -97,9 +98,10 @@ QSqlDatabase& TrackCollection::getDatabase()
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
-bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
+bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
+                                      QList<TrackInfoObject*>& tracksToAdd)
 {
-    qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
+    //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
     QFileInfoList files;
@@ -150,7 +152,9 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
                 emit(progressLoading(fileName));
 
                 // addTrack uses this QFileInfo instead of making a new one now.
-                trackDao.addTrack(file);
+                //trackDao.addTrack(file);
+                TrackInfoObject* pTrack = new TrackInfoObject(file.absoluteFilePath());
+                tracksToAdd.append(pTrack);
             }
         } else {
             //qDebug() << "Skipping" << file.fileName() <<
