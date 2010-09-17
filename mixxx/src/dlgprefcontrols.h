@@ -25,7 +25,6 @@
 class QWidget;
 class ControlObjectThreadMain;
 class ControlPotmeter;
-class MixxxView;
 class SkinLoader;
 
 /**
@@ -35,7 +34,7 @@ class SkinLoader;
 class DlgPrefControls : public QWidget, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
 public:
-    DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx,
+    DlgPrefControls(QWidget *parent, MixxxApp *mixxx,
                     SkinLoader* pSkinLoader, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
 public slots:
@@ -62,12 +61,11 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     /** Pointers to ControlObjects associated with rate sliders */
     ControlObjectThreadMain *m_pControlRate1, *m_pControlRate2, *m_pControlRateRange1, *m_pControlRateRange2;
+    ControlObject* m_pControlPositionDisplay;
     /** Pointer to ControlObjects for controlling direction of rate sliders */
     ControlObjectThreadMain *m_pControlRateDir1, *m_pControlRateDir2;
     /** Pointer to ControlObjects for cue behavior */
     ControlObjectThreadMain *m_pControlCueDefault1, *m_pControlCueDefault2;
-    /** Pointer to MixxxView */
-    MixxxView *m_pView;
     MixxxApp *m_mixxx;
     SkinLoader* m_pSkinLoader;
 };

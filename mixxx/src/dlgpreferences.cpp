@@ -45,10 +45,10 @@
 #include <QtGui>
 #include <QEvent>
 
-DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader, MixxxView * view,
+DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman,
-                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
-{
+                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config)
+        :  QDialog(), Ui::DlgPreferencesDlg() {
     m_pMixxx = mixxx;
     m_pMidiDeviceManager = midi;
 
@@ -66,7 +66,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader, MixxxV
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, config);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, view, mixxx, pSkinLoader, config);
+    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);
