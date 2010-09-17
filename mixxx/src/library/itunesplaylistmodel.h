@@ -10,7 +10,6 @@
 #include "trackmodel.h"
 
 class ITunesTrackModel;
-class TrackInfoObject;
 
 class ITunesPlaylistModel : public QAbstractTableModel, public TrackModel {
 
@@ -36,6 +35,7 @@ class ITunesPlaylistModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags flags(const QModelIndex& index) const;
     virtual QVariant data(const QModelIndex & index,
                           int role = Qt::DisplayRole) const;
+    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
     virtual QVariant headerData(int section,
                                 Qt::Orientation orientation,
                                 int role = Qt::DisplayRole) const;
@@ -43,13 +43,14 @@ class ITunesPlaylistModel : public QAbstractTableModel, public TrackModel {
     virtual int columnCount(const QModelIndex& parent) const;
 
     //Playlist Model stuff
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
     virtual const QList<int>& searchColumns() const;
     virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
+    virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);

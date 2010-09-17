@@ -40,6 +40,7 @@ public:
     /** Associates a background pixmap with the widget. This is only needed if the knob
       * pixmaps contains alpha channel values. */
     void setPixmapBackground(const QString &filename);
+    void wheelEvent(QWheelEvent *e);
 private:
     /** Set position number to zero and deallocate pixmaps */
     void resetPositions();

@@ -161,7 +161,7 @@ DlgPreferences::~DlgPreferences()
 void DlgPreferences::createIcons()
 {
     m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pSoundButton->setIcon(0, QIcon(":/images/preferences/soundhardware.png"));
+    m_pSoundButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_soundhardware.png"));
     m_pSoundButton->setText(0, tr("Sound Hardware"));
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -173,7 +173,7 @@ void DlgPreferences::createIcons()
     midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 */
     m_pMIDITreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/controllers.png"));
+    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
     m_pMIDITreeItem->setText(0, tr("MIDI Controllers"));
     m_pMIDITreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pMIDITreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -187,37 +187,37 @@ void DlgPreferences::createIcons()
 */
 
     m_pPlaylistButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/library.png"));
+    m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
     m_pPlaylistButton->setText(0, tr("Library"));
     m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
        m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pControlsButton->setIcon(0, QIcon(":/images/preferences/interface.png"));
+    m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
     m_pControlsButton->setText(0, tr("Interface"));
     m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pEqButton->setIcon(0, QIcon(":/images/preferences/generic.png"));
+    m_pEqButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
     m_pEqButton->setText(0, tr("Equalizers"));
     m_pEqButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pCrossfaderButton->setIcon(0, QIcon(":/images/preferences/generic.png"));
+    m_pCrossfaderButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_crossfader.png"));
     m_pCrossfaderButton->setText(0, tr("Crossfader"));
     m_pCrossfaderButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pCrossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pRecordingButton->setIcon(0, QIcon(":/images/preferences/recording.png"));
+    m_pRecordingButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_recording.png"));
     m_pRecordingButton->setText(0, tr("Recording"));
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pBPMdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pBPMdetectButton->setIcon(0, QIcon(":/images/preferences/bpmdetect.png"));
+    m_pBPMdetectButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     m_pBPMdetectButton->setText(0, tr("BPM Detection"));
     m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -226,7 +226,7 @@ void DlgPreferences::createIcons()
     m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
     //instead...
-    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/vinyl.png"));
+    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
     m_pVinylControlButton->setText(0, tr("Vinyl Control"));
     m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -234,7 +234,7 @@ void DlgPreferences::createIcons()
 
 #ifdef __SHOUTCAST__
     m_pShoutcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pShoutcastButton->setIcon(0, QIcon(":/images/preferences/broadcast.png"));
+    m_pShoutcastButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_broadcast.png"));
     m_pShoutcastButton->setText(0, tr("Live Broadcasting"));
     m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -391,7 +391,7 @@ void DlgPreferences::setupMidiWidgets()
 
         QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << midiBindingsButton;
-        midiBindingsButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
+        midiBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
         midiBindingsButton->setText(0, curDeviceName);
         midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
         midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);

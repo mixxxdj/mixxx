@@ -17,7 +17,6 @@ class QPaintEvent;
 class ConfigKey;
 class ControlObjectThreadMain;
 class WaveformRenderer;
-class TrackInfoObject;
 
 class WaveformRenderMark : public RenderObject {
     Q_OBJECT
@@ -28,7 +27,7 @@ public:
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event,
               QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackInfoObject *pTrack);
+    void newTrack(TrackPointer pTrack);
 
 public slots:
     void slotUpdateMarkPoint(double mark);
@@ -46,7 +45,7 @@ private:
     WaveformRenderer *m_pParent;
     ControlObjectThreadMain *m_pMarkPoint;
     ControlObjectThreadMain *m_pTrackSamples;
-    TrackInfoObject *m_pTrack;
+    TrackPointer m_pTrack;
 
     int m_iMarkPoint;
     int m_iWidth, m_iHeight;
@@ -56,6 +55,7 @@ private:
     QString m_markPixmapPath;
     MarkAlign m_markAlign;
     QPixmap m_markPixmap;
+    bool m_bHasCustomPixmap;
     double m_dSamplesPerDownsample;
 
     int m_iNumSamples;

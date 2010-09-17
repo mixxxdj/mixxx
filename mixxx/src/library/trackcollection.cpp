@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "soundsourceproxy.h"
 #include "library/schemamanager.h"
+#include "trackinfoobject.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -64,7 +65,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 3;
+    int requiredSchemaVersion = 5;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
@@ -96,9 +97,10 @@ QSqlDatabase& TrackCollection::getDatabase()
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
-bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
+bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
+                                      QList<TrackInfoObject*>& tracksToAdd)
 {
-    qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
+    //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
     QFileInfoList files;
@@ -131,6 +133,8 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
         QString fileName = file.fileName();
 
         if (fileName.count(m_supportedFileExtensionsRegex)) {
+            //If the track is in the database, mark it as existing. This code gets exectuted
+            //when other files in the same directory have changed (the directory hash has changed).
             trackDao.markTrackLocationAsVerified(absoluteFilePath);
 
             // If the file already exists in the database, continue and go on to
@@ -147,7 +151,9 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
                 emit(progressLoading(fileName));
 
                 // addTrack uses this QFileInfo instead of making a new one now.
-                trackDao.addTrack(file);
+                //trackDao.addTrack(file);
+                TrackInfoObject* pTrack = new TrackInfoObject(file.absoluteFilePath());
+                tracksToAdd.append(pTrack);
             }
         } else {
             //qDebug() << "Skipping" << file.fileName() <<

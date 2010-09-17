@@ -18,7 +18,6 @@ class QPaintEvent;
 
 class ControlObjectThreadMain;
 class WaveformRenderer;
-class TrackInfoObject;
 class SoundSourceProxy;
 
 class WaveformRenderSignalPixmap : public RenderObject {
@@ -28,7 +27,7 @@ public:
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackInfoObject *pTrack);
+    void newTrack(TrackPointer pTrack);
 
 private:
     void updatePixmap(QVector<float> *buffer, double playPos, double rateAdjust);
@@ -37,7 +36,7 @@ private:
     int m_iWidth, m_iHeight;
     int m_iLastPlaypos;
     QVector<QLineF> m_lines;
-    TrackInfoObject *m_pTrack;
+    TrackPointer m_pTrack;
     QColor signalColor;
     QPixmap m_screenPixmap;
 };

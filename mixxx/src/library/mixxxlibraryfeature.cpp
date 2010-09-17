@@ -32,7 +32,7 @@ QVariant MixxxLibraryFeature::title() {
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_library.png");
 }
 
 QAbstractItemModel* MixxxLibraryFeature::getChildModel() {

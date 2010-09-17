@@ -7,6 +7,8 @@
 
 #include "mixxxutils.cpp"
 
+const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
@@ -29,10 +31,12 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
-                  "track_locations.location" + "," +
+                  "track_locations.location," +
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " "
                   "FROM library "
@@ -68,6 +72,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
     setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -100,7 +106,7 @@ bool MissingTableModel::addTrack(const QModelIndex& index, QString location)
     return false;
 }
 
-TrackInfoObject* MissingTableModel::getTrack(const QModelIndex& index) const
+TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 
@@ -118,6 +124,10 @@ QString MissingTableModel::getTrackLocation(const QModelIndex& index) const
 }
 
 void MissingTableModel::removeTrack(const QModelIndex& index)
+{
+}
+
+void MissingTableModel::removeTracks(const QModelIndexList& indices)
 {
 }
 
@@ -139,15 +149,15 @@ void MissingTableModel::slotSearch(const QString& searchText) {
 
     QString filter;
     if (searchText == "")
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+        filter = "(" + MissingTableModel::MISSINGFILTER + ")";
     else {
         QSqlField search("search", QVariant::String);
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
+        filter = "(" + MissingTableModel::MISSINGFILTER + " AND " +
                 "(artist LIKE " + escapedText + " OR " +
                 "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + "))";
+                "title LIKE " + escapedText + "))";
     }
     setFilter(filter);
 }
@@ -158,7 +168,8 @@ const QString MissingTableModel::currentSearch() {
 
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED))
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
         return true;
     else
         return false;
@@ -177,7 +188,7 @@ QMimeData* MissingTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url(getTrackLocation(index));
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
                 if (!url.isValid())
                     qDebug() << "ERROR invalid url\n";
                 else

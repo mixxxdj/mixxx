@@ -41,13 +41,12 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
         QKeyEvent * ke = (QKeyEvent *)e;
 
         //qDebug() << "press";
+        bool autoRepeat = ke->isAutoRepeat();
 
-        if (!kbdPress(getKeySeq(ke), false))
-            ke->ignore();
-        else
-        {
+        if (kbdPress(getKeySeq(ke), false, autoRepeat)) {
             // Add key to active key list
-            m_qActiveKeyList.append(ke->key());
+            if (!autoRepeat)
+                m_qActiveKeyList.append(ke->key());
 
             return true;
         }
@@ -68,18 +67,13 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
             {
                 //qDebug() << "release";
 
-                if (!ke->isAutoRepeat())
-                {
-                    if (!kbdPress(getKeySeq(ke), true)) {
-                        ke->ignore();
-                        //qDebug() << "release autorepeat";
-                    }
-                    else
-                    {
+                bool autoRepeat = ke->isAutoRepeat();
+                if (kbdPress(getKeySeq(ke), true, autoRepeat)) {
+                    if (!autoRepeat) {
                         //qDebug() << "release else";
                         m_qActiveKeyList.remove(it);
-                        return true;
                     }
+                    return true;
                 }
                 return false;
             }
@@ -90,7 +84,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
     return false;
 }
 
-bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
+bool MixxxKeyboard::kbdPress(QKeySequence k, bool release, bool autoRepeat)
 {
     bool react = false;
 
@@ -99,7 +93,9 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
         // Check if a shortcut is defined
         ConfigKey * pConfigKey = m_pKbdConfigObject->get(ConfigValueKbd(k));
 
-        if (pConfigKey)
+        react = pConfigKey != NULL;
+
+        if (pConfigKey && !autoRepeat)
         {
             if (release) {
                 //qDebug() << "Sending MIDI NOTE_OFF";
@@ -110,8 +106,6 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
                 //qDebug() << "Sending MIDI NOTE_ON";
                 ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_ON, 1);
             }
-
-            react = true;
         }
     }
     return react;

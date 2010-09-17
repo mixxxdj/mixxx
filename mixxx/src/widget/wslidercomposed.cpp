@@ -142,6 +142,17 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
     }
 }
 
+void WSliderComposed::wheelEvent(QWheelEvent *e)
+{   
+    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
+    double newValue = getValue() + (wheelDirection);
+    this->updateValue(newValue);
+
+    e->accept();
+
+    //e->ignore();
+}
+
 void WSliderComposed::mouseReleaseEvent(QMouseEvent * e)
 {
     if (!m_bEventWhileDrag)

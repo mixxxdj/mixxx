@@ -5,13 +5,15 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/searchthread.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
 
-class TrackInfoObject;
+
 class DlgTrackInfo;
+class TrackCollection;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
@@ -21,7 +23,8 @@ class WTrackTableView : public WLibraryTableView
 {
     Q_OBJECT
  	public:
-    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig);
+    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+                    TrackCollection* pTrackCollection);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
     void onSearchStarting();
@@ -40,9 +43,12 @@ private slots:
     void slotShowTrackInfo();
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
+    void slotSendToAutoDJ();
+    void addSelectionToPlaylist(int iPlaylistId);
+    void addSelectionToCrate(int iCrateId);
 signals:
-    void loadTrack(TrackInfoObject* pTrack);
-    void loadTrackToPlayer(TrackInfoObject* pTrack, int player);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, int player);
 
 private:
     void showTrackInfo(QModelIndex index);
@@ -56,6 +62,7 @@ private:
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
 
     ConfigObject<ConfigValue> * m_pConfig;
+    TrackCollection* m_pTrackCollection;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
 
@@ -66,9 +73,10 @@ private:
 
     //Used for right-click operations
     /** Right-click menu */
-    QMenu *m_pMenu;
-    /**Send to Play Queue Action**/
-    QAction *m_pPlayQueueAct;
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu;
+    QSignalMapper m_playlistMapper, m_crateMapper;
+    /**Send to AutoDJ Action**/
+    QAction *m_pAutoDJAct;
     /**Send to Player 1 Action**/
     QAction *m_pPlayer1Act;
     /**Send to Player 2 Action**/

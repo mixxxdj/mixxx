@@ -142,6 +142,7 @@ void MessageHandler( QtMsgType type, const char * input )
 int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
+    // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
@@ -303,6 +304,8 @@ int main(int argc, char * argv[])
     delete mixxx;
 
     qDebug() << "Mixxx shutdown complete with code" << result;
+
+    qInstallMsgHandler(0); //Reset to default.
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!

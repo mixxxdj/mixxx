@@ -18,64 +18,75 @@
 #ifndef ENGINESHOUTCAST_H
 #define ENGINESHOUTCAST_H
 
-//#include "engineobject.h"
+#include <QObject>
+#include <QMutex>
+#include <QMessageBox>
+
+#include <shout/shout.h>
+
 #include "engineabstractrecord.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "trackinfoobject.h"
+#include "errordialoghandler.h"
+#include "recording/encoder.h"
 
-#include <shout/shout.h>
-
-#include <QObject>
-#include <QMutex>
-
-#include "encoder.h"
-
-//class ControlLogpotmeter;
-//class ConfigKey;
 class EncoderVorbis;
-class TrackInfoObject;
 
 class EngineShoutcast : public EngineAbstractRecord {
     Q_OBJECT
-public:
+  public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
-    ~EngineShoutcast();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void writePage(unsigned char *header, unsigned char *body,
-                   int headerLen, int bodyLen);
+    virtual ~EngineShoutcast();
 
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    /**writes to shoutcast stream **/
+    void write(unsigned char *header, unsigned char *body,
+               int headerLen, int bodyLen);
+    /** connects to server **/
+    bool serverConnect();
+    bool serverDisconnect();
+    bool isConnected();
     void shutdown() {
         m_bQuit = true;
     }
-public slots:
+  public slots:
     /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
     void updateFromPreferences();
-//    static void wrapper2writePage();
-//private slots:
-//    void writePage(unsigned char *header, unsigned char *body,
-//                   int headerLen, int bodyLen, int count);
-private:
-    bool serverConnect();
+    //    static void wrapper2writePage();
+    //private slots:
+    //    void writePage(unsigned char *header, unsigned char *body,
+    //                   int headerLen, int bodyLen, int count);
+  private:
     int getActiveTracks();
     bool metaDataHasChanged();
     void updateMetaData();
-    TrackInfoObject *m_pMetaData;
+
+    TrackPointer m_pMetaData;
     shout_t *m_pShout;
     shout_metadata_t *m_pShoutMetaData;
     int m_pMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObject* recReady;
-    Encoder *encoder;
+    Encoder *m_encoder;
+    ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
-//    void (*writeFn)(unsigned char *, unsigned char *, int, int);
     ControlObjectThread* m_pCrossfader;
     ControlObjectThread* m_pVolume1;
     ControlObjectThread* m_pVolume2;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
+    /** static metadata according to prefereneces **/
+    bool m_custom_metadata;
+    QByteArray m_baCustom_artist;
+    QByteArray m_baCustom_title;
+    QByteArray m_baFormat;
+    /* Standard error dialog */
+    void errorDialog(QString text, QString detailedError);
+    /** we static metadata is used, we only need calling shout_set_metedata once */
+    bool m_firstCall;
 };
 
 #endif

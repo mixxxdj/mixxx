@@ -719,7 +719,6 @@ void MidiMapping::savePreset(QString path) {
 void MidiMapping::applyPreset() {
     qDebug() << "MidiMapping::applyPreset()";
     m_mappingLock.lock();
-    MidiLedHandler::destroyHandlers();
 
 #ifdef __MIDISCRIPT__
     // Since this can be called after re-enabling a device without reloading the XML preset,
@@ -1053,25 +1052,25 @@ double MidiMapping::ComputeValue(MidiOption midioption, double _prevmidivalue, d
         //if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Since this is a selection knob, we do not want to inherit previous values.
-        return _newmidivalue;
     }
     else if (midioption == MIDI_OPT_BUTTON) { _newmidivalue = (_newmidivalue != 0); }
     else if (midioption == MIDI_OPT_SWITCH) { _newmidivalue = 1; }
     else if (midioption == MIDI_OPT_SPREAD64)
     {
-       qDebug() << "MIDI_OPT_SPREAD64";
+
+        //qDebug() << "MIDI_OPT_SPREAD64";
         // BJW: Spread64: Distance away from centre point (aka "relative CC")
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
         // but with added sensitivity adjustment. This formula is still experimental.
-        /*
-         //FIXME
-        double distance = _newmidivalue - 64.;
-        _newmidivalue = distance * distance * sensitivity / 50000.;
-        if (distance < 0.)
-            _newmidivalue = -_newmidivalue;
-        */
 
-        // qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
+        _newmidivalue = _newmidivalue - 64.;
+        //FIXME
+        //double distance = _newmidivalue - 64.;
+        // _newmidivalue = distance * distance * sensitivity / 50000.;
+        //if (distance < 0.)
+        //    _newmidivalue = -_newmidivalue;
+
+         //qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
     }
     else if (midioption == MIDI_OPT_HERC_JOG)
     {
@@ -1159,6 +1158,7 @@ void MidiMapping::restartScriptEngine()
 void MidiMapping::reset() {
 #ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
     restartScriptEngine();
+    MidiLedHandler::destroyHandlers();
     applyPreset();
 #endif
 }

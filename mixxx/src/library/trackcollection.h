@@ -21,6 +21,7 @@
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QRegExp>
+#include <QList>
 
 #include "configobject.h"
 #include "library/dao/trackdao.h"
@@ -28,11 +29,12 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 
+class TrackInfoObject;
+
 #define AUTODJ_TABLE "Auto DJ"
 
 const QString MIXXX_DB_PATH = QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxdb.sqlite");
 
-class TrackInfoObject;
 class BpmDetector;
 
 
@@ -48,7 +50,8 @@ class TrackCollection : public QObject
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
-    bool importDirectory(QString directory, TrackDAO &trackDao);
+    bool importDirectory(QString directory, TrackDAO &trackDao,
+                         QList<TrackInfoObject*>& tracksToAdd);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();

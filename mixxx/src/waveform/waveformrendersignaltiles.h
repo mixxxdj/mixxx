@@ -16,7 +16,6 @@
 
 class ControlObjectThreadMain;
 class WaveformRenderer;
-class TrackInfoObject;
 class SoundSourceProxy;
 
 struct Tile {
@@ -32,7 +31,7 @@ public:
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackInfoObject *pTrack);
+    void newTrack(TrackPointer pTrack);
 
 private:
     Tile* getTileForSubpixel(int subpixel, QVector<float> *buffer);
@@ -40,7 +39,7 @@ private:
 
     WaveformRenderer *m_pParent;
     int m_iWidth, m_iHeight;
-    TrackInfoObject *m_pTrack;
+    TrackPointer m_pTrack;
     QColor signalColor;
 
     QHash<int, Tile*> m_qTileMap;

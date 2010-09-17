@@ -105,8 +105,8 @@ void WVisualSimple::setup(QDomNode node)
     colorMarker = WSkinColor::getCorrectColor(colorMarker);
 }
 
-void WVisualSimple::slotNewTrack(TrackInfoObject* track)
-{
+void WVisualSimple::refresh() {
+    // Do nothing since its the simple waveform.
 }
 
 void WVisualSimple::mouseMoveEvent(QMouseEvent * e)

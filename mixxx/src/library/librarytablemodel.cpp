@@ -7,7 +7,7 @@
 
 #include "mixxxutils.cpp"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0";
+const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -26,10 +26,12 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " " +
                   "FROM library " +
@@ -66,6 +68,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
     setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -97,18 +101,30 @@ LibraryTableModel::~LibraryTableModel()
 
 bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 {
-	//Note: The model index is ignored when adding to the library track collection.
-	//      The position in the library is determined by whatever it's being sorted by,
-	//      and there's no arbitrary "unsorted" view.
-	int trackId = m_trackDao.addTrack(location);
-	select(); //Repopulate the data model.
-    if (trackId >= 0)
+    //Note: The model index is ignored when adding to the library track collection.
+    //      The position in the library is determined by whatever it's being sorted by,
+    //      and there's no arbitrary "unsorted" view.
+    QFileInfo fileInfo(location);
+
+    int trackId = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
+    if (trackId >= 0) {
+        //If the track is already in the library, make sure it's marked as
+        //not deleted. (This lets the user unremove a track from the library
+        //by dragging-and-dropping it back into the library view.)
+        m_trackDao.unremoveTrack(trackId);
+        select();
         return true;
-    else
-        return false;
+    }
+
+    trackId = m_trackDao.addTrack(fileInfo);
+    if (trackId >= 0) {
+        select(); //Repopulate the data model.
+        return true;
+    }
+    return false;
 }
 
-TrackInfoObject* LibraryTableModel::getTrack(const QModelIndex& index) const
+TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
 	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 	return m_trackDao.getTrack(trackId);
@@ -119,6 +135,19 @@ QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
 	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
 	return location;
+}
+
+void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+
+    foreach (QModelIndex index, indices) {
+        int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+        trackIds.append(trackId);
+    }
+
+    m_trackDao.removeTracks(trackIds);
+
+    select(); //Repopulate the data model.
 }
 
 void LibraryTableModel::removeTrack(const QModelIndex& index)
@@ -176,7 +205,8 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
-        (column == fieldIndex(LIBRARYTABLE_CHANNELS))) {
+        (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
+        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
     }
     return false;
@@ -220,7 +250,7 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
             if (!rows.contains(index.row())) //Only add a URL once per row.
             {
                 rows.push_back(index.row());
-                QUrl url(getTrackLocation(index));
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
                 if (!url.isValid())
                     qDebug() << "ERROR invalid url\n";
                 else {
@@ -255,7 +285,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS;
+    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
 }
 
 /*

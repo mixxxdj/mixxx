@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,12 +25,12 @@
 /**
   *@author Tue and Ken Haste Andersen
   */
-  
+
 class ControlPushButton : public ControlObject
 {
     Q_OBJECT
 public:
-    ControlPushButton(ConfigKey key, bool bMidiSimulateLatching=false);
+    ControlPushButton(ConfigKey key);
     ~ControlPushButton();
     void setToggleButton(bool bIsToggleButton);
 
@@ -38,7 +38,6 @@ protected:
     void setValueFromMidi(MidiCategory c, double v);
 
 private:
-    bool m_bMidiSimulateLatching;
     bool m_bIsToggleButton;
 };
 

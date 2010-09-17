@@ -32,7 +32,7 @@ QVariant AutoDJFeature::title() {
 }
 
 QIcon AutoDJFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_autodj.png");
 }
 
 void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
@@ -44,10 +44,10 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                            m_pTrackCollection);
     pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
-    connect(pAutoDJView, SIGNAL(loadTrack(TrackInfoObject*)),
-            this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 }
 
 QAbstractItemModel* AutoDJFeature::getChildModel() {
@@ -79,18 +79,27 @@ bool AutoDJFeature::dropAccept(QUrl url) {
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-    QString location = url.toLocalFile();
-    if (!trackDao.trackExistsInDatabase(location))
-    {
-        trackDao.addTrack(location);
-    }
+
+    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
+    //     instead of toString()
+    QFileInfo file(url.toLocalFile());
+    QString location = file.absoluteFilePath();
+
     //Get id of track
     int trackId = trackDao.getTrackId(location);
 
+    if (trackId < 0) {
+        trackId = trackDao.addTrack(file);
+    }
+
+    if (trackId < 0) {
+        return false;
+    }
+
+    // TODO(XXX) No feedback on whether this worked.
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
     return true;
-
 }
 
 bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {

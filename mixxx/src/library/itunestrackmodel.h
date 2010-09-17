@@ -24,7 +24,6 @@
 #include "abstractxmltrackmodel.h"
 #include "itunesplaylistmodel.h"
 
-class TrackInfoObject;
 class QSqlDatabase;
 
 /**
@@ -53,6 +52,7 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual bool isColumnInternal(int column);
     static QString getiTunesMusicPath();
+    QDomNode getTrackNodeById(const QString& ) const;
 
   public slots:
 
@@ -62,7 +62,7 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     void finishedLoading();
 
   protected:
-    virtual TrackInfoObject *parseTrackNode(QDomNode node) const;
+    virtual TrackPointer parseTrackNode(QDomNode node) const;
     /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
     virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
@@ -70,7 +70,7 @@ class ITunesTrackModel : public AbstractXmlTrackModel
   private:
     QString findValueByKey(QDomNode dictNode, QString key) const;
     QDomElement findNodeByKey(QDomNode dictNode, QString key) const;
-    TrackInfoObject* getTrackById(QString id);
+    TrackPointer getTrackById(QString id);
 
     QHash<QString, QDomNode> m_mTracksById;
     QHash<QString, QList<QString> > m_mPlaylists;

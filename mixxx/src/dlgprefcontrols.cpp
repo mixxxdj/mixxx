@@ -65,18 +65,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
     {
-        if (pView->m_pNumberPosCh1)
-            pView->m_pNumberPosCh1->setRemain(true);
-        if (pView->m_pNumberPosCh2)
-            pView->m_pNumberPosCh2->setRemain(true);
+        pView->slotSetDurationRemaining(true);
         ComboBoxPosition->setCurrentIndex(1);
     }
     else
     {
-        if (pView->m_pNumberPosCh1)
-            pView->m_pNumberPosCh1->setRemain(false);
-        if (pView->m_pNumberPosCh2)
-            pView->m_pNumberPosCh2->setRemain(false);
+        pView->slotSetDurationRemaining(false);
         ComboBoxPosition->setCurrentIndex(0);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
@@ -356,10 +350,7 @@ void DlgPrefControls::slotSetRateDir(int)
 void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
-    QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
-    //textLabel->setText(
-      tr("Restart Mixxx before the change of visuals will take effect.")
-      );
+    m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetCueDefault(int)
@@ -414,21 +405,7 @@ void DlgPrefControls::slotSetSkin(int)
 void DlgPrefControls::slotSetPositionDisplay(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(ComboBoxPosition->currentIndex()));
-
-    if (ComboBoxPosition->currentIndex()==1)
-    {
-        if (m_pView->m_pNumberPosCh1)
-            m_pView->m_pNumberPosCh1->setRemain(true);
-        if (m_pView->m_pNumberPosCh2)
-            m_pView->m_pNumberPosCh2->setRemain(true);
-    }
-    else
-    {
-        if (m_pView->m_pNumberPosCh1)
-            m_pView->m_pNumberPosCh1->setRemain(false);
-        if (m_pView->m_pNumberPosCh2)
-            m_pView->m_pNumberPosCh2->setRemain(false);
-    }
+    m_pView->slotSetDurationRemaining(ComboBoxPosition->currentIndex() == 1);
 }
 
 void DlgPrefControls::slotSetRateTempLeft(double v)

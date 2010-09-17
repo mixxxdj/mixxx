@@ -167,13 +167,16 @@ QString ITunesTrackModel::findValueByKey(QDomNode dictNode, QString key) const
 {
     QDomElement curElem;
 
-
     curElem = dictNode.firstChildElement("key");
     while(!curElem.isNull()) {
         if ( curElem.text() == key ) {
             QDomElement value;
             value = curElem.nextSiblingElement();
-            return value.text();
+            QString textValue = value.text();
+            //Either iTunes lies about the text encoding in its XML file or 
+            //Qt misdetects it. We workaround this explicitly sayi it's UTF-8.
+            textValue = QString::fromUtf8(textValue.toAscii().data(), textValue.size());
+            return textValue;
         }
 
         curElem = curElem.nextSiblingElement("key");
@@ -243,7 +246,7 @@ bool ITunesTrackModel::isColumnInternal(int column) {
     return false;
 }
 
-TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
+TrackPointer ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
     QString strloc = findValueByKey(songNode,"Location");
     QByteArray strlocbytes = strloc.toUtf8();
@@ -258,7 +261,7 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 #endif
     //pTrack->setLocation(QUrl(findValueByKey(songNode,"Location")).toLocalFile());
 
-    TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
+    TrackInfoObject* pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(findValueByKey(songNode, "Artist"));
     pTrack->setTitle(findValueByKey(songNode, "Name"));
@@ -270,12 +273,13 @@ TrackInfoObject *ITunesTrackModel::parseTrackNode(QDomNode songNode) const
     // ITunes stores time in total milliseconds
     pTrack->setDuration(findValueByKey(songNode,"Total Time").toInt() / 1000);
 
-    return pTrack;
+    // Let Qt handle deleting the track since it isn't owned by the library.
+    return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
-TrackInfoObject* ITunesTrackModel::getTrackById(QString id) {
+TrackPointer ITunesTrackModel::getTrackById(QString id) {
     if (!m_mTracksById.contains(id)) {
-        return NULL;
+        return TrackPointer();
     }
     return parseTrackNode(m_mTracksById[id]);
 }
@@ -297,3 +301,15 @@ QString ITunesTrackModel::getiTunesMusicPath() {
     qDebug() << "ITunesLibrary=[" << musicFolder << "]";
     return musicFolder;
 }
+
+//OwenB - for use by the playlistmodel
+QDomNode ITunesTrackModel::getTrackNodeById(const QString& id) const
+{
+    if ( !m_mTracksById.contains(id))
+        return QDomNode();
+
+    QDomNode songNode = m_mTracksById[id];
+    return songNode;
+}
+
+
