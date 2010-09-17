@@ -52,6 +52,8 @@ void WLabel::setup(QDomNode node)
 
     m_pLabel->setPalette(palette);
 
+    m_pLabel->setToolTip(getTooltip());
+
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
