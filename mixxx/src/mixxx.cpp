@@ -36,7 +36,6 @@
 #include "soundsourceproxy.h"
 
 #include "player.h"
-#include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
@@ -53,7 +52,6 @@
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
 #ifdef __IPOD__
-#include "wtracktableview.h"
 #include "gpod/itdb.h"
 #endif
 
@@ -541,7 +539,7 @@ int MixxxApp::noSoundDlg(void)
             soundmanager->queryDevices();
 
             // This way of opening the dialog allows us to use it synchronously
-            prefDlg->setWindowModality(Qt::ApplicationModal);
+           prefDlg->setWindowModality(Qt::ApplicationModal);
             prefDlg->exec();
             if ( prefDlg->result() == QDialog::Accepted) {
                 soundmanager->queryDevices();
