@@ -204,6 +204,7 @@ class MixxxApp : public QMainWindow
     QAction *editPaste;
 
     QAction *playlistsNew;
+    QAction *cratesNew;
     QAction *playlistsImport;
     QAction **playlistsList;
 

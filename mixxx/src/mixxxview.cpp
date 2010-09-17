@@ -198,7 +198,7 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
   connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
           m_pLineEditSearch, SLOT(restoreSearch(const QString&)));
 
-  int desired_fps = 30;
+  int desired_fps = 40;
   float update_interval = 1000.0f / desired_fps;
   m_guiTimer.start(update_interval);
 }
@@ -570,7 +570,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    p->setWidget((QWidget *)m_pVisualCh1, true, true, true, Qt::LeftButton);
 
                     //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 
@@ -599,7 +599,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    p->setWidget((QWidget *)m_pVisualCh2, true, true, true, Qt::LeftButton);
 
                     //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 

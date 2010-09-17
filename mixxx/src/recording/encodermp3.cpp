@@ -323,7 +323,9 @@ void EncoderMp3::initStream() {
 int EncoderMp3::initEncoder(int bitrate) {
     if(m_library == NULL || !m_library->isLoaded())
         return -1;
-    unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+
+    unsigned long samplerate_in = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    unsigned long samplerate_out = (samplerate_in>48000?48000:samplerate_in);
 
     m_lameFlags = lame_init();
 
@@ -333,8 +335,8 @@ int EncoderMp3::initEncoder(int bitrate) {
     }
 
     lame_set_num_channels(m_lameFlags, 2);
-    lame_set_in_samplerate(m_lameFlags, samplerate);
-    lame_set_out_samplerate(m_lameFlags, samplerate);
+    lame_set_in_samplerate(m_lameFlags, samplerate_in);
+    lame_set_out_samplerate(m_lameFlags, samplerate_out);
     lame_set_brate(m_lameFlags, bitrate);
     lame_set_mode(m_lameFlags, STEREO);
     lame_set_quality(m_lameFlags, 2);

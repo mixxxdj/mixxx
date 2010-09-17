@@ -486,6 +486,10 @@ void MixxxApp::initActions()
     playlistsNew->setShortcut(tr("Ctrl+N"));
     playlistsNew->setShortcutContext(Qt::ApplicationShortcut);
 
+    cratesNew = new QAction(tr("Add new &crate"), this);
+    cratesNew->setShortcut(tr("Ctrl+C"));
+    cratesNew->setShortcutContext(Qt::ApplicationShortcut);
+
     playlistsImport = new QAction(tr("&Import playlist"), this);
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
@@ -553,6 +557,10 @@ void MixxxApp::initActions()
     playlistsNew->setStatusTip(tr("Create a new playlist"));
     playlistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreatePlaylist()));
+
+    cratesNew->setStatusTip(tr("Create a new crate"));
+    cratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
+    connect(cratesNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreateCrate()));
 
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));
@@ -655,6 +663,7 @@ void MixxxApp::initMenuBar()
     libraryMenu->addAction(libraryRescan);
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
+    libraryMenu->addAction(cratesNew);
     //libraryMenu->addAction(playlistsImport);
 
 #ifdef __IPOD__
@@ -877,7 +886,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
          winpos = pos();
          // Can't set max to -1,-1 or 0,0 for unbounded?
          setMaximumSize(32767,32767);
@@ -886,7 +895,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
         // Crazy X window managers break this so I'm told by Qt docs
         //         int deskw = app->desktop()->width();
         //         int deskh = app->desktop()->height();
