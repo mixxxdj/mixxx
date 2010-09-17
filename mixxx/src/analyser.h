@@ -11,15 +11,15 @@
  *   -- Adam
  */
 
-class TrackInfoObject;
+#include "trackinfoobject.h"
 
 class Analyser {
 
 public:
-    virtual void initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) { }
-	virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
-	virtual void finalise(TrackInfoObject* tio) { }
-	virtual ~Analyser() {}
+    virtual void initialise(TrackPointer tio, int sampleRate, int totalSamples) { }
+    virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual void finalise(TrackPointer tio) { }
+    virtual ~Analyser() {}
 };
 
 #endif

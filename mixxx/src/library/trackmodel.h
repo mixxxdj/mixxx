@@ -5,9 +5,8 @@
 #include <QItemDelegate>
 #include <QtSql>
 
+#include "trackinfoobject.h"
 #include "library/dao/settingsdao.h"
-
-class TrackInfoObject;
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -27,12 +26,15 @@ public:
         TRACKMODELCAPS_NONE           = 0x0000,
         TRACKMODELCAPS_REORDER        = 0x0001,
         TRACKMODELCAPS_RECEIVEDROPS   = 0x0002,
+        TRACKMODELCAPS_ADDTOPLAYLIST  = 0x0004,
+        TRACKMODELCAPS_ADDTOCRATE     = 0x0008,
+        TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
                                     //0x0004
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const = 0;
+    virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;
@@ -41,6 +43,7 @@ public:
     virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
     virtual void removeTrack(const QModelIndex& index) = 0;
+    virtual void removeTracks(const QModelIndexList& indices) = 0;
     virtual bool addTrack(const QModelIndex& index, QString location) = 0;
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex) = 0;

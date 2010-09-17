@@ -10,7 +10,6 @@
 #include "library/dao/trackdao.h"
 
 class TrackCollection;
-class TrackInfoObject;
 
 class BaseSqlTableModel : public QSqlTableModel {
     Q_OBJECT

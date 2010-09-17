@@ -50,10 +50,12 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
+                  "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
                   "track_locations.location,"
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " " +
                   "FROM library "
@@ -91,6 +93,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
     setHeaderData(fieldIndex("location"),
                   Qt::Horizontal, tr("Location"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
@@ -124,14 +128,15 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
-    if (!m_trackDao.trackExistsInDatabase(location))
-    {
-        m_trackDao.addTrack(location);
-    }
+    QFileInfo fileInfo(location);
+    location = fileInfo.absoluteFilePath();
+
     int trackId = m_trackDao.getTrackId(location);
+    if (trackId < 0)
+        trackId = m_trackDao.addTrack(location);
 
     // Do nothing if the location still isn't in the database.
-    if (trackId == -1)
+    if (trackId < 0)
         return false;
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
@@ -141,7 +146,7 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     return true;
 }
 
-TrackInfoObject* PlaylistTableModel::getTrack(const QModelIndex& index) const
+TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 
@@ -159,10 +164,26 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
+}
+
+void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+
+    QList<int> trackPositions;
+    foreach (QModelIndex index, indices) {
+        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        trackPositions.append(trackPosition);
+    }
+
+    foreach (int trackPosition, trackPositions) {
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, trackPosition);
+    }
+
+    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -302,7 +323,8 @@ const QString PlaylistTableModel::currentSearch() {
 
 bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED))
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
         return true;
     return false;
 }
@@ -320,7 +342,7 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url(getTrackLocation(index));
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
                 if (!url.isValid())
                     qDebug() << "ERROR invalid url\n";
                 else
@@ -371,5 +393,11 @@ QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
 {
-    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER;
+    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOPLAYLIST;
+
+    // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
+    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE))
+        caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+
+    return caps;
 }

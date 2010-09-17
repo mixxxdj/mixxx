@@ -39,7 +39,8 @@ EngineChannel::EngineChannel(const char* group,
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
     m_pVolume = new EngineVolume(ConfigKey(group, "volume"));
     m_pVUMeter = new EngineVuMeter(group);
-    m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"), true);
+    m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"));
+    m_pPFL->setToggleButton(true);
     m_pOrientation = new ControlObject(ConfigKey(group, "orientation"));
     m_pOrientation->set(defaultOrientation);
 

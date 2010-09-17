@@ -9,11 +9,11 @@
 
 #include "engine/enginecontrol.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class ControlObject;
 class ControlPushButton;
 class Cue;
-class TrackInfoObject;
 
 class CueControl : public EngineControl {
     Q_OBJECT
@@ -25,8 +25,8 @@ class CueControl : public EngineControl {
     virtual void hintReader(QList<Hint>& hintList);
 
   public slots:
-    void loadTrack(TrackInfoObject* pTrack);
-    void unloadTrack(TrackInfoObject* pTrack);
+    void loadTrack(TrackPointer pTrack);
+    void unloadTrack(TrackPointer pTrack);
 
   private slots:
     void cueUpdated();
@@ -58,6 +58,7 @@ class CueControl : public EngineControl {
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
+    int m_iCurrentlyPreviewingHotcues;
 
     const int m_iNumHotCues;
     // Hotcue state controls
@@ -82,7 +83,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
 
-    TrackInfoObject* m_pLoadedTrack;
+    TrackPointer m_pLoadedTrack;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

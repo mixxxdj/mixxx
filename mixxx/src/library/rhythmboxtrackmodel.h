@@ -24,7 +24,6 @@
 #include "abstractxmltrackmodel.h"
 
 
-class TrackInfoObject;
 class QSqlDatabase;
 
 
@@ -51,9 +50,10 @@ public:
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual bool isColumnInternal(int column);
     virtual QVariant data(const QModelIndex& item, int role) const;
+    QDomNode getTrackNodeByLocation(const QString& ) const;
 
 protected:
-    virtual TrackInfoObject *parseTrackNode(QDomNode node) const;
+    virtual TrackPointer parseTrackNode(QDomNode node) const;
     /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
     virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
@@ -64,6 +64,8 @@ signals:
  	void startedLoading();
  	void progressLoading(QString path);
  	void finishedLoading();
+
+ 	friend class RhythmboxPlaylistModel;
 };
 
 #endif

@@ -17,10 +17,17 @@
 #ifndef ENGINERECORD_H
 #define ENGINERECORD_H
 
+#include <QDataStream>
+#include <QFile>
+
+#include <sndfile.h>
+
 #include "controlobjectthread.h"
+#include "engine/engineabstractrecord.h"
 #include "configobject.h"
 #include "engine/engineobject.h"
-#include "writeaudiofile.h"
+#include "encoder.h"
+#include "errordialoghandler.h"
 
 #define THRESHOLD_REC 2. //high enough that its not triggered by white noise
 
@@ -28,16 +35,38 @@ class ControlLogpotmeter;
 class ConfigKey;
 class ControlObject;
 
-class EngineRecord : public EngineObject {
-public:
+class EngineRecord : public EngineAbstractRecord {
+  public:
     EngineRecord(ConfigObject<ConfigValue> *_config);
-    ~EngineRecord();
+    virtual ~EngineRecord();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private:
-    WriteAudioFile *fOut;
-    ConfigObject<ConfigValue> *config;
-    ControlObjectThread* recReady;
-    ControlObject* recReadyCO;
+    /** writes (un)compressed audio to file **/
+    void write(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
+    //creates or opens an audio file
+    bool openFile();
+    //closes the audio file
+    void closeFile();
+    void updateFromPreferences();
+    bool fileOpen();
+
+  private:
+    ConfigObject<ConfigValue> *m_config;
+    Encoder *m_encoder;
+    QByteArray m_OGGquality;
+    QByteArray m_MP3quality;
+    QByteArray m_Encoding;
+    QByteArray m_filename;
+    QByteArray m_baTitle;
+    QByteArray m_baAuthor;
+    QByteArray m_baAlbum;
+
+    QFile m_file;
+    QDataStream m_datastream;
+    SNDFILE *m_sndfile;
+    SF_INFO m_sfInfo;
+
+    ControlObjectThread* m_recReady;
+    ControlObject* m_recReadyCO;
 };
 
 #endif

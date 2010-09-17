@@ -20,7 +20,7 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
-TrackInfoObject* ProxyTrackModel::getTrack(const QModelIndex& index) const {
+TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrack(indexSource);
 }
@@ -53,6 +53,15 @@ bool ProxyTrackModel::isColumnInternal(int column) {
 void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     QModelIndex indexSource = mapToSource(index);
     m_pTrackModel->removeTrack(indexSource);
+}
+
+void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
+    QModelIndexList translatedList;
+    foreach (QModelIndex index, indices) {
+        QModelIndex indexSource = mapToSource(index);
+        translatedList.append(indexSource);
+    }
+    m_pTrackModel->removeTracks(translatedList);
 }
 
 bool ProxyTrackModel::addTrack(const QModelIndex& index, QString location) {

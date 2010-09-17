@@ -7,12 +7,12 @@
 #include <QList>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class Player;
 class Library;
 class EngineMaster;
 class AnalyserQueue;
-class TrackInfoObject;
 
 class PlayerManager : public QObject {
     Q_OBJECT
@@ -33,13 +33,13 @@ class PlayerManager : public QObject {
     Player* getPlayer(QString group);
 
   public slots:
-    void slotLoadTrackToPlayer(TrackInfoObject* pTrack, int player);
-    void slotLoadTrackIntoNextAvailablePlayer(TrackInfoObject* pTrack);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, int player);
+    void slotLoadTrackIntoNextAvailablePlayer(TrackPointer pTrack);
     void slotLoadToPlayer(QString location, int player);
     void slotLoadToPlayer(QString location, QString group);
 
   private:
-    TrackInfoObject* lookupTrack(QString location);
+    TrackPointer lookupTrack(QString location);
     ConfigObject<ConfigValue>* m_pConfig;
     EngineMaster* m_pEngine;
     Library* m_pLibrary;

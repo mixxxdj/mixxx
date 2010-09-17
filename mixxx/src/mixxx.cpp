@@ -93,8 +93,14 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    setWindowTitle(tr("Mixxx " VERSION " x64"));
+#elif defined(IA64)
+    setWindowTitle(tr("Mixxx " VERSION " Itanium"));
+#else
     setWindowTitle(tr("Mixxx " VERSION));
-    setWindowIcon(QIcon(":/images/icon.svg"));
+#endif
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     //Reset pointer to players
     soundmanager = 0;
@@ -105,6 +111,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     Upgrade upgrader;
     config = upgrader.versionUpgrade();
     bool bFirstRun = upgrader.isFirstRun();
+    bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = config->getConfigPath();
 
 #ifdef __C_METRICS__
@@ -187,7 +194,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     frame = new QFrame;
     setCentralWidget(frame);
 
-    m_pLibrary = new Library(this, config, bFirstRun);
+    m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
+    qRegisterMetaType<TrackPointer>("TrackPointer");
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
@@ -286,8 +294,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     }
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun) {
-        QList<TrackInfoObject*> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
+    if (bFirstRun || bUpgraded) {
+        QList<TrackPointer> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
         for (int i = 0; i < m_pPlayerManager->numPlayers() && i < tracksToAutoLoad.count(); i++) {
             m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
         }
@@ -472,6 +480,10 @@ void MixxxApp::initActions()
     playlistsNew->setShortcut(tr("Ctrl+N"));
     playlistsNew->setShortcutContext(Qt::ApplicationShortcut);
 
+    cratesNew = new QAction(tr("Add new &crate"), this);
+    cratesNew->setShortcut(tr("Ctrl+C"));
+    cratesNew->setShortcutContext(Qt::ApplicationShortcut);
+
     playlistsImport = new QAction(tr("&Import playlist"), this);
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
@@ -494,6 +506,12 @@ void MixxxApp::initActions()
     optionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
     optionsVinylControl->setShortcut(tr("Ctrl+Y"));
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
+#endif
+
+#ifdef __SHOUTCAST__
+    optionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    optionsShoutcast->setShortcut(tr("Ctrl+L"));
+    optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
     optionsRecord = new QAction(tr("&Record Mix"), this);
@@ -526,6 +544,10 @@ void MixxxApp::initActions()
     playlistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreatePlaylist()));
 
+    cratesNew->setStatusTip(tr("Create a new crate"));
+    cratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
+    connect(cratesNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreateCrate()));
+
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));
     //connect(playlistsImport, SIGNAL(activated()), m_pTrack, SLOT(slotImportPlaylist()));
@@ -547,6 +569,18 @@ void MixxxApp::initActions()
     optionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
+#endif
+
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setCheckable(true);
+    bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+
+    optionsShoutcast->setChecked(broadcastEnabled);
+
+    optionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
+    optionsShoutcast->setWhatsThis(tr("Stream your mixes to a shoutcast or icecast server"));
+
+    connect(optionsShoutcast, SIGNAL(toggled(bool)), this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
     optionsRecord->setCheckable(true);
@@ -590,7 +624,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroMenu=new QMenu("&Macro");
 #endif
-
+	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
@@ -604,6 +638,9 @@ void MixxxApp::initMenuBar()
     optionsMenu->addAction(optionsVinylControl);
 #endif
     optionsMenu->addAction(optionsRecord);
+#ifdef __SHOUTCAST__
+    optionsMenu->addAction(optionsShoutcast);
+#endif
     optionsMenu->addAction(optionsFullScreen);
     optionsMenu->addSeparator();
     optionsMenu->addAction(optionsPreferences);
@@ -612,6 +649,7 @@ void MixxxApp::initMenuBar()
     libraryMenu->addAction(libraryRescan);
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
+    libraryMenu->addAction(cratesNew);
     //libraryMenu->addAction(playlistsImport);
 
     // menuBar entry viewMenu
@@ -727,11 +765,13 @@ void MixxxApp::slotOptionsBeatMark(bool)
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
+    if (optionsFullScreen)
+        optionsFullScreen->setChecked(toggle);
 
-// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
          winpos = pos();
          // Can't set max to -1,-1 or 0,0 for unbounded?
          setMaximumSize(32767,32767);
@@ -740,7 +780,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
         // Crazy X window managers break this so I'm told by Qt docs
         //         int deskw = app->desktop()->width();
         //         int deskh = app->desktop()->height();
@@ -875,20 +915,24 @@ void MixxxApp::slotHelpAbout()
 {
 
     DlgAbout *about = new DlgAbout(this);
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    about->version_label->setText(VERSION " x64");
+#elif defined(IA64)
+    about->version_label->setText(VERSION " IA64");
+#else
     about->version_label->setText(VERSION);
+#endif
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
-"Garth Dahlstrom<br>"
 "RJ Ryan<br>"
+"Garth Dahlstrom<br>"
 "Sean Pappalardo<br>"
-"Nick Guenther<br>"
 "Phillip Whelan<br>"
-"Zach Elko<br>"
-"Tom Care<br>"
-"Pawel Bartkiewicz<br>"
+"Tobias Rafreider<br>"
+"S. Brandt<br>"
 
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
@@ -896,33 +940,34 @@ void MixxxApp::slotHelpAbout()
 "Mark Hills<br>"
 "Andre Roth<br>"
 "Robin Sheat<br>"
-"Michael Pujos<br>"
 "Mark Glines<br>"
-"Claudio Bantaloukas<br>"
-"Pavol Rusnak<br>"
 "Mathieu Rene<br>"
 "Miko Kiiski<br>"
-"Navaho Gunleg<br>"
-"Gavin Pryke<br>"
 "Brian Jackson<br>"
 "Owen Williams<br>"
-"James Evans<br>"
-"Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"J&aacute;n Jockusch<br>"
 "Oliver St&ouml;neberg<br>"
+"Jan Jockusch<br>"
 "C. Stewart<br>"
-"Tobias Rafreider<br>"
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
 "Bill Good<br>"
+"Graeme Mathieson<br>"
+"Sebastian Actist<br>"
+"Jussi Sainio<br>"
+"David Gnedt<br>"
+"Antonio Passamani<br>"
+"Guy Martin<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
 "Stanton<br>"
 "Hercules<br>"
+"EKS<br>"
 "Echo Digital Audio<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
@@ -946,6 +991,10 @@ void MixxxApp::slotHelpAbout()
 "Ben Wheeler<br>"
 "Wesley Stessens<br>"
 "Nathan Prado<br>"
+"Zach Elko<br>"
+"Tom Care<br>"
+"Pawel Bartkiewicz<br>"
+"Nick Guenther<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
@@ -959,7 +1008,6 @@ void MixxxApp::slotHelpAbout()
 "Jeremie Zimmermann<br>"
 "Gianluca Romanin<br>"
 "Tim Jackson<br>"
-"J&aacute;n Jockusch<br>"
 "Stefan Langhammer<br>"
 "Frank Willascheck<br>"
 "Jeff Nelson<br>"
@@ -977,7 +1025,22 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
-"</p>").arg(VERSION);
+"James Evans<br>"
+"Martin Sakmar<br>"
+"Navaho Gunleg<br>"
+"Gavin Pryke<br>"
+"Michael Pujos<br>"
+"Claudio Bantaloukas<br>"
+"Pavol Rusnak<br>"
+
+#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+    "</p>").arg(VERSION " x64");
+#elif defined(IA64)
+    "</p>").arg(VERSION " IA64");
+#else
+    "</p>").arg(VERSION);
+#endif
+
 
 
     about->textBrowser->setHtml(credits);
@@ -998,6 +1061,12 @@ void MixxxApp::rebootMixxxView() {
     int oldh = m_pView->height();
     int oldw = m_pView->width();
     qDebug() << "Now in Rebootmixxview...";
+
+    // Workaround for changing skins while fullscreen, just go out of fullscreen
+    // mode. If you change skins while in fullscreen (on Linux, at least) the
+    // window returns to 0,0 but and the backdrop disappears so it looks as if
+    // it is not fullscreen, but acts as if it is.
+    slotOptionsFullScreen(false);
 
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
@@ -1041,4 +1110,26 @@ void MixxxApp::slotScanLibrary()
 void MixxxApp::slotEnableRescanLibraryAction()
 {
     libraryRescan->setEnabled(true);
+}
+void MixxxApp::slotOptionsMenuShow(){
+	ControlObjectThread* ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
+
+	if(ctrlRec->get() == RECORD_OFF){
+		//uncheck Recording
+		optionsRecord->setChecked(false);
+	}
+
+#ifdef __SHOUTCAST__
+	bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);	if(broadcastEnabled)
+      optionsShoutcast->setChecked(true);
+	else
+      optionsShoutcast->setChecked(false);
+#endif
+}
+
+void MixxxApp::slotOptionsShoutcast(bool value){
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setChecked(value);
+    config->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue(value));
+#endif
 }

@@ -17,7 +17,7 @@ AnalyserWavesummary::AnalyserWavesummary() {
     m_pData = NULL;
 }
 
-void AnalyserWavesummary::initialise(TrackInfoObject* tio, int sampleRate, int totalSamples) {
+void AnalyserWavesummary::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     // Check if the preview has already been generated
     const QByteArray* p = tio->getWaveSummary();
     if(p != NULL && p->size() > 0) {
@@ -69,7 +69,7 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
-void AnalyserWavesummary::finalise(TrackInfoObject *tio) {
+void AnalyserWavesummary::finalise(TrackPointer tio) {
     if(m_pData == NULL)
         return;
     tio->setWaveSummary(m_pData, true);
@@ -77,5 +77,5 @@ void AnalyserWavesummary::finalise(TrackInfoObject *tio) {
     //to delete the pointer.
     delete m_pData;
     m_pData = NULL;
-    qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
+    //qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
 }

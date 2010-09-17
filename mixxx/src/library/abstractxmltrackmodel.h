@@ -35,8 +35,6 @@
 #include <QtXml>
 #include "trackmodel.h"
 
-class TrackInfoObject;
-
 class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
 {
     Q_OBJECT
@@ -47,19 +45,21 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
     //QAbstractTableModel stuff
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
     virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
     virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
     virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
     virtual int columnCount(const QModelIndex& parent) const;
 
     //Track Model stuff
-    virtual TrackInfoObject* getTrack(const QModelIndex& index) const;
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual TrackInfoObject *getTrackByLocation(const QString& location) const;
+    virtual TrackPointer getTrackByLocation(const QString& location) const;
     virtual void search(const QString& searchText);
     virtual const QList<int>& searchColumns() const;
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column) = 0;
     virtual void removeTrack(const QModelIndex& index);
+    virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
@@ -76,7 +76,7 @@ private:
 
 protected:
     /* Implemented by AbstractXmlTrackModel implementations to parse the DOM Node into a TrackInfoObject */
-    virtual TrackInfoObject *parseTrackNode(QDomNode node) const = 0;
+    virtual TrackPointer parseTrackNode(QDomNode node) const = 0;
     /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
     virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const = 0;
     /* Called by AbstractXmlTrackModel implementations to enumerate their columns */

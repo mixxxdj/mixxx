@@ -16,7 +16,6 @@
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
-#include <QtDebug>
 
 PlayerInfo &PlayerInfo::Instance()
 {
@@ -25,17 +24,17 @@ PlayerInfo &PlayerInfo::Instance()
 }
 
 PlayerInfo::PlayerInfo()
-        : m_pTrack1(NULL),
-          m_pTrack2(NULL) {
+        : m_pTrack1(),
+          m_pTrack2() {
 }
 
 PlayerInfo::~PlayerInfo()
 {
 }
 
-TrackInfoObject *PlayerInfo::getTrackInfo(int track)
+TrackPointer PlayerInfo::getTrackInfo(int track)
 {
-    TrackInfoObject* pRet = NULL;
+    TrackPointer pRet;
     m_mutex.lock();
     switch (track)
     {
@@ -47,13 +46,13 @@ TrackInfoObject *PlayerInfo::getTrackInfo(int track)
         break;
     default:
         // incorrect track number
-        pRet = NULL;
+        break;
     }
     m_mutex.unlock();
     return pRet;
 }
 
-void PlayerInfo::setTrackInfo(int track, TrackInfoObject *trackInfoObj)
+void PlayerInfo::setTrackInfo(int track, TrackPointer trackInfoObj)
 {
     m_mutex.lock();
     switch (track) {

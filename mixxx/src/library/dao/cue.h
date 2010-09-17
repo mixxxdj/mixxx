@@ -7,8 +7,7 @@
 #include <QObject>
 #include <QMutex>
 
-#include "library/dao/cuedao.h"
-
+class CueDAO;
 class TrackInfoObject;
 
 class Cue : public QObject {

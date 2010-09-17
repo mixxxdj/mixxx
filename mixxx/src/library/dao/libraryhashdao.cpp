@@ -15,7 +15,6 @@ LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
 
 LibraryHashDAO::~LibraryHashDAO()
 {
-
 }
 
 void LibraryHashDAO::initialize()
@@ -62,7 +61,7 @@ void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
     if (!query.exec()) {
         qDebug() << "Creating new dirhash failed:" << query.lastError();
     }
-    qDebug() << "created new hash" << hash;
+    //qDebug() << "created new hash" << hash;
 }
 
 void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_deleted)
@@ -79,10 +78,25 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
     if (!query.exec()) {
         qDebug() << "Updating existing dirhash failed:" << query.lastError();
     }
-    qDebug() << "updated old existing hash" << newHash << dirPath << dir_deleted;
+    //qDebug() << "updated old existing hash" << newHash << dirPath << dir_deleted;
 
     //DEBUG: Print out the directory hash we just saved to verify...
     //qDebug() << getDirectoryHash(dirPath);
+}
+
+void LibraryHashDAO::updateDirectoryStatus(QString dirPath, bool deleted, bool verified) {
+    //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE LibraryHashes "
+                  "SET directory_deleted=:directory_deleted, "
+                  "needs_verification=:needs_verification "
+                  "WHERE directory_path=:directory_path");
+    query.bindValue(":directory_deleted", deleted);
+    query.bindValue(":needs_verification", !verified);
+    query.bindValue(":directory_path", dirPath);
+    if (!query.exec()) {
+        qDebug() << "Updating directory status failed: " << query.lastError();
+    }
 }
 
 void LibraryHashDAO::markAsExisting(QString dirPath)
@@ -99,15 +113,52 @@ void LibraryHashDAO::markAsExisting(QString dirPath)
     }
 }
 
-void LibraryHashDAO::markAllDirectoriesAsDeleted()
+void LibraryHashDAO::markAsVerified(QString dirPath)
 {
-    //qDebug() << "LibraryHashDAO::markAllDirectoriesAsDeleted"
+    //qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE LibraryHashes "
+                  "SET needs_verification=0 "
+                  "WHERE directory_path=:directory_path");
+   // query.bindValue(":directory_deleted", 0);
+    query.bindValue(":directory_path", dirPath);
+    if (!query.exec()) {
+        qDebug() << "Updating dirhash to mark as verified failed:" << query.lastError();
+    }
+}
+
+void LibraryHashDAO::invalidateAllDirectories()
+{
+    //qDebug() << "LibraryHashDAO::invalidateAllDirectories"
     //<< QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
-                  "SET directory_deleted=:directory_deleted");
+                  "SET needs_verification=:needs_verification");
+    query.bindValue(":needs_verification", 1);
+    if (!query.exec()) {
+        qDebug() << query.lastError();
+    }
+}
+
+void LibraryHashDAO::markUnverifiedDirectoriesAsDeleted()
+{
+    //qDebug() << "LibraryHashDAO::markUnverifiedDirectoriesAsDeleted"
+    //<< QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE LibraryHashes "
+                  "SET directory_deleted=:directory_deleted "
+                  "WHERE needs_verification=1");
     query.bindValue(":directory_deleted", 1);
     if (!query.exec()) {
         qDebug() << query.lastError();
     }
+}
+
+void LibraryHashDAO::removeDeletedDirectoryHashes()
+{
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM LibraryHashes WHERE "
+               "directory_deleted=:directory_deleted");
+    query.bindValue(":directory_deleted", 1);
+    Q_ASSERT(query.exec());
 }

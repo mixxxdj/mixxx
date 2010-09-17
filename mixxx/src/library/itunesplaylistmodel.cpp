@@ -30,7 +30,39 @@ ITunesPlaylistModel::~ITunesPlaylistModel()
 
 Qt::ItemFlags ITunesPlaylistModel::flags ( const QModelIndex & index ) const
 {
-    return QAbstractTableModel::flags(index);
+    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+
+    if (!index.isValid())
+        return Qt::ItemIsEnabled;
+
+    defaultFlags |= Qt::ItemIsDragEnabled;
+
+    return defaultFlags;
+}
+
+QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+
+    //Ok, so the list of indexes we're given contains separates indexes for
+    //each column, so even if only one row is selected, we'll have like 7 indexes.
+    //We need to only count each row once:
+    QList<int> rows;
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            if (!rows.contains(index.row())) {
+                rows.push_back(index.row());
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+                if (!url.isValid())
+                    qDebug() << "ERROR invalid url\n";
+                else
+                    urls.append(url);
+            }
+        }
+    }
+    mimeData->setUrls(urls);
+    return mimeData;
 }
 
 QVariant ITunesPlaylistModel::data ( const QModelIndex & index, int role ) const
@@ -41,31 +73,18 @@ QVariant ITunesPlaylistModel::data ( const QModelIndex & index, int role ) const
     if (!index.isValid())
         return QVariant();
 
-    TrackInfoObject *pTrack = getTrack(index);
-    if ( pTrack == NULL )
-        return QVariant();
+    // OwenB - attempting to make this more efficient, don't create a new
+    // TIO for every row
+	if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
+		  // get track id
+	    QList<QString> playlistTrackList = m_pTrackModel->m_mPlaylists[m_sCurrentPlaylist];
+	    QString id = playlistTrackList.at(index.row());
 
-    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
-        switch (index.column()) {
-            case ITunesPlaylistModel::COLUMN_ARTIST:
-                return pTrack->getArtist();
-            case ITunesPlaylistModel::COLUMN_TITLE:
-                return pTrack->getTitle();
-            case ITunesPlaylistModel::COLUMN_ALBUM:
-                return pTrack->getAlbum();
-            case ITunesPlaylistModel::COLUMN_DATE:
-                return pTrack->getYear();
-            case ITunesPlaylistModel::COLUMN_BPM:
-                return pTrack->getBpm();
-            case ITunesPlaylistModel::COLUMN_GENRE:
-                return pTrack->getGenre();
-            case ITunesPlaylistModel::COLUMN_LOCATION:
-                return pTrack->getLocation();
-            case ITunesPlaylistModel::COLUMN_DURATION:
-                return MixxxUtils::secondsToMinutes(pTrack->getDuration());
-            default:
-                return QVariant();
-        }
+          // use this to get DOM node from the TrackModel
+        QDomNode songNode = m_pTrackModel->getTrackNodeById(id);
+
+          // use node to return the data item that was asked for.
+        return m_pTrackModel->getTrackColumnData(songNode, index);
     }
 
     return QVariant();
@@ -148,6 +167,10 @@ void ITunesPlaylistModel::removeTrack(const QModelIndex& index)
     //Should do nothing... hmmm
 }
 
+void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices)
+{
+}
+
 void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
     //Should do nothing... hmmm
@@ -155,17 +178,19 @@ void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModel
 
 QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const
 {
-    //FIXME
-    return QString();
+    TrackPointer track = getTrack(index);
+    QString location = track->getLocation();
+    // track is auto-deleted
+    return location;
 }
 
-TrackInfoObject * ITunesPlaylistModel::getTrack(const QModelIndex& index) const
+TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
 {
     int row = index.row();
 
     if (!m_pTrackModel ||
         !m_pTrackModel->m_mPlaylists.contains(m_sCurrentPlaylist)) {
-        return NULL;
+        return TrackPointer();
     }
 
     // Qt should do this by reference for us so we aren't actually making a copy
@@ -173,7 +198,7 @@ TrackInfoObject * ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     QList<QString> songIds = m_pTrackModel->m_mPlaylists[m_sCurrentPlaylist];
 
     if (row < 0 || row >= songIds.length()) {
-        return NULL;
+        return TrackPointer();
     }
 
     return m_pTrackModel->getTrackById(songIds.at(row));
