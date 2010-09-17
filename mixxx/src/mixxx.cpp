@@ -202,13 +202,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pPlayerManager->addPlayer();
     m_pPlayerManager->addPlayer();
 
-    m_pSkinLoader = new SkinLoader(config);
-
-    m_pView = m_pSkinLoader->loadDefaultSkin(frame,
-                                             m_pKeyboard,
-                                             m_pPlayerManager,
-                                             m_pLibrary);
-
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
 
@@ -265,9 +258,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pMidiDeviceManager->queryDevices();
     m_pMidiDeviceManager->setupDevices();
 
+    m_pSkinLoader = new SkinLoader(config);
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, m_pSkinLoader, m_pView, soundmanager,
+    prefDlg = new DlgPreferences(this, m_pSkinLoader, soundmanager,
                                  m_pMidiDeviceManager, config);
     prefDlg->setHidden(true);
 
@@ -308,8 +302,14 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     initActions();
     initMenuBar();
 
+    m_pView = m_pSkinLoader->loadDefaultSkin(frame,
+                                             m_pKeyboard,
+                                             m_pPlayerManager,
+                                             m_pLibrary);
+
     // Check direct rendering and warn user if they don't have it
-    m_pView->checkDirectRendering();
+    if (m_pView)
+        m_pView->checkDirectRendering();
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
@@ -792,13 +792,15 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         int deskw = width();
         int deskh = height();
 #endif
-        m_pView->move((deskw - m_pView->width())/2, (deskh - m_pView->height())/2);
+        if (m_pView)
+            m_pView->move((deskw - m_pView->width())/2, (deskh - m_pView->height())/2);
         // FWI: End of fullscreen patch
     }
     else
     {
         // FWI: Begin of fullscreen patch
-        m_pView->move(0,0);
+        if (m_pView)
+            m_pView->move(0,0);
         menuBar()->show();
         showNormal();
 
@@ -1056,6 +1058,10 @@ void MixxxApp::slotHelpSupport()
 }
 
 void MixxxApp::rebootMixxxView() {
+
+    if (!m_pView)
+        return;
+
     // Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
     // So we check and if the size hasn't changed we don't make the call
     int oldh = m_pView->height();

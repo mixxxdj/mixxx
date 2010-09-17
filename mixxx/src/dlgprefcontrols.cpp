@@ -26,17 +26,15 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "mixxxview.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx,
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
                                  ConfigObject<ConfigValue> * pConfig)
         :  QWidget(parent), Ui::DlgPrefControlsDlg() {
-    m_pView = pView;
     m_pConfig = pConfig;
     m_mixxx = mixxx;
     m_pSkinLoader = pSkinLoader;
@@ -59,19 +57,20 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
 
     // Position display configuration
+    m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
     ComboBoxPosition->addItem("Position");
     ComboBoxPosition->addItem("Remaining");
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
     {
-        pView->slotSetDurationRemaining(true);
         ComboBoxPosition->setCurrentIndex(1);
+        m_pControlPositionDisplay->set(1.0f);
     }
     else
     {
-        pView->slotSetDurationRemaining(false);
         ComboBoxPosition->setCurrentIndex(0);
+        m_pControlPositionDisplay->set(0.0f);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
@@ -404,8 +403,9 @@ void DlgPrefControls::slotSetSkin(int)
 
 void DlgPrefControls::slotSetPositionDisplay(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(ComboBoxPosition->currentIndex()));
-    m_pView->slotSetDurationRemaining(ComboBoxPosition->currentIndex() == 1);
+    int positionDisplay = ComboBoxPosition->currentIndex();
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(positionDisplay));
+    m_pControlPositionDisplay->set(positionDisplay);
 }
 
 void DlgPrefControls::slotSetRateTempLeft(double v)

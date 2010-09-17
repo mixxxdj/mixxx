@@ -83,8 +83,6 @@ public:
     /** Return a pointer to the track table view widget. */
     WTrackTableView* getTrackTableView();
 
-
-
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
     WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
@@ -111,7 +109,6 @@ public:
     void slotClearTrackTextCh1(TrackPointer pTrack);
     void slotUpdateTrackTextCh2(TrackPointer pTrack);
     void slotClearTrackTextCh2(TrackPointer pTrack);
-    void slotSetDurationRemaining(bool bDurationRemaining);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
@@ -121,9 +118,6 @@ private:
 
     // Pointer to absolute file position widgets
     WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
-    // Indicates whether the duration widgets are in 'time-remaining' mode or
-    // not.
-    bool m_bDurationRemain;
 
     // The text display widgets
     QLabel *m_pTextCh1, *m_pTextCh2;

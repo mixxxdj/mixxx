@@ -113,8 +113,6 @@ MixxxView::MixxxView(QWidget* parent, MixxxKeyboard* pKeyboard,
     m_pTextCh2 = 0;
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
-    m_pNumberPosCh1 = 0;
-    m_pNumberPosCh2 = 0;
     m_pNumberBpmCh1 = 0;
     m_pNumberBpmCh2 = 0;
     m_pSliderRateCh1 = 0;
@@ -133,10 +131,6 @@ MixxxView::MixxxView(QWidget* parent, MixxxKeyboard* pKeyboard,
     m_pSplitter = 0;
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
-
-    // Default to showing absolute durations instead of duration remaining. The
-    // preferences will change this to what the user prefers.
-    m_bDurationRemain = false;
 
     m_textCh1 = "";
     m_textCh2 = "";
@@ -470,6 +464,23 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pNumberBpmCh2 = p;
                 }
             }
+            else if (node.nodeName()=="NumberPos")
+            {
+                WNumberPos* pNumberPos;
+
+                QString group;
+                if (WWidget::selectNodeInt(node, "Channel")==1) {
+                    group = "[Channel1]";
+                } else if (WWidget::selectNodeInt(node, "Channel")==2) {
+                    group = "[Channel2]";
+                }
+
+                pNumberPos = new WNumberPos(group, this);
+                pNumberPos->installEventFilter(m_pKeyboard);
+                pNumberPos->setup(node);
+                pNumberPos->show();
+                m_qWidgetList.append(pNumberPos);
+            }
             else if (node.nodeName()=="NumberRate")
             {
                 QColor c(255,255,255);
@@ -694,34 +705,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->show();
             }
 
-            // persistent: m_pNumberPosCh1, m_pNumberPosCh2
-
-            // NOTE: The m_pNumberPosCh1/2 widgets are no longer persistent, but they
-            // are stored in those member fields. -- rryan 8/2010
-            else if (node.nodeName()=="NumberPos")
-            {
-                if (m_pNumberPosCh1 != NULL || m_pNumberPosCh2 != NULL) {
-                    qDebug() << "WARNING: Number widgets were not reset before rebooting GUI.";
-                }
-
-                if (WWidget::selectNodeInt(node, "Channel")==1) {
-                    m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
-                    m_pNumberPosCh1->installEventFilter(m_pKeyboard);
-                    m_pNumberPosCh1->setup(node);
-                    m_pNumberPosCh1->setRemain(m_bDurationRemain);
-                    m_pNumberPosCh1->show();
-                    m_qWidgetList.append(m_pNumberPosCh1);
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2) {
-                    m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
-                    m_pNumberPosCh2->installEventFilter(m_pKeyboard);
-                    m_pNumberPosCh2->setup(node);
-                    m_pNumberPosCh2->setRemain(m_bDurationRemain);
-                    m_pNumberPosCh2->show();
-                    m_qWidgetList.append(m_pNumberPosCh2);
-                }
-            }
-
             // persistent: m_pSliderRateCh1, m_pSliderRateCh2
             else if (node.nodeName()=="SliderComposed")
             {
@@ -942,8 +925,6 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     m_pVisualCh2 = NULL;
     m_pTextCh1 = NULL;
     m_pTextCh2 = NULL;
-    m_pNumberPosCh1 = NULL;
-    m_pNumberPosCh2 = NULL;
     m_pNumberBpmCh1 = NULL;
     m_pNumberBpmCh2 = NULL;
 
@@ -1107,12 +1088,4 @@ void MixxxView::slotClearTrackTextCh2(TrackPointer pTrack)
     m_textCh2 = "";
     if (m_pTextCh2)
         m_pTextCh2->setText("");
-}
-
-void MixxxView::slotSetDurationRemaining(bool bDurationRemaining) {
-    m_bDurationRemain = bDurationRemaining;
-    if (m_pNumberPosCh1)
-        m_pNumberPosCh1->setRemain(m_bDurationRemain);
-    if (m_pNumberPosCh2)
-        m_pNumberPosCh2->setRemain(m_bDurationRemain);
 }
