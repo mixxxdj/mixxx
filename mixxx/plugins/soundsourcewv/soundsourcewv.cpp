@@ -41,7 +41,6 @@ int SoundSourceWV::open()
 		qDebug() << "SSWV::open: failed to open file : "<<msg;
 		return ERR;
 	}
-	qDebug() << "SSWV::opened file";
 	if (WavpackGetMode(filewvc) & MODE_FLOAT) {
 		qDebug() << "SSWV::open: cannot load 32bit float files";
 		WavpackCloseFile(filewvc);
@@ -83,7 +82,7 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
 		if (timesamps > (WV_BUF_LENGTH/m_iChannels)) {	//if requested size requires more than one buffer filling
 			timesamps=(WV_BUF_LENGTH/m_iChannels);		//tempbuffer must hold (timesamps * channels) samples
 			qDebug() << "SSWV::read : performance warning, size requested > buffer size !";
-		} 
+		}
 
 		tsdone=WavpackUnpackSamples(filewvc, tempbuffer, timesamps);	//fill temp buffer with timesamps*4bytes*channels
 				//data is right justified, format_samples() fixes that.
