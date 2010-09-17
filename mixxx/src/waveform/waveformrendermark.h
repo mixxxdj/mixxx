@@ -55,6 +55,7 @@ private:
     QString m_markPixmapPath;
     MarkAlign m_markAlign;
     QPixmap m_markPixmap;
+    bool m_bHasCustomPixmap;
     double m_dSamplesPerDownsample;
 
     int m_iNumSamples;
