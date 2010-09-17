@@ -1,5 +1,5 @@
-#ifndef _SONGDOWNLOADER_H_
-#define _SONGDOWNLOADER_H_
+#ifndef SONGDOWNLOADER_H
+#define SONGDOWNLOADER_H
 
 #include <QtCore>
 #include <QtNetwork>
@@ -12,9 +12,9 @@ class SongDownloader : public QObject
     public:
         SongDownloader(QObject* parent);
         ~SongDownloader();
-        
+
         bool downloadSongFromURL(QUrl& url);
-       
+
     public slots:
         void slotReadyRead();
         void slotError(QNetworkReply::NetworkError error);
@@ -28,7 +28,7 @@ class SongDownloader : public QObject
 
     private:
         bool downloadFromQueue();
-        
+
         QNetworkAccessManager* m_pNetwork;
         QQueue<QUrl> m_downloadQueue;
         QFile* m_pDownloadedFile;
@@ -36,4 +36,4 @@ class SongDownloader : public QObject
         QNetworkRequest* m_pRequest;
 };
 
-#endif _SONGDOWNLOADER_H_
+#endif // SONGDOWNLOADER_H

@@ -152,7 +152,7 @@ MaudioXponent.wheel = function (channel, control, value, status) {
         if (MaudioXponent.state["scratching"+currentdeck] == 1) { //scratch mode on
 	    engine.scratchTick(currentdeck, value-64);
         } else {  //normal wheel mode
-            engine.setValue("[Channel"+currentdeck+"]", "jog", (value-64)*4);
+            engine.setValue("[Channel"+currentdeck+"]", "jog", (value-64)/8);
         }
     }
 };
@@ -223,19 +223,20 @@ MaudioXponent.convert = function(value) {
 };
 
 MaudioXponent.actbin = function(channel, control, value, status) {    // Generic binary button
+    script.debug(channel, control, value, status);
     var currentdeck = channel+1;
-    var activenow = engine.getValue("[Channel"+currentdeck+"]",MaudioXponent.binleds[control]);
-    if (activenow == 1) {    // If currently active
-        engine.setValue("[Channel"+currentdeck+"]",MaudioXponent.binleds[control],0);    // Stop
-        midi.sendShortMsg(MaudioXponent.off + channel,control,0x00);    // Turn off the LED
+    var activenow = engine.getValue("[Channel"+currentdeck+"]", MaudioXponent.binleds[control]);
+    if (activenow) {    // If currently active
+        engine.setValue("[Channel"+currentdeck+"]",MaudioXponent.binleds[control], 0);    // Stop
+        midi.sendShortMsg(MaudioXponent.off + channel,control, 0x00);    // Turn off the LED
     }else {    // If not currently active
-        engine.setValue("[Channel"+currentdeck+"]",MaudioXponent.binleds[control],1);    // Start
-        midi.sendShortMsg(MaudioXponent.on + channel,control,0x01);    // Turn on the LED
+        engine.setValue("[Channel"+currentdeck+"]",MaudioXponent.binleds[control], 1);    // Start
+        midi.sendShortMsg(MaudioXponent.on + channel,control, 0x01);    // Turn on the LED
     }
 };
 
 MaudioXponent.actbinstop = function(channel, control, value, status) {    // Generic binary button
-    print ("sono sulla stop");
+    script.debug(channel, control, value, status);
     var currentdeck = channel+1;
     engine.setValue("[Channel"+currentdeck+"]",MaudioXponent.binleds[control],0);    // Stop
     midi.sendShortMsg(MaudioXponent.off + channel,control,0x00);    // Turn off the LED
@@ -381,7 +382,7 @@ MaudioXponent.secondaryoff = function(channel, control, value, status) {
 };
 
 MaudioXponent.flanger = function(channel, control, value, status) {
-    script.debug(channel, control, value, status);
+    //script.debug(channel, control, value, status);
     if (control == 12) {
         var activenow = engine.getValue("[Channel1]","flanger");
         if (activenow == 1) {    // If currently active

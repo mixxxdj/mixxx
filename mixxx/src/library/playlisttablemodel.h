@@ -25,6 +25,7 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual void removeTrack(const QModelIndex& index);
+    virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     virtual QVariant data(const QModelIndex& item, int role) const;

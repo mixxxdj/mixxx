@@ -54,15 +54,17 @@ bool CrateFeature::dropAccept(QUrl url) {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     QString crateName = index.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
-    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(url.toString());
 
     //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
     //     QUrl::toLocalFile() vs. QUrl::toString() usage.
+    QFileInfo file(url.toLocalFile());
+    QString trackLocation = file.absoluteFilePath();
 
+    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(trackLocation);
     //If the track wasn't found in the database, add it to the DB first.
     if (trackId <= 0)
     {
-        trackId = m_pTrackCollection->getTrackDAO().addTrack(url.toString());
+        trackId = m_pTrackCollection->getTrackDAO().addTrack(trackLocation);
     }
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
@@ -132,21 +134,27 @@ void CrateFeature::slotCreateCrate() {
                                          tr("New Crate"),
                                          tr("Crate name:"),
                                          QLineEdit::Normal, tr("New Crate"));
-    if (name == "")
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+
+    if (name == "") {
+		QMessageBox::warning(NULL,
+                             tr("Crate Creation Failed"),
+                             tr("A crate cannot have a blank name."));
         return;
-    else {
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        if (crateDao.createCrate(name)) {
-            m_crateListTableModel.select();
-            // Switch to the new crate.
-            int crate_id = crateDao.getCrateIdByName(name);
-            m_crateTableModel.setCrate(crate_id);
-            emit(showTrackModel(&m_crateTableModel));
-            // TODO(XXX) set sidebar selection
-            emit(featureUpdated());
-        } else {
-            qDebug() << "Error creating crate (may already exist) with name " << name;
-        }
+    } else if (crateDao.createCrate(name)) {
+        m_crateListTableModel.select();
+        // Switch to the new crate.
+        int crate_id = crateDao.getCrateIdByName(name);
+        m_crateTableModel.setCrate(crate_id);
+        emit(showTrackModel(&m_crateTableModel));
+        // TODO(XXX) set sidebar selection
+        emit(featureUpdated());
+    } else {
+        qDebug() << "Error creating crate (may already exist) with name " << name;
+        QMessageBox::warning(NULL,
+                             tr("Creating Crate Failed"),
+                             tr("A crate by that name already exists."));
+
     }
 }
 
