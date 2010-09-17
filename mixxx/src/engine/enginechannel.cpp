@@ -36,7 +36,8 @@ EngineChannel::EngineChannel(const char * group)
     clipping = new EngineClipping(group);
 
     // PFL button
-    pfl = new ControlPushButton(ConfigKey(group, "pfl"), true);
+    pfl = new ControlPushButton(ConfigKey(group, "pfl"));
+    pfl->setToggleButton(true);
 }
 
 EngineChannel::~EngineChannel()
