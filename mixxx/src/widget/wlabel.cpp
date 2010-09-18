@@ -24,7 +24,7 @@
 
 WLabel::WLabel(QWidget * parent) : WWidget(parent)
 {
-    m_pLabel = new QLabel(parent);
+    m_pLabel = new QLabel(this);
     m_qsText = "";
 }
 
@@ -71,11 +71,6 @@ void WLabel::setup(QDomNode node)
         if (selectNodeQString(node, "Alignment")=="right")
             m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     }
-
-    QString style = selectNodeQString(node, "Style");
-    if (style != "") {
-        m_pLabel->setStyleSheet(style);
-    }
 }
 
 void WLabel::setFixedSize(int x,int y)
@@ -87,7 +82,6 @@ void WLabel::setFixedSize(int x,int y)
 void WLabel::move(int x, int y)
 {
     WWidget::move(x,y);
-    m_pLabel->move(x,y);
 }
 
 void WLabel::setAlignment(Qt::Alignment i)
