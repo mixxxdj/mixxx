@@ -50,7 +50,6 @@ RateControl::RateControl(const char* _group,
     // Reverse button
     m_pReverseButton = new ControlPushButton(ConfigKey(_group, "reverse"));
     m_pReverseButton->set(0);
-    m_pReverseButton->setToggleButton(true);
 
     // Forward button
     m_pForwardButton = new ControlPushButton(ConfigKey(_group, "fwd"));

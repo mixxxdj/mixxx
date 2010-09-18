@@ -645,6 +645,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 int y = pos.mid(pos.indexOf(",")+1).toInt();
                 p->move(x,y);
 
+                // Get tooltip
+                QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
+                p->setToolTip(tooltip);
+
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.indexOf(",")).toInt();

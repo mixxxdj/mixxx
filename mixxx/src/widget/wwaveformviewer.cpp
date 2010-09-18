@@ -37,7 +37,6 @@ void WWaveformViewer::setup(QDomNode node) {
     int sep = pos.indexOf(",");
     int x = pos.left(sep).toInt();
     int y = pos.mid(sep+1).toInt();
-
     move(x,y);
 
     // Acquire size
@@ -45,8 +44,15 @@ void WWaveformViewer::setup(QDomNode node) {
     sep = size.indexOf(",");
     x = size.left(sep).toInt();
     y = size.mid(sep+1).toInt();
-
     setFixedSize(x,y);
+
+    // Get tooltip
+    QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
+    setToolTip(tooltip);
+
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
 
     m_pWaveformRenderer->setup(node);
 
