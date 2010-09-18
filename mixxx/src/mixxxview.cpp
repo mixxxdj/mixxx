@@ -836,6 +836,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         */
                     }
 
+
+
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
@@ -863,6 +865,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pSplitter->addWidget(m_pLibrarySidebarPage);
                     //Add the library widget to the splitter.
                     m_pSplitter->addWidget(m_pLibraryWidget);
+
+                    QString style = WWidget::selectNodeQString(node, "Style");
+                    if (style != "") {
+                        m_pTabWidget->setStyleSheet(style);
+                    }
 
                     // TODO(rryan) can we make this more elegant?
                     QList<int> splitterSizes;
