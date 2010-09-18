@@ -81,7 +81,7 @@ Copyright (C) 2010 Mixxx
 	</Background>
 
 	<SliderComposed>
-		<Tooltip>Crossfader</Tooltip>
+		<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Right-click: Reset to default value&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
 		<Handle>crosshandle-on-.png</Handle>
 		<Slider>crossslider-off-.png</Slider>
 		<Pos>301,155</Pos>
@@ -92,7 +92,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Playback rate</Tooltip>
+		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>ratehandle-on-Ch1.png</Handle>
 		<Slider>rateslider-off-Ch1.png</Slider>
 		<Pos>2,64</Pos>
@@ -103,7 +103,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Playback rate</Tooltip>
+		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>ratehandle-on-Ch2.png</Handle>
 		<Slider>rateslider-off-Ch2.png</Slider>
 		<Pos>689,64</Pos>
@@ -114,7 +114,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<PushButton>
-		<Tooltip>Tempo syncronization</Tooltip>
+		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -134,7 +134,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Tempo syncronization</Tooltip>
+		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -154,7 +154,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -184,7 +184,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -214,7 +214,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -234,7 +234,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -254,7 +254,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -284,7 +284,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -314,7 +314,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -344,7 +344,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -374,7 +374,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<SliderComposed>
-		<Tooltip>Channel volume</Tooltip>
+		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>volhandle-on-Ch1.png</Handle>
 		<Slider>volslider-off-Ch1.png</Slider>
 		<Pos>2,220</Pos>
@@ -385,7 +385,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<SliderComposed>
-		<Tooltip>Channel volume</Tooltip>
+		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Handle>volhandle-on-Ch2.png</Handle>
 		<Slider>volslider-off-Ch2.png</Slider>
 		<Pos>689,220</Pos>
@@ -396,7 +396,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<VuMeter>
-		<Tooltip>Master VuMeter</Tooltip>
+		<Tooltip>Master channel volume&#10;Outputs the current instantaneous stereo master volume.&#10;</Tooltip>
 		<PathVu>vumeter-on-.png</PathVu>
 		<PathBack>vumeter-off-.png</PathBack>
 		<Pos>305,126</Pos>
@@ -410,7 +410,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</VuMeter>
 	<VuMeter>
-		<Tooltip>Channel VuMeter</Tooltip>
+		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
 		<PathVu>vumeter-on-Ch1.png</PathVu>
 		<PathBack>vumeter-off-Ch1.png</PathBack>
 		<Pos>79,227</Pos>
@@ -423,7 +423,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</VuMeter>
 	<VuMeter>
-		<Tooltip>Channel VuMeter</Tooltip>
+		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
 		<PathVu>vumeter-on-Ch2.png</PathVu>
 		<PathBack>vumeter-off-Ch2.png</PathBack>
 		<Pos>766,224</Pos>
@@ -436,7 +436,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</VuMeter>
 	<PushButton>
-		<Tooltip>End of track mode</Tooltip>
+		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
 		<NumberStates>3</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -459,7 +459,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>End of track mode</Tooltip>
+		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
 		<NumberStates>3</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -482,7 +482,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+		<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
@@ -509,7 +509,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+		<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
@@ -536,7 +536,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+		<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -566,7 +566,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+		<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -596,7 +596,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Reverse playback</Tooltip>
+		<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -616,7 +616,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Reverse playback</Tooltip>
+		<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -636,7 +636,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+		<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -666,7 +666,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -696,7 +696,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+		<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -726,7 +726,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -756,7 +756,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Flanger on/off</Tooltip>
+		<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -774,7 +774,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Flanger on/off</Tooltip>
+		<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -792,7 +792,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Headphone cue</Tooltip>
+		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -810,7 +810,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Headphone cue</Tooltip>
+		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -828,7 +828,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<Knob>
-		<Tooltip>Master volume</Tooltip>
+		<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>647,149</Pos>
@@ -837,7 +837,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Master balance</Tooltip>
+		<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>607,149</Pos>
@@ -846,7 +846,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Headphone volume</Tooltip>
+		<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>265,149</Pos>
@@ -855,7 +855,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Mix between headphone and main</Tooltip>
+		<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>227,149</Pos>
@@ -864,7 +864,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger depth</Tooltip>
+		<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>103,149</Pos>
@@ -873,7 +873,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger delay</Tooltip>
+		<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>144,149</Pos>
@@ -882,7 +882,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger LFO period</Tooltip>
+		<Tooltip>Flanger period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>184,149</Pos>
@@ -891,7 +891,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel pre gain</Tooltip>
+		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<Pos>43,228</Pos>
@@ -900,7 +900,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel highpass filter</Tooltip>
+		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -914,7 +914,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel bandpass filter</Tooltip>
+		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -928,7 +928,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel lowpass filter</Tooltip>
+		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -942,7 +942,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel pre gain</Tooltip>
+		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<Pos>730,227</Pos>
@@ -951,7 +951,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel highpass filter</Tooltip>
+		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -965,7 +965,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel bandpass filter</Tooltip>
+		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -979,7 +979,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Channel lowpass filter</Tooltip>
+		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -993,7 +993,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Visual>
-		<Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>101,14</Pos>
 		<Size>580,40</Size>
@@ -1253,7 +1253,7 @@ Copyright (C) 2010 Mixxx
 		</Mark>
 	</Visual>
 	<Visual>
-		<Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>101,56</Pos>
 		<Size>580,40</Size>
@@ -1513,6 +1513,7 @@ Copyright (C) 2010 Mixxx
 		</Mark>
 	</Visual>
 	<Text>
+		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>100,1</Pos>
 		<Size>288,12</Size>
@@ -1520,6 +1521,7 @@ Copyright (C) 2010 Mixxx
 		<BgColor>#ffffff</BgColor>
 	</Text>
 	<Text>
+		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>395,1</Pos>
 		<Size>288,12</Size>
@@ -1528,7 +1530,7 @@ Copyright (C) 2010 Mixxx
 		<Align>right</Align>
 	</Text>
 	<NumberBpm>
-		<Tooltip>Tempo display (Beat Per Minute)</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>101,98</Pos>
 		<Size>78,16</Size>
@@ -1540,7 +1542,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
-		<Tooltip>Tempo display (Beat Per Minute)</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>476,98</Pos>
 		<Size>78,16</Size>
@@ -1552,7 +1554,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</NumberBpm>
 	<NumberPos>
-		<Tooltip>Play position/remaining time</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>209,98</Pos>
 		<Size>94,16</Size>
@@ -1565,7 +1567,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Play position/remaining time</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>583,98</Pos>
 		<Size>94,16</Size>
@@ -1578,7 +1580,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</NumberPos>
 	<NumberRate>
-		<Tooltip>Playback rate factor</Tooltip>
+		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>35,122</Pos>
 		<Size>47,16</Size>
@@ -1590,7 +1592,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</NumberRate>
 	<NumberRate>
-		<Tooltip>Playback rate factor</Tooltip>
+		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>722,122</Pos>
 		<Size>47,16</Size>
@@ -1601,6 +1603,7 @@ Copyright (C) 2010 Mixxx
 			<ConfigKey>[Channel2],rate</ConfigKey>
 		</Connection>
 	</NumberRate>
+	<!-- Redundant keys
 	<XSliderComposed>
 		<Tooltip>Play position - Use mouse to seek</Tooltip>
 		<Handle>playpos-marker1.png</Handle>
@@ -1625,8 +1628,9 @@ Copyright (C) 2010 Mixxx
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</XSliderComposed>
+	-->
 	<Overview>
-		<Tooltip>Overview display of waveform</Tooltip>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 		<Channel>1</Channel>
 		<Pos>101,113</Pos>
 		<Size>201,13</Size>
@@ -1639,7 +1643,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Overview>
 	<Overview>
-		<Tooltip>Overview display of waveform</Tooltip>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 		<Channel>2</Channel>
 		<Pos>476,113</Pos>
 		<Size>201,13</Size>
