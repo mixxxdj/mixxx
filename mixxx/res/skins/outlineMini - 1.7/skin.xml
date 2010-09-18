@@ -123,7 +123,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<PushButton>
-		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -146,7 +146,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -314,7 +314,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
+		<Tooltip>Lower pitch temporary (nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -380,7 +380,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
+		<Tooltip>Lower pitch temporary (nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -441,7 +441,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</SliderComposed>
 	<VuMeter>
-		<Tooltip>Master channel volume&#10;Outputs the current instantaneous stereo master volume.&#10;</Tooltip>
+		<Tooltip>Master channel volume meter&#10;Outputs the current instantaneous stereo master volume.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -458,7 +458,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</VuMeter>
 	<VuMeter>
-		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
+		<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -474,7 +474,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</VuMeter>
 	<VuMeter>
-		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
+		<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -1002,7 +1002,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</Knob>
 	<Knob>
-		<Tooltip>Flanger period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Tooltip>Flanger LFO period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
