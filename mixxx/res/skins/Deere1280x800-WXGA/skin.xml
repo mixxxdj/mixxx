@@ -826,21 +826,21 @@
 	-->
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Channel>1</Channel>
-		<Pos>2,20</Pos>
-		<Size>400,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #0099FF; text-align: left; padding-left: 1%;
 		</Style>
+		<Channel>1</Channel>
+		<Pos>2,20</Pos>
+		<Size>400,28</Size>
 	</Text>
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Channel>2</Channel>
-		<Pos>859,20</Pos>
-		<Size>400,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #E17800; text-align: left;padding-left: 1%;
 		</Style>
+		<Channel>2</Channel>
+		<Pos>859,20</Pos>
+		<Size>400,28</Size>
 	</Text>
 
 	<!--
@@ -850,12 +850,12 @@
 	-->
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
-		<Channel>1</Channel>
-		<Pos>213,52</Pos>
-		<Size>115,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #0099FF; text-align: left;padding-left: 1%;
 		</Style>
+		<Channel>1</Channel>
+		<Pos>213,52</Pos>
+		<Size>115,28</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],bpm</ConfigKey>
@@ -863,12 +863,12 @@
 	</NumberBpm>
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
-		<Channel>2</Channel>
-		<Pos>1070,52</Pos>
-		<Size>115,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #E17800; text-align: left;padding-left: 1%;
 		</Style>
+		<Channel>2</Channel>
+		<Pos>1070,52</Pos>
+		<Size>115,28</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],bpm</ConfigKey>
@@ -882,12 +882,12 @@
 	-->
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
-		<Channel>1</Channel>
-		<Pos>2,52</Pos>
-		<Size>205,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #0099FF; text-align: left;padding-left: 1%;
 		</Style>
+		<Channel>1</Channel>
+		<Pos>2,52</Pos>
+		<Size>205,28</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
@@ -895,12 +895,12 @@
 	</NumberPos>
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
-		<Channel>2</Channel>
-		<Pos>859,52</Pos>
-		<Size>205,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #E17800; text-align: left;padding-left: 1%;
 		</Style>
+		<Channel>2</Channel>
+		<Pos>859,52</Pos>
+		<Size>205,28</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
@@ -914,12 +914,12 @@
 	-->
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
-		<Channel>1</Channel>
-		<Pos>337,52</Pos>
-		<Size>70,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #0099FF; text-align: right; padding-right: 1%;
 		</Style>
+		<Channel>1</Channel>
+		<Pos>337,52</Pos>
+		<Size>70,28</Size>
 		<Alignment>right</Alignment>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
@@ -928,12 +928,12 @@
 	</NumberRate>
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
-		<Channel>2</Channel>
-		<Pos>1192,52</Pos>
-		<Size>70,28</Size>
 		<Style>font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: transparent; color: #E17800; text-align: right; padding-right: 1%;
 		</Style>
+		<Channel>2</Channel>
+		<Pos>1192,52</Pos>
+		<Size>70,28</Size>
 		<Alignment>right</Alignment>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
