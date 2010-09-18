@@ -803,7 +803,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidget = new QStackedWidget(this);
 
                     // Create the pages that go in the tab widget
-                    m_pTabWidgetLibraryPage = new QWidget(this);
+                    m_pTabWidgetLibraryPage = new QWidget(m_pTabWidget);
 #ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
@@ -820,35 +820,23 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
 
-                    //Set up the search box widget
-                    if (m_pLineEditSearch == 0) {
-                        QString path = pConfig->getConfigPath();
-                        m_pLineEditSearch = new WSearchLineEdit(path, node, this);
-                        //m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
-                        //m_pLineEditSearch->show();
-
-                        // Size
-                        /*
-                        QString size = WWidget::selectNodeQString(node, "Size");
-                        int x = size.left(size.indexOf(",")).toInt();
-                        int y = size.mid(size.indexOf(",")+1).toInt();
-                        m_pLineEditSearch->setFixedSize(x,y);
-                        */
-                    }
-
-
-
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
                     m_pLibraryWidget = new WLibrary(m_pSplitter);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
+                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
 
-                    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
+                    m_pLibrarySidebar = new WLibrarySidebar(m_pLibrarySidebarPage);
                     m_pLibrarySidebar->installEventFilter(m_pKeyboard);
 
-                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
+                    //Set up the search box widget
+                    if (m_pLineEditSearch == 0) {
+                        QString path = pConfig->getConfigPath();
+                        m_pLineEditSearch = new WSearchLineEdit(path, node, m_pLibrarySidebarPage);
+                    }
+
                     QVBoxLayout* vl = new QVBoxLayout();
                     vl->setContentsMargins(0,0,0,0); //Fill entire space
                     m_pLibrarySidebarPage->setLayout(vl);
@@ -865,11 +853,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pSplitter->addWidget(m_pLibrarySidebarPage);
                     //Add the library widget to the splitter.
                     m_pSplitter->addWidget(m_pLibraryWidget);
-
-                    QString style = WWidget::selectNodeQString(node, "Style");
-                    if (style != "") {
-                        m_pTabWidget->setStyleSheet(style);
-                    }
 
                     // TODO(rryan) can we make this more elegant?
                     QList<int> splitterSizes;
@@ -897,10 +880,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
                 }
 
+                // Style the track source widget
+                setupTrackSourceViewWidget(node);
+
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
-
-                setupTrackSourceViewWidget(node);
 
                 // Applies the node settings to every view registered in the
                 // Library widget.
@@ -1014,6 +998,12 @@ void MixxxView::setupTabWidget(QDomNode node)
         int y = size.mid(size.indexOf(",")+1).toInt();
         m_pTabWidget->setFixedSize(x,y);
     }
+
+    // Style
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "") {
+        m_pTabWidget->setStyleSheet(style);
+    }
 }
 
 
@@ -1052,7 +1042,6 @@ void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 	        m_pLibrarySidebar->setPalette(Rowpalette);
 	    }
     }
-
 }
 
 void MixxxView::slotSetupTrackConnectionsCh1(TrackPointer pTrack)
