@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.8.0">
     <info>
-        <name>Hercules DJ Console RMX</name>
+        <name>Hercules DJ Console RMX Advanced</name>
         <author>Anders Gunnarsson</author>
-        <description>Hercules DJ Console RMX controller mapping, v1.8.1. Requires script v1.8.1</description>
+        <description>Hercules DJ Console RMX controller mapping with hotcues and loops, v1.8.0. Requires script v1.8.1</description>
     </info>
     <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>
@@ -107,7 +107,7 @@
 <!-- Stop and Reset button -->
             <control>
                 <group>[Channel1]</group>
-                <key>HerculesRMX.stop</key>
+                <key>HerculesRMX.shift</key>
                 <status>0xB0</status>
                 <midino>0x0D</midino>
                 <options>
@@ -117,35 +117,13 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>HerculesRMX.stop</key>
+                <key>HerculesRMX.shift</key>
                 <status>0xB0</status>
                 <midino>0x25</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-
-<!-- Flanger -->
-            <control>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <status>0xB0</status>
-                <midino>0x01</midino>
-                <options>
-                    <Button/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <status>0xB0</status>
-                <midino>0x19</midino>
-                <options>
-                    <Button/>
-                </options>
-            </control>
-
             <control>
                 <group>[Master]</group>
                 <key>HerculesRMX.crossFader</key>
@@ -472,22 +450,113 @@
                    <Script-Binding/>
                 </options>
             </control>
+            
             <control>
                 <group>[Channel1]</group>
-                <key>reverse</key>
+                <key>HerculesRMX.keypad1</key>
                 <status>0xB0</status>
-                <midino>0x04</midino>
+                <midino>0x01</midino>
                 <options>
-                    <Switch/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverse</key>
+                <key>HerculesRMX.keypad1</key>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.keypad2</key>
+                <status>0xB0</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.keypad2</key>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>HerculesRMX.keypad3</key>
+                <group>[Channel1]</group>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>HerculesRMX.keypad3</key>
+                <group>[Channel2]</group>
+                <status>0xB0</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.keypad4</key>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.keypad4</key>
                 <status>0xB0</status>
                 <midino>0x1C</midino>
                 <options>
-                    <Switch/>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.keypad5</key>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.keypad5</key>
+                <status>0xB0</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>HerculesRMX.keypad6</key>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>HerculesRMX.keypad6</key>
+                <status>0xB0</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
     </controls>
