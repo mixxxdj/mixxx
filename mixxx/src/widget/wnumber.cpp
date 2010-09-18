@@ -24,7 +24,7 @@
 
 WNumber::WNumber(QWidget * parent) : WWidget(parent)
 {
-    m_pLabel = new QLabel(parent);
+    m_pLabel = new QLabel(this);
     m_qsText = "";
     m_dConstFactor = 0.;
 }
@@ -93,11 +93,6 @@ void WNumber::setup(QDomNode node)
         setValue(0.);
     }
 
-    QString style = selectNodeQString(node, "Style");
-    if (style != "") {
-        m_pLabel->setStyleSheet(style);
-    }
-
     QString pos = selectNodeQString(node, "Pos");
     int px = pos.left(pos.indexOf(",")).toInt();
     int py = pos.mid(pos.indexOf(",")+1).toInt();
@@ -114,7 +109,6 @@ void WNumber::setFixedSize(int x,int y)
 void WNumber::move(int x, int y)
 {
     WWidget::move(x,y);
-    m_pLabel->move(x,y);
 }
 
 void WNumber::setNumDigits(int n)
