@@ -82,6 +82,9 @@ Copyright (C) 2010 Mixxx
 
 	<SliderComposed>
 		<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Right-click: Reset to default value&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>crosshandle-on-.png</Handle>
 		<Slider>crossslider-off-.png</Slider>
 		<Pos>413,185</Pos>
@@ -93,6 +96,9 @@ Copyright (C) 2010 Mixxx
 	</SliderComposed>
 	<SliderComposed>
 		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>ratehandle-on-Ch1.png</Handle>
 		<Slider>rateslider-off-Ch1.png</Slider>
 		<Pos>4,102</Pos>
@@ -104,6 +110,9 @@ Copyright (C) 2010 Mixxx
 	</SliderComposed>
 	<SliderComposed>
 		<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>ratehandle-on-Ch2.png</Handle>
 		<Slider>rateslider-off-Ch2.png</Slider>
 		<Pos>907,102</Pos>
@@ -115,6 +124,9 @@ Copyright (C) 2010 Mixxx
 	</SliderComposed>
 	<PushButton>
 		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -135,6 +147,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Syncronize&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -155,6 +170,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -175,6 +193,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -195,6 +216,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -215,6 +239,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -235,6 +262,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
@@ -267,6 +297,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Loop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
@@ -299,6 +332,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -329,6 +365,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -359,6 +398,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -379,6 +421,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -399,6 +444,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -429,6 +477,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -459,6 +510,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -489,6 +543,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Lower pitch temporary(nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -519,6 +576,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<SliderComposed>
 		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>volhandle-on-Ch1.png</Handle>
 		<Slider>volslider-off-Ch1.png</Slider>
 		<Pos>4,355</Pos>
@@ -530,6 +590,9 @@ Copyright (C) 2010 Mixxx
 	</SliderComposed>
 	<SliderComposed>
 		<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>volhandle-on-Ch2.png</Handle>
 		<Slider>volslider-off-Ch2.png</Slider>
 		<Pos>907,352</Pos>
@@ -541,6 +604,9 @@ Copyright (C) 2010 Mixxx
 	</SliderComposed>
 	<VuMeter>
 		<Tooltip>Master channel volume&#10;Outputs the current instantaneous master volume for the left channel.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathVu>vumeter-on-.png</PathVu>
 		<PathBack>vumeter-off-.png</PathBack>
 		<Pos>728,182</Pos>
@@ -555,6 +621,9 @@ Copyright (C) 2010 Mixxx
 	</VuMeter>
 	<VuMeter>
 		<Tooltip>Master channel volume&#10;Outputs the current instantaneous master volume for the right channel.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathVu>vumeter-on-.png</PathVu>
 		<PathBack>vumeter-off-.png</PathBack>
 		<Pos>728,200</Pos>
@@ -569,6 +638,9 @@ Copyright (C) 2010 Mixxx
 	</VuMeter>
 	<VuMeter>
 		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathVu>vumeter-on-Ch1.png</PathVu>
 		<PathBack>vumeter-off-Ch1.png</PathBack>
 		<Pos>78,363</Pos>
@@ -582,6 +654,9 @@ Copyright (C) 2010 Mixxx
 	</VuMeter>
 	<VuMeter>
 		<Tooltip>Channel volume&#10;Shows the current channel volume&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathVu>vumeter-on-Ch2.png</PathVu>
 		<PathBack>vumeter-off-Ch2.png</PathBack>
 		<Pos>981,363</Pos>
@@ -595,6 +670,9 @@ Copyright (C) 2010 Mixxx
 	</VuMeter>
 	<StatusLight>
 		<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathStatusLight>peak-indicator-on.png</PathStatusLight>
 		<PathBack>peak-indicator-off.png</PathBack>
 		<Pos>78,353</Pos>
@@ -604,6 +682,9 @@ Copyright (C) 2010 Mixxx
 	</StatusLight>
 	<StatusLight>
 		<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathStatusLight>peak-indicator-on.png</PathStatusLight>
 		<PathBack>peak-indicator-off.png</PathBack>
 		<Pos>981,353</Pos>
@@ -613,6 +694,9 @@ Copyright (C) 2010 Mixxx
 	</StatusLight>
 	<StatusLight>
 		<Tooltip>Master Peak Indicator&#10;Indicates when the signal on the Master output is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<PathStatusLight>peak-indicator-master-on.png</PathStatusLight>
 		<PathBack>peak-indicator-master-off.png</PathBack>
 		<Pos>717,182</Pos>
@@ -622,6 +706,9 @@ Copyright (C) 2010 Mixxx
 	</StatusLight>
 	<PushButton>
 		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>3</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -645,6 +732,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>3</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -668,6 +758,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
@@ -695,6 +788,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
@@ -722,6 +818,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -752,6 +851,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -782,6 +884,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -802,6 +907,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -822,6 +930,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -852,6 +963,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -882,6 +996,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -912,6 +1029,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -942,6 +1062,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -960,6 +1083,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -978,6 +1104,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -996,6 +1125,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
@@ -1014,6 +1146,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<Knob>
 		<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>684,181</Pos>
@@ -1023,6 +1158,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>646,181</Pos>
@@ -1032,6 +1170,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>290,181</Pos>
@@ -1041,6 +1182,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>252,181</Pos>
@@ -1050,6 +1194,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>102,181</Pos>
@@ -1059,6 +1206,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>140,181</Pos>
@@ -1068,6 +1218,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Flanger period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
 		<Pos>177,181</Pos>
@@ -1077,6 +1230,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<Pos>43,375</Pos>
@@ -1086,6 +1242,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -1100,6 +1259,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -1114,6 +1276,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -1128,6 +1293,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<Pos>946,375</Pos>
@@ -1137,6 +1305,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -1151,6 +1322,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -1165,6 +1339,9 @@ Copyright (C) 2010 Mixxx
 	</Knob>
 	<Knob>
 		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
@@ -1183,6 +1360,9 @@ Copyright (C) 2010 Mixxx
   -->
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1228,6 +1408,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1273,6 +1456,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1318,6 +1504,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1363,6 +1552,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1408,6 +1600,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1453,6 +1648,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1498,6 +1696,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<PushButton>
 		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<NumberStates>2</NumberStates>
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1543,6 +1744,9 @@ Copyright (C) 2010 Mixxx
 	</PushButton>
 	<Visual>
 		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>1</Channel>
 		<Pos>102,17</Pos>
 		<Size>798,60</Size>
@@ -1802,6 +2006,9 @@ Copyright (C) 2010 Mixxx
 	</Visual>
 	<Visual>
 		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>2</Channel>
 		<Pos>102,80</Pos>
 		<Size>798,60</Size>
@@ -2061,6 +2268,9 @@ Copyright (C) 2010 Mixxx
 	</Visual>
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>1</Channel>
 		<Pos>102,0</Pos>
 		<Size>395,19</Size>
@@ -2069,6 +2279,9 @@ Copyright (C) 2010 Mixxx
 	</Text>
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>2</Channel>
 		<Pos>505,0</Pos>
 		<Size>395,19</Size>
@@ -2078,6 +2291,9 @@ Copyright (C) 2010 Mixxx
 	</Text>
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>1</Channel>
 		<Pos>102,140</Pos>
 		<Size>78,16</Size>
@@ -2090,6 +2306,9 @@ Copyright (C) 2010 Mixxx
 	</NumberBpm>
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>2</Channel>
 		<Pos>649,140</Pos>
 		<Size>78,16</Size>
@@ -2102,6 +2321,9 @@ Copyright (C) 2010 Mixxx
 	</NumberBpm>
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>1</Channel>
 		<Pos>258,140</Pos>
 		<Size>94,16</Size>
@@ -2115,6 +2337,9 @@ Copyright (C) 2010 Mixxx
 	</NumberPos>
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>2</Channel>
 		<Pos>805,140</Pos>
 		<Size>94,16</Size>
@@ -2128,6 +2353,9 @@ Copyright (C) 2010 Mixxx
 	</NumberPos>
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>1</Channel>
 		<Pos>40,182</Pos>
 		<Size>47,16</Size>
@@ -2140,6 +2368,9 @@ Copyright (C) 2010 Mixxx
 	</NumberRate>
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>2</Channel>
 		<Pos>943,182</Pos>
 		<Size>47,16</Size>
@@ -2153,6 +2384,9 @@ Copyright (C) 2010 Mixxx
 	<!-- Redundant keys
 	<XSliderComposed>
 		<Tooltip>Play position - Use mouse to seek</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>playpos-marker1.png</Handle>
 		<Slider>playpos-slider.png</Slider>
 		<Pos>112,177</Pos>
@@ -2165,6 +2399,9 @@ Copyright (C) 2010 Mixxx
 	</XSliderComposed>
 	<XSliderComposed>
 		<Tooltip>Play position - Use mouse to seek</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Handle>playpos-marker2.png</Handle>
 		<Slider>playpos-slider.png</Slider>
 		<Pos>487,177</Pos>
@@ -2178,6 +2415,9 @@ Copyright (C) 2010 Mixxx
 	-->
 	<Overview>
 		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>1</Channel>
 		<Pos>102,155</Pos>
 		<Size>251,20</Size>
@@ -2191,6 +2431,9 @@ Copyright (C) 2010 Mixxx
 	</Overview>
 	<Overview>
 		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
 		<Channel>2</Channel>
 		<Pos>649,155</Pos>
 		<Size>251,20</Size>
