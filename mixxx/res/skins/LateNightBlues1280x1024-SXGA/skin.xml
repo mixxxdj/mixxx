@@ -829,8 +829,8 @@
 	-->
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFC318; text-align: left; padding-left: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FFC318; text-align: left; padding-left: 1%; }
 		</Style>
 		<Channel>1</Channel>
 		<Pos>2,195</Pos>
@@ -838,8 +838,8 @@
 	</Text>
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%; }
 		</Style>
 		<Channel>2</Channel>
 		<Pos>803,195</Pos>
@@ -853,8 +853,8 @@
 	-->
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFC318; text-align: left;padding-left: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FFC318; text-align: left;padding-left: 1%; }
 		</Style>
 		<Channel>1</Channel>
 		<Pos>217,220</Pos>
@@ -866,8 +866,8 @@
 	</NumberBpm>
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%; }
 		</Style>
 		<Channel>2</Channel>
 		<Pos>1018,220</Pos>
@@ -885,8 +885,8 @@
 	-->
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFC318; text-align: left;padding-left: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FFC318; text-align: left;padding-left: 1%; }
 		</Style>
 		<Channel>1</Channel>
 		<Pos>2,220</Pos>
@@ -898,8 +898,8 @@
 	</NumberPos>
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FF9900; text-align: left;padding-left: 1%; }
 		</Style>
 		<Channel>2</Channel>
 		<Pos>803,220</Pos>
@@ -917,8 +917,8 @@
 	-->
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FFC318; text-align: right; padding-right: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FFC318; text-align: right; padding-right: 1%; }
 		</Style>
 		<Channel>1</Channel>
 		<Pos>357,220</Pos>
@@ -930,8 +930,8 @@
 	</NumberRate>
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
-		<Style>font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: transparent; color: #FF9900; text-align: right; padding-right: 1%;
+		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FF9900; text-align: right; padding-right: 1%; }
 		</Style>
 		<Channel>2</Channel>
 		<Pos>1158,220</Pos>
