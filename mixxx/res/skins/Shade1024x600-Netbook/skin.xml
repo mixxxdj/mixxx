@@ -910,7 +910,6 @@
 		<Channel>1</Channel>
 		<Pos>268,40</Pos>
 		<Size>55,24</Size>
-		<Alignment>right</Alignment>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],rate</ConfigKey>
@@ -924,7 +923,6 @@
 		<Channel>2</Channel>
 		<Pos>941,40</Pos>
 		<Size>55,24</Size>
-		<Alignment>right</Alignment>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],rate</ConfigKey>
