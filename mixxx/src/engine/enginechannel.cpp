@@ -30,7 +30,8 @@
 EngineChannel::EngineChannel(const char* group,
                              ConfigObject<ConfigValue>* pConfig,
                              EngineChannel::ChannelOrientation defaultOrientation)
-        : m_pConfig(pConfig) {
+        : m_group(group),
+          m_pConfig(pConfig) {
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
     m_pFlanger = new EngineFlanger(group);
@@ -59,6 +60,10 @@ EngineChannel::~EngineChannel() {
     delete m_pVolume;
     delete m_pVUMeter;
     delete m_pPFL;
+}
+
+const QString& EngineChannel::getGroup() {
+    return m_group;
 }
 
 bool EngineChannel::isPFL() {
