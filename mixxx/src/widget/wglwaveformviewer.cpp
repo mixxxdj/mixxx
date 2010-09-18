@@ -57,6 +57,10 @@ void WGLWaveformViewer::setup(QDomNode node) {
     QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
     setToolTip(tooltip);
 
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
+
     m_pWaveformRenderer->setup(node);
 
     m_pWaveformRenderer->resize(x,y);
