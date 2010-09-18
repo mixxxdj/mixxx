@@ -10,6 +10,11 @@ SConscript(File('src/SConscript.env'), duplicate=0)
 Import('env', 'sources', 'flags') 
 Import('build_dir', 'platformString')
 
+# Make the main src directory accessible to the SoundSourceM4A, so
+# SoundSourceM4A can get at sounddevice.cpp, which it needs to build
+# and link properly. This sucks but it's the best way I can find -- bkgood
+VariantDir("plugins/soundsourcem4a", "src", duplicate=0)
+VariantDir("plugins/soundsourcewv", "src", duplicate=0)
 #Build our soundsource plugins
 soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build_dir + "/plugins"), duplicate=0, exports=['env', 'flags', 'platformString'])
 

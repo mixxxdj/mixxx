@@ -65,10 +65,12 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // Increment or decrement current read-ahead position
     if (in_reverse) {
-        m_iCurrentPosition -= samples_read;
+        m_iCurrentPosition -= math_max(0, samples_read);
     } else {
         m_iCurrentPosition += samples_read;
     }
+
+    m_iCurrentPosition = math_max(0, m_iCurrentPosition);
 
     // Activate on this trigger if necessary
     if (next_loop.second != kNoTrigger) {

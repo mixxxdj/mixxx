@@ -31,17 +31,17 @@
 
 #include "mixxxutils.cpp"
 
-TrackInfoObject::TrackInfoObject(const QString sLocation)
+TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
         : m_qMutex(QMutex::Recursive) {
     QFileInfo fileInfo(sLocation);
     populateLocation(fileInfo);
-    initialize();
+    initialize(parseHeader);
 }
 
-TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo)
+TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
         : m_qMutex(QMutex::Recursive) {
     populateLocation(fileInfo);
-    initialize();
+    initialize(parseHeader);
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -99,7 +99,7 @@ void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
     m_bExists = fileInfo.exists();
 }
 
-void TrackInfoObject::initialize() {
+void TrackInfoObject::initialize(bool parseHeader) {
     m_bDirty = false;
     m_bLocationChanged = false;
 
@@ -107,13 +107,14 @@ void TrackInfoObject::initialize() {
     m_sTitle = "";
     m_sType= "";
     m_sComment = "";
+    m_sYear = "";
     m_sURL = "";
     m_iDuration = 0;
-    m_iLength = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
     m_bBpmConfirm = false;
+    m_bIsValid = false;
     m_bHeaderParsed = false;
     m_fBeatFirst = -1.;
     m_iId = -1;
@@ -124,7 +125,8 @@ void TrackInfoObject::initialize() {
     m_dVisualResampleRate = 0;
 
     // parse() parses the metadata from file. This is not a quick operation!
-    m_bIsValid = parse() == OK;
+    if (parseHeader)
+        parse();
 }
 
 TrackInfoObject::~TrackInfoObject() {
@@ -177,7 +179,9 @@ int TrackInfoObject::parse()
     parseFilename();
 
     // Parse the using information stored in the sound file
-    return SoundSourceProxy::ParseHeader(this);
+    bool result = SoundSourceProxy::ParseHeader(this);
+    m_bIsValid = result == OK;
+    return result;
 }
 
 
@@ -274,7 +278,7 @@ void TrackInfoObject::setBpm(float f)
     lock.unlock();
 
     //Tell the GUI to update the bpm label...
-    qDebug() << "TrackInfoObject: emitting bpmUpdated signal!";
+    //qDebug() << "TrackInfoObject signaling BPM update to" << f;
     emit(bpmUpdated(f));
 }
 
@@ -304,7 +308,10 @@ bool TrackInfoObject::getHeaderParsed()  const
 void TrackInfoObject::setHeaderParsed(bool parsed)
 {
     QMutexLocker lock(&m_qMutex);
+    bool dirty = m_bHeaderParsed != parsed;
     m_bHeaderParsed = parsed;
+    if (dirty)
+        setDirty(true);
 }
 
 QString TrackInfoObject::getInfo()  const
@@ -628,7 +635,7 @@ void TrackInfoObject::slotCueUpdated() {
 }
 
 Cue* TrackInfoObject::addCue() {
-    qDebug() << "TrackInfoObject::addCue()";
+    //qDebug() << "TrackInfoObject::addCue()";
     QMutexLocker lock(&m_qMutex);
     Cue* cue = new Cue(m_iId);
     connect(cue, SIGNAL(updated()),
@@ -655,7 +662,7 @@ const QList<Cue*>& TrackInfoObject::getCuePoints() {
 }
 
 void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
-    qDebug() << "setCuePoints" << cuePoints.length();
+    //qDebug() << "setCuePoints" << cuePoints.length();
     QMutexLocker lock(&m_qMutex);
     QListIterator<Cue*> it(m_cuePoints);
     while (it.hasNext()) {
@@ -691,7 +698,7 @@ void TrackInfoObject::setDirty(bool bDirty) {
     m_bDirty = bDirty;
     lock.unlock();
     if (change) {
-        qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
+        //qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
         if (m_bDirty)
             emit(dirty());
         else

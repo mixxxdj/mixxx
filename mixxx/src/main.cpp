@@ -256,6 +256,8 @@ int main(int argc, char * argv[])
 
     qDebug() << "Mixxx shutdown complete with code" << result;
 
+    qInstallMsgHandler(0); //Reset to default.
+
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
     if(Logfile.isOpen())

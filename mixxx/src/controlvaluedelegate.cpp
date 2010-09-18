@@ -53,6 +53,17 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("volume");
         m_channelControlValues.append("wheel");
         m_channelControlValues.append("jog");
+        m_channelControlValues.append("loop_in");
+        m_channelControlValues.append("loop_out");
+        m_channelControlValues.append("reloop_exit");
+        m_channelControlValues.append("hotcue_1_activate");
+        m_channelControlValues.append("hotcue_2_activate");
+        m_channelControlValues.append("hotcue_3_activate");
+        m_channelControlValues.append("hotcue_4_activate");
+        m_channelControlValues.append("hotcue_1_clear");
+        m_channelControlValues.append("hotcue_2_clear");
+        m_channelControlValues.append("hotcue_3_clear");
+        m_channelControlValues.append("hotcue_4_clear");
     }
     if (m_masterControlValues.isEmpty())
     {

@@ -22,7 +22,7 @@ void PlaylistDAO::initialize()
 /** Create a playlist with the given name.
     @param name The name of the playlist to be created.
 */
-void PlaylistDAO::createPlaylist(QString name, bool hidden)
+bool PlaylistDAO::createPlaylist(QString name, bool hidden)
 {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
@@ -38,7 +38,7 @@ void PlaylistDAO::createPlaylist(QString name, bool hidden)
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();
-        return;
+        return false;
     }
     //query.finish();
 
@@ -61,11 +61,13 @@ void PlaylistDAO::createPlaylist(QString name, bool hidden)
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();
+        return false;
     }
     //query.finish();
 
     //Commit the transaction
     m_database.commit();
+    return true;
 }
 
 /** Find out the name of the playlist at the given position */
@@ -211,26 +213,40 @@ int PlaylistDAO::getPlaylistId(int position)
     // qDebug() << "PlaylistDAO::getPlaylistId"
     //          << QThread::currentThread() << m_database.connectionName();
 
-    //Find out the highest position existing in the playlist so we know what
-    //position this track should have.
     QSqlQuery query(m_database);
-    query.prepare("SELECT id FROM Playlists "
-                  "WHERE position=:position");
-    query.bindValue(":position", position);
+    query.prepare("SELECT id FROM Playlists");
 
-    if (!query.exec()) {
-        qDebug() << "getPlaylistId" << query.lastError();
-        return -1;
+    if (query.exec()) {
+        int currentRow = 0;
+        while(query.next()) {
+            if (currentRow++ == position) {
+                int id = query.value(0).toInt();
+                return id;
+            }
+        }
+    } else {
+        qDebug() << query.lastError();
     }
 
-    //Get the id field
-    int playlistId = -1;
-    if (query.next()) {
-        playlistId = query.value(query.record().indexOf("id")).toInt();
-    }
-    //query.finish();
+    return -1;
+}
 
-    return playlistId;
+bool PlaylistDAO::isHidden(int playlistId) {
+    // qDebug() << "PlaylistDAO::isHidden"
+    //          << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare("SELECT hidden FROM Playlists WHERE id = :id");
+    query.bindValue(":id", playlistId);
+
+    if (query.exec()) {
+        if (query.next()) {
+            return query.value(0).toBool();
+        }
+    } else {
+        qDebug() << query.lastError();
+    }
+    return false;
 }
 
 void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)

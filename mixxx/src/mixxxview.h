@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <Q3ValueList>
 #include <QList>
+#include <QTimer>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -54,6 +55,7 @@ class WSearchLineEdit;
 class LADSPAView;
 class WaveformRenderer;
 class Player;
+class PlayerManager;
 class QStandardItemModel;
 class Library;
 class WLibrary;
@@ -74,7 +76,7 @@ class MixxxView : public QWidget
 public:
     MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig,
               QString qSkinPath, ConfigObject<ConfigValue> *pConfig,
-              Player* player1, Player* player2,
+              PlayerManager* pPlayerManager,
               Library* pLibrary);
     ~MixxxView();
 
@@ -85,12 +87,12 @@ public:
     /** Return a pointer to the track table view widget. */
     WTrackTableView* getTrackTableView();
 
-    QLabel *m_pTextCh1, *m_pTextCh2;
+
+
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
     WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
-    /** Pointer to absolute file position widgets */
-    WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
+
     /** Pointer to BPM display widgets */
     WNumberBpm *m_pNumberBpmCh1, *m_pNumberBpmCh2;
     /** Pointer to rate slider widgets */
@@ -113,12 +115,25 @@ public:
     void slotClearTrackTextCh1(TrackPointer pTrack);
     void slotUpdateTrackTextCh2(TrackPointer pTrack);
     void slotClearTrackTextCh2(TrackPointer pTrack);
+    void slotSetDurationRemaining(bool bDurationRemaining);
 
 private:
     void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
     void createAllWidgets(QDomElement docElem, QWidget* parent, ConfigObject<ConfigValue> *pConfig);
     void setupTabWidget(QDomNode node);
     void setupTrackSourceViewWidget(QDomNode node);
+
+    // Pointer to absolute file position widgets
+    WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
+    // Indicates whether the duration widgets are in 'time-remaining' mode or
+    // not.
+    bool m_bDurationRemain;
+
+    // The text display widgets
+    QLabel *m_pTextCh1, *m_pTextCh2;
+    // The current text each of those widgets contains, so it can be reset
+    // across reboots of the GUI.
+    QString m_textCh1, m_textCh2;
 
     ImgSource* parseFilters(QDomNode filt);
     static QDomElement openSkin(QString qSkinPath);
@@ -130,7 +145,7 @@ private:
     QList<QObject *> m_qWidgetList;
     /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
-    ConfigObject<ConfigValue> *m_pconfig;
+    ConfigObject<ConfigValue> *m_pConfig;
 
     /** Tab widget, which contains several "pages" for different views */
     QTabWidget* m_pTabWidget; //XXX: Temporarily turned this into a QStackedWidget instead of a QTabWidget to disable the tabs for 1.7.0 since LADSPA effects isn't finished.
@@ -146,8 +161,8 @@ private:
     /** The layout for the effects units page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsUnitsPageLayout;
 
-	// The splitter widget that contains the library panes
-	QSplitter *m_pSplitter;
+    // The splitter widget that contains the library panes
+    QSplitter *m_pSplitter;
     // The library widget
     WLibrary* m_pLibraryWidget;
     // The library manager
@@ -157,8 +172,9 @@ private:
     // Contains the actual library sidebar widget and the search box in a vertical box layout.
     QWidget* m_pLibrarySidebarPage;
 
-	Player* m_pPlayer1;
-	Player* m_pPlayer2;
+    PlayerManager* m_pPlayerManager;
+
+    QTimer m_guiTimer;
 
 #ifdef __LADSPA__
     LADSPAView* m_pLADSPAView;

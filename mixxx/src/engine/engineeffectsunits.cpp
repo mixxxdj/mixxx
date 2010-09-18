@@ -11,7 +11,7 @@ EngineEffectsUnits::EngineEffectsUnits() {
 	m_OnChannel1 = new QList<EffectsUnitsInstance * >();
 	m_OnChannel2 = new QList<EffectsUnitsInstance * >();
 
-	qDebug() << "FXUNITS: EngineEffectsUnits: new instance" << (int) m_pEngine;
+	qDebug() << "FXUNITS: EngineEffectsUnits: new instance" << m_pEngine;
 }
 
 EngineEffectsUnits::~EngineEffectsUnits() {

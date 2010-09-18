@@ -76,7 +76,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bResetPitchIndpTimeStretch(true) {
 
     // Play button
-    playButton = new ControlPushButton(ConfigKey(group, "play"), true);
+    playButton = new ControlPushButton(ConfigKey(group, "play"));
+    playButton->setToggleButton(true);
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);
@@ -494,6 +495,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed.
             filepos_play += idx;
+            filepos_play = math_max(0, filepos_play);
+            // We need the above protection against negative playpositions
+            // in case SoundTouch/EngineBufferSoundTouch gives us too many samples.
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -577,7 +581,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 playButton->set(0.);
                 break;
             case TRACK_END_MODE_NEXT:
-                m_pTrackEnd->set(1.);
+                //m_pTrackEnd->set(1.);
+                playButton->set(0.);
                 emit(loadNextTrack());
                 break;
 
@@ -612,6 +617,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
+    // Wake up the reader so that it processes our hints / loads new files
+    // (hopefully) before the next callback.
+    m_pReader->wake();
+
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -638,6 +647,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
+        // TODO(XXX) SSE
         while (i<iLen)
         {
             pOutput[i] = fStep*(iLen-(i+1));
@@ -645,6 +655,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         }
     }
 
+    // TODO(XXX) memset
     // Reset rest of buffer
     while (i<iBufferSize)
     {
@@ -701,7 +712,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
-void EngineBuffer::loadTrack(TrackPointer pTrack) {
+void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
 

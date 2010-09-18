@@ -28,14 +28,17 @@
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
 #include "engine/enginebuffer.h"
-#include "analyserqueue.h"
+#include "engine/enginemaster.h"
+#include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveform/waveformrenderer.h"
 #include "soundsourceproxy.h"
 
+#include "analyserqueue.h"
 #include "player.h"
+#include "playermanager.h"
 #include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -99,7 +102,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
 #else
     setWindowTitle(tr("Mixxx " VERSION));
 #endif
-    setWindowIcon(QIcon(":/images/icon.svg"));
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     //Reset pointer to players
     soundmanager = 0;
@@ -165,31 +168,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
 
-    // Sample rate used by Player object
-    ControlObject * sr = new ControlObject(ConfigKey("[Master]","samplerate"));
-    sr->set(44100.);
-
-    ControlObject * latency = new ControlObject(ConfigKey("[Master]","latency"));
-    /* avoid unused warning*/
-    latency = 0;
-
-    // Master rate
-    new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
-
-    // Init buffers/readers
-    buffer1 = new EngineBuffer("[Channel1]", config);
-    buffer2 = new EngineBuffer("[Channel2]", config);
-    buffer1->setOtherEngineBuffer(buffer2);
-    buffer2->setOtherEngineBuffer(buffer1);
-
-    // Starting channels:
-    channel1 = new EngineChannel("[Channel1]");
-    channel2 = new EngineChannel("[Channel2]");
-
     // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
+    m_pEngine = new EngineMaster(config, "[Master]");
 
-    soundmanager = new SoundManager(config, master);
+    // Initialize player device
+
+    soundmanager = new SoundManager(config, m_pEngine);
     soundmanager->queryDevices();
 
     // Find path of skin
@@ -209,10 +193,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
 
-    // Needed for updating widgets with track duration info
-    new ControlObject(ConfigKey("[Channel1]","duration"));
-    new ControlObject(ConfigKey("[Channel2]","duration"));
-
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame;
     setCentralWidget(frame);
@@ -220,20 +200,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
-    //Create the "players" (virtual playback decks)
-    m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
-    m_pPlayer2 = new Player(config, buffer2, "[Channel2]");
+    // Create the player manager.
+    m_pPlayerManager = new PlayerManager(config, m_pEngine, m_pLibrary);
+    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addPlayer();
 
-    //Connect the player to the track collection so that when a track is unloaded,
-    //it's data (eg. waveform summary) is saved back to the database.
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackPointer)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackPointer)));
-
-    view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
+    view=new MixxxView(frame, kbdconfig, qSkinPath, config,
+                       m_pPlayerManager,
                        m_pLibrary);
 
     //Scan the library directory.
@@ -286,49 +259,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
     }
 
-    // Setup the analyser queue to automatically process new tracks loaded by either player
-    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(config);
-    connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
-    connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
-
-
-
-    // Initialize track object:
-    // m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")),
-    //                      view,
-    //                      config,
-    //                      buffer1,
-    //                      buffer2,
-    //                      AnalyserQueue::createDefaultAnalyserQueue(config));
-
-    //WTreeItem::setTrack(m_pTrack);
-    // Set up drag and drop to player visuals
-
-    if (view->m_pVisualCh1)
-        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
-                this, SLOT(slotLoadPlayer1(QString)));
-    if (view->m_pVisualCh2)
-        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
-                this, SLOT(slotLoadPlayer2(QString)));
-
-    if (view->m_pWaveformRendererCh1)
-        connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
-                view->m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackPointer)));
-    if (view->m_pWaveformRendererCh2)
-          connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
-                  view->m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackPointer)));
-
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
-    connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
-             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackPointer)));
-
-    // Setup state of End of track controls from config database
-    ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(config);
     //TODO: Try to open MIDI devices?
@@ -359,23 +289,16 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //grabKeyboard();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player 1 and 2:
-    if (args.qlMusicFiles.count()>0)
-        this->slotLoadPlayer1((args.qlMusicFiles.at(0)));
-    if (args.qlMusicFiles.count()>1)
-        this->slotLoadPlayer2((args.qlMusicFiles.at(1)));
-
-    // Initialize visualization of temporal effects
-    channel1->setEngineBuffer(buffer1);
-    channel2->setEngineBuffer(buffer2);
+    for (int i = 0; i < m_pPlayerManager->numPlayers() && i < args.qlMusicFiles.count(); ++i) {
+        m_pPlayerManager->slotLoadToPlayer(args.qlMusicFiles.at(i), i+1);
+    }
 
     //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun || bUpgraded)
-    {
+    if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad = m_pLibrary->getTracksToAutoLoad();
-        if (tracksToAutoLoad.count() > 0)
-            m_pPlayer1->slotLoadTrack(tracksToAutoLoad.at(0));
-        if (tracksToAutoLoad.count() > 1)
-            m_pPlayer2->slotLoadTrack(tracksToAutoLoad.at(1));
+        for (int i = 0; i < m_pPlayerManager->numPlayers() && i < tracksToAutoLoad.count(); i++) {
+            m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
+        }
     }
 
 #ifdef __SCRIPT__
@@ -435,30 +358,17 @@ MixxxApp::~MixxxApp()
     soundmanager->closeDevices();
     qDebug() << "soundmanager->close() done";
 
-    // Save state of End of track controls in config database
-    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
-    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
 
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
-    qDebug() << "delete master, " << qTime.elapsed();
-    delete master;
-    qDebug() << "delete channel1, " << qTime.elapsed();
-    delete channel1;
-    qDebug() << "delete channel2, " << qTime.elapsed();
-    delete channel2;
 
-    //delete m_pPlayer1;
-    //delete m_pPlayer2;
-    delete m_pAnalyserQueue;
+    qDebug() << "delete playerManager" << qTime.elapsed();
+    delete m_pPlayerManager;
 
-    qDebug() << "delete buffer1, " << qTime.elapsed();
-    delete buffer1;
-    qDebug() << "delete buffer2, " << qTime.elapsed();
-    delete buffer2;
+    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    delete m_pEngine;
 
 //    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
@@ -479,8 +389,6 @@ MixxxApp::~MixxxApp()
     config->Save();
 
     delete prefDlg;
-
-    //   delete m_pBpmDetector;
 
     delete frame;
 
@@ -578,6 +486,10 @@ void MixxxApp::initActions()
     playlistsNew->setShortcut(tr("Ctrl+N"));
     playlistsNew->setShortcutContext(Qt::ApplicationShortcut);
 
+    cratesNew = new QAction(tr("Add new &crate"), this);
+    cratesNew->setShortcut(tr("Ctrl+C"));
+    cratesNew->setShortcutContext(Qt::ApplicationShortcut);
+
     playlistsImport = new QAction(tr("&Import playlist"), this);
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
@@ -610,6 +522,12 @@ void MixxxApp::initActions()
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
+#ifdef __SHOUTCAST__
+    optionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    optionsShoutcast->setShortcut(tr("Ctrl+L"));
+    optionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
+#endif
+
     optionsRecord = new QAction(tr("&Record Mix"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
     optionsRecord->setShortcutContext(Qt::ApplicationShortcut);
@@ -640,6 +558,10 @@ void MixxxApp::initActions()
     playlistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreatePlaylist()));
 
+    cratesNew->setStatusTip(tr("Create a new crate"));
+    cratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
+    connect(cratesNew, SIGNAL(activated()), m_pLibrary, SLOT(slotCreateCrate()));
+
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));
     //connect(playlistsImport, SIGNAL(activated()), m_pTrack, SLOT(slotImportPlaylist()));
@@ -661,6 +583,18 @@ void MixxxApp::initActions()
     optionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
+#endif
+
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setCheckable(true);
+    bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+
+    optionsShoutcast->setChecked(broadcastEnabled);
+
+    optionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
+    optionsShoutcast->setWhatsThis(tr("Stream your mixes to a shoutcast or icecast server"));
+
+    connect(optionsShoutcast, SIGNAL(toggled(bool)), this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
     optionsRecord->setCheckable(true);
@@ -704,7 +638,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroMenu=new QMenu("&Macro");
 #endif
-
+	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
@@ -718,6 +652,9 @@ void MixxxApp::initMenuBar()
     optionsMenu->addAction(optionsVinylControl);
 #endif
     optionsMenu->addAction(optionsRecord);
+#ifdef __SHOUTCAST__
+    optionsMenu->addAction(optionsShoutcast);
+#endif
     optionsMenu->addAction(optionsFullScreen);
     optionsMenu->addSeparator();
     optionsMenu->addAction(optionsPreferences);
@@ -726,6 +663,7 @@ void MixxxApp::initMenuBar()
     libraryMenu->addAction(libraryRescan);
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
+    libraryMenu->addAction(cratesNew);
     //libraryMenu->addAction(playlistsImport);
 
 #ifdef __IPOD__
@@ -890,12 +828,15 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        TrackPointer track = TrackPointer(pTrack, &QObject::deleteLater);
-        m_pPlayer1->slotLoadTrack(track);
+    QString s =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 1"),
+                config->getValueString(ConfigKey("[Playlist]","Directory")),
+                QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+
+    if (s != QString::null) {
+        m_pPlayerManager->slotLoadToPlayer(s, 1);
     }
 }
 
@@ -915,12 +856,15 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
-    if (!(s == QString::null)) {
-        // TODO(XXX) Lookup track in the Library and load that.
-        TrackInfoObject * pTrack = new TrackInfoObject(s);
-        TrackPointer track = TrackPointer(pTrack, &QObject::deleteLater);
-        m_pPlayer2->slotLoadTrack(track);
+    QString s =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 2"),
+                config->getValueString(ConfigKey("[Playlist]","Directory")),
+                QString("Audio (%1)").arg(SoundSourceProxy::supportedFileExtensionsString()));
+
+    if (s != QString::null) {
+        m_pPlayerManager->slotLoadToPlayer(s, 2);
     }
 }
 
@@ -936,11 +880,13 @@ void MixxxApp::slotOptionsBeatMark(bool)
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
+    if (optionsFullScreen)
+        optionsFullScreen->setChecked(toggle);
 
-// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
          winpos = pos();
          // Can't set max to -1,-1 or 0,0 for unbounded?
          setMaximumSize(32767,32767);
@@ -949,7 +895,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
         // Crazy X window managers break this so I'm told by Qt docs
         //         int deskw = app->desktop()->width();
         //         int deskh = app->desktop()->height();
@@ -1096,14 +1042,12 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
-"Garth Dahlstrom<br>"
 "RJ Ryan<br>"
+"Garth Dahlstrom<br>"
 "Sean Pappalardo<br>"
-"Nick Guenther<br>"
 "Phillip Whelan<br>"
-"Zach Elko<br>"
-"Tom Care<br>"
-"Pawel Bartkiewicz<br>"
+"Tobias Rafreider<br>"
+"S. Brandt<br>"
 
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
@@ -1111,27 +1055,27 @@ void MixxxApp::slotHelpAbout()
 "Mark Hills<br>"
 "Andre Roth<br>"
 "Robin Sheat<br>"
-"Michael Pujos<br>"
 "Mark Glines<br>"
-"Claudio Bantaloukas<br>"
-"Pavol Rusnak<br>"
 "Mathieu Rene<br>"
 "Miko Kiiski<br>"
-"Navaho Gunleg<br>"
-"Gavin Pryke<br>"
 "Brian Jackson<br>"
 "Owen Williams<br>"
-"James Evans<br>"
-"Martin Sakmar<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
+"J&aacute;n Jockusch<br>"
 "Oliver St&ouml;neberg<br>"
+"Jan Jockusch<br>"
 "C. Stewart<br>"
-"Tobias Rafreider<br>"
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
 "Bill Good<br>"
+"Graeme Mathieson<br>"
+"Sebastian Actist<br>"
+"Jussi Sainio<br>"
+"David Gnedt<br>"
+"Antonio Passamani<br>"
+"Guy Martin<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1162,6 +1106,10 @@ void MixxxApp::slotHelpAbout()
 "Ben Wheeler<br>"
 "Wesley Stessens<br>"
 "Nathan Prado<br>"
+"Zach Elko<br>"
+"Tom Care<br>"
+"Pawel Bartkiewicz<br>"
+"Nick Guenther<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
@@ -1175,7 +1123,6 @@ void MixxxApp::slotHelpAbout()
 "Jeremie Zimmermann<br>"
 "Gianluca Romanin<br>"
 "Tim Jackson<br>"
-"J&aacute;n Jockusch<br>"
 "Stefan Langhammer<br>"
 "Frank Willascheck<br>"
 "Jeff Nelson<br>"
@@ -1193,6 +1140,14 @@ void MixxxApp::slotHelpAbout()
 "Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
+"James Evans<br>"
+"Martin Sakmar<br>"
+"Navaho Gunleg<br>"
+"Gavin Pryke<br>"
+"Michael Pujos<br>"
+"Claudio Bantaloukas<br>"
+"Pavol Rusnak<br>"
+
 #if defined(AMD64) || defined(EM64T) || defined(x86_64)
     "</p>").arg(VERSION " x64");
 #elif defined(IA64)
@@ -1222,6 +1177,12 @@ void MixxxApp::rebootMixxxView() {
     int oldw = view->width();
     qDebug() << "Now in Rebootmixxview...";
 
+    // Workaround for changing skins while fullscreen, just go out of fullscreen
+    // mode. If you change skins while in fullscreen (on Linux, at least) the
+    // window returns to 0,0 but and the backdrop disappears so it looks as if
+    // it is not fullscreen, but acts as if it is.
+    slotOptionsFullScreen(false);
+
     QString qSkinPath = getSkinPath();
 
     view->rebootGUI(frame, config, qSkinPath);
@@ -1230,19 +1191,6 @@ void MixxxApp::rebootMixxxView() {
 
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
       setFixedSize(view->width(), view->height() + menuBar()->height());
-    }
-
-    // these signals/slots need reconnected to the new m_pVisuals after reboot or the
-    // signals go to the wrong slots
-    if (view->m_pVisualCh1) {
-        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer1(QString)));
-        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)),
-            this, SLOT(slotLoadPlayer1(QString)));
-    }
-    if (view->m_pVisualCh2) {
-        disconnect(SIGNAL(trackDropped(QString)), this, SLOT(slotLoadPlayer2(QString)));
-        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)),
-            this, SLOT(slotLoadPlayer2(QString)));
     }
 }
 
@@ -1290,51 +1238,6 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 
 }
 
-void MixxxApp::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
-    // TODO(XXX) In the future, when we support multiple decks, this method will
-    // be less of a hack.
-    if (player == 1) {
-        m_pPlayer1->slotLoadTrack(pTrack);
-    } else if (player == 2) {
-        m_pPlayer2->slotLoadTrack(pTrack);
-    }
-}
-void MixxxApp::slotLoadTrackIntoNextAvailablePlayer(TrackPointer pTrack)
-{
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-        m_pPlayer1->slotLoadTrack(pTrack, false);
-    else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-        m_pPlayer2->slotLoadTrack(pTrack, false);
-}
-
-void MixxxApp::slotLoadPlayer1(QString location)
-{
-    // Try to get TrackInfoObject* from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
-    if (pTrack == NULL)
-    {
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    }
-    //Load the track into the Player.
-    m_pPlayer1->slotLoadTrack(pTrack);
-}
-
-void MixxxApp::slotLoadPlayer2(QString location)
-{
-    // Try to get TrackInfoObject* from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackInfoObject*
-    if (pTrack == NULL)
-    {
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    }
-    //Load the track into the Player.
-    m_pPlayer2->slotLoadTrack(pTrack);
-}
-
 void MixxxApp::slotScanLibrary()
 {
     libraryRescan->setEnabled(false);
@@ -1344,4 +1247,26 @@ void MixxxApp::slotScanLibrary()
 void MixxxApp::slotEnableRescanLibraryAction()
 {
     libraryRescan->setEnabled(true);
+}
+void MixxxApp::slotOptionsMenuShow(){
+	ControlObjectThread* ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
+
+	if(ctrlRec->get() == RECORD_OFF){
+		//uncheck Recording
+		optionsRecord->setChecked(false);
+	}
+
+#ifdef __SHOUTCAST__
+	bool broadcastEnabled = (config->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);	if(broadcastEnabled)
+      optionsShoutcast->setChecked(true);
+	else
+      optionsShoutcast->setChecked(false);
+#endif
+}
+
+void MixxxApp::slotOptionsShoutcast(bool value){
+#ifdef __SHOUTCAST__
+    optionsShoutcast->setChecked(value);
+    config->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue(value));
+#endif
 }

@@ -50,7 +50,7 @@
 #include "widget/wwaveformviewer.h"
 #include "trackinfoobject.h"
 #include "player.h"
-
+#include "playermanager.h"
 
 #include "imgloader.h"
 #include "imginvert.h"
@@ -72,14 +72,16 @@
 #include "library/browsetablemodel.h"
 
 MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
-		     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
-		     Player* player1, Player* player2,
-		     Library* pLibrary) : QWidget(parent) {
+                     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
+                     PlayerManager* pPlayerManager,
+                     Library* pLibrary)
+        : QWidget(parent),
+          m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
+          m_pPlayerManager(pPlayerManager)
+
+{
     view = 0;
-    m_pconfig = pConfig;
-    m_pPlayer1 = player1;
-    m_pPlayer2 = player2;
-    m_pLibrary = pLibrary;
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -97,9 +99,16 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
 
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+    Player* pPlayer1 = m_pPlayerManager->getPlayer(1);
+    Player* pPlayer2 = m_pPlayerManager->getPlayer(2);
+
+    connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackPointer)));
+    connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackPointer)));
+    connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
             m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackPointer)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+    connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
             m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackPointer)));
 
     // Default values for visuals
@@ -132,6 +141,12 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pLibrarySidebar = 0;
     m_pLibrarySidebarPage = 0; //The sidebar and search widgets get embedded in this.
 
+    // Default to showing absolute durations instead of duration remaining. The
+    // preferences will change this to what the user prefers.
+    m_bDurationRemain = false;
+
+    m_textCh1 = "";
+    m_textCh2 = "";
 
     setupColorScheme(docElem, pConfig);
 
@@ -147,24 +162,25 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
  	 //Connect the players to the waveform overview widgets so they
  	 //update when a new track is loaded.
- 	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+ 	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
           m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackPointer)));
-  connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
           m_pOverviewCh1, SLOT(slotUnloadTrack(TrackPointer)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
           m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackPointer)));
-  connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
           m_pOverviewCh2, SLOT(slotUnloadTrack(TrackPointer)));
+
 
 	//Connect the players to some other widgets, so they get updated when a
 	//new track is loaded.
-	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
           this, SLOT(slotUpdateTrackTextCh1(TrackPointer)));
-  connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
           this, SLOT(slotClearTrackTextCh1(TrackPointer)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
           this, SLOT(slotUpdateTrackTextCh2(TrackPointer)));
-  connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
           this, SLOT(slotClearTrackTextCh2(TrackPointer)));
 
 	//Setup a connection that allows us to connect the TrackInfoObjects that
@@ -174,9 +190,9 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 	//notify the waveform overview widgets to update once the waveform
 	//summary has finished generating. This connection gives us a way to
 	//create that connection at runtime.)
-	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
 		this, SLOT(slotSetupTrackConnectionsCh1(TrackPointer)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
 		this, SLOT(slotSetupTrackConnectionsCh2(TrackPointer)));
 
 	// Connect search box signals to the library
@@ -188,6 +204,10 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
           m_pLibraryWidget, SLOT(searchStarting()));
   connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
           m_pLineEditSearch, SLOT(restoreSearch(const QString&)));
+
+  int desired_fps = 40;
+  float update_interval = 1000.0f / desired_fps;
+  m_guiTimer.start(update_interval);
 }
 
 MixxxView::~MixxxView()
@@ -238,11 +258,11 @@ void MixxxView::checkDirectRendering()
 	WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2) == WAVEFORM_GL &&
 	!((WGLWaveformViewer *)m_pVisualCh2)->directRendering()))
         {
-	    if(m_pconfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
+	    if(m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
 		{
 		    QMessageBox::warning(0, "OpenGL Direct Rendering",
 					 "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
-		    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+		    m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
 		}
 	}
 
@@ -435,6 +455,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="NumberBpm")
             {
+                if (m_pNumberBpmCh1 != NULL || m_pNumberBpmCh2) {
+                    qDebug() << "WARNING: BPM widget pointers wre not reset on GUI reboot.";
+                }
+                // NOTE: The BPM widgets are added to the widget list (so they
+                // will be auto-deleted) and also assigned to m_pNumberBpmCh1/2.
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberBpm * p = new WNumberBpm("[Channel1]", this);
@@ -540,89 +565,96 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="Visual")
             {
-		WaveformViewerType type;
+                WaveformViewerType type;
 
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
-		    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
-		    m_qWidgetList.append(m_pVisualCh1);
+                    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
+                    connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh1, SLOT(refresh()));
+                    m_qWidgetList.append(m_pVisualCh1);
 
-		    m_pVisualCh1->installEventFilter(m_pKeyboard);
+                    m_pVisualCh1->installEventFilter(m_pKeyboard);
 
-		    // Hook up [Channel1],wheel Control Object to the Visual Controller
-		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-		    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    // Hook up [Channel1],wheel Control Object to the Visual Controller
+                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh1, true, true, true, Qt::LeftButton);
 
-		    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 
-		    // Things to do whether the waveform was previously created or not
-		    if(type == WAVEFORM_GL) {
-			m_bVisualWaveform = true; // TODO : remove this crust
-			((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
-			// TODO rryan re-enable this later
-			/*
-			((WVisualWaveform*)m_pVisualCh1)->resetColors();
-			*/
-		    } else if (type == WAVEFORM_WIDGET) {
-			m_bVisualWaveform = true;
-			((WWaveformViewer *)m_pVisualCh1)->setup(node);
-		    } else if (type == WAVEFORM_SIMPLE) {
-			((WVisualSimple*)m_pVisualCh1)->setup(node);
-		    }
-		}
-		else if (WWidget::selectNodeInt(node, "Channel")==2)
-		{
-		    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
-		    m_qWidgetList.append(m_pVisualCh2);
+                    // Things to do whether the waveform was previously created or not
+                    if(type == WAVEFORM_GL) {
+                        m_bVisualWaveform = true; // TODO : remove this crust
+                        ((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
+                        // TODO rryan re-enable this later
+                        /*
+                          ((WVisualWaveform*)m_pVisualCh1)->resetColors();
+                        */
+                    } else if (type == WAVEFORM_WIDGET) {
+                        m_bVisualWaveform = true;
+                        ((WWaveformViewer *)m_pVisualCh1)->setup(node);
+                    } else if (type == WAVEFORM_SIMPLE) {
+                        ((WVisualSimple*)m_pVisualCh1)->setup(node);
+                    }
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
+                    connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh2, SLOT(refresh()));
+                    m_qWidgetList.append(m_pVisualCh2);
 
-		    m_pVisualCh2->installEventFilter(m_pKeyboard);
+                    m_pVisualCh2->installEventFilter(m_pKeyboard);
 
-		    // Hook up [Channel1],wheel Control Object to the Visual Controller
-		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-		    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    // Hook up [Channel1],wheel Control Object to the Visual Controller
+                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh2, true, true, true, Qt::LeftButton);
 
-		    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 
-		    // Things to do whether the waveform was previously created or not
-		    if(type == WAVEFORM_GL) {
-			m_bVisualWaveform = true; // TODO : remove this crust
+                    // Things to do whether the waveform was previously created or not
+                    if(type == WAVEFORM_GL) {
+                        m_bVisualWaveform = true; // TODO : remove this crust
 
-			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
-			// TODO rryan re-enable this later
-			/*
-			((WVisualWaveform*)m_pVisualCh2)->resetColors();
-			*/
-		    } else if (type == WAVEFORM_WIDGET) {
-			m_bVisualWaveform = true;
-			((WWaveformViewer *)m_pVisualCh2)->setup(node);
-		    } else if (type == WAVEFORM_SIMPLE) {
-			((WVisualSimple*)m_pVisualCh2)->setup(node);
-		    }
-		}
+                        ((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
+                        // TODO rryan re-enable this later
+                        /*
+                          ((WVisualWaveform*)m_pVisualCh2)->resetColors();
+                        */
+                    } else if (type == WAVEFORM_WIDGET) {
+                        m_bVisualWaveform = true;
+                        ((WWaveformViewer *)m_pVisualCh2)->setup(node);
+                    } else if (type == WAVEFORM_SIMPLE) {
+                        ((WVisualSimple*)m_pVisualCh2)->setup(node);
+                    }
+                }
             }
 
             /*############## PERSISTENT OBJECT ##############*/
+
+
             // persistent: m_pTextCh1, m_pTextCh2
+
+            // NOTE: The m_pTextCh1/2 widgets are no longer persistent, but they
+            // are stored in those member fields. -- rryan 8/2010
             else if (node.nodeName()=="Text")
             {
                 QLabel * p = 0;
-                // Associate pointers
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pTextCh1 != 0)
-                    p = m_pTextCh1;
-                else if (WWidget::selectNodeInt(node, "Channel")==2  && m_pTextCh2 != 0)
-                    p = m_pTextCh2;
-                else {
-                    p = new QLabel(this);
-                    p->installEventFilter(m_pKeyboard);
+
+                if (m_pTextCh1 != NULL || m_pTextCh2 != NULL) {
+                    qDebug() << "WARNING: Text widgets not destroyed before rebooting GUI.";
                 }
 
+                p = new QLabel(this);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+
                 // Associate pointers
-                if (WWidget::selectNodeInt(node, "Channel")==1)
+                if (WWidget::selectNodeInt(node, "Channel")==1) {
                     m_pTextCh1 = p;
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                    m_pTextCh1->setText(m_textCh1);
+                } else if (WWidget::selectNodeInt(node, "Channel")==2) {
                     m_pTextCh2 = p;
-                else
-                    m_qWidgetList.append(p);
+                    m_pTextCh2->setText(m_textCh2);
+                }
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -666,34 +698,36 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
                     p->setAlignment(Qt::AlignRight);
 
-		p->show();
+                p->show();
             }
 
             // persistent: m_pNumberPosCh1, m_pNumberPosCh2
+
+            // NOTE: The m_pNumberPosCh1/2 widgets are no longer persistent, but they
+            // are stored in those member fields. -- rryan 8/2010
             else if (node.nodeName()=="NumberPos")
             {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    if (m_pNumberPosCh1 == 0) {
-                        m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
-                        m_pNumberPosCh1->installEventFilter(m_pKeyboard);
-                    }
-		    m_pNumberPosCh1->setup(node);
-		    m_pNumberPosCh1->show();
-
+                if (m_pNumberPosCh1 != NULL || m_pNumberPosCh2 != NULL) {
+                    qDebug() << "WARNING: Number widgets were not reset before rebooting GUI.";
                 }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    if (m_pNumberPosCh2 == 0) {
-                        m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
-                        m_pNumberPosCh2->installEventFilter(m_pKeyboard);
-		    }
-		    m_pNumberPosCh2->setup(node);
-		    m_pNumberPosCh2->show();
+
+                if (WWidget::selectNodeInt(node, "Channel")==1) {
+                    m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
+                    m_pNumberPosCh1->installEventFilter(m_pKeyboard);
+                    m_pNumberPosCh1->setup(node);
+                    m_pNumberPosCh1->setRemain(m_bDurationRemain);
+                    m_pNumberPosCh1->show();
+                    m_qWidgetList.append(m_pNumberPosCh1);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2) {
+                    m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
+                    m_pNumberPosCh2->installEventFilter(m_pKeyboard);
+                    m_pNumberPosCh2->setup(node);
+                    m_pNumberPosCh2->setRemain(m_bDurationRemain);
+                    m_pNumberPosCh2->show();
+                    m_qWidgetList.append(m_pNumberPosCh2);
                 }
             }
-
-
 
             // persistent: m_pSliderRateCh1, m_pSliderRateCh2
             else if (node.nodeName()=="SliderComposed")
@@ -919,23 +953,29 @@ void MixxxView::rebootGUI(QWidget * parent, ConfigObject<ConfigValue> * pConfig,
     QObject *obj;
     int i;
 
-    // This isn't thread safe, does anything else hack on this object?
+    // This isn't thread safe, so this must only be called from Qt main thread.
 
-    // Temporary hack since we keep these pointers around, but we have them on
-    // the widget list.
+
+    // Clear the pointers to widgets that are going to be deleted (e.g. on the
+    // widget list) but we retain pointers to for contacting from other parts of
+    // Mixxx.
     m_pVisualCh1 = NULL;
     m_pVisualCh2 = NULL;
+    m_pTextCh1 = NULL;
+    m_pTextCh2 = NULL;
+    m_pNumberPosCh1 = NULL;
+    m_pNumberPosCh2 = NULL;
+    m_pNumberBpmCh1 = NULL;
+    m_pNumberBpmCh2 = NULL;
 
-    //remove all widget from the list (except permanent one)
+    // Delete all the widgets on the 'widget list'. This is a list of active
+    // screen widgets that should be automatically deleted on a skin reboot or
+    // shutdown.
     while (!m_qWidgetList.isEmpty()) {
         delete m_qWidgetList.takeFirst();
     }
 
-    //hide permanent widget
-    if (m_pTextCh1) m_pTextCh1->hide();
-    if (m_pTextCh2) m_pTextCh2->hide();
-    if (m_pNumberPosCh1) m_pNumberPosCh1->hide();
-    if (m_pNumberPosCh2) m_pNumberPosCh2->hide();
+    // Hide all widgets that are persistent across GUI reboots.
     if (m_pSliderRateCh1) m_pSliderRateCh1->hide();
     if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
     if (m_pOverviewCh1) m_pOverviewCh1->hide();
@@ -1064,25 +1104,36 @@ void MixxxView::slotSetupTrackConnectionsCh2(TrackPointer pTrack)
 
 void MixxxView::slotUpdateTrackTextCh1(TrackPointer pTrack)
 {
-	if (m_pTextCh1)
-		m_pTextCh1->setText(pTrack->getInfo());
+    m_textCh1 = pTrack->getInfo();
+    if (m_pTextCh1)
+        m_pTextCh1->setText(m_textCh1);
 }
 
 void MixxxView::slotUpdateTrackTextCh2(TrackPointer pTrack)
 {
-	if (m_pTextCh2)
-		m_pTextCh2->setText(pTrack->getInfo());
+    m_textCh2 = pTrack->getInfo();
+    if (m_pTextCh2)
+        m_pTextCh2->setText(m_textCh2);
 }
 
 void MixxxView::slotClearTrackTextCh1(TrackPointer pTrack)
 {
-	if (m_pTextCh1)
-		m_pTextCh1->setText("");
+    m_textCh1 = "";
+    if (m_pTextCh1)
+        m_pTextCh1->setText("");
 }
 
 void MixxxView::slotClearTrackTextCh2(TrackPointer pTrack)
 {
-	if (m_pTextCh2)
-		m_pTextCh2->setText("");
+    m_textCh2 = "";
+    if (m_pTextCh2)
+        m_pTextCh2->setText("");
 }
 
+void MixxxView::slotSetDurationRemaining(bool bDurationRemaining) {
+    m_bDurationRemain = bDurationRemaining;
+    if (m_pNumberPosCh1)
+        m_pNumberPosCh1->setRemain(m_bDurationRemain);
+    if (m_pNumberPosCh2)
+        m_pNumberPosCh2->setRemain(m_bDurationRemain);
+}

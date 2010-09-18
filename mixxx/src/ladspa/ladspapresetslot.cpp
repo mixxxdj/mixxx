@@ -52,7 +52,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     QDomElement spacingElement = element.firstChildElement("Spacing");
     QString spacing = spacingElement.text();
     int spacingWidth = spacing.left(spacing.indexOf(",")).toInt();
-    int spacingHeight = spacing.mid(spacing.indexOf(",") + 1).toInt();    
+    int spacingHeight = spacing.mid(spacing.indexOf(",") + 1).toInt();
 
     QDomElement sizeElement = element.firstChildElement("Size");
     QString size = sizeElement.text();
@@ -74,7 +74,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 
     QString slotString;
     slotString.setNum(slot);
-    
+
     QDomNodeList buttonNodeList = element.elementsByTagName("PushButton");
     for (int i = 0; i < buttonNodeList.count(); i++)
     {
@@ -84,7 +84,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 	{
 	    QString keyString = QString("RemoveEffect") + slotString;
 	    ConfigKey *key = new ConfigKey("[LADSPA]", keyString);
-	    ControlPushButton *control = new ControlPushButton(*key, false);
+	    ControlPushButton *control = new ControlPushButton(*key);
 	    m_pRemoveButton = new WPushButton(m_pScrollWidget);
 	    buttonElement.firstChildElement("Connection").firstChildElement("ConfigKey").firstChild().setNodeValue("[LADSPA]," + keyString);
 	    m_pRemoveButton->setup(buttonElement);
@@ -96,7 +96,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 	    QString keyString = QString("EnableEffect") + slotString;
 	    ConfigKey *key = new ConfigKey("[LADSPA]", keyString);
         qDebug() << "Key string:" << keyString;
-	    ControlObject *control = new ControlPushButton(*key, false);
+	    ControlObject *control = new ControlPushButton(*key);
         control->set(1.0f);
 	    m_pEnableButton = new WPushButton(m_pScrollWidget);
 	    buttonElement.firstChildElement("Connection").firstChildElement("ConfigKey").firstChild().setNodeValue("[LADSPA]," + keyString);
@@ -138,7 +138,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     m_qKnobElement = element.firstChildElement("Knob");
     m_pPresetInstance = NULL;
 
-    
+
     ConfigKey *key = new ConfigKey("[LADSPA]", "DryWet" + slotString);
     ControlPotmeter *control = new ControlPotmeter(*key, 0.0, 1.0);
     m_pDryWetKnob = new WKnob(m_pScrollWidget);
@@ -274,7 +274,7 @@ void LADSPAPresetSlot::addKnob(int i)
     QDomElement spacingElement = m_qKnobElement.firstChildElement("Spacing");
     QString spacing = spacingElement.text();
     int spacingWidth = spacing.left(spacing.indexOf(",")).toInt();
-    int spacingHeight = spacing.mid(spacing.indexOf(",") + 1).toInt();    
+    int spacingHeight = spacing.mid(spacing.indexOf(",") + 1).toInt();
     knob->move(x + (i + 1) * (knob->width() + spacingWidth), y + (i + 1) * spacingHeight);
     if (knob->x() + knob->width() > m_pScrollWidget->width())
     {
@@ -288,7 +288,7 @@ void LADSPAPresetSlot::addKnob(int i)
     label->show();
     /*while (label->width() >= spacingWidth + knob->width() - 5)
     {
-	qDebug() << label->width() << ", " << length << ", " << spacingWidth << ", " << knob->width(); 
+	qDebug() << label->width() << ", " << length << ", " << spacingWidth << ", " << knob->width();
 	if (length > 10)
 	    length = 10;
 	length -= 2;

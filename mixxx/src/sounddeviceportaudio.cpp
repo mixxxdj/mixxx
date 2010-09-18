@@ -361,11 +361,13 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 			//Interlace Audio data onto portaudio buffer
 			//We iterate through the source list to find out what goes in the buffer
 			//data is interlaced in the order of the list
-			QListIterator<AudioSource> devItr(m_audioSources);
+			//QListIterator<AudioSource> devItr(m_audioSources);
 			int iChannel;
-			while(devItr.hasNext())
+			//while(devItr.hasNext())
+            for (int i = 0; i < m_audioSources.length(); ++i)
 			{
-				AudioSource src = devItr.next();
+				//const AudioSource& src = devItr.next();
+                const AudioSource& src = m_audioSources.at(i);
 				int iLocalFrameBase = (iFrameBase/iFrameSize) * src.channels;
 				for(iChannel = 0; iChannel < src.channels; iChannel++)	//this will make sure a sample from each channel is copied
 				{

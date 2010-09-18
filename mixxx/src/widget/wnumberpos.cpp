@@ -24,6 +24,11 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
     m_pRateDirControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pDurationControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "duration")));
     connect(m_pDurationControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetDuration(double)));
+
+    // Tell the duration CO to signal us the update because we might be created
+    // after it is set on load.
+    m_pDurationControl->emitValueChanged();
+
 }
 
 WNumberPos::~WNumberPos()
@@ -87,6 +92,9 @@ void WNumberPos::setRemain(bool bRemain)
         m_qsText = "Rem: ";
     else
         m_qsText = "Pos: ";
+
+    // Have the widget redraw itself with its current value.
+    setValue(m_dOldValue);
 }
 
 

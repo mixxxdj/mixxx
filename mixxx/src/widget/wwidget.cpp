@@ -105,6 +105,14 @@ void WWidget::setup(QDomNode node)
             if (selectNodeQString(con, "EmitOnDownPress").contains("false",Qt::CaseInsensitive))
                 bEmitOnDownPress = false;
 
+            bool connectValueFromWidget = true;
+            if (selectNodeQString(con, "ConnectValueFromWidget").contains("false",Qt::CaseInsensitive))
+                connectValueFromWidget = false;
+
+            bool connectValueToWidget = true;
+            if (selectNodeQString(con, "ConnectValueToWidget").contains("false",Qt::CaseInsensitive))
+                connectValueToWidget = false;
+
             Qt::ButtonState state = Qt::NoButton;
             if (!selectNode(con, "ButtonState").isNull())
             {
@@ -115,10 +123,10 @@ void WWidget::setup(QDomNode node)
             }
 
             // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidget(this, bEmitOnDownPress, state);
+            (new ControlObjectThreadWidget(control))->setWidget(this, connectValueFromWidget, connectValueToWidget, bEmitOnDownPress, state);
 
             // Add keyboard shortcut info to tooltip string
-            QString shortcut = QString(" (%1)").arg(m_spKbdConfigObject->getValueString(configKey));
+            QString shortcut = QString("\nShortcut: %1").arg(m_spKbdConfigObject->getValueString(configKey));
             if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !m_Tooltip.contains(shortcut,Qt::CaseInsensitive))
                 m_Tooltip += shortcut;
         }

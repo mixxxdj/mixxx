@@ -91,6 +91,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
                                          CSAMPLE* pBase, unsigned long iBaseLength)
 {
+
     long unscaled_samples_needed;
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
@@ -98,10 +99,9 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
 
-
     if ( rate_add_diff )
         m_scaleRemainder = 0.0f;
-    
+
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
@@ -118,6 +118,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
+
     for (int j = 0; j < iRateLerpLength; j+=2)
     {
         rate_add = (rate_add_diff) / iRateLerpLength * j + rate_add_old;
@@ -129,16 +130,16 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
     samples += (rate_add_abs * ((buf_size - iRateLerpLength)/2));
     unscaled_samples_needed = ceil(samples);
-    
+
 
     if ( samples != unscaled_samples_needed)
         m_scaleRemainder += (double)unscaled_samples_needed - samples;
 
-    bool carry_remainder = FALSE;    
+    bool carry_remainder = FALSE;
     if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
     {
         long rem = (long)floor(m_scaleRemainder);
-        
+
         // Be very defensive about equating the remainder
         // back into unscaled_samples_needed
 	if ((unscaled_samples_needed - rem) >= 1)
@@ -147,13 +148,13 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             m_scaleRemainder -= rem;
             unscaled_samples_needed -= rem;
         }
-        
+
     }
 
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
     unscaled_samples_needed *= 2;
-    
+
     Q_ASSERT(unscaled_samples_needed >= 0);
     Q_ASSERT(unscaled_samples_needed != 0);
 
@@ -172,11 +173,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     while(i < buf_size)
     {
         prev_sample = current_sample;
-        
+
         current_sample = floor(buffer_index) * 2;
         if (!even(current_sample))
             current_sample++;
-
 
         Q_ASSERT(current_sample % 2 == 0);
         Q_ASSERT(current_sample >= 0);
@@ -198,7 +198,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
             buffer_size = m_pReadAheadManager
                                 ->getNextSamples(m_dBaseRate,buffer_int,
-                                                              samples_to_read);
+                                                 samples_to_read);
+
             if (m_dBaseRate > 0)
                 new_playpos += buffer_size;
             else if (m_dBaseRate < 0)
@@ -247,6 +248,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     }
 
     // If we broke out of the loop, zero the remaining samples
+    // TODO(XXX) memset
     for (; i < buf_size; i += 2) {
         buffer[i] = 0.0f;
         buffer[i+1] = 0.0f;
