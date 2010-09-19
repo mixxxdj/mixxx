@@ -149,8 +149,7 @@ void LegacySkinParser::setControlDefaults(QDomNode node, WAbstractControl* pCont
     {
         pControl->setDefaultValue(0.);
     }
-    else if (compareConfigKeys(node, "[Channel1],volume")||
-             compareConfigKeys(node, "[Channel2],volume"))
+    else if (compareConfigKeys(node, "],volume")) // Matches [ChannelX],volume
     {
         pControl->setDefaultValue(127.);
     }

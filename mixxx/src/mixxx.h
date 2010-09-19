@@ -147,14 +147,10 @@ class MixxxApp : public QMainWindow
   private:
     void checkDirectRendering();
 
-    /** view is the main widget which represents your working area. The View
-     * class should handle all events of the view widget.  It is kept empty so
-     * you can create your view according to your application's needs by
-     * changing the view class.
-     */
-    QWidget* m_pView;
-    QFrame *frame;
     QApplication *app;
+
+    // Pointer to the root GUI widget
+    QWidget* m_pView;
 
     // The mixing engine.
     EngineMaster *m_pEngine;
