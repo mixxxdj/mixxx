@@ -38,7 +38,6 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrary.h"
 
-
 #include "widget/woverview.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
@@ -843,8 +842,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     vl->addWidget(m_pLineEditSearch);
                     vl->addWidget(m_pLibrarySidebar);
 
-                    setupTrackSourceViewWidget(node);
-
                     m_pLibrary->bindWidget(m_pLibrarySidebar,
                                            m_pLibraryWidget,
                                            m_pKeyboard);
@@ -879,9 +876,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     //m_pTabWidget->addTab(m_pTabWidgetEffectsPage, tr("Effects"));
                     m_pTabWidget->addWidget(m_pTabWidgetEffectsPage);
                 }
-
-                // Style the track source widget
-                setupTrackSourceViewWidget(node);
 
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
@@ -1001,47 +995,46 @@ void MixxxView::setupTabWidget(QDomNode node)
 
     // Style
     QString style = WWidget::selectNodeQString(node, "Style");
-    if (style != "") {
-        m_pTabWidget->setStyleSheet(style);
+
+    // Workaround to support legacy color styling
+    QColor color(0,0,0);
+
+    if (!WWidget::selectNode(node, "FgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
     }
+
+    if (!WWidget::selectNode(node, "BgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowEven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+    }
+
+    m_pTabWidget->setStyleSheet(style);
 }
 
 
 void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
 
-    //Setup colors:
-    //Foreground color
-    QColor fgc(0,255,0);
-    if (!WWidget::selectNode(node, "FgColor").isNull()) {
 
-	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-
-	//m_pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
-
-	// Row colors
-	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
-	    {
-	        QColor r1;
-	        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-		r1 = WSkinColor::getCorrectColor(r1);
-		QColor r2;
-		r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-		r2 = WSkinColor::getCorrectColor(r2);
-
-		// For now make text the inverse of the background so it's readable
-		// In the future this should be configurable from the skin with this
-		// as the fallback option
-		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-
-	        QPalette Rowpalette = palette();
-	        Rowpalette.setColor(QPalette::Base, r1);
-	        Rowpalette.setColor(QPalette::AlternateBase, r2);
-		Rowpalette.setColor(QPalette::Text, text);
-
-	        m_pLibrarySidebar->setPalette(Rowpalette);
-	    }
-    }
 }
 
 void MixxxView::slotSetupTrackConnectionsCh1(TrackPointer pTrack)
