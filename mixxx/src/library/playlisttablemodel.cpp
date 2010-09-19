@@ -371,26 +371,6 @@ QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value;
-
-    if (role == Qt::ToolTipRole)
-        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
-    else
-        value = BaseSqlTableModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
-    }
-    return value;
-}
-
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
 {
     TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOPLAYLIST;

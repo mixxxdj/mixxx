@@ -216,26 +216,6 @@ QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value;
-    if (role == Qt::ToolTipRole)
-        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
-    else
-        value = BaseSqlTableModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
-    }
-
-    return value;
-}
-
 QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
