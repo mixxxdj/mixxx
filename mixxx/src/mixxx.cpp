@@ -192,8 +192,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
 
     // Use frame as container for view, needed for fullscreen display
-    frame = new QFrame;
-    setCentralWidget(frame);
+    m_pView = new QFrame;
+    setCentralWidget(m_pView);
 
     m_pLibrary = new Library(this, config, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
@@ -289,10 +289,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     initActions();
     initMenuBar();
 
-    m_pView = m_pSkinLoader->loadDefaultSkin(frame,
-                                             m_pKeyboard,
-                                             m_pPlayerManager,
-                                             m_pLibrary);
+    // Loads the skin as a child of m_pView
+    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+                                        m_pKeyboard,
+                                        m_pPlayerManager,
+                                        m_pLibrary)) {
+        qDebug() << "Could not load default skin.";
+    }
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -369,8 +372,6 @@ MixxxApp::~MixxxApp()
     config->Save();
 
     delete prefDlg;
-
-    delete frame;
 
 #ifdef __C_METRICS__ // cmetrics will cause this whole method to segfault on Linux/i386 if it is called after config is deleted. Obviously, it depends on config somehow.
     qDebug() << "cmetrics to report:" << "Mixxx deconstructor complete.";
@@ -772,8 +773,8 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         //         int deskh = app->desktop()->height();
 
         //support for xinerama
-        int deskw = app->desktop()->screenGeometry(frame).width();
-        int deskh = app->desktop()->screenGeometry(frame).height();
+        int deskw = app->desktop()->screenGeometry(m_pView).width();
+        int deskh = app->desktop()->screenGeometry(m_pView).height();
 #else
         int deskw = width();
         int deskh = height();
@@ -1045,8 +1046,8 @@ void MixxxApp::slotHelpSupport()
 
 void MixxxApp::rebootMixxxView() {
 
-    // if (!m_pView)
-    //     return;
+    if (!m_pView)
+        return;
 
     // Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
     // So we check and if the size hasn't changed we don't make the call
@@ -1063,16 +1064,18 @@ void MixxxApp::rebootMixxxView() {
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
+    m_pView->hide();
+    m_pView->deleteLater();
     m_pView = NULL;
-    delete frame;
+    m_pView = new QFrame();
+    setCentralWidget(m_pView);
 
-    frame = new QFrame();
-    setCentralWidget(frame);
-
-    m_pView = m_pSkinLoader->loadDefaultSkin(frame,
-                                             m_pKeyboard,
-                                             m_pPlayerManager,
-                                             m_pLibrary);
+    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+                                        m_pKeyboard,
+                                        m_pPlayerManager,
+                                        m_pLibrary)) {
+        qDebug() << "Could not reload the skin.";
+    }
 
     qDebug() << "rebootgui DONE";
 
