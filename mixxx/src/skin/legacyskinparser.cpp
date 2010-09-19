@@ -21,6 +21,7 @@
 #include "skin/colorschemeparser.h"
 
 #include "widget/wwidget.h"
+#include "widget/wabstractcontrol.h"
 #include "widget/wknob.h"
 #include "widget/wslidercomposed.h"
 #include "widget/wpushbutton.h"
@@ -126,6 +127,35 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
     return schlist;
 }
 
+bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
+{
+    QDomNode n = node;
+
+    // Loop over each <Connection>, check if it's ConfigKey matches key
+    while (!n.isNull())
+    {
+        n = WWidget::selectNode(n, "Connection");
+        if (!n.isNull())
+        {
+            if  (WWidget::selectNodeQString(n, "ConfigKey").contains(key))
+                return true;
+        }
+    }
+    return false;
+}
+
+void LegacySkinParser::setControlDefaults(QDomNode node, WAbstractControl* pControl) {
+    if (compareConfigKeys(node, "[Master],headMix"))
+    {
+        pControl->setDefaultValue(0.);
+    }
+    else if (compareConfigKeys(node, "[Channel1],volume")||
+             compareConfigKeys(node, "[Channel2],volume"))
+    {
+        pControl->setDefaultValue(127.);
+    }
+}
+
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     QDomElement skinDocument = openSkin(skinPath);
 
@@ -184,7 +214,6 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
         return parseTableView(node, pParent);
     }
 
-
     // Descend chilren
     QDomNodeList children = node.childNodes();
 
@@ -239,7 +268,7 @@ QWidget* LegacySkinParser::parseSliderComposed(QDomElement node, QWidget* pParen
     WSliderComposed* p = new WSliderComposed(pParent);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
-    // TODO(XXX) check for volume control and set default values
+    setControlDefaults(node, p);
     return p;
 }
 
@@ -411,7 +440,7 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node, QWidget* pParent) {
     WKnob * p = new WKnob(pParent);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
-    // TODO(XXX) currentwidget crap
+    setControlDefaults(node, p);
     return p;
 }
 
