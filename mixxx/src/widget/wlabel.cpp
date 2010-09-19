@@ -74,6 +74,11 @@ void WLabel::setup(QDomNode node)
     if (style != "") {
         m_pLabel->setStyleSheet(style);
     }
+
+    QString pos = selectNodeQString(node, "Pos");
+    int px = pos.left(pos.indexOf(",")).toInt();
+    int py = pos.mid(pos.indexOf(",")+1).toInt();
+    move(px,py);
 }
 
 void WLabel::setFixedSize(int x,int y)

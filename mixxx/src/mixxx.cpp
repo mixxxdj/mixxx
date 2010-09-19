@@ -42,7 +42,6 @@
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
-#include "library/legacylibraryimporter.h"
 
 #include "soundmanager.h"
 #include "defs_urls.h"
@@ -55,6 +54,7 @@
 #include "mixxxkeyboard.h"
 
 #include "skin/skinloader.h"
+#include "skin/legacyskinparser.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
@@ -308,8 +308,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
                                              m_pLibrary);
 
     // Check direct rendering and warn user if they don't have it
-    if (m_pView)
-        m_pView->checkDirectRendering();
+    // if (m_pView)
+    //     m_pView->checkDirectRendering();
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
@@ -1059,8 +1059,8 @@ void MixxxApp::slotHelpSupport()
 
 void MixxxApp::rebootMixxxView() {
 
-    if (!m_pView)
-        return;
+    // if (!m_pView)
+    //     return;
 
     // Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
     // So we check and if the size hasn't changed we don't make the call
@@ -1077,7 +1077,16 @@ void MixxxApp::rebootMixxxView() {
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    m_pView->rebootGUI(frame, config, qSkinPath);
+    m_pView = NULL;
+    delete frame;
+
+    frame = new QFrame();
+    setCentralWidget(frame);
+
+    m_pView = m_pSkinLoader->loadDefaultSkin(frame,
+                                             m_pKeyboard,
+                                             m_pPlayerManager,
+                                             m_pLibrary);
 
     qDebug() << "rebootgui DONE";
 
