@@ -78,6 +78,7 @@ bool LegacySkinParser::canParse(QString skinPath) {
     return true;
 }
 
+// static
 QDomElement LegacySkinParser::openSkin(QString skinPath) {
     QDir skinDir(skinPath);
 
@@ -103,6 +104,26 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
 
     skinXmlFile.close();
     return skin.documentElement();
+}
+
+// static
+QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
+
+    QDomElement docElem = openSkin(qSkinPath);
+    QList<QString> schlist;
+
+    QDomNode colsch = docElem.namedItem("Schemes");
+    if (!colsch.isNull() && colsch.isElement()) {
+        QDomNode sch = colsch.firstChild();
+
+        while (!sch.isNull()) {
+            QString thisname = WWidget::selectNodeQString(sch, "Name");
+            schlist.append(thisname);
+            sch = sch.nextSibling();
+        }
+    }
+
+    return schlist;
 }
 
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {

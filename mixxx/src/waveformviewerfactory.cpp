@@ -139,3 +139,30 @@ WaveformViewerType WaveformViewerFactory::getWaveformViewerType(QWidget *pWavefo
         return WAVEFORM_GL;
     return WAVEFORM_INVALID;
 }
+
+// static
+int WaveformViewerFactory::numViewers(WaveformViewerType type) {
+    if (type == WAVEFORM_SIMPLE) {
+        return m_simpleViewers.count();
+    } else if (type == WAVEFORM_WIDGET) {
+        return m_visualViewers.count();
+    } else if (type == WAVEFORM_GL) {
+        return m_visualGLViewers.count();
+    }
+    return 0;
+}
+
+// static
+bool WaveformViewerFactory::isDirectRenderingEnabled() {
+    if (m_visualGLViewers.count() > 0) {
+        bool enabled = true;
+        foreach (WGLWaveformViewer* pViewer, m_visualGLViewers) {
+            if (!pViewer->directRendering()) {
+                enabled = false;
+            }
+        }
+        return enabled;
+    }
+
+
+}
