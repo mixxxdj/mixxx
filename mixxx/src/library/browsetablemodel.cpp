@@ -59,6 +59,11 @@ void BrowseTableModel::removeTrack(const QModelIndex& index)
 	//TODO
 }
 
+void BrowseTableModel::removeTracks(const QModelIndexList& indices)
+{
+	//TODO
+}
+
 bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
 {
 	//TODO
@@ -74,13 +79,11 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
     //We need to only count each row once:
     QList<int> rows;
 
-    qDebug() << "MIME DAta";
-
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url(getTrackLocation(index));
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
                 if (!url.isValid())
                     qDebug() << "ERROR invalid url\n";
                 else {

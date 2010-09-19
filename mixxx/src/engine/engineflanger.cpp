@@ -57,7 +57,8 @@ EngineFlanger::EngineFlanger(const char * group)
         potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 50000., 2000000.);
 
     // Create an enable key on a per-deck basis.
-    flangerEnable = new ControlPushButton(ConfigKey(group, "flanger"), true);
+    flangerEnable = new ControlPushButton(ConfigKey(group, "flanger"));
+    flangerEnable->setToggleButton(true);
 
     // Fixed values of controls:
     LFOamplitude = 240;

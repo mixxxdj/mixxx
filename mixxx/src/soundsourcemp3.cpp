@@ -26,7 +26,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename),
     mad_stream_init(Stream);
     Synth = new mad_synth;
     mad_synth_init(Synth);
-    Frame = new mad_frame; 
+    Frame = new mad_frame;
     mad_frame_init(Frame);
 }
 
@@ -37,7 +37,7 @@ SoundSourceMp3::~SoundSourceMp3()
     mad_synth_finish(Synth);
     m_file.unmap(inputbuf);
     m_file.close();
-    
+
     //Don't delete because we're using mmapped i/o now.... right?
     //delete [] inputbuf;
 
@@ -108,7 +108,7 @@ int SoundSourceMp3::open()
             //qDebug() << "SSMP3() :: Setting m_iSampleRate to " << Header.samplerate << " from " << m_iSampleRate;
         }
 
-        this->setSampleRate(Header.samplerate);
+        setSampleRate(Header.samplerate);
         m_iChannels = MAD_NCHANNELS(&Header);
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
@@ -139,18 +139,18 @@ int SoundSourceMp3::open()
     framecount = currentframe;
     currentframe = 0;
 
-    //Recalculate the duration by using the average frame size. Our first guess at 
+    //Recalculate the duration by using the average frame size. Our first guess at
     //the duration of VBR MP3s in parseHeader() goes for speed over accuracy
     //since it runs during a library scan. When we open() an MP3 for playback,
     //we had to seek through the entire thing to build a seek table, so we've
     //also counted the number of frames in it. We need that to better estimate
     //the length of VBR MP3s.
-    if (this->getSampleRate() > 0 && m_iChannels > 0) //protect again divide by zero
+    if (getSampleRate() > 0 && m_iChannels > 0) //protect again divide by zero
     {
-        qDebug() << "SSMP3::open() - Setting duration to:" << framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels;
-        this->setDuration(framecount * m_iAvgFrameSize / this->getSampleRate() / m_iChannels);
+        //qDebug() << "SSMP3::open() - Setting duration to:" << framecount * m_iAvgFrameSize / getSampleRate() / m_iChannels;
+        setDuration(framecount * m_iAvgFrameSize / getSampleRate() / m_iChannels);
     }
-    
+
     //TODO: Emit metadata updated signal?
 
 /*
@@ -524,9 +524,9 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 int SoundSourceMp3::parseHeader()
 {
-    QString location = m_qFilename; 
+    QString location = m_qFilename;
 
-    this->setType("mp3");
+    setType("mp3");
 
     // mad-dev post in 2002-25-Jan on how to use libid3 by Rob Leslie
     // http://www.mars.org/mailman/public/mad-dev/2002-January/000439.html
@@ -542,30 +542,34 @@ int SoundSourceMp3::parseHeader()
             QString s;
             getField(tag,"TIT2",&s); // TIT2 : Title
             if (s != "")
-                this->setTitle(s);
+                setTitle(s);
             s="";
             getField(tag,"TPE1",&s); // TPE1 : Artist
             if (s != "")
-                this->setArtist(s);
+                setArtist(s);
             s="";
             getField(tag,"TALB",&s);
-            this->setAlbum(s);
+            setAlbum(s);
             getField(tag,"TDRC",&s);
-            this->setYear(s);
+            setYear(s);
             s="";
             getField(tag,"TCON",&s);
-            this->setGenre(s);
+            setGenre(s);
             s="";
             getField(tag,"TRCK",&s);
-            this->setTrackNumber(s);
+            setTrackNumber(s);
             s="";
             getField(tag,"TBPM",&s); // TBPM: the bpm
             float bpm = 0;
             if (s.length()>1) bpm = str2bpm(s);
             if(bpm > 0) {
-                this->setBPM(bpm);
+                setBPM(bpm);
                 //Track->setBpmConfirm(true);
             }
+            s="";
+            getField(tag, "COMM", &s);
+            setComment(s);
+
             //Track->setHeaderParsed(true);
 
             /*
@@ -600,7 +604,7 @@ int SoundSourceMp3::parseHeader()
         qDebug() << "SSMP3::ParseHeader Open failed:" << location;
         return ERR;
     }
-    inputbuf = new unsigned char[READLENGTH]; 
+    inputbuf = new unsigned char[READLENGTH];
     /*
     inputbuf_len = file.size();
     inputbuf = file.map(0, inputbuf_len);
@@ -626,7 +630,7 @@ int SoundSourceMp3::parseHeader()
 
     while(frames < DESIRED_FRAMES) {
         unsigned int readbytes = file.read((char*)inputbuf, READLENGTH);
-        
+
         if(readbytes != READLENGTH) {
             //qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << readbytes << "bytes, but wanted" << READLENGTH << "bytes";
             if(readbytes == -1) {
@@ -638,7 +642,7 @@ int SoundSourceMp3::parseHeader()
                 break;
             }
             // otherwise we just have less data to work with, keep going!
-        } 
+        }
 
         // This preserves skiplen, so if we had a buffer error earlier
         // the skip will occur when we give it more data.
@@ -672,8 +676,8 @@ int SoundSourceMp3::parseHeader()
                 bytesperframe = (Stream->next_frame - Stream->this_frame);
                 //Set samplerate and channels here so length() calculation
                 //works.
-                this->setSampleRate(Header.samplerate);
-                this->setChannels(MAD_NCHANNELS(&Header));
+                setSampleRate(Header.samplerate);
+                setChannels(MAD_NCHANNELS(&Header));
             } else if (bitrate != Header.bitrate) {
                 bytesperframe = (Stream->next_frame - Stream->this_frame);
                 constantbitrate = false;
@@ -688,7 +692,7 @@ int SoundSourceMp3::parseHeader()
             frames++;
         }
     }
-    
+
     //Calculate the average bitrate over a bunch of frames so we can guess the duration of VBR MP3s better
     if (frames > 0) { //divide by zero protection
         averageBitrate = averageBitrate / frames;
@@ -696,7 +700,7 @@ int SoundSourceMp3::parseHeader()
     }
 
     /*
-    qDebug() << "SSMP3::ParseHeader -" << this->getTitle();
+    qDebug() << "SSMP3::ParseHeader -" << getTitle();
     qDebug() << "SSMP3::ParseHeader - frames read: " << frames << " bitrate " << Header.bitrate/1000;
     qDebug() << "SSMP3::ParseHeader - samplerate " << Header.samplerate << " channels " << MAD_NCHANNELS(&Header);
     */
@@ -712,17 +716,17 @@ int SoundSourceMp3::parseHeader()
         if (bytesperframe > 0) //prevent div by zero
             mad_timer_multiply(&dur, file.size()/bytesperframe);
         duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
-        this->setBitrate(Header.bitrate/1000);
+        setBitrate(Header.bitrate/1000);
         //qDebug() << "SSMP3::ParseHeader - Song is CBR";
      }
-     else //Calculate duration for VBR MP3s 
+     else //Calculate duration for VBR MP3s
      {
          // FIXME: We need a fast way to get reasonable VBR MP3 file duration estimates
-         
+
          // In the meantime (and since the below method can be waaaay off)
          // we'd rather show nothing until the track is loaded and the real
          // duration can be calculated - Sean (June 2010)
-         
+
          /*
          //Since this is sort of a crapshoot to begin with unless you want to
          //get really fancy, we're going to just use our estimate at the
@@ -732,13 +736,13 @@ int SoundSourceMp3::parseHeader()
          duration = mad_timer_count(dur, MAD_UNITS_SECONDS);
          */
 
-         this->setBitrate(averageBitrate/1000);
+         setBitrate(averageBitrate/1000);
          //qDebug() << "SSMP3::ParseHeader - Song is VBR";
      }
 
-    this->setDuration(duration);
-    this->setSampleRate(Header.samplerate);
-    this->setChannels(MAD_NCHANNELS(&Header));
+    setDuration(duration);
+    setSampleRate(Header.samplerate);
+    setChannels(MAD_NCHANNELS(&Header));
 
     mad_stream_finish(Stream);
     delete [] inputbuf;
@@ -763,11 +767,18 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
     id3_frame * frame = id3_tag_findframe(tag, frameid, 0);
     if (frame)
     {
-        // Unicode handling
-        if (id3_field_getnstrings(&frame->fields[1])>0)
-        {
-            id3_utf16_t* framestr = NULL;
+        id3_utf16_t* framestr = NULL;
 
+        // Unicode handling of various fields
+
+        if (strcmp(frameid, "COMM") == 0) {
+            id3_ucs4_t const* comment = id3_field_getfullstring(&frame->fields[3]);
+            if (!comment)
+                return;
+            framestr = id3_ucs4_utf16duplicate(comment);
+        }
+        else if (id3_field_getnstrings(&frame->fields[1])>0)
+        {
             //Shitty genre tag handling, thanks libid3tag!
             if (strcmp(frameid, "TCON") == 0)
             {
@@ -776,18 +787,21 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
             }
             else
                 framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-
-            int strlen = 0; while (framestr[strlen]!=0) strlen++;
-            if (strlen>0) {
-                str->setUtf16((ushort *)framestr,strlen);
-                //The ID3 specification says that a tag can contain a UTF-16 byte-order-mark (BOM). If we don't
-                //remove these by hand, they will end up in strange places like our library XML file and
-                //break it. :/ Conclusion: libid3tag sucks.
-                *str = str->remove(QChar(QChar::ByteOrderMark));
-                *str = str->remove(QChar(QChar::ByteOrderSwapped));
-            }
-            free(framestr);
         }
+
+        if (!framestr)
+            return;
+
+        int strlen = 0; while (framestr[strlen]!=0) strlen++;
+        if (strlen>0) {
+            str->setUtf16((ushort *)framestr,strlen);
+            //The ID3 specification says that a tag can contain a UTF-16 byte-order-mark (BOM). If we don't
+            //remove these by hand, they will end up in strange places like our library XML file and
+            //break it. :/ Conclusion: libid3tag sucks.
+            *str = str->remove(QChar(QChar::ByteOrderMark));
+            *str = str->remove(QChar(QChar::ByteOrderSwapped));
+        }
+        free(framestr);
     }
 }
 

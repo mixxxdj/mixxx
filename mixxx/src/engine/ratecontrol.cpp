@@ -118,11 +118,10 @@ RateControl::RateControl(const char* _group,
     // cleared when we read
     m_pScratch = new ControlTTRotary(ConfigKey(_group, "scratch2"));
     m_pOldScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));  // Deprecated
-    
+
     // Scratch enable toggle
     m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
     m_pScratchToggle->set(0);
-    m_pScratchToggle->setToggleButton(true);
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
@@ -362,8 +361,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
     } else if (paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
         // New scratch behavior overrides old
-        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor/10.;
-        else rate = oldScratchFactor + jogFactor*18 + wheelFactor/10.; // Just remove oldScratchFactor in future
+        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*10.;
+        else rate = oldScratchFactor + jogFactor*18 + wheelFactor*10.; // Just remove oldScratchFactor in future
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
@@ -375,27 +374,26 @@ double RateControl::calculateRate(double baserate, bool paused) {
 
         rate = 1. + getRawRate() + getTempRate();
         rate += wheelFactor * 10.;
-        
+
         // New scratch behavior - overrides playback speed (and old behavior)
         if (scratchEnable) rate = scratchFactor;
         else {
             // Deprecated old scratch behavior
             if (oldScratchFactor < 0.) {
-                rate *= (oldScratchFactor-1.);                
+                rate *= (oldScratchFactor-1.);
             } else if (oldScratchFactor > 0.) {
                 rate *= (oldScratchFactor+1.);
             }
         }
-        
-        // FIXME: This divisor needs to adjust for latency. (For 10ms, divide by 10.)
-        rate += jogFactor/10;
+
+        rate += jogFactor;
 
         // If we are reversing (and not scratching,) flip the rate.
         if (!scratchEnable && m_pReverseButton->get()) {
             rate = -rate;
         }
     }
-    
+
     // Scale the rate by the engine samplerate
     rate *= baserate;
 
@@ -427,8 +425,8 @@ double RateControl::process(const double rate,
     if ((m_ePbPressed) && (!m_bTempStarted))
     {
         m_bTempStarted = true;
-        
-        
+
+
         if ( m_eRateRampMode == RATERAMP_STEP )
         {
             // old temporary pitch shift behaviour
@@ -444,7 +442,7 @@ double RateControl::process(const double rate,
                                     (100. * range);
             double csmall = m_pRateDir->get() * m_dTempSmall /
                                     (100. * range);
-            
+
             if (buttonRateTempUp->get())
                 addRateTemp(change);
             else if (buttonRateTempDown->get())
@@ -465,7 +463,7 @@ double RateControl::process(const double rate,
     }
 
     if (m_eRateRampMode == RATERAMP_LINEAR) {
-        
+
         if (m_ePbCurrent)
         {
             // apply ramped pitchbending
@@ -478,8 +476,8 @@ double RateControl::process(const double rate,
         {
             // No buttons pressed, so time to deinitialize
             m_bTempStarted = false;
-            
-            
+
+
             if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0))
             {
                 int period = 2;
@@ -512,7 +510,7 @@ double RateControl::process(const double rate,
             resetRateTemp();
         }
     }
-    
+
     return kNoTrigger;
 }
 
@@ -525,7 +523,7 @@ void RateControl::setRateTemp(double v)
     // Do not go backwards
     if (( 1. + getRawRate() + v ) < 0)
         return;
-    
+
     m_dRateTemp = v;
     if ( m_dRateTemp < -1.0 )
         m_dRateTemp = -1.0;

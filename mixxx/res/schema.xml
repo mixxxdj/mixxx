@@ -138,4 +138,12 @@ METADATA
       ALTER TABLE library ADD COLUMN filetype varchar(8) DEFAULT "?";
     </sql>
   </revision>
+  <revision version="5">
+    <description>
+      Add needs_verification column to library hashes table.
+    </description>
+    <sql>
+      ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>

@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <Q3ValueList>
 #include <QList>
+#include <QTimer>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -153,8 +154,8 @@ private:
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
 
-	// The splitter widget that contains the library panes
-	QSplitter *m_pSplitter;
+    // The splitter widget that contains the library panes
+    QSplitter *m_pSplitter;
     // The library widget
     WLibrary* m_pLibraryWidget;
     // The library manager
@@ -165,6 +166,8 @@ private:
     QWidget* m_pLibrarySidebarPage;
 
     PlayerManager* m_pPlayerManager;
+
+    QTimer m_guiTimer;
 
 #ifdef __LADSPA__
     LADSPAView* m_pLADSPAView;

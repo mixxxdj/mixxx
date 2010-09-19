@@ -76,7 +76,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bResetPitchIndpTimeStretch(true) {
 
     // Play button
-    playButton = new ControlPushButton(ConfigKey(group, "play"), true);
+    playButton = new ControlPushButton(ConfigKey(group, "play"));
+    playButton->setToggleButton(true);
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);
@@ -494,9 +495,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed.
             filepos_play += idx;
-            filepos_play = math_max(0, filepos_play); 
+            filepos_play = math_max(0, filepos_play);
             // We need the above protection against negative playpositions
-            // in case SoundTouch/EngineBufferSoundTouch gives us too many samples. 
+            // in case SoundTouch/EngineBufferSoundTouch gives us too many samples.
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);

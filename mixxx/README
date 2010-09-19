@@ -64,6 +64,15 @@ To install Mixxx after compilation, run:
 
    $ sudo scons prefix=/usr install
 
+A full list of scons flags is available by running:
+
+   $ scons --help
+
+WARNING: We do not recommend building Mixxx with any
+flags other than the defaults if you are going to use Mixxx
+for live performance. Features that are disabled by default
+may not compile or may be unstable. Be forewarned. 
+
 More detailed compiling instructions are available for your
 platform on our wiki:
     http://www.mixxx.org/wiki/
