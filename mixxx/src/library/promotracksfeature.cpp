@@ -45,9 +45,9 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
                              bool firstRun)
         : LibraryFeature(parent),
           m_pConfig(config),
+          m_pTrackCollection(pTrackCollection),
           m_pFeaturedArtistsView(NULL),
           m_pBundledSongsView(NULL),
-          m_pTrackCollection(pTrackCollection),
           m_downloadsTableModel(this, pTrackCollection),
           m_bFirstRun(firstRun) {
 
@@ -62,13 +62,13 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
     {
         QTextStream extra(&file);
 
-        qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
+        //qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
         while (!extra.atEnd())
         {
             QString trackPath = extra.readLine();
             trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
-            qDebug() << "PROMO: Auto-loading track" << trackPath;
-            
+            //qDebug() << "PROMO: Auto-loading track" << trackPath;
+
             TrackInfoObject* track = new TrackInfoObject(trackPath);
             // TODO(XXX) These tracks are probably getting leaked b/c
             // m_tracksToAutoLoad is never cleared.
@@ -109,7 +109,7 @@ QVariant PromoTracksFeature::title() {
 }
 
 QIcon PromoTracksFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_promotracks.png");
 }
 
 bool PromoTracksFeature::isSupported(ConfigObject<ConfigValue>* config) {
@@ -126,11 +126,12 @@ QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
 void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                     WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
-    
+
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
     m_pBundledSongsView = new BundledSongsWebView(libraryWidget, PROMO_BUNDLE_PATH, m_sPromoLocalHTMLLocation, m_bFirstRun, m_pConfig);
+    m_pBundledSongsView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
     connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),
@@ -139,7 +140,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 
 /*  XXX: Re-enable this code for Promo 3.0
-    m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this)); 
+    m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this));
     libraryWidget->registerView(m_sFeaturedArtistsViewName, m_pFeaturedArtistsView);
     connect(m_pFeaturedArtistsView, SIGNAL(loadTrack(TrackInfoObject*)),
             this, SIGNAL(loadTrack(TrackInfoObject*)));

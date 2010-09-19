@@ -85,9 +85,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     head_clipping = new EngineClipping("");
 
     // Allocate buffers
-
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     sidechain = new EngineSideChain(_config);
 
@@ -303,7 +304,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
-    m_channelBuffers.push_back(SampleUtil::alloc(MAX_BUFFER_LEN));
+    CSAMPLE* pChannelBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+    memset(pChannelBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_channelBuffers.push_back(pChannelBuffer);
     m_channels.push_back(pChannel);
     pChannel->getEngineBuffer()->bindWorkers(m_pWorkerScheduler);
 

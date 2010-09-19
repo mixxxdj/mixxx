@@ -197,6 +197,10 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
           m_pLibraryWidget, SLOT(searchStarting()));
   connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
           m_pLineEditSearch, SLOT(restoreSearch(const QString&)));
+
+  int desired_fps = 40;
+  float update_interval = 1000.0f / desired_fps;
+  m_guiTimer.start(update_interval);
 }
 
 MixxxView::~MixxxView()
@@ -554,73 +558,67 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
             else if (node.nodeName()=="Visual")
             {
-		WaveformViewerType type;
+                WaveformViewerType type;
 
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
-		    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
-		    m_qWidgetList.append(m_pVisualCh1);
+                    type = WaveformViewerFactory::createWaveformViewer("[Channel1]", this, pConfig, &m_pVisualCh1, m_pWaveformRendererCh1);
+                    connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh1, SLOT(refresh()));
+                    m_qWidgetList.append(m_pVisualCh1);
 
-		    m_pVisualCh1->installEventFilter(m_pKeyboard);
+                    m_pVisualCh1->installEventFilter(m_pKeyboard);
 
-        // Connect trackDropped signals to the PlayerManager
-        connect(m_pVisualCh1, SIGNAL(trackDropped(QString,QString)),
-                m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+                    // Hook up [Channel1],wheel Control Object to the Visual Controller
+                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh1, true, true, true, Qt::LeftButton);
 
-		    // Hook up [Channel1],wheel Control Object to the Visual Controller
-		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-		    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 
-		    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                    // Things to do whether the waveform was previously created or not
+                    if(type == WAVEFORM_GL) {
+                        m_bVisualWaveform = true; // TODO : remove this crust
+                        ((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
+                        // TODO rryan re-enable this later
+                        /*
+                          ((WVisualWaveform*)m_pVisualCh1)->resetColors();
+                        */
+                    } else if (type == WAVEFORM_WIDGET) {
+                        m_bVisualWaveform = true;
+                        ((WWaveformViewer *)m_pVisualCh1)->setup(node);
+                    } else if (type == WAVEFORM_SIMPLE) {
+                        ((WVisualSimple*)m_pVisualCh1)->setup(node);
+                    }
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
+                    connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh2, SLOT(refresh()));
+                    m_qWidgetList.append(m_pVisualCh2);
 
-		    // Things to do whether the waveform was previously created or not
-		    if(type == WAVEFORM_GL) {
-			m_bVisualWaveform = true; // TODO : remove this crust
-			((WGLWaveformViewer*)m_pVisualCh1)->setup(node);
-			// TODO rryan re-enable this later
-			/*
-			((WVisualWaveform*)m_pVisualCh1)->resetColors();
-			*/
-		    } else if (type == WAVEFORM_WIDGET) {
-			m_bVisualWaveform = true;
-			((WWaveformViewer *)m_pVisualCh1)->setup(node);
-		    } else if (type == WAVEFORM_SIMPLE) {
-			((WVisualSimple*)m_pVisualCh1)->setup(node);
-		    }
-		}
-		else if (WWidget::selectNodeInt(node, "Channel")==2)
-		{
-		    type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
-		    m_qWidgetList.append(m_pVisualCh2);
+                    m_pVisualCh2->installEventFilter(m_pKeyboard);
 
-		    m_pVisualCh2->installEventFilter(m_pKeyboard);
+                    // Hook up [Channel1],wheel Control Object to the Visual Controller
+                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh2, true, true, true, Qt::LeftButton);
 
-        // Connect trackDropped signals to the PlayerManager
-        connect(m_pVisualCh2, SIGNAL(trackDropped(QString,QString)),
-                m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 
-		    // Hook up [Channel1],wheel Control Object to the Visual Controller
-		    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-		    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    // Things to do whether the waveform was previously created or not
+                    if(type == WAVEFORM_GL) {
+                        m_bVisualWaveform = true; // TODO : remove this crust
 
-		    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-
-		    // Things to do whether the waveform was previously created or not
-		    if(type == WAVEFORM_GL) {
-			m_bVisualWaveform = true; // TODO : remove this crust
-
-			((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
-			// TODO rryan re-enable this later
-			/*
-			((WVisualWaveform*)m_pVisualCh2)->resetColors();
-			*/
-		    } else if (type == WAVEFORM_WIDGET) {
-			m_bVisualWaveform = true;
-			((WWaveformViewer *)m_pVisualCh2)->setup(node);
-		    } else if (type == WAVEFORM_SIMPLE) {
-			((WVisualSimple*)m_pVisualCh2)->setup(node);
-		    }
-		}
+                        ((WGLWaveformViewer*)m_pVisualCh2)->setup(node);
+                        // TODO rryan re-enable this later
+                        /*
+                          ((WVisualWaveform*)m_pVisualCh2)->resetColors();
+                        */
+                    } else if (type == WAVEFORM_WIDGET) {
+                        m_bVisualWaveform = true;
+                        ((WWaveformViewer *)m_pVisualCh2)->setup(node);
+                    } else if (type == WAVEFORM_SIMPLE) {
+                        ((WVisualSimple*)m_pVisualCh2)->setup(node);
+                    }
+                }
             }
 
             /*############## PERSISTENT OBJECT ##############*/

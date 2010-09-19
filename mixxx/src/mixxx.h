@@ -83,13 +83,13 @@ class MidiDeviceManager;
   */
 class MixxxApp : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     /** Construtor. files is a list of command line arguments */
     MixxxApp(QApplication *app, struct CmdlineArgs args);
     /** destructor */
-    ~MixxxApp();
+    virtual ~MixxxApp();
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
@@ -131,11 +131,14 @@ class MixxxApp : public QMainWindow
     QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-
     /** Scan or rescan the music library directory */
     void slotScanLibrary();
     /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
     void slotEnableRescanLibraryAction();
+    /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+    void slotOptionsMenuShow();
+    /** toggles Livebroadcasting **/
+    void slotOptionsShoutcast(bool value);
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -202,6 +205,7 @@ class MixxxApp : public QMainWindow
     QAction *editPaste;
 
     QAction *playlistsNew;
+    QAction *cratesNew;
     QAction *playlistsImport;
     QAction **playlistsList;
 
@@ -218,6 +222,9 @@ class MixxxApp : public QMainWindow
     QAction *optionsRecord;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
+#ifdef __SHOUTCAST__
+    QAction *optionsShoutcast;
+#endif
 
     QAction *helpAboutApp;
     QAction *helpSupport;

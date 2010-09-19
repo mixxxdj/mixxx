@@ -21,6 +21,7 @@
 #include "library/legacylibraryimporter.h"
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
+#include "trackinfoobject.h"
 
 LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_pCollection(collection),
@@ -41,9 +42,25 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     //modified the database directly when we detected moved files,
     //and the TIOs corresponding to the moved files would then have the
     //wrong track location.
-    connect(this, SIGNAL(scanFinished()), 
+    connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
 
+    /* The "Album Artwork" folder within iTunes stores Album Arts.
+     * It has numerous hundreds of sub folders but no audio files
+     * We put this folder on a "black list"
+     * On Windows, the iTunes folder is contained within the standard music folder
+     * Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
+     */
+    m_iTunesArtFolder = "";
+#if defined(__WINDOWS__)
+		QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
+		// if the value method fails it returns QTDir::homePath
+		m_iTunesArtFolder = settings.value("My Music", QDir::homePath()).toString();
+		m_iTunesArtFolder += "\\iTunes\\Album Artwork";
+		m_iTunesArtFolder.replace(QString("\\"), QString("/"));
+#elif defined(__APPLE__)
+		m_iTunesArtFolder = QDir::homePath() + "/Music/iTunes/Album Artwork";
+#endif
 }
 
 LibraryScanner::~LibraryScanner()
@@ -92,12 +109,12 @@ LibraryScanner::~LibraryScanner()
     foreach(dir, deletedDirs) {
         m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
     }
-    
+
     m_pCollection->getDatabase().commit();
-    
+
     //Close our database connection
     Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
-    //The above is an ASSERT because there should never be an outstanding 
+    //The above is an ASSERT because there should never be an outstanding
     //transaction when this code is called. If there is, it means we probably
     //aren't committing a transaction somewhere that should be.
     if (m_database.isOpen())
@@ -111,6 +128,9 @@ void LibraryScanner::run()
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
+
+    //Lower our priority to help not grind crappy computers.
+    setPriority(QThread::LowPriority);
 
     if (!m_database.isOpen()) {
         m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
@@ -150,7 +170,7 @@ void LibraryScanner::run()
     m_database.commit();
     qDebug("Legacy importer took %d ms", t2.elapsed());
 
-    //Refresh the name filters in case we loaded new 
+    //Refresh the name filters in case we loaded new
     //SoundSource plugins.
     nameFilters = SoundSourceProxy::supportedFileExtensionsString().split(" ");
 
@@ -158,50 +178,77 @@ void LibraryScanner::run()
     QTime t;
     t.start();
 
-    //First, we're going to temporarily mark all the directories that we've
-    //previously hashed as "deleted". As we search through the directory tree
-    //when we rescan, we'll mark any directory that does still exist as such.
-    m_libraryHashDao.markAllDirectoriesAsDeleted();
+    //First, we're going to mark all the directories that we've
+    //previously hashed as needing verification. As we search through the directory tree
+    //when we rescan, we'll mark any directory that does still exist as verified.
+    m_libraryHashDao.invalidateAllDirectories();
 
     //Mark all the tracks in the library as needing
     //verification of their existance...
-    //(ie. we want to check they're still on your hard drive where 
+    //(ie. we want to check they're still on your hard drive where
     //we think they are)
     m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
 
     qDebug() << "Recursively scanning library.";
     //Start scanning the library.
-    //THIS SHOULD NOT BE IN A TRANSACTION! Each addTrack() call from inside 
+    //THIS SHOULD NOT BE IN A TRANSACTION! Each addTrack() call from inside
     //recursiveScan() handles it's own transactions.
-    bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath);
+
+    QList<TrackInfoObject*> tracksToAdd;
+
+    bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath, tracksToAdd);
 
     if (!bScanFinishedCleanly) {
         qDebug() << "Recursive scan interrupted.";
     } else {
         qDebug() << "Recursive scan finished cleanly.";
     }
+	/*
+     * We store the scanned files in the database: Note that the recursiveScan()
+     * method used TrackCollection::importDirectory() to scan the folders. The
+     * method TrackCollection::importDirectory() added all the files to the
+     * 'tracksToAdd' list.
+     *
+     * The following statement writes all the scanned tracks in the list to the
+     * database at once. We don't care if the scan has been cancelled or not.
+     *
+     * This new approach accelerates the scanning process massively by a factor
+     * of 3-4 !!!
+     */
+
+    // Runs inside a transaction
+    m_trackDao.addTracks(tracksToAdd);
+
+    QMutableListIterator<TrackInfoObject*> it(tracksToAdd);
+    while (it.hasNext()) {
+        TrackInfoObject* pTrack = it.next();
+        it.remove();
+        delete pTrack;
+    }
 
     //Start a transaction for all the library hashing (moved file detection)
     //stuff.
     m_database.transaction();
 
-    //At the end of a scan, mark all tracks that weren't "verified" as "deleted"
-    //(as long as the scan wasn't cancelled half way through. This condition is
-    //important because our rescanning algorithm starts by marking all tracks as
-    //unverified, so a cancelled scan might leave half of your library as
-    //unverified. Don't want to mark those tracks as deleted in that case) :)
+    //At the end of a scan, mark all tracks and directories that
+    //weren't "verified" as "deleted" (as long as the scan wasn't cancelled
+    //half way through. This condition is important because our rescanning
+    //algorithm starts by marking all tracks and dirs as unverified, so a
+    //cancelled scan might leave half of your library as unverified. Don't
+    //want to mark those tracks/dirs as deleted in that case) :)
     if (bScanFinishedCleanly)
     {
-        
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
-        
+        qDebug() << "Marking unverified directories as deleted.";
+        m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
+
         //Check to see if the "deleted" tracks showed up in another location,
         //and if so, do some magic to update all our tables.
         qDebug() << "Detecting moved files.";
         m_trackDao.detectMovedFiles();
-        
-        //Remove the hashes for any directories that have been 
+
+        //Remove the hashes for any directories that have been
         //marked as deleted to clean up. We need to do this otherwise
         //we can skip over songs if you move a set of songs from directory
         //A to B, then back to A.
@@ -220,11 +267,11 @@ void LibraryScanner::run()
     //m_pProgress->slotStopTiming();
 
     Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
-    //The above is an ASSERT because there should never be an outstanding 
+    //The above is an ASSERT because there should never be an outstanding
     //transaction when this code is called. If there is, it means we probably
     //aren't committing a transaction somewhere that should be.
     m_database.close();
-    
+
     resetCancel();
     emit(scanFinished());
 }
@@ -242,11 +289,11 @@ void LibraryScanner::scan(QString libraryPath)
     //BlockingQueuedConnection. (DirectConnection isn't an option for sending
     //signals across threads.)
     connect(m_pCollection, SIGNAL(progressLoading(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
+            m_pProgress, SLOT(slotUpdate(QString)));
+            //Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(progressHashing(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
+            m_pProgress, SLOT(slotUpdate(QString)));
+            //Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(scanFinished()),
             m_pProgress, SLOT(slotScanFinished()));
     connect(m_pProgress, SIGNAL(scanCancelled()),
@@ -279,7 +326,7 @@ void LibraryScanner::scan()
     have already been scanned and have not changed. Changes are tracked by performing
     a hash of the directory's file list, and those hashes are stored in the database.
 */
-bool LibraryScanner::recursiveScan(QString dirPath)
+bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd)
 {
     QDirIterator fileIt(dirPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
@@ -310,17 +357,19 @@ bool LibraryScanner::recursiveScan(QString dirPath)
     //Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash)
     {
+        //If we didn't know about this directory before...
         if (!prevHashExists) {
             m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
         }
-        else //Just need to update the old hash in the database
+        else //Contents of a known directory have changed.
+             //Just need to update the old hash in the database and then rescan it.
         {
             qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
             m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
         }
 
         //Rescan that mofo!
-        bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao);
+        bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao, tracksToAdd);
     }
     else //prevHash == newHash
     {
@@ -329,10 +378,15 @@ bool LibraryScanner::recursiveScan(QString dirPath)
         //keep track of directories that have been deleted to stop the database from keeping
         //rows about deleted directories around. :)
         //qDebug() << "prevHash == newHash";
-        m_libraryHashDao.markAsExisting(dirPath);
 
-        //We also need to mark the tracks _inside_ this directory as verified 
-        //and still existing!
+        // Mark the directory as verified and not deleted.
+        // m_libraryHashDao.markAsExisting(dirPath);
+        // m_libraryHashDao.markAsVerified(dirPath);
+        m_libraryHashDao.updateDirectoryStatus(dirPath, false, true);
+
+        //We also need to mark the tracks _inside_ this directory as verified.
+        //Note that this doesn't mark the tracks as existing, just that they're in
+        //the same state as the last time we scanned this directory.
         m_trackDao.markTracksInDirectoryAsVerified(dirPath);
 
         emit(progressHashing(dirPath));
@@ -351,7 +405,14 @@ bool LibraryScanner::recursiveScan(QString dirPath)
     QDirIterator dirIt(dirPath, QDir::Dirs | QDir::NoDotAndDotDot);
     while (dirIt.hasNext() && bScanFinishedCleanly)
     {
-        if (!recursiveScan(dirIt.next()))
+        QString nextPath = dirIt.next();
+
+        // Skip the iTunes Album Art Folder since it is probably a waste of
+        // time.
+        if (nextPath == m_iTunesArtFolder)
+            continue;
+
+        if (!recursiveScan(nextPath, tracksToAdd))
             bScanFinishedCleanly = false;
     }
 
