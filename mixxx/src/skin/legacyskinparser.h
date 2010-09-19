@@ -11,6 +11,7 @@
 class Library;
 class MixxxKeyboard;
 class PlayerManager;
+class WAbstractControl;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -29,8 +30,13 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QDomElement openSkin(QString skinPath);
 
     QWidget* parseNode(QDomElement node, QWidget* pParent);
-    void parseColorSchemes(QDomElement node);
 
+    // Support for various legacy behavior
+    void parseColorSchemes(QDomElement node);
+    void setControlDefaults(QDomNode node, WAbstractControl* pControl);
+    bool compareConfigKeys(QDomNode node, QString key);
+
+    // Parsers for each node
     QWidget* parseBackground(QDomElement node, QWidget* pParent);
     QWidget* parsePushButton(QDomElement node, QWidget* pParent);
     QWidget* parseSliderComposed(QDomElement node, QWidget* pParent);
