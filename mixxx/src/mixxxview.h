@@ -80,92 +80,16 @@ public:
     void checkDirectRendering();
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
-    /** Return a pointer to the track table view widget. */
-    WTrackTableView* getTrackTableView();
-
-    /** Pointer to WVisual widgets */
-    QObject *m_pVisualCh1, *m_pVisualCh2;
-    WaveformRenderer *m_pWaveformRendererCh1, *m_pWaveformRendererCh2;
-
-    /** Pointer to BPM display widgets */
-    WNumberBpm *m_pNumberBpmCh1, *m_pNumberBpmCh2;
-    /** Pointer to rate slider widgets */
-    WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
-    /** Pointer to SearchBox */
-    QLabel *m_pSearchLabel;
-    WSearchLineEdit *m_pLineEditSearch;
-    /** Pointer to Search PushButton*/
-    QPushButton *m_pPushButton;
-    /** Pointer to overview displays */
-    WOverview *m_pOverviewCh1, *m_pOverviewCh2;
-
-    void rebootGUI(QWidget* parent, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
-
     static QList<QString> getSchemeList(QString qSkinPath);
-  public slots:
-    void slotSetupTrackConnectionsCh1(TrackPointer pTrack);
-    void slotSetupTrackConnectionsCh2(TrackPointer pTrack);
-    void slotUpdateTrackTextCh1(TrackPointer pTrack);
-    void slotClearTrackTextCh1(TrackPointer pTrack);
-    void slotUpdateTrackTextCh2(TrackPointer pTrack);
-    void slotClearTrackTextCh2(TrackPointer pTrack);
-
 private:
-    void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
-    void createAllWidgets(QDomElement docElem, QWidget* parent, ConfigObject<ConfigValue> *pConfig);
-    void setupTabWidget(QDomNode node);
-    void setupTrackSourceViewWidget(QDomNode node);
-
-    // Pointer to absolute file position widgets
-    WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
-
-    // The text display widgets
-    QLabel *m_pTextCh1, *m_pTextCh2;
-    // The current text each of those widgets contains, so it can be reset
-    // across reboots of the GUI.
-    QString m_textCh1, m_textCh2;
-
-    ImgSource* parseFilters(QDomNode filt);
     static QDomElement openSkin(QString qSkinPath);
-    /**Used for comboBox change*/
-    int view;
+
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;
-    bool compareConfigKeys(QDomNode node, QString key);
-    QList<QObject *> m_qWidgetList;
-    /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
     ConfigObject<ConfigValue> *m_pConfig;
-
-    /** Tab widget, which contains several "pages" for different views */
-    QStackedWidget* m_pTabWidget; //XXX: Temporarily turned this into a QStackedWidget instead of a QTabWidget to disable the tabs for 1.7.0 since LADSPA effects isn't finished.
-    /** The widget containing the library/tracktable page */
-    QWidget* m_pTabWidgetLibraryPage;
-    /** The widget containing the effects/LADSPA page */
-    QWidget* m_pTabWidgetEffectsPage;
-    /** The layout for the library page. Allows stuff to resize automatically */
-    QGridLayout* m_pLibraryPageLayout;
-    /** The layout for the effects page. Allows stuff to resize automatically */
-    QGridLayout* m_pEffectsPageLayout;
-
-    // The splitter widget that contains the library panes
-    QSplitter *m_pSplitter;
-    // The library widget
-    WLibrary* m_pLibraryWidget;
-    // The library manager
-    Library* m_pLibrary;
-    // The library sidebar
-    WLibrarySidebar* m_pLibrarySidebar;
-    // Contains the actual library sidebar widget and the search box in a vertical box layout.
-    QWidget* m_pLibrarySidebarPage;
-
     PlayerManager* m_pPlayerManager;
 
-    QTimer m_guiTimer;
-
-#ifdef __LADSPA__
-    LADSPAView* m_pLADSPAView;
-#endif
 };
 
 #endif

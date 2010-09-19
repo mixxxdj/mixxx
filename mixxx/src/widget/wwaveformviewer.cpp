@@ -19,7 +19,7 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
 
-    m_pGroup = group;
+    m_pGroup = strdup(group);
 
     setAcceptDrops(true);
 

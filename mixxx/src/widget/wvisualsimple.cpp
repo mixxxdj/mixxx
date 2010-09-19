@@ -31,7 +31,7 @@
 
 WVisualSimple::WVisualSimple(const char* group, QWidget * parent, WaveformRenderer* pWaveformRenderer)
         : WWidget(parent),
-          m_group(group),
+          m_group(strdup(group)),
           m_iValue(64),
           m_pWaveformRenderer(pWaveformRenderer)
 

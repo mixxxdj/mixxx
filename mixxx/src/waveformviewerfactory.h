@@ -4,6 +4,8 @@
 
 #include <QList>
 #include <QDomNode>
+#include <QWidget>
+#include <QTimer>
 
 #include "configobject.h"
 #include "widget/wwidget.h"
@@ -26,16 +28,17 @@ private:
     /* shouldn't be accessible */
     WaveformViewerFactory() {};
     ~WaveformViewerFactory() {};
-    static QList<QObject*> m_viewers;
+    static QList<QWidget*> m_viewers;
     static QList<WVisualSimple*> m_simpleViewers;
     static QList<WWaveformViewer*> m_visualViewers;
     static QList<WGLWaveformViewer*> m_visualGLViewers;
+    static QTimer s_waveformUpdateTimer;
 
 public:
-    static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer *pWaveformRenderer);
-    static void destroyWaveformViewer(QObject *pWaveformViewer);
-    static WaveformViewerType getWaveformViewerType(QObject *pWaveformViewer);
-    
+    static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer *pWaveformRenderer);
+    static void destroyWaveformViewer(QWidget *pWaveformViewer);
+    static WaveformViewerType getWaveformViewerType(QWidget *pWaveformViewer);
+
 };
 
 #endif

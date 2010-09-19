@@ -151,7 +151,7 @@ class MixxxApp : public QMainWindow
      * you can create your view according to your application's needs by
      * changing the view class.
      */
-    MixxxView* m_pView;
+    QWidget* m_pView;
     QFrame *frame;
 
     QApplication *app;
@@ -160,6 +160,7 @@ class MixxxApp : public QMainWindow
 
   public: // HACKSMODE
     SkinLoader* m_pSkinLoader;
+
   private:
 
     // The sound manager

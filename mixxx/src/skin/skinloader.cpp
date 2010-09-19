@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "skin/skinloader.h"
+#include "skin/legacyskinparser.h"
 
 #include "mixxxview.h"
 #include "library/library.h"
@@ -46,9 +47,13 @@ QString SkinLoader::getConfiguredSkinPath() {
     return qSkinPath;
 }
 
-MixxxView* SkinLoader::loadDefaultSkin(QWidget* pParent,
+QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                        MixxxKeyboard* pKeyboard,
                                        PlayerManager* pPlayerManager,
                                        Library* pLibrary) {
-    return new MixxxView(pParent, pKeyboard, getConfiguredSkinPath(), m_pConfig, pPlayerManager, pLibrary);
+    QString skinPath = getConfiguredSkinPath();
+
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary);
+    qDebug() << "Legacy can parse:" << legacy.canParse(skinPath);
+    return legacy.parseSkin(skinPath, pParent);
 }
