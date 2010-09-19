@@ -81,8 +81,6 @@ MixxxView::MixxxView(QWidget* parent, MixxxKeyboard* pKeyboard,
 #endif
 #endif
 
-    m_bVisualWaveform = false;
-
 #ifdef __WINDOWS__
 #ifndef QT3_SUPPORT
     // QPixmap fix needed on Windows 9x
@@ -96,86 +94,3 @@ MixxxView::~MixxxView()
 {
 
 }
-
-void MixxxView::checkDirectRendering()
-{
-    // IF
-    //  * A waveform viewer exists
-    // AND
-    //  * The waveform viewer is an OpenGL waveform viewer
-    // AND
-    //  * The waveform viewer does not have direct rendering enabled.
-    // THEN
-    //  * Warn user
-
-    // TODO rryan -- re-integrate with 'new' GL viewer
-
-    // TODO(XXX) integrate into new skin loader
-
-
-  //   if((m_pVisualCh1 &&
-	// WaveformViewerFactory::getWaveformViewerType(m_pVisualCh1) == WAVEFORM_GL &&
-	// !((WGLWaveformViewer *)m_pVisualCh1)->directRendering()) ||
-  //      (m_pVisualCh2 &&
-	// WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2) == WAVEFORM_GL &&
-	// !((WGLWaveformViewer *)m_pVisualCh2)->directRendering()))
-  //       {
-	//     if(m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
-	// 	{
-	// 	    QMessageBox::warning(0, "OpenGL Direct Rendering",
-	// 				 "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
-	// 	    m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
-	// 	}
-	// }
-
-}
-
-bool MixxxView::activeWaveform()
-{
-    return m_bVisualWaveform;
-}
-
-QDomElement MixxxView::openSkin(QString qSkinPath) {
-
-    // Path to image files
-    WWidget::setPixmapPath(qSkinPath.append("/"));
-
-    // Read XML file
-    QDomDocument skin("skin");
-    QFile file(WWidget::getPath("skin.xml"));
-    QFileInfo fi(file);
-    QByteArray qbaFilename = fi.fileName().toUtf8();
-
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qFatal("Could not open skin definition file: %s", qbaFilename.constData());
-    }
-    if (!skin.setContent(&file))
-    {
-        qFatal("Error parsing skin definition file: %s", qbaFilename.constData());
-    }
-
-    file.close();
-    return skin.documentElement();
-}
-
-
-QList<QString> MixxxView::getSchemeList(QString qSkinPath) {
-
-    QDomElement docElem = openSkin(qSkinPath);
-    QList<QString> schlist;
-
-    QDomNode colsch = docElem.namedItem("Schemes");
-    if (!colsch.isNull() && colsch.isElement()) {
-        QDomNode sch = colsch.firstChild();
-
-        while (!sch.isNull()) {
-            QString thisname = WWidget::selectNodeQString(sch, "Name");
-            schlist.append(thisname);
-            sch = sch.nextSibling();
-        }
-    }
-
-    return schlist;
-}
-

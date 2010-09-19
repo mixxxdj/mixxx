@@ -33,6 +33,7 @@
 #include "engine/enginevumeter.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
+#include "waveformviewerfactory.h"
 #include "waveform/waveformrenderer.h"
 #include "soundsourceproxy.h"
 
@@ -212,21 +213,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //Scan the library for new files and directories.
     m_pLibraryScanner->scan(config->getValueString(ConfigKey("[Playlist]","Directory")));
 
-
     // Call inits to invoke all other construction parts
-
-    // TODO rryan : Move this to WaveformViewerFactory or something.
-    /*
-    if (bVisualsWaveform && !m_pView->activeWaveform())
-    {
-        config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
-        QMessageBox * mb = new QMessageBox(this);
-        mb->setWindowTitle(QString("Wavform displays"));
-        mb->setIcon(QMessageBox::Information);
-        mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
-        mb->show();
-    }
-    */
 
     // Verify path for xml track file.
     QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
@@ -308,8 +295,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
                                              m_pLibrary);
 
     // Check direct rendering and warn user if they don't have it
-    // if (m_pView)
-    //     m_pView->checkDirectRendering();
+    checkDirectRendering();
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
@@ -1147,4 +1133,23 @@ void MixxxApp::slotOptionsShoutcast(bool value){
     optionsShoutcast->setChecked(value);
     config->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue(value));
 #endif
+}
+
+void MixxxApp::checkDirectRendering() {
+    // IF
+    //  * A waveform viewer exists
+    // AND
+    //  * The waveform viewer is an OpenGL waveform viewer
+    // AND
+    //  * The waveform viewer does not have direct rendering enabled.
+    // THEN
+    //  * Warn user
+
+    if (WaveformViewerFactory::numViewers(WAVEFORM_GL) > 0 &&
+        !WaveformViewerFactory::isDirectRenderingEnabled() &&
+        config->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
+		    QMessageBox::warning(0, "OpenGL Direct Rendering",
+                             "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+        config->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+    }
 }

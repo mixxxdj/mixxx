@@ -38,7 +38,8 @@ public:
     static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer *pWaveformRenderer);
     static void destroyWaveformViewer(QWidget *pWaveformViewer);
     static WaveformViewerType getWaveformViewerType(QWidget *pWaveformViewer);
-
+    static int numViewers(WaveformViewerType type);
+    static bool isDirectRenderingEnabled();
 };
 
 #endif

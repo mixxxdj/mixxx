@@ -75,17 +75,8 @@ public:
               PlayerManager* pPlayerManager,
               Library* pLibrary);
     ~MixxxView();
-
-    /** Check if direct rendering is not available, and display warning */
-    void checkDirectRendering();
-    /** Return true if WVisualWaveform has been instantiated. */
-    bool activeWaveform();
-    static QList<QString> getSchemeList(QString qSkinPath);
 private:
-    static QDomElement openSkin(QString qSkinPath);
 
-    // True if m_pVisualChX is instantiated as WVisualWaveform
-    bool m_bVisualWaveform;
     MixxxKeyboard *m_pKeyboard;
     ConfigObject<ConfigValue> *m_pConfig;
     PlayerManager* m_pPlayerManager;

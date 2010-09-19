@@ -30,6 +30,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
+#include "skin/legacyskinparser.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
@@ -269,7 +270,7 @@ DlgPrefControls::~DlgPrefControls()
 void DlgPrefControls::slotUpdateSchemes()
 {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = MixxxView::getSchemeList(
+    QList<QString> schlist = LegacySkinParser::getSchemeList(
         m_pSkinLoader->getConfiguredSkinPath());
 
     ComboBoxSchemeconf->clear();

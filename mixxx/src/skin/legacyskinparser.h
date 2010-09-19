@@ -23,8 +23,11 @@ class LegacySkinParser : public QObject, public SkinParser {
     virtual bool canParse(QString skinPath);
     virtual QWidget* parseSkin(QString skinPath, QWidget* pParent);
 
+    // Legacy support for looking up the scheme list.
+    static QList<QString> getSchemeList(QString qSkinPath);
   private:
-    QDomElement openSkin(QString skinPath);
+    static QDomElement openSkin(QString skinPath);
+
     QWidget* parseNode(QDomElement node, QWidget* pParent);
     void parseColorSchemes(QDomElement node);
 
