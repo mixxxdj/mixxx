@@ -6,6 +6,7 @@
 #include "trackinfoobject.h"
 #include "library/trackcollection.h"
 #include "library/basesqltablemodel.h"
+#include "mixxxutils.cpp"
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -49,23 +50,26 @@ bool BaseSqlTableModel::select() {
 }
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid())
+    if (!index.isValid()){
         return QVariant();
-
+	}
     int row = index.row();
     int col = index.column();
-
+	
     Q_ASSERT(m_rowToTrackId.contains(row));
     if (!m_rowToTrackId.contains(row)) {
         return QSqlTableModel::data(index, role);
     }
-
+	
     int trackId = m_rowToTrackId[row];
-
-    if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
+	/*
+	 * The if-block below is only executed when a table item has been edited.
+	 *
+	 */
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) && m_trackOverrides.contains(trackId)) {
         //qDebug() << "Returning override for track" << trackId;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
-
+		
         // TODO(XXX) Qt properties could really help here.
         if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
             return QVariant(pTrack->getArtist());
@@ -86,14 +90,32 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         } else if (fieldIndex(LIBRARYTABLE_COMMENT) == col) {
             return QVariant(pTrack->getComment());
         } else if (fieldIndex(LIBRARYTABLE_DURATION) == col) {
-            return QVariant(pTrack->getDuration());
+            QVariant value = pTrack->getDuration();
+			if (qVariantCanConvert<int>(value)) 
+				value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+			return value;
         } else if (fieldIndex(LIBRARYTABLE_BITRATE) == col) {
             return QVariant(pTrack->getBitrate());
         } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
             return QVariant(pTrack->getBpm());
         }
     }
-    return QSqlTableModel::data(index, role);
+	
+	
+	QVariant value; 
+	
+	if (role == Qt::ToolTipRole)
+		value = QSqlTableModel::data(index, Qt::DisplayRole);
+	else
+		value = QSqlTableModel::data(index, role);
+		
+	if (fieldIndex(LIBRARYTABLE_DURATION) == col)
+	{
+		if (qVariantCanConvert<int>(value)) 
+            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+	}
+
+    return value;
 }
 
 void BaseSqlTableModel::trackChanged(int trackId) {
