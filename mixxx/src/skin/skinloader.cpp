@@ -8,7 +8,6 @@
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 
-#include "mixxxview.h"
 #include "library/library.h"
 #include "playermanager.h"
 
