@@ -49,6 +49,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_RATING + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
@@ -79,36 +80,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     setTable(playlistTableName);
 
-    //Set the column heading labels, rename them for translations and have
-    //proper capitalization
-    setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
-                  Qt::Horizontal, tr("#"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
-                  Qt::Horizontal, tr("Artist"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
-                  Qt::Horizontal, tr("Title"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
-                  Qt::Horizontal, tr("Album"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
-                  Qt::Horizontal, tr("Genre"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
-                  Qt::Horizontal, tr("Type"));
-    setHeaderData(fieldIndex("location"),
-                  Qt::Horizontal, tr("Location"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
-                  Qt::Horizontal, tr("Comment"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
-                  Qt::Horizontal, tr("Duration"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
-                  Qt::Horizontal, tr("Track #"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
-                  Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
-                  Qt::Horizontal, tr("Date Added"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
-                  Qt::Horizontal, tr("BPM"));
+    initHeaderData();    //derived from BaseSqlModel
 
     slotSearch("");
 
@@ -354,18 +326,6 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-Qt::ItemFlags PlaylistTableModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-      return Qt::ItemIsEnabled;
-
-    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
-    //load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    return defaultFlags;
-}
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
     return NULL;

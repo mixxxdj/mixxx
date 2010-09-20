@@ -146,4 +146,12 @@ METADATA
       ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="6">
+    <description>
+      Add rating column
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN rating integer DEFAULT 1;
+    </sql>
+  </revision>
 </schema>

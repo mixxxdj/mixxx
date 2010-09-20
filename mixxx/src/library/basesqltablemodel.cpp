@@ -7,6 +7,8 @@
 #include "library/trackcollection.h"
 #include "library/basesqltablemodel.h"
 #include "mixxxutils.cpp"
+#include "library/starrating.h"
+
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -21,8 +23,41 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
+
 }
 
+void BaseSqlTableModel::initHeaderData() {
+    //Set the column heading labels, rename them for translations and have
+    //proper capitalization
+    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
+                  Qt::Horizontal, tr("Artist"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
+                  Qt::Horizontal, tr("Title"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
+                  Qt::Horizontal, tr("Album"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
+                  Qt::Horizontal, tr("Genre"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
+                  Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, tr("Type"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
+                  Qt::Horizontal, tr("Location"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
+                  Qt::Horizontal, tr("Comment"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
+                  Qt::Horizontal, tr("Duration"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_RATING),
+                  Qt::Horizontal, tr("Rating"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
+                  Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
+                  Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
+                  Qt::Horizontal, tr("Track #"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Date Added"));
+}
 bool BaseSqlTableModel::select() {
     //qDebug() << "select()";
     bool result = QSqlTableModel::select();
@@ -66,7 +101,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 	 * The if-block below is only executed when a table item has been edited.
 	 *
 	 */
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) && m_trackOverrides.contains(trackId)) {
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole || role == Qt::EditRole) && m_trackOverrides.contains(trackId)) {
         //qDebug() << "Returning override for track" << trackId;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 		
@@ -99,12 +134,18 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
             return QVariant(pTrack->getBpm());
         }
+        else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
+            QVariant value = pTrack->getRating();
+			if (qVariantCanConvert<int>(value)) 
+				value = qVariantFromValue(StarRating(value.toInt()));
+            return value;
+        }
     }
 	
 	
 	QVariant value; 
 	
-	if (role == Qt::ToolTipRole)
+	if (role == Qt::ToolTipRole || role == Qt::EditRole)
 		value = QSqlTableModel::data(index, Qt::DisplayRole);
 	else
 		value = QSqlTableModel::data(index, role);
@@ -114,10 +155,66 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 		if (qVariantCanConvert<int>(value)) 
             value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
 	}
+    if (fieldIndex(LIBRARYTABLE_RATING) == col)
+	{
+		if (qVariantCanConvert<int>(value)) 
+            value = qVariantFromValue(StarRating(value.toInt()));
+	}
+    
 
     return value;
 }
+bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	if (!index.isValid())
+        return false;
 
+    int row = index.row();
+    int col = index.column();
+
+    Q_ASSERT(m_rowToTrackId.contains(row));
+    if (!m_rowToTrackId.contains(row)) {
+        return QSqlTableModel::setData(index, value, role);
+    }
+
+    int trackId = m_rowToTrackId[row];
+    
+    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    
+    // TODO(XXX) Qt properties could really help here.
+    if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
+        pTrack->setArtist(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_TITLE) == col) {
+        pTrack->setTitle(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == col) {
+        pTrack->setAlbum(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_YEAR) == col) {
+        pTrack->setYear(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_GENRE) == col) {
+        pTrack->setGenre(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == col) {
+        pTrack->setType(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == col) {
+        pTrack->setTrackNumber(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == col) {
+        pTrack->setLocation(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == col) {
+        pTrack->setComment(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_DURATION) == col) {
+        pTrack->setDuration(value.toInt());
+    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == col) {
+        pTrack->setBitrate(value.toInt());
+    } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
+        pTrack->setBpm(value.toInt());
+    } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
+		StarRating starRating = qVariantValue<StarRating>(value);
+        pTrack->setRating(starRating.starCount());
+    }
+    
+    m_trackDAO.saveTrack(pTrack);
+    
+    return true;
+}
 void BaseSqlTableModel::trackChanged(int trackId) {
     m_trackOverrides.insert(trackId);
     if (m_trackIdToRow.contains(trackId)) {
@@ -170,4 +267,44 @@ QString BaseSqlTableModel::orderByClause() const {
 
     s += m_eSortOrder == Qt::AscendingOrder ? QLatin1String(" ASC") : QLatin1String(" DESC");
     return s;
+}
+Qt::ItemFlags BaseSqlTableModel::readWriteFlags(const QModelIndex &index) const
+{
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+    if (!index.isValid())
+      return Qt::ItemIsEnabled;
+
+	//Enable dragging songs from this data model to elsewhere (like the waveform
+	//widget to load a track into a Player).
+    defaultFlags |= Qt::ItemIsDragEnabled;
+    
+
+    if ( index.column() == fieldIndex(LIBRARYTABLE_FILETYPE) 
+        || index.column() == fieldIndex(LIBRARYTABLE_LOCATION) 
+        || index.column() == fieldIndex(LIBRARYTABLE_DURATION)
+        || index.column() == fieldIndex(LIBRARYTABLE_BITRATE)  
+        || index.column() == fieldIndex(LIBRARYTABLE_DATETIMEADDED)  )
+    {
+        return defaultFlags | QAbstractItemModel::flags(index);
+    }
+    else{
+        return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    }
+}
+Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
+{
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+    if (!index.isValid())
+      return Qt::ItemIsEnabled;
+
+    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
+    //load a track into a Player).
+    defaultFlags |= Qt::ItemIsDragEnabled;
+
+    return defaultFlags;
+    
+}
+Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const
+{
+    return readWriteFlags(index);
 }

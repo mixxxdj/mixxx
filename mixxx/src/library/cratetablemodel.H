@@ -1,24 +1,29 @@
-#ifndef PLAYLISTTABLEMODEL_H
-#define PLAYLISTTABLEMODEL_H
+// cratetablemodel.h
+// Created 10/25/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtSql>
+#ifndef CRATETABLEMODEL_H
+#define CRATETABLEMODEL_H
+
 #include <QItemDelegate>
-#include <QtCore>
-#include "trackmodel.h"
+#include <QSqlTableModel>
+
 #include "library/basesqltablemodel.h"
-#include "library/librarytablemodel.h"
-#include "library/dao/playlistdao.h"
-#include "library/dao/trackdao.h"
+#include "library/trackmodel.h"
 
 class TrackCollection;
 
-class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
-{
+class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
     Q_OBJECT
   public:
-    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~PlaylistTableModel();
-    void setPlaylist(int playlistId);
+    CrateTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~CrateTableModel();
+
+    void setCrate(int crateId);
+
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
+   
+
+    // From TrackModel
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
@@ -27,25 +32,21 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-    
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QItemDelegate* delegateForColumn(const int i);
+    virtual void moveTrack(const QModelIndex& sourceIndex,
+                           const QModelIndex& destIndex);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+    virtual QItemDelegate* delegateForColumn(const int i);
 
   private slots:
     void slotSearch(const QString& searchText);
-
   signals:
     void doSearch(const QString& searchText);
 
   private:
     TrackCollection* m_pTrackCollection;
-    PlaylistDAO& m_playlistDao;
-    TrackDAO& m_trackDao;
-    int m_iPlaylistId;
+    int m_iCrateId;
     QString m_currentSearch;
 };
 
-#endif
+
+#endif /* CRATETABLEMODEL_H */

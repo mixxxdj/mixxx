@@ -25,6 +25,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_RATING + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
@@ -56,34 +57,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //and shows it...
     //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
-    //Set the column heading labels, rename them for translations and have
-    //proper capitalization
-    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
-                  Qt::Horizontal, tr("Artist"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
-                  Qt::Horizontal, tr("Title"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
-                  Qt::Horizontal, tr("Album"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
-                  Qt::Horizontal, tr("Genre"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
-                  Qt::Horizontal, tr("Type"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
-                  Qt::Horizontal, tr("Location"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
-                  Qt::Horizontal, tr("Comment"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
-                  Qt::Horizontal, tr("Duration"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
-                  Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
-                  Qt::Horizontal, tr("BPM"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
-                  Qt::Horizontal, tr("Track #"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
-                  Qt::Horizontal, tr("Date Added"));
+    initHeaderData();    //derived from BaseSqlModel
 
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
     slotSearch("");
@@ -243,25 +217,7 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-      return Qt::ItemIsEnabled;
 
-	//Enable dragging songs from this data model to elsewhere (like the waveform
-	//widget to load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    /** FIXME: This doesn't seem to work - Albert */
-    const int bpmColumnIndex = fieldIndex(LIBRARYTABLE_BPM);
-    if (index.column() == bpmColumnIndex)
-    {
-        return defaultFlags | Qt::ItemIsEditable;
-    }
-
-    return defaultFlags;
-}
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {

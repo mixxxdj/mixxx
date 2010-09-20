@@ -123,6 +123,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
+    m_Rating = 1;
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader)
@@ -720,4 +721,19 @@ bool TrackInfoObject::isDirty() {
 bool TrackInfoObject::locationChanged() {
     QMutexLocker lock(&m_qMutex);
     return m_bLocationChanged;
+}
+/** Returns the rating */
+int TrackInfoObject::getRating() const{
+	QMutexLocker lock(&m_qMutex);
+	
+	return m_Rating;
+}
+    /** Set rating */
+void TrackInfoObject::setRating (int rating){
+	QMutexLocker lock(&m_qMutex);
+	
+	bool dirty = rating != m_Rating;
+    m_Rating = rating;
+    if (dirty)
+        setDirty(true);
 }
