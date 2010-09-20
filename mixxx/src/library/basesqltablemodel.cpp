@@ -205,7 +205,8 @@ bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (fieldIndex(LIBRARYTABLE_BITRATE) == col) {
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
-        pTrack->setBpm(value.toInt());
+        //QVariant::toFloat needs >= QT 4.6.x
+		pTrack->setBpm((float) value.toDouble());
     } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
 		StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
