@@ -30,7 +30,7 @@
 	v1.03	(14/09/2010)
 	* Corrected errors in (Hot)cues resulting in unexpected behaviour
 	* Reloop button now reflect its toggle state
-	
+
 	v1.02	(13/09/2010)
 	* Change skin license to Creative Commons Attribution-ShareAlike 3.0 Unported
 	  Skin now DFSG-compatible see http://wiki.debian.org/DebianFreeSoftwareGuidelines
@@ -74,7 +74,7 @@
 	-->
 
 	<!--
-	**********************************************	
+	**********************************************
 	General- Main background picture
 	**********************************************
 	-->
@@ -214,7 +214,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_7_position</Control>
 			<Text> HOTCUE 7 </Text>
@@ -228,7 +228,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_9_position</Control>
 			<Text> HOTCUE 9 </Text>
@@ -242,7 +242,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_11_position</Control>
 			<Text> HOTCUE 11 </Text>
@@ -256,7 +256,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_13_position</Control>
 			<Text> HOTCUE 13 </Text>
@@ -270,7 +270,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_15_position</Control>
 			<Text> HOTCUE 15 </Text>
@@ -284,7 +284,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_17_position</Control>
 			<Text> HOTCUE 17 </Text>
@@ -298,7 +298,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_19_position</Control>
 			<Text> HOTCUE 19 </Text>
@@ -319,7 +319,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_22_position</Control>
 			<Text> HOTCUE 22 </Text>
@@ -333,7 +333,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_24_position</Control>
 			<Text> HOTCUE 24 </Text>
@@ -347,7 +347,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_26_position</Control>
 			<Text> HOTCUE 26 </Text>
@@ -361,7 +361,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
@@ -375,7 +375,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_30_position</Control>
 			<Text> HOTCUE 30 </Text>
@@ -389,7 +389,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
@@ -497,7 +497,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_7_position</Control>
 			<Text> HOTCUE 7 </Text>
@@ -511,7 +511,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_9_position</Control>
 			<Text> HOTCUE 9 </Text>
@@ -525,7 +525,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_11_position</Control>
 			<Text> HOTCUE 11 </Text>
@@ -539,7 +539,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_13_position</Control>
 			<Text> HOTCUE 13 </Text>
@@ -553,7 +553,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_15_position</Control>
 			<Text> HOTCUE 15 </Text>
@@ -567,7 +567,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_17_position</Control>
 			<Text> HOTCUE 17 </Text>
@@ -581,7 +581,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_19_position</Control>
 			<Text> HOTCUE 19 </Text>
@@ -602,7 +602,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_22_position</Control>
 			<Text> HOTCUE 22 </Text>
@@ -616,7 +616,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_24_position</Control>
 			<Text> HOTCUE 24 </Text>
@@ -630,7 +630,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_26_position</Control>
 			<Text> HOTCUE 26 </Text>
@@ -644,7 +644,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
@@ -658,7 +658,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_30_position</Control>
 			<Text> HOTCUE 30 </Text>
@@ -672,7 +672,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
@@ -1051,7 +1051,7 @@
 	</SliderComposed>
 
 	<!--
-	**********************************************	
+	**********************************************
 	Slider- Pitch control
 	**********************************************
 	-->
@@ -2031,7 +2031,7 @@
 	</PushButton>
 
 	<!--
-	**********************************************	
+	**********************************************
 	Button- Pitch control
 	**********************************************
 	-->

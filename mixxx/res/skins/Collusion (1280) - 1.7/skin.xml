@@ -40,12 +40,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			</Filters>
 		</Scheme>
 	</Schemes>
-	
+
 	<!-- ***** Background image ***** -->
 	<Background>
 		<Path>scene1.8.png</Path>
 	</Background>
-	
+
 	<!-- ***** SLIDERS ***** -->
 	<SliderComposed>
 		<Tooltip>Master: Crossfader</Tooltip>
@@ -102,7 +102,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</SliderComposed>
-	
+
 	<!-- ***** VOLUME METERS ***** -->
 	<VuMeter>
 		<Tooltip>Master: Volume Meter</Tooltip>
@@ -142,7 +142,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel2],VuMeter</ConfigKey>
 		</Connection>
 	</VuMeter>
-	
+
 	<!-- ***** PLAYER 1 CONTROL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck A: Left click: Pause/play, Right click: Set cue point</Tooltip>
@@ -360,7 +360,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** PLAYER 2 CONTROL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck B: Left click: Pause/play, Right click: Set cue point</Tooltip>
@@ -578,7 +578,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** PLAYER 1 TEMPO BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck A: Change playback rate (left/right click: large/small effect)</Tooltip>
@@ -802,7 +802,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** MASTER/FLANGER KNOBS ***** -->
 	<Knob>
 		<Tooltip>Master volume</Tooltip>
@@ -973,7 +973,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<OnOff>true</OnOff>
 		</Connection>
 	</Knob>
-	
+
 	<!-- ***** PLAYER 1 KILL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck A: Treble Kill</Tooltip>
@@ -1035,7 +1035,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** PLAYER 2 KILL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck B: Treble Kill</Tooltip>
@@ -1097,7 +1097,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** WAVEFORMS ***** -->
 	<Visual>
 		<Tooltip>Deck A: Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
@@ -1169,7 +1169,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_7_position</Control>
 			<Text> HOTCUE 7 </Text>
@@ -1183,7 +1183,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_9_position</Control>
 			<Text> HOTCUE 9 </Text>
@@ -1197,7 +1197,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_11_position</Control>
 			<Text> HOTCUE 11 </Text>
@@ -1211,7 +1211,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_13_position</Control>
 			<Text> HOTCUE 13 </Text>
@@ -1225,7 +1225,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_15_position</Control>
 			<Text> HOTCUE 15 </Text>
@@ -1239,7 +1239,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_17_position</Control>
 			<Text> HOTCUE 17 </Text>
@@ -1253,7 +1253,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_19_position</Control>
 			<Text> HOTCUE 19 </Text>
@@ -1274,7 +1274,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_22_position</Control>
 			<Text> HOTCUE 22 </Text>
@@ -1288,7 +1288,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_24_position</Control>
 			<Text> HOTCUE 24 </Text>
@@ -1302,7 +1302,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_26_position</Control>
 			<Text> HOTCUE 26 </Text>
@@ -1316,7 +1316,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
@@ -1330,7 +1330,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_30_position</Control>
 			<Text> HOTCUE 30 </Text>
@@ -1344,7 +1344,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
@@ -1428,7 +1428,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_7_position</Control>
 			<Text> HOTCUE 7 </Text>
@@ -1442,7 +1442,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_9_position</Control>
 			<Text> HOTCUE 9 </Text>
@@ -1456,7 +1456,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_11_position</Control>
 			<Text> HOTCUE 11 </Text>
@@ -1470,7 +1470,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_13_position</Control>
 			<Text> HOTCUE 13 </Text>
@@ -1484,7 +1484,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_15_position</Control>
 			<Text> HOTCUE 15 </Text>
@@ -1498,7 +1498,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_17_position</Control>
 			<Text> HOTCUE 17 </Text>
@@ -1512,7 +1512,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_19_position</Control>
 			<Text> HOTCUE 19 </Text>
@@ -1533,7 +1533,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_22_position</Control>
 			<Text> HOTCUE 22 </Text>
@@ -1547,7 +1547,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_24_position</Control>
 			<Text> HOTCUE 24 </Text>
@@ -1561,7 +1561,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_26_position</Control>
 			<Text> HOTCUE 26 </Text>
@@ -1575,7 +1575,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
@@ -1589,7 +1589,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_30_position</Control>
 			<Text> HOTCUE 30 </Text>
@@ -1603,7 +1603,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
@@ -1667,7 +1667,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</Overview>
-	
+
 	<!-- ***** TEXT ***** -->
 	<Text>
 		<Channel>1</Channel>
@@ -1757,7 +1757,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel2],rate</ConfigKey>
 		</Connection>
 	</NumberRate>
-	
+
 	<!-- ***** MEDIA LIBRARY ***** -->
 	<TableView>
 		<Pos>27,283</Pos>
@@ -1769,7 +1769,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<BgColorBpmNoConfirm>#00FF00</BgColorBpmNoConfirm>
 		<BgColorBpmConfirm>#FF0000</BgColorBpmConfirm>
 	</TableView>
-	
+
 	<!-- ***** CLIPPING LIGHTS ***** -->
 	<StatusLight>
 		<Tooltip>Deck A: Clipping Indicator</Tooltip>
