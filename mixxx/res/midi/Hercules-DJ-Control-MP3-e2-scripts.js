@@ -453,16 +453,18 @@ HerculesMP3e2.sync = function (midino, control, value, status, group)
 
 HerculesMP3e2.jogWheel = function (midino, control, value, status, group) 
 {
+        var deck = (group == "[Channel1]") ? 1 : 2;
+        
+        
 	// This function is called everytime the jog is moved
 	if (value == 0x01) 
 	{
-		engine.scratchTick(1, 1);
+		engine.scratchTick(deck, 1);
 		engine.setValue(group, "jog", 1);
 	}
 	else 
 	{
-		engine.scratchTick(1, -1);
+		engine.scratchTick(deck, -1);
 		engine.setValue(group, "jog", -1); 
 	}
 };
-
