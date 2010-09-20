@@ -1005,6 +1005,8 @@ void MixxxView::setupTabWidget(QDomNode node)
         style.prepend(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
         style.prepend(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
         style.prepend(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("QLabel { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
     }
 
     if (!WWidget::selectNode(node, "BgColor").isNull()) {
