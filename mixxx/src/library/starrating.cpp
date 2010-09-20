@@ -53,11 +53,11 @@ void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &pal
     painter->setPen(Qt::NoPen);
 
     if (mode == Editable) {
-		painter->setBrush(Qt::cyan);
-        //painter->setBrush(palette.highlight());
+		//painter->setBrush(Qt::cyan);
+        painter->setBrush(palette.text());
     } else {
-		painter->setBrush(Qt::cyan);
-        //painter->setBrush(palette.foreground());
+		//painter->setBrush(Qt::cyan);
+        painter->setBrush(palette.text());
     }
 
     int yOffset = (rect.height() - PaintingScaleFactor) / 2;
