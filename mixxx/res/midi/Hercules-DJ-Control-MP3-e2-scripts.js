@@ -71,7 +71,7 @@ HerculesMP3e2.init = function (id)
 	// Switch off all LEDs
 	for (i=1; i<95; i++) 
 	{
-	        midi.sendShortMsg(0x90, i, 0x00);
+		midi.sendShortMsg(0x90, i, 0x00);
 	}
 	
 	midi.sendShortMsg(0xB0,0x7F,0x7F);
@@ -84,7 +84,7 @@ HerculesMP3e2.init = function (id)
 	
 	HerculesMP3e2.setPitchIncrement();
 	engine.connectControl("[Channel1]","rateRange",
-	                "HerculesMP3e2.setPitchIncrement");
+			"HerculesMP3e2.setPitchIncrement");
 };
 
 HerculesMP3e2.setPitchIncrement = function()
@@ -102,7 +102,7 @@ HerculesMP3e2.shutdown = function (id)
 	// Switch off all LEDs
 	for (i=1; i<95; i++)
 	{
-	        midi.sendShortMsg(0x90, i, 0x00);
+		midi.sendShortMsg(0x90, i, 0x00);
 	}
 };
 
@@ -223,7 +223,7 @@ HerculesMP3e2.keyButton = function (midino, control, value, status, group)
 	
 	switch (control) 
 	{
-	        // Loop buttons
+		// Loop buttons
 		case 0x01: case 0x15:  	// K1, Loop in
 			engine.setValue(group, "loop_in", value ? 1 : 0);
 			break;
@@ -237,9 +237,9 @@ HerculesMP3e2.keyButton = function (midino, control, value, status, group)
 			engine.setValue(group, "reloop_exit", value ? 1 : 0);
 			break;
 
-                // Hotcue buttons:
-                // Simple press: go to the hotcue position
-                // Shift (hold down "Automix"): clear the hotcue
+		// Hotcue buttons:
+		// Simple press: go to the hotcue position
+		// Shift (hold down "Automix"): clear the hotcue
 		case 0x05: case 0x19 :	// K5
 			if (superButtonHold == 1) 
 			{
@@ -248,7 +248,7 @@ HerculesMP3e2.keyButton = function (midino, control, value, status, group)
 			}
 			else 
 			{
-			        engine.setValue(group, "hotcue_1_activate", value ? 1 : 0);
+				engine.setValue(group, "hotcue_1_activate", value ? 1 : 0);
 			}
 			break;
 
@@ -260,7 +260,7 @@ HerculesMP3e2.keyButton = function (midino, control, value, status, group)
 			}
 			else
 			{
-			        engine.setValue(group, "hotcue_2_activate", value ? 1 : 0);
+				engine.setValue(group, "hotcue_2_activate", value ? 1 : 0);
 			}
 			break;
 
@@ -272,7 +272,7 @@ HerculesMP3e2.keyButton = function (midino, control, value, status, group)
 			}
 			else
 			{
-			        engine.setValue(group, "hotcue_3_activate", value ? 1 : 0);
+				engine.setValue(group, "hotcue_3_activate", value ? 1 : 0);
 			}
 			break;
 
@@ -284,7 +284,7 @@ HerculesMP3e2.keyButton = function (midino, control, value, status, group)
 			}
 			else
 			{
-			        engine.setValue(group, "hotcue_4_activate", value ? 1 : 0);
+				engine.setValue(group, "hotcue_4_activate", value ? 1 : 0);
 			}
 			break;
 		}
@@ -301,11 +301,11 @@ HerculesMP3e2.knobIncrement = function (group, action, minValue, maxValue, centr
 	
 	if (actual < 1) 
 	{
-	        increment = ((rangeWidthLeft)/semiStep)*sign;
+		increment = ((rangeWidthLeft)/semiStep)*sign;
 	}
 	else if (actual > 1) 
 	{
-	        increment = ((rangeWidthRight)/semiStep)*sign;
+		increment = ((rangeWidthRight)/semiStep)*sign;
 	}
 	else if (actual == 1) 
 	{
@@ -314,11 +314,11 @@ HerculesMP3e2.knobIncrement = function (group, action, minValue, maxValue, centr
 
 	if (sign == 1 && actual < maxValue)
 	{
-	        newValue = actual + increment;
+		newValue = actual + increment;
 	}
 	else if (sign == -1 && actual > minValue)
 	{
-	        newValue = actual + increment;
+		newValue = actual + increment;
 	}
 	
 	return newValue;
@@ -347,7 +347,6 @@ HerculesMP3e2.pitch = function (midino, control, value, status, group)
 	else
 	{
 		//increment = 0.0166;
-		print("Pitch Shift Increment = " + pitchShiftIncrement);
 		increment = pitchShiftIncrement;
 		increment = (value == 0x01) ? increment : increment * -1;
 		engine.setValue(group, "rate", engine.getValue(group, "rate") + increment);
@@ -361,7 +360,7 @@ HerculesMP3e2.pitchbend = function (midino, control, value, status, group)
 	// Shift:  pregain adjust
 	if (superButtonHold == 1 && value) 
 	{
-	        // Pitchbend +
+		// Pitchbend +
 		if (control == 0x0B || control == 0x1F) 
 		{
 			newValue = HerculesMP3e2.knobIncrement(group, "pregain", 0, 4, 1, 20, 1);
@@ -376,7 +375,7 @@ HerculesMP3e2.pitchbend = function (midino, control, value, status, group)
 	}
 	else
 	{
-	        // Pitchbend +
+		// Pitchbend +
 		if (control == 0x0B || control == 0x1F) 
 		{
 			engine.setValue(group, "rate_temp_up", value ? 1 : 0);
@@ -399,7 +398,7 @@ HerculesMP3e2.cue = function (midino, control, value, status, group)
 	}
 	else
 	{
-	        engine.setValue(group, "cue_preview", value ? 1 : 0);
+		engine.setValue(group, "cue_preview", value ? 1 : 0);
 	}
 };
 
@@ -429,8 +428,6 @@ HerculesMP3e2.sync = function (midino, control, value, status, group)
 	{
 		deck = (group == "[Channel1]") ? 1 : 2;
 		
-		print("DECK = " + deck + " ScratchMode = " + scratchMode[(deck-1)]);
-		
 		if(scratchMode[(deck-1)]==0) 
 		{
 			engine.scratchEnable(deck, 128, standardRpm, alpha, beta); // Enable the scratch mode on Deck A
@@ -447,24 +444,28 @@ HerculesMP3e2.sync = function (midino, control, value, status, group)
 	}
 	else
 	{
-	        engine.setValue(group, "beatsync", value ? 1 : 0);
+		engine.setValue(group, "beatsync", value ? 1 : 0);
 	}
 };
 
 HerculesMP3e2.jogWheel = function (midino, control, value, status, group) 
 {
-        var deck = (group == "[Channel1]") ? 1 : 2;
-        
-        
+	var deck = (group == "[Channel1]") ? 1 : 2;
+	
+	
 	// This function is called everytime the jog is moved
 	if (value == 0x01) 
 	{
-		engine.scratchTick(deck, 1);
-		engine.setValue(group, "jog", 1);
+		if (scratchMode[(deck-1)])
+			engine.scratchTick(deck, 1);
+		else
+			engine.setValue(group, "jog", 1);
 	}
 	else 
 	{
-		engine.scratchTick(deck, -1);
-		engine.setValue(group, "jog", -1); 
+		if (scratchMode[(deck-1)])
+			engine.scratchTick(deck, -1);
+		else
+			engine.setValue(group, "jog", -1); 
 	}
 };
