@@ -20,6 +20,9 @@
 
 	<!--
 	CHANGELOG
+	v1.05	(20/09/2010)
+	* Added stylesheet support for library & tooltips
+
 	v1.04	(16/09/2010)
 	* Added support for up to 32 Hotcues with MIDI-controllers
 	* Hotcue buttons now reflect its toggle state
@@ -87,12 +90,26 @@
 	**********************************************
 	-->
 	<TableView>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #333333; text-align: left; padding-left: 1%; }
+		QTableView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background: #F7F7F7; alternate-background-color: #F7F7F7; color: #333333; }
+		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QRadioButton { color: #333333; }
+		QTextBrowser { background: #F7F7F7; color: #333333; }
+		WLibrarySidebar { background: #F7F7F7; color: #333333; }
+		WSearchLineEdit { background: #F7F7F7; color: #333333; }
+		</Style>
 		<Pos>11,431</Pos>
 		<Size>1562,658</Size>
+		<!--
 		<BgColor>#F7F7F7</BgColor>
-		<FgColor>#454C53</FgColor>
+		<FgColor>#333333</FgColor>
 		<BgColorRowEven>#F7F7F7</BgColorRowEven>
 		<BgColorRowUneven>#F7F7F7</BgColorRowUneven>
+		-->
 	</TableView>
 
 	<!--

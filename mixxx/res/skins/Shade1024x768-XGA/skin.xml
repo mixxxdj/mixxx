@@ -20,6 +20,9 @@
 
 	<!--
 	CHANGELOG
+	v1.05	(20/09/2010)
+	* Added stylesheet support for library & tooltips
+
 	v1.04	(16/09/2010)
 	* Added support for up to 32 Hotcues with MIDI-controllers
 	* Hotcue buttons now reflect its toggle state
@@ -90,12 +93,26 @@
 	**********************************************
 	-->
 	<TableView>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: transparent; color: #FFFFFF; text-align: left; padding-left: 1%; }
+		QTableView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background: #191F24; alternate-background-color: #191F24; color: #FFFFFF; }
+		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QRadioButton { color: #FFFFFF; }
+		QTextBrowser { background: #191F24; color: #FFFFFF; }
+		WLibrarySidebar { background: #191F24; color: #FFFFFF; }
+		WSearchLineEdit { background: #191F24; color: #FFFFFF; }
+		</Style>
 		<Pos>11,267</Pos>
 		<Size>986,390</Size>
+		<!--
 		<BgColor>#191F24</BgColor>
 		<FgColor>#FFFFFF</FgColor>
 		<BgColorRowEven>#191F24</BgColorRowEven>
 		<BgColorRowUneven>#191F24</BgColorRowUneven>
+		-->
 	</TableView>
 
 	<!--
@@ -618,7 +635,7 @@
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
