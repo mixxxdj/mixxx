@@ -1364,8 +1364,9 @@ void MixxxApp::slotLoadPlayer1(QString location)
     {
         pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     }
-    //Load the track into the Player.
-    m_pPlayer1->slotLoadTrack(pTrack);
+    //Load the track into the Player, if no track is playing
+	if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+		m_pPlayer1->slotLoadTrack(pTrack);
 }
 
 void MixxxApp::slotLoadPlayer2(QString location)
@@ -1378,8 +1379,10 @@ void MixxxApp::slotLoadPlayer2(QString location)
     {
         pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     }
-    //Load the track into the Player.
-    m_pPlayer2->slotLoadTrack(pTrack);
+    //Load the track into the Player, if no track is playing
+	if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+		m_pPlayer2->slotLoadTrack(pTrack);
+    
 }
 
 void MixxxApp::slotScanLibrary()
