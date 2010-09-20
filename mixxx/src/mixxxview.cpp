@@ -38,7 +38,6 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrary.h"
 
-
 #include "widget/woverview.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
@@ -803,7 +802,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidget = new QStackedWidget(this);
 
                     // Create the pages that go in the tab widget
-                    m_pTabWidgetLibraryPage = new QWidget(this);
+                    m_pTabWidgetLibraryPage = new QWidget(m_pTabWidget);
 #ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
@@ -820,40 +819,28 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
 
-                    //Set up the search box widget
-                    if (m_pLineEditSearch == 0) {
-                        QString path = pConfig->getConfigPath();
-                        m_pLineEditSearch = new WSearchLineEdit(path, node, this);
-                        //m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
-                        //m_pLineEditSearch->show();
-
-                        // Size
-                        /*
-                        QString size = WWidget::selectNodeQString(node, "Size");
-                        int x = size.left(size.indexOf(",")).toInt();
-                        int y = size.mid(size.indexOf(",")+1).toInt();
-                        m_pLineEditSearch->setFixedSize(x,y);
-                        */
-                    }
-
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
                     m_pLibraryWidget = new WLibrary(m_pSplitter);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
+                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
 
-                    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
+                    m_pLibrarySidebar = new WLibrarySidebar(m_pLibrarySidebarPage);
                     m_pLibrarySidebar->installEventFilter(m_pKeyboard);
 
-                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
+                    //Set up the search box widget
+                    if (m_pLineEditSearch == 0) {
+                        QString path = pConfig->getConfigPath();
+                        m_pLineEditSearch = new WSearchLineEdit(path, node, m_pLibrarySidebarPage);
+                    }
+
                     QVBoxLayout* vl = new QVBoxLayout();
                     vl->setContentsMargins(0,0,0,0); //Fill entire space
                     m_pLibrarySidebarPage->setLayout(vl);
                     vl->addWidget(m_pLineEditSearch);
                     vl->addWidget(m_pLibrarySidebar);
-
-                    setupTrackSourceViewWidget(node);
 
                     m_pLibrary->bindWidget(m_pLibrarySidebar,
                                            m_pLibraryWidget,
@@ -892,8 +879,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
-
-                setupTrackSourceViewWidget(node);
 
                 // Applies the node settings to every view registered in the
                 // Library widget.
@@ -1007,44 +992,52 @@ void MixxxView::setupTabWidget(QDomNode node)
         int y = size.mid(size.indexOf(",")+1).toInt();
         m_pTabWidget->setFixedSize(x,y);
     }
+
+    // Style
+    QString style = WWidget::selectNodeQString(node, "Style");
+
+    // Workaround to support legacy color styling
+    QColor color(0,0,0);
+
+    if (!WWidget::selectNode(node, "FgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("QLabel { color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
+        style.prepend(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowEven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+        color = WSkinColor::getCorrectColor(color);
+        style.prepend(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+    }
+
+    m_pTabWidget->setStyleSheet(style);
 }
 
 
 void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
 
-    //Setup colors:
-    //Foreground color
-    QColor fgc(0,255,0);
-    if (!WWidget::selectNode(node, "FgColor").isNull()) {
-
-	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-
-	//m_pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
-
-	// Row colors
-	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
-	    {
-	        QColor r1;
-	        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-		r1 = WSkinColor::getCorrectColor(r1);
-		QColor r2;
-		r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-		r2 = WSkinColor::getCorrectColor(r2);
-
-		// For now make text the inverse of the background so it's readable
-		// In the future this should be configurable from the skin with this
-		// as the fallback option
-		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-
-	        QPalette Rowpalette = palette();
-	        Rowpalette.setColor(QPalette::Base, r1);
-	        Rowpalette.setColor(QPalette::AlternateBase, r2);
-		Rowpalette.setColor(QPalette::Text, text);
-
-	        m_pLibrarySidebar->setPalette(Rowpalette);
-	    }
-    }
 
 }
 
