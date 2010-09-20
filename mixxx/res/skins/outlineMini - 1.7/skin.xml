@@ -1213,7 +1213,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_7_position</Control>
 			<Text> HOTCUE 7 </Text>
@@ -1227,7 +1227,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_9_position</Control>
 			<Text> HOTCUE 9 </Text>
@@ -1241,7 +1241,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_11_position</Control>
 			<Text> HOTCUE 11 </Text>
@@ -1255,7 +1255,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_13_position</Control>
 			<Text> HOTCUE 13 </Text>
@@ -1269,7 +1269,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_15_position</Control>
 			<Text> HOTCUE 15 </Text>
@@ -1283,7 +1283,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_17_position</Control>
 			<Text> HOTCUE 17 </Text>
@@ -1297,7 +1297,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_19_position</Control>
 			<Text> HOTCUE 19 </Text>
@@ -1318,7 +1318,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_22_position</Control>
 			<Text> HOTCUE 22 </Text>
@@ -1332,7 +1332,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_24_position</Control>
 			<Text> HOTCUE 24 </Text>
@@ -1346,7 +1346,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_26_position</Control>
 			<Text> HOTCUE 26 </Text>
@@ -1360,7 +1360,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
@@ -1374,7 +1374,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_30_position</Control>
 			<Text> HOTCUE 30 </Text>
@@ -1388,7 +1388,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
@@ -1476,7 +1476,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_7_position</Control>
 			<Text> HOTCUE 7 </Text>
@@ -1490,7 +1490,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_9_position</Control>
 			<Text> HOTCUE 9 </Text>
@@ -1504,7 +1504,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_11_position</Control>
 			<Text> HOTCUE 11 </Text>
@@ -1518,7 +1518,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_13_position</Control>
 			<Text> HOTCUE 13 </Text>
@@ -1532,7 +1532,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_15_position</Control>
 			<Text> HOTCUE 15 </Text>
@@ -1546,7 +1546,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_17_position</Control>
 			<Text> HOTCUE 17 </Text>
@@ -1560,7 +1560,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_19_position</Control>
 			<Text> HOTCUE 19 </Text>
@@ -1581,7 +1581,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_22_position</Control>
 			<Text> HOTCUE 22 </Text>
@@ -1595,7 +1595,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_24_position</Control>
 			<Text> HOTCUE 24 </Text>
@@ -1609,7 +1609,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_26_position</Control>
 			<Text> HOTCUE 26 </Text>
@@ -1623,7 +1623,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_28_position</Control>
 			<Text> HOTCUE 28 </Text>
@@ -1637,7 +1637,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>	
+		</Mark>
 		<Mark>
 			<Control>hotcue_30_position</Control>
 			<Text> HOTCUE 30 </Text>
@@ -1651,7 +1651,7 @@ Copyright (C) 2010 Mixxx
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
-		</Mark>		
+		</Mark>
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
