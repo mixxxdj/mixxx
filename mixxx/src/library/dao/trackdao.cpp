@@ -184,12 +184,12 @@ void TrackDAO::bindTrackToTrackLocationsInsert(QSqlQuery& query, TrackInfoObject
 
 void TrackDAO::prepareLibraryInsert(QSqlQuery& query) {
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
-                  "filetype, location, comment, url, duration, "
+                  "filetype, location, comment, url, duration, rating, "
                   "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
                   "channels, mixxx_deleted, header_parsed) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
-                  ":filetype, :location, :comment, :url, :duration, "
+                  ":filetype, :location, :comment, :url, :duration, :rating,"
                   ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
                   ":channels, :mixxx_deleted, :header_parsed)");
 }
@@ -206,6 +206,7 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
+    query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":bitrate", pTrack->getBitrate());
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
@@ -497,6 +498,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         QString url = query.value(query.record().indexOf("url")).toString();
         int duration = query.value(query.record().indexOf("duration")).toInt();
         int bitrate = query.value(query.record().indexOf("bitrate")).toInt();
+        int rating = query.value(query.record().indexOf("rating")).toInt();
         int samplerate = query.value(query.record().indexOf("samplerate")).toInt();
         int cuepoint = query.value(query.record().indexOf("cuepoint")).toInt();
         QString bpm = query.value(query.record().indexOf("bpm")).toString();
@@ -522,6 +524,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setYear(year);
         track->setGenre(genre);
         track->setTrackNumber(tracknumber);
+        track->setRating(rating);
 
         track->setComment(comment);
         track->setURL(url);
@@ -604,7 +607,7 @@ TrackPointer TrackDAO::getTrack(int id) const
     time.start();
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, filetype, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
+    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, filetype, rating, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, wavesummaryhex, channels, header_parsed FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
     TrackPointer pTrack;
 
     if (query.exec()) {
@@ -638,7 +641,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
                   "SET artist=:artist, "
                   "title=:title, album=:album, year=:year, genre=:genre, "
                   "filetype=:filetype, tracknumber=:tracknumber, "
-                  "comment=:comment, url=:url, duration=:duration, "
+                  "comment=:comment, url=:url, duration=:duration, rating=:rating, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
                   "channels=:channels, header_parsed=:header_parsed "
@@ -657,6 +660,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
+    query.bindValue(":rating", pTrack->getRating());
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
