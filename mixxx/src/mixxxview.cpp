@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtGlobal>
 #include <QtCore>
 #include <QtGui>
 
@@ -999,37 +1000,92 @@ void MixxxView::setupTabWidget(QDomNode node)
     // Workaround to support legacy color styling
     QColor color(0,0,0);
 
+
+    // Qt 4.7.0's GTK style is broken.
+    bool hasQtKickedUsInTheNuts = false;
+
+#ifdef __LINUX__
+#define ohyesithas true
+    QString QtVersion = qVersion();
+    if (QtVersion == "4.7.0") {
+        hasQtKickedUsInTheNuts = ohyesithas;
+    }
+#undef ohyesithas
+#endif
+
+    QString styleHack = "";
+
     if (!WWidget::selectNode(node, "FgColor").isNull()) {
         color.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
         color = WSkinColor::getCorrectColor(color);
-        style.prepend(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("QLabel { color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTreeView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView::item:!selected { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTreeView::item:!selected { color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
+        }
+        styleHack.append(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QLabel { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
     }
 
     if (!WWidget::selectNode(node, "BgColor").isNull()) {
         color.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
         color = WSkinColor::getCorrectColor(color);
-        style.prepend(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
-        style.prepend(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTreeView {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView {  background-color: %1; }\n ").arg(color.name()));
+
+            // Required for styling the item backgrounds, need to pick !selected
+            styleHack.append(QString("QTreeView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
+
+            // Styles the sidebar triangle area where there is no triangle
+            styleHack.append(QString("QTreeView::branch:!has-children {  background-color: %1; }\n ").arg(color.name()));
+
+            // We can't style the triangle portions because the triangle
+            // disappears when we do background-color. I suspect they use
+            // background-image instead of border-image, against their own
+            // documentation's recommendation.
+
+            // styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
+        }
+
+        styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
     }
 
     if (!WWidget::selectNode(node, "BgColorRowEven").isNull()) {
         color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
         color = WSkinColor::getCorrectColor(color);
-        style.prepend(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTableView::item:!selected { background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
+        }
     }
 
     if (!WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
         color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
         color = WSkinColor::getCorrectColor(color);
-        style.prepend(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTableView::item:alternate:!selected { background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+        }
     }
+
+    style.prepend(styleHack);
 
     m_pTabWidget->setStyleSheet(style);
 }

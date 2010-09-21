@@ -88,6 +88,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     }
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
+    qDebug() << "Qt version is:" << qVersion();
+
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
 #if defined(AMD64) || defined(EM64T) || defined(x86_64)
