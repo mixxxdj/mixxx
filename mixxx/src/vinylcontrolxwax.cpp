@@ -381,7 +381,7 @@ void VinylControlXwax::run()
                     {
                     	//At first I thought it was a bug to resync to leadin in absolute mode,
                     	//but after using it that way it's actually pretty convenient.
-                    	qDebug() << "Vinyl leadin";
+                    	//qDebug() << "Vinyl leadin";
                     	syncPosition();
                         resetSteadyPitch(dVinylPitch, dVinylPosition);
                         if (uiUpdateTime(filePosition))
@@ -560,7 +560,7 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
 void VinylControlXwax::syncPosition()
 {
-	qDebug() << "sync position";
+	//qDebug() << "sync position";
    	playPos->slotSet(dVinylPosition / duration->get());     //VinylPos in seconds / total length of song
 }
 
