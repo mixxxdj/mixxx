@@ -148,7 +148,7 @@
 		</MarkRange>
 		<Mark>
 			<Control>loop_start_position</Control>
-			<Pixmap>marker_loopin.png</Pixmap>
+			<Pixmap>marker_loopin1.png</Pixmap>
 			<Text>LOOP IN</Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -156,7 +156,7 @@
 		</Mark>
 		<Mark>
 			<Control>loop_end_position</Control>
-			<Pixmap>marker_loopout.png</Pixmap>
+			<Pixmap>marker_loopout1.png</Pixmap>
 			<Text>LOOP OUT</Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -171,7 +171,7 @@
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
-			<Pixmap>marker_hotcue1.png</Pixmap>
+			<Pixmap>marker_hotcue1_1.png</Pixmap>
 			<Text> HOTCUE 1 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -179,7 +179,7 @@
 		</Mark>
 		<Mark>
 			<Control>hotcue_2_position</Control>
-			<Pixmap>marker_hotcue2.png</Pixmap>
+			<Pixmap>marker_hotcue1_2.png</Pixmap>
 			<Text> HOTCUE 2 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -187,7 +187,7 @@
 		</Mark>
 		<Mark>
 			<Control>hotcue_3_position</Control>
-			<Pixmap>marker_hotcue3.png</Pixmap>
+			<Pixmap>marker_hotcue1_3.png</Pixmap>
 			<Text> HOTCUE 3 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -195,7 +195,7 @@
 		</Mark>
 		<Mark>
 			<Control>hotcue_4_position</Control>
-			<Pixmap>marker_hotcue4.png</Pixmap>
+			<Pixmap>marker_hotcue1_4.png</Pixmap>
 			<Text> HOTCUE 4 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -400,7 +400,7 @@
 
 		<Mark>
 			<Control>cue_point</Control>
-			<Pixmap>marker_cue.png</Pixmap>
+			<Pixmap>marker_cue1.png</Pixmap>
 			<Text> CUE </Text>
 			<Align>bottom</Align>
 			<Color>#FF001C</Color>
@@ -431,7 +431,7 @@
 		</MarkRange>
 		<Mark>
 			<Control>loop_start_position</Control>
-			<Pixmap>marker_loopin.png</Pixmap>
+			<Pixmap>marker_loopin2.png</Pixmap>
 			<Text>LOOP IN</Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -439,7 +439,7 @@
 		</Mark>
 		<Mark>
 			<Control>loop_end_position</Control>
-			<Pixmap>marker_loopout.png</Pixmap>
+			<Pixmap>marker_loopout2.png</Pixmap>
 			<Text>LOOP OUT</Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -454,7 +454,7 @@
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
-			<Pixmap>marker_hotcue1.png</Pixmap>
+			<Pixmap>marker_hotcue2_1.png</Pixmap>
 			<Text> HOTCUE 1 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -462,7 +462,7 @@
 		</Mark>
 		<Mark>
 			<Control>hotcue_2_position</Control>
-			<Pixmap>marker_hotcue2.png</Pixmap>
+			<Pixmap>marker_hotcue2_2.png</Pixmap>
 			<Text> HOTCUE 2 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -470,7 +470,7 @@
 		</Mark>
 		<Mark>
 			<Control>hotcue_3_position</Control>
-			<Pixmap>marker_hotcue3.png</Pixmap>
+			<Pixmap>marker_hotcue2_3.png</Pixmap>
 			<Text> HOTCUE 3 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -478,7 +478,7 @@
 		</Mark>
 		<Mark>
 			<Control>hotcue_4_position</Control>
-			<Pixmap>marker_hotcue4.png</Pixmap>
+			<Pixmap>marker_hotcue2_4.png</Pixmap>
 			<Text> HOTCUE 4 </Text>
 			<Align>bottom</Align>
 			<Color>#00FF00</Color>
@@ -683,7 +683,7 @@
 
 		<Mark>
 			<Control>cue_point</Control>
-			<Pixmap>marker_cue.png</Pixmap>
+			<Pixmap>marker_cue2.png</Pixmap>
 			<Text> CUE </Text>
 			<Align>bottom</Align>
 			<Color>#FF001C</Color>
