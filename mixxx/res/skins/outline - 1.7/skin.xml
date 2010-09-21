@@ -1,6 +1,6 @@
 <!DOCTYPE skin>
 <!--
-OutlineNetbook, Skin for Mixxx 1.8.x
+Outline, Skin for Mixxx 1.8.x
 www.mixxx.org
 Copyright (C) 2010 Mixxx
 
@@ -87,7 +87,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>crosshandle-on-.png</Handle>
 		<Slider>crossslider-off-.png</Slider>
-		<Pos>413,185</Pos>
+		<Pos>400,314</Pos>
 		<Horizontal>true</Horizontal>
 		<Connection>
 			<ConfigKey>[Master],crossfader</ConfigKey>
@@ -101,7 +101,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>ratehandle-on-Ch1.png</Handle>
 		<Slider>rateslider-off-Ch1.png</Slider>
-		<Pos>4,102</Pos>
+		<Pos>9,170</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel1],rate</ConfigKey>
@@ -115,7 +115,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>ratehandle-on-Ch2.png</Handle>
 		<Slider>rateslider-off-Ch2.png</Slider>
-		<Pos>907,102</Pos>
+		<Pos>896,169</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],rate</ConfigKey>
@@ -133,7 +133,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>sync-on-Ch1.png</Pressed>
 			<Unpressed>sync-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>50,295</Pos>
+		<Pos>72,445</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],beatsync</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -156,7 +156,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>sync-on-Ch2.png</Pressed>
 			<Unpressed>sync-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>953,295</Pos>
+		<Pos>960,445</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -179,7 +179,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>loopin-on-Ch1.png</Pressed>
 			<Unpressed>loopin-off.png</Unpressed>
 		</State>
-		<Pos>50,92</Pos>
+		<Pos>72,130</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_in</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -202,7 +202,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>loopin-on-Ch2.png</Pressed>
 			<Unpressed>loopin-off.png</Unpressed>
 		</State>
-		<Pos>953,92</Pos>
+		<Pos>959,130</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_in</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -225,7 +225,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>loopout-on-Ch1.png</Pressed>
 			<Unpressed>loopout-off.png</Unpressed>
 		</State>
-		<Pos>50,120</Pos>
+		<Pos>72,170</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_out</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -248,7 +248,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>loopout-on-Ch2.png</Pressed>
 			<Unpressed>loopout-off.png</Unpressed>
 		</State>
-		<Pos>953,120</Pos>
+		<Pos>959,170</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_out</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -277,7 +277,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>reloop-on-Ch1.png</Pressed>
 			<Unpressed>reloop-on-Ch1.png</Unpressed>
 		</State>
-		<Pos>50,148</Pos>
+		<Pos>72,210</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -312,7 +312,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>reloop-on-Ch2.png</Pressed>
 			<Unpressed>reloop-on-Ch2.png</Unpressed>
 		</State>
-		<Pos>953,148</Pos>
+		<Pos>959,210</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -341,7 +341,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>rateup-on-Ch1.png</Pressed>
 			<Unpressed>rateup-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>36,230</Pos>
+		<Pos>51,328</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -374,7 +374,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>rateup-on-Ch2.png</Pressed>
 			<Unpressed>rateup-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>939,230</Pos>
+		<Pos>938,328</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -407,7 +407,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>ratedown-on-Ch1.png</Pressed>
 			<Unpressed>ratedown-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>36,252</Pos>
+		<Pos>51,359</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -430,7 +430,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>ratedown-on-Ch2.png</Pressed>
 			<Unpressed>ratedown-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>939,252</Pos>
+		<Pos>938,359</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -453,7 +453,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>rateup-on-Ch1.png</Pressed>
 			<Unpressed>rateup-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>67,230</Pos>
+		<Pos>96,328</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -486,7 +486,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>ratedown-on-Ch1.png</Pressed>
 			<Unpressed>ratedown-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>67,252</Pos>
+		<Pos>96,359</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -519,7 +519,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>rateup-on-Ch2.png</Pressed>
 			<Unpressed>rateup-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>970,230</Pos>
+		<Pos>983,328</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -552,7 +552,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>ratedown-on-Ch2.png</Pressed>
 			<Unpressed>ratedown-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>970,252</Pos>
+		<Pos>983,359</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -581,7 +581,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>volhandle-on-Ch1.png</Handle>
 		<Slider>volslider-off-Ch1.png</Slider>
-		<Pos>4,355</Pos>
+		<Pos>9,520</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel1],volume</ConfigKey>
@@ -595,7 +595,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>volhandle-on-Ch2.png</Handle>
 		<Slider>volslider-off-Ch2.png</Slider>
-		<Pos>907,352</Pos>
+		<Pos>896,517</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],volume</ConfigKey>
@@ -609,7 +609,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<PathVu>vumeter-on-.png</PathVu>
 		<PathBack>vumeter-off-.png</PathBack>
-		<Pos>728,182</Pos>
+		<Pos>663,256</Pos>
 		<Horizontal>true</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>400</PeakHoldTime>
@@ -626,12 +626,12 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<PathVu>vumeter-on-.png</PathVu>
 		<PathBack>vumeter-off-.png</PathBack>
-		<Pos>728,200</Pos>
+		<Pos>663,276</Pos>
 		<Horizontal>true</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>400</PeakHoldTime>
 		<PeakFallTime>80</PeakFallTime>
-		<PeakFallStep>1</PeakFallStep>
+		<PeakFallStep>5</PeakFallStep>
 		<Connection>
 			<ConfigKey>[Master],VuMeterR</ConfigKey>
 		</Connection>
@@ -643,7 +643,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<PathVu>vumeter-on-Ch1.png</PathVu>
 		<PathBack>vumeter-off-Ch1.png</PathBack>
-		<Pos>78,363</Pos>
+		<Pos>107,525</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>400</PeakHoldTime>
 		<PeakFallTime>80</PeakFallTime>
@@ -659,7 +659,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<PathVu>vumeter-on-Ch2.png</PathVu>
 		<PathBack>vumeter-off-Ch2.png</PathBack>
-		<Pos>981,363</Pos>
+		<Pos>995,525</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>400</PeakHoldTime>
 		<PeakFallTime>80</PeakFallTime>
@@ -675,7 +675,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<PathStatusLight>peak-indicator-on.png</PathStatusLight>
 		<PathBack>peak-indicator-off.png</PathBack>
-		<Pos>78,353</Pos>
+		<Pos>108, 500</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 		</Connection>
@@ -687,7 +687,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<PathStatusLight>peak-indicator-on.png</PathStatusLight>
 		<PathBack>peak-indicator-off.png</PathBack>
-		<Pos>981,353</Pos>
+		<Pos>996, 500</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 		</Connection>
@@ -697,9 +697,9 @@ Copyright (C) 2010 Mixxx
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<PathStatusLight>peak-indicator-master-on.png</PathStatusLight>
-		<PathBack>peak-indicator-master-off.png</PathBack>
-		<Pos>717,182</Pos>
+		<PathStatusLight>peak-indicator-on.png</PathStatusLight>
+		<PathBack>peak-indicator-off.png</PathBack>
+		<Pos>639,257</Pos>
 		<Connection>
 			<ConfigKey>[Master],PeakIndicator</ConfigKey>
 		</Connection>
@@ -725,7 +725,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>endoftrack-loop-ch1.png</Pressed>
 			<Unpressed>endoftrack-loop-ch1.png</Unpressed>
 		</State>
-		<Pos>356,147</Pos>
+		<Pos>408,208</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],TrackEndMode</ConfigKey>
 		</Connection>
@@ -751,7 +751,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>endoftrack-loop-ch2.png</Pressed>
 			<Unpressed>endoftrack-loop-ch2.png</Unpressed>
 		</State>
-		<Pos>622,147</Pos>
+		<Pos>586,208</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],TrackEndMode</ConfigKey>
 		</Connection>
@@ -773,7 +773,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>play-on-Ch1.png</Pressed>
 			<Unpressed>play-on-Ch1.png</Unpressed>
 		</State>
-		<Pos>2,12</Pos>
+		<Pos>8,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -803,7 +803,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>play-on-Ch2.png</Pressed>
 			<Unpressed>play-on-Ch2.png</Unpressed>
 		</State>
-		<Pos>905,12</Pos>
+		<Pos>895,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -827,7 +827,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>cue-on-Ch1.png</Pressed>
 			<Unpressed>cue-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>50,12</Pos>
+		<Pos>72,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],cue_default</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -860,7 +860,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>cue-on-Ch2.png</Pressed>
 			<Unpressed>cue-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>953,12</Pos>
+		<Pos>959,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],cue_default</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -893,7 +893,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>rev-on-Ch1.png</Pressed>
 			<Unpressed>rev-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>50,61</Pos>
+		<Pos>72,90</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reverse</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -916,7 +916,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>rev-on-Ch2.png</Pressed>
 			<Unpressed>rev-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>953,61</Pos>
+		<Pos>959,90</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reverse</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -939,7 +939,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>fwd-on-Ch1.png</Pressed>
 			<Unpressed>fwd-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>27,61</Pos>
+		<Pos>40,90</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],fwd</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -972,7 +972,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>back-on-Ch1.png</Pressed>
 			<Unpressed>back-off-Ch1.png</Unpressed>
 		</State>
-		<Pos>2,61</Pos>
+		<Pos>8,90</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],back</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1005,7 +1005,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>fwd-on-Ch2.png</Pressed>
 			<Unpressed>fwd-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>930,61</Pos>
+		<Pos>927,90</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],fwd</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1038,7 +1038,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>back-on-Ch2.png</Pressed>
 			<Unpressed>back-off-Ch2.png</Unpressed>
 		</State>
-		<Pos>905,61</Pos>
+		<Pos>895,90</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],back</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1076,7 +1076,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>flanger-on-Ch1.png</Pressed>
 			<Unpressed>flanger-on-Ch1.png</Unpressed>
 		</State>
-		<Pos>50,326</Pos>
+		<Pos>72,405</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],flanger</ConfigKey>
 		</Connection>
@@ -1097,7 +1097,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>flanger-on-Ch2.png</Pressed>
 			<Unpressed>flanger-on-Ch2.png</Unpressed>
 		</State>
-		<Pos>953,326</Pos>
+		<Pos>960,405</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],flanger</ConfigKey>
 		</Connection>
@@ -1118,7 +1118,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>head-on-Ch1.png</Pressed>
 			<Unpressed>head-on-Ch1.png</Unpressed>
 		</State>
-		<Pos>2,295</Pos>
+		<Pos>9,405</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pfl</ConfigKey>
 		</Connection>
@@ -1139,7 +1139,7 @@ Copyright (C) 2010 Mixxx
 			<Pressed>head-on-Ch2.png</Pressed>
 			<Unpressed>head-on-Ch2.png</Unpressed>
 		</State>
-		<Pos>905,295</Pos>
+		<Pos>896,405</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
 		</Connection>
@@ -1151,7 +1151,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>684,181</Pos>
+		<Pos>842,311</Pos>
 		<Connection>
 			<ConfigKey>[Master],volume</ConfigKey>
 		</Connection>
@@ -1163,7 +1163,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>646,181</Pos>
+		<Pos>791,311</Pos>
 		<Connection>
 			<ConfigKey>[Master],balance</ConfigKey>
 		</Connection>
@@ -1175,7 +1175,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>290,181</Pos>
+		<Pos>198,311</Pos>
 		<Connection>
 			<ConfigKey>[Master],headVolume</ConfigKey>
 		</Connection>
@@ -1187,7 +1187,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>252,181</Pos>
+		<Pos>146,311</Pos>
 		<Connection>
 			<ConfigKey>[Master],headMix</ConfigKey>
 		</Connection>
@@ -1199,7 +1199,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>102,181</Pos>
+		<Pos>146,255</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDepth</ConfigKey>
 		</Connection>
@@ -1211,7 +1211,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>140,181</Pos>
+		<Pos>198,255</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDelay</ConfigKey>
 		</Connection>
@@ -1223,7 +1223,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobm%1.png</Path>
-		<Pos>177,181</Pos>
+		<Pos>250,255</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
 		</Connection>
@@ -1235,7 +1235,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
-		<Pos>43,375</Pos>
+		<Pos>62,530</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pregain</ConfigKey>
 		</Connection>
@@ -1248,7 +1248,7 @@ Copyright (C) 2010 Mixxx
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
-		<Pos>43,417</Pos>
+		<Pos>62,587</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHigh</ConfigKey>
 		</Connection>
@@ -1265,7 +1265,7 @@ Copyright (C) 2010 Mixxx
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
-		<Pos>43,457</Pos>
+		<Pos>62,642</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMid</ConfigKey>
 		</Connection>
@@ -1282,7 +1282,7 @@ Copyright (C) 2010 Mixxx
 		<NumberStates>41</NumberStates>
 		<Path>knobl%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
-		<Pos>43,497</Pos>
+		<Pos>62,698</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLow</ConfigKey>
 		</Connection>
@@ -1298,7 +1298,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
-		<Pos>946,375</Pos>
+		<Pos>948,529</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pregain</ConfigKey>
 		</Connection>
@@ -1311,7 +1311,7 @@ Copyright (C) 2010 Mixxx
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
-		<Pos>946,417</Pos>
+		<Pos>948,586</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHigh</ConfigKey>
 		</Connection>
@@ -1328,7 +1328,7 @@ Copyright (C) 2010 Mixxx
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
-		<Pos>946,457</Pos>
+		<Pos>948,641</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMid</ConfigKey>
 		</Connection>
@@ -1345,7 +1345,7 @@ Copyright (C) 2010 Mixxx
 		<NumberStates>41</NumberStates>
 		<Path>knobr%1.png</Path>
 		<DisabledPath>knobg%1.png</DisabledPath>
-		<Pos>946,497</Pos>
+		<Pos>948,697</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
 		</Connection>
@@ -1353,405 +1353,18 @@ Copyright (C) 2010 Mixxx
 			<ConfigKey>[Channel2],filterLowKill</ConfigKey>
 			<OnOff>true</OnOff>
 		</Connection>
-	</Knob><!---
-  **********************************************
-  Button- Hotcue
-  **********************************************
-  -->
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-1-Ch1.png</Pressed>
-			<Unpressed>hotcue-off-1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-1.png</Pressed>
-			<Unpressed>hotcue-on-1-Ch1.png</Unpressed>
-		</State>
-		<Pos>31,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-2-Ch1.png</Pressed>
-			<Unpressed>hotcue-off-2.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-2.png</Pressed>
-			<Unpressed>hotcue-on-2-Ch1.png</Unpressed>
-		</State>
-		<Pos>47,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-3-Ch1.png</Pressed>
-			<Unpressed>hotcue-off-3.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-3.png</Pressed>
-			<Unpressed>hotcue-on-3-Ch1.png</Unpressed>
-		</State>
-		<Pos>63,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-4-Ch1.png</Pressed>
-			<Unpressed>hotcue-off-4.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-4.png</Pressed>
-			<Unpressed>hotcue-on-4-Ch1.png</Unpressed>
-		</State>
-		<Pos>79,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-1-Ch2.png</Pressed>
-			<Unpressed>hotcue-off-1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-1.png</Pressed>
-			<Unpressed>hotcue-on-1-Ch2.png</Unpressed>
-		</State>
-		<Pos>905,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-2-Ch2.png</Pressed>
-			<Unpressed>hotcue-off-2.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-2.png</Pressed>
-			<Unpressed>hotcue-on-2-Ch2.png</Unpressed>
-		</State>
-		<Pos>921,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-3-Ch2.png</Pressed>
-			<Unpressed>hotcue-off-3.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-3.png</Pressed>
-			<Unpressed>hotcue-on-3-Ch2.png</Unpressed>
-		</State>
-		<Pos>937, 42</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<LeftClickIsPushButton>true</LeftClickIsPushButton>
-		<RightClickIsPushButton>true</RightClickIsPushButton>
-		<State>
-			<Number>0</Number>
-			<Pressed>hotcue-on-4-Ch2.png</Pressed>
-			<Unpressed>hotcue-off-4.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>hotcue-off-4.png</Pressed>
-			<Unpressed>hotcue-on-4-Ch2.png</Unpressed>
-		</State>
-		<Pos>953,42</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_enabled</ConfigKey>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
-		</Connection>
-	</PushButton>
+	</Knob>
 	<Visual>
 		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>102,17</Pos>
-		<Size>798,60</Size>
+		<Pos>139,50</Pos>
+		<Size>747,74</Size>
 		<BgColor>#ffffff</BgColor>
 		<SignalColor>#00ff00</SignalColor>
+		<HfcColor>#FFC115</HfcColor>
 		<BeatColor>#0000f0</BeatColor>
 		<MarkerColor>#0000ff</MarkerColor>
 		<MarkRange>
@@ -1778,28 +1391,28 @@ Copyright (C) 2010 Mixxx
 			<Control>hotcue_1_position</Control>
 			<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
-			<Color>#0033FF</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_2_position</Control>
 			<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
-			<Color>#FF0000</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_3_position</Control>
 			<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
-			<Color>#FF00FF</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_4_position</Control>
 			<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
-			<Color>#009900</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
@@ -2010,10 +1623,11 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>102,80</Pos>
-		<Size>798,60</Size>
+		<Pos>139,126</Pos>
+		<Size>747,74</Size>
 		<BgColor>#ffffff</BgColor>
 		<SignalColor>#00ff00</SignalColor>
+		<HfcColor>#FFC115</HfcColor>
 		<BeatColor>#f00000</BeatColor>
 		<MarkerColor>#ff0000</MarkerColor>
 		<MarkRange>
@@ -2040,28 +1654,28 @@ Copyright (C) 2010 Mixxx
 			<Control>hotcue_1_position</Control>
 			<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
-			<Color>#0033FF</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_2_position</Control>
 			<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
-			<Color>#FF0000</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_3_position</Control>
 			<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
-			<Color>#FF00FF</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_4_position</Control>
 			<Text> HOTCUE 4 </Text>
 			<Align>center</Align>
-			<Color>#009900</Color>
+			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
@@ -2272,8 +1886,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>102,0</Pos>
-		<Size>395,19</Size>
+		<Pos>144,0</Pos>
+		<Size>368,50</Size>
 		<FgColor>#606060</FgColor>
 		<BgColor>#ffffff</BgColor>
 	</Text>
@@ -2283,8 +1897,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>505,0</Pos>
-		<Size>395,19</Size>
+		<Pos>513,0</Pos>
+		<Size>368,50</Size>
 		<FgColor>#606060</FgColor>
 		<BgColor>#ffffff</BgColor>
 		<Align>right</Align>
@@ -2295,8 +1909,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>102,140</Pos>
-		<Size>78,16</Size>
+		<Pos>144,207</Pos>
+		<Size>100,20</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<BgColor>#ffffff</BgColor>
 		<FgColor>#606060</FgColor>
@@ -2310,8 +1924,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>649,140</Pos>
-		<Size>78,16</Size>
+		<Pos>623,207</Pos>
+		<Size>100,20</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<BgColor>#ffffff</BgColor>
 		<FgColor>#606060</FgColor>
@@ -2325,8 +1939,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>258,140</Pos>
-		<Size>94,16</Size>
+		<Pos>281,207</Pos>
+		<Size>120,20</Size>
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<BgColor>#ffffff</BgColor>
@@ -2341,8 +1955,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>805,140</Pos>
-		<Size>94,16</Size>
+		<Pos>760,207</Pos>
+		<Size>120,20</Size>
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<BgColor>#ffffff</BgColor>
@@ -2357,8 +1971,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>40,182</Pos>
-		<Size>47,16</Size>
+		<Pos>51,271</Pos>
+		<Size>60,20</Size>
 		<NumberOfDigits>3</NumberOfDigits>
 		<BgColor>#ffffff</BgColor>
 		<FgColor>#606060</FgColor>
@@ -2372,8 +1986,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>943,182</Pos>
-		<Size>47,16</Size>
+		<Pos>938,271</Pos>
+		<Size>60,20</Size>
 		<NumberOfDigits>3</NumberOfDigits>
 		<BgColor>#ffffff</BgColor>
 		<FgColor>#606060</FgColor>
@@ -2389,7 +2003,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>playpos-marker1.png</Handle>
 		<Slider>playpos-slider.png</Slider>
-		<Pos>112,177</Pos>
+		<Pos>144,227</Pos>
 		<Horizontal>true</Horizontal>
 		<EventWhileDrag>no</EventWhileDrag>
 		<Connection>
@@ -2404,7 +2018,7 @@ Copyright (C) 2010 Mixxx
 		</Style>
 		<Handle>playpos-marker2.png</Handle>
 		<Slider>playpos-slider.png</Slider>
-		<Pos>487,177</Pos>
+		<Pos>623,227</Pos>
 		<Horizontal>true</Horizontal>
 		<EventWhileDrag>no</EventWhileDrag>
 		<Connection>
@@ -2419,8 +2033,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>102,155</Pos>
-		<Size>251,20</Size>
+		<Pos>144,227</Pos>
+		<Size>257,17</Size>
 		<BgColor>#fafafa</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#0000ff</MarkerColor>
@@ -2435,8 +2049,8 @@ Copyright (C) 2010 Mixxx
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>649,155</Pos>
-		<Size>251,20</Size>
+		<Pos>623,227</Pos>
+		<Size>257,17</Size>
 		<BgColor>#fafafa</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#ff0000</MarkerColor>
@@ -2451,8 +2065,8 @@ Copyright (C) 2010 Mixxx
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<Pos>101,224</Pos>
-		<Size>799,325</Size>
+		<Pos>140,365</Pos>
+		<Size>745,391</Size>
 		<FgColor>#000000</FgColor>
 		<BgColor>#ffffff</BgColor>
 		<BgColorRowEven>#ffffff</BgColorRowEven>
