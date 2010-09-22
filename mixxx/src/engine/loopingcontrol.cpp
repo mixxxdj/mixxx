@@ -22,17 +22,17 @@ LoopingControl::LoopingControl(const char * _group,
     m_iLoopEndSample = kNoTrigger;
 
     //Create loop-in, loop-out, and reloop/exit ControlObjects
-    m_pLoopInButton = new ControlPushButton(ConfigKey(_group, "loop_in"), true);
+    m_pLoopInButton = new ControlPushButton(ConfigKey(_group, "loop_in"));
     connect(m_pLoopInButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopIn(double)));
     m_pLoopInButton->set(0);
 
-    m_pLoopOutButton = new ControlPushButton(ConfigKey(_group, "loop_out"), true);
+    m_pLoopOutButton = new ControlPushButton(ConfigKey(_group, "loop_out"));
     connect(m_pLoopOutButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopOut(double)));
     m_pLoopOutButton->set(0);
 
-    m_pReloopExitButton = new ControlPushButton(ConfigKey(_group, "reloop_exit"), true);
+    m_pReloopExitButton = new ControlPushButton(ConfigKey(_group, "reloop_exit"));
     connect(m_pReloopExitButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotReloopExit(double)));
     m_pReloopExitButton->set(0);
