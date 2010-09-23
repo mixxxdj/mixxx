@@ -1372,3 +1372,4 @@ void MixxxApp::slotEnableRescanLibraryAction()
 {
     libraryRescan->setEnabled(true);
 }
+
