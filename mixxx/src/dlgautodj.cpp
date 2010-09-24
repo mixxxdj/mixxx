@@ -1,7 +1,7 @@
 #include <QSqlTableModel>
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "wtracktableview.h"
+#include "widget/wtracktableview.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
