@@ -40,12 +40,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			</Filters>
 		</Scheme>
 	</Schemes>
-	
+
 	<!-- ***** Background image ***** -->
 	<Background>
 		<Path>scene1.8.png</Path>
 	</Background>
-	
+
 	<!-- ***** SLIDERS ***** -->
 	<SliderComposed>
 		<Tooltip>Master: Crossfader</Tooltip>
@@ -102,7 +102,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</SliderComposed>
-	
+
 	<!-- ***** VOLUME METERS ***** -->
 	<VuMeter>
 		<Tooltip>Master: Volume Meter</Tooltip>
@@ -142,11 +142,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel2],VuMeter</ConfigKey>
 		</Connection>
 	</VuMeter>
-	
+
 	<!-- ***** PLAYER 1 CONTROL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck A: Left click: Pause/play, Right click: Set cue point</Tooltip>
 		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>b-play-1.png</Pressed>
@@ -167,6 +168,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel1],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -191,6 +193,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -218,6 +225,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Deck A: Left click: Fast forward, Right click: End of track</Tooltip>
@@ -241,6 +253,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel1],end</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -337,12 +354,18 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatsync</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** PLAYER 2 CONTROL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck B: Left click: Pause/play, Right click: Set cue point</Tooltip>
 		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>b-play-1.png</Pressed>
@@ -363,6 +386,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel2],cue_set</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -387,6 +411,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -414,6 +443,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],start</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<Tooltip>Deck B: Left click: Fast forward, Right click: End of track</Tooltip>
@@ -437,6 +471,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<Connection>
 			<ConfigKey>[Channel2],end</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],end</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -533,8 +572,13 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>true</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatsync</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** PLAYER 1 TEMPO BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck A: Change playback rate (left/right click: large/small effect)</Tooltip>
@@ -551,8 +595,18 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
+			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -653,8 +707,18 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
+			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -738,7 +802,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** MASTER/FLANGER KNOBS ***** -->
 	<Knob>
 		<Tooltip>Master volume</Tooltip>
@@ -909,7 +973,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<OnOff>true</OnOff>
 		</Connection>
 	</Knob>
-	
+
 	<!-- ***** PLAYER 1 KILL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck A: Treble Kill</Tooltip>
@@ -971,7 +1035,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** PLAYER 2 KILL BUTTONS ***** -->
 	<PushButton>
 		<Tooltip>Deck B: Treble Kill</Tooltip>
@@ -1033,7 +1097,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
-	
+
 	<!-- ***** WAVEFORMS ***** -->
 	<Visual>
 		<Tooltip>Deck A: Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
@@ -1044,10 +1108,6 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<SignalColor>#d1d1d1</SignalColor>
 		<BeatColor>#48839b</BeatColor>
 		<MarkerColor>#48839b</MarkerColor>
-		<Mark>
-			<Control>cue_point</Control>
-			<Text>CUE</Text>
-		</Mark>
 		<MarkRange>
 			<StartControl>loop_start_position</StartControl>
 			<EndControl>loop_end_position</EndControl>
@@ -1055,11 +1115,247 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		</MarkRange>
 		<Mark>
 			<Control>loop_start_position</Control>
-			<Text>IN</Text>
+			<Text> In </Text>
 		</Mark>
 		<Mark>
 			<Control>loop_end_position</Control>
-			<Text>OUT</Text>
+			<Text> Out </Text>
+		</Mark>
+		<!-- 
+		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
+		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
+		-->
+		<Mark>
+			<Control>hotcue_1_position</Control>
+			<Text> HOTCUE 1 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_2_position</Control>
+			<Text> HOTCUE 2 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_3_position</Control>
+			<Text> HOTCUE 3 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_4_position</Control>
+			<Text> HOTCUE 4 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_5_position</Control>
+			<Text> HOTCUE 5 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_6_position</Control>
+			<Text> HOTCUE 6 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_7_position</Control>
+			<Text> HOTCUE 7 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_8_position</Control>
+			<Text> HOTCUE 8 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_9_position</Control>
+			<Text> HOTCUE 9 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_10_position</Control>
+			<Text> HOTCUE 10 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_11_position</Control>
+			<Text> HOTCUE 11 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_12_position</Control>
+			<Text> HOTCUE 12 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_13_position</Control>
+			<Text> HOTCUE 13 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_14_position</Control>
+			<Text> HOTCUE 14 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_15_position</Control>
+			<Text> HOTCUE 15 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_16_position</Control>
+			<Text> HOTCUE 16 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_17_position</Control>
+			<Text> HOTCUE 17 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_18_position</Control>
+			<Text> HOTCUE 18 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_19_position</Control>
+			<Text> HOTCUE 19 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_20_position</Control>
+			<Text> HOTCUE 20 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_21_position</Control>
+			<Text> HOTCUE 21 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_22_position</Control>
+			<Text> HOTCUE 22 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_23_position</Control>
+			<Text> HOTCUE 23 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_24_position</Control>
+			<Text> HOTCUE 24 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_25_position</Control>
+			<Text> HOTCUE 25 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_26_position</Control>
+			<Text> HOTCUE 26 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_27_position</Control>
+			<Text> HOTCUE 27 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_28_position</Control>
+			<Text> HOTCUE 28 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_29_position</Control>
+			<Text> HOTCUE 29 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_30_position</Control>
+			<Text> HOTCUE 30 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_31_position</Control>
+			<Text> HOTCUE 31 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_32_position</Control>
+			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+
+		<Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
 		</Mark>
 	</Visual>
 	<Visual>
@@ -1071,10 +1367,6 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<SignalColor>#d1d1d1</SignalColor>
 		<BeatColor>#9b4848</BeatColor>
 		<MarkerColor>#9b4848</MarkerColor>
-		<Mark>
-			<Control>cue_point</Control>
-			<Text>CUE</Text>
-		</Mark>
 		<MarkRange>
 			<StartControl>loop_start_position</StartControl>
 			<EndControl>loop_end_position</EndControl>
@@ -1082,11 +1374,247 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		</MarkRange>
 		<Mark>
 			<Control>loop_start_position</Control>
-			<Text>IN</Text>
+			<Text> In </Text>
 		</Mark>
 		<Mark>
 			<Control>loop_end_position</Control>
-			<Text>OUT</Text>
+			<Text> Out </Text>
+		</Mark>
+		<!-- 
+		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
+		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
+		-->
+		<Mark>
+			<Control>hotcue_1_position</Control>
+			<Text> HOTCUE 1 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_2_position</Control>
+			<Text> HOTCUE 2 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_3_position</Control>
+			<Text> HOTCUE 3 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_4_position</Control>
+			<Text> HOTCUE 4 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_5_position</Control>
+			<Text> HOTCUE 5 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_6_position</Control>
+			<Text> HOTCUE 6 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_7_position</Control>
+			<Text> HOTCUE 7 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_8_position</Control>
+			<Text> HOTCUE 8 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_9_position</Control>
+			<Text> HOTCUE 9 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_10_position</Control>
+			<Text> HOTCUE 10 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_11_position</Control>
+			<Text> HOTCUE 11 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_12_position</Control>
+			<Text> HOTCUE 12 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_13_position</Control>
+			<Text> HOTCUE 13 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_14_position</Control>
+			<Text> HOTCUE 14 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_15_position</Control>
+			<Text> HOTCUE 15 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_16_position</Control>
+			<Text> HOTCUE 16 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_17_position</Control>
+			<Text> HOTCUE 17 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_18_position</Control>
+			<Text> HOTCUE 18 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_19_position</Control>
+			<Text> HOTCUE 19 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_20_position</Control>
+			<Text> HOTCUE 20 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_21_position</Control>
+			<Text> HOTCUE 21 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_22_position</Control>
+			<Text> HOTCUE 22 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_23_position</Control>
+			<Text> HOTCUE 23 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_24_position</Control>
+			<Text> HOTCUE 24 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_25_position</Control>
+			<Text> HOTCUE 25 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_26_position</Control>
+			<Text> HOTCUE 26 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_27_position</Control>
+			<Text> HOTCUE 27 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_28_position</Control>
+			<Text> HOTCUE 28 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_29_position</Control>
+			<Text> HOTCUE 29 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_30_position</Control>
+			<Text> HOTCUE 30 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_31_position</Control>
+			<Text> HOTCUE 31 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_32_position</Control>
+			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+
+		<Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
 		</Mark>
 	</Visual>
 	<XSliderComposed>
@@ -1139,7 +1667,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</Overview>
-	
+
 	<!-- ***** TEXT ***** -->
 	<Text>
 		<Channel>1</Channel>
@@ -1229,11 +1757,11 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<ConfigKey>[Channel2],rate</ConfigKey>
 		</Connection>
 	</NumberRate>
-	
+
 	<!-- ***** MEDIA LIBRARY ***** -->
 	<TableView>
 		<Pos>27,283</Pos>
-		<Size>1226,391</Size>
+		<Size>1226,673</Size>
 		<FgColor>#dedede</FgColor>
 		<BgColor>#2c2c2c</BgColor>
 		<BgColorRowEven>#3c3c3c</BgColorRowEven>
@@ -1241,7 +1769,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		<BgColorBpmNoConfirm>#00FF00</BgColorBpmNoConfirm>
 		<BgColorBpmConfirm>#FF0000</BgColorBpmConfirm>
 	</TableView>
-	
+
 	<!-- ***** CLIPPING LIGHTS ***** -->
 	<StatusLight>
 		<Tooltip>Deck A: Clipping Indicator</Tooltip>

@@ -105,6 +105,15 @@ int SoundDevicePortAudio::open()
         m_dSampleRate = 44100.0f;
     qDebug() << "m_dSampleRate" << m_dSampleRate;
 
+    //XXX Workaround for PortAudio crashing when our samplerate doesn't match
+    //    the JACK samplerate:
+    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == 
+            MIXXX_PORTAUDIO_JACK_STRING)
+    {
+        m_dSampleRate = m_deviceInfo->defaultSampleRate;
+        //Sure hope that's the right samplerate
+    }
+
     //Get latency in milleseconds
     int iLatencyMSec = m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt();
     if (iLatencyMSec <= 0)     //Make sure we don't get a crazy latency value.
