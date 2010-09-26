@@ -102,59 +102,7 @@ QWidget* DlgPrepare::getWidgetForMIDIControl()
 
 void DlgPrepare::setup(QDomNode node)
 {
-    QPalette pal = palette();
 
-    // Row colors
-    if (!WWidget::selectNode(node, "BgColorRowEven").isNull() &&
-        !WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
-        QColor r1;
-        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-        r1 = WSkinColor::getCorrectColor(r1);
-        QColor r2;
-        r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-        r2 = WSkinColor::getCorrectColor(r2);
-
-        // For now make text the inverse of the background so it's readable In
-        // the future this should be configurable from the skin with this as the
-        // fallback option
-        QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-
-        //setAlternatingRowColors ( true );
-
-        QColor fgColor;
-        fgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-        fgColor = WSkinColor::getCorrectColor(fgColor);
-
-        pal.setColor(QPalette::Base, r1);
-        pal.setColor(QPalette::AlternateBase, r2);
-        pal.setColor(QPalette::Text, text);
-        pal.setColor(QPalette::WindowText, fgColor);
-
-        // STUPID STUPID STUPID rryan 1/3/2009 Workaround for QRadioButton text
-        // not obeying our palette changes. Something is wrong here, but I can't
-        // figure it out. I spent hours trying to change the parents of
-        // DlgPrepare, the radio buttons, etc. I tried every Palette role known
-        // to Qt but the text color won't change. This workaround sucks but it
-        // works.
-        QString radioForeground = "color: " + fgColor.name();
-        radioButtonAllSongs->setStyleSheet(radioForeground);
-        radioButtonRecentlyAdded->setStyleSheet(radioForeground);
-    }
-
-    setPalette(pal);
-
-    // None of these setPalette's are necessary since they are all parented to
-    // this QDialog
-
-    //pushButtonSelectAll->setPalette(pal);
-    //pushButtonAnalyze->setPalette(pal);
-    //labelProgress->setPalette(pal);
-    //radioButtonRecentlyAdded->setPalette(pal);
-    //radioButtonAllSongs->setPalette(pal);
-
-    //m_pPrepareLibraryTableView->setPalette(pal);
-    //m_pPrepareCratesTableView->setPalette(pal);
-    //m_pCrateView->setPalette(pal);
 }
 void DlgPrepare::onSearchStarting()
 {
