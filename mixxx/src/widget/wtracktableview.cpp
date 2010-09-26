@@ -11,7 +11,7 @@
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
-#include "wtracktableview.h"
+#include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,

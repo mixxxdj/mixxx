@@ -53,7 +53,7 @@ bool WWidget::event(QEvent *event)
   if(event->type() == QEvent::ToolTip)
     {
       QHelpEvent *tooltip = static_cast<QHelpEvent *>(event);
-      QToolTip::showText(tooltip->globalPos(), m_Tooltip);
+      QToolTip::showText(tooltip->globalPos(), m_Tooltip, this);
       //http://doc.trolltech.com/4.3/widgets-tooltips-sortingbox-cpp.html suggests you should use QToolTip::hideText in certain cases; it works well enough on OS X with just this code though...
     }
   return QWidget::event(event);
@@ -75,6 +75,10 @@ void WWidget::setup(QDomNode node)
 
     // Get tooltip
     m_Tooltip = selectNodeQString(node, "Tooltip");
+
+    QString style = selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
 
     // For each connection
     QDomNode con = selectNode(node, "Connection");

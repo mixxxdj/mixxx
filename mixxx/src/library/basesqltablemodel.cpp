@@ -57,6 +57,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Track #"));
     setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
                   Qt::Horizontal, tr("Date Added"));
+	setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
+                  Qt::Horizontal, tr("#"));
 }
 bool BaseSqlTableModel::select() {
     //qDebug() << "select()";
