@@ -226,7 +226,7 @@ void WaveformRenderMarkRange::draw(QPainter *pPainter, QPaintEvent *event,
     QRectF markRect(QPointF(xStart, halfh), QPointF(xEnd, -halfh));
 
     QColor color = m_bMarkEnabled ? m_markColor : m_markDisabledColor;
-    color.setAlphaF(0.2);
+    color.setAlphaF(0.3);
     QPen newPen(color);
     pPainter->setPen(newPen);
     pPainter->setBrush(QBrush(color));

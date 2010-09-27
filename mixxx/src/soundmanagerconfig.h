@@ -36,10 +36,8 @@ const unsigned int MAX_LATENCY = 6; // this represents latency values from 1 ms 
 // enginebuffer), as such, disabling these latencies -- bkgood
 // no DEFAULT_API because we have to check that the api is available -- bkgood
 const unsigned int DEFAULT_SAMPLE_RATE = 48000;
-// default is max so that we don't set latency too low and make mixxx look bad
-// to newbies with a bunch of pops and clicks (maybe this should be more like
-// the ~80 ms value instead of the ~180 value though) -- bkgood
-const int DEFAULT_LATENCY = MAX_LATENCY;
+// latency=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
+const int DEFAULT_LATENCY = 5;
 
 class SoundManagerConfig {
 public:

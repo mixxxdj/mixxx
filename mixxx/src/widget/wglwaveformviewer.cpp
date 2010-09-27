@@ -44,7 +44,6 @@ void WGLWaveformViewer::setup(QDomNode node) {
     int sep = pos.indexOf(",");
     int x = pos.left(sep).toInt();
     int y = pos.mid(sep+1).toInt();
-
     move(x,y);
 
     // Acquire size
@@ -52,8 +51,15 @@ void WGLWaveformViewer::setup(QDomNode node) {
     sep = size.indexOf(",");
     x = size.left(sep).toInt();
     y = size.mid(sep+1).toInt();
-
     setFixedSize(x,y);
+
+    // Get tooltip
+    QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
+    setToolTip(tooltip);
+
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
 
     m_pWaveformRenderer->setup(node);
 
@@ -113,7 +119,7 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
             // start at the middle of 0-127, and emit values based on
             // how far the mouse has travelled horizontally
-            double v = 64 + (double)(m->x()-m_iMouseStart)/100;
+            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
             // clamp to 0-127
             if(v<0)
                 v = 0;
