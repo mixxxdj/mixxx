@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
     <name>Vestax VCI-100.midi.xml</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Vestax VCI-100.midi.xml for Mixxx 1.6.2</description>
+    <author>Anders Gunnarsson</author>
+    <description>Preliminary controller mapping for Vestax VCI-100 with scripts</description>
   </info>
-  <controller id="Vestax VCI-100" port="Port">
+  <controller id="Vestax VCI-100">
+    <scriptfiles>
+       <file filename="Vestax-VCI-100-scripts.js" functionprefix="VestaxVCI100"/>
+    </scriptfiles>
     <controls>
       <control>
         <group>[Master]</group>
@@ -76,12 +79,30 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>wheel</key>
-        <status>0xB0</status>
-        <midino>0x10</midino>
-        <options/>
-        <sensitivity>50</sensitivity>
-        <translations/>
+        <key>VestaxVCI100.vinyl_mode</key>
+        <status>0x90</status>
+        <midino>0x6B</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI100.jog_touch</key>
+        <status>0x90</status>
+        <midino>0x30</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>VestaxVCI100.jog_wheel</key>
+          <status>0xB0</status>
+          <midino>0x10</midino>
+          <options>
+              <Script-Binding/>
+          </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -265,13 +286,31 @@
         <options/>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>wheel</key>
-        <status>0xB0</status>
-        <midino>0x11</midino>
-        <options/>
-        <sensitivity>50</sensitivity>
-        <translations/>
+         <group>[Channel2]</group>
+         <key>VestaxVCI100.vinyl_mode</key>
+         <status>0x90</status>
+         <midino>0x6C</midino>
+         <options>
+            <Script-Binding/>
+         </options>
+      </control>
+      <control>
+         <group>[Channel2]</group>
+         <key>VestaxVCI100.jog_touch</key>
+         <status>0x90</status>
+         <midino>0x31</midino>
+         <options>
+            <Script-Binding/>
+         </options>
+      </control>
+      <control>
+         <group>[Channel2]</group>
+         <key>VestaxVCI100.jog_wheel</key>
+         <status>0xB0</status>
+         <midino>0x11</midino>
+         <options>
+            <Script-Binding/>
+         </options>
       </control>
       <control>
         <group>[Channel2]</group>

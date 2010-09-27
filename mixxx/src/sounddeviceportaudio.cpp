@@ -104,6 +104,13 @@ int SoundDevicePortAudio::open()
     }
     qDebug() << "m_dSampleRate" << m_dSampleRate;
 
+    //XXX Workaround for PortAudio crashing when our samplerate doesn't match
+    //    the JACK samplerate:
+    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
+        m_dSampleRate = m_deviceInfo->defaultSampleRate;
+        //Sure hope that's the right samplerate
+    }
+
     //Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
