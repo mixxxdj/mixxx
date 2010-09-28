@@ -37,7 +37,16 @@
 		    </p>
     -->
   	 		<script type="text/javascript">    
-					var OSName="your OS";
+var OSName="your OS";if(navigator.appVersion.indexOf("Win")!=-1)OSName="Windows";if(navigator.appVersion.indexOf("Mac")!=-1)
+{OSName="Mac OS X";if((navigator.userAgent.indexOf("10.5")!=-1)||(navigator.userAgent.indexOf("10_5")!=-1))
+{OSName+=" 10.5";}
+else if((navigator.userAgent.indexOf("10.4")!=-1)||(navigator.userAgent.indexOf("10_4")!=-1))
+{OSName+=" 10.4";}
+if(navigator.userAgent.indexOf("Intel Mac")!=-1)
+{OSName+=" (Universal)";}}
+if(navigator.appVersion.indexOf("X11")!=-1)OSName="Linux";if(navigator.appVersion.indexOf("Linux")!=-1)OSName="Linux";
+<?php /*
+				var OSName="your OS";
 					if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
 					
 					// OS X why do you come in so many binary-incompatible flavours?
@@ -64,7 +73,7 @@
 
 					if (navigator.appVersion.indexOf("X11")!=-1) OSName="Linux";
 					if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
-					
+						 */ ?>
 			</script>     
 					
             <div class="anythingSlider">
@@ -229,7 +238,8 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
     <script type="text/javascript" src="js/mini.js"></script>
     <script type="text/javascript">
-
+function formatText(index,panel){return"";};$(function(){$(".splash_link").click(function(){var value=$(this).attr("splash_idx");$(".splash:visible").fadeOut(500);showdiv=$("div#splash"+value);setTimeout('showdiv.fadeIn(500);',500);});$('.anythingSlider').anythingSlider({easing:"swing",autoPlay:true,startStopped:false,delay:4000,animationTime:600,hashTags:true,buildNavigation:true,pauseOnHover:true,startText:"Start",stopText:"Stop",navigationFormatter:formatText});$("#slide-jump").click(function(e){$('.anythingSlider').anythingSlider(3);e.preventDefault();});});function switchSlide(index){$('.anythingSlider').anythingSlider(index);};
+<?php /*
 function formatText(index, panel) {
     return "";
   };
@@ -271,6 +281,7 @@ $(function() {
     function switchSlide(index) {
         $('.anythingSlider').anythingSlider(index);
     };
+ */ ?>
     </script>
     <!-- ##### Footer ##### -->
 	<?php include 'footer.php' ?>
