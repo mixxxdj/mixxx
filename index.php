@@ -16,57 +16,7 @@
     <!--[if lt IE 7.]>
     <script defer type="text/javascript" src="js/pngfix.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="js/jquery.js"></script> 
-    <script type="text/javascript" src="js/jquery.cycle.pack.js"></script>
-    <script type="text/javascript" src="js/jquery.anythingslider.js"></script>
-    <script type="text/javascript" src="js/jquery.easing.1.2.js"></script>
-    <script type="text/javascript" src="js/fancyzoom.js"></script>
-    
     <title>Mixxx | Free Digital DJ Software</title>
-    <script type="text/javascript">
-
-function formatText(index, panel) {
-    return "";
-  };
-
-$(function() {
-
-    
-    $(".splash_link").click(function() {
-    	var value = $(this).attr("splash_idx");
-    	//alert("value =" + value);
-    	$(".splash:visible").fadeOut(500);        //Wax on
-		showdiv = $("div#splash" + value);
-    	setTimeout('showdiv.fadeIn(500);', 500);  //Wax off
-    });
-
-    $('.anythingSlider').anythingSlider({
-        easing: "swing",                // Anything other than "linear" or "swing" requires the easing plugin
-        autoPlay: true,                 // This turns off the entire FUNCTIONALY, not just if it starts running or not
-        startStopped: false,            // If autoPlay is on, this can force it to start stopped
-        delay: 4000,                    // How long between slide transitions in AutoPlay mode
-        animationTime: 600,             // How long the slide transition takes
-        hashTags: true,                 // Should links change the hashtag in the URL?
-        buildNavigation: true,          // If true, builds and list of anchor links to link to each slide
-        pauseOnHover: true,             // If true, and autoPlay is enabled, the show will pause on hover
-        startText: "Start",             // Start text
-        stopText: "Stop",               // Stop text
-        navigationFormatter: formatText // Details at the top of the file on this use (advanced use)
-        });
-
-    $("#slide-jump").click(function(e){
-        $('.anythingSlider').anythingSlider(3);
-        e.preventDefault();
-    });
-    
-
-
-});
-
-    function switchSlide(index) {
-        $('.anythingSlider').anythingSlider(index);
-    };
-    </script>
   </head>
   <body>
     <!-- For non-visual user agents: --><div id="top"><a href="#main-copy" class="doNotDisplay doNotPrint">Skip to main content.</a></div>
@@ -276,6 +226,52 @@ $(function() {
     </div> <!-- main-copy ?? -->
 
 
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+    <script type="text/javascript" src="js/mini.js"></script>
+    <script type="text/javascript">
+
+function formatText(index, panel) {
+    return "";
+  };
+
+$(function() {
+
+    
+    $(".splash_link").click(function() {
+    	var value = $(this).attr("splash_idx");
+    	//alert("value =" + value);
+    	$(".splash:visible").fadeOut(500);        //Wax on
+		showdiv = $("div#splash" + value);
+    	setTimeout('showdiv.fadeIn(500);', 500);  //Wax off
+    });
+
+    $('.anythingSlider').anythingSlider({
+        easing: "swing",                // Anything other than "linear" or "swing" requires the easing plugin
+        autoPlay: true,                 // This turns off the entire FUNCTIONALY, not just if it starts running or not
+        startStopped: false,            // If autoPlay is on, this can force it to start stopped
+        delay: 4000,                    // How long between slide transitions in AutoPlay mode
+        animationTime: 600,             // How long the slide transition takes
+        hashTags: true,                 // Should links change the hashtag in the URL?
+        buildNavigation: true,          // If true, builds and list of anchor links to link to each slide
+        pauseOnHover: true,             // If true, and autoPlay is enabled, the show will pause on hover
+        startText: "Start",             // Start text
+        stopText: "Stop",               // Stop text
+        navigationFormatter: formatText // Details at the top of the file on this use (advanced use)
+        });
+
+    $("#slide-jump").click(function(e){
+        $('.anythingSlider').anythingSlider(3);
+        e.preventDefault();
+    });
+    
+
+
+});
+
+    function switchSlide(index) {
+        $('.anythingSlider').anythingSlider(index);
+    };
+    </script>
     <!-- ##### Footer ##### -->
 	<?php include 'footer.php' ?>
   </body>
