@@ -50,7 +50,6 @@ RateControl::RateControl(const char* _group,
     // Reverse button
     m_pReverseButton = new ControlPushButton(ConfigKey(_group, "reverse"));
     m_pReverseButton->set(0);
-    m_pReverseButton->setToggleButton(true);
 
     // Forward button
     m_pForwardButton = new ControlPushButton(ConfigKey(_group, "fwd"));
@@ -122,12 +121,11 @@ RateControl::RateControl(const char* _group,
     // Scratch enable toggle
     m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
     m_pScratchToggle->set(0);
-    m_pScratchToggle->setToggleButton(true);
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
-    m_pJogFilter->setFilterLength(5);
+    m_pJogFilter->setFilterLength(25);
 
     // Update Internal Settings
     // Set Pitchbend Mode
@@ -317,8 +315,7 @@ double RateControl::getRawRate() {
 }
 
 double RateControl::getWheelFactor() {
-    // Calculate wheel (experimental formula)
-    return 40 * m_pWheel->get();
+    return m_pWheel->get();
 }
 
 double RateControl::getJogFactor() {
@@ -362,8 +359,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
     } else if (paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
         // New scratch behavior overrides old
-        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*10.;
-        else rate = oldScratchFactor + jogFactor*18 + wheelFactor*10.; // Just remove oldScratchFactor in future
+        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*40.0;
+        else rate = oldScratchFactor + jogFactor*18 + wheelFactor; // Just remove oldScratchFactor in future
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
@@ -373,12 +370,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // Jog: a linear additive effect whose value is filtered (springs back)
         // Temp: pitch bend
 
-        // Multiply reverse direction to make it feel more real
-        if (jogFactor < 0.0f)
-            jogFactor *= 2.0;
-
         rate = 1. + getRawRate() + getTempRate();
-        rate += wheelFactor * 10.;
+        rate += wheelFactor;
 
         // New scratch behavior - overrides playback speed (and old behavior)
         if (scratchEnable) rate = scratchFactor;

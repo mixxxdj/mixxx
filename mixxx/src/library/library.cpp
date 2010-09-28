@@ -19,7 +19,7 @@
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
 
-#include "wtracktableview.h"
+#include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -95,7 +95,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
                          WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
     WTrackTableView* pTrackTableView =
-        new WTrackTableView(pLibraryWidget, m_pConfig);
+            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
