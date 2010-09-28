@@ -26,7 +26,7 @@
                 return false;
             });
 
-            $("#ubuntudlg").dialog({autoOpen : false});
+            $("#ubuntudlg").dialog({autoOpen : false, width : 500});
             
             $("#getubu").bind("click", function(e) {
                 $("#ubuntudlg").dialog("open");
@@ -58,17 +58,21 @@
 		</p>
 	</div>
 
-	<div id="ubuntudlg" style="display: none;" title="Important (Ubuntu 9.04-10.04)">
-	   <center><b>Download:</b><br>
-	   <a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-ubuntu-i386.deb">Mixxx 1.8.0 for Ubuntu 9.10+ i386</a><br>
-	   <a href="http://downloads.mixxx.org/mixxx-1.7.1/mixxx-1.7.1-ubuntu-amd64.deb">Mixxx 1.7.1 for Ubuntu 9.04+ amd64</a></center><br>
-	   <center><b>Important Note:</b></center>
-		<p>Ubuntu users are urged to upgrade to <b>Ubuntu 10.10 or newer</b>.</p><p> Earlier versions of Ubuntu have a flaw in a library provided by Ubuntu 9.04 that can cause <b>critical hangups</b> in Mixxx. Ubuntu 9.04-10.04 users are advised to install the version of PortAudio from Ubuntu 8.10, available as .deb packages here:<br><br>
-            <ul>
-                <li><a href="http://old-releases.ubuntu.com/ubuntu/pool/universe/p/portaudio19/libportaudio2_19+svn20071207-0ubuntu3_i386.deb">PortAudio for i386</a></li>
-                <li><a href="http://old-releases.ubuntu.com/ubuntu/pool/universe/p/portaudio19/libportaudio2_19+svn20071207-0ubuntu3_amd64.deb">PortAudio for amd64</a></li>
-            </ul>
-   		</p>
+	<div id="ubuntudlg" style="display: none;" title="Ubuntu Downloads">
+	   <center><b>Download:</b></center>
+	   <br>
+	   <b>Ubuntu 10.10 (Maverick):</b><br>
+	   Mixxx 1.8.0 can be installed directly from the Ubuntu Software Centre!<br><br>
+	   
+	   <b>Ubuntu 10.04 (Lucid):</b><br>
+	   Open a terminal, and enter:
+	   <pre>
+sudo add-apt-repository ppa:mixxxdevelopers/ppa
+sudo apt-get update
+sudo apt-get install mixxx libportaudio2
+	   </pre>
+	   This will install the latest version of Mixxx from the <a href="https://launchpad.net/~mixxxdevelopers/+archive/ppa">Mixxx Developers PPA</a> on Launchpad.
+
 	</div>
 	
     <!-- ##### Main Copy ##### -->
