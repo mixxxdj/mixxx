@@ -122,30 +122,33 @@ $(function() {
                     <ul>
                         <li>
                             <a href="#" onClick="switchSlide(2);">
-                                <img stlye="padding: 0px;" src="images/splash_1_colour.png" alt="Powered by Mixxx.">
+                                <img stlye="padding: 0px;" src="images/splash_1_colour.png" alt="Powered by Mixxx."
+                                 width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(3);">
                                 <img src="images/splash_5_djmixes.png" alt="Create your own live DJ mixes. 
-                                     And play them really, really loud.">
+                                     And play them really, really loud." width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(4);">
                                 <img src="images/splash_3_library.png" alt="Crates. Auto DJ. Hot Cues. iTunes.
-                                      Designed by DJs, for DJs.">
+                                      Designed by DJs, for DJs." width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(5);">
-                                <img src="images/splash_2_skins.png" alt="Choose your layout. Skins make it happens.">
+                                <img src="images/splash_2_skins.png" alt="Choose your layout. Skins make it happens."
+                                 width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(6);">
                                 <img src="images/splash_4.png" alt="We could have hired superstar DJs to endorse us,
-                                      but instead we spent our money making Mixxx better.">
+                                      but instead we spent our money making Mixxx better."
+                                      width="680px" height="318px">
                             </a>   
                         </li>       
                     </ul>
