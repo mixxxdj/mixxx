@@ -143,7 +143,7 @@
                 <status>0x90</status>
                 <midino>0xf</midino>
                 <group>[Channel1]</group>
-                <key>BehringerBCD3000.loop1</key>
+                <key>BehringerBCD3000.loop</key>
                 <options>
                     <script-binding/>
                 </options>
@@ -161,7 +161,7 @@
                 <status>0x90</status>
                 <midino>0x11</midino>
                 <group>[Channel1]</group>
-                <key>BehringerBCD3000.scratch1</key>
+                <key>BehringerBCD3000.scratchButton</key>
                 <options>
                     <script-binding/>
                 </options>
@@ -269,7 +269,7 @@
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <group>[Channel2]</group>
-                <key>BehringerBCD3000.loop2</key>
+                <key>BehringerBCD3000.loop</key>
                 <options>
                     <script-binding/>
                 </options>
@@ -305,7 +305,7 @@
                 <status>0x90</status>
                 <midino>0x19</midino>
                 <group>[Channel2]</group>
-                <key>BehringerBCD3000.scratch2</key>
+                <key>BehringerBCD3000.scratchButton</key>
                 <options>
                     <script-binding/>
                 </options>
@@ -458,7 +458,7 @@
                 <status>0xb0</status>
                 <midino>0x12</midino>
                 <group>[Channel2]</group>
-                <key>BehringerBCD3000.jog_wheel2</key>
+                <key>BehringerBCD3000.jogWheel</key>
                 <options>
                     <script-binding/>
                 </options>
@@ -467,7 +467,7 @@
                 <status>0xb0</status>
                 <midino>0x13</midino>
                 <group>[Channel1]</group>
-                <key>BehringerBCD3000.jog_wheel1</key>
+                <key>BehringerBCD3000.jogWheel</key>
                 <options>
                     <script-binding/>
                 </options>

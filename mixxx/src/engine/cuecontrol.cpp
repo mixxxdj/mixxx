@@ -20,6 +20,7 @@ CueControl::CueControl(const char * _group,
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
+        m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
         m_mutex(QMutex::Recursive) {
@@ -65,7 +66,8 @@ CueControl::~CueControl() {
 ConfigKey CueControl::keyForControl(int hotcue, QString name) {
     ConfigKey key;
     key.group = getGroup();
-    key.item = QString("hotcue_%1_%2").arg(hotcue).arg(name);
+    // Add one to hotcue so that we dont have a hotcue_0
+    key.item = QString("hotcue_%1_%2").arg(hotcue+1).arg(name);
     return key;
 }
 
@@ -386,7 +388,7 @@ void CueControl::hotcueActivate(double v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(v);
             } else {
-                if (m_pPlayButton->get() == 1.0f) {
+                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0f) {
                     hotcueGoto(v);
                 } else {
                     hotcueActivatePreview(v);
@@ -413,6 +415,7 @@ void CueControl::hotcueActivatePreview(double v) {
 
     if (v) {
         if (pCue && pCue->getPosition() != -1) {
+            m_iCurrentlyPreviewingHotcues++;
             int iPosition = pCue->getPosition();
             m_pPlayButton->set(1.0);
             m_bPreviewingHotcue = true;
@@ -424,14 +427,16 @@ void CueControl::hotcueActivatePreview(double v) {
         }
     } else {
         if (m_bPreviewingHotcue && pCue && pCue->getPosition() != -1) {
-            int iPosition = pCue->getPosition();
-            m_pPlayButton->set(0.0);
-            m_bPreviewingHotcue = false;
+            if (--m_iCurrentlyPreviewingHotcues == 0) {
+                int iPosition = pCue->getPosition();
+                m_pPlayButton->set(0.0);
+                m_bPreviewingHotcue = false;
 
-            // Need to unlock before emitting any signals to prevent deadlock.
-            lock.unlock();
+                // Need to unlock before emitting any signals to prevent deadlock.
+                lock.unlock();
 
-            emit(seekAbs(iPosition));
+                emit(seekAbs(iPosition));
+            }
         }
     }
 }

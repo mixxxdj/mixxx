@@ -120,6 +120,24 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     m_controlsToBind.append(MixxxControl("[Channel2]", "pregain"));
     m_controlDescriptions.append("Gain for Channel 2");
     
+    m_controlsToBind.append(MixxxControl("[Channel1]", "loop_in"));
+    m_controlDescriptions.append("Loop In for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "loop_in"));
+    m_controlDescriptions.append("Loop In for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "loop_out"));
+    m_controlDescriptions.append("Loop Out for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "loop_out"));
+    m_controlDescriptions.append("Loop Out for Player 2");
+
+    m_controlsToBind.append(MixxxControl("[Channel1]", "reloop_exit"));
+    m_controlDescriptions.append("Reloop / Exit for Player 1");
+
+    m_controlsToBind.append(MixxxControl("[Channel2]", "reloop_exit"));
+    m_controlDescriptions.append("Reloop / Exit for Player 2");
+
     //Should be same number of controls as descriptions.
     Q_ASSERT(m_controlsToBind.size() == m_controlDescriptions.size());
 

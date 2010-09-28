@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtGlobal>
 #include <QtCore>
 #include <QtGui>
 
@@ -37,7 +38,6 @@
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrary.h"
-
 
 #include "widget/woverview.h"
 #include "mixxxkeyboard.h"
@@ -560,7 +560,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    p->setWidget((QWidget *)m_pVisualCh1, true, true, true, Qt::LeftButton);
 
                     //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
 
@@ -589,7 +589,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    p->setWidget((QWidget *)m_pVisualCh2, true, true, true, Qt::LeftButton);
 
                     //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 
@@ -644,6 +644,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 int x = pos.left(pos.indexOf(",")).toInt();
                 int y = pos.mid(pos.indexOf(",")+1).toInt();
                 p->move(x,y);
+
+                // Get tooltip
+                QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
+                p->setToolTip(tooltip);
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
@@ -799,7 +803,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidget = new QStackedWidget(this);
 
                     // Create the pages that go in the tab widget
-                    m_pTabWidgetLibraryPage = new QWidget(this);
+                    m_pTabWidgetLibraryPage = new QWidget(m_pTabWidget);
 #ifdef __LADSPA__
                     m_pLADSPAView = new LADSPAView(this);
                     m_pTabWidgetEffectsPage = m_pLADSPAView;
@@ -816,40 +820,28 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTabWidgetLibraryPage->setLayout(m_pLibraryPageLayout);
                     //m_pTabWidgetEffectsPage->setLayout(m_pEffectsPageLayout);
 
-                    //Set up the search box widget
-                    if (m_pLineEditSearch == 0) {
-                        QString path = pConfig->getConfigPath();
-                        m_pLineEditSearch = new WSearchLineEdit(path, node, this);
-                        //m_pLibraryPageLayout->addWidget(m_pLineEditSearch, 0, 2, Qt::AlignRight); //Row 0, col 2
-                        //m_pLineEditSearch->show();
-
-                        // Size
-                        /*
-                        QString size = WWidget::selectNodeQString(node, "Size");
-                        int x = size.left(size.indexOf(",")).toInt();
-                        int y = size.mid(size.indexOf(",")+1).toInt();
-                        m_pLineEditSearch->setFixedSize(x,y);
-                        */
-                    }
-
                     // Build the Library widgets
                     m_pSplitter = new QSplitter(m_pTabWidgetLibraryPage);
 
                     m_pLibraryWidget = new WLibrary(m_pSplitter);
                     m_pLibraryWidget->installEventFilter(m_pKeyboard);
 
+                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
 
-                    m_pLibrarySidebar = new WLibrarySidebar(m_pSplitter);
+                    m_pLibrarySidebar = new WLibrarySidebar(m_pLibrarySidebarPage);
                     m_pLibrarySidebar->installEventFilter(m_pKeyboard);
 
-                    m_pLibrarySidebarPage = new QWidget(m_pSplitter);
+                    //Set up the search box widget
+                    if (m_pLineEditSearch == 0) {
+                        QString path = pConfig->getConfigPath();
+                        m_pLineEditSearch = new WSearchLineEdit(path, node, m_pLibrarySidebarPage);
+                    }
+
                     QVBoxLayout* vl = new QVBoxLayout();
                     vl->setContentsMargins(0,0,0,0); //Fill entire space
                     m_pLibrarySidebarPage->setLayout(vl);
                     vl->addWidget(m_pLineEditSearch);
                     vl->addWidget(m_pLibrarySidebar);
-
-                    setupTrackSourceViewWidget(node);
 
                     m_pLibrary->bindWidget(m_pLibrarySidebar,
                                            m_pLibraryWidget,
@@ -888,8 +880,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 //Move the tab widget into position and size it properly.
                 setupTabWidget(node);
-
-                setupTrackSourceViewWidget(node);
 
                 // Applies the node settings to every view registered in the
                 // Library widget.
@@ -1003,44 +993,107 @@ void MixxxView::setupTabWidget(QDomNode node)
         int y = size.mid(size.indexOf(",")+1).toInt();
         m_pTabWidget->setFixedSize(x,y);
     }
+
+    // Style
+    QString style = WWidget::selectNodeQString(node, "Style");
+
+    // Workaround to support legacy color styling
+    QColor color(0,0,0);
+
+
+    // Qt 4.7.0's GTK style is broken.
+    bool hasQtKickedUsInTheNuts = false;
+
+#ifdef __LINUX__
+#define ohyesithas true
+    QString QtVersion = qVersion();
+    if (QtVersion == "4.7.0") {
+        hasQtKickedUsInTheNuts = ohyesithas;
+    }
+#undef ohyesithas
+#endif
+
+    QString styleHack = "";
+
+    if (!WWidget::selectNode(node, "FgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+        color = WSkinColor::getCorrectColor(color);
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTreeView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView::item:!selected { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTreeView::item:!selected { color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
+        }
+        styleHack.append(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QLabel { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        color = WSkinColor::getCorrectColor(color);
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTreeView {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView {  background-color: %1; }\n ").arg(color.name()));
+
+            // Required for styling the item backgrounds, need to pick !selected
+            styleHack.append(QString("QTreeView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
+
+            // Styles the sidebar triangle area where there is no triangle
+            styleHack.append(QString("QTreeView::branch:!has-children {  background-color: %1; }\n ").arg(color.name()));
+
+            // We can't style the triangle portions because the triangle
+            // disappears when we do background-color. I suspect they use
+            // background-image instead of border-image, against their own
+            // documentation's recommendation.
+
+            // styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
+        }
+
+        styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowEven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+        color = WSkinColor::getCorrectColor(color);
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTableView::item:!selected { background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
+        }
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+        color = WSkinColor::getCorrectColor(color);
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTableView::item:alternate:!selected { background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+        }
+    }
+
+    style.prepend(styleHack);
+
+    m_pTabWidget->setStyleSheet(style);
 }
 
 
 void MixxxView::setupTrackSourceViewWidget(QDomNode node)
 {
 
-    //Setup colors:
-    //Foreground color
-    QColor fgc(0,255,0);
-    if (!WWidget::selectNode(node, "FgColor").isNull()) {
-
-	fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-
-	//m_pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
-
-	// Row colors
-	if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
-	    {
-	        QColor r1;
-	        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-		r1 = WSkinColor::getCorrectColor(r1);
-		QColor r2;
-		r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-		r2 = WSkinColor::getCorrectColor(r2);
-
-		// For now make text the inverse of the background so it's readable
-		// In the future this should be configurable from the skin with this
-		// as the fallback option
-		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-
-	        QPalette Rowpalette = palette();
-	        Rowpalette.setColor(QPalette::Base, r1);
-	        Rowpalette.setColor(QPalette::AlternateBase, r2);
-		Rowpalette.setColor(QPalette::Text, text);
-
-	        m_pLibrarySidebar->setPalette(Rowpalette);
-	    }
-    }
 
 }
 
