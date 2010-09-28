@@ -16,11 +16,8 @@
     <!--[if lt IE 7.]>
     <script defer type="text/javascript" src="js/pngfix.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="js/jquery.js"></script> 
-    <script type="text/javascript" src="js/jquery.cycle.pack.js"></script>
-    <script type="text/javascript" src="js/jquery.anythingslider.js"></script>
-    <script type="text/javascript" src="js/jquery.easing.1.2.js"></script>
-    <script type="text/javascript" src="js/fancyzoom.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+    <script type="text/javascript" src="js/mini.js"></script>
     
     <title>Mixxx | Free Digital DJ Software</title>
     <script type="text/javascript">
