@@ -243,7 +243,7 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
   
 SectionGroupEnd
 
-SectionGroup /e "Additional Skins" SecAddlSkins
+SectionGroup "Additional Skins" SecAddlSkins
 
 	;Section /o "Minimalist skins" SecBasicSkins
 	;  
@@ -273,27 +273,27 @@ SectionGroup /e "Additional Skins" SecAddlSkins
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook*
 	SectionEnd
 
-	Section /o "XGA-size (1024x768)" SecXGASkins
+	Section "XGA-size (1024x768)" SecXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA*
 	SectionEnd
 
-	Section /o "WXGA-size (1280x800)" SecWXGASkins
+	Section "WXGA-size (1280x800)" SecWXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA*
 	SectionEnd
 
-	Section /o "SXGA-size (1280x1024)" SecSXGASkins
+	Section "SXGA-size (1280x1024)" SecSXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA*
 	SectionEnd
 
-	Section /o "UXGA-size (1600x1200)" SecUXGASkins
+	Section "UXGA-size (1600x1200)" SecUXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA*
 	SectionEnd
 
-	Section /o "WSXGA-size (1680x1050)" SecWSXGASkins
+	Section "WSXGA-size (1680x1050)" SecWSXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA*
 	SectionEnd
