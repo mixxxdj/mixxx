@@ -15,8 +15,7 @@ String.prototype.toInt = function() {
 
 // ----------------- Function overloads ---------------------
 
-// Causes script print() calls to qDebug instead
-//	so they get logged
+// Causes script print() calls to appear in the log file as well
 print = function(string) {
 	engine.log(string);
 }
