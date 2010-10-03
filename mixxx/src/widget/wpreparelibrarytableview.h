@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "configobject.h"
-#include "wtracktableview.h"
+#include "widget/wtracktableview.h"
 
 class TrackCollection;
 

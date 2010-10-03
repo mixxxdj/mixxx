@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QRegExp>
 #include <QtXmlPatterns/QXmlQuery>
+#include <QDesktopServices>
 
 #include "itunestrackmodel.h"
 #include "xmlparse.h"
@@ -287,14 +288,11 @@ TrackPointer ITunesTrackModel::getTrackById(QString id) {
 QString ITunesTrackModel::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
-		musicFolder = QDir::homePath() + "/Music/iTunes/iTunes Music Library.xml";
+    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/iTunes Music Library.xml";
 #elif defined(__WINDOWS__)
-    QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
-		// if the value method fails it returns QTDir::homePath
-    musicFolder = settings.value("My Music", QDir::homePath()).toString();
-    musicFolder += "\\iTunes\\iTunes Music Library.xml";
+    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\iTunes Music Library.xml";
 #elif defined(__LINUX__)
-		musicFolder =  QDir::homePath() + "/.itunes.xml";
+		musicFolder = QDir::homePath() + "/.itunes.xml";
 #else
 		musicFolder = "";
 #endif
