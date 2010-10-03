@@ -75,7 +75,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bResetPitchIndpTimeStretch(true) {
 
     // Play button
-    playButton = new ControlPushButton(ConfigKey(group, "play"), true);
+    playButton = new ControlPushButton(ConfigKey(group, "play"));
+    playButton->setToggleButton(true);
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);
@@ -141,6 +142,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
+    m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
@@ -200,6 +202,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pTrackEndMode;
 
     delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
     delete m_pScaleST;
@@ -288,6 +291,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
+    m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
 
     // Let the engine know that a track is loaded now.
@@ -306,6 +310,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
     playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
+    m_pTrackSampleRate->set(0);
     pause.unlock();
     emit(trackLoadFailed(pTrack, reason));
 }

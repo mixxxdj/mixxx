@@ -19,7 +19,7 @@
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
 
-#include "wtracktableview.h"
+#include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
