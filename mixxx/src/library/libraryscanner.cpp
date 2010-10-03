@@ -17,6 +17,8 @@
 
 #include <QtCore>
 #include <QtDebug>
+#include <QDesktopServices>
+
 #include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
 #include "libraryscanner.h"
@@ -51,15 +53,20 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
      * On Windows, the iTunes folder is contained within the standard music folder
      * Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
      */
-    m_iTunesArtFolder = "";
+    QString iTunesArtFolder = "";
 #if defined(__WINDOWS__)
-		QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
-		// if the value method fails it returns QTDir::homePath
-		m_iTunesArtFolder = settings.value("My Music", QDir::homePath()).toString();
-		m_iTunesArtFolder += "\\iTunes\\Album Artwork";
-		m_iTunesArtFolder.replace(QString("\\"), QString("/"));
+		iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\Album Artwork";
+		iTunesArtFolder.replace(QString("\\"), QString("/"));
 #elif defined(__APPLE__)
-		m_iTunesArtFolder = QDir::homePath() + "/Music/iTunes/Album Artwork";
+		iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork";
+#endif
+    m_directoriesBlacklist << iTunesArtFolder;
+    qDebug() << "iTunes Album Art path is:" << iTunesArtFolder;
+
+#ifdef __WINDOWS__
+    //Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
+    QString seratoDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\_Serato_";
+    m_directoriesBlacklist << seratoDir;
 #endif
 }
 
@@ -419,7 +426,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
 
         // Skip the iTunes Album Art Folder since it is probably a waste of
         // time.
-        if (nextPath == m_iTunesArtFolder)
+        if (m_directoriesBlacklist.contains(nextPath))
             continue;
 
         if (!recursiveScan(nextPath, tracksToAdd))

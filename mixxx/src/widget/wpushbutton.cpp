@@ -126,8 +126,8 @@ void WPushButton::setup(QDomNode node)
                      ( (isLeftButton && !m_bLeftClickForcePush) ||
                        (isRightButton && !m_bRightClickForcePush) ) );
 
-            if (setAsToggleButton)
-                p->setToggleButton(true);
+            // if (setAsToggleButton)
+            //     p->setToggleButton(true);
 
             // BJW: Removed this so that buttons that are hardcoded as toggle in the source
             // don't get overridden if a skin fails to set them to 2-state. Buttons still
