@@ -12,23 +12,33 @@
     <link rel="SHORTCUT ICON" href="/favicon.ico"><!-- TODO: put a real favicon.ico on server, this one is blank, just to prevent IE 404 apache log spam -->
     <link rel="stylesheet" type="text/css" href="css/prosimii-screen.css" media="screen, tv, projection" title="Default" />
     <link rel="stylesheet" type="text/css" href="css/slider.css" media="screen" /> 
+    <link rel="stylesheet" type="text/css" href="prettyPhoto/css/prettyPhoto.css" media="screen" /> 
 	<link rel="alternate" type="application/rss+xml" title="Mixxx RSS Feed" href="http://feeds.feedburner.com/MixxxNews" />
     <!--[if lt IE 7.]>
     <script defer type="text/javascript" src="js/pngfix.js"></script>
     <![endif]-->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
     <script type="text/javascript" src="js/mini.js"></script>
+    <script type="text/javascript" src="prettyPhoto/js/jquery.prettyPhoto.js"></script>
     
     <title>Mixxx | Free Digital DJ Software</title>
     <script type="text/javascript">
-
+ 
 function formatText(index, panel) {
     return "";
   };
 
 $(function() {
 
-    
+//$("img").lazyload({ threshold : 200 });
+
+    $("a[rel^='prettyPhoto']").prettyPhoto({
+		theme: 'dark_rounded',
+		image_markup: '<img id="fullResImage" src="" style="cursor: hand;" onClick="$.prettyPhoto.close();" />',
+
+	});
+
+
     $(".splash_link").click(function() {
     	var value = $(this).attr("splash_idx");
     	//alert("value =" + value);
@@ -119,31 +129,31 @@ $(function() {
                     <ul>
                         <li>
                             <a href="#" onClick="switchSlide(2);">
-                                <img stlye="padding: 0px;" src="images/splash_1_colour.png" alt="Powered by Mixxx."
+                                <img style="padding: 0px;" src="http://web.mit.edu/rryan/www/mixxx.org/images/splash_1_colour.png" alt="Powered by Mixxx."
                                  width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(3);">
-                                <img src="images/splash_5_djmixes.png" alt="Create your own live DJ mixes. 
+                                <img src="http://web.mit.edu/rryan/www/mixxx.org/images/splash_5_djmixes.png" alt="Create your own live DJ mixes. 
                                      And play them really, really loud." width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(4);">
-                                <img src="images/splash_3_library.png" alt="Crates. Auto DJ. Hot Cues. iTunes.
+                                <img src="http://web.mit.edu/rryan/www/mixxx.org/images/splash_3_library.png" alt="Crates. Auto DJ. Hot Cues. iTunes.
                                       Designed by DJs, for DJs." width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(5);">
-                                <img src="images/splash_2_skins.png" alt="Choose your layout. Skins make it happens."
+                                <img src="http://web.mit.edu/rryan/www/mixxx.org/images/splash_2_skins.png" alt="Choose your layout. Skins make it happens."
                                  width="680px" height="318px">
                             </a>
                         </li>
                         <li>
                             <a href="#" onClick="switchSlide(6);">
-                                <img src="images/splash_4.png" alt="We could have hired superstar DJs to endorse us,
+                                <img src="http://web.mit.edu/rryan/www/mixxx.org/images/splash_4.png" alt="We could have hired superstar DJs to endorse us,
                                       but instead we spent our money making Mixxx better."
                                       width="680px" height="318px">
                             </a>   
@@ -184,6 +194,9 @@ $(function() {
                 <a href="download.php">Get Mixxx for other platforms...</a>
                 </p>
                 <center>
+                   <a href="images/splash_mixxx_screenshot.png" rel="prettyPhoto" class="screen"><img src="images/splash_mixxx_screenshot_mini.png"></a><br>
+                   <a href="images/splash_mixxx_screenshot_deere.png" rel="prettyPhoto"  class="screen"><img src="images/splash_mixxx_screenshot_deere_mini.png"></a>
+<!--
                    <a href="#screenshot_default" class="screen"><img src="images/splash_mixxx_screenshot_mini.png"></a><br>
                    <a href="#screenshot_deere" class="screen"><img src="images/splash_mixxx_screenshot_deere_mini.png"></a>
                    <div id="screenshot_default">
@@ -195,6 +208,7 @@ $(function() {
                     <script type="text/javascript">
                         $('a.screen').fancyZoom({directory: "images/fancyzoom", closeOnClick: true});
                     </script>
+-->
                 </center>
             </div>
             <!-- Clear the floats so that the main-copy div expands vertically. -->
