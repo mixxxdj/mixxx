@@ -122,7 +122,6 @@ RateControl::RateControl(const char* _group,
     // Scratch enable toggle
     m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
     m_pScratchToggle->set(0);
-    m_pScratchToggle->setToggleButton(true);
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
