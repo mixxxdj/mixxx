@@ -76,7 +76,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bResetPitchIndpTimeStretch(true) {
 
     // Play button
-    playButton = new ControlPushButton(ConfigKey(group, "play"), true);
+    playButton = new ControlPushButton(ConfigKey(group, "play"));
+    playButton->setToggleButton(true);
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);

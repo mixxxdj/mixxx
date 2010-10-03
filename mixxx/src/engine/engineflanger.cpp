@@ -41,8 +41,10 @@ EngineFlanger::EngineFlanger(const char * group)
     potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 50000., 2000000.);
 
     // Init. channel selects:
-    pushbuttonFlangerCh1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"), true);
-    pushbuttonFlangerCh2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"), true);
+    pushbuttonFlangerCh1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"));
+    pushbuttonFlangerCh1->setToggleButton(true);
+    pushbuttonFlangerCh2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"));
+    pushbuttonFlangerCh2->setToggleButton(true);
 
     // Fixed values of controls:
     LFOamplitude = 240;
