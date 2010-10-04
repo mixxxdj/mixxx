@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 Import('build_dir')
-Import('env', 'flags', 'platformString')
+Import('build', 'flags')
 
-plugins = [] 
-soundsourcem4a = SConscript(File('soundsourcem4a/SConscript'), build_dir=Dir(build_dir + "/m4a"), duplicate=0, exports=['env','flags', 'platformString']) 
-soundsourcewv = SConscript(File('soundsourcewv/SConscript'), build_dir=Dir(build_dir + "/wv"), duplicate=0, exports=['env','flags', 'platformString'])
+plugins = []
+soundsourcem4a = SConscript(File('soundsourcem4a/SConscript'), build_dir=Dir(build_dir + "/m4a"), duplicate=0, exports=['build','flags'])
+soundsourcewv = SConscript(File('soundsourcewv/SConscript'), build_dir=Dir(build_dir + "/wv"), duplicate=0, exports=['build','flags'])
 plugins.extend(soundsourcem4a)
 plugins.extend(soundsourcewv)
 
