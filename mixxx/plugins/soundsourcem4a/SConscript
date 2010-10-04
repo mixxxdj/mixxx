@@ -5,7 +5,7 @@ import sys
 import SCons
 import shutil
 
-Import('env', 'flags', 'platformString')
+Import('build', 'flags')
 
 
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
@@ -20,10 +20,10 @@ m4a_sources = [
 #=========================
 if int(flags['m4a']):
 	SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
-	if 'win' in platformString:
-		ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+	if build.platform_is_windows:
+		ssm4a_bin = build.env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [build.env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 	else:
-		ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources)
+		ssm4a_bin = build.env.SharedLibrary('soundsourcem4a', m4a_sources)
 
 	#Pass this soundsourcem4a library object file back to the SConscript above us.
 	Return("ssm4a_bin")

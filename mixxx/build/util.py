@@ -44,7 +44,7 @@ def determine_platform():
 		platformString = 'linux'
 	return platformString
 
-def determine_architecture(platformString, ARGUMENTS, env):
+def determine_architecture(build, ARGUMENTS, env):
 	architecture = platform.architecture()
 	machine = platform.machine()
 	bitwidth = architecture[0][0:2];	# "32" or "64"
@@ -54,7 +54,7 @@ def determine_architecture(platformString, ARGUMENTS, env):
 	flags_force32 = ARGUMENTS.get('force32', 0)
 	flags_force64 = ARGUMENTS.get('force64', 0)
 	if int(flags_force32) and not int(flags_force64):
-		if 'win' not in platformString:
+		if not build.platform_is_windows:
 			env.Append(CCFLAGS = '-m32')
 			env.Append(CXXFLAGS = '-m32')
 			env.Append(LINKFLAGS = '-m32')
@@ -63,7 +63,7 @@ def determine_architecture(platformString, ARGUMENTS, env):
 
 	#force 64-bit compile
 	if int(flags_force64) and not int(flags_force32):
-		if 'win' not in platformString:
+		if not build.platform_is_windows:
 			env.Append(CCFLAGS = '-m64')
 			env.Append(CXXFLAGS = '-m64')
 			env.Append(LINKFLAGS = '-m64')
@@ -71,9 +71,11 @@ def determine_architecture(platformString, ARGUMENTS, env):
 		bitwidth = '64'
 	if int(flags_force64) or int(flags_force32):
                 print "FORCING %s-BIT BUILD: %s %s (%s bit)" % \
-                    (bitwidth, platformString, machine, bitwidth)
+                    (bitwidth, build.platform, machine, bitwidth)
 
 	print 'Binary format: %s' % architecture[1]
 
-	return {"machine":machine, "bitwidth":bitwidth, 'architecture': architecture}
+	return {"machine": machine,
+                "bitwidth": bitwidth,
+                'architecture': architecture}
 
