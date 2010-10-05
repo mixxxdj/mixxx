@@ -123,12 +123,7 @@ class MixxxBuild(object):
 
         self.read_environment_variables()
 
-        # Global cache directory Put all project files in it so a rm -rf cache
-        # will clean up the config
-        if not self.env.has_key('CACHEDIR'):
-            self.env['CACHEDIR'] = str(Script.Dir('#cache/'))
-        if not os.path.isdir(self.env['CACHEDIR']):
-            os.mkdir(self.env['CACHEDIR'])
+        self.install_options()
 
     def detect_platform(self):
         return {'win32': 'windows',
@@ -159,7 +154,14 @@ class MixxxBuild(object):
         # mangled
         self.env['CPPDEFINES'] = []
 
-    def get_features(self):
+    def install_options(self):
+        # Global cache directory Put all project files in it so a rm -rf cache
+        # will clean up the config
+        if not self.env.has_key('CACHEDIR'):
+            self.env['CACHEDIR'] = str(Script.Dir('#cache/'))
+        if not os.path.isdir(self.env['CACHEDIR']):
+            os.mkdir(self.env['CACHEDIR'])
+
         cachefile = os.path.join(str(self.env['CACHEDIR']), 'custom.py')
 
         ## Avoid spreading .sconsign files everywhere
@@ -167,6 +169,7 @@ class MixxxBuild(object):
         ## WARNING - We found that the above line causes SCons to randomly not find
         ##           dependencies for some reason. It might not happen right away, but
         ##           a good number of users found that it caused weird problems - Albert (May 15/08)
+
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
@@ -187,6 +190,7 @@ class MixxxBuild(object):
         #Save the options to cache
         vars.Save(cachefile, self.env)
 
+    def get_features(self):
         return self.available_features
 
 class Dependence(object):
