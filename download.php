@@ -96,9 +96,9 @@ sudo apt-get install mixxx libportaudio2
 						        	<td>
 						        	<img src="images/downloads_win.png">
 						        	</td>
-						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/172win32'); ">Mixxx 1.8.0</a><br>(32-bit)
+						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/180win32'); ">Mixxx 1.8.0</a><br>(32-bit)
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/172win64'); ">Mixxx 1.8.0</a><br>(64-bit)
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/180win64'); ">Mixxx 1.8.0</a><br>(64-bit)
 
                                     <!--
 		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
@@ -121,8 +121,8 @@ sudo apt-get install mixxx libportaudio2
 						            <td>
 						                <img src="images/downloads_mac.png">
 						            </td>
-						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-osx-universal.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/172osxuniversal'); ">Mixxx 1.8.0</a><br>
-						    		(10.4+, Universal)<br>
+						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/180osxintel'); ">Mixxx 1.8.0</a><br>
+						    		(10.5+, Intel)<br>
 						    		</td>
 						            <td><img src="images/mac.png"></td>
 						        </tr>
@@ -133,11 +133,11 @@ sudo apt-get install mixxx libportaudio2
 						        <tr>
 						        	<td><img src="images/downloads_linux.png"></td>
 						            <td width="30%">
-						             <a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/172linuxsrc'); ">Mixxx 1.8.0</a><br>
+						             <a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0.2-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/180linuxsrc'); ">Mixxx 1.8.0</a><br>
 						    (Source)
 						            </td>
 						            <td width="30%">
-						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/172ubuntu'); ">Mixxx 1.8.0</a><br>(Ubuntu)
+						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/180ubuntu'); ">Mixxx 1.8.0</a><br>(Ubuntu)
 						    		</td>
 						    		<td><img src="images/ubuntu.png" align="center" border="0px">
 						    		</td>
@@ -181,7 +181,7 @@ sudo apt-get install mixxx libportaudio2
 							<img src="images/source.png" style="float: right; padding: 10px;">
 							<p>Mixxx is also available as source code, licensed under the GPL v2. Please check the LICENSE file for complete licensing information. You can grab the latest distribution or get the latest code directly from BZR:</p>
 							<ul>
-								<li><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/172linuxsrc'); ">Mixxx 1.8.0 source code</a></li>
+								<li><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0.2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180linuxsrc'); ">Mixxx 1.8.0 source code</a></li>
 		           				<li>Checking out from BZR:
 							<pre>bzr branch lp:mixxx</pre></li>
 							</ul>

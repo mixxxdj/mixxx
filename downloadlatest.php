@@ -5,11 +5,11 @@ if ($os == "Windows") {
 	$url .= "win32.exe";
 }
 /*else if ($os == "Mac OS X")
-	$url .= "macppc.dmg"; */
+	$url .= "macppc.dmg"; 
 else if ($os == "Mac OS X 10.5 (Universal)")
 	$url .= "osx-universal.dmg";
 else if ($os == "Mac OS X 10.4 (Universal)") 
-	$url .= "osx-universal.dmg";
+	$url .= "osx-universal.dmg"; */
 	//$url = "http://downloads.mixxx.org/mixxx-1.6.0/mixxx-1.6.0-macintel-tiger.dmg"; 
 else // if ($os == "Linux")
 {
