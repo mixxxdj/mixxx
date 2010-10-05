@@ -316,20 +316,6 @@ class ScriptStudio(Feature):
                 'script/macrolistitem.cpp',
                 'script/qtscriptinterface.cpp']
 
-
-
-
-class Template(Feature):
-    def description(self):
-        return "TEMPLATE"
-    def enabled(self, build):
-        build.flags['TEMPLATE'] = util.get_flags(build.env, 'TEMPLATE', 0)
-        if int(build.flags['TEMPLATE']):
-            return True
-        return False
-    def add_options(self, build, vars):
-        vars.Add('', '', 0)
-
 class AsmLib(Feature):
     def description(self):
         return "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)"
