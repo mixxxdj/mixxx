@@ -28,46 +28,6 @@ def get_mixxx_version():
     version = version.split()[-1].replace('"', '')
     return version
 
-def determine_platform():
-	if os.name == 'nt':
-		print 'Platform: Windows ' #+ machine + ' (' + architecture[0] + ')'
-		platformString = 'windows'
-	elif sys.platform == 'linux2':
-		 print 'Platform: Linux '
-		 platformString = 'linux'
-	elif 'bsd' in sys.platform: #should cover {Net,Open,Free,DragonFly}BSD, but I'll be upfront: I've only built Mixxx on OpenBSD
-		 print 'Platform: BSD '
-		 platformString = 'bsd'
-	elif sys.platform == 'darwin':
-		 print 'Platform: OS X '
-		 platformString = 'osx'
-	else:
-		print 'Platform: Unknown (assuming Linux-like,)'
-		platformString = 'linux'
-	return platformString
-
-def determine_architecture(build, ARGUMENTS):
-	architecture = platform.architecture()
-	machine = platform.machine()
-	bitwidth = architecture[0][0:2];	# "32" or "64"
-
-	# Allow to override auto-detection (environment variables must already be set appropriately with SETENV.CMD /xp /x86 or /x64)
-	# (Auto-detection of 64-bit only works correctly if you're running a 64-bit version of Python, otherwise it'll see an x86 system)
-	flags_force32 = ARGUMENTS.get('force32', 0)
-	flags_force64 = ARGUMENTS.get('force64', 0)
-	if int(flags_force32) and not int(flags_force64):
-            machine = 'x86'
-            bitwidth = '32'
-
-	#force 64-bit compile
-	if int(flags_force64) and not int(flags_force32):
-            machine = 'AMD64'
-            bitwidth = '64'
-
-	return {"machine": machine,
-                "bitwidth": bitwidth,
-                'architecture': architecture}
-
 def get_flags(env, argflag, default=0):
 	"""
 	* get value passed as an argument to scons as argflag=value
