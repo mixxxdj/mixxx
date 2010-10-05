@@ -1,13 +1,12 @@
 from SCons import Script
 import os, sys, platform
 
-
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
 
 def get_build_dir(platformString, bitwidth):
-	build_dir = '%s%s_build' % (platformString[0:3],bitwidth)
-	return build_dir
+    build_dir = '%s%s_build' % (platformString[0:3],bitwidth)
+    return build_dir
 
 def get_mixxx_version():
     """

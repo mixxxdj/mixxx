@@ -539,9 +539,14 @@ class MixxxCore(Feature):
         return sources
 
     def configure(self, build, conf):
+        # TODO(XXX) need to evaluate this define.
+        machine = util.determine_architecture(
+            build.platform, SCons.ARGUMENTS, build.env)['machine']
+        build.env.Append(CPPDEFINES=machine)
+
         if build.toolchain_is_gnu:
             # Default GNU Options
-            # TODO(XXX) always generate debugging info? Why -pipe?
+            # TODO(XXX) always generate debugging info?
             build.env.Append(CCFLAGS = '-pipe')
             build.env.Append(CCFLAGS = '-Wall')
             build.env.Append(CCFLAGS = '-Wextra')
