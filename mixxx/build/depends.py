@@ -217,7 +217,6 @@ class KissFFT(Dependence):
         build.env.Append(CPPPATH="#lib/kissfft")
 
 
-# NOT USED RIGHT NOW
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.4.1'
 
@@ -496,8 +495,6 @@ class MixxxCore(Feature):
                    "recording/encoder.cpp",
 
                    "segmentation.cpp",
-
-                   #res/qrc_mixxx.cc
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
