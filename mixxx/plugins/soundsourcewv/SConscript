@@ -20,17 +20,16 @@ wv_sources = [
 #=========================
 if int(build.flags['wv']):
 	SHLIBPREFIX='lib' #Makes the filename "libsoundsourcewv" consistently across platforms to make our lives easier.
+
         env = build.env.Clone()
         conf = Configure(env)
-
-        have_wv = conf.CheckLib('wavpack', 'wv')
-
+        have_wv = conf.CheckLib(['wavpack', 'wv'])
         env = conf.Finish()
 
 	if build.platform_is_windows:
-		sswv_bin = build.env.SharedLibrary('soundsourcewv', wv_sources, LINKCOM  = [build.env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+		sswv_bin = env.SharedLibrary('soundsourcewv', wv_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 	else:
-		sswv_bin = build.env.SharedLibrary('soundsourcewv', wv_sources)
+		sswv_bin = env.SharedLibrary('soundsourcewv', wv_sources)
 
 	#Pass this soundsourcewv library object file back to the SConscript above us.
 	Return("sswv_bin")

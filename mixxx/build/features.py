@@ -243,19 +243,17 @@ class M4A(Feature):
             return
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'], autoadd=False)) or \
-            conf.CheckLib('mp4', autoadd=False)
+        have_mp4v2 = conf.CheckLib('mp4v2', autoadd=False)
+        have_mp4 = conf.CheckLib('mp4', autoadd=False)
 
-        # We have to check for libfaad version 2.6 or 2.7. In libfaad
-        # version 2.7, the type for the samplerate is unsigned long*,
-        # while in 2.6 the type is uint32_t*. We can use the optional
-        # call parameter to CheckLibWithHeader to build a test file to
-        # check which one this faad.h supports.
-
-        have_faad = conf.CheckLib(['faad', 'libfaad'], autoadd=False)
+        # Either mp4 or mp4v2 works
+        have_mp4 = (have_mp4v2_h and have_mp4v2) or have_mp4
 
         if not have_mp4:
-            raise Exception('Could not find libmp4v2 or the libmp4v2 development headers.')
+            raise Exception('Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
+
+        have_faad = conf.CheckLib('faad', autoadd=False)
+
         if not have_faad:
             raise Exception('Could not find libfaad or the libfaad development headers.')
 
