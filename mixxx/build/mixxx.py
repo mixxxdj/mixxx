@@ -53,7 +53,6 @@ class MixxxBuild(object):
         self.platform_is_bsd = self.platform == 'bsd'
         self.platform_is_windows = self.platform == 'windows'
 
-
         self.bitwidth = 32
         if self.machine_is_64bit:
             self.bitwidth = 64
@@ -149,7 +148,7 @@ class Feature(object):
         raise NotImplementedError()
 
     def depends(self, build):
-        raise NotImplementedError()
+        return []
 
     def get_options(self, build):
         return []
@@ -161,13 +160,13 @@ class Dependence(object):
     name = property(_get_name)
 
     def sources(self, build):
-        pass
+        return []
 
     def satisfy(self):
         pass
 
-    def depends(self):
-        pass
+    def depends(self, build):
+        return []
 
     def configure(self, build, conf):
         pass
