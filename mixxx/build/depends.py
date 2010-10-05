@@ -1,7 +1,7 @@
 
 import os
 import util
-from mixxx import Dependence
+from mixxx import Dependence, Feature
 import SCons.Script as SCons
 
 class PortAudio(Dependence):
@@ -283,7 +283,13 @@ class SoundTouch(Dependence):
             build.env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
 
-class MixxxCore(Dependence):
+class MixxxCore(Feature):
+
+    def description(self):
+        return "Mixxx Core Features"
+
+    def enabled(self, build):
+        return True
 
     def sources(self, build):
         sources = ["mixxxkeyboard.cpp",
@@ -585,6 +591,13 @@ class MixxxCore(Dependence):
             build.env.Append(LIBS = 'delayimp')
             build.env.Append(LIBS = 'winspool')
             build.env.Append(LIBS = 'shell32')
+
+            # Makes the program not launch a shell first
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = '/subsystem:windows')
+            elif build.toolchain_is_gnu:
+                build.env.Append(LINKFLAGS = '-subsystem,windows')
+
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
