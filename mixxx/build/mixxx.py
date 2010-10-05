@@ -45,19 +45,39 @@ class MixxxBuild(object):
             raise Exception('cannot use msvs toolchain on non-windows platform')
 
         self.platform = target
-        self.machine = machine
-        self.build = build
-        self.toolchain = toolchain
-        self.crosscompile = self.host_platform != self.platform
-
-        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64']
-        self.toolchain_is_gnu = self.toolchain == 'gnu'
-        self.toolchain_is_msvs = self.toolchain == 'msvs'
         self.platform_is_posix = self.platform in ['linux', 'osx', 'bsd']
         self.platform_is_linux = self.platform == 'linux'
         self.platform_is_osx = self.platform == 'osx'
         self.platform_is_bsd = self.platform == 'bsd'
         self.platform_is_windows = self.platform == 'windows'
+
+        self.machine = machine
+        self.build = build
+
+        self.toolchain = toolchain
+        self.toolchain_is_gnu = self.toolchain == 'gnu'
+        self.toolchain_is_msvs = self.toolchain == 'msvs'
+
+        self.crosscompile = self.host_platform != self.platform
+
+        flags_force32 = int(Script.ARGUMENTS.get('force32', 0))
+        flags_force64 = int(Script.ARGUMENTS.get('force64', 0))
+        if self.toolchain == 'gnu':
+            if flags_force32 and flags_force64:
+                logging.error('Both force32 and force64 cannot be enabled at once')
+                Script.Exit(1)
+
+            if flags_force32:
+                if self.machine in ['powerpc', 'powerpc64']:
+                    self.machine = 'powerpc'
+                else:
+                    self.machine = 'x86'
+            elif flags_force64:
+                if self.machine in ['powerpc', 'powerpc64']:
+                    self.machine = 'powerpc64'
+                else:
+                    self.machine = 'x86_64'
+        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64']
 
         self.bitwidth = 32
         if self.machine_is_64bit:
@@ -122,6 +142,12 @@ class MixxxBuild(object):
                                      **extra_arguments)
 
         self.read_environment_variables()
+
+        if self.toolchain_is_gnu:
+            if flags_force32:
+                self.env.Append(CCFLAGS = '-m32')
+            elif flags_force64:
+                self.env.Append(CCFLAGS = '-m64')
 
         self.install_options()
 

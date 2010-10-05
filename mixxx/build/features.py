@@ -602,7 +602,7 @@ class Optimize(Feature):
             return
 
         machine = util.determine_architecture(
-            build.platform, SCons.ARGUMENTS, build.env)['machine']
+            build, SCons.ARGUMENTS)['machine']
 
         optimize_level = int(build.flags['optimize'])
 
@@ -707,7 +707,7 @@ class Tuned(Feature):
                     build.env.Append(CXXFLAGS = '/favor:blend')
                 else:
                     machine = util.determine_architecture(
-                        build.platform, SCons.ARGUMENTS, build.env)['machine']
+                        build, SCons.ARGUMENTS)['machine']
                     self.status = "Enabled (%s-optimized)" % machine
                     build.env.Append(CXXFLAGS = '/favor:' + machine)
             else:

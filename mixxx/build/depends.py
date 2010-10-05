@@ -537,7 +537,7 @@ class MixxxCore(Feature):
     def configure(self, build, conf):
         # TODO(XXX) need to evaluate this define.
         machine = util.determine_architecture(
-            build.platform, SCons.ARGUMENTS, build.env)['machine']
+            build, SCons.ARGUMENTS)['machine']
         build.env.Append(CPPDEFINES=machine)
 
         if build.toolchain_is_gnu:
