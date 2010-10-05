@@ -103,8 +103,7 @@ class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
                       'osx': '/usr/lib/Qt-4.5',
-                      'win32': 'C:\\qt\\4.5.1',
-                      'win64': 'C:\\qt\\4.5.1'}
+                      'windows': 'C:\\qt\\4.5.1'}
 
     def satisfy(self):
         pass

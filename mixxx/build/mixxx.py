@@ -35,7 +35,7 @@ class MixxxBuild(object):
         if target not in ['windows', 'osx', 'linux', 'bsd']:
             raise Exception("invalid target platform")
 
-        if machine not in ['x86_64', 'i686', 'i586', 'i486', 'i386', 'powerpc', 'powerpc64']:
+        if machine not in ['x86_64', 'x86', 'i686', 'i586', 'i486', 'i386', 'powerpc', 'powerpc64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
