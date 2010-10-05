@@ -479,19 +479,28 @@ class TestSuite(Feature):
         if not self.enabled(build):
             return
 
-        build.env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
-	build.env.Append(LIBS = 'gtest')
-	build.env.Append(CPPPATH="#lib/gtest-1.3.0/include")
-
     def sources(self, build):
-        gtest_dir = build.env.Dir("#lib/gtest-1.3.0")
+        # Build the gtest library, but don't return any sources.
+
+        # Clone our main environment so we don't change any settings in the
+        # Mixxx environment
+        test_env = build.env.Clone()
+
+        # -pthread tells GCC to do the right thing regardless of system
+        test_env.Append(CCFLAGS = '-pthread')
+        test_env.Append(LINKFLAGS = '-pthread')
+
+	test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.3.0")
         gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.3.0'))
         #build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-	build.env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+	test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
 
-        env = build.env
+        env = test_env
         SCons.Export('env')
         env.SConscript(env.File('scons/SConscript', gtest_dir))
+
+        return []
 
 class Shoutcast(Feature):
     def description(self):
