@@ -25,13 +25,35 @@ import os
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
-from build import mixxx
+from build import mixxx, features
 target = ARGUMENTS.get('target', None)
 machine = ARGUMENTS.get('machine', None)
 build_type = ARGUMENTS.get('build', None)
 toolchain = ARGUMENTS.get('toolchain', None)
 
-build = mixxx.MixxxBuild(target, machine, build_type, toolchain)
+available_features = [features.HifiEq,
+                      features.MIDIScript,
+                      features.VinylControl,
+                      features.Shoutcast,
+                      features.Profiling,
+                      features.QDebug,
+                      features.M4A,
+                      features.WavPack,
+                      features.TestSuite,
+                      features.LADSPA,
+                      features.MSVCDebug,
+                      features.MSVSHacks,
+
+                      # "Features" of dubious quality
+                      features.AsmLib,
+                      features.Tonal,
+                      features.IPod,
+                      features.ScriptStudio,
+                      features.CMetrics,
+                      features.FFMPEG,
+                      ]
+
+build = mixxx.MixxxBuild(target, machine, build_type, toolchain, available_features)
 Export('build')
 
 #Run our configuration stuff to setup our build environment (detect platform/arch, find libraries, etc)

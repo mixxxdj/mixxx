@@ -7,9 +7,11 @@ import SCons.Script as SCons
 
 class MixxxBuild(object):
 
-    def __init__(self, target, machine, build, toolchain):
+    def __init__(self, target, machine, build, toolchain, available_features=[]):
+        self.available_features = available_features
         self.host_platform = self.detect_platform()
         self.host_machine = self.detect_machine()
+        self.flags = {}
 
         if target is None:
             target = self.host_platform
@@ -121,8 +123,6 @@ class MixxxBuild(object):
                 os.mkdir(cachedir)
             self.env['CACHEDIR'] = cachedir
 
-        cachefile = os.path.join(str(self.env['CACHEDIR']), 'custom.py')
-
     def detect_platform(self):
         return {'win32': 'windows',
                 'cygwin': 'windows',
@@ -133,30 +133,48 @@ class MixxxBuild(object):
     def detect_machine(self):
         return platform.machine()
 
-    def install_options(self):
-        pass
+    def get_features(self):
+        cachefile = os.path.join(str(self.env['CACHEDIR']), 'custom.py')
+
+        ## Avoid spreading .sconsign files everywhere
+        #env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
+        ## WARNING - We found that the above line causes SCons to randomly not find
+        ##           dependencies for some reason. It might not happen right away, but
+        ##           a good number of users found that it caused weird problems - Albert (May 15/08)
 
 
+        vars = SCons.Variables(cachefile)
+        vars.Add('prefix', 'Set to your install prefix', '/usr/local')
+        vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 
-class Feature(object):
+        for feature_class in self.available_features:
+            # Instantiate the feature
+            feature = feature_class()
 
-    def _get_name(self):
-        return self.__cls__.__name__
-    name = property(_get_name)
+            # Add the feature to the feature list
+            feature.add_options(self, vars)
 
-    def satisfy(self, build):
-        raise NotImplementedError()
+        if not self.platform_is_windows:
+            vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
+            vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
 
-    def depends(self, build):
-        return []
+        else:
+            if self.machine_is_64bit:
+		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
+            vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
 
-    def get_options(self, build):
-        return []
+        vars.Update(self.env)
+        SCons.Help(vars.GenerateHelpText(self.env))
+
+        #Save the options to cache
+        vars.Save(cachefile, self.env)
+
+        return self.available_features
 
 class Dependence(object):
 
     def _get_name(self):
-        return self.__cls__.__name__
+        return self.__class__.__name__
     name = property(_get_name)
 
     def sources(self, build):
@@ -169,5 +187,23 @@ class Dependence(object):
         return []
 
     def configure(self, build, conf):
+        pass
+
+class Feature(Dependence):
+
+    def _get_name(self):
+        return self.__class__.__name__
+    name = property(_get_name)
+
+    def satisfy(self, build):
+        raise NotImplementedError()
+
+    def description(self):
+        raise NotImplementedError()
+
+    def enabled(self, build):
+        return False
+
+    def add_options(self, build, vars):
         pass
 
