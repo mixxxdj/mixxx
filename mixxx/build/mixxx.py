@@ -126,10 +126,9 @@ class MixxxBuild(object):
         # Global cache directory Put all project files in it so a rm -rf cache
         # will clean up the config
         if not self.env.has_key('CACHEDIR'):
-            cachedir = str(Script.Dir('#cache/'))
-            if not os.path.isdir(cachedir):
-                os.mkdir(cachedir)
-            self.env['CACHEDIR'] = cachedir
+            self.env['CACHEDIR'] = str(Script.Dir('#cache/'))
+        if not os.path.isdir(self.env['CACHEDIR']):
+            os.mkdir(self.env['CACHEDIR'])
 
     def detect_platform(self):
         return {'win32': 'windows',
@@ -168,7 +167,6 @@ class MixxxBuild(object):
         ## WARNING - We found that the above line causes SCons to randomly not find
         ##           dependencies for some reason. It might not happen right away, but
         ##           a good number of users found that it caused weird problems - Albert (May 15/08)
-
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
