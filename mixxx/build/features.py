@@ -227,7 +227,7 @@ class Tonal(Feature):
 
 class M4A(Feature):
     def description(self):
-        return "Apple M4A audio file support"
+        return "Apple M4A audio file support plugin"
 
     def enabled(self, build):
         build.flags['m4a'] = util.get_flags(build.env, 'm4a', 0)
@@ -260,7 +260,7 @@ class M4A(Feature):
 
 class WavPack(Feature):
     def description(self):
-        return "WavPack audio file support"
+        return "WavPack audio file support plugin"
 
     def enabled(self, build):
         build.flags['wv'] = util.get_flags(build.env, 'wv', 0)
@@ -613,7 +613,7 @@ class Optimize(Feature):
 
         if build.toolchain_is_msvs:
             if int(build.flags['msvcdebug']):
-                print "Skipping CPU Optimizations due to debug mode"
+                self.status = "Disabled (due to mscvdebug mode)"
                 return
             if build.machine_is_64bit:
                 build.env.Append(LINKFLAGS = '/MACHINE:X64')
@@ -624,53 +624,54 @@ class Optimize(Feature):
                 build.env.Append(LINKFLAGS = '/LTCG:STATUS')
 
                 if optimize_level == 1:
-                    print "  Maximize speed (/O2)"
+                    self.status = "Enabled -- Maximize Speed (/O2)"
                     build.env.Append(CXXFLAGS = '/O2')
                 elif optimize_level >= 2:
-                    print "  Maximum optimizations (/Ox)"
+                    self.status = "Enabled -- Maximum Optimizations (/Ox)"
                     build.env.Append(CXXFLAGS = '/Ox')
 
                 # SSE and SSE2 are core instructions on x64
                 if not build.machine_is_64bit:
                     if optimize_level == 3:
-                        print "  SSE instructions enabled"
+                        self.status += ", SSE Instructions Enabled"
                         build.env.Append(CXXFLAGS = '/arch:SSE')
                     elif optimize_level == 4:
-                        print "  SSE2 instructions enabled"
+                        self.status += ", SSE2 Instructions Enabled"
                         build.env.Append(CXXFLAGS = '/arch:SSE2')
         elif build.toolchain_is_gnu:
             if int(build.flags.get('tuned',0)):
-                print "Skipping specific CPU Optimizations due to tuned=1"
+                self.status = "Disabled (Overriden by tuned=1)"
                 return
 
             if optimize_level == 1:
                 build.env.Append(CXXFLAGS = '-O3')
+                self.status = "Enabled -- Basic Optimizations (-03)"
             elif optimize_level == 2:
-                print "  P4 MMX/SSE optimizations enabled."
+                self.status = "Enabled (P4 MMX/SSE)"
                 build.env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
             elif optimize_level == 3:
-                print "  Intel Core Solo/Duo optimizations enabled."
+                self.status = "Enabled (Intel Core Solo/Duo)"
                 build.env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
             elif optimize_level == 4:
-                print "  Intel Core 2 optimizations enabled."
+                self.status = "Enabled (Intel Core 2)"
                 build.env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
             elif optimize_level == 5:
-                print "  Athlon Athlon-4/XP/MP optimizations enabled."
+                self.status = "Enabled (Athlon Athlon-4/XP/MP)"
                 build.env.Append(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
             elif optimize_level == 6:
-                print "  Athlon K8/Opteron/AMD64 optimizations enabled."
+                self.status = "Enabled (Athlon K8/Opteron/AMD64)"
                 build.env.Append(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
             elif optimize_level == 7:
-                print "  Athlon K8/Opteron/AMD64 + SSE3 optimizations enabled."
+                self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
                 build.env.Append(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
             elif optimize_level == 8:
-                print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
+                self.status = "Enabled (Generic SSE/SSE2/SSE3)"
                 build.env.Append(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 
 
 class Tuned(Feature):
     def description(self):
-        return "Tuned"
+        return "Tune to this system CPU"
 
     def enabled(self, build):
         build.flags['tuned'] = util.get_flags(build.env, 'tuned', 0)
@@ -695,13 +696,12 @@ class Tuned(Feature):
                 build.env.Append(CCFLAGS = '-march=native')
                 # Doesn't make sense as a linkflag
                 build.env.Append(LINKFLAGS = '-march=native')
-                print "Optimizing for this CPU... yes"
             else:
-                print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
+                self.status = "Disabled (requires gcc >= 4.2.0)"
         elif build.toolchain_is_msvs:
             if build.machine_is_64bit:
                 if 'makerelease' in SCons.COMMAND_LINE_TARGETS:
-                    print "Optimizing for this CPU class... no  (due to makerelease)"
+                    self.status = "Disabled (due to makerelease target)"
                     # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
                     # IA64 which uses a different compiler.)  For a release, we choose
                     # to have code run about the same on both
@@ -709,7 +709,7 @@ class Tuned(Feature):
                 else:
                     machine = util.determine_architecture(
                         build.platform, SCons.ARGUMENTS, build.env)['machine']
-                    print "Optimizing for this CPU class (" + machine + ")... yes"
+                    self.status = "Enabled (%s-optimized)" % machine
                     build.env.Append(CXXFLAGS = '/favor:' + machine)
             else:
-                print "Optimizing for this CPU... no (not supported on 32-bit MSVC)"
+                self.status = "Disabled (not supported on 32-bit MSVC)"

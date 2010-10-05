@@ -4,7 +4,8 @@ import sys
 import os
 import re
 
-import SCons.Script as SCons
+import SCons
+from SCons import Script
 
 import util
 
@@ -86,18 +87,18 @@ class MixxxBuild(object):
         # Ugly hack to check the qtdir argument
         import depends
         default_qtdir = depends.Qt.DEFAULT_QTDIRS[self.platform]
-        qtdir = SCons.ARGUMENTS.get('qtdir',
+        qtdir = Script.ARGUMENTS.get('qtdir',
                                     os.environ.get('QTDIR', default_qtdir))
 
         # Validate the specified qtdir exists
         if not os.path.exists(qtdir):
             logging.error("QT path does not exist or QT4 is not installed.")
             logging.error("Please specify your QT path by running 'scons qtdir=[path]'")
-            SCons.Exit(1)
+            Script.Exit(1)
         # And that it doesn't contain qt3
         elif qtdir.find("qt3") != -1 or qtdir.find("qt/3") != -1:
             logging.error("Mixxx now requires QT4 instead of QT3 - please use your QT4 path with the qtdir build flag.")
-            SCons.Exit(1)
+            Script.Exit(1)
         logging.info("Qt path: %s" % qtdir)
 
         if self.platform == 'osx':
@@ -117,13 +118,15 @@ class MixxxBuild(object):
             if self.platform == 'osx':
                 tools.append('crossosx')
 
-        self.env = SCons.Environment(tools=tools, toolpath=toolpath, ENV=os.environ,
+        self.env = Script.Environment(tools=tools, toolpath=toolpath, ENV=os.environ,
                                      **extra_arguments)
+
+        self.read_environment_variables()
 
         # Global cache directory Put all project files in it so a rm -rf cache
         # will clean up the config
         if not self.env.has_key('CACHEDIR'):
-            cachedir = str(SCons.Dir('#cache/'))
+            cachedir = str(Script.Dir('#cache/'))
             if not os.path.isdir(cachedir):
                 os.mkdir(cachedir)
             self.env['CACHEDIR'] = cachedir
@@ -153,7 +156,6 @@ class MixxxBuild(object):
         if os.environ.has_key('LDFLAGS'):
             self.env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
 
-
         # Initialize this as a list, fixes a bug where first CPPDEFINE would get
         # mangled
         self.env['CPPDEFINES'] = []
@@ -167,7 +169,7 @@ class MixxxBuild(object):
         ##           dependencies for some reason. It might not happen right away, but
         ##           a good number of users found that it caused weird problems - Albert (May 15/08)
 
-        vars = SCons.Variables(cachefile)
+        vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 
@@ -182,7 +184,7 @@ class MixxxBuild(object):
             feature.add_options(self, vars)
 
         vars.Update(self.env)
-        SCons.Help(vars.GenerateHelpText(self.env))
+        Script.Help(vars.GenerateHelpText(self.env))
 
         #Save the options to cache
         vars.Save(cachefile, self.env)
@@ -212,6 +214,7 @@ class Feature(Dependence):
     def _get_name(self):
         return self.__class__.__name__
     name = property(_get_name)
+    status = ""
 
     def satisfy(self, build):
         raise NotImplementedError()
