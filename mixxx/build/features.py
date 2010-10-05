@@ -137,10 +137,10 @@ class MSVCDebug(Feature):
             build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(LINKFLAGS = '/DEBUG')
             if build.machine_is_64bit:
-                build.env.Append(CXXFLAGS = '/Zi')
+                build.env.Append(CCFLAGS = '/Zi')
                 build.env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
             else:
-                build.env.Append(CXXFLAGS = '/ZI')
+                build.env.Append(CCFLAGS = '/ZI')
         elif build.toolchain_is_msvs:
             # Enable multithreaded and DLL specific runtime methods. Required
             # for sndfile w/ flac support on windows
@@ -335,13 +335,13 @@ class AsmLib(Feature):
 
         build.env.Append(LIBPATH='#/../asmlib')
         if build.platform_is_linux:
-		build.env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+		build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
 		build.env.Append(LIBS = '":alibelf%so.a"' % build.bitwidth)
 	elif build.platform_is_osx:
-		build.env.Append(CXXFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+		build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
 		build.env.Append(LIBS = '":alibmac%so.a"' % build.bitwidth)
 	elif build.platform_is_windows:
-		build.env.Append(CXXFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
+		build.env.Append(CCFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
 		build.env.Append(LIBS = 'alibcof%so' % build.bitwidth)
 
 
@@ -618,7 +618,9 @@ class Optimize(Feature):
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
             # /MP : http://msdn.microsoft.com/en-us/library/bb385193.aspx
             # /MP has little to do with optimization so why is it here?
-            build.env.Append(CXXFLAGS = '/GL /MP')
+            # !!! /GL is incompatible with /ZI, which is set by mscvdebug
+            build.env.Append(CCFLAGS = '/GL /MP')
+
             # Use the fastest floating point math library
             # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
@@ -642,48 +644,54 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             if optimize_level == 1:
                 self.status = "Enabled -- Maximize Speed (/O2)"
-                build.env.Append(CXXFLAGS = '/O2')
+                build.env.Append(CCFLAGS = '/O2')
             elif optimize_level >= 2:
                 self.status = "Enabled -- Maximum Optimizations (/Ox)"
-                build.env.Append(CXXFLAGS = '/Ox')
+                build.env.Append(CCFLAGS = '/Ox')
 
             # SSE and SSE2 are core instructions on x64
             if not build.machine_is_64bit:
                 if optimize_level == 3:
                     self.status += ", SSE Instructions Enabled"
-                    build.env.Append(CXXFLAGS = '/arch:SSE')
+                    build.env.Append(CCFLAGS = '/arch:SSE')
                 elif optimize_level == 4:
                     self.status += ", SSE2 Instructions Enabled"
-                    build.env.Append(CXXFLAGS = '/arch:SSE2')
+                    build.env.Append(CCFLAGS = '/arch:SSE2')
         elif build.toolchain_is_gnu:
             if int(build.flags.get('tuned',0)):
                 self.status = "Disabled (Overriden by tuned=1)"
                 return
 
+            # Common flags to all optimizations
+            build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
+
+            # GC unused code
+            build.env.Append(CCFLAGS='-ffunction-sections -fdata-sections -Wl,--gc-sections')
+
             if optimize_level == 1:
-                build.env.Append(CXXFLAGS = '-O3')
+                build.env.Append(CCFLAGS = '-O3')
                 self.status = "Enabled -- Basic Optimizations (-03)"
             elif optimize_level == 2:
                 self.status = "Enabled (P4 MMX/SSE)"
-                build.env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=pentium4 -mmmx -msse2 -mfpmath=sse')
             elif optimize_level == 3:
                 self.status = "Enabled (Intel Core Solo/Duo)"
-                build.env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3 -mfpmath=sse')
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
-                build.env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
-                build.env.Append(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
             elif optimize_level == 6:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64)"
-                build.env.Append(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse')
             elif optimize_level == 7:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
-                build.env.Append(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse')
             elif optimize_level == 8:
                 self.status = "Enabled (Generic SSE/SSE2/SSE3)"
-                build.env.Append(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3 -mfpmath=sse')
 
 
 class Tuned(Feature):
@@ -707,7 +715,7 @@ class Tuned(Feature):
             # Even if not enabled, enable 'blending' for 64-bit because the
             # instructions are emitted anyway.
             if build.toolchain_is_msvs and build.machine_is_64bit:
-                build.env.Append(CXXFLAGS = '/favor:blend')
+                build.env.Append(CCFLAGS = '/favor:blend')
             return
 
         if build.toolchain_is_gnu:
@@ -727,14 +735,14 @@ class Tuned(Feature):
                     # IA64 which uses a different compiler.)  For a release, we choose
                     # to have code run about the same on both
 
-                    build.env.Append(CXXFLAGS = '/favor:blend')
+                    build.env.Append(CCFLAGS = '/favor:blend')
                 else:
                     self.status = "Disabled (currently broken with Visual Studio)"
-                    build.env.Append(CXXFLAGS = '/favor:blend')
+                    build.env.Append(CCFLAGS = '/favor:blend')
                     # Only valid choices are AMD64, INTEL64, and blend. Also
                     # /favor is only valid for Visual Studio 2010, 2003 does not
                     # have it.
                     #self.status = "Enabled (%s-optimized)" % machine
-                    #build.env.Append(CXXFLAGS = '/favor:' + machine)
+                    #build.env.Append(CCFLAGS = '/favor:' + machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
