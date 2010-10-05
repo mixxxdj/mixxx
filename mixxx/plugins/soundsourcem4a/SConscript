@@ -30,6 +30,12 @@ if int(build.flags['m4a']):
         have_faad = conf.CheckLib(['faad', 'libfaad'])
         have_faad_26 = False
 
+        # We have to check for libfaad version 2.6 or 2.7. In libfaad
+        # version 2.7, the type for the samplerate is unsigned long*,
+        # while in 2.6 the type is uint32_t*. We can use the optional
+        # call parameter to CheckLibWithHeader to build a test file to
+        # check which one this faad.h supports.
+
         # Check for libfaad version 2.6. This check doesn't work correctly on Windows
         # And we build it manually anyway, so we know it's v2.7
         if have_faad and not build.platform_is_windows:
@@ -41,7 +47,8 @@ if int(build.flags['m4a']):
         if have_faad_26:
             env.Append(CPPDEFINES = '__M4AHACK__')
             print "libfaad 2.6 compatibility mode... enabled"
-        env.Append(CPPDEFINES = '__MP4V2__')
+        if have_mp4v2_h:
+            env.Append(CPPDEFINES = '__MP4V2__')
 
         env = conf.Finish()
 
