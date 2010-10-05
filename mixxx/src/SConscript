@@ -6,6 +6,8 @@ import sys
 import SCons
 import shutil
 
+from build import util
+
 #TODO:
 #-figure out what files actually need what defines and write separate builder lines for them (so that changing a #define doesn't cause a rebuild of everything)
 #-
@@ -28,6 +30,7 @@ import shutil
 #Useful functions
 #
 
+mixxx_version = util.get_mixxx_version()
 print "WE ARE IN:", os.getcwd()
 
 plugins = []
@@ -211,7 +214,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+	dmg = env.Dmg('Mixxx-%s-%s' % (mixxx_version, ARCH), [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
 if build.platform_is_windows:
@@ -254,7 +257,7 @@ def BuildRelease(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
 	print
-	print "You have built version ", env['MIXXX_VERSION']
+	print "You have built version %s" % mixxx_version
 	print
 	if int(flags['msvcdebug']):
 		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
@@ -305,7 +308,7 @@ def BuildRelease(target, source, env):
 
 			# Call the NSIS build
 			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % {'path':nsis_location, \
-'version':env['MIXXX_VERSION'], '64bit':buildwin64}
+'version':mixxx_version, '64bit':buildwin64}
 			type(command) == str
 			print "Using command:" + command
 			os.system(command)
@@ -325,7 +328,7 @@ def BuildUbuntuPackage(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
 	print
-	print "You have built version ", env['MIXXX_VERSION']
+	print "You have built version ", mixxx_version
 	print
 	print
 	print "Top line of README, check version:"
@@ -341,8 +344,8 @@ def BuildUbuntuPackage(target, source, env):
 	if ("yes" == "yes"):
 		print "Now building DEB package..."
                 print
-		mixxx_dir = 'mixxx-' + env['MIXXX_VERSION']
-		mixxx_tarball = 'mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz' #The underscore is super important here to make the deb package work
+		mixxx_dir = 'mixxx-' + mixxx_version
+		mixxx_tarball = 'mixxx_' + mixxx_version + '.orig.tar.gz' #The underscore is super important here to make the deb package work
 
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
@@ -367,10 +370,10 @@ def BuildUbuntuPackage(target, source, env):
 
 		os.chdir('ubuntu')
 		# Tar the source code
-		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz ... (this can take a couple minutes)"
+		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + mixxx_version + ".orig.tar.gz ... (this can take a couple minutes)"
 		print
-		os.system("rm -f mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz") #Remove old tarball
-		os.system('tar --exclude=debian --exclude=debian/* -czf  mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz ' + mixxx_dir)
+		os.system("rm -f mixxx_" + mixxx_version + ".orig.tar.gz") #Remove old tarball
+		os.system('tar --exclude=debian --exclude=debian/* -czf  mixxx_' + mixxx_version + '.orig.tar.gz ' + mixxx_dir)
 
 		os.chdir(mixxx_dir)
 		# Copy the debian folder from /build/debian to exported source folder root
