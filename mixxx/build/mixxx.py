@@ -3,7 +3,10 @@ import platform
 import sys
 import os
 import re
+
 import SCons.Script as SCons
+
+import util
 
 class MixxxBuild(object):
 
@@ -58,6 +61,8 @@ class MixxxBuild(object):
         self.bitwidth = 32
         if self.machine_is_64bit:
             self.bitwidth = 64
+
+        self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
@@ -133,6 +138,26 @@ class MixxxBuild(object):
     def detect_machine(self):
         return platform.machine()
 
+    def read_environment_variables(self):
+        # Import environment variables from the terminal. Note that some
+        # variables correspond to variables inside the SCons env with different
+        # names, eg. the shell's "CFLAGS" ---> SCons' "CCFLAGS".
+        if os.environ.has_key('CC'):
+            self.env['CC'] = os.environ['CC']
+        if os.environ.has_key('CFLAGS'):
+            self.env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
+        if os.environ.has_key('CXX'):
+            self.env['CXX'] = os.environ['CXX']
+        if os.environ.has_key('CXXFLAGS'):
+            self.env['CXXFLAGS'] += SCons.Util.CLVar(os.environ['CXXFLAGS'])
+        if os.environ.has_key('LDFLAGS'):
+            self.env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
+
+
+        # Initialize this as a list, fixes a bug where first CPPDEFINE would get
+        # mangled
+        self.env['CPPDEFINES'] = []
+
     def get_features(self):
         cachefile = os.path.join(str(self.env['CACHEDIR']), 'custom.py')
 
@@ -142,10 +167,12 @@ class MixxxBuild(object):
         ##           dependencies for some reason. It might not happen right away, but
         ##           a good number of users found that it caused weird problems - Albert (May 15/08)
 
-
         vars = SCons.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
+
+        vars.Add('force32', 'Force a 32-bit compile', 0)
+        vars.Add('force64', 'Force a 64-bit compile', 0)
 
         for feature_class in self.available_features:
             # Instantiate the feature
@@ -153,15 +180,6 @@ class MixxxBuild(object):
 
             # Add the feature to the feature list
             feature.add_options(self, vars)
-
-        if not self.platform_is_windows:
-            vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
-            vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
-
-        else:
-            if self.machine_is_64bit:
-		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
-            vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
 
         vars.Update(self.env)
         SCons.Help(vars.GenerateHelpText(self.env))

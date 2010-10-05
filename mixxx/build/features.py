@@ -202,7 +202,7 @@ class VinylControl(Feature):
 
 class Tonal(Feature):
     def description(self):
-        return "Tonal Audio Detection"
+        return "NOT-WORKING Tonal Audio Detection"
 
     def enabled(self, build):
         build.flags['tonal'] = util.get_flags(build.env, 'tonal', 0)
@@ -243,7 +243,8 @@ class M4A(Feature):
             return
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'])) or conf.CheckLib('mp4')
+        have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'], autoadd=False)) or \
+            conf.CheckLib('mp4', autoadd=False)
 
         # We have to check for libfaad version 2.6 or 2.7. In libfaad
         # version 2.7, the type for the samplerate is unsigned long*,
@@ -251,32 +252,12 @@ class M4A(Feature):
         # call parameter to CheckLibWithHeader to build a test file to
         # check which one this faad.h supports.
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'])
-        have_faad_26 = False
-
-        # Check for libfaad version 2.6. This check doesn't work correctly on Windows
-        # And we build it manually anyway, so we know it's v2.7
-        if have_faad and not build.platform_is_windows:
-            have_faad_26 = (not conf.CheckLibWithHeader(
-                    'libfaad', 'faad.h', 'c++',
-                    call = 'faacDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);',
-                    autoadd=False))
+        have_faad = conf.CheckLib(['faad', 'libfaad'], autoadd=False)
 
         if not have_mp4:
             raise Exception('Could not find libmp4v2 or the libmp4v2 development headers.')
         if not have_faad:
             raise Exception('Could not find libfaad or the libfaad development headers.')
-
-        if have_faad_26:
-            build.env.Append(CPPDEFINES = '__M4AHACK__')
-            print "libfaad 2.6 compatibility mode... enabled"
-
-        if have_mp4v2_h:
-            build.env.Append(CPPDEFINES = '__MP4V2__')
-
-        build.env.Append(CPPDEFINES = '__M4A__')
-        build.env.Append(LIBS = 'libmp4v2')
-        build.env.Append(LIBS = 'libfaad')
 
 
 class WavPack(Feature):
@@ -475,10 +456,10 @@ class Profiling(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if self.target_is_linux or self.target_is_bsd:
+        if build.platform_is_linux or build.platform_is_bsd:
             build.env.Append(CCFLAGS = '-pg')
             build.env.Append(LINKFLAGS = '-pg')
-        elif self.target_is_osx:
+        elif build.platform_is_osx:
             build.env.Append(CCFLAGS = '-finstrument-functions')
             build.env.Append(LINKFLAGS = '-lSaturn')
 
@@ -604,3 +585,133 @@ class FFMPEG(Feature):
 
     def sources(self, build):
         return ['soundsourceffmpeg.cpp']
+
+class Optimize(Feature):
+    def description(self):
+        return "Optimization and Tuning"
+
+    def enabled(self, build):
+        build.flags['optimize'] = util.get_flags(build.env, 'optimize', 1)
+        if int(build.flags['optimize']):
+            return True
+        else:
+            return False
+
+    def add_options(self, build, vars):
+        if not build.platform_is_windows:
+            vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
+        else:
+            vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
+
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        machine = util.determine_architecture(
+            build.platform, SCons.ARGUMENTS, build.env)['machine']
+
+        optimize_level = int(build.flags['optimize'])
+
+        if build.toolchain_is_msvs:
+            if int(build.flags['msvcdebug']):
+                print "Skipping CPU Optimizations due to debug mode"
+                return
+            if build.machine_is_64bit:
+                build.env.Append(LINKFLAGS = '/MACHINE:X64')
+            else:
+                build.env.Append(LINKFLAGS = '/MACHINE:'+machine)
+
+                build.env.Append(CXXFLAGS = '/GL /MP')
+                build.env.Append(LINKFLAGS = '/LTCG:STATUS')
+
+                if optimize_level == 1:
+                    print "  Maximize speed (/O2)"
+                    build.env.Append(CXXFLAGS = '/O2')
+                elif optimize_level >= 2:
+                    print "  Maximum optimizations (/Ox)"
+                    build.env.Append(CXXFLAGS = '/Ox')
+
+                # SSE and SSE2 are core instructions on x64
+                if not build.machine_is_64bit:
+                    if optimize_level == 3:
+                        print "  SSE instructions enabled"
+                        build.env.Append(CXXFLAGS = '/arch:SSE')
+                    elif optimize_level == 4:
+                        print "  SSE2 instructions enabled"
+                        build.env.Append(CXXFLAGS = '/arch:SSE2')
+        elif build.toolchain_is_gnu:
+            if int(build.flags.get('tuned',0)):
+                print "Skipping specific CPU Optimizations due to tuned=1"
+                return
+
+            if optimize_level == 1:
+                build.env.Append(CXXFLAGS = '-O3')
+            elif optimize_level == 2:
+                print "  P4 MMX/SSE optimizations enabled."
+                build.env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+            elif optimize_level == 3:
+                print "  Intel Core Solo/Duo optimizations enabled."
+                build.env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+            elif optimize_level == 4:
+                print "  Intel Core 2 optimizations enabled."
+                build.env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+            elif optimize_level == 5:
+                print "  Athlon Athlon-4/XP/MP optimizations enabled."
+                build.env.Append(CXXFLAGS = '-O3 -march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+            elif optimize_level == 6:
+                print "  Athlon K8/Opteron/AMD64 optimizations enabled."
+                build.env.Append(CXXFLAGS = '-O3 -march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+            elif optimize_level == 7:
+                print "  Athlon K8/Opteron/AMD64 + SSE3 optimizations enabled."
+                build.env.Append(CXXFLAGS = '-O3 -march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+            elif optimize_level == 8:
+                print "  Generic SSE/SSE2/SSE3 optimizations enabled (Celeron D)."
+                build.env.Append(CXXFLAGS = '-O3 -mmmx -msse2 -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+
+
+class Tuned(Feature):
+    def description(self):
+        return "Tuned"
+
+    def enabled(self, build):
+        build.flags['tuned'] = util.get_flags(build.env, 'tuned', 0)
+        if int(build.flags['tuned']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        if not build.platform_is_windows:
+            vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
+        elif build.machine_is_64bit: # 64-bit windows
+		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if build.toolchain_is_gnu:
+            ccv = build.env['CCVERSION'].split('.')
+            if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
+                # Should we use -mtune as well?
+                build.env.Append(CCFLAGS = '-march=native')
+                # Doesn't make sense as a linkflag
+                build.env.Append(LINKFLAGS = '-march=native')
+                print "Optimizing for this CPU... yes"
+            else:
+                print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
+        elif build.toolchain_is_msvs:
+            if build.machine_is_64bit:
+                if 'makerelease' in SCons.COMMAND_LINE_TARGETS:
+                    print "Optimizing for this CPU class... no  (due to makerelease)"
+                    # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
+                    # IA64 which uses a different compiler.)  For a release, we choose
+                    # to have code run about the same on both
+                    build.env.Append(CXXFLAGS = '/favor:blend')
+                else:
+                    machine = util.determine_architecture(
+                        build.platform, SCons.ARGUMENTS, build.env)['machine']
+                    print "Optimizing for this CPU class (" + machine + ")... yes"
+                    build.env.Append(CXXFLAGS = '/favor:' + machine)
+            else:
+                print "Optimizing for this CPU... no (not supported on 32-bit MSVC)"

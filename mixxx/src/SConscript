@@ -37,19 +37,17 @@ plugins = []
 #######################
 
 
-Import('build_dir')
 Import('build')
 Import('sources')
-Import('flags')
 Import('soundsource_plugins') #Grab these from the SConstruct above us
-Import('bitwidth')
 
 env = build.env
+flags = build.flags
 
 #Tell SCons to build Mixxx
 #=========================
 if build.platform_is_windows:
-	dist_dir = 'dist'+bitwidth
+	dist_dir = 'dist%s' % build.bitwidth
 	mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
 	mixxx_bin = env.Program('mixxx', sources)
@@ -107,7 +105,11 @@ icon_files = Glob('#res/images/mixxx-icon.png')
 image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
-dll_files = Glob('#/../mixxx-win' + bitwidth + 'lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+
+# TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
+# all files on 2+ builds after a clean.
+dll_files = Glob('#/../mixxx-win%slib-msvc/[!"msvc"]*.dll' % build.bitwidth)
+
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
 $QTDIR/bin/phonon4.dll""")
@@ -296,7 +298,7 @@ def BuildRelease(target, source, env):
 		if not nsis_location_handle:
 			print "Cannot find NSIS. Do you have it installed?"
 		else:
-			if bitwidth == '64':
+			if build.machine_is_64bit:
 				buildwin64 = "/Dx64=1"
 			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
 			_winreg.CloseKey(hklm)
