@@ -680,7 +680,7 @@ class Optimize(Feature):
 
 class Tuned(Feature):
     def description(self):
-        return "Tune to this system CPU"
+        return "Optimizing for this CPU"
 
     def enabled(self, build):
         build.flags['tuned'] = util.get_flags(build.env, 'tuned', 0)
@@ -696,6 +696,10 @@ class Tuned(Feature):
 
     def configure(self, build, conf):
         if not self.enabled(build):
+            # Even if not enabled, enable 'blending' for 64-bit because the
+            # instructions are emitted anyway.
+            if build.toolchain_is_msvs and build.machine_is_64bit:
+                build.env.Append(CXXFLAGS = '/favor:blend')
             return
 
         if build.toolchain_is_gnu:
