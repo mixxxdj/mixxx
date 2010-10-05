@@ -79,3 +79,18 @@ def determine_architecture(build, ARGUMENTS, env):
                 "bitwidth": bitwidth,
                 'architecture': architecture}
 
+def get_flags(env, argflag, default=0):
+	"""
+	* get value passed as an argument to scons as argflag=value
+	* if no value is passed to scons use stored value
+	* if no value is stored, use default
+	Returns the value and stores it in env[argflag]
+	"""
+	flags = Script.ARGUMENTS.get(argflag, -1)
+	if int(flags) < 0:
+		if env.has_key(argflag):
+			flags = env[argflag]
+		else: #default value
+			flags = default
+	env[argflag] = flags
+	return flags
