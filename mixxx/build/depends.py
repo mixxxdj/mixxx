@@ -1,5 +1,6 @@
 
 import os
+import util
 from mixxx import Dependence
 import SCons.Script as SCons
 
@@ -46,6 +47,10 @@ class OpenGL(Dependence):
             not conf.CheckLib('glu32') and
             not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
             raise Exception('Did not find GLU development files, exiting!')
+
+        if build.platform_is_osx:
+            build.env.Append(CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
+            build.env.Append(LINKFLAGS='-framework OpenGL')
 
 class OggVorbis(Dependence):
 
@@ -106,17 +111,85 @@ class Qt(Dependence):
         pass
 
     def configure(self, build, conf):
-        default_qtdir = self.DEFAULT_QTDIRS[build.platform]
+        if not conf.CheckForPKG('QtCore', '4.3'):
+            raise Exception('QT >= 4.3 not found')
 
-        qtdir = SCons.ARGUMENTS.get('qtdir',
-                                    os.environ.get('QTDIR', default_qtdir))
+        # Emit various Qt defines
+        build.env.Append(CPPDEFINES = ['QT3_SUPPORT',
+                                       'QT3_SUPPORT_WARNINGS',
+                                       'QT_THREAD_SUPPORT',
+                                       'QT_SHARED',
+                                       'QT_TABLET_SUPPORT'])
 
-        if not os.path.exists(qtdir):
-            raise Exception("Error: QT path does not exist or QT4 is not installed. Please specify your QT path by running 'scons qtdir=[path]'")
-        elif qtdir.find("qt3") != -1 or qtdir.find("qt/3") != -1:
-            raise Exception("Error: Mixxx now requires QT4 instead of QT3 - please use your QT4 path with the qtdir build flag.")
+        # Enable Qt includep paths
+        if build.platform_is_linux:
+            #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
+            #(This hopefully respects our qtdir=blah flag while linking now.)
+            build.env.EnableQt4Modules(['QtCore',
+                                        'QtGui',
+                                        'QtOpenGL',
+                                        'Qt3Support',
+                                        'QtXml',
+                                        'QtSvg',
+                                        'QtSql',
+                                        'QtScript',
+                                        'QtXmlPatterns',
+                                        'QtWebKit'
+                                        #'QtUiTools',
+                                        #'QtDesigner',
+                                        ],
+                                       debug=False)
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
+            build.env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
+				'/Library/Frameworks/QtOpenGL.framework/Headers/',
+				'/Library/Frameworks/Qt3Support.framework/Headers/',
+				'/Library/Frameworks/QtGui.framework/Headers/',
+				'/Library/Frameworks/QtXml.framework/Headers/',
+				'/Library/Frameworks/QtNetwork.framework/Headers/',
+				'/Library/Frameworks/QtSql.framework/Headers/',
+				'/Library/Frameworks/QtWebKit.framework/Headers/',
+				'/Library/Frameworks/QtScript.framework/Headers/'])
 
-        build.env['QTDIR'] = qtdir
+        # Setup Qt library includes for non-OSX
+        if build.platform_is_linux or build.platform_is_bsd:
+            build.env.Append(LIBS = 'Qt3Support')
+            build.env.Append(LIBS = 'QtXml')
+            build.env.Append(LIBS = 'QtGui')
+            build.env.Append(LIBS = 'QtCore')
+            build.env.Append(LIBS = 'QtNetwork')
+            build.env.Append(LIBS = 'QtOpenGL')
+            build.env.Append(LIBS = 'QtWebKit')
+            build.env.Append(LIBS = 'QtScript')
+        elif build.platform_is_windows:
+            build.env.Append(LIBS = 'Qt3Support4');
+            build.env.Append(LIBS = 'QtXml4');
+            build.env.Append(LIBS = 'QtXmlPatterns4');
+            build.env.Append(LIBS = 'QtSql4');
+            build.env.Append(LIBS = 'QtGui4');
+            build.env.Append(LIBS = 'QtCore4');
+            build.env.Append(LIBS = 'QtWebKit4');
+            build.env.Append(LIBS = 'QtNetwork4')
+            build.env.Append(LIBS = 'QtOpenGL4');
+
+        # Set Qt include paths for non-OSX
+        if not build.platform_is_osx:
+            build.env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
+                                      '$QTDIR/include/QtCore',
+                                      '$QTDIR/include/QtGui',
+                                      '$QTDIR/include/QtXml',
+                                      '$QTDIR/include/QtNetwork',
+                                      '$QTDIR/include/QtSql',
+                                      '$QTDIR/include/QtOpenGL',
+                                      '$QTDIR/include/QtWebKit',
+                                      '$QTDIR/include/Qt'])
+
+        # Set the rpath for linux/bsd/osx. TODO(XXX) is this supposed to be done
+        # for OSX?
+        if not build.platform_is_windows:
+            build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
+
+
 
 class FidLib(Dependence):
 
@@ -159,7 +232,7 @@ class SoundTouch(Dependence):
                     '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                     '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
                     '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
-        if build.platform_is_windows:
+        if build.platform_is_windows and build.toolchain_is_msvs:
             if build.machine == 'x86_64':
                 sources.append(
                     '#lib/%s/cpu_detect_x64_win.cpp' % self.SOUNDTOUCH_PATH)
@@ -178,175 +251,43 @@ class SoundTouch(Dependence):
         else:
             raise Exception("Unhandled CPU configuration for SoundTouch")
 
+        # TODO(XXX) when we figure out a better way to represent features, fix
+        # this.
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        if build.machine_is_64bit or \
+                (build.toolchain_is_msvs and optimize > 1) or \
+                (build.toolchain_is_gnu and optimize > 2):
+            sources.extend(
+                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                 ])
+        if build.toolchain_is_msvs and not build.machine_is_64bit:
+            sources.append('#lib/%s/3dnow_win.cpp' % self.SOUNDTOUCH_PATH)
+        else:
+            # TODO(XXX) the docs refer to a 3dnow_gcc, but we don't seem to have
+            # it.
+            pass
+
+        return sources
+
     def configure(self, build, conf):
         if build.platform_is_windows:
             build.env.Append(CPPDEFINES = 'WIN'+build.bitwidth)
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
+        # TODO(XXX) when we figure out a better way to represent features, fix
+        # this.
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        if build.machine_is_64bit or \
+                (build.toolchain_is_msvs and optimize > 1) or \
+                (build.toolchain_is_gnu and optimize > 2):
+            build.env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
-# THIS IS UNUSED
-# THIS IS UNUSED
-# THIS IS UNUSED  It will be used later! It's not used now!
-# THIS IS UNUSED
-# THIS IS UNUSED
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+
 class MixxxCore(Dependence):
 
     def sources(self, build):
-        return ['input.cpp',
-                'trackplaylistlist.cpp',
-                'mixxxkeyboard.cpp',
-                'configobject.cpp',
-                'controlobjectthread.cpp',
-                'controlobjectthreadwidget.cpp',
-                'controlobjectthreadmain.cpp',
-                'controlevent.cpp',
-                'controllogpotmeter.cpp',
-                'controlobject.cpp',
-                'controlnull.cpp',
-                'controlpotmeter.cpp',
-                'controlpushbutton.cpp',
-                'controlttrotary.cpp',
-                'controlbeat.cpp',
-
-                'dlgpreferences.cpp',
-                'dlgprefsound.cpp',
-                'dlgprefmidibindings.cpp',
-                'dlgprefplaylist.cpp',
-                'dlgprefnomidi.cpp',
-                'dlgprefcontrols.cpp',
-                'dlgbpmtap.cpp',
-                'dlgprefbpm.cpp',
-                'dlgbpmscheme.cpp',
-                'dlgabout.cpp',
-                'dlgprefeq.cpp',
-                'dlgprefcrossfader.cpp',
-                'dlgmidilearning.cpp',
-
-                'engine/enginebuffercue.cpp',
-                'engine/enginebuffer.cpp',
-                'engine/enginebufferscale.cpp',
-		'engine/enginebufferscaledummy.cpp',
-                'engine/enginebufferscalelinear.cpp',
-		'engine/enginebufferscalereal.cpp',
-                'engine/engineclipping.cpp',
-                'engine/enginefilterblock.cpp',
-                'engine/enginefilteriir.cpp',
-                'engine/enginefilter.cpp',
-                'engine/engineobject.cpp',
-                'engine/enginepregain.cpp',
-                'engine/enginevolume.cpp',
-                'engine/enginechannel.cpp',
-                'engine/enginemaster.cpp',
-                'engine/enginedelay.cpp',
-                'engine/engineflanger.cpp',
-                'engine/enginespectralfwd.cpp',
-                'engine/enginevumeter.cpp',
-                'engine/enginevinylsoundemu.cpp',
-                'engine/enginesidechain.cpp',
-                'engine/enginefilterbutterworth8.cpp',
-                'engine/enginexfader.cpp',
-
-                'analyserqueue.cpp',
-		'analyserwavesummary.cpp',
-		'analyserbpm.cpp',
-		'analyserwaveform.cpp',
-
-                'main.cpp',
-                'midiobject.cpp',
-                'midimapping.cpp',
-                'midiobjectnull.cpp',
-                'mididevicehandler.cpp',
-                'midiinputmappingtablemodel.cpp',
-                'midioutputmappingtablemodel.cpp',
-                'midichanneldelegate.cpp',
-                'midistatusdelegate.cpp',
-                'midinodelegate.cpp',
-                'midioptiondelegate.cpp',
-                'controlgroupdelegate.cpp',
-                'controlvaluedelegate.cpp',
-                'midimessage.cpp',
-                'mixxxcontrol.cpp',
-                'mixxx.cpp',
-                'mixxxview.cpp',
-                'errordialog.cpp',
-                'upgrade.cpp',
-
-                'soundsource.cpp',
-                'soundsourcemp3.cpp',
-                'soundsourceoggvorbis.cpp',
-
-                'widget/wwidget.cpp',
-                'widget/wlabel.cpp',
-                'widget/wnumber.cpp',
-                'widget/wnumberpos.cpp',
-                'widget/wnumberrate.cpp',
-                'widget/wnumberbpm.cpp',
-                'widget/wknob.cpp',
-                'widget/wdisplay.cpp',
-                'widget/wvumeter.cpp',
-                'widget/wpushbutton.cpp',
-                'widget/wslidercomposed.cpp',
-                'widget/wslider.cpp',
-                'widget/wstatuslight.cpp',
-		'widget/woverview.cpp',
-		'widget/wskincolor.cpp',
-		'widget/wabstractcontrol.cpp',
-                'widget/wsearchlineedit.cpp',
-		'widget/wpixmapstore.cpp',
-                'widget/hexspinbox.cpp',
-
-                'mathstuff.cpp',
-                'readerextract.cpp',
-                'readerextractwave.cpp',
-                'readerevent.cpp',
-                'rtthread.cpp',
-                'windowkaiser.cpp',
-                'probabilityvector.cpp',
-                'reader.cpp',
-                'peaklist.cpp',
-                'rotary.cpp',
-                'track.cpp',
-                'trackcollection.cpp',
-                'trackplaylist.cpp',
-                'wtracktableview.cpp',
-                'wtracktablemodel.cpp',
-                'wpromotracksmodel.cpp',
-                'proxymodel.cpp',
-                'xmlparse.cpp',
-                'trackimporter.cpp',
-                'parser.cpp',
-                'parserpls.cpp',
-                'parserm3u.cpp',
-                'bpm/bpmscheme.cpp',
-                'soundsourceproxy.cpp',
-                'widget/wvisualsimple.cpp',
-                'widget/wwaveformviewer.cpp',
-                'widget/wglwaveformviewer.cpp',
-                'waveformviewerfactory.cpp',
-                'waveform/waveformrenderer.cpp',
-		'waveform/waveformrenderbackground.cpp',
-		'waveform/waveformrendersignal.cpp',
-		'waveform/waveformrendersignalpixmap.cpp',
-		'waveform/waveformrendermark.cpp	',
-                'waveform/waveformrenderbeat.cpp',
-                'imginvert.cpp',
-                'imgloader.cpp',
-                'imgcolor.cpp',
-                'trackinfoobject.cpp',
-                'midiledhandler.cpp',
-                'sounddevice.cpp',
-                'soundmanager.cpp',
-                'dlgprefrecord.cpp',
-                'recording/enginerecord.cpp',
-                'recording/writeaudiofile.cpp',
-                'wtracktablefilter.cpp',
-                'wplaylistlistmodel.cpp',
-                'libraryscanner.cpp',
-                'libraryscannerdlg.cpp',
-                'playerinfo.cpp',
-                'segmentation.cpp']
+        return []
 
     def configure(self, build, conf):
         if build.platform_is_windows:
