@@ -615,9 +615,31 @@ class Optimize(Feature):
             else:
                 build.env.Append(LINKFLAGS = '/MACHINE:'+build.machine)
 
+            # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
+            # /MP : http://msdn.microsoft.com/en-us/library/bb385193.aspx
+            # /MP has little to do with optimization so why is it here?
             build.env.Append(CXXFLAGS = '/GL /MP')
+            # Use the fastest floating point math library
+            # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
+            # http://msdn.microsoft.com/en-us/library/ms235601.aspx
+            build.env.Append(CCFLAGS = '/fp:fast')
+
+            # Show a progress indicator. Not related to optimization so why is
+            # it here? Should we turn on PGO ?
+            # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
             build.env.Append(LINKFLAGS = '/LTCG:STATUS')
 
+            # Suggested for Code unused code removal
+            # http://msdn.microsoft.com/en-us/library/ms235601.aspx
+            # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
+            # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
+            build.env.Append(CCFLAGS = '/Gy')
+            build.env.Append(LINKFLAGS = '/OPT:REF')
+            if build.machine_is_64bits:
+                build.env.Append(LINKFLAGS = '/OPT:ICF')
+
+            # WTF? http://msdn.microsoft.com/en-us/library/59a3b321.aspx
+            # In general, you should pick /O2 over /Ox
             if optimize_level == 1:
                 self.status = "Enabled -- Maximize Speed (/O2)"
                 build.env.Append(CXXFLAGS = '/O2')
