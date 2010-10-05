@@ -152,11 +152,16 @@ class MixxxBuild(object):
         self.install_options()
 
     def detect_platform(self):
-        return {'win32': 'windows',
-                'cygwin': 'windows',
-                'darwin': 'osx',
-                'linux2': 'linux',
-                'bsd': 'bsd',}.setdefault(sys.platform, 'invalid')
+        if os.name == 'nt' or sys.platform == 'win32':
+            return 'windows'
+        # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
+        if 'bsd' in sys.platform:
+            return 'bsd'
+        if sys.platform == 'darwin':
+            return 'osx'
+        logging.error("Couldn't determine platform. os.name: %s sys.platform: %s"
+                      % (os.name, sys.platform))
+        return 'invalid'
 
     def detect_machine(self):
         return platform.machine()

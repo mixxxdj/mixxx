@@ -601,38 +601,38 @@ class Optimize(Feature):
         if not self.enabled(build):
             return
 
-        machine = util.determine_architecture(
-            build, SCons.ARGUMENTS)['machine']
-
         optimize_level = int(build.flags['optimize'])
 
         if build.toolchain_is_msvs:
             if int(build.flags['msvcdebug']):
                 self.status = "Disabled (due to mscvdebug mode)"
                 return
+            # Valid values of /MACHINE are:
+            # {AM33|ARM|EBC|IA64|M32R|MIPS|MIPS16|MIPSFPU|MIPSFPU16|MIPSR41XX|SH3|SH3DSP|SH4|SH5|THUMB|X86}
+            # http://msdn.microsoft.com/en-us/library/5wy54dk2(v=VS.71).aspx
             if build.machine_is_64bit:
                 build.env.Append(LINKFLAGS = '/MACHINE:X64')
             else:
-                build.env.Append(LINKFLAGS = '/MACHINE:'+machine)
+                build.env.Append(LINKFLAGS = '/MACHINE:'+build.machine)
 
-                build.env.Append(CXXFLAGS = '/GL /MP')
-                build.env.Append(LINKFLAGS = '/LTCG:STATUS')
+            build.env.Append(CXXFLAGS = '/GL /MP')
+            build.env.Append(LINKFLAGS = '/LTCG:STATUS')
 
-                if optimize_level == 1:
-                    self.status = "Enabled -- Maximize Speed (/O2)"
-                    build.env.Append(CXXFLAGS = '/O2')
-                elif optimize_level >= 2:
-                    self.status = "Enabled -- Maximum Optimizations (/Ox)"
-                    build.env.Append(CXXFLAGS = '/Ox')
+            if optimize_level == 1:
+                self.status = "Enabled -- Maximize Speed (/O2)"
+                build.env.Append(CXXFLAGS = '/O2')
+            elif optimize_level >= 2:
+                self.status = "Enabled -- Maximum Optimizations (/Ox)"
+                build.env.Append(CXXFLAGS = '/Ox')
 
-                # SSE and SSE2 are core instructions on x64
-                if not build.machine_is_64bit:
-                    if optimize_level == 3:
-                        self.status += ", SSE Instructions Enabled"
-                        build.env.Append(CXXFLAGS = '/arch:SSE')
-                    elif optimize_level == 4:
-                        self.status += ", SSE2 Instructions Enabled"
-                        build.env.Append(CXXFLAGS = '/arch:SSE2')
+            # SSE and SSE2 are core instructions on x64
+            if not build.machine_is_64bit:
+                if optimize_level == 3:
+                    self.status += ", SSE Instructions Enabled"
+                    build.env.Append(CXXFLAGS = '/arch:SSE')
+                elif optimize_level == 4:
+                    self.status += ", SSE2 Instructions Enabled"
+                    build.env.Append(CXXFLAGS = '/arch:SSE2')
         elif build.toolchain_is_gnu:
             if int(build.flags.get('tuned',0)):
                 self.status = "Disabled (Overriden by tuned=1)"
@@ -704,11 +704,15 @@ class Tuned(Feature):
                     # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
                     # IA64 which uses a different compiler.)  For a release, we choose
                     # to have code run about the same on both
+
                     build.env.Append(CXXFLAGS = '/favor:blend')
                 else:
-                    machine = util.determine_architecture(
-                        build, SCons.ARGUMENTS)['machine']
-                    self.status = "Enabled (%s-optimized)" % machine
-                    build.env.Append(CXXFLAGS = '/favor:' + machine)
+                    self.status = "Disabled (currently broken with Visual Studio)"
+                    build.env.Append(CXXFLAGS = '/favor:blend')
+                    # Only valid choices are AMD64, INTEL64, and blend. Also
+                    # /favor is only valid for Visual Studio 2010, 2003 does not
+                    # have it.
+                    #self.status = "Enabled (%s-optimized)" % machine
+                    #build.env.Append(CXXFLAGS = '/favor:' + machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"

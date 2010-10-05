@@ -535,10 +535,10 @@ class MixxxCore(Feature):
         return sources
 
     def configure(self, build, conf):
-        # TODO(XXX) need to evaluate this define.
-        machine = util.determine_architecture(
-            build, SCons.ARGUMENTS)['machine']
-        build.env.Append(CPPDEFINES=machine)
+        # Evaluate this define. There are a lot of different things around the
+        # codebase that use different defines. (AMD64, x86_64, x86, i386, i686,
+        # EM64T). We need to unify them together.
+        build.env.Append(CPPDEFINES=build.machine)
 
         if build.toolchain_is_gnu:
             # Default GNU Options
