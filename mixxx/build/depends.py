@@ -616,12 +616,6 @@ class MixxxCore(Feature):
             build.env.Append(LIBPATH = ['/opt/local/lib'])
             build.env.Append(CPPPATH = ['/opt/local/include'])
 
-            # TODO(XXX) ALBERT PLEASE TEST WHICH FRAMEWORKS ARE REQUIRED
-            # if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
-	    #     raise Exception('Did not find CoreMIDI framework, exiting! (Please install it)')
-            # else:
-	    #     build.env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework QuickTime -framework AudioToolbox -framework AudioUnit') #Have to add the rest of these frameworks somewhere..
-
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
             build.env.Append(CPPPATH=['/usr/include',
