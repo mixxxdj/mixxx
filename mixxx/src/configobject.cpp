@@ -90,14 +90,14 @@ ConfigValueKbd::ConfigValueKbd(QString _value) : ConfigValue(_value)
 ConfigValueKbd::ConfigValueKbd(QKeySequence key)
 {
     m_qKey = key;
-    QTextOStream(&value) << (const QString)m_qKey;
+    QTextOStream(&value) << m_qKey.toString();
 //          qDebug() << "value" << value;
 }
 
 void ConfigValueKbd::valCopy(const ConfigValueKbd v)
 {
     m_qKey = v.m_qKey;
-    QTextOStream(&value) << (const QString &)m_qKey;
+    QTextOStream(&value) << m_qKey.toString();
 }
 
 bool operator==(const ConfigValue & s1, const ConfigValue & s2)

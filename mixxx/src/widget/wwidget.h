@@ -75,6 +75,10 @@ protected:
     /** Pointer to keyboard config object */
     static ConfigObject<ConfigValueKbd> *m_spKbdConfigObject;
 
+    QString getTooltip() {
+        return m_Tooltip;
+    }
+
 private:
     /** Variable containing the path to the pixmaps */
     static QString m_qPath;

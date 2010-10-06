@@ -13,7 +13,7 @@
    inkscape:export-filename=""
    style="display:inline"
    sodipodi:docname="ic_template_library_and_preferences.svg"
-   inkscape:version="0.47+devel r9568"
+   inkscape:version="0.47 r22583"
    id="svg2"
    height="32"
    width="32"
@@ -28,15 +28,15 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1680"
-     inkscape:window-height="1028"
+     inkscape:window-height="977"
      id="namedview26"
      showgrid="true"
-     inkscape:zoom="11.930556"
-     inkscape:cx="15.240709"
-     inkscape:cy="16.417549"
-     inkscape:window-x="1280"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:zoom="10"
+     inkscape:cx="37.486319"
+     inkscape:cy="16"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
      inkscape:current-layer="g4255"
      inkscape:object-paths="true"
      showguides="true"
@@ -788,18 +788,35 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
+       id="layer4"
+       inkscape:label="rhythmbox2.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 10,2 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z m -5,18 c 1.656858,0 3,1.343143 3,3 0,1.656859 -1.343141,3 -3,3 -1.656859,0 -3,-1.343142 -3,-3 0,-1.656857 1.343141,-3 3,-3 z m 10,0 c 1.656858,0 3,1.343143 3,3 0,1.656859 -1.343141,3 -3,3 -1.656859,0 -3,-1.343142 -3,-3 0,-1.656857 1.343141,-3 3,-3 z"
+         id="rect3993-6"
+         sodipodi:nodetypes="ccccccccccsssccsssccsssc" />
+      <path
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="m 16,8 c -2.209145,0 -4,1.790858 -4,4 0,2.209144 1.790855,4 4,4 2.209145,0 4,-1.790855 4,-4 0,-2.209142 -1.790856,-4 -4,-4 z"
+         id="path3903"
+         sodipodi:nodetypes="csssc" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer1"
        inkscape:label="rhythmbox.png"
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 2,2 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 8,8 C 6.892,8 6,7.108 6,6 6,4.892 6.892,4 8,4 z m 12,0 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 20,8 C 18.892,8 18,7.108 18,6 18,4.892 18.892,4 20,4 z m -4,7 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z"
          id="rect3993"
          inkscape:connector-curvature="0" />
       <path
          sodipodi:type="arc"
-         style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.82970834;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="path4671-4"
          sodipodi:cx="17.5"
          sodipodi:cy="19"
@@ -1073,7 +1090,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          inkscape:flatsided="false"
          inkscape:rounded="0"
          inkscape:randomized="0"
-         d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 z"
+         d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 8.9999997,29 z"
          transform="translate(2.9999999,0.9999991)" />
       <path
          style="fill:#000000;fill-opacity:1;stroke:none;display:inline"

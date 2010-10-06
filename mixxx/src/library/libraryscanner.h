@@ -64,7 +64,7 @@ class LibraryScanner : public QThread
     QStringList nameFilters;
     bool m_bCancelLibraryScan;
     QMutex m_libraryScanMutex;
-    QString m_iTunesArtFolder;
+    QStringList m_directoriesBlacklist; 
 };
 
 #endif

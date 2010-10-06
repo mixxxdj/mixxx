@@ -1,5 +1,5 @@
 /**
- * Hercules DJ Console RMX controller script v1.8.0
+ * Hercules DJ Console RMX controller script v1.8.1
  * Copyright (C) 2010  Anders Gunnarsson
  *
  * This program is free software; you can redistribute it and/or
@@ -222,7 +222,6 @@ HerculesRMX.Deck.prototype.jogMove = function(jogValue) {
 		engine.scratchTick(this.deckNumber, jogValue);
 		this.scratchTimer = engine.beginTimer(20, "HerculesRMX.GetDeck('" + this.group + "').stopScratching()", true);
 	} else {
-		jogValue = engine.getValue(this.group,"play") == 1 ? jogValue * 10: jogValue;
 		engine.setValue(this.group,"jog", jogValue);
 	}
 };
@@ -541,6 +540,14 @@ HerculesRMX.Deck.prototype.shiftHandler = function(value) {
    }
 };
 
+HerculesRMX.Deck.prototype.stopHandler = function(value) {
+   if(value == HerculesRMX.ButtonState.pressed) {
+      engine.setValue(this.group, "cue_default", 0);
+      engine.setValue(this.group, "play", 0);
+      engine.setValue(this.group, "start", 0);
+   }
+};
+
 HerculesRMX.Deck.prototype.addButton = HerculesRMX.addButton;
 
 HerculesRMX.Decks = {"Left":new HerculesRMX.Deck(1,"[Channel1]"), "Right":new HerculesRMX.Deck(2,"[Channel2]")};
@@ -566,7 +573,7 @@ HerculesRMX.Decks.Left.addButton("Previous", new HerculesRMX.Button(0x09), "prev
 HerculesRMX.Decks.Left.addButton("Next", new HerculesRMX.Button(0x0A), "nextHandler");
 HerculesRMX.Decks.Left.addButton("PlayPause", new HerculesRMX.Button(0x0B, 0x3B), "playPauseHandler");
 HerculesRMX.Decks.Left.addButton("Cue", new HerculesRMX.Button(0x0C, 0x3C), "cueHandler");
-HerculesRMX.Decks.Left.addButton("Stop",  new HerculesRMX.Button(0x0D), "shiftHandler");
+HerculesRMX.Decks.Left.addButton("Shift",  new HerculesRMX.Button(0x0D), "shiftHandler");
 HerculesRMX.Decks.Left.addButton("KillHigh", new HerculesRMX.Button(0x0E), "killHighHandler");
 HerculesRMX.Decks.Left.addButton("KillMid", new HerculesRMX.Button(0x0F), "killMidHandler");
 HerculesRMX.Decks.Left.addButton("KillLow", new HerculesRMX.Button(0x10), "killLowHandler");
@@ -574,6 +581,7 @@ HerculesRMX.Decks.Left.addButton("PitchReset", new HerculesRMX.Button(0x11, 0x41
 HerculesRMX.Decks.Left.addButton("Load", new HerculesRMX.Button(0x12), "loadHandler");
 HerculesRMX.Decks.Left.addButton("Source", new HerculesRMX.Button(0x13, 0x43), null);
 HerculesRMX.Decks.Left.addButton("CueSelect", new HerculesRMX.Button(0x14, 0x44), "cueSelectHandler");
+HerculesRMX.Decks.Left.addButton("Stop",  new HerculesRMX.Button(0x0D), "stopHandler");
 
 HerculesRMX.Decks.Left.Controls = {
       "Gain" : new HerculesRMX.Control("pregain", false),
@@ -612,7 +620,7 @@ HerculesRMX.Decks.Right.addButton("Previous", new HerculesRMX.Button(0x21), "pre
 HerculesRMX.Decks.Right.addButton("Next", new HerculesRMX.Button(0x22), "nextHandler");
 HerculesRMX.Decks.Right.addButton("PlayPause", new HerculesRMX.Button(0x23, 0x53), "playPauseHandler");
 HerculesRMX.Decks.Right.addButton("Cue", new HerculesRMX.Button(0x24, 0x54), "cueHandler");
-HerculesRMX.Decks.Right.addButton("Stop", new HerculesRMX.Button(0x25), "shiftHandler");
+HerculesRMX.Decks.Right.addButton("Shift", new HerculesRMX.Button(0x25), "shiftHandler");
 HerculesRMX.Decks.Right.addButton("KillHigh", new HerculesRMX.Button(0x26), "killHighHandler");
 HerculesRMX.Decks.Right.addButton("KillMid", new HerculesRMX.Button(0x27), "killMidHandler");
 HerculesRMX.Decks.Right.addButton("KillLow", new HerculesRMX.Button(0x28), "killLowHandler");
@@ -620,6 +628,7 @@ HerculesRMX.Decks.Right.addButton("PitchReset", new HerculesRMX.Button(0x20, 0x5
 HerculesRMX.Decks.Right.addButton("Load", new HerculesRMX.Button(0x16), "loadHandler");
 HerculesRMX.Decks.Right.addButton("Source", new HerculesRMX.Button(0x17, 0x57), null);
 HerculesRMX.Decks.Right.addButton("CueSelect", new HerculesRMX.Button(0x18, 0x58), "cueSelectHandler");
+HerculesRMX.Decks.Right.addButton("Stop", new HerculesRMX.Button(0x25), "stopHandler");
 
 HerculesRMX.Decks.Right.Controls = {
       "Gain" : new HerculesRMX.Control("pregain", false),
@@ -746,6 +755,11 @@ HerculesRMX.stop = function (channel, control, value, status, group) {
    deck.Buttons.Stop.handleEvent(value);
 };
 
+HerculesRMX.shift = function (channel, control, value, status, group) {
+   var deck = HerculesRMX.GetDeck(group);
+   deck.Buttons.Shift.handleEvent(value);
+};
+
 HerculesRMX.keypad1 = function (channel, control, value, status, group) {
    var deck = HerculesRMX.GetDeck(group);
    deck.Buttons.Keypad1.handleEvent(value);
@@ -831,7 +845,7 @@ HerculesRMX.shutdown = function() {
 };
 
 HerculesRMX.killLeds = function() {
-   HerculesRMX.Buttons.Scratch.setLed(HerculesRMX.LedState.off)
+   HerculesRMX.Buttons.Scratch.setLed(HerculesRMX.LedState.off);
    //TODO: remove timers when alsa midi work properly.
    var button;
    var time = 20;
@@ -852,11 +866,11 @@ HerculesRMX.rateChange = function (value, group) {
       HerculesRMX.Decks.Left.Buttons.Sync.setLed(HerculesRMX.LedState.off);
    }
    if (HerculesRMX.Decks.Right.Buttons.Sync.state != HerculesRMX.ButtonState.pressed) {
-      engine.beginTimer(20, "HerculesRMX.Decks.Right.Buttons.Sync.setLed(HerculesRMX.LedState.off)", true);
+      engine.beginTimer(25, "HerculesRMX.Decks.Right.Buttons.Sync.setLed(HerculesRMX.LedState.off)", true);
    }
    if (value != 0.0) {
       var deck = HerculesRMX.GetDeck(group);
-      engine.beginTimer(25, "HerculesRMX.GetDeck('" + group + "').Buttons.PitchReset.setLed(HerculesRMX.LedState.off)", true);
+      engine.beginTimer(30, "HerculesRMX.GetDeck('" + group + "').Buttons.PitchReset.setLed(HerculesRMX.LedState.off)", true);
    }
 };
 
