@@ -46,10 +46,12 @@
 #include "recording/defs_recording.h"
 
 #include "midi/mididevicemanager.h"
-#include "defs_version.h"
+
 #include "upgrade.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
+
+#include "defs_version.h"
 
 #ifdef __IPOD__
 #include "gpod/itdb.h"
