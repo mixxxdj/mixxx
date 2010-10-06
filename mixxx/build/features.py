@@ -510,7 +510,7 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        vorbisenc_found = conf.CheckLib(['vorbisenc', 'vorbisenc2'])
+        vorbisenc_found = conf.CheckLib(['vorbisenc'])
         build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if build.platform_is_windows:
