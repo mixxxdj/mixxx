@@ -12,13 +12,6 @@ DigitalJockey2Controller.ledOff = 0x00;
 DigitalJockey2Controller.keyPressed = 0x7F;
 DigitalJockey2Controller.keyUp = 0x00;
 
-//Initial Jog Wheel positions
-DigitalJockey2Controller.WheelSensitivity = 6; 
-
-DigitalJockey2Controller.decayLast = new Date().getTime();
-DigitalJockey2Controller.decayInterval = 50;
-DigitalJockey2Controller.decayRate = 300;
-
 DigitalJockey2Controller.scratchModeChannel1 = false;
 DigitalJockey2Controller.scratchModeChannel2 = false;
 
@@ -30,11 +23,7 @@ DigitalJockey2Controller.init = function(id){
     print ("Initalizing Reloop Digital Jockey 2 Controler Edition.");
 	DigitalJockey2Controller.resetLEDs();
 
-	
-	// Waveform speed handling if scratching is active
-	engine.connectControl("[Channel1]","playposition","DigitalJockey2Controller.wheelDecay");
-    engine.connectControl("[Channel2]","playposition","DigitalJockey2Controller.wheelDecay");
-	
+		
 	engine.connectControl("[Channel1]","play","DigitalJockey2Controller.isChannel1_Playing");
     engine.connectControl("[Channel2]","play","DigitalJockey2Controller.isChannel2_Playing");
 	
@@ -331,29 +320,29 @@ DigitalJockey2Controller.Scratch2 = function (channel, control, value){
 }
 DigitalJockey2Controller.Scratch = function (channel, control, value){
 	if(value == DigitalJockey2Controller.keyPressed){
-		print ("Sratch 1: " + DigitalJockey2Controller.scratchModeChannel1);
-		print ("Sratch 2: " + DigitalJockey2Controller.scratchModeChannel2);
+		//print ("Sratch 1: " + DigitalJockey2Controller.scratchModeChannel1);
+		//print ("Sratch 2: " + DigitalJockey2Controller.scratchModeChannel2);
 		if(channel == 1){
 			if(DigitalJockey2Controller.scratchModeChannel1 == true){
 				DigitalJockey2Controller.scratchModeChannel1 = false;
-				scratch.disable(channel);
+				engine.scratchDisable(channel);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOff);
 			}
 			else{
 				DigitalJockey2Controller.scratchModeChannel1 = true;
-				scratch.enable(channel);
+				engine.scratchEnable(channel, 128, 33+1/3, 1.0/8, (1.0/8)/32);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOn);
 			}
 		}
 		if( channel == 2){
 			if(DigitalJockey2Controller.scratchModeChannel2 == true){
 				DigitalJockey2Controller.scratchModeChannel2 = false;
-				scratch.disable(channel);
+				engine.scratchDisable(channel);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOff);
 			}
 			else{
 				DigitalJockey2Controller.scratchModeChannel2 = true;
-				scratch.enable(channel);
+				engine.scratchEnable(channel, 128, 33+1/3, 1.0/8, (1.0/8)/32);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOn);		
 			}
 		}
@@ -375,66 +364,30 @@ DigitalJockey2Controller.JogWheel = function (channel, control, value){
 	 * 
 	 * Spinning around in a forward manner produces values of 65 or higher.
 	 */
-	var jogValue = (value - 64)/DigitalJockey2Controller.WheelSensitivity;
+	var jogValue = (value - 64); //DigitalJockey2Controller.WheelSensitivity;
+	
+	
 	
 	//Functionality of Jog Wheel if we're in scratch mode 
 	if(channel == 1){
 		if (DigitalJockey2Controller.scratchModeChannel1 == true) {
-			engine.setValue("[Channel"+channel+"]","scratch", (engine.getValue("[Channel"+channel+"]","scratch") + jogValue).toFixed(2));
+			
+			engine.scratchTick(channel,jogValue);
+
 		}		
 	}
 	if(channel == 2){
 		if (DigitalJockey2Controller.scratchModeChannel2 == true) {
-			engine.setValue("[Channel"+channel+"]","scratch", (engine.getValue("[Channel"+channel+"]","scratch") + jogValue).toFixed(2));
+			engine.scratchTick(channel,jogValue);
 		}		
 	}
 }
 DigitalJockey2Controller.JogWheel1_Hold = function (channel, control, value){
-	DigitalJockey2Controller.JogWheel_Hold(1, control, value);
+	
 }
 
 DigitalJockey2Controller.JogWheel2_Hold = function (channel, control, value){
-	DigitalJockey2Controller.JogWheel_Hold(2, control, value);
-}
-DigitalJockey2Controller.JogWheel_Hold = function (channel, control, value){
-	//nothing to do here
-}
-
-//For scratching
-DigitalJockey2Controller.wheelDecay = function (value) {    
-   // engine.getValue("[Channel1]","play")
-
-    var currentDate = new Date().getTime();
-    // print(currentDate);
-    if (currentDate > DigitalJockey2Controller.decayLast + DigitalJockey2Controller.decayInterval) {
-		DigitalJockey2Controller.decayLast = currentDate;
-	   
-       if (DigitalJockey2Controller.scratchModeChannel1 || DigitalJockey2Controller.scratchModeChannel2) { // do some scratching
-			if (DigitalJockey2Controller.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch") + " deck2: "+ engine.getValue("[Channel2]","scratch"));
-			// print("do scratching " + jogValue);
-			// engine.setValue(group,"scratch", jogValue); // /64);
-
-			var jog1DecayRate = DigitalJockey2Controller.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
-			var jog1 = engine.getValue("[Channel1]","scratch"); 
-			if (jog1 != 0) {
-				if (Math.abs(jog1) > jog1DecayRate) {  
-					engine.setValue("[Channel1]","scratch", (jog1 / jog1DecayRate).toFixed(2));
-				} 
-				else {
-               engine.setValue("[Channel1]","scratch", 0);
-            }
-         }
-	 var jog2DecayRate = DigitalJockey2Controller.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
-         var jog2 = engine.getValue("[Channel2]","scratch"); 
-	  if (jog2 != 0) {
-	     if (Math.abs(jog2) > jog2DecayRate) {  
-                engine.setValue("[Channel2]","scratch", (jog2 / jog2DecayRate).toFixed(2));
-             } else {
-                engine.setValue("[Channel2]","scratch", 0);
-             }
-          }
-      } 
-    }
+	
 }
 /*****************************************************
  * Put functions here to handle controlobjets functions
