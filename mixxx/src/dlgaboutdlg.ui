@@ -10,6 +10,12 @@
     <height>322</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>249</width>
+    <height>322</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>About Mixxx</string>
   </property>
@@ -56,7 +62,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>19</x>
+     <x>14</x>
      <y>10</y>
      <width>51</width>
      <height>61</height>
@@ -66,16 +72,16 @@ p, li { white-space: pre-wrap; }
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>:/images/mixxx-icon.png</pixmap>
+    <pixmap resource="../res/mixxx.qrc">:/images/mixxx-icon.png</pixmap>
    </property>
   </widget>
   <widget class="QLabel" name="mixxx_logo">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>231</width>
-     <height>91</height>
+     <x>69</x>
+     <y>7</y>
+     <width>170</width>
+     <height>68</height>
     </rect>
    </property>
    <property name="text">

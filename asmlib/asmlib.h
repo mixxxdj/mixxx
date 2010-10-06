@@ -1,7 +1,7 @@
 /*************************** asmlib.h ***************************************
 * Author:        Agner Fog
 * Date created:  2003
-* Last modified: 2008-12-14
+* Last modified: 2009-07-20
 * Project:       asmlib.zip
 * Source URL:    www.agner.org/optimize
 *
@@ -10,7 +10,7 @@
 * This library is available in many versions for different platforms.
 * See asmlib-instructions.pdf for details.
 *
-* Copyright 2003 - 2008 by Agner Fog. 
+* Copyright 2003 - 2009 by Agner Fog. 
 * GNU General Public License http://www.gnu.org/licenses/gpl.html
 *****************************************************************************/
 

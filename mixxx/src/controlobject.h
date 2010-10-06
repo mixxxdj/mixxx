@@ -64,7 +64,7 @@ class ControlObject : public QObject
 public:
     ControlObject();
     ControlObject(ConfigKey key, bool bIgnoreNops=true);
-    ~ControlObject();
+    virtual ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest. */
     static bool connectControls(ConfigKey src, ConfigKey dest);
     /** Disonnect a control object. */

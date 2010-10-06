@@ -36,7 +36,6 @@
 #include "soundsourceproxy.h"
 
 #include "player.h"
-#include "wtracktableview.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
@@ -47,13 +46,14 @@
 #include "recording/defs_recording.h"
 
 #include "midi/mididevicemanager.h"
-#include "defs_version.h"
+
 #include "upgrade.h"
 
 #include "build.h" //#defines of details of the build set up (flags, repo number, etc). This isn't a real file, SConscript generates it and it probably gets placed in $PLATFORM_build/. By including this file here and only here we make sure that updating src or changing the build flags doesn't force a rebuild of everything
 
+#include "defs_version.h"
+
 #ifdef __IPOD__
-#include "wtracktableview.h"
 #include "gpod/itdb.h"
 #endif
 
@@ -90,6 +90,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     }
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
+    qDebug() << "Qt version is:" << qVersion();
+
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
 #if defined(AMD64) || defined(EM64T) || defined(x86_64)
@@ -541,7 +543,7 @@ int MixxxApp::noSoundDlg(void)
             soundmanager->queryDevices();
 
             // This way of opening the dialog allows us to use it synchronously
-            prefDlg->setWindowModality(Qt::ApplicationModal);
+           prefDlg->setWindowModality(Qt::ApplicationModal);
             prefDlg->exec();
             if ( prefDlg->result() == QDialog::Accepted) {
                 soundmanager->queryDevices();
@@ -972,7 +974,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
          winpos = pos();
          // Can't set max to -1,-1 or 0,0 for unbounded?
          setMaximumSize(32767,32767);
@@ -981,7 +983,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
         // Crazy X window managers break this so I'm told by Qt docs
         //         int deskw = app->desktop()->width();
         //         int deskh = app->desktop()->height();
@@ -1162,6 +1164,7 @@ void MixxxApp::slotHelpAbout()
 "David Gnedt<br>"
 "Antonio Passamani<br>"
 "Guy Martin<br>"
+"Anders Gunnarson<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1392,6 +1395,7 @@ void MixxxApp::slotEnableRescanLibraryAction()
 {
     libraryRescan->setEnabled(true);
 }
+
 void MixxxApp::slotOptionsMenuShow(){
 	ControlObjectThread* ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
 
