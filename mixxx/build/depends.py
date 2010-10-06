@@ -579,7 +579,7 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES='__WINDOWS__')
             # Need this on Windows until we have UTF16 support in Mixxx
             build.env.Append(CPPDEFINES='UNICODE')
-            build.env.Append(CPPDEFINES='WIN'+build.bitwidth)
+            build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
 
             #Needed for Midi stuff, should be able to remove since PortMIDI
             build.env.Append(LIBS = 'WinMM');
