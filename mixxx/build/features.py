@@ -510,7 +510,7 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        vorbisenc_found = conf.CheckLib('vorbisenc')
+        vorbisenc_found = conf.CheckLib(['vorbisenc', 'vorbisenc2'])
         build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if build.platform_is_windows:
@@ -666,10 +666,11 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
 
             # GC unused code
-            build.env.Append(CCFLAGS='-ffunction-sections -fdata-sections -Wl,--gc-sections')
+            build.env.Append(CCFLAGS='-ffunction-sections -fdata-sections')
+            build.env.Append(LINKFLAGS='-Wl,--gc-sections')
 
             if optimize_level == 1:
-                build.env.Append(CCFLAGS = '-O3')
+                # only includes what we already applied
                 self.status = "Enabled -- Basic Optimizations (-03)"
             elif optimize_level == 2:
                 self.status = "Enabled (P4 MMX/SSE)"
