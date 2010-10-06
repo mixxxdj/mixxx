@@ -55,6 +55,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
                   "track_locations.location,"
+                  "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
                   "library." + LIBRARYTABLE_MIXXXDELETED + " " +
                   "FROM library "
@@ -163,10 +164,26 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
     select(); //Repopulate the data model.
+}
+
+void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+
+    QList<int> trackPositions;
+    foreach (QModelIndex index, indices) {
+        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        trackPositions.append(trackPosition);
+    }
+
+    foreach (int trackPosition, trackPositions) {
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, trackPosition);
+    }
+
+    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -306,7 +323,8 @@ const QString PlaylistTableModel::currentSearch() {
 
 bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED))
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
         return true;
     return false;
 }
@@ -324,7 +342,7 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url(getTrackLocation(index));
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
                 if (!url.isValid())
                     qDebug() << "ERROR invalid url\n";
                 else
