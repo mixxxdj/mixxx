@@ -102,16 +102,13 @@ class SndFile(Dependence):
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
-                      'osx': '/usr/lib/Qt-4.5',
+                      'osx': '/Library/Frameworks',
                       'windows': 'C:\\qt\\4.5.1'}
 
     def satisfy(self):
         pass
 
     def configure(self, build, conf):
-        if not conf.CheckForPKG('QtCore', '4.3'):
-            raise Exception('QT >= 4.3 not found')
-
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT3_SUPPORT',
                                        'QT3_SUPPORT_WARNINGS',
@@ -121,6 +118,9 @@ class Qt(Dependence):
 
         # Enable Qt includep paths
         if build.platform_is_linux:
+            if not conf.CheckForPKG('QtCore', '4.3'):
+                raise Exception('QT >= 4.3 not found')
+
             #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
             #(This hopefully respects our qtdir=blah flag while linking now.)
             build.env.EnableQt4Modules(['QtCore',
