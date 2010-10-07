@@ -198,7 +198,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
         m_pLoadedTrack->setBpm(spinBpm->value());
-        m_pLoadedTrack->setComment(txtComment->text());
+        m_pLoadedTrack->setComment(txtComment->toPlainText());
 
         QHash<int, Cue*> cueMap;
         for (int row = 0; row < cueTable->rowCount(); ++row) {

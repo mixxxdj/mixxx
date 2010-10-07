@@ -16,7 +16,7 @@ class Player : public QObject
 	Q_OBJECT
 	public:
     Player(ConfigObject<ConfigValue> *pConfig, EngineMaster* pMixingEngine,
-           int playerNumber, const char* pGroup);
+           int playerNumber, QString group);
     ~Player();
     QString getGroup();
     WaveformRenderer* getWaveformRenderer();

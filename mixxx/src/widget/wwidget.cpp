@@ -117,7 +117,7 @@ void WWidget::setup(QDomNode node)
             if (selectNodeQString(con, "ConnectValueToWidget").contains("false",Qt::CaseInsensitive))
                 connectValueToWidget = false;
 
-            Qt::ButtonState state = Qt::NoButton;
+            Qt::MouseButton state = Qt::NoButton;
             if (!selectNode(con, "ButtonState").isNull())
             {
 	      if (selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
@@ -220,7 +220,7 @@ QDomElement WWidget::openXMLFile(QString path, QString name)
 {
     QDomDocument doc(name);
     QFile file(path);
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "Could not open xml file:" << file.fileName();
         return QDomElement();

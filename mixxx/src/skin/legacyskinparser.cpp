@@ -275,12 +275,18 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
 
+    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
+    // now while everything expects groups as const char* because otherwise
+    // we'll be providing a pointer to QString's internal memory, which might
+    // get free'd at some point.
+    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+
     Player* pPlayer = m_pPlayerManager->getPlayer(channel);
 
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* p = new WOverview(channelStr, pParent);
+    WOverview* p = new WOverview(pSafeChannelStr, pParent);
     p->installEventFilter(m_pKeyboard);
 
     p->setup(node);
@@ -299,6 +305,12 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
     QString channelStr = QString("[Channel%1]").arg(channel);
     Player* pPlayer = m_pPlayerManager->getPlayer(channel);
 
+    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
+    // now while everything expects groups as const char* because otherwise
+    // we'll be providing a pointer to QString's internal memory, which might
+    // get free'd at some point.
+    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+
     if (pPlayer == NULL)
         return NULL;
 
@@ -306,7 +318,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
 
     WaveformViewerType type;
     QWidget* widget = NULL;
-    type = WaveformViewerFactory::createWaveformViewer(channelStr, pParent,
+    type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, pParent,
                                                        m_pConfig, &widget, pWaveformRenderer);
     widget->installEventFilter(m_pKeyboard);
 
@@ -375,6 +387,12 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
 
+    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
+    // now while everything expects groups as const char* because otherwise
+    // we'll be providing a pointer to QString's internal memory, which might
+    // get free'd at some point.
+    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+
     QColor c(255,255,255);
     if (!WWidget::selectNode(node, "BgColor").isNull()) {
         c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -385,7 +403,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
 
-    WNumberRate * p = new WNumberRate(channelStr, pParent);
+    WNumberRate * p = new WNumberRate(pSafeChannelStr, pParent);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     p->setPalette(palette);
@@ -396,7 +414,14 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
-    WNumberPos* p = new WNumberPos(channelStr, pParent);
+
+    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
+    // now while everything expects groups as const char* because otherwise
+    // we'll be providing a pointer to QString's internal memory, which might
+    // get free'd at some point.
+    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+
+    WNumberPos* p = new WNumberPos(pSafeChannelStr, pParent);
     p->installEventFilter(m_pKeyboard);
     p->setup(node);
     return p;
@@ -405,12 +430,19 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
+
+    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
+    // now while everything expects groups as const char* because otherwise
+    // we'll be providing a pointer to QString's internal memory, which might
+    // get free'd at some point.
+    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+
     Player* pPlayer = m_pPlayerManager->getPlayer(channel);
 
     if (!pPlayer)
         return NULL;
 
-    WNumberBpm * p = new WNumberBpm(channelStr, pParent);
+    WNumberBpm * p = new WNumberBpm(pSafeChannelStr, pParent);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
 

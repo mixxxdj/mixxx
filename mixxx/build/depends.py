@@ -110,13 +110,10 @@ class Qt(Dependence):
 
     def configure(self, build, conf):
         # Emit various Qt defines
-        build.env.Append(CPPDEFINES = ['QT3_SUPPORT',
-                                       'QT3_SUPPORT_WARNINGS',
-                                       'QT_THREAD_SUPPORT',
-                                       'QT_SHARED',
+        build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
-        # Enable Qt includep paths
+        # Enable Qt include paths
         if build.platform_is_linux:
             if not conf.CheckForPKG('QtCore', '4.3'):
                 raise Exception('QT >= 4.3 not found')
@@ -126,7 +123,6 @@ class Qt(Dependence):
             build.env.EnableQt4Modules(['QtCore',
                                         'QtGui',
                                         'QtOpenGL',
-                                        'Qt3Support',
                                         'QtXml',
                                         'QtSvg',
                                         'QtSql',
@@ -138,20 +134,18 @@ class Qt(Dependence):
                                         ],
                                        debug=False)
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
+            build.env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
             build.env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
-				'/Library/Frameworks/QtOpenGL.framework/Headers/',
-				'/Library/Frameworks/Qt3Support.framework/Headers/',
-				'/Library/Frameworks/QtGui.framework/Headers/',
-				'/Library/Frameworks/QtXml.framework/Headers/',
-				'/Library/Frameworks/QtNetwork.framework/Headers/',
-				'/Library/Frameworks/QtSql.framework/Headers/',
-				'/Library/Frameworks/QtWebKit.framework/Headers/',
-				'/Library/Frameworks/QtScript.framework/Headers/'])
+                                        '/Library/Frameworks/QtOpenGL.framework/Headers/',
+                                        '/Library/Frameworks/QtGui.framework/Headers/',
+                                        '/Library/Frameworks/QtXml.framework/Headers/',
+                                        '/Library/Frameworks/QtNetwork.framework/Headers/',
+                                        '/Library/Frameworks/QtSql.framework/Headers/',
+                                        '/Library/Frameworks/QtWebKit.framework/Headers/',
+                                        '/Library/Frameworks/QtScript.framework/Headers/'])
 
         # Setup Qt library includes for non-OSX
         if build.platform_is_linux or build.platform_is_bsd:
-            build.env.Append(LIBS = 'Qt3Support')
             build.env.Append(LIBS = 'QtXml')
             build.env.Append(LIBS = 'QtGui')
             build.env.Append(LIBS = 'QtCore')
@@ -160,7 +154,7 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtWebKit')
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
-            build.env.Append(LIBS = 'Qt3Support4');
+            build.env.Append(LIBPATH=['$QTDIR/lib'])
             build.env.Append(LIBS = 'QtXml4');
             build.env.Append(LIBS = 'QtXmlPatterns4');
             build.env.Append(LIBS = 'QtSql4');
@@ -172,8 +166,7 @@ class Qt(Dependence):
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
-            build.env.Append(CPPPATH=['$QTDIR/include/Qt3Support',
-                                      '$QTDIR/include/QtCore',
+            build.env.Append(CPPPATH=['$QTDIR/include/QtCore',
                                       '$QTDIR/include/QtGui',
                                       '$QTDIR/include/QtXml',
                                       '$QTDIR/include/QtNetwork',
@@ -269,7 +262,7 @@ class SoundTouch(Dependence):
 
     def configure(self, build, conf):
         if build.platform_is_windows:
-            build.env.Append(CPPDEFINES = 'WIN'+build.bitwidth)
+            build.env.Append(CPPDEFINES = 'WIN%s' % build.bitwidth)
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
         # TODO(XXX) when we figure out a better way to represent features, fix
@@ -537,7 +530,7 @@ class MixxxCore(Feature):
             #
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
-            sources.append("mixxx.res")
+            #sources.append("mixxx.res")
 
         return sources
 
@@ -557,7 +550,7 @@ class MixxxCore(Feature):
 
             # Check that g++ is present (yeah, SCONS is a bit dumb here)
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code
-		raise Exception("Did not find g++.")
+                raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             if build.machine == 'x86_64':
                 mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
@@ -568,11 +561,12 @@ class MixxxCore(Feature):
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
 
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib',
-                                          '/nodefaultlib:libcd.lib',
+            build.env.Append(LINKFLAGS = [#'/nodefaultlib:libc.lib',
+                                          #'/nodefaultlib:libcd.lib',
+                                          '/nodefaultlib:MSVCRT.lib',
+                                        #  '/nodefaultlib:LIBCMT.lib',
+                                        #  '/nodefaultlib:LIBCMTd.lib',
                                           '/entry:mainCRTStartup'])
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                          '/nodefaultlib:LIBCMTD.lib'])
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
             build.env.Append(CXXFLAGS = '/Zc:wchar_t-')
@@ -584,21 +578,22 @@ class MixxxCore(Feature):
 
         if build.platform_is_windows:
             build.env.Append(CPPDEFINES='__WINDOWS__')
+            build.env.Append(CPPDEFINES='_ATL_MIN_CRT') #Helps prevent duplicate symbols
             # Need this on Windows until we have UTF16 support in Mixxx
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
 
             #Needed for Midi stuff, should be able to remove since PortMIDI
-            build.env.Append(LIBS = 'WinMM');
             #Tobias Rafreider: libshout won't compile if you uncomment this
-	    #build.env.Append(LIBS = 'ogg_static')
-	    #build.env.Append(LIBS = 'vorbis_static')
-	    #build.env.Append(LIBS = 'vorbisfile_static')
+            #build.env.Append(LIBS = 'ogg_static')
+            #build.env.Append(LIBS = 'vorbis_static')
+            #build.env.Append(LIBS = 'vorbisfile_static')
+            '''build.env.Append(LIBS = 'WinMM');
             build.env.Append(LIBS = 'imm32')
             build.env.Append(LIBS = 'wsock32')
             build.env.Append(LIBS = 'delayimp')
             build.env.Append(LIBS = 'winspool')
-            build.env.Append(LIBS = 'shell32')
+            build.env.Append(LIBS = 'shell32')'''
 
             # Makes the program not launch a shell first
             if build.toolchain_is_msvs:

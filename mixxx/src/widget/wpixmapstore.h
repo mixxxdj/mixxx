@@ -18,8 +18,8 @@
 #ifndef WPIXMAPSTORE_H
 #define WPIXMAPSTORE_H
 
+#include <QHash>
 #include <qpixmap.h>
-#include <q3dict.h>
 
 #include "skin/imgsource.h"
 
@@ -44,7 +44,7 @@ public:
 	static void emptyStore();
 private:
     /** Dictionary of pixmaps already instantiated */
-    static Q3Dict<PixmapInfoType> dictionary;
+    static QHash<QString, PixmapInfoType*> dictionary;
 	static ImgSource* loader;
 };
 
