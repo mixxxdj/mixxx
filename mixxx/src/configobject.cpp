@@ -33,7 +33,7 @@
 #endif
 
 #include <qiodevice.h>
-#include <QTextIStream>
+#include <QTextStream>
 #include <math.h>
 
 ConfigKey::ConfigKey()
@@ -83,21 +83,21 @@ ConfigValueKbd::ConfigValueKbd(QString _value) : ConfigValue(_value)
 {
     QString key;
 
-    QTextIStream(&_value) >> key;
+    QTextStream(&_value) >> key;
     m_qKey = QKeySequence(key);
 }
 
 ConfigValueKbd::ConfigValueKbd(QKeySequence key)
 {
     m_qKey = key;
-    QTextOStream(&value) << m_qKey.toString();
+    QTextStream(&value) << m_qKey.toString();
 //          qDebug() << "value" << value;
 }
 
 void ConfigValueKbd::valCopy(const ConfigValueKbd v)
 {
     m_qKey = v.m_qKey;
-    QTextOStream(&value) << m_qKey.toString();
+    QTextStream(&value) << m_qKey.toString();
 }
 
 bool operator==(const ConfigValue & s1, const ConfigValue & s2)
@@ -123,8 +123,11 @@ template <class ValueType>
 ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
 {
     // Search for key in list, and set value if found
-    ConfigOption<ValueType> *it;
-    for (it = list.first(); it; it = list.next())
+    QListIterator<ConfigOption<ValueType>* > iterator(list);
+    ConfigOption<ValueType>* it;
+    while (iterator.hasNext())
+    {
+        it = iterator.next();
 //         if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0)
         if (it->key->group == k.group && it->key->item == k.item)
         {
@@ -136,6 +139,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
             //cout << "2: " << it->val->value << "\n";
             return it;
         }
+    }
 
     // If key is not found, insert it into the list of config objects
     ConfigKey * key = new ConfigKey(k.group, k.item);
@@ -148,9 +152,11 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
 template <class ValueType>
 ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
 {
-    ConfigOption<ValueType> *it;
-    for (it = list.first(); it; it = list.next())
+    QListIterator<ConfigOption<ValueType>* > iterator(list);
+    ConfigOption<ValueType>* it;
+    while (iterator.hasNext())
     {
+        it = iterator.next();
         //qDebug() << it->key->group << k->group << it->key->item << k->item;
         if (it->key->group == k.group && it->key->item == k.item)
         {
@@ -168,9 +174,11 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
 template <class ValueType>
 ConfigKey *ConfigObject<ValueType>::get(ValueType v)
 {
-    ConfigOption<ValueType> *it;
-    for (it = list.first(); it; it = list.next())
+    QListIterator<ConfigOption<ValueType>* > iterator(list);
+    ConfigOption<ValueType>* it;
+    while (iterator.hasNext())
     {
+        it = iterator.next();
         if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0){
             //qDebug() << "ConfigObject #534: QString::compare match for " << it->key->group << it->key->item;
             return it->key;
@@ -181,7 +189,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
             return it->key;
         }
 
-        if (it == list.getLast()) {
+        if (it == list.last()) {
             //qDebug() << "ConfigObject: last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
@@ -226,7 +234,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                 else if (group>0)
                 {
                     QString key;
-                    QTextIStream(&line) >> key;
+                    QTextStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
                     val = val.trimmed();
                     //qDebug() << "control:" << key << "value:" << val;
@@ -244,16 +252,20 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
 
 template <class ValueType> void ConfigObject<ValueType>::clear()
 {
+    //Delete the pointers, because that's what we did before we
+    //purged Mixxx of Qt3 code. -- Albert, June 18th 2010 (at 30,000 ft)
+    for (int i = 0; i < list.count(); i++)
+        delete list[i];
+
     // This shouldn't be done, since objects might have references to
     // members of list. Instead all member values should be set to some
     // null value.
     list.clear();
+
 }
 
 template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 {
-    list.setAutoDelete(TRUE);
-
     // First try to open the config file placed in the users .mixxx directory.
     // If that fails, try the system wide CONFIG_PATH.
 
@@ -274,12 +286,14 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
     }
     else
     {
-        Q3TextStream stream(&file);
-
-        ConfigOption<ValueType> *it;
+        QTextStream stream(&file);
         QString grp = "";
-        for (it = list.first(); it; it = list.next())
+
+        QListIterator<ConfigOption<ValueType>* > iterator(list);
+        ConfigOption<ValueType>* it;
+        while (iterator.hasNext())
         {
+            it = iterator.next();
 //            qDebug() << "group:" << it->key->group << "item" << it->key->item << "val" << it->val->value;
             if (it->key->group != grp)
             {

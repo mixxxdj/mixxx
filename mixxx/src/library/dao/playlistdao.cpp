@@ -1,8 +1,7 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <QSqlQuery>
-#include <QSqlError>
+#include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
 
