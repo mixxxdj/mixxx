@@ -184,6 +184,8 @@ class MixxxBuild(object):
         # Initialize this as a list, fixes a bug where first CPPDEFINE would get
         # mangled
         self.env['CPPDEFINES'] = []
+        self.env['LIBS'] = []
+        self.env['LIBPATH'] = []
 
     def install_options(self):
         # Global cache directory Put all project files in it so a rm -rf cache
