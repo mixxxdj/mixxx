@@ -198,13 +198,13 @@ MixxxView::~MixxxView()
     //m_qWidgetList.clear();
 
     if(m_pVisualCh1) {
-	m_qWidgetList.remove(m_pVisualCh1);
+	m_qWidgetList.removeOne(m_pVisualCh1);
 	delete m_pVisualCh1;
 	m_pVisualCh1 = NULL;
     }
 
     if(m_pVisualCh2) {
-	m_qWidgetList.remove(m_pVisualCh2);
+	m_qWidgetList.removeOne(m_pVisualCh2);
 	delete m_pVisualCh2;
 	m_pVisualCh2 = NULL;
     }
