@@ -35,7 +35,8 @@ class MixxxBuild(object):
         if target not in ['windows', 'osx', 'linux', 'bsd']:
             raise Exception("invalid target platform")
 
-        if machine not in ['x86_64', 'x86', 'i686', 'i586', 'i486', 'i386', 'powerpc', 'powerpc64']:
+        if machine not in ['x86_64', 'x86', 'i686', 'i586',
+                           'i486', 'i386', 'powerpc', 'powerpc64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -147,6 +148,18 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS = '-m64')
 
+        if self.crosscompile:
+            crosscompile_root = self.ARGUMENTS.get('crosscompile_root', '')
+
+            if crosscompile_root == '':
+                print "Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required."
+                Script.Exit(1)
+
+            crosscompile_root = os.path.abspath(crosscompile_root)
+            self.env.Append(CPPPATH=os.path.join(crosscompile_root, 'include'))
+            self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'lib'))
+            self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'bin'))
+
         self.install_options()
 
     def detect_platform(self):
@@ -206,7 +219,10 @@ class MixxxBuild(object):
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
-
+        vars.Add('target', 'Set the build target for cross-compiling (windows, osx, linux, bsd).', '')
+        vars.Add('machine', 'Set the machine type for cross-compiling (x86_64, x86, powerpc, powerpc64).', '')
+        vars.Add('toolchain', 'Specify the toolchain to use for building (gnu, msvs). Default is gnu.', 'gnu')
+        vars.Add('crosscompile_root', 'Set the path to the root of a cross-compile sandbox.', '')
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
 
