@@ -9,7 +9,7 @@ Standards-Version: 3.7.3
 Package: mixxx
 Section: sound
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-opengl, libqt4-svg, libqt4-qt3support, libqt4-xmlpatterns, libqt4-webkit, libqt4-sql, libqt4-sql-sqlite
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-opengl, libqt4-svg, libqt4-xmlpatterns, libqt4-webkit, libqt4-sql, libqt4-sql-sqlite
 Recommends: caps, cmt, swh-plugins
 Suggests: pdf-viewer
 Replaces: mixxx-data
