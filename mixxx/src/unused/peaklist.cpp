@@ -22,10 +22,9 @@
 //#include <fstream.h>
 #include <string>
 #include <iostream>
-//Added by qt3to4:
-#include <Q3ValueList>
+#include <QList>
 
-PeakList::PeakList(int iIdxSize, float * pBuffer) : Q3ValueList<PeakType>()
+PeakList::PeakList(int iIdxSize, float * pBuffer) : QList<PeakType>()
 {
     m_iIdxSize = iIdxSize;
     m_pBuffer = pBuffer;
@@ -118,8 +117,10 @@ PeakList::iterator PeakList::insertIfPeak(int idx, PeakList::iterator it)
         // Insert peak in peaks list
         if (it!=end())
             it = insert(it, p);
-        else
-            it = append(p);
+        else {
+            append(p);
+            it = end();
+        }
     }
     return it;
 }
