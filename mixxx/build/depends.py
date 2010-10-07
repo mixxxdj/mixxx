@@ -155,7 +155,6 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
-            build.env.Append(LIBS = 'Qt3Support4');
             build.env.Append(LIBS = 'QtXml4');
             build.env.Append(LIBS = 'QtXmlPatterns4');
             build.env.Append(LIBS = 'QtSql4');
@@ -582,7 +581,7 @@ class MixxxCore(Feature):
             #build.env.Append(LIBS = 'ogg_static')
             #build.env.Append(LIBS = 'vorbis_static')
             #build.env.Append(LIBS = 'vorbisfile_static')
-            '''build.env.Append(LIBS = 'WinMM');        
+            '''build.env.Append(LIBS = 'WinMM');
             build.env.Append(LIBS = 'imm32')
             build.env.Append(LIBS = 'wsock32')
             build.env.Append(LIBS = 'delayimp')
