@@ -154,6 +154,8 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtWebKit')
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
+            build.env.Append(LIBPATH=['$QTDIR/lib'])
+            build.env.Append(LIBS = 'Qt3Support4');
             build.env.Append(LIBS = 'QtXml4');
             build.env.Append(LIBS = 'QtXmlPatterns4');
             build.env.Append(LIBS = 'QtSql4');
@@ -522,7 +524,7 @@ class MixxxCore(Feature):
             #
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
-            sources.append("mixxx.res")
+            #sources.append("mixxx.res")
 
         return sources
 
@@ -542,7 +544,7 @@ class MixxxCore(Feature):
 
             # Check that g++ is present (yeah, SCONS is a bit dumb here)
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code
-		raise Exception("Did not find g++.")
+                raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             if build.machine == 'x86_64':
                 mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
@@ -553,11 +555,12 @@ class MixxxCore(Feature):
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
 
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib',
-                                          '/nodefaultlib:libcd.lib',
+            build.env.Append(LINKFLAGS = [#'/nodefaultlib:libc.lib',
+                                          #'/nodefaultlib:libcd.lib',
+                                          '/nodefaultlib:MSVCRT.lib',
+                                        #  '/nodefaultlib:LIBCMT.lib',
+                                        #  '/nodefaultlib:LIBCMTd.lib',
                                           '/entry:mainCRTStartup'])
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                          '/nodefaultlib:LIBCMTD.lib'])
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
             build.env.Append(CXXFLAGS = '/Zc:wchar_t-')
@@ -569,21 +572,22 @@ class MixxxCore(Feature):
 
         if build.platform_is_windows:
             build.env.Append(CPPDEFINES='__WINDOWS__')
+            build.env.Append(CPPDEFINES='_ATL_MIN_CRT') #Helps prevent duplicate symbols
             # Need this on Windows until we have UTF16 support in Mixxx
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
 
             #Needed for Midi stuff, should be able to remove since PortMIDI
-            build.env.Append(LIBS = 'WinMM');
             #Tobias Rafreider: libshout won't compile if you uncomment this
-	    #build.env.Append(LIBS = 'ogg_static')
-	    #build.env.Append(LIBS = 'vorbis_static')
-	    #build.env.Append(LIBS = 'vorbisfile_static')
+            #build.env.Append(LIBS = 'ogg_static')
+            #build.env.Append(LIBS = 'vorbis_static')
+            #build.env.Append(LIBS = 'vorbisfile_static')
+            '''build.env.Append(LIBS = 'WinMM');        
             build.env.Append(LIBS = 'imm32')
             build.env.Append(LIBS = 'wsock32')
             build.env.Append(LIBS = 'delayimp')
             build.env.Append(LIBS = 'winspool')
-            build.env.Append(LIBS = 'shell32')
+            build.env.Append(LIBS = 'shell32')'''
 
             # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
