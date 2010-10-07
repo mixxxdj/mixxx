@@ -79,9 +79,9 @@ class MixxxBuild(object):
                     self.machine = 'x86_64'
         self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64']
 
-        self.bitwidth = 32
+        self.bitwidth = "32"
         if self.machine_is_64bit:
-            self.bitwidth = 64
+            self.bitwidth = "64"
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
@@ -100,9 +100,7 @@ class MixxxBuild(object):
         tools = ['default']
         toolpath = ['#build/']
         extra_arguments = {}
-
-        if self.platform in ('linux', 'bsd', 'osx'):
-            tools.append('qt4')
+        tools.append('qt4')
 
         # Ugly hack to check the qtdir argument
         import depends

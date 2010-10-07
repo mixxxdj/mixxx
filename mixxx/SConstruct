@@ -37,15 +37,15 @@ available_features = [features.HifiEq,
                       features.Shoutcast,
                       features.Profiling,
                       features.Tuned,
-                      features.Optimize,
-                      features.QDebug,
                       features.M4A,
                       features.WavPack,
                       features.TestSuite,
                       features.LADSPA,
                       features.MSVCDebug,
                       features.MSVSHacks,
-
+                      features.QDebug,					  
+                      features.Optimize,
+					  
                       # "Features" of dubious quality
                       features.AsmLib,
                       features.Tonal,
