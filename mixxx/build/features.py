@@ -350,6 +350,8 @@ class QDebug(Feature):
         return "Debugging message output"
 
     def enabled(self, build):
+        # Meh, repeating this can't hurt, and we require knowing the status of msvcdebug.
+        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
         build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
         if build.platform_is_windows:
             if int(build.flags['msvcdebug']):
@@ -584,6 +586,8 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     def enabled(self, build):
+        # Meh, repeating this can't hurt, and we require knowing the status of msvcdebug.
+        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
         build.flags['optimize'] = util.get_flags(build.env, 'optimize', 1)
         if int(build.flags['optimize']):
             return True

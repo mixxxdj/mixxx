@@ -263,7 +263,7 @@ class SoundTouch(Dependence):
 
     def configure(self, build, conf):
         if build.platform_is_windows:
-            build.env.Append(CPPDEFINES = 'WIN'+build.bitwidth)
+            build.env.Append(CPPDEFINES = 'WIN%s' % build.bitwidth)
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
         # TODO(XXX) when we figure out a better way to represent features, fix
