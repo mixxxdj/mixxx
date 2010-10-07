@@ -138,6 +138,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
+    m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
@@ -197,6 +198,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pTrackEndMode;
 
     delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
     delete m_pScaleST;
@@ -285,6 +287,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
+    m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
 
     // Let the engine know that a track is loaded now.
@@ -303,6 +306,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
     playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
+    m_pTrackSampleRate->set(0);
     pause.unlock();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -454,14 +458,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             (at_start && backwards) ||
             (at_end && !backwards);
 
-        // If paused, then ramp out.
-        if (bCurBufferPaused) {
-            // If this is the first process() since being paused, then ramp out.
-            if (!m_bLastBufferPaused) {
-                rampOut(pOut, iBufferSize);
-            }
-        // Otherwise, scale the audio.
-        } else { // if (bCurBufferPaused)
+        // If the buffer is not paused, then scale the audio.
+        if (!bCurBufferPaused) {
             CSAMPLE *output;
             double idx;
 
@@ -612,8 +610,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // release the pauselock
         pause.unlock();
     } else { // if (!m_pTrackEnd->get() && pause.tryLock()) {
-        if (!m_bLastBufferPaused)
-            rampOut(pOut, iBufferSize);
+        // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
     }
 
@@ -628,6 +625,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         float fStep = pOutput[iLen-1]/(float)iLen;
         for (int i=0; i<iLen; ++i)
             pOutput[i] = fStep*i;
+
+    }
+    // Force ramp out if this is the first buffer to be paused.
+    else if (!m_bLastBufferPaused && bCurBufferPaused) {
+        rampOut(pOut, iBufferSize);
+    }
+    // If the previous buffer was paused and we are currently paused, then
+    // memset the output to zero.
+    else if (m_bLastBufferPaused && bCurBufferPaused) {
+        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
