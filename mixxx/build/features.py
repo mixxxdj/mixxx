@@ -637,7 +637,7 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
-            if build.machine_is_64bits:
+            if build.machine_is_64bit:
                 build.env.Append(LINKFLAGS = '/OPT:ICF')
 
             # WTF? http://msdn.microsoft.com/en-us/library/59a3b321.aspx
