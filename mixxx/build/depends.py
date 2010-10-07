@@ -592,7 +592,7 @@ class MixxxCore(Feature):
             if build.toolchain_is_msvs:
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
             elif build.toolchain_is_gnu:
-                build.env.Append(LINKFLAGS = '-subsystem,windows')
+                build.env.Append(LINKFLAGS = '--subsystem,windows')
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
