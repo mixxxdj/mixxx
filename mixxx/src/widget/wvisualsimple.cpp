@@ -19,8 +19,6 @@
 #include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <q3dragobject.h>
-//Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
@@ -47,7 +45,6 @@ void WVisualSimple::dragEnterEvent(QDragEnterEvent * event)
 {
   if (event->mimeData()->hasUrls())
       event->acceptProposedAction();
-  //    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualSimple::dropEvent(QDropEvent * event)

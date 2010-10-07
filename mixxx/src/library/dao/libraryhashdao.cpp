@@ -1,6 +1,5 @@
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
+
+#include <QtSql>
 #include <QString>
 #include <QtDebug>
 #include <QVariant>

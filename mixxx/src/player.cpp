@@ -17,10 +17,10 @@
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineMaster* pMixingEngine,
-               int playerNumber, const char* pGroup)
+               int playerNumber, QString group)
     : m_pConfig(pConfig),
       m_iPlayerNumber(playerNumber),
-      m_strChannel(pGroup),
+      m_strChannel(group),
       m_pLoadedTrack() {
 
     EngineChannel::ChannelOrientation orientation;
@@ -29,11 +29,18 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     else
         orientation = EngineChannel::RIGHT;
 
-    EngineChannel* pChannel = new EngineChannel(pGroup, pConfig, orientation);
+    // Need to strdup the string because EngineChannel will save the pointer,
+    // but we might get deleted before the EngineChannel. TODO(XXX)
+    // pSafeGroupName is leaked. It's like 5 bytes so whatever.
+    const char* pSafeGroupName = strdup(m_strChannel.toAscii().constData());
+
+    EngineChannel* pChannel = new EngineChannel(pSafeGroupName,
+                                                pConfig, orientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
-    CueControl* pCueControl = new CueControl(m_strChannel, pConfig);
+    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
+
     connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
             pCueControl, SLOT(loadTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),

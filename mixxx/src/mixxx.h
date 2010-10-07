@@ -33,18 +33,6 @@
 #include <QFrame>
 #include <qstringlist.h>
 
-#ifdef QT3_SUPPORT
-#include <Q3Action>
-#include <q3mainwindow.h>
-#include <q3popupmenu.h>
-#include <q3whatsthis.h>
-#include <q3filedialog.h>
-#else
-#include <q3mainwindow.h>
-#include <q3popupmenu.h>
-#include <q3whatsthis.h>
-#include <q3filedialog.h>
-#endif
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
