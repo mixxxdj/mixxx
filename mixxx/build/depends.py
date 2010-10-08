@@ -189,6 +189,10 @@ class FidLib(Dependence):
         if build.platform_is_windows:
             if build.toolchain_is_msvs:
                 symbol = 'T_MSVC'
+            elif build.crosscompile:
+                # Not sure why, but fidlib won't build with mingw32msvc and
+                # T_MINGW
+                symbol = 'T_LINUX'
             elif build.toolchain_is_gnu:
                 symbol = 'T_MINGW'
         else:
