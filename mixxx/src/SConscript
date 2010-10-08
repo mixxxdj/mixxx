@@ -152,6 +152,8 @@ elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
         # x86_64, x86, powerpc, powerpc64
         dylib_files = Glob('#/../mixxx-osx-%s-crossmingw' % build.machine)
+else:
+        dll_files = list() # dll_files += on the next line required dll_files to exist
 
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSvg4.dll $QTDIR/bin/QtWebKit4.dll
