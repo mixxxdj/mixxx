@@ -143,10 +143,18 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
-dll_files = Glob('#/../mixxx-win%slib-msvc/[!"msvc"]*.dll' % build.bitwidth)
+if build.toolchain_is_msvs:
+        dll_files = Glob('#/../mixxx-win%slib-msvc/[!"msvc"]*.dll' % build.bitwidth)
+elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        # We're cross-compiling, grab these from the crosscompile bin folder. How should we be doing this?
+        dll_files = Glob('#/../mixxx-win%slib-crossmingw' % build.bitwidth)
+elif build.crosscompile and build.platform_is_osx:
+        # Glob appropriate dylib files. We have 4 different library types,
+        # x86_64, x86, powerpc, powerpc64
+        dylib_files = Glob('#/../mixxx-osx-%s-crossmingw' % build.machine)
 
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
+dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSvg4.dll $QTDIR/bin/QtWebKit4.dll
 $QTDIR/bin/phonon4.dll""")
 
 if int(flags['script']) or int(flags['midiscript']):
@@ -276,14 +284,6 @@ if build.platform_is_windows:
 	env.Alias('mixxx', soundsource_plugins)
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
-
-	def cleanSVNDirsFromDist():
-		if os.path.exists(dist_dir):
-			print "Cleaning .svn directories from "+dist_dir+"... ",
-			os.system('cmd.exe /c @FOR /F "tokens=*" %D IN (\'dir /b /ad /s '+dist_dir+'\*.svn*\') do @(rd /s /q "%D") 2> NUL')
-			print "Done."
-	import atexit
-	atexit.register(cleanSVNDirsFromDist)
 
 def BuildRelease(target, source, env):
 	print

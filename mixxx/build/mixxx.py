@@ -149,7 +149,7 @@ class MixxxBuild(object):
                 self.env.Append(CCFLAGS = '-m64')
 
         if self.crosscompile:
-            crosscompile_root = self.ARGUMENTS.get('crosscompile_root', '')
+            crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
 
             if crosscompile_root == '':
                 print "Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required."
