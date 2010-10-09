@@ -402,7 +402,7 @@ def BuildUbuntuPackage(target, source, env):
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
 		# Export the source folder
-		print "* Exporting source folder from current workspace (bzr rev: " + getBZRRevision() + ")"
+		print "* Exporting source folder from current workspace (bzr rev: " + util.get_bzr_revision() + ")"
 		print
 		os.system('bzr export ubuntu/'+mixxx_dir + ' .')
 
