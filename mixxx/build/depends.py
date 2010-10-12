@@ -667,13 +667,14 @@ class MixxxCore(Feature):
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
-           after the Configure checks run."""
-        build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                      '/nodefaultlib:LIBCMTd.lib',
-                                      '/entry:mainCRTStartup'])
-        # Makes the program not launch a shell first 
-        if build.toolchain_is_msvs:
-            build.env.Append(LINKFLAGS = '/subsystem:windows')
-        elif build.toolchain_is_gnu:
-            build.env.Append(LINKFLAGS = '--subsystem,windows')
-            build.env.Append(LINKFLAGS = '-mwindows')
+        after the Configure checks run."""
+        if build.platform_is_windows:
+            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                          '/nodefaultlib:LIBCMTd.lib',
+                                          '/entry:mainCRTStartup'])
+            # Makes the program not launch a shell first 
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = '/subsystem:windows')
+            elif build.toolchain_is_gnu:
+                build.env.Append(LINKFLAGS = '--subsystem,windows')
+                build.env.Append(LINKFLAGS = '-mwindows')
