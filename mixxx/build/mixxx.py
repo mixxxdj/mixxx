@@ -240,7 +240,7 @@ class MixxxBuild(object):
         vars.Save(cachefile, self.env)
 
     def get_features(self):
-        return self.available_features
+        return self.available_features\
 
 class Dependence(object):
 
@@ -258,6 +258,9 @@ class Dependence(object):
         return []
 
     def configure(self, build, conf):
+        pass
+    
+    def post_dependency_check_configure(self, build, conf):
         pass
 
 class Feature(Dependence):
