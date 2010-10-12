@@ -156,9 +156,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -286,6 +288,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     slotControlSeek(0.);
+
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
