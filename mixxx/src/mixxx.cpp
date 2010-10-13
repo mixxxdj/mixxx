@@ -632,13 +632,13 @@ void MixxxApp::initActions()
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-    fileMenu=new QMenu("&File");
-    optionsMenu=new QMenu("&Options");
-    libraryMenu=new QMenu("&Library");
-    viewMenu=new QMenu("&View");
-    helpMenu=new QMenu("&Help");
+    fileMenu=new QMenu(tr("&File"));
+    optionsMenu=new QMenu(tr("&Options"));
+    libraryMenu=new QMenu(tr("&Library"));
+    viewMenu=new QMenu(tr("&View"));
+    helpMenu=new QMenu(tr("&Help"));
 #ifdef __SCRIPT__
-    macroMenu=new QMenu("&Macro");
+    macroMenu=new QMenu(tr("&Macro"));
 #endif
 	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -783,6 +783,8 @@ void MixxxApp::slotiPodToggle(bool toggle) {
     //m_pTrack->m_qIPodPlaylist.clear();
 
   }
+#else
+  Q_UNUSED(toggle); // suppress gcc unused parameter warning
 #endif
 }
 
@@ -1229,7 +1231,7 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
     static int tooltips = config->getValueString(ConfigKey("[Controls]","Tooltips")).toInt();
 
     if (event->type() == QEvent::ToolTip) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        // QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event); // unused, remove? TODO(bkgood)
         if (tooltips == 1)
             return false;
         else

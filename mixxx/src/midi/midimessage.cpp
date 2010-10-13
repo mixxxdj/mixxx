@@ -5,10 +5,6 @@
 /** MidiMessage constructor */
 MidiMessage::MidiMessage(MidiStatusByte status, int midino, char midichannel)
 {
-    //Register this class with QT so we can use this bad boy in signals/slots.
-    qRegisterMetaType<MidiMessage>("MidiMessage");
-    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
-
     m_midiStatusByte = status;
     m_midiNo = midino;
     m_midiStatusByte |= midichannel; //Jam midichannel into low nibble of status byte.
@@ -98,9 +94,9 @@ QString MidiMessage::toString() const
 uint qHash(const MidiMessage& key)
 {
     //& with 0xF0 to ignore the channel bits for comparison purposes.
-    if ((key.getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND) { 
+    if ((key.getMidiStatusByte() & 0xF0) == MIDI_STATUS_PITCH_BEND) {
         //Ignore midino for pitch bend messages because those bits are actually part of the 14-bit pitch bend payload.
-        return key.getMidiStatusByte(); 
+        return key.getMidiStatusByte();
     }
     else
         return (key.getMidiByte2On() << 16) | (key.getMidiStatusByte() << 8) | key.getMidiNo();

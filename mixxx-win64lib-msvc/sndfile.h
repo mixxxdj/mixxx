@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 1999-2010 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as published by
@@ -294,7 +294,7 @@ enum
 	SF_CHANNEL_MAP_AMBISONIC_B_Y,
 	SF_CHANNEL_MAP_AMBISONIC_B_Z,
 
-	SF_CHANNEL_MAP_MAX,
+	SF_CHANNEL_MAP_MAX
 } ;
 
 
