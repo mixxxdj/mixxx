@@ -189,6 +189,10 @@ class FidLib(Dependence):
         if build.platform_is_windows:
             if build.toolchain_is_msvs:
                 symbol = 'T_MSVC'
+            elif build.crosscompile:
+                # Not sure why, but fidlib won't build with mingw32msvc and
+                # T_MINGW
+                symbol = 'T_LINUX'
             elif build.toolchain_is_gnu:
                 symbol = 'T_MINGW'
         else:
@@ -557,12 +561,9 @@ class MixxxCore(Feature):
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
 
-            build.env.Append(LINKFLAGS = [#'/nodefaultlib:libc.lib',
-                                          #'/nodefaultlib:libcd.lib',
-                                          '/nodefaultlib:MSVCRT.lib',
-                                        #  '/nodefaultlib:LIBCMT.lib',
-                                        #  '/nodefaultlib:LIBCMTd.lib',
-                                          '/entry:mainCRTStartup'])
+
+
+
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
             build.env.Append(CXXFLAGS = '/Zc:wchar_t-')
@@ -591,11 +592,6 @@ class MixxxCore(Feature):
             build.env.Append(LIBS = 'winspool')
             build.env.Append(LIBS = 'shell32')'''
 
-            # Makes the program not launch a shell first
-            if build.toolchain_is_msvs:
-                build.env.Append(LINKFLAGS = '/subsystem:windows')
-            elif build.toolchain_is_gnu:
-                build.env.Append(LINKFLAGS = '-subsystem,windows')
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
@@ -671,3 +667,17 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
                 FidLib, Mad, SndFile, OggVorbis, OpenGL]
+
+    def post_dependency_check_configure(self, build, conf):
+        """Sets up additional things in the Environment that must happen
+        after the Configure checks run."""
+        if build.platform_is_windows:
+            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                          '/nodefaultlib:LIBCMTd.lib',
+                                          '/entry:mainCRTStartup'])
+            # Makes the program not launch a shell first 
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = '/subsystem:windows')
+            elif build.toolchain_is_gnu:
+                build.env.Append(LINKFLAGS = '--subsystem,windows')
+                build.env.Append(LINKFLAGS = '-mwindows')

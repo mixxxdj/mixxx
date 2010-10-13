@@ -143,10 +143,20 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
-dll_files = Glob('#/../mixxx-win%slib-msvc/[!"msvc"]*.dll' % build.bitwidth)
+if build.toolchain_is_msvs:
+        dll_files = Glob('#/../mixxx-win%slib-msvc/[!"msvc"]*.dll' % build.bitwidth)
+elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        # We're cross-compiling, grab these from the crosscompile bin folder. How should we be doing this?
+        dll_files = Glob('#/../mixxx-win%slib-crossmingw' % build.bitwidth)
+elif build.crosscompile and build.platform_is_osx:
+        # Glob appropriate dylib files. We have 4 different library types,
+        # x86_64, x86, powerpc, powerpc64
+        dylib_files = Glob('#/../mixxx-osx-%s-crossmingw' % build.machine)
+else:
+        dll_files = list() # dll_files += on the next line required dll_files to exist
 
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
+dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSvg4.dll $QTDIR/bin/QtWebKit4.dll
 $QTDIR/bin/phonon4.dll""")
 
 if int(flags['script']) or int(flags['midiscript']):
@@ -277,13 +287,22 @@ if build.platform_is_windows:
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
-	def cleanSVNDirsFromDist():
-		if os.path.exists(dist_dir):
-			print "Cleaning .svn directories from "+dist_dir+"... ",
-			os.system('cmd.exe /c @FOR /F "tokens=*" %D IN (\'dir /b /ad /s '+dist_dir+'\*.svn*\') do @(rd /s /q "%D") 2> NUL')
-			print "Done."
-	import atexit
-	atexit.register(cleanSVNDirsFromDist)
+def win32_find_nsis_via_registry():
+        # Windows registry access to find where NSIS is installed
+        import _winreg
+        hklm = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
+        nsis_location_handle = None
+        try:
+                nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+        except WindowsError:
+                nsis_location_handle = None
+
+        if not nsis_location_handle:
+                try:
+                        nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
+                except WindowsError:
+                        nsis_location_handle = None
+        return nsis_location_handle
 
 def BuildRelease(target, source, env):
 	print
@@ -299,7 +318,7 @@ def BuildRelease(target, source, env):
 	print
 	print "Installer file ",
 	os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
-	print
+	printpath
 	print "Top line of README, check version:"
 	os.system('head -n 1 README')
 	print
@@ -311,37 +330,30 @@ def BuildRelease(target, source, env):
 
 	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
 		print "\nNow building installer..."
-
 		buildwin64 = ""
-		type(buildwin64) == str
 
-		# Windows registry access to find where NSIS is installed
-		import _winreg
-		hklm = _winreg.ConnectRegistry( None, _winreg.HKEY_LOCAL_MACHINE )
-		nsis_location_handle = ""
-		try:
-			nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
-		except WindowsError:
-			nsis_location_handle = None
+                command_flag = None
+                nsis_path = None
+                if not build.crosscompile and build.platform_is_windows:
+                        nsis_directory = win32_find_nsis_via_registry()
+                        nsis_path = "\"%s\\makensis.exe\"" % nsis_directory
+                        command_flag = '/'
+                elif build.crosscompile and build.platform_is_windows:
+                        nsis_path = 'makensis'
+                        command_flag = '-'
 
-		if not nsis_location_handle:
-			try:
-				nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
-			except WindowsError:
-				nsis_location_handle = None
-
-		if not nsis_location_handle:
+                if not nsis_path:
 			print "Cannot find NSIS. Do you have it installed?"
 		else:
+                        parameters = []
 			if build.machine_is_64bit:
-				buildwin64 = "/Dx64=1"
+                                parameters.append("%sx64=1" % command_flag)
 			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
 			_winreg.CloseKey(hklm)
 
 			# Call the NSIS build
 			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % {'path':nsis_location, \
 'version':mixxx_version, '64bit':buildwin64}
-			type(command) == str
 			print "Using command:" + command
 			os.system(command)
 	else:
@@ -390,7 +402,7 @@ def BuildUbuntuPackage(target, source, env):
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
 		# Export the source folder
-		print "* Exporting source folder from current workspace (bzr rev: " + getBZRRevision() + ")"
+		print "* Exporting source folder from current workspace (bzr rev: " + util.get_bzr_revision() + ")"
 		print
 		os.system('bzr export ubuntu/'+mixxx_dir + ' .')
 
