@@ -552,6 +552,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh1, SLOT(refresh()));
                     m_qWidgetList.append(m_pVisualCh1);
 
+                    connect(m_pVisualCh1, SIGNAL(trackDropped(QString, QString)),
+                            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+
                     m_pVisualCh1->installEventFilter(m_pKeyboard);
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
@@ -580,6 +584,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
                     connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh2, SLOT(refresh()));
                     m_qWidgetList.append(m_pVisualCh2);
+
+                    connect(m_pVisualCh2, SIGNAL(trackDropped(QString, QString)),
+                            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
                     m_pVisualCh2->installEventFilter(m_pKeyboard);
 
