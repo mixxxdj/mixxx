@@ -875,6 +875,8 @@ void MixxxApp::slotiPodToggle(bool toggle) {
     //m_pTrack->m_qIPodPlaylist.clear();
 
   }
+#else
+  Q_UNUSED(toggle); // suppress gcc unused parameter warning
 #endif
 }
 
@@ -1328,7 +1330,7 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
     static int tooltips = config->getValueString(ConfigKey("[Controls]","Tooltips")).toInt();
 
     if (event->type() == QEvent::ToolTip) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        // QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event); // unused, remove? TODO(bkgood)
         if (tooltips == 1)
             return false;
         else
