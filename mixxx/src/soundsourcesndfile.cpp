@@ -18,8 +18,7 @@
 #include "soundsourcesndfile.h"
 #include <qstring.h>
 #include <QtDebug>
-//Added by qt3to4:
-#include <Q3ValueList>
+
 /*
    Class for reading files using libsndfile
  */

@@ -18,7 +18,11 @@
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
+#include <QMap>
 #include <QMutex>
+#include <QString>
+#include <QLibrary>
+
 #include "soundsource.h"
 #include "trackinfoobject.h"
 
@@ -59,6 +63,7 @@ private:
 
     SoundSource *m_pSoundSource;
     TrackPointer m_pTrack;
+
     static QMap<QString, QLibrary*> m_plugins;
     static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;

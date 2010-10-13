@@ -18,8 +18,9 @@
 #ifndef WWIDGET_H
 #define WWIDGET_H
 
-#include <qwidget.h>
-#include <qdom.h>
+#include <QtGui>
+#include <QtXml>
+
 #include "configobject.h"
 
 /**
@@ -86,8 +87,6 @@ private:
     QString m_Tooltip;
     /** Property used when connecting to ControlObject */
     bool m_bEmitOnDownPress;
-    /** Property used when connecting to ControlObject */
-    Qt::ButtonState m_qButtonState;
 };
 
 #endif

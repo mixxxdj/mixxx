@@ -18,7 +18,6 @@
 #ifndef VINYLCONTROLSCRATCHLIB_H
 #define VINYLCONTROLSCRATCHLIB_H
 
-#include <q3semaphore.h>
 #include <qthread.h>
 #include "DAnalyse.h"
 #include "vinylcontrol.h"
