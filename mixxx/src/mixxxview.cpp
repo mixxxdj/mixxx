@@ -86,13 +86,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     // Try to open the file pointed to by qSkinPath
     QDomElement docElem = openSkin(qSkinPath);
 
-#ifdef __WINDOWS__
-#ifndef QT3_SUPPORT
-    // QPixmap fix needed on Windows 9x
-    QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
-#endif
-#endif
-
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
 
@@ -145,13 +138,6 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
     // Load all widgets defined in the XML file
     createAllWidgets(docElem, parent, pConfig);
-
-#ifdef __WINDOWS__
-#ifndef QT3_SUPPORT
-    // QPixmap fix needed on Windows 9x
-    QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
-#endif
-#endif
 
  	 //Connect the players to the waveform overview widgets so they
  	 //update when a new track is loaded.
@@ -208,13 +194,13 @@ MixxxView::~MixxxView()
     //m_qWidgetList.clear();
 
     if(m_pVisualCh1) {
-	m_qWidgetList.remove(m_pVisualCh1);
+	m_qWidgetList.removeOne(m_pVisualCh1);
 	delete m_pVisualCh1;
 	m_pVisualCh1 = NULL;
     }
 
     if(m_pVisualCh2) {
-	m_qWidgetList.remove(m_pVisualCh2);
+	m_qWidgetList.removeOne(m_pVisualCh2);
 	delete m_pVisualCh2;
 	m_pVisualCh2 = NULL;
     }
@@ -566,6 +552,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh1, SLOT(refresh()));
                     m_qWidgetList.append(m_pVisualCh1);
 
+                    connect(m_pVisualCh1, SIGNAL(trackDropped(QString, QString)),
+                            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+
                     m_pVisualCh1->installEventFilter(m_pKeyboard);
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
@@ -594,6 +584,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
                     connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh2, SLOT(refresh()));
                     m_qWidgetList.append(m_pVisualCh2);
+
+                    connect(m_pVisualCh2, SIGNAL(trackDropped(QString, QString)),
+                            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
                     m_pVisualCh2->installEventFilter(m_pKeyboard);
 
