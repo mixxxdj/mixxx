@@ -28,7 +28,7 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
             this, SLOT(slotBpmHalve()));
-    connect(bpmTap, SIGNAL(clicked()),
+    connect(bpmTap, SIGNAL(pressed()),
             this, SLOT(slotBpmTap()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
