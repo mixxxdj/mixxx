@@ -159,10 +159,20 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
             //Add the plugin to our list of loaded QLibraries/plugins
             m_plugins.insert(lib_filename, plugin);
 
+            bool incompatible = false;
             //Plugin API version check
             getSoundSourceAPIVersionFunc getver = (getSoundSourceAPIVersionFunc)plugin->resolve("getSoundSourceAPIVersion");
-            int pluginAPIVersion = getver();
-            if (pluginAPIVersion != MIXXX_SOUNDSOURCE_API_VERSION)
+            if (getver) {
+                int pluginAPIVersion = getver();
+                if (pluginAPIVersion != MIXXX_SOUNDSOURCE_API_VERSION) {
+                    //SoundSource API version mismatch
+                    incompatible = true;
+                }
+            } else {
+                //Missing getSoundSourceAPIVersion symbol 
+                incompatible = true;
+            }
+            if (incompatible)
             {
                 //Plugin is using an older/incompatible version of the
                 //plugin API!
