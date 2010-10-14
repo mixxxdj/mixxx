@@ -52,7 +52,11 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
 
     sampleRateComboBox->clear();
     foreach (unsigned int srate, m_pSoundManager->getSampleRates()) {
-        sampleRateComboBox->addItem(QString("%1 Hz").arg(srate), srate);
+        if (srate > 0) {
+            // no ridiculous sample rate values. prohibiting zero means
+            // avoiding a potential div-by-0 error in ::updateLatencies
+            sampleRateComboBox->addItem(QString("%1 Hz").arg(srate), srate);
+        }
     }
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(sampleRateChanged(int)));
@@ -313,15 +317,13 @@ void DlgPrefSound::latencyChanged(int index) {
  */
 void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
-    if (sampleRate == 0.0) {
-        sampleRateComboBox->setCurrentIndex(0); // hope this doesn't recurse!
-        return;
-    }
     int oldLatency = latencyComboBox->currentIndex();
     unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
     // we don't want to display any sub-1ms latencies (well maybe we do but I
     // don't right now!), so we iterate over all the buffer sizes until we
     // find the first that gives us a latency >= 1 ms -- bkgood
+    // no div-by-0 in the next line because we don't allow srates of 0 in our
+    // srate list when we construct it in the ctor -- bkgood
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
     latencyComboBox->clear();
     for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
