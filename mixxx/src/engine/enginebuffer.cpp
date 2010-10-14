@@ -171,12 +171,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
-    //Figure out which one to use (setPitchIndpTimeStretch does this)
-    int iPitchIndpTimeStretch =
-        _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
-    this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
+    this->setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
 
     setNewPlaypos(0.);
+
+    m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"));
+    m_pKeylock->setToggleButton(true);
+    m_pKeylock->set(false);
 }
 
 EngineBuffer::~EngineBuffer()
@@ -205,6 +206,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleLinear;
     delete m_pScaleST;
 
+    delete m_pKeylock;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -382,6 +384,18 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     bool bCurBufferPaused = false;
 
+    if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+        //qDebug() << "setting PITS on for" << getGroup();
+        setPitchIndpTimeStretch(true);
+        m_bScalerChanged = true;
+        setNewPlaypos(filepos_play);
+    } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
+        //qDebug() << "setting PITS off for " << getGroup();
+        setPitchIndpTimeStretch(false);
+        m_bScalerChanged = true;
+        setNewPlaypos(filepos_play);
+    }
+
     if (!m_pTrackEnd->get() && pause.tryLock()) {
         float sr = m_pSampleRate->get();
         double baserate = 0.0f;
@@ -410,7 +424,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // TODO: Configurable vinyl stop effect.
         if (wheelTouchSensorEnabled) {
             // Act as scratch controller
-            if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt()) {
+            if (m_pKeylock->get()) {
                 // Use vinyl-style pitch bending
                 // qDebug() << "Disabling Pitch-Independent Time Stretch for scratching";
                 m_bResetPitchIndpTimeStretch = true;

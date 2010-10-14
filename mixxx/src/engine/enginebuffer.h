@@ -191,6 +191,7 @@ private:
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
+    ControlPushButton *m_pKeylock;
 
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;

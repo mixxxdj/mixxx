@@ -1124,7 +1124,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+		<Tooltip>Key-lock&#10;Activates position-independent time stretch for this deck.&#10;Warning: changing this while the deck is producing sound may result in undesired faults in the audio!&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -1142,6 +1142,48 @@ Copyright (C) 2010 Mixxx
 		<Pos>905,295</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates position-independent time stretch for this deck.&#10;Warning: changing this while the deck is producing sound may result in undesired faults in the audio!&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>keylock-off-Ch1.png</Pressed>
+			<Unpressed>keylock-off-Ch1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>keylock-on-Ch1.png</Pressed>
+			<Unpressed>keylock-on-Ch1.png</Unpressed>
+		</State>
+		<Pos>2,326</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],keylock</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates position-independent time stretch in the deck.&#10;Warning: changing this while the deck is producing sound may result in undesired faults in the audio!&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>keylock-off-Ch2.png</Pressed>
+			<Unpressed>keylock-off-Ch2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>keylock-on-Ch2.png</Pressed>
+			<Unpressed>keylock-on-Ch2.png</Unpressed>
+		</State>
+		<Pos>905,326</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],keylock</ConfigKey>
 		</Connection>
 	</PushButton>
 	<Knob>
