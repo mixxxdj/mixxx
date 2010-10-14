@@ -67,12 +67,21 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
         {
             QString trackPath = extra.readLine();
             trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
+            QFileInfo fileInfo(trackPath);
+            trackPath = fileInfo.absoluteFilePath();
             //qDebug() << "PROMO: Auto-loading track" << trackPath;
 
-            TrackInfoObject* track = new TrackInfoObject(trackPath);
-            // TODO(XXX) These tracks are probably getting leaked b/c
-            // m_tracksToAutoLoad is never cleared.
-            TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
+            // Try to get TrackInfoObject* from library, identified by location.
+            TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+            TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(trackPath));
+            // If not, create a new TrackInfoObject*
+            if (pTrack == NULL)
+            {
+                // TODO(XXX) These tracks are probably getting leaked b/c
+                // m_tracksToAutoLoad is never cleared.
+                pTrack = TrackPointer(new TrackInfoObject(trackPath), &QObject::deleteLater);
+            }
+
             m_tracksToAutoLoad.append(pTrack);
         }
         file.close();
@@ -130,7 +139,10 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
-    m_pBundledSongsView = new BundledSongsWebView(libraryWidget, PROMO_BUNDLE_PATH, m_sPromoLocalHTMLLocation, m_bFirstRun, m_pConfig);
+    m_pBundledSongsView = new BundledSongsWebView(libraryWidget, m_pTrackCollection,
+                                                  PROMO_BUNDLE_PATH, 
+                                                  m_sPromoLocalHTMLLocation, 
+                                                  m_bFirstRun, m_pConfig);
     m_pBundledSongsView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
