@@ -69,11 +69,10 @@ bool TrackCollection::checkForTables()
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
-                              qApp->tr(QString(
-                                  "Unable to upgrade your database schema to version %1.\n"
-                                  "Your mixxx.db file may be corrupt.\n"
-                                  "Try renaming it and restarting Mixxx.\n\n"
-                                  "Click OK to exit.").arg(requiredSchemaVersion)),
+                             qApp->tr("Unable to upgrade your database schema to version %1.\n"
+                                      "Your mixxx.db file may be corrupt.\n"
+                                      "Try renaming it and restarting Mixxx.\n\n"
+                                      "Click OK to exit.").arg(requiredSchemaVersion),
                              QMessageBox::Ok);
         return false;
     }
