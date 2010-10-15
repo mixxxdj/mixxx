@@ -145,9 +145,9 @@ void DlgPrefVinyl::slotUpdate()
 
     // Decks input devices
     ComboBoxDeviceDeck1->clear();
-    ComboBoxDeviceDeck1->insertItem("None");
+    ComboBoxDeviceDeck1->insertItem(0, tr("None"));
     ComboBoxDeviceDeck2->clear();
-    ComboBoxDeviceDeck2->insertItem("None (Single Deck Mode)");
+    ComboBoxDeviceDeck2->insertItem(0, tr("None (Single Deck Mode)"));
     j = 1;
     while (device_it.hasNext())
     {
@@ -165,7 +165,7 @@ void DlgPrefVinyl::slotUpdate()
         ++j;
     }
 
-    // Get input channels of the current device 
+    // Get input channels of the current device
     refreshDeck1Channels();
     refreshDeck2Channels();
 
@@ -193,12 +193,12 @@ void DlgPrefVinyl::slotUpdate()
 
 /** Called when the first deck device combobox changes */
 void DlgPrefVinyl::slotComboBoxDeviceDeck1Change()
-{	
+{
     //Hack: Apply device change when combobox is clicked.
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","ChannelInputDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
     this->applySoundDeviceChanges();
-    
+
     refreshDeck1Channels();
 }
 
@@ -209,7 +209,7 @@ void DlgPrefVinyl::refreshDeck1Channels()
 	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
-	
+
     //Refresh the possible channels for the device and update the combo box.
 	ComboBoxChannelDeck1->clear();
 	while(devItr.hasNext())
@@ -243,7 +243,7 @@ void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","ChannelInputDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
     this->applySoundDeviceChanges();
-    
+
     refreshDeck2Channels();
 }
 
@@ -438,7 +438,7 @@ void DlgPrefVinyl::applySoundDeviceChanges()
 	    if (deviceOpenError == MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL)
 	        QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
 	    else if (deviceOpenError == MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL)
-	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");		
+	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");
 	    else if (deviceOpenError != 0)
 		    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 		else

@@ -11,9 +11,9 @@
 //
 #include "parser.h"
 #include "parserpls.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <QDebug>
+#include <QTextStream>
+#include <QFile>
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -25,63 +25,53 @@
           not only the filepath;
  **/
 
-ParserPls::ParserPls()
+ParserPls::ParserPls() : Parser()
 {
-    m_psLocations = new Q3PtrList<QString>;
 }
 
 ParserPls::~ParserPls()
 {
-
-    delete m_psLocations;
 }
 
-Q3PtrList<QString> * ParserPls::parse(QString sFilename)
+QList<QString> ParserPls::parse(QString sFilename)
 {
     //long numEntries =0;
-    QFile * file = new QFile(sFilename);
+    QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
 
     clearLocations();
 
-    if (file->open(QIODevice::ReadOnly) && !isBinary(sFilename) ) {
+    if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename) ) {
 
-        Q3TextStream * textstream = new Q3TextStream( file );
+        QTextStream textstream(&file);
 
-        //numEntries = getNumEntries(textstream);
-
-        //delete textstream;
-
-        //textstream = new QTextStream( file );
-
-        while(QString * psLine = new QString(getFilepath(textstream, basepath))){
-
-            if(psLine->isNull() || (*psLine) == "NULL") {
+        while(!textstream.atEnd()) {
+            QString psLine = getFilepath(&textstream, basepath);
+            if(psLine.isNull()) {
                 break;
             } else {
-                m_psLocations->append(psLine);
+                m_sLocations.append(psLine);
             }
 
             //--numEntries;
         }
 
-        file->close();
+        file.close();
 
-        if(m_psLocations->count() != 0)
-            return m_psLocations;
+        if(m_sLocations.count() != 0)
+            return m_sLocations;
         else
-            return 0; // NULL pointer returned when no locations were found
+            return QList<QString>(); // NULL pointer returned when no locations were found
     }
 
-    file->close();
-    return 0; //if we get here something went wrong :D
+    file.close();
+    return QList<QString>(); //if we get here something went wrong :D
 }
 
-long ParserPls::getNumEntries(Q3TextStream * stream)
+long ParserPls::getNumEntries(QTextStream *stream)
 {
 
     QString textline;
-
     textline = stream->readLine();
 
     if(textline.contains("[playlist]")){
@@ -101,7 +91,7 @@ long ParserPls::getNumEntries(Q3TextStream * stream)
 }
 
 
-QString ParserPls::getFilepath(Q3TextStream * stream, QString& basepath)
+QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
 {
     QString textline,filename = "";
     textline = stream->readLine();
