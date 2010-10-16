@@ -414,8 +414,7 @@ void DlgPrefBpm::saveBpmSchemes()
     }
 
     // Write to the file:
-    Q3TextStream Xml(&opmlFile);
-    Xml.setEncoding(Q3TextStream::Unicode);
+    QTextStream Xml(&opmlFile);
     Xml << domXML.toString();
     opmlFile.close();
 }

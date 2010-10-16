@@ -17,12 +17,10 @@
 
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
-#ifdef QT3_SUPPORT
-#include <Q3ValueList>
+#include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
-#endif
 
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
 {
@@ -56,14 +54,13 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
         QKeyEvent * ke = (QKeyEvent *)e;
 
         // Run through list of active keys to see if the released key is active
-        #ifdef QT3_SUPPORT
-        Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
-        #else
-        Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
-                #endif
-        while (it!=m_qActiveKeyList.end())
+        int key = -1;
+        QListIterator<int> it(m_qActiveKeyList);
+
+        while (it.hasNext())
         {
-            if ((*it) == ke->key())
+            key = it.next();
+            if (key == ke->key())
             {
                 //qDebug() << "release";
 
@@ -71,13 +68,12 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
                 if (kbdPress(getKeySeq(ke), true, autoRepeat)) {
                     if (!autoRepeat) {
                         //qDebug() << "release else";
-                        m_qActiveKeyList.remove(it);
+                        m_qActiveKeyList.removeOne(key);
                     }
                     return true;
                 }
                 return false;
             }
-            ++it;
         }
     }
 
@@ -126,6 +122,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e)
         s = QKeySequence("Alt+" + e->text());
     else
         s = QKeySequence(e->key());
+
     //qDebug() << "keyboard press: " << s;
     return s;
 

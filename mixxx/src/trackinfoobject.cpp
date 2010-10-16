@@ -708,7 +708,7 @@ Cue* TrackInfoObject::addCue() {
 void TrackInfoObject::removeCue(Cue* cue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(cue, 0, this, 0);
-    m_cuePoints.remove(cue);
+    m_cuePoints.removeOne(cue);
     setDirty(true);
     lock.unlock();
     emit(cuesUpdated());

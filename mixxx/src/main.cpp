@@ -23,7 +23,6 @@
 #include <qmessagebox.h>
 #include <qiodevice.h>
 #include <qfile.h>
-#include <q3textstream.h>
 #include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
@@ -91,16 +90,11 @@ void MessageHandler( QtMsgType type, const char * input )
 
     if(!Logfile.isOpen())
     {
-    Logfile.setFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
-
-#ifdef QT3_SUPPORT
-    Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-#else
-    Logfile.open(IO_WriteOnly | IO_Translate);
-#endif
+    	Logfile.setFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
+        Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    Q3TextStream Log( &Logfile );
+    QTextStream Log( &Logfile );
 
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
 
