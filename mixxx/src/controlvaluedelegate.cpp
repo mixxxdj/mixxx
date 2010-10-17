@@ -40,7 +40,6 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("back");
         m_channelControlValues.append("reverse");
         m_channelControlValues.append("playposition");
-        m_channelControlValues.append("replaygain");
         m_channelControlValues.append("pregain");
         m_channelControlValues.append("PrevTrack");
         m_channelControlValues.append("rate");

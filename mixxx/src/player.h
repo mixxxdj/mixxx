@@ -36,6 +36,7 @@ private:
     ControlObjectThreadMain* m_pPlayPosition;
     ControlObjectThreadMain* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
+    ControlObjectThreadMain* m_pRG;
 };
 
 #endif
