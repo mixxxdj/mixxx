@@ -16,6 +16,8 @@
 
 #include "enginepregain.h"
 #include "controllogpotmeter.h"
+#include "controlobject.h"
+#include "controlpushbutton.h"
 
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
@@ -23,13 +25,16 @@
 EnginePregain::EnginePregain(const char * group)
 {
   potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
-  //  potmeterPregain = new ControlPotmeter(ConfigKey(group, "pregain"), -1., 1.);
+
+
 
 }
 
 EnginePregain::~EnginePregain()
 {
     delete potmeterPregain;
+//    delete m_pFileRG;
+//    delete m_pButtonRGApply;
 }
 
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)

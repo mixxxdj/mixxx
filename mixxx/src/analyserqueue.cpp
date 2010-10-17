@@ -11,6 +11,7 @@
 #include "analyserwaveform.h"
 #include "analyserwavesummary.h"
 #include "analyserbpm.h"
+#include "analyserrg.h"
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
                                  m_tioq(),
@@ -112,7 +113,7 @@ void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         // analyser queue is CPU intensive so we want to get out of the way of
         // the audio callback thread.
         //QThread::yieldCurrentThread();
-        QThread::usleep(10);
+       QThread::usleep(10);
 
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
     delete[] data16;
@@ -200,6 +201,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #endif
 
     ret->addAnalyser(new AnalyserWavesummary());
+    ret->addAnalyser(new AnalyserGain());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
 
@@ -210,6 +212,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
 	AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
+    //ret->addAnalyser(new AnalyserGain());
     ret->addAnalyser(new AnalyserBPM(_config));
 	ret->start(QThread::IdlePriority);
 	return ret;

@@ -355,7 +355,9 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
-
+			
+		   "replaygain/replaygain_analysis.c",
+		   "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
                    "analyserbpm.cpp",
