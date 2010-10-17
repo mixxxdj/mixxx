@@ -1,305 +1,191 @@
-file /home/vittorio/workspace/mixxx-taglib/mixxx/src/SConscript.env,line 31:
+file /home/vittorio/Pubblici/features_replaygain/mixxx/src/SConscript.env,line 31:
 	Configure(confdir = .sconf_temp)
 scons: Configure: Checking for pkg-config (at least version 0.15.0)... 
-scons: Configure: ".sconf_temp/conftest_0" is up to date.
-scons: Configure: The original builder output was:
-  |pkg-config --atleast-pkgconfig-version=0.15.0
-  |
-scons: Configure: (cached) yes
+pkg-config --atleast-pkgconfig-version=0.15.0
+scons: Configure: yes
 
 scons: Configure: Checking for C library portaudio... 
-scons: Configure: ".sconf_temp/conftest_1.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_1.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_1.c <-
   |
-scons: Configure: ".sconf_temp/conftest_1.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_1.o -c -pipe -Wall -Wextra -g -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft .sconf_temp/conftest_1.c
   |
-scons: Configure: ".sconf_temp/conftest_1" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_1 .sconf_temp/conftest_1.o -L/usr/share/qt4/lib -lportaudio
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_1.o -c -pipe -Wall -Wextra -g -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft .sconf_temp/conftest_1.c
+gcc -o .sconf_temp/conftest_1 .sconf_temp/conftest_1.o -L/usr/share/qt4/lib -lportaudio
+scons: Configure: yes
 
 scons: Configure: Checking for C library porttime... 
-scons: Configure: ".sconf_temp/conftest_2.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_2.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_2.c <-
   |
-scons: Configure: ".sconf_temp/conftest_2.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_2.o -c -pipe -Wall -Wextra -g -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft .sconf_temp/conftest_2.c
   |
-scons: Configure: ".sconf_temp/conftest_2" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_2 .sconf_temp/conftest_2.o -L/usr/share/qt4/lib -lportaudio -lporttime
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_2.o -c -pipe -Wall -Wextra -g -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft .sconf_temp/conftest_2.c
+gcc -o .sconf_temp/conftest_2 .sconf_temp/conftest_2.o -L/usr/share/qt4/lib -lportaudio -lporttime
+scons: Configure: yes
 
 scons: Configure: Checking for C library portmidi... 
-scons: Configure: ".sconf_temp/conftest_3.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_3.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_3.c <-
   |
-scons: Configure: ".sconf_temp/conftest_3.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_3.o -c -pipe -Wall -Wextra -g -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft .sconf_temp/conftest_3.c
   |
-scons: Configure: ".sconf_temp/conftest_3" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_3 .sconf_temp/conftest_3.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_3.o -c -pipe -Wall -Wextra -g -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft .sconf_temp/conftest_3.c
+gcc -o .sconf_temp/conftest_3 .sconf_temp/conftest_3.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi
+scons: Configure: yes
 
 scons: Configure: Checking for QtCore (4.3 or higher)... 	
-scons: Configure: ".sconf_temp/conftest_4" is up to date.
-scons: Configure: The original builder output was:
-  |pkg-config --atleast-version=4.3 'QtCore'
-  |
-scons: Configure: (cached) yes
+pkg-config --atleast-version=4.3 'QtCore'
+scons: Configure: yes
 
 scons: Configure: Checking for C library mad... 
-scons: Configure: ".sconf_temp/conftest_5.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_5.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_5.c <-
   |
-scons: Configure: ".sconf_temp/conftest_5.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_5.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_5.c
   |
-scons: Configure: ".sconf_temp/conftest_5" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_5 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_5.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_5.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_5.c
+gcc -o .sconf_temp/conftest_5 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_5.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad
+scons: Configure: yes
 
 scons: Configure: Checking for C library id3tag... 
-scons: Configure: ".sconf_temp/conftest_6.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_6.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_6.c <-
   |
-scons: Configure: ".sconf_temp/conftest_6.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_6.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_6.c
   |
-scons: Configure: ".sconf_temp/conftest_6" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_6 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_6.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_6.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_6.c
+gcc -o .sconf_temp/conftest_6 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_6.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag
+scons: Configure: yes
 
 scons: Configure: Checking for C library sndfile... 
-scons: Configure: ".sconf_temp/conftest_7.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_7.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_7.c <-
   |
-scons: Configure: ".sconf_temp/conftest_7.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_7.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_7.c
   |
-scons: Configure: ".sconf_temp/conftest_7" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_7 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_7.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_7.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_7.c
+gcc -o .sconf_temp/conftest_7 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_7.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile
+scons: Configure: yes
 
 scons: Configure: Checking for C library vorbisfile... 
-scons: Configure: ".sconf_temp/conftest_8.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_8.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_8.c <-
   |
-scons: Configure: ".sconf_temp/conftest_8.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_8.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_8.c
   |
-scons: Configure: ".sconf_temp/conftest_8" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_8 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_8.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_8.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_8.c
+gcc -o .sconf_temp/conftest_8 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_8.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile
+scons: Configure: yes
 
 scons: Configure: Checking for C library vorbis... 
-scons: Configure: ".sconf_temp/conftest_9.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_9.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_9.c <-
   |
-scons: Configure: ".sconf_temp/conftest_9.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_9.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_9.c
   |
-scons: Configure: ".sconf_temp/conftest_9" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_9 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_9.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_9.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_9.c
+gcc -o .sconf_temp/conftest_9 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_9.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis
+scons: Configure: yes
 
 scons: Configure: Checking for C library ogg... 
-scons: Configure: ".sconf_temp/conftest_10.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_10.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_10.c <-
   |
-scons: Configure: ".sconf_temp/conftest_10.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_10.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_10.c
   |
-scons: Configure: ".sconf_temp/conftest_10" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_10 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_10.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_10.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_10.c
+gcc -o .sconf_temp/conftest_10 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_10.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg
+scons: Configure: yes
 
 scons: Configure: Checking for C library GL... 
-scons: Configure: ".sconf_temp/conftest_11.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_11.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_11.c <-
   |
-scons: Configure: ".sconf_temp/conftest_11.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_11.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_11.c
   |
-scons: Configure: ".sconf_temp/conftest_11" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_11 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_11.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg -lGL
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_11.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_11.c
+gcc -o .sconf_temp/conftest_11 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_11.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg -lGL
+scons: Configure: yes
 
 scons: Configure: Checking for C library GLU... 
-scons: Configure: ".sconf_temp/conftest_12.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_12.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_12.c <-
   |
-scons: Configure: ".sconf_temp/conftest_12.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_12.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_12.c
   |
-scons: Configure: ".sconf_temp/conftest_12" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_12 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_12.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg -lGL -lGLU
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_12.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_12.c
+gcc -o .sconf_temp/conftest_12 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_12.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg -lGL -lGLU
+scons: Configure: yes
 
 scons: Configure: Checking for C library tag... 
-scons: Configure: ".sconf_temp/conftest_13.c" is up to date.
-scons: Configure: The original builder output was:
-  |.sconf_temp/conftest_13.c <-
-  |  |
-  |  |
-  |  |
-  |  |int
-  |  |main() {
-  |  |  
-  |  |return 0;
-  |  |}
-  |  |
+.sconf_temp/conftest_13.c <-
   |
-scons: Configure: ".sconf_temp/conftest_13.o" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_13.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_13.c
   |
-scons: Configure: ".sconf_temp/conftest_13" is up to date.
-scons: Configure: The original builder output was:
-  |gcc -o .sconf_temp/conftest_13 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_13.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg -lGL -lGLU -ltag
   |
-scons: Configure: (cached) yes
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+gcc -o .sconf_temp/conftest_13.o -c -pipe -Wall -Wextra -g -DQT_GUI_LIB -Dx86_64 -D__LINUX__ -D__UNIX__ -DSETTINGS_PATH=\".mixxx/\" -DBPMSCHEME_FILE=\"mixxxbpmscheme.xml\" -DSETTINGS_FILE=\"mixxx.cfg\" -DTRACK_FILE=\"mixxxtrack.xml\" -DUNIX_SHARE_PATH=\"/usr/local/share/mixxx\" -DALLOW_X86_OPTIMIZATIONS -D__PORTAUDIO__ -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_TABLET_SUPPORT -DQT_SHARED -DQT3_SUPPORT -D__SNDFILE__ -I/usr/share/qt4/include -Isrc -Ilib/soundtouch-1.4.1 -Ilib/kissfft -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4/Qt3Support -I/usr/include/qt4/QtNetwork -I/usr/include/qt4/QtSql -I/usr/include/qt4/QtXml -I/usr/include/qt4/QtSvg -I/usr/include/qt4/QtScript -I/usr/include/qt4/QtXmlPatterns -I/usr/include/qt4/QtWebKit -I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include/QtCore -I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtXml -I/usr/share/qt4/include/QtNetwork -I/usr/share/qt4/include/QtSql -I/usr/share/qt4/include/QtOpenGL -I/usr/share/qt4/include/QtWebKit -I/usr/share/qt4/include/Qt -Ilib/fidlib-0.9.9 .sconf_temp/conftest_13.c
+gcc -o .sconf_temp/conftest_13 -Wl,-rpath,/usr/share/qt4/lib .sconf_temp/conftest_13.o -L/usr/share/qt4/lib -lportaudio -lporttime -lportmidi -lQtOpenGL -lQt3Support -lQtXml -lQtSvg -lQtSql -lQtScript -lQtXmlPatterns -lQtWebKit -lQtGui -lQtNetwork -lQtCore -lQt3Support -lQtXml -lQtGui -lQtCore -lQtNetwork -lQtOpenGL -lQtWebKit -lQtScript -lmad -lid3tag -lsndfile -lvorbisfile -lvorbis -logg -lGL -lGLU -ltag
+scons: Configure: yes
 
 
