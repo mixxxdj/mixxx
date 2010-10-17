@@ -14,7 +14,7 @@
     <script defer type="text/javascript" src="js/pngfix.js"></script>
     <![endif]-->
 
-    <title>Mixxx | Support</title>
+    <title>Mixxx | Press</title>
   </head>
 
   <body>
