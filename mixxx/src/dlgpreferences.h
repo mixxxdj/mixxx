@@ -42,6 +42,7 @@ class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefBpm;
+/*class DlgPrefRG;**/
 class DlgPrefVinyl;
 class DlgPrefShoutcast;
 class PowerMate;
@@ -84,6 +85,7 @@ private:
     DlgPrefCrossfader *wcrossfader;
     DlgPrefRecord *wrecord;
     DlgPrefBpm *wbpm;
+    /*DlgPrefRG *wrg;*/
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefShoutcast *wshoutcast;
 
@@ -94,6 +96,7 @@ private:
 	QTreeWidgetItem* m_pCrossfaderButton;
 	QTreeWidgetItem* m_pRecordingButton;
 	QTreeWidgetItem* m_pBPMdetectButton;
+	/*QTreeWidgetItem* m_pReplayGainButton;*/
 	QTreeWidgetItem* m_pVinylControlButton;
 	QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pMIDITreeItem;

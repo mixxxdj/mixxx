@@ -84,6 +84,12 @@ public:
     // the TrackInfoObject is created, or when setLocation() is called.
     bool exists() const;
 
+
+
+    /** Returns ReplayGain*/
+    float getRG() const;
+    /** Set ReplayGain*/
+    void setRG(float);
     /** Returns BPM */
     float getBpm() const;
     /** Set BPM */
@@ -214,6 +220,7 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
+    void RGUpdated(double replaygain);
     void cuesUpdated();
     void changed();
     void dirty();
@@ -288,6 +295,8 @@ public:
     int m_iBitrate;
     /** Number of times the track has been played */
     int m_iTimesPlayed;
+    /** Replay Gain volume */
+    float m_fRG;
     /** Beat per minutes (BPM) */
     float m_fBpm;
     /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */

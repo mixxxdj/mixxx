@@ -28,8 +28,17 @@ public:
     ~EnginePregain();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
+//public slots:
+//
+//    void slotRGChanged(double);
+//    void slotControlApplyRG(double);
+
+
 private:
     ControlLogpotmeter *potmeterPregain;
+//    ControlObject* m_pFileRG;
+//    ControlPushButton* m_pButtonRGApply;
+
 };
 
 #endif
