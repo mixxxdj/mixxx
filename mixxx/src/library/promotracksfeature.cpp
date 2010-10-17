@@ -25,14 +25,14 @@
 #include "library/trackcollection.h"
 #include "library/dao/cratedao.h"
 #include "trackinfoobject.h"
-#include "defs_version.h"
+#include "defs_promo.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
 QString PromoTracksFeature::m_sPromoRemoteHTMLLocation;
-#define PROMO_BUNDLE_PATH (config->getConfigPath() + "/promo/" + VERSION + "/")
+#define PROMO_BUNDLE_PATH (config->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/")
 #define LOCAL_HTML_LOCATION (PROMO_BUNDLE_PATH + "index.html")
 
 const QString PromoTracksFeature::m_sFeaturedArtistsViewName = tr("Featured Artists");
@@ -51,9 +51,9 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
           m_downloadsTableModel(this, pTrackCollection),
           m_bFirstRun(firstRun) {
 
-    m_sPromoRemoteHTMLLocation = QString("http://promo.mixxx.org/%1/index.html").arg(VERSION); //m_pConfig->getConfigPath() + "/promo/promotracks.html";
+    m_sPromoRemoteHTMLLocation = QString("http://promo.mixxx.org/%1/index.html").arg(MIXXX_PROMO_VERSION); //m_pConfig->getConfigPath() + "/promo/promotracks.html";
     m_sPromoLocalHTMLLocation = LOCAL_HTML_LOCATION;
-    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/autoload.dat";
+    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/autoload.dat";
 
     //Load the extra.dat file so we can peek at some extra information, such
     //as which songs to auto-load into Mixxx's players.
@@ -66,7 +66,7 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
         while (!extra.atEnd())
         {
             QString trackPath = extra.readLine();
-            trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
+            trackPath = m_pConfig->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/" + trackPath;
             QFileInfo fileInfo(trackPath);
             trackPath = fileInfo.absoluteFilePath();
             //qDebug() << "PROMO: Auto-loading track" << trackPath;

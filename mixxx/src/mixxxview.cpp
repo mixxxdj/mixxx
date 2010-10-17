@@ -426,6 +426,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             {
                 WLabel * p = new WLabel(this);
                 p->setup(node);
+                p->installEventFilter(m_pKeyboard);
 
                 m_qWidgetList.append(p);
             }
