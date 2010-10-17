@@ -13,9 +13,9 @@ AnalyserWaveform::AnalyserWaveform() {
 
 void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
-    if(tio->getVisualWaveform() != NULL) {
-        return;
-    }
+  if(tio->getVisualWaveform() != NULL) {
+       return;
+   }
 
     if(totalSamples == 0) {
         return;  //?

@@ -19,7 +19,9 @@
 
 #include "engineobject.h"
 
+
 class ControlLogpotmeter;
+class ControlObject;
 
 class EnginePregain : public EngineObject
 {
@@ -28,15 +30,12 @@ public:
     ~EnginePregain();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
-//public slots:
-//
-//    void slotRGChanged(double);
-//    void slotControlApplyRG(double);
 
 
 private:
     ControlLogpotmeter *potmeterPregain;
-//    ControlObject* m_pFileRG;
+    ControlObject *ControlReplayGain;
+    float p_fReplayGainCorrection;
 //    ControlPushButton* m_pButtonRGApply;
 
 };

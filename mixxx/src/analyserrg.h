@@ -21,9 +21,8 @@ class AnalyserGain : public Analyser {
     void finalise(TrackPointer tio);
 
   private:
+    int stepcontrol;
     //int m_iStartTime;
-
-
 };
 
 

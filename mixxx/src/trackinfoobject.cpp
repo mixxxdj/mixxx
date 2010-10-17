@@ -114,7 +114,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
-    m_fRG = -32767;
+    m_fRG = -32767.;
     m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;
@@ -281,9 +281,7 @@ void TrackInfoObject::setRG(float f)
     if (dirty)
         setDirty(true);
     emit(RGUpdated(f));
-
-    //lock.unlock();
-    //Should we ask the gui to update value?
+    lock.unlock();
 }
 
 float TrackInfoObject::getBpm() const

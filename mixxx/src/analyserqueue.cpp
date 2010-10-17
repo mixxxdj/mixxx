@@ -201,9 +201,9 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #endif
 
     ret->addAnalyser(new AnalyserWavesummary());
-    ret->addAnalyser(new AnalyserGain());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
+    ret->addAnalyser(new AnalyserGain());
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -212,8 +212,8 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
 	AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
-    //ret->addAnalyser(new AnalyserGain());
     ret->addAnalyser(new AnalyserBPM(_config));
+    //ret->addAnalyser(new AnalyserGain());
 	ret->start(QThread::IdlePriority);
 	return ret;
 }

@@ -53,6 +53,8 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
+    m_pRG = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(m_strChannel, "replaygain")));
 }
 
 Player::~Player()
@@ -64,6 +66,7 @@ Player::~Player()
     delete m_pPlayPosition;
     delete m_pDuration;
     delete m_pBPM;
+    delete m_pRG;
 }
 
 void Player::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
@@ -111,6 +114,10 @@ void Player::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
     connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
             m_pBPM, SLOT(slotSet(double)));
 
+    // Listen for updates to the file's Replay Gain
+    connect(m_pLoadedTrack.data(), SIGNAL(RGUpdated(double)),
+            m_pRG, SLOT(slotSet(double)));
+
     //Request a new track from the reader
     m_pEngineBuffer->loadTrack(track);
 }
@@ -131,6 +138,7 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
     }
     m_pDuration->slotSet(0);
     m_pBPM->slotSet(0);
+    m_pRG->slotSet(-32767);
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
     m_pLoadedTrack.clear();
@@ -157,7 +165,7 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
     //Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->slotSet(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
-
+    m_pRG->slotSet(m_pLoadedTrack->getRG());
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
     PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
