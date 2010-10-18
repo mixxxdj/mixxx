@@ -227,7 +227,7 @@ class SoundTouch(Dependence):
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
         if build.platform_is_windows and build.toolchain_is_msvs:
-            if build.machine == 'x86_64':
+            if build.machine_is_64bit:
                 sources.append(
                     '#lib/%s/cpu_detect_x64_win.cpp' % self.SOUNDTOUCH_PATH)
             elif build.machine == 'x86':
