@@ -138,7 +138,7 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
     }
     m_pDuration->slotSet(0);
     m_pBPM->slotSet(0);
-    m_pRG->slotSet(-32767);
+    m_pRG->slotSet(0);
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
     m_pLoadedTrack.clear();

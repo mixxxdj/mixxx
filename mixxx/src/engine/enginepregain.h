@@ -35,8 +35,7 @@ public:
 private:
     ControlLogpotmeter *potmeterPregain;
     ControlObject *ControlReplayGain;
-    float p_fReplayGainCorrection;
-//    ControlPushButton* m_pButtonRGApply;
+    float m_fReplayGainCorrection;
 
 };
 

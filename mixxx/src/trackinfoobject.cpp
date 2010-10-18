@@ -114,7 +114,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
-    m_fRG = -32767.;
+    m_fRG = 0.;
     m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;

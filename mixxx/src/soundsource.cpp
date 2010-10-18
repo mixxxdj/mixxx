@@ -50,7 +50,7 @@ SoundSource::SoundSource(QString qFilename)
     m_qFilename = qFilename;
     m_iSampleRate = 0;
     m_fBPM = 0.0f;
-    m_fRG = -32767.0f;
+    m_fRG = 0.0f;
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iChannels = 0;
@@ -258,11 +258,11 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
 
 void SoundSource::parseRGString (QString sRG) {
 	 QString RGstring = sRG.remove( " dB" );
-	 float fRG = RGstring.toFloat();
-	 //I found some mp3s of mine with replaygain tag set to 0 even if not normalized.
-	 //This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to -32767 (i.e. rescan via analyserrg)
-	 if(fRG==0.0f){
-		 fRG=-32767.0f;
+	 float fRG = pow(10,(RGstring.toFloat())/20);
+	 //I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
+	 //This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
+	 if(fRG==1.0f){
+		 fRG= 0.0f;
 	 }
 	 setRG(fRG);
 }

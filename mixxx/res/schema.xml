@@ -151,7 +151,7 @@ METADATA
                 Added a ReplayGain Column.
   </description>
   <sql>
-    ALTER TABLE library ADD COLUMN replaygain float DEFAULT -32767;
+    ALTER TABLE library ADD COLUMN replaygain float DEFAULT 0;
   </sql>
   </revision>
   
