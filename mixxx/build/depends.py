@@ -452,6 +452,7 @@ class MixxxCore(Feature):
                    "library/promotracksfeature.cpp",
                    "library/featuredartistswebview.cpp",
                    "library/bundledsongswebview.cpp",
+                   "library/songdownloader.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
@@ -480,8 +481,10 @@ class MixxxCore(Feature):
                    "imgloader.cpp",
                    "imgcolor.cpp",
 
+                   "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "player.cpp",
+                   "playermanager.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "dlgprefrecord.cpp",
