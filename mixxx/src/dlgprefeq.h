@@ -48,6 +48,7 @@ private:
 	void loadSettings();
 	int getEqFreq(int);
     int getSliderPosition(int eqFreq);
+    void validate_levels();
     
 	int m_lowEqFreq, m_highEqFreq;
     /** Pointer to config object */

@@ -10,12 +10,11 @@
 //
 //
 #include "parser.h"
-//Added by qt3to4:
-#include <Q3PtrList>
-
 
 #ifndef PARSERM3U_H
 #define PARSERM3U_H
+
+class QTextStream;
 
 class ParserM3u : public Parser
 {
@@ -24,11 +23,11 @@ public:
     ParserM3u();
     ~ParserM3u();
     /**Overwriting function parse in class Parser**/
-    Q3PtrList<QString> * parse(QString);
+    QList<QString> parse(QString);
 
 private:
     /**Reads a line from the file and returns filepath if a valid file**/
-    QString getFilepath(Q3TextStream *, QString&);
+    QString getFilepath(QTextStream *, QString);
 
 
 };

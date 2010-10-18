@@ -157,9 +157,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -289,6 +291,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
+
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
@@ -458,14 +461,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             (at_start && backwards) ||
             (at_end && !backwards);
 
-        // If paused, then ramp out.
-        if (bCurBufferPaused) {
-            // If this is the first process() since being paused, then ramp out.
-            if (!m_bLastBufferPaused) {
-                rampOut(pOut, iBufferSize);
-            }
-        // Otherwise, scale the audio.
-        } else { // if (bCurBufferPaused)
+        // If the buffer is not paused, then scale the audio.
+        if (!bCurBufferPaused) {
             CSAMPLE *output;
             double idx;
 
@@ -616,8 +613,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // release the pauselock
         pause.unlock();
     } else { // if (!m_pTrackEnd->get() && pause.tryLock()) {
-        if (!m_bLastBufferPaused)
-            rampOut(pOut, iBufferSize);
+        // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
     }
 
@@ -628,6 +624,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         float fStep = pOutput[iLen-1]/(float)iLen;
         for (int i=0; i<iLen; ++i)
             pOutput[i] = fStep*i;
+
+    }
+    // Force ramp out if this is the first buffer to be paused.
+    else if (!m_bLastBufferPaused && bCurBufferPaused) {
+        rampOut(pOut, iBufferSize);
+    }
+    // If the previous buffer was paused and we are currently paused, then
+    // memset the output to zero.
+    else if (m_bLastBufferPaused && bCurBufferPaused) {
+        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
@@ -729,9 +735,11 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
     connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)));
+            this, SLOT(slotControlSeek(double)),
+            Qt::DirectConnection);
     connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)));
+            this, SLOT(slotControlSeekAbs(double)),
+            Qt::DirectConnection);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {

@@ -168,7 +168,9 @@ QList<QString> SoundManager::getHostAPIList()
     for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++)
     {
         const PaHostApiInfo *api = Pa_GetHostApiInfo(i);
-        if (QString(api->name) != "skeleton implementation") apiList.push_back(api->name);
+        if (api) {
+            if (QString(api->name) != "skeleton implementation") apiList.push_back(api->name);
+        }
     }
 
     return apiList;
@@ -285,7 +287,10 @@ void SoundManager::queryDevices()
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++)
     {
+        const PaHostApiInfo * apiInfo = NULL;
         deviceInfo = Pa_GetDeviceInfo(i);
+        if (!deviceInfo)
+            continue;
         /* deviceInfo fields for quick reference:
             int 	structVersion
             const char * 	name
@@ -298,8 +303,9 @@ void SoundManager::queryDevices()
             PaTime 	defaultHighOutputLatency
             double 	defaultSampleRate
          */
-        const PaHostApiInfo * apiInfo = NULL;
         apiInfo = Pa_GetHostApiInfo(deviceInfo->hostApi);
+        if (!apiInfo)
+            continue;
         //if (apiInfo->name == m_hostAPI)
         {
             SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);

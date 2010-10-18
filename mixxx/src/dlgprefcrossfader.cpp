@@ -20,7 +20,6 @@
 #include "controlobject.h"
 #include "engine/enginexfader.h"
 #include <qlineedit.h>
-#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>
