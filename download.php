@@ -61,10 +61,7 @@
 	<div id="ubuntudlg" style="display: none;" title="Ubuntu Downloads">
 	   <center><b>Download:</b></center>
 	   <br>
-	   <b>Ubuntu 10.10 (Maverick):</b><br>
-	   Mixxx 1.8.0 can be installed directly from the Ubuntu Software Centre!<br><br>
-	   
-	   <b>Ubuntu 10.04 (Lucid):</b><br>
+	   <b>Ubuntu 10.04 (Lucid) and 10.10 (Maverick):</b><br>
 	   Open a terminal, and enter:
 	   <pre>
 sudo add-apt-repository ppa:mixxxdevelopers/ppa
@@ -72,6 +69,9 @@ sudo apt-get update
 sudo apt-get install mixxx libportaudio2
 	   </pre>
 	   This will install the latest version of Mixxx from the <a href="https://launchpad.net/~mixxxdevelopers/+archive/ppa">Mixxx Developers PPA</a> on Launchpad.
+
+	   <b>Ubuntu 10.10 (Maverick):</b><br>
+	   Our older Mixxx 1.8.0 release can be installed directly from the Ubuntu Software Centre.<br><br>
 
 	</div>
 	
@@ -96,9 +96,9 @@ sudo apt-get install mixxx libportaudio2
 						        	<td>
 						        	<img src="images/downloads_win.png">
 						        	</td>
-						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/180win32'); ">Mixxx 1.8.0</a><br>(32-bit)
+						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/181win32'); ">Mixxx 1.8.1</a><br>(32-bit)
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/180win64'); ">Mixxx 1.8.0</a><br>(64-bit)
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/181win64'); ">Mixxx 1.8.1</a><br>(64-bit)
 
                                     <!--
 		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
@@ -121,7 +121,7 @@ sudo apt-get install mixxx libportaudio2
 						            <td>
 						                <img src="images/downloads_mac.png">
 						            </td>
-						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/180osxintel'); ">Mixxx 1.8.0</a><br>
+						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/181osxintel'); ">Mixxx 1.8.1</a><br>
 						    		(10.5+, Intel)<br>
 						    		</td>
 						            <td><img src="images/mac.png"></td>
@@ -133,11 +133,11 @@ sudo apt-get install mixxx libportaudio2
 						        <tr>
 						        	<td><img src="images/downloads_linux.png"></td>
 						            <td width="30%">
-						             <a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0.2-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/180linuxsrc'); ">Mixxx 1.8.0</a><br>
+						             <a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1.2-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/181linuxsrc'); ">Mixxx 1.8.1</a><br>
 						    (Source)
 						            </td>
 						            <td width="30%">
-						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/180ubuntu'); ">Mixxx 1.8.0</a><br>(Ubuntu)
+						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/181ubuntu'); ">Mixxx 1.8.1</a><br>(Ubuntu)
 						    		</td>
 						    		<td><img src="images/ubuntu.png" align="center" border="0px">
 						    		</td>
@@ -147,14 +147,14 @@ sudo apt-get install mixxx libportaudio2
 <!--
 <div id="beta">
 							<img src="images/beta.png" style="float: left; padding: 10px">
-							<p>The Mixxx 1.8.0 beta includes a brand new library, looping controls, support for multiple MIDI controllers, and more! <p>If you'd like to try out the latest features and are willing to <a href="https://bugs.launchpad.net/mixxx/">report any bugs</a> you find, try the latest <b>(unstable) beta release</b>:</p>
+							<p>The Mixxx 1.8.1 beta includes a brand new library, looping controls, support for multiple MIDI controllers, and more! <p>If you'd like to try out the latest features and are willing to <a href="https://bugs.launchpad.net/mixxx/">report any bugs</a> you find, try the latest <b>(unstable) beta release</b>:</p>
 <br>
-<ul><li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-win32.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2win32'); ">Mixxx 1.8.0-beta2 for Windows (32-bit)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-win64.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2win64'); ">Mixxx 1.8.0-beta2 for Windows (64-Bit)</a><p>(Note: Will ONLY work with 64-bit Windows)</p></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-ubuntu-i386.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2ubuntu'); " >Mixxx 1.8.0-beta2 for Ubuntu 9.10+ (i386 deb)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-ubuntu-amd64.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2ubuntu'); " >Mixxx 1.8.0-beta2 for Ubuntu 9.10+ (amd64 deb)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-osx-universal.dmg" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2osx'); ">Mixxx 1.8.0-beta2 for Mac OS X 10.4+ (Universal)</a></li>
-<li><a href="http://downloads.mixxx.org/mixxx-1.8.0-beta2/mixxx-1.8.0-beta2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2linuxsrc'); ">Mixxx 1.8.0-beta2 for Linux (source)</a></li>
+<ul><li><a href="http://downloads.mixxx.org/mixxx-1.8.1-beta2/mixxx-1.8.1-beta2-win32.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2win32'); ">Mixxx 1.8.1-beta2 for Windows (32-bit)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.1-beta2/mixxx-1.8.1-beta2-win64.exe" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2win64'); ">Mixxx 1.8.1-beta2 for Windows (64-Bit)</a><p>(Note: Will ONLY work with 64-bit Windows)</p></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.1-beta2/mixxx-1.8.1-beta2-ubuntu-i386.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2ubuntu'); " >Mixxx 1.8.1-beta2 for Ubuntu 9.10+ (i386 deb)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.1-beta2/mixxx-1.8.1-beta2-ubuntu-amd64.deb" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2ubuntu'); " >Mixxx 1.8.1-beta2 for Ubuntu 9.10+ (amd64 deb)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.1-beta2/mixxx-1.8.1-beta2-osx-universal.dmg" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2osx'); ">Mixxx 1.8.1-beta2 for Mac OS X 10.4+ (Universal)</a></li>
+<li><a href="http://downloads.mixxx.org/mixxx-1.8.1-beta2/mixxx-1.8.1-beta2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180beta2linuxsrc'); ">Mixxx 1.8.1-beta2 for Linux (source)</a></li>
 </ul>
 </div>
 -->
@@ -181,7 +181,7 @@ sudo apt-get install mixxx libportaudio2
 							<img src="images/source.png" style="float: right; padding: 10px;">
 							<p>Mixxx is also available as source code, licensed under the GPL v2. Please check the LICENSE file for complete licensing information. You can grab the latest distribution or get the latest code directly from BZR:</p>
 							<ul>
-								<li><a href="http://downloads.mixxx.org/mixxx-1.8.0/mixxx-1.8.0.2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/180linuxsrc'); ">Mixxx 1.8.0 source code</a></li>
+								<li><a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/181linuxsrc'); ">Mixxx 1.8.1 source code</a></li>
 		           				<li>Checking out from BZR:
 							<pre>bzr branch lp:mixxx</pre></li>
 							</ul>
