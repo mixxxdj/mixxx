@@ -23,13 +23,13 @@ class MIDIScript(Feature):
             return
         if build.platform_is_windows:
             build.env.Append(LIBS = 'QtScript4')
-	elif build.platform_is_linux:
-            build.env.Append(LIBS = 'QtScript')
-	elif build.platform_is_osx:
-            # TODO(XXX) put in logic here to add a -framework QtScript
-            pass
+        elif build.platform_is_linux:
+                build.env.Append(LIBS = 'QtScript')
+        elif build.platform_is_osx:
+                # TODO(XXX) put in logic here to add a -framework QtScript
+                pass
         build.env.Append(CPPPATH = '$QTDIR/include/QtScript')
-	build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
+        build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
 
     def sources(self, build):
         return ["midi/midiscriptengine.cpp"]
