@@ -133,7 +133,7 @@ sudo apt-get install mixxx libportaudio2
 						        <tr>
 						        	<td><img src="images/downloads_linux.png"></td>
 						            <td width="30%">
-						             <a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1.2-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/181linuxsrc'); ">Mixxx 1.8.1</a><br>
+						             <a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/181linuxsrc'); ">Mixxx 1.8.1</a><br>
 						    (Source)
 						            </td>
 						            <td width="30%">
