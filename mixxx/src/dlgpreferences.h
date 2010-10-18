@@ -44,6 +44,7 @@ class DlgPrefRecord;
 class DlgPrefBpm;
 class DlgPrefVinyl;
 class DlgPrefShoutcast;
+class DlgPrefReplayGain;
 class PowerMate;
 class MidiDeviceManager;
 
@@ -86,6 +87,7 @@ private:
     DlgPrefBpm *wbpm;
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefShoutcast *wshoutcast;
+    DlgPrefReplayGain *wreplaygain;
 
 	QTreeWidgetItem* m_pSoundButton;
 	QTreeWidgetItem* m_pPlaylistButton;
@@ -96,6 +98,7 @@ private:
 	QTreeWidgetItem* m_pBPMdetectButton;
 	QTreeWidgetItem* m_pVinylControlButton;
 	QTreeWidgetItem* m_pShoutcastButton;
+	QTreeWidgetItem* m_pReplayGainButton;
     QTreeWidgetItem* m_pMIDITreeItem;
     QList<QTreeWidgetItem*> m_midiBindingsButtons;
 

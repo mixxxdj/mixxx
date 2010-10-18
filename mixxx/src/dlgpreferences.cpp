@@ -34,6 +34,7 @@
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
+#include "dlgprefreplaygain.h"
 #include "mixxx.h"
 #include "midi/mididevicemanager.h"
 #include "midi/mididevice.h"
@@ -69,6 +70,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);
+    wreplaygain = new DlgPrefReplayGain(this, config);
     wrecord = new DlgPrefRecord(this, config);
 #ifdef __VINYLCONTROL__
     wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
@@ -90,6 +92,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wcrossfader);
     pagesWidget->addWidget(wrecord);
     pagesWidget->addWidget(wbpm);
+    pagesWidget->addWidget(wreplaygain);
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
 #endif
@@ -109,12 +112,13 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
     connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
-    connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), weq,       SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()),wcrossfader,SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wbpm,      SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wsound,     SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wplaylist,  SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wcontrols,  SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), weq,        SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()),wcrossfader, SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wbpm,       SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wreplaygain,SLOT(slotUpdate()));
 
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #ifdef __VINYLCONTROL__
@@ -138,8 +142,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wbpm,      SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()),wreplaygain,SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
     connect(buttonBox, SIGNAL(accepted()), wshoutcast,SLOT(slotApply()));
 #endif
@@ -221,6 +226,12 @@ void DlgPreferences::createIcons()
     m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
+    m_pReplayGainButton->setText(0, tr("Normalization"));
+    m_pReplayGainButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pReplayGainButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
 #ifdef __VINYLCONTROL__
     m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
@@ -262,6 +273,9 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
            pagesWidget->setCurrentWidget(wrecord);
        else if (current == m_pBPMdetectButton)
            pagesWidget->setCurrentWidget(wbpm);
+       else if (current == m_pReplayGainButton)
+    	   pagesWidget->setCurrentWidget(wreplaygain);
+
 #ifdef __VINYLCONTROL__
        else if (current == m_pVinylControlButton)
            pagesWidget->setCurrentWidget(wvinylcontrol);

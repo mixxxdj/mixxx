@@ -1,17 +1,18 @@
 /********************************************************************************
-** Form generated from reading UI file 'dlgreplaygaindlg.ui'
+** Form generated from reading UI file 'dlgprefreplaygaindlg.ui'
 **
-** Created: Sat Oct 16 18:48:21 2010
+** Created: Mon Oct 18 15:20:48 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef DLGREPLAYGAINDLG_H
-#define DLGREPLAYGAINDLG_H
+#ifndef UI_DLGPREFREPLAYGAINDLG_H
+#define UI_DLGPREFREPLAYGAINDLG_H
 
 #include <Qt3Support/Q3GroupBox>
 #include <Qt3Support/Q3MimeSourceFactory>
+#include <QtCore/QLocale>
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
@@ -22,7 +23,6 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
-#include <QtGui/QRadioButton>
 #include <QtGui/QSlider>
 #include <QtGui/QSpacerItem>
 #include <QtGui/QVBoxLayout>
@@ -39,34 +39,35 @@ public:
     QCheckBox *EnableGain;
     QFrame *line;
     QCheckBox *EnableAnalyser;
-    QRadioButton *AffectVolume;
-    QRadioButton *AffectGain;
+    QLabel *bigfatwarning;
+    QSpacerItem *verticalSpacer;
     QHBoxLayout *hboxLayout;
     QVBoxLayout *vboxLayout2;
     QHBoxLayout *hboxLayout1;
-    QLabel *label_2;
+    QLabel *label_boost;
     QSpacerItem *spacerItem;
     QLabel *label;
     QSlider *SliderBoost;
     QHBoxLayout *hboxLayout2;
-    QLabel *TextLabel8;
+    QLabel *label0;
     QSpacerItem *spacerItem1;
-    QLabel *TextLabel8_2;
-    QHBoxLayout *hboxLayout3;
+    QLabel *label15;
     QSpacerItem *spacerItem2;
-    QPushButton *PushButtonReset;
+    QHBoxLayout *hboxLayout3;
     QSpacerItem *spacerItem3;
+    QPushButton *PushButtonReset;
 
     void setupUi(QWidget *DlgPrefReplayGainDlg)
     {
         if (DlgPrefReplayGainDlg->objectName().isEmpty())
             DlgPrefReplayGainDlg->setObjectName(QString::fromUtf8("DlgPrefReplayGainDlg"));
-        DlgPrefReplayGainDlg->resize(409, 418);
+        DlgPrefReplayGainDlg->resize(407, 418);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(DlgPrefReplayGainDlg->sizePolicy().hasHeightForWidth());
         DlgPrefReplayGainDlg->setSizePolicy(sizePolicy);
+        DlgPrefReplayGainDlg->setLocale(QLocale(QLocale::C, QLocale::AnyCountry));
         vboxLayout = new QVBoxLayout(DlgPrefReplayGainDlg);
         vboxLayout->setSpacing(6);
         vboxLayout->setContentsMargins(11, 11, 11, 11);
@@ -104,15 +105,20 @@ public:
 
         vboxLayout1->addWidget(EnableAnalyser);
 
-        AffectVolume = new QRadioButton(GroupBox1);
-        AffectVolume->setObjectName(QString::fromUtf8("AffectVolume"));
+        bigfatwarning = new QLabel(GroupBox1);
+        bigfatwarning->setObjectName(QString::fromUtf8("bigfatwarning"));
+        QFont font1;
+        font1.setBold(false);
+        font1.setItalic(true);
+        font1.setWeight(50);
+        font1.setStrikeOut(false);
+        bigfatwarning->setFont(font1);
 
-        vboxLayout1->addWidget(AffectVolume);
+        vboxLayout1->addWidget(bigfatwarning);
 
-        AffectGain = new QRadioButton(GroupBox1);
-        AffectGain->setObjectName(QString::fromUtf8("AffectGain"));
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        vboxLayout1->addWidget(AffectGain);
+        vboxLayout1->addItem(verticalSpacer);
 
         hboxLayout = new QHBoxLayout();
         hboxLayout->setSpacing(6);
@@ -123,10 +129,10 @@ public:
         hboxLayout1 = new QHBoxLayout();
         hboxLayout1->setSpacing(6);
         hboxLayout1->setObjectName(QString::fromUtf8("hboxLayout1"));
-        label_2 = new QLabel(GroupBox1);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_boost = new QLabel(GroupBox1);
+        label_boost->setObjectName(QString::fromUtf8("label_boost"));
 
-        hboxLayout1->addWidget(label_2);
+        hboxLayout1->addWidget(label_boost);
 
         spacerItem = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -142,11 +148,12 @@ public:
 
         SliderBoost = new QSlider(GroupBox1);
         SliderBoost->setObjectName(QString::fromUtf8("SliderBoost"));
+        SliderBoost->setLocale(QLocale(QLocale::C, QLocale::AnyCountry));
         SliderBoost->setMinimum(0);
-        SliderBoost->setMaximum(100);
+        SliderBoost->setMaximum(15);
         SliderBoost->setSingleStep(1);
         SliderBoost->setPageStep(1);
-        SliderBoost->setValue(50);
+        SliderBoost->setValue(6);
         SliderBoost->setOrientation(Qt::Horizontal);
         SliderBoost->setTickInterval(5);
 
@@ -155,23 +162,23 @@ public:
         hboxLayout2 = new QHBoxLayout();
         hboxLayout2->setSpacing(6);
         hboxLayout2->setObjectName(QString::fromUtf8("hboxLayout2"));
-        TextLabel8 = new QLabel(GroupBox1);
-        TextLabel8->setObjectName(QString::fromUtf8("TextLabel8"));
-        TextLabel8->setFont(font);
-        TextLabel8->setWordWrap(false);
+        label0 = new QLabel(GroupBox1);
+        label0->setObjectName(QString::fromUtf8("label0"));
+        label0->setFont(font);
+        label0->setWordWrap(false);
 
-        hboxLayout2->addWidget(TextLabel8);
+        hboxLayout2->addWidget(label0);
 
         spacerItem1 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         hboxLayout2->addItem(spacerItem1);
 
-        TextLabel8_2 = new QLabel(GroupBox1);
-        TextLabel8_2->setObjectName(QString::fromUtf8("TextLabel8_2"));
-        TextLabel8_2->setFont(font);
-        TextLabel8_2->setWordWrap(false);
+        label15 = new QLabel(GroupBox1);
+        label15->setObjectName(QString::fromUtf8("label15"));
+        label15->setFont(font);
+        label15->setWordWrap(false);
 
-        hboxLayout2->addWidget(TextLabel8_2);
+        hboxLayout2->addWidget(label15);
 
 
         vboxLayout2->addLayout(hboxLayout2);
@@ -185,12 +192,16 @@ public:
 
         vboxLayout->addWidget(GroupBox1);
 
+        spacerItem2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        vboxLayout->addItem(spacerItem2);
+
         hboxLayout3 = new QHBoxLayout();
         hboxLayout3->setSpacing(6);
         hboxLayout3->setObjectName(QString::fromUtf8("hboxLayout3"));
-        spacerItem2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        spacerItem3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        hboxLayout3->addItem(spacerItem2);
+        hboxLayout3->addItem(spacerItem3);
 
         PushButtonReset = new QPushButton(DlgPrefReplayGainDlg);
         PushButtonReset->setObjectName(QString::fromUtf8("PushButtonReset"));
@@ -199,10 +210,6 @@ public:
 
 
         vboxLayout->addLayout(hboxLayout3);
-
-        spacerItem3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        vboxLayout->addItem(spacerItem3);
 
 
         retranslateUi(DlgPrefReplayGainDlg);
@@ -216,12 +223,15 @@ public:
         GroupBox1->setTitle(QApplication::translate("DlgPrefReplayGainDlg", "Replay Gain Normalization", 0, QApplication::UnicodeUTF8));
         EnableGain->setText(QApplication::translate("DlgPrefReplayGainDlg", "Enable Replay Gain", 0, QApplication::UnicodeUTF8));
         EnableAnalyser->setText(QApplication::translate("DlgPrefReplayGainDlg", "Enable Replay Gain Analyser", 0, QApplication::UnicodeUTF8));
-        AffectVolume->setText(QApplication::translate("DlgPrefReplayGainDlg", "Affect Desk Volume", 0, QApplication::UnicodeUTF8));
-        AffectGain->setText(QApplication::translate("DlgPrefReplayGainDlg", "Affect Desk Pregain", 0, QApplication::UnicodeUTF8));
-        label_2->setText(QApplication::translate("DlgPrefReplayGainDlg", "Initial Boost", 0, QApplication::UnicodeUTF8));
+        bigfatwarning->setText(QApplication::translate("DlgPrefReplayGainDlg", "Big Fat Warning: Tell something about\n"
+"volume changing when ReplayGain is on.", 0, QApplication::UnicodeUTF8));
+        label_boost->setText(QApplication::translate("DlgPrefReplayGainDlg", "Initial Boost", 0, QApplication::UnicodeUTF8));
         label->setText(QString());
-        TextLabel8->setText(QApplication::translate("DlgPrefReplayGainDlg", "0  Db", 0, QApplication::UnicodeUTF8));
-        TextLabel8_2->setText(QApplication::translate("DlgPrefReplayGainDlg", "+15 Db ", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        SliderBoost->setToolTip(QApplication::translate("DlgPrefReplayGainDlg", "Initial Gain Boost", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        label0->setText(QApplication::translate("DlgPrefReplayGainDlg", "0  dB", 0, QApplication::UnicodeUTF8));
+        label15->setText(QApplication::translate("DlgPrefReplayGainDlg", "+15 dB ", 0, QApplication::UnicodeUTF8));
         PushButtonReset->setText(QApplication::translate("DlgPrefReplayGainDlg", "Reset", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
@@ -233,4 +243,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // DLGREPLAYGAINDLG_H
+#endif // UI_DLGPREFREPLAYGAINDLG_H
