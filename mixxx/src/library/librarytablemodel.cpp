@@ -130,15 +130,15 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-	return m_trackDao.getTrack(trackId);
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    return m_trackDao.getTrack(trackId);
 }
 
 QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 {
-	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	return location;
+    const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
+    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+    return location;
 }
 
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
@@ -156,9 +156,9 @@ void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
 
 void LibraryTableModel::removeTrack(const QModelIndex& index)
 {
-	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-	m_trackDao.removeTrack(trackId);
-	select(); //Repopulate the data model.
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    m_trackDao.removeTrack(trackId);
+    select(); //Repopulate the data model.
 }
 
 void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -315,8 +315,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
     if (!index.isValid())
       return Qt::ItemIsEnabled;
 
-	//Enable dragging songs from this data model to elsewhere (like the waveform
-	//widget to load a track into a Player).
+    //Enable dragging songs from this data model to elsewhere (like the waveform
+    //widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     if (index.column() == fieldIndex(LIBRARYTABLE_BPM))
@@ -337,7 +337,7 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 
 bool LibraryTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	//qDebug() << "edited " << index.row() << " " << index.column() << "to " << value << " with role " << role;
+    //qDebug() << "edited " << index.row() << " " << index.column() << "to " << value << " with role " << role;
     if (index.isValid() && role == Qt::CheckStateRole)
     {
         QString val = value.toInt() > 0 ? QString("true") : QString("false");
