@@ -62,7 +62,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 
     int trackId = m_rowToTrackId[row];
 
-    if (role == Qt::DisplayRole && m_trackOverrides.contains(trackId)) {
+    if ((role == Qt::DisplayRole || role == Qt::EditRole) && m_trackOverrides.contains(trackId)) {
         //qDebug() << "Returning override for track" << trackId;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
@@ -91,9 +91,66 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             return QVariant(pTrack->getBitrate());
         } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
             return QVariant(pTrack->getBpm());
+        } else if (fieldIndex(LIBRARYTABLE_PLAYED) == col) {
+            return QVariant(pTrack->getPlayed());
+        } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == col) {
+            return QVariant(pTrack->getTimesPlayed());
         }
     }
     return QSqlTableModel::data(index, role);
+}
+
+bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid())
+        return false;
+
+    int row = index.row();
+    int col = index.column();
+
+    Q_ASSERT(m_rowToTrackId.contains(row));
+    if (!m_rowToTrackId.contains(row)) {
+        return QSqlTableModel::setData(index, value, role);
+    }
+
+    int trackId = m_rowToTrackId[row];
+
+    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+
+    // TODO(XXX) Qt properties could really help here.
+    if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
+        pTrack->setArtist(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_TITLE) == col) {
+        pTrack->setTitle(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == col) {
+        pTrack->setAlbum(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_YEAR) == col) {
+        pTrack->setYear(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_GENRE) == col) {
+        pTrack->setGenre(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == col) {
+        pTrack->setType(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == col) {
+        pTrack->setTrackNumber(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == col) {
+        pTrack->setLocation(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == col) {
+        pTrack->setComment(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_DURATION) == col) {
+        pTrack->setDuration(value.toInt());
+    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == col) {
+        pTrack->setBitrate(value.toInt());
+    } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
+        pTrack->setBpm(value.toInt());
+    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == col) {
+        pTrack->setPlayed(value.toBool());
+    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == col) {
+        pTrack->setTimesPlayed(value.toInt());
+    }
+
+    m_trackDAO.saveTrack(pTrack);
+
+    return true;
 }
 
 void BaseSqlTableModel::trackChanged(int trackId) {
@@ -129,7 +186,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString table = m_qTableName;
     QString field = database().driver()->escapeIdentifier(f.name(),
-                                                           QSqlDriver::FieldName);
+                                                          QSqlDriver::FieldName);
     s.append(QLatin1String("ORDER BY "));
     QString sort_field = QString("%1.%2").arg(table).arg(field);
 

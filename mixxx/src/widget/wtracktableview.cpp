@@ -31,12 +31,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotPrevTrackInfo()));
 
     m_pMenu = new QMenu(this);
+    //Edit on clicking selected row
+    setEditTriggers(QAbstractItemView::SelectedClicked);
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
-    //Disable editing
-    //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     //Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
