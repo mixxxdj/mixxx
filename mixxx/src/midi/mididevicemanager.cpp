@@ -49,26 +49,26 @@ void MidiDeviceManager::saveMappings(bool onlyActive) {
     // Write out MIDI mappings for currently connected devices
     QList<MidiDevice*> deviceList = getDeviceList(false, true);
     QListIterator<MidiDevice*> it(deviceList);
-    
+
     QList<QString> filenames;
-    
+
     while (it.hasNext())
     {
         MidiDevice *cur= it.next();
         if (onlyActive && !cur->isOpen()) continue;
         MidiMapping *mapping = cur->getMidiMapping();
         QString name = cur->getName();
-        
+
         QString ofilename = name.right(name.size()-name.indexOf(" ")-1).replace(" ", "_");
-        
+
         QString filename = ofilename;
-        
+
         int i=1;
         while (filenames.contains(filename)) {
             i++;
             filename = QString("%1--%2").arg(ofilename).arg(i);
         }
-        
+
         filenames.append(filename);
         mapping->savePreset(BINDINGS_PATH.append(filename + MIDI_MAPPING_EXTENSION));
     }
@@ -93,12 +93,12 @@ QList<MidiDevice*> MidiDeviceManager::getDeviceList(bool bOutputDevices, bool bI
     {
         bMatchedCriteria = false;                //Reset this for the next device.
         MidiDevice *device = dev_it.next();
-        
+
         if ((bOutputDevices == device->isOutputDevice()) ||
             (bInputDevices == device->isInputDevice())) {
             bMatchedCriteria = true;
         }
-    
+
         if (bMatchedCriteria)
             filteredDeviceList.push_back(device);
     }
@@ -120,36 +120,36 @@ int MidiDeviceManager::setupDevices()
 {
     QList<MidiDevice*> deviceList = getDeviceList(false, true);
     QListIterator<MidiDevice*> it(deviceList);
-    
+
     qDebug() << "MidiDeviceManager: Setting up devices";
-    
+
     QList<QString> filenames;
-    
+
     while (it.hasNext())
     {
         MidiDevice *cur= it.next();
         MidiMapping *mapping = cur->getMidiMapping();
         QString name = cur->getName();
         mapping->setName(name);
-        
+
         cur->close();
-        
+
         QString ofilename = name.right(name.size()-name.indexOf(" ")-1).replace(" ", "_");
-        
+
         QString filename = ofilename;
-        
+
         int i=1;
         while (filenames.contains(filename)) {
             i++;
             filename = QString("%1--%2").arg(ofilename).arg(i);
         }
-        
+
         filenames.append(filename);
         mapping->loadPreset(BINDINGS_PATH.append(filename + MIDI_MAPPING_EXTENSION),true);
-        
+
         if ( m_pConfig->getValueString(ConfigKey("[Midi]", name.replace(" ", "_"))) != "1" )
             continue;
-        
+
         qDebug() << "Opening Device:" << name;
 
         cur->open();
@@ -158,7 +158,7 @@ int MidiDeviceManager::setupDevices()
         mapping->applyPreset();
         cur->setReceiveInhibit(false);
     }
-    
+
     return 0;
 }
 
@@ -196,7 +196,7 @@ void MidiDeviceManager::associateInputAndOutputDevices(MidiDevice* inputDevice, 
     //TODO: This function needs to be updated to work with our "aggregate" input/ouput MidiDevice class
     //      or just simply removed all together. I just sent out a mixxx-devel email with more history
     //      on this, check the archive if you need more info. -- Albert Nov 9/09 (1.8 CRUNCH TIME!)
-    //      
+    //
 
 /*
     //Find the output MidiDevice object that corresponds to outputDeviceName.
@@ -208,12 +208,12 @@ void MidiDeviceManager::associateInputAndOutputDevices(MidiDevice* inputDevice, 
             qDebug() << "associating input dev" << inputDevice->getName() << "with" << outputDeviceName;
             break;
         }
-    }    
-    
+    }
+
     if (outputDevice == NULL) //No output device matched outputDeviceName...
         return;
-    
+
     //Tell the input device that it's corresponding output device is... outputDevice.
-    inputDevice->setOutputDevice(outputDevice);    
+    inputDevice->setOutputDevice(outputDevice);
     */
 }

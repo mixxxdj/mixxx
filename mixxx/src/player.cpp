@@ -22,7 +22,8 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
       m_strChannel(channel),
       m_pLoadedTrack() {
 
-    CueControl* pCueControl = new CueControl(channel, pConfig);
+
+    CueControl* pCueControl = new CueControl(strdup(channel.toAscii().constData()), pConfig);
     connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
             pCueControl, SLOT(loadTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),
