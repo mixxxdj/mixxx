@@ -183,7 +183,9 @@ QList<QString> SoundManager::getHostAPIList() const
     for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++)
     {
         const PaHostApiInfo *api = Pa_GetHostApiInfo(i);
-        if (QString(api->name) != "skeleton implementation") apiList.push_back(api->name);
+        if (api) {
+            if (QString(api->name) != "skeleton implementation") apiList.push_back(api->name);
+        }
     }
 
     return apiList;
@@ -304,6 +306,8 @@ void SoundManager::queryDevices()
     for (int i = 0; i < iNumDevices; i++)
     {
         deviceInfo = Pa_GetDeviceInfo(i);
+        if (!deviceInfo)
+            continue;
         /* deviceInfo fields for quick reference:
             int 	structVersion
             const char * 	name
