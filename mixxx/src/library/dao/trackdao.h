@@ -38,6 +38,8 @@ const QString LIBRARYTABLE_CHANNELS = "channels";
 const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
 const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
 const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
+const QString LIBRARYTABLE_TIMESPLAYED= "timesplayed";
+const QString LIBRARYTABLE_PLAYED= "played";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -52,6 +54,7 @@ Q_OBJECT
   public:
     //TrackDAO() {};
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao);
+    void finish();
     virtual ~TrackDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
