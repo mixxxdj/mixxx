@@ -439,9 +439,7 @@ void DlgPrefVinyl::applySoundDeviceChanges()
 	        QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
 	    else if (deviceOpenError == MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL)
 	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");
-	    else if (deviceOpenError != 0)
-		    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-		else
+	    else if (deviceOpenError== 0)
 			slotUpdate();
 	}
 }
