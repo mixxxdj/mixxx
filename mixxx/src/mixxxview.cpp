@@ -50,7 +50,7 @@
 #include "widget/wwaveformviewer.h"
 #include "trackinfoobject.h"
 #include "player.h"
-
+#include "playermanager.h"
 
 #include "imgloader.h"
 #include "imginvert.h"
@@ -69,14 +69,16 @@
 #include "library/browsetablemodel.h"
 
 MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
-		     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
-		     Player* player1, Player* player2,
-		     Library* pLibrary) : QWidget(parent) {
+                     QString qSkinPath, ConfigObject<ConfigValue>* pConfig,
+                     PlayerManager* pPlayerManager,
+                     Library* pLibrary)
+        : QWidget(parent),
+          m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
+          m_pPlayerManager(pPlayerManager)
+
+{
     view = 0;
-    m_pconfig = pConfig;
-    m_pPlayer1 = player1;
-    m_pPlayer2 = player2;
-    m_pLibrary = pLibrary;
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -87,9 +89,16 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
     m_pWaveformRendererCh1 = new WaveformRenderer("[Channel1]");
     m_pWaveformRendererCh2 = new WaveformRenderer("[Channel2]");
 
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+    Player* pPlayer1 = m_pPlayerManager->getPlayer(1);
+    Player* pPlayer2 = m_pPlayerManager->getPlayer(2);
+
+    connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh1, SLOT(slotNewTrack(TrackPointer)));
+    connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRendererCh2, SLOT(slotNewTrack(TrackPointer)));
+    connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
             m_pWaveformRendererCh1, SLOT(slotUnloadTrack(TrackPointer)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+    connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
             m_pWaveformRendererCh2, SLOT(slotUnloadTrack(TrackPointer)));
 
     // Default values for visuals
@@ -132,24 +141,25 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 
  	 //Connect the players to the waveform overview widgets so they
  	 //update when a new track is loaded.
- 	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+ 	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
           m_pOverviewCh1, SLOT(slotLoadNewWaveform(TrackPointer)));
-  connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
           m_pOverviewCh1, SLOT(slotUnloadTrack(TrackPointer)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
           m_pOverviewCh2, SLOT(slotLoadNewWaveform(TrackPointer)));
-  connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
           m_pOverviewCh2, SLOT(slotUnloadTrack(TrackPointer)));
+
 
 	//Connect the players to some other widgets, so they get updated when a
 	//new track is loaded.
-	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
           this, SLOT(slotUpdateTrackTextCh1(TrackPointer)));
-  connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
           this, SLOT(slotClearTrackTextCh1(TrackPointer)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
           this, SLOT(slotUpdateTrackTextCh2(TrackPointer)));
-  connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
+  connect(pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
           this, SLOT(slotClearTrackTextCh2(TrackPointer)));
 
 	//Setup a connection that allows us to connect the TrackInfoObjects that
@@ -159,9 +169,9 @@ MixxxView::MixxxView(QWidget* parent, ConfigObject<ConfigValueKbd>* kbdconfig,
 	//notify the waveform overview widgets to update once the waveform
 	//summary has finished generating. This connection gives us a way to
 	//create that connection at runtime.)
-	connect(m_pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer1, SIGNAL(newTrackLoaded(TrackPointer)),
 		this, SLOT(slotSetupTrackConnectionsCh1(TrackPointer)));
-	connect(m_pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
+	connect(pPlayer2, SIGNAL(newTrackLoaded(TrackPointer)),
 		this, SLOT(slotSetupTrackConnectionsCh2(TrackPointer)));
 
 	// Connect search box signals to the library
@@ -227,11 +237,11 @@ void MixxxView::checkDirectRendering()
 	WaveformViewerFactory::getWaveformViewerType(m_pVisualCh2) == WAVEFORM_GL &&
 	!((WGLWaveformViewer *)m_pVisualCh2)->directRendering()))
         {
-	    if(m_pconfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
+	    if(m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
 		{
 		    QMessageBox::warning(0, "OpenGL Direct Rendering",
 					 "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
-		    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+		    m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
 		}
 	}
 
@@ -543,6 +553,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh1, SLOT(refresh()));
                     m_qWidgetList.append(m_pVisualCh1);
 
+                    connect(m_pVisualCh1, SIGNAL(trackDropped(QString, QString)),
+                            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+
                     m_pVisualCh1->installEventFilter(m_pKeyboard);
 
                     // Hook up [Channel1],wheel Control Object to the Visual Controller
@@ -571,6 +585,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     type = WaveformViewerFactory::createWaveformViewer("[Channel2]", this, pConfig, &m_pVisualCh2, m_pWaveformRendererCh2);
                     connect(&m_guiTimer, SIGNAL(timeout()), m_pVisualCh2, SLOT(refresh()));
                     m_qWidgetList.append(m_pVisualCh2);
+
+                    connect(m_pVisualCh2, SIGNAL(trackDropped(QString, QString)),
+                            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
                     m_pVisualCh2->installEventFilter(m_pKeyboard);
 
