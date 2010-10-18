@@ -185,7 +185,7 @@ $(function() {
 				<img src="images/download_now.png" alt="Download Now" onclick="location.href='downloadlatest.php?os=' + OSName;" border="0px" style="vertical-align: middle; cursor:pointer;" />
                 <br/>
                 <p class="downloadSmall" style="text-align: center;">
-                    Mixxx 1.8.0 for 
+                    Mixxx 1.8.1 for 
                 <script type="text/javascript">
                         document.write(OSName);
                 </script>
