@@ -14,13 +14,13 @@ AnalyserGain::AnalyserGain() {
 
 void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
-   stepcontrol = 0;
-    if(tio->getRG() != -32767) {
+	m_istepcontrol = 0;
+    if(tio->getRG() != 0) {
         return;
    }
 
     if(totalSamples == 0) return;
-    stepcontrol = InitGainAnalysis( (long)sampleRate );
+    m_istepcontrol = InitGainAnalysis( (long)sampleRate );
 
  //   m_iStartTime = clock();
 }
@@ -30,7 +30,7 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
 
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
-	if(stepcontrol==0) return;
+	if(m_istepcontrol!=1) return;
 	//optimal: float_t m_fLems[4096], m_fRems[4096];
 	float_t m_fLems[4096], m_fRems[4096];
 	int RGCounter = 0;
@@ -43,7 +43,7 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
         	RGCounter++;
     }
 
-	stepcontrol = AnalyzeSamples(m_fLems,m_fRems,RGCounter,2);
+	m_istepcontrol = AnalyzeSamples(m_fLems,m_fRems,RGCounter,2);
 }
 
 
@@ -51,13 +51,17 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
 void AnalyserGain::finalise(TrackPointer tio) {
 
-	if(stepcontrol==0) return;
+	if(m_istepcontrol!=1) return;
 
-	float_t Gain_Result = GetTitleGain();
+	//TODO: Digg into replay_gain code and modify it so that
+	// it directly sends the result as relative amplitude.
+	// so that there is no need to do this:
+
+	float_t Gain_Result = pow(10,GetTitleGain()/20);
 
 	tio->setRG(Gain_Result);
 
-    stepcontrol=0;
+	m_istepcontrol=0;
 //m_iStartTime = clock() - m_iStartTime;
 //qDebug() << "AnalyserGain :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
 }

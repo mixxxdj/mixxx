@@ -35,8 +35,6 @@ EnginePregain::~EnginePregain()
 {
     delete potmeterPregain;
     delete ControlReplayGain;
-//    delete m_pFileRG;
-//    delete m_pButtonRGApply;
 }
 
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
@@ -44,14 +42,14 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain=potmeterPregain->get();
     float fRGain = ControlReplayGain->get();
-    p_fReplayGainCorrection=1;
-   if(fRGain != -32767)
+    m_fReplayGainCorrection=1;
+   if(fRGain != 0)
    {
-    	//Passing from Db to relative peak value with a boost of +9Db
-	    //This last should be user configurable  (see http://replaygain.hydrogenaudio.org/)
-	   p_fReplayGainCorrection=pow(10,(9+fRGain)/20);
+    	//Passing a boost of +9dB
+	    //TODO: This last should be user configurable  (see http://replaygain.hydrogenaudio.org/)
+	   m_fReplayGainCorrection=fRGain*pow(10,9/20);
     }
-    fGain = (fGain/2)*p_fReplayGainCorrection;;
+    fGain = (fGain/2)*m_fReplayGainCorrection;;
     if (fGain == 1.)
     {
         if (pIn!=pOut)
