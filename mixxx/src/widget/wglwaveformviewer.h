@@ -39,7 +39,7 @@ class WGLWaveformViewer : public QGLWidget
   signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
-    void trackDropped(QString filename);
+    void trackDropped(QString filename, QString group);
 
   protected:
     void paintEvent(QPaintEvent* event);

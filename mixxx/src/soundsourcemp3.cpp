@@ -591,6 +591,7 @@ int SoundSourceMp3::parseHeader()
             s="";
             getField(tag, "COMM", &s);
             setComment(s);
+
             //Track->setHeaderParsed(true);
 
             /*

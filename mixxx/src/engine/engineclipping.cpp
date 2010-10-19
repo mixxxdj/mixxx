@@ -16,10 +16,8 @@
 
 #include "engineclipping.h"
 #include "controlpotmeter.h"
+#include "sampleutil.h"
 
-/*----------------------------------------------------------------
-   A pregaincontrol is ... a pregain.
-   ----------------------------------------------------------------*/
 EngineClipping::EngineClipping(const char * group)
 {
     //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
@@ -38,64 +36,11 @@ void EngineClipping::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const in
     static const FLOAT_TYPE kfClip = 0.8*kfMaxAmp;
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    clipped = false;
-    if (pIn==pOut)
-    {
-        for (int i=0; i<iBufferSize; ++i)
-        {
-/*
-            CSAMPLE fTmp = pIn[i];
-            if ((fTmp>kfClip) || (fTmp<-kfClip))
-            {
-                FLOAT_TYPE sign = 1;
-                if (fTmp<0)
-                    sign = -1;
-                pOutput[i] = sign*(kfMaxAmp - ((kfMaxAmp-kfClip)*(kfMaxAmp-kfClip)) /
-                                   ((kfMaxAmp-2.*kfClip)+sign*pIn[i]));
-            }
- */
+    // SampleUtil clamps the buffer and if pIn and pOut are aliased will not copy.
+    clipped = SampleUtil::copyClampBuffer(kfMaxAmp, -kfMaxAmp,
+                                          pOutput, pIn, iBufferSize);
 
-            if (pIn[i]>kfMaxAmp){
-                pOutput[i] = kfMaxAmp;
-                clipped = true;
-            }
-            else if (pIn[i]<-kfMaxAmp)
-            {
-                pOutput[i] = -kfMaxAmp;
-                clipped = true;
-            }
-        }
-    }
-    else
-    {
-        for (int i=0; i<iBufferSize; ++i)
-        {
-/*
-            CSAMPLE fTmp = pIn[i];
-            if ((fTmp>kfClip) || (fTmp<-kfClip))
-            {
-                FLOAT_TYPE sign = 1;
-                if (fTmp<0)
-                    sign = -1;
-                pOutput[i] = sign*(kfMaxAmp - ((kfMaxAmp-kfClip)*(kfMaxAmp-kfClip)) /
-                                   ((kfMaxAmp-2.*kfClip)+sign*pIn[i]));
-            }
-            else
-                pOutput[i] = pIn[i];
- */
-            if (pIn[i]>kfMaxAmp){
-                pOutput[i] = kfMaxAmp;
-                clipped = true;
-            }
-            else if (pIn[i]<-kfMaxAmp){
-                pOutput[i] = -kfMaxAmp;
-                clipped = true;
-            }
-            else
-                pOutput[i] = pIn[i];
-        }
-    }
-    if(clipped)
+    if (clipped)
         m_ctrlClipping->set(1.);
     else
         m_ctrlClipping->set(0);
