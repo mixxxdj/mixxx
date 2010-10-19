@@ -82,10 +82,14 @@ void StarEditor::paintEvent(QPaintEvent *)
  */
  int StarEditor::starAtPosition(int x)
  {
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+     // If the mouse is very close to the left edge, set 0 stars.
+     if (x < m_starRating.sizeHint().width() * 0.05) {
+         return 0;
+     }
+     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
 
-	if (star <= 0 || star > m_starRating.maxStarCount())
-        return -1;
+     if (star <= 0 || star > m_starRating.maxStarCount())
+         return 0;
 
-    return star;
+     return star;
  }
