@@ -27,6 +27,7 @@ WaveformRenderMark::WaveformRenderMark(const char* pGroup,
           m_iMarkPoint(-1),
           m_iWidth(0),
           m_iHeight(0),
+          m_bHasCustomPixmap(false),
           m_dSamplesPerDownsample(-1),
           m_iNumSamples(0),
           m_iSampleRate(-1) {
@@ -184,20 +185,24 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
             pPainter->setPen(newPen);
             pPainter->drawLine(QLineF(x, halfh, x, -halfh));
 
-            pPainter->setPen(m_markColor);
-            pPainter->setBrush(QBrush(m_markColor));
-            QPolygonF topTriangle;
-            QPolygonF bottomTriangle;
-            double triWidth = subpixelsPerPixel * 8.0;
-            double triHeight = 10.0;
-            topTriangle << QPointF(x - 1 - triWidth/2.0f, halfh)
-                        << QPointF(x + 1 + triWidth/2.0f, halfh)
-                        << QPointF(x, halfh - triHeight);
-            bottomTriangle << QPointF(x - triWidth/2.0f, -halfh)
-                           << QPointF(x + 1 + triWidth/2.0f, -halfh)
-                           << QPointF(x, -halfh + triHeight);
-            pPainter->drawPolygon(topTriangle);
-            pPainter->drawPolygon(bottomTriangle);
+            if (!m_bHasCustomPixmap) {
+                // If no custom pixmap is provided, draw triangles at top and
+                // bottom of the mark.
+                pPainter->setPen(m_markColor);
+                pPainter->setBrush(QBrush(m_markColor));
+                QPolygonF topTriangle;
+                QPolygonF bottomTriangle;
+                double triWidth = subpixelsPerPixel * 8.0;
+                double triHeight = 10.0;
+                topTriangle << QPointF(x - 1 - triWidth/2.0f, halfh)
+                            << QPointF(x + 1 + triWidth/2.0f, halfh)
+                            << QPointF(x, halfh - triHeight);
+                bottomTriangle << QPointF(x - triWidth/2.0f, -halfh)
+                               << QPointF(x + 1 + triWidth/2.0f, -halfh)
+                               << QPointF(x, -halfh + triHeight);
+                pPainter->drawPolygon(topTriangle);
+                pPainter->drawPolygon(bottomTriangle);
+            }
 
             if (!m_markPixmap.isNull()) {
                 pPainter->scale(subpixelsPerPixel, -1.0);
@@ -241,6 +246,7 @@ void WaveformRenderMark::setupMarkPixmap() {
         // If loading the pixmap didn't fail, then we're done. Otherwise fall
         // through and render a label.
         if (!m_markPixmap.isNull()) {
+            m_bHasCustomPixmap = true;
             return;
         }
     }

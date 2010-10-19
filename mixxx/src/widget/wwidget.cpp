@@ -53,7 +53,7 @@ bool WWidget::event(QEvent *event)
   if(event->type() == QEvent::ToolTip)
     {
       QHelpEvent *tooltip = static_cast<QHelpEvent *>(event);
-      QToolTip::showText(tooltip->globalPos(), m_Tooltip);
+      QToolTip::showText(tooltip->globalPos(), m_Tooltip, this);
       //http://doc.trolltech.com/4.3/widgets-tooltips-sortingbox-cpp.html suggests you should use QToolTip::hideText in certain cases; it works well enough on OS X with just this code though...
     }
   return QWidget::event(event);
@@ -75,6 +75,10 @@ void WWidget::setup(QDomNode node)
 
     // Get tooltip
     m_Tooltip = selectNodeQString(node, "Tooltip");
+
+    QString style = selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
 
     // For each connection
     QDomNode con = selectNode(node, "Connection");
@@ -105,7 +109,15 @@ void WWidget::setup(QDomNode node)
             if (selectNodeQString(con, "EmitOnDownPress").contains("false",Qt::CaseInsensitive))
                 bEmitOnDownPress = false;
 
-            Qt::ButtonState state = Qt::NoButton;
+            bool connectValueFromWidget = true;
+            if (selectNodeQString(con, "ConnectValueFromWidget").contains("false",Qt::CaseInsensitive))
+                connectValueFromWidget = false;
+
+            bool connectValueToWidget = true;
+            if (selectNodeQString(con, "ConnectValueToWidget").contains("false",Qt::CaseInsensitive))
+                connectValueToWidget = false;
+
+            Qt::MouseButton state = Qt::NoButton;
             if (!selectNode(con, "ButtonState").isNull())
             {
 	      if (selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
@@ -115,10 +127,10 @@ void WWidget::setup(QDomNode node)
             }
 
             // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidget(this, bEmitOnDownPress, state);
+            (new ControlObjectThreadWidget(control))->setWidget(this, connectValueFromWidget, connectValueToWidget, bEmitOnDownPress, state);
 
             // Add keyboard shortcut info to tooltip string
-            QString shortcut = QString(" (%1)").arg(m_spKbdConfigObject->getValueString(configKey));
+            QString shortcut = QString("\nShortcut: %1").arg(m_spKbdConfigObject->getValueString(configKey));
             if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !m_Tooltip.contains(shortcut,Qt::CaseInsensitive))
                 m_Tooltip += shortcut;
         }
@@ -208,7 +220,7 @@ QDomElement WWidget::openXMLFile(QString path, QString name)
 {
     QDomDocument doc(name);
     QFile file(path);
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "Could not open xml file:" << file.fileName();
         return QDomElement();

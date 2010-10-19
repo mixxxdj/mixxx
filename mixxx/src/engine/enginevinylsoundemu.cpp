@@ -19,7 +19,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "enginevinylsoundemu.h"
-
+#include "sampleutil.h"
 
 /** This class emulates the response of a vinyl record's audio to changes
  *   in speed. In practice, it quiets the audio during very slow playback.
@@ -45,8 +45,9 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     m_fAbsSpeed = fabs((float)m_pRateEngine->get());
     //qDebug() << m_pRateEngine->get();
-
-    if (m_fAbsSpeed < 0.50f && m_fAbsSpeed > 0.0f) //Change the volume based on the playback speed.
+    
+    const float thresholdSpeed = 0.070f; //Scale volume if playback speed is below 7%.
+    if (m_fAbsSpeed < thresholdSpeed && m_fAbsSpeed > 0.0f) //Change the volume based on the playback speed.
     {
         //The numbers in this formula are important:
         //  - The "1 + ..." makes the minimum value of the parameter of log10
@@ -54,21 +55,18 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
         //  - The "* 9" makes the maximum value of the log10 become 10 (9 + 1 = 10)
         //    which gives a gain of 1
         //m_fGainFactor = log10(1 + m_fAbsSpeed/0.50f * 9);
-        m_fGainFactor = m_fAbsSpeed/0.50f;
+        m_fGainFactor = m_fAbsSpeed/thresholdSpeed;
         //qDebug() << m_fGainFactor << m_fAbsSpeed;
     }
     else if (m_fAbsSpeed == 0.0f)
         m_fGainFactor = 0.0f; //Log blows up at 0 :)
-    else
+    else 
     {
         m_fGainFactor = 1.0f;
     }
 
-    //Apply whatever gain we calculated.
-    for (int i=0; i < iBufferSize; i++)
-    {
-        pOutput[i] = pOutput[i] * m_fGainFactor;
-    }
-
+    // Apply whatever gain we calculated. SampleUtil takes care of aliased
+    // buffers and gains of 1 or 0.
+    SampleUtil::copyWithGain(pOutput, pIn, m_fGainFactor, iBufferSize);
 }
 

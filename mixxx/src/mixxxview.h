@@ -21,8 +21,8 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include <Q3ValueList>
 #include <QList>
+#include <QTimer>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -54,6 +54,7 @@ class WSearchLineEdit;
 class LADSPAView;
 class WaveformRenderer;
 class Player;
+class PlayerManager;
 class QStandardItemModel;
 class Library;
 class WLibrary;
@@ -70,7 +71,7 @@ class MixxxView : public QWidget
 public:
     MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig,
               QString qSkinPath, ConfigObject<ConfigValue> *pConfig,
-              Player* player1, Player* player2,
+              PlayerManager* pPlayerManager,
               Library* pLibrary);
     ~MixxxView();
 
@@ -139,7 +140,7 @@ private:
     QList<QObject *> m_qWidgetList;
     /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
-    ConfigObject<ConfigValue> *m_pconfig;
+    ConfigObject<ConfigValue> *m_pConfig;
 
     /** Tab widget, which contains several "pages" for different views */
     QStackedWidget* m_pTabWidget; //XXX: Temporarily turned this into a QStackedWidget instead of a QTabWidget to disable the tabs for 1.7.0 since LADSPA effects isn't finished.
@@ -152,8 +153,8 @@ private:
     /** The layout for the effects page. Allows stuff to resize automatically */
     QGridLayout* m_pEffectsPageLayout;
 
-	// The splitter widget that contains the library panes
-	QSplitter *m_pSplitter;
+    // The splitter widget that contains the library panes
+    QSplitter *m_pSplitter;
     // The library widget
     WLibrary* m_pLibraryWidget;
     // The library manager
@@ -163,8 +164,9 @@ private:
     // Contains the actual library sidebar widget and the search box in a vertical box layout.
     QWidget* m_pLibrarySidebarPage;
 
-	Player* m_pPlayer1;
-	Player* m_pPlayer2;
+    PlayerManager* m_pPlayerManager;
+
+    QTimer m_guiTimer;
 
 #ifdef __LADSPA__
     LADSPAView* m_pLADSPAView;

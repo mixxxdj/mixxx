@@ -82,11 +82,6 @@ public:
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
-    // Request that the EngineBuffer load a track. Since the process is
-    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
-    // has completed.
-    void loadTrack(TrackPointer pTrack);
-
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);
 
@@ -104,19 +99,24 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
-public slots:
+  public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
 
-signals:
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
+    void slotLoadTrack(TrackPointer pTrack);
+
+  signals:
     void trackLoaded(TrackPointer pTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
     void loadNextTrack();
 
-private slots:
+  private slots:
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
@@ -179,6 +179,7 @@ private:
     int m_iSamplesCalculated;
 
     ControlObject* m_pTrackSamples;
+    ControlObject* m_pTrackSampleRate;
 
     ControlPushButton *playButton, *buttonBeatSync;
     ControlObjectThreadMain *playButtonCOT, *m_pTrackEndCOT;

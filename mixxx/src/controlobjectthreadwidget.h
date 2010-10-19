@@ -1,7 +1,7 @@
 //
 // C++ Interface: controlobjecthreadwidget.h
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
@@ -11,6 +11,8 @@
 //
 #ifndef CONTROLOBJECTTHREADWIDGET_H
 #define CONTROLOBJECTTHREADWIDGET_H
+
+#include <QWidget>
 
 #include "controlobjectthreadmain.h"
 
@@ -27,11 +29,13 @@ public:
     ControlObjectThreadWidget(ControlObject *pControlObject);
     ~ControlObjectThreadWidget();
     /** Associates a QWidget with the ControlObject. */
-    void setWidget(QWidget *widget, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
+    void setWidget(QWidget *widget,
+                   bool connectValueFromWidget=true, bool connectValueToWidget = true,
+                   bool emitOnDownPress=true, Qt::MouseButton state=Qt::NoButton);
     /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
     void setWidgetOnOff(QWidget *widget);
     bool setExtern(double v);
-    
+
 private:
     void updateControlObject();
 };

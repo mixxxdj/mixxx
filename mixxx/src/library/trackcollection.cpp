@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "soundsourceproxy.h"
 #include "library/schemamanager.h"
+#include "trackinfoobject.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -64,15 +65,14 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 4;
+    int requiredSchemaVersion = 5;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
-                              qApp->tr(QString(
-                                  "Unable to upgrade your database schema to version %1.\n"
-                                  "Your mixxx.db file may be corrupt.\n"
-                                  "Try renaming it and restarting Mixxx.\n\n"
-                                  "Click OK to exit.").arg(requiredSchemaVersion)),
+                             qApp->tr("Unable to upgrade your database schema to version %1.\n"
+                                      "Your mixxx.db file may be corrupt.\n"
+                                      "Try renaming it and restarting Mixxx.\n\n"
+                                      "Click OK to exit.").arg(requiredSchemaVersion),
                              QMessageBox::Ok);
         return false;
     }
@@ -96,9 +96,10 @@ QSqlDatabase& TrackCollection::getDatabase()
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
-bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
+bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
+                                      QList<TrackInfoObject*>& tracksToAdd)
 {
-    qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
+    //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
     QFileInfoList files;
@@ -149,7 +150,9 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao)
                 emit(progressLoading(fileName));
 
                 // addTrack uses this QFileInfo instead of making a new one now.
-                trackDao.addTrack(file);
+                //trackDao.addTrack(file);
+                TrackInfoObject* pTrack = new TrackInfoObject(file.absoluteFilePath());
+                tracksToAdd.append(pTrack);
             }
         } else {
             //qDebug() << "Skipping" << file.fileName() <<

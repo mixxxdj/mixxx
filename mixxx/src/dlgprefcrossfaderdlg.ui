@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>409</width>
-    <height>418</height>
+    <width>427</width>
+    <height>333</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -18,25 +18,13 @@
   <property name="windowTitle" >
    <string>Form1</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
    <item>
-    <widget class="Q3GroupBox" name="GroupBox1" >
-     <property name="enabled" >
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="font" >
-      <font/>
-     </property>
+    <widget class="QGroupBox" name="groupBox" >
      <property name="title" >
       <string>Crossfader Curve</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QVBoxLayout" name="verticalLayout" >
       <item>
        <widget class="QRadioButton" name="radioButtonSlowFade" >
         <property name="sizePolicy" >
@@ -82,7 +70,7 @@
               <property name="orientation" >
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeHint" >
+              <property name="sizeHint" stdset="0" >
                <size>
                 <width>40</width>
                 <height>20</height>
@@ -144,7 +132,7 @@
               <property name="orientation" >
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeHint" >
+              <property name="sizeHint" stdset="0" >
                <size>
                 <width>40</width>
                 <height>20</height>
@@ -206,6 +194,10 @@
        </layout>
       </item>
      </layout>
+     <zorder>radioButtonConstantPower</zorder>
+     <zorder>radioButtonFastCut</zorder>
+     <zorder></zorder>
+     <zorder>radioButtonSlowFade</zorder>
     </widget>
    </item>
    <item>
@@ -215,7 +207,7 @@
        <property name="orientation" >
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0" >
         <size>
          <width>40</width>
          <height>20</height>
@@ -237,7 +229,7 @@
      <property name="orientation" >
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeHint" >
+     <property name="sizeHint" stdset="0" >
       <size>
        <width>20</width>
        <height>40</height>
@@ -249,14 +241,6 @@
  </widget>
  <layoutdefault spacing="6" margin="11" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>Q3GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>Qt3Support/Q3GroupBox</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

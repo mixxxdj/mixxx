@@ -25,14 +25,14 @@
 #include "library/trackcollection.h"
 #include "library/dao/cratedao.h"
 #include "trackinfoobject.h"
-#include "defs_version.h"
+#include "defs_promo.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
 QString PromoTracksFeature::m_sPromoRemoteHTMLLocation;
-#define PROMO_BUNDLE_PATH (config->getConfigPath() + "/promo/" + VERSION + "/")
+#define PROMO_BUNDLE_PATH (config->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/")
 #define LOCAL_HTML_LOCATION (PROMO_BUNDLE_PATH + "index.html")
 
 const QString PromoTracksFeature::m_sFeaturedArtistsViewName = tr("Featured Artists");
@@ -45,15 +45,15 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
                              bool firstRun)
         : LibraryFeature(parent),
           m_pConfig(config),
+          m_pTrackCollection(pTrackCollection),
           m_pFeaturedArtistsView(NULL),
           m_pBundledSongsView(NULL),
-          m_pTrackCollection(pTrackCollection),
           m_downloadsTableModel(this, pTrackCollection),
           m_bFirstRun(firstRun) {
 
-    m_sPromoRemoteHTMLLocation = QString("http://promo.mixxx.org/%1/index.html").arg(VERSION); //m_pConfig->getConfigPath() + "/promo/promotracks.html";
+    m_sPromoRemoteHTMLLocation = QString("http://promo.mixxx.org/%1/index.html").arg(MIXXX_PROMO_VERSION); //m_pConfig->getConfigPath() + "/promo/promotracks.html";
     m_sPromoLocalHTMLLocation = LOCAL_HTML_LOCATION;
-    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/autoload.dat";
+    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/autoload.dat";
 
     //Load the extra.dat file so we can peek at some extra information, such
     //as which songs to auto-load into Mixxx's players.
@@ -62,17 +62,26 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
     {
         QTextStream extra(&file);
 
-        qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
+        //qDebug() << "PROMO: Autoload" << (file.exists() ? "" : "not") << "found";
         while (!extra.atEnd())
         {
             QString trackPath = extra.readLine();
-            trackPath = m_pConfig->getConfigPath() + "/promo/" + VERSION + "/" + trackPath;
-            qDebug() << "PROMO: Auto-loading track" << trackPath;
-            
-            TrackInfoObject* track = new TrackInfoObject(trackPath);
-            // TODO(XXX) These tracks are probably getting leaked b/c
-            // m_tracksToAutoLoad is never cleared.
-            TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
+            trackPath = m_pConfig->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/" + trackPath;
+            QFileInfo fileInfo(trackPath);
+            trackPath = fileInfo.absoluteFilePath();
+            //qDebug() << "PROMO: Auto-loading track" << trackPath;
+
+            // Try to get TrackInfoObject* from library, identified by location.
+            TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+            TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(trackPath));
+            // If not, create a new TrackInfoObject*
+            if (pTrack == NULL)
+            {
+                // TODO(XXX) These tracks are probably getting leaked b/c
+                // m_tracksToAutoLoad is never cleared.
+                pTrack = TrackPointer(new TrackInfoObject(trackPath), &QObject::deleteLater);
+            }
+
             m_tracksToAutoLoad.append(pTrack);
         }
         file.close();
@@ -109,7 +118,7 @@ QVariant PromoTracksFeature::title() {
 }
 
 QIcon PromoTracksFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_promotracks.png");
 }
 
 bool PromoTracksFeature::isSupported(ConfigObject<ConfigValue>* config) {
@@ -126,11 +135,15 @@ QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
 void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                     WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
-    
+
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
-    m_pBundledSongsView = new BundledSongsWebView(libraryWidget, PROMO_BUNDLE_PATH, m_sPromoLocalHTMLLocation, m_bFirstRun, m_pConfig);
+    m_pBundledSongsView = new BundledSongsWebView(libraryWidget, m_pTrackCollection,
+                                                  PROMO_BUNDLE_PATH, 
+                                                  m_sPromoLocalHTMLLocation, 
+                                                  m_bFirstRun, m_pConfig);
+    m_pBundledSongsView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
     connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),
@@ -139,7 +152,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
 
 /*  XXX: Re-enable this code for Promo 3.0
-    m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this)); 
+    m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this));
     libraryWidget->registerView(m_sFeaturedArtistsViewName, m_pFeaturedArtistsView);
     connect(m_pFeaturedArtistsView, SIGNAL(loadTrack(TrackInfoObject*)),
             this, SIGNAL(loadTrack(TrackInfoObject*)));

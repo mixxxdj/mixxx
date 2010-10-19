@@ -1,11 +1,11 @@
 [Desktop Entry]
 Version=1.0
-Encoding=UTF-8
 Name=Mixxx
+GenericName=Digital DJ interface
 Comment=A digital DJ interface
 Exec=pasuspender mixxx
 Terminal=false
-Icon=mixxx-icon.png
+Icon=mixxx-icon
 Type=Application
-Categories=AudioVideo;Audio;
-GenericName[en_CA]=
+StartupNotify=true
+Categories=Qt;AudioVideo;Audio;

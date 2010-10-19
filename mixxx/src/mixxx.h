@@ -17,6 +17,7 @@
 
 #ifndef MIXXX_H
 #define MIXXX_H
+
 // include files for QT
 #include <qaction.h>
 #include <qmenubar.h>
@@ -30,27 +31,12 @@
 #include <qapplication.h>
 //Added by qt3to4:
 #include <QFrame>
-#include <vector>
 #include <qstringlist.h>
 
-#ifdef QT3_SUPPORT
-#include <Q3Action>
-#include <q3mainwindow.h>
-#include <q3popupmenu.h>
-#include <q3whatsthis.h>
-#include <q3filedialog.h>
-#else
-#include <q3mainwindow.h>
-#include <q3popupmenu.h>
-#include <q3whatsthis.h>
-#include <q3filedialog.h>
-#endif
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
 #include "trackinfoobject.h"
-#include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
@@ -63,7 +49,9 @@
 #include "script/scriptengine.h"
 #endif
 
-class WVisual;
+class EngineMaster;
+class PlayerManager;
+class TrackInfoObject;
 class PlayerProxy;
 class BpmDetector;
 class QSplashScreen;
@@ -82,13 +70,13 @@ class MidiDeviceManager;
   */
 class MixxxApp : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     /** Construtor. files is a list of command line arguments */
     MixxxApp(QApplication *app, struct CmdlineArgs args);
     /** destructor */
-    ~MixxxApp();
+    virtual ~MixxxApp();
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
@@ -127,22 +115,17 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-	QString getSkinPath();
+    QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-    // Load a track into the next available (non-playing) Player
-    void slotLoadTrackIntoNextAvailablePlayer(TrackPointer track);
-    // Load a track into the specified player. Does nothing if an invalid player
-    // is specified. player is indexed from 1.
-    void slotLoadTrackToPlayer(TrackPointer track, int player);
-    /** Load a track into Player 1 */
-    void slotLoadPlayer1(QString location);
-    /** Load a track into Player 2 */
-	void slotLoadPlayer2(QString location);
-	/** Scan or rescan the music library directory */
-	void slotScanLibrary();
-	/** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
-	void slotEnableRescanLibraryAction();
+    /** Scan or rescan the music library directory */
+    void slotScanLibrary();
+    /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+    void slotEnableRescanLibraryAction();
+    /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+    void slotOptionsMenuShow();
+    /** toggles Livebroadcasting **/
+    void slotOptionsShoutcast(bool value);
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -158,15 +141,14 @@ class MixxxApp : public QMainWindow
     QFrame *frame;
 
     QApplication *app;
-    EngineObject *engine;
-    EngineBuffer *buffer1, *buffer2;
+    // The mixing engine.
+    EngineMaster *m_pEngine;
 
-    EngineChannel *channel1, *channel2;
-    EngineMaster *master;
+    // The sound manager
     SoundManager *soundmanager;
-    Player *m_pPlayer1;
-    Player *m_pPlayer2;
-    AnalyserQueue* m_pAnalyserQueue;
+
+    PlayerManager* m_pPlayerManager;
+
     MidiDeviceManager *m_pMidiDeviceManager;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
@@ -210,6 +192,7 @@ class MixxxApp : public QMainWindow
     QAction *editPaste;
 
     QAction *playlistsNew;
+    QAction *cratesNew;
     QAction *playlistsImport;
     QAction **playlistsList;
 
@@ -226,6 +209,9 @@ class MixxxApp : public QMainWindow
     QAction *optionsRecord;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
+#ifdef __SHOUTCAST__
+    QAction *optionsShoutcast;
+#endif
 
     QAction *helpAboutApp;
     QAction *helpSupport;

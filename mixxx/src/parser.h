@@ -10,6 +10,8 @@
 //
 //
 
+#ifndef PARSER_H
+#define PARSER_H
 
 /**Developer Information:
 This is the rootclass for all parser classes for the Importer class.
@@ -21,15 +23,10 @@ it afterwards fro proper functioning
 #include <qobject.h>
 #include <qstring.h>
 #include <qfile.h>
-#include <q3ptrlist.h>
-#include <q3textstream.h>
 
-#ifndef PARSER_H
-#define PARSER_H
 
 class Parser : public QObject
 {
-    Q_OBJECT
 public:
     Parser();
     ~Parser();
@@ -37,12 +34,12 @@ public:
     Note for developers:
     This function should return an empty PtrList
      or 0 in order for the trackimporter to function**/
-    virtual Q3PtrList<QString> * parse(QString) = 0;
+    virtual QList<QString> parse(QString) = 0;
 
 
 protected:
     /**Pointer to the parsed Filelocations**/
-    Q3PtrList<QString> * m_psLocations;
+    QList<QString> m_sLocations;
     /**Returns the number of parsed locations**/
     long countParsed();
     /**Clears m_psLocations**/

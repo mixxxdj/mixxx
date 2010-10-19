@@ -9,10 +9,8 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-
+#include <QTextStream>
 #include "parserm3u.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -33,59 +31,50 @@
           or on a mounted harddrive.
  **/
 
-ParserM3u::ParserM3u()
+ParserM3u::ParserM3u() : Parser()
 {
-    m_psLocations = new Q3PtrList<QString>;
 }
 
 ParserM3u::~ParserM3u()
 {
 
-    //delete m_psLocations;
-
 }
 
 
-Q3PtrList<QString> * ParserM3u::parse(QString sFilename)
+QList<QString> ParserM3u::parse(QString sFilename)
 {
-
-
-    QFile * file = new QFile(sFilename);
+    QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
 
     clearLocations();
     //qDebug() << "ParserM3u: Starting to parse.";
-    if (file->open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
-
-        Q3TextStream * textstream = new Q3TextStream( file );
-
-
-
-        while(QString * psLine = new QString(getFilepath(textstream, basepath))){
-
-            if(psLine->isNull() || (*psLine) == "NULL")
+    if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
+        QTextStream textstream(&file);
+        
+        while(!textstream.atEnd()) {
+            QString sLine = getFilepath(&textstream, basepath);
+            if(sLine.isEmpty())
                 break;
 
-            //qDebug) << ("ParserM3u: parsed: " << (*psLine);
-            m_psLocations->append(psLine);
-
+            //qDebug) << ("ParserM3u: parsed: " << (sLine);
+            m_sLocations.append(sLine);
         }
 
-        file->close();
+        file.close();
 
-        if(m_psLocations->count() != 0)
-            return m_psLocations;
+        if(m_sLocations.count() != 0)
+            return m_sLocations;
         else
-            return 0; // NULL pointer returned when no locations were found
+            return QList<QString>(); // NULL pointer returned when no locations were found
 
     }
 
-    file->close();
-    return 0; //if we get here something went wrong
+    file.close();
+    return QList<QString>(); //if we get here something went wrong
 }
 
 
-QString ParserM3u::getFilepath(Q3TextStream * stream, QString& basepath)
+QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 {
     QString textline,filename = "";
 

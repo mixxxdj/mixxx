@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QVector>
 #include <QLine>
+#include <qgl.h>
 
 #include "waveformrendersignal.h"
 #include "waveformrenderer.h"
@@ -62,8 +63,6 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
 
     int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
 
-    pPainter->scale(1.0/subpixelsPerPixel,m_iHeight*0.40);
-
     // If the array is not large enough, expand it.
     // Amortize the cost of this by requesting a factor of 2 more.
     if(m_lines.size() < subpixelWidth) {
@@ -77,7 +76,9 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         if(thisIndex >= 0 && (thisIndex+1) < numBufferSamples) {
             float sampl = baseBuffer[thisIndex];
             float sampr = baseBuffer[thisIndex+1];
-            m_lines[i].setLine(i,-sampr,i,sampl);
+            const qreal xPos = i/subpixelsPerPixel;
+            m_lines[i].setLine(xPos, -sampr*0.40*m_iHeight,
+                               xPos, sampl*0.40*m_iHeight);
         } else {
             m_lines[i].setLine(0,0,0,0);
         }

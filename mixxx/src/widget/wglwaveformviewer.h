@@ -20,9 +20,11 @@ class WaveformRenderer;
 class WGLWaveformViewer : public QGLWidget
 {
     Q_OBJECT
-public:
-    WGLWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *pParent=0, const QGLWidget *pShareWidget = 0, Qt::WFlags f = 0);
-    ~WGLWaveformViewer();
+  public:
+    WGLWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer,
+                      QWidget *pParent=0, const QGLWidget *pShareWidget = 0,
+                      Qt::WFlags f = 0);
+    virtual ~WGLWaveformViewer();
 
     bool directRendering();
     void dragEnterEvent(QDragEnterEvent *event);
@@ -30,24 +32,21 @@ public:
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
 
-public slots:
+  public slots:
     void setValue(double);
-signals:
+    void refresh();
+
+  signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
-    void trackDropped(QString filename);
+    void trackDropped(QString filename, QString group);
 
-protected:
-
-    void timerEvent(QTimerEvent *);
+  protected:
     void paintEvent(QPaintEvent* event);
 
-private:
+  private:
     /** Used in mouse event handler */
     int m_iMouseStart;
-
-    /** Timer id */
-    int m_iTimerID;
 
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;

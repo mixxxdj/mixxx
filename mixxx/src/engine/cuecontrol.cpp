@@ -20,10 +20,13 @@ CueControl::CueControl(const char * _group,
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
+        m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
         m_mutex(QMutex::Recursive) {
     createControls();
+
+    m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
@@ -65,7 +68,8 @@ CueControl::~CueControl() {
 ConfigKey CueControl::keyForControl(int hotcue, QString name) {
     ConfigKey key;
     key.group = getGroup();
-    key.item = QString("hotcue_%1_%2").arg(hotcue).arg(name);
+    // Add one to hotcue so that we dont have a hotcue_0
+    key.item = QString("hotcue_%1_%2").arg(hotcue+1).arg(name);
     return key;
 }
 
@@ -73,6 +77,8 @@ void CueControl::createControls() {
     for (int i = 0; i < m_iNumHotCues; ++i) {
         ControlObject* hotcuePosition = new ControlObject(
             keyForControl(i, "position"));
+        connect(hotcuePosition, SIGNAL(valueChanged(double)),
+                this, SLOT(hotcuePositionChanged(double)));
         hotcuePosition->set(-1);
         m_controlMap[hotcuePosition] = i;
         m_hotcuePosition.append(hotcuePosition);
@@ -304,7 +310,7 @@ int CueControl::senderHotcue(QObject* pSender) {
 void CueControl::hotcueSet(double v) {
     //qDebug() << "CueControl::hotcueSet" << v;
 
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -323,7 +329,7 @@ void CueControl::hotcueSet(double v) {
 }
 
 void CueControl::hotcueGoto(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -345,7 +351,7 @@ void CueControl::hotcueGoto(double v) {
 }
 
 void CueControl::hotcueGotoAndStop(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -382,11 +388,11 @@ void CueControl::hotcueActivate(double v) {
     lock.unlock();
 
     if (pCue) {
-        if (v == 1.0f) {
+        if (v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(v);
             } else {
-                if (m_pPlayButton->get() == 1.0f) {
+                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0f) {
                     hotcueGoto(v);
                 } else {
                     hotcueActivatePreview(v);
@@ -398,7 +404,7 @@ void CueControl::hotcueActivate(double v) {
             }
         }
     } else {
-        if (v == 1.0f) {
+        if (v) {
             hotcueSet(v);
         }
     }
@@ -411,8 +417,9 @@ void CueControl::hotcueActivatePreview(double v) {
     int hotcue = senderHotcue(sender());
     Cue* pCue = m_hotcue[hotcue];
 
-    if (v == 1.0) {
+    if (v) {
         if (pCue && pCue->getPosition() != -1) {
+            m_iCurrentlyPreviewingHotcues++;
             int iPosition = pCue->getPosition();
             m_pPlayButton->set(1.0);
             m_bPreviewingHotcue = true;
@@ -424,20 +431,22 @@ void CueControl::hotcueActivatePreview(double v) {
         }
     } else {
         if (m_bPreviewingHotcue && pCue && pCue->getPosition() != -1) {
-            int iPosition = pCue->getPosition();
-            m_pPlayButton->set(0.0);
-            m_bPreviewingHotcue = false;
+            if (--m_iCurrentlyPreviewingHotcues == 0) {
+                int iPosition = pCue->getPosition();
+                m_pPlayButton->set(0.0);
+                m_bPreviewingHotcue = false;
 
-            // Need to unlock before emitting any signals to prevent deadlock.
-            lock.unlock();
+                // Need to unlock before emitting any signals to prevent deadlock.
+                lock.unlock();
 
-            emit(seekAbs(iPosition));
+                emit(seekAbs(iPosition));
+            }
         }
     }
 }
 
 void CueControl::hotcueClear(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -452,6 +461,24 @@ void CueControl::hotcueClear(double v) {
     }
 
     detachCue(hotcue);
+}
+
+void CueControl::hotcuePositionChanged(double newPosition) {
+    QMutexLocker lock(&m_mutex);
+    if (!m_pLoadedTrack)
+        return;
+
+    int hotcue = senderHotcue(sender());
+
+    Cue* pCue = m_hotcue[hotcue];
+    if (pCue) {
+        // Setting the position to -1 is the same as calling hotcue_x_clear
+        if (newPosition == -1) {
+            pCue->setHotCue(-1);
+        } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
+            pCue->setPosition(newPosition);
+        }
+    }
 }
 
 void CueControl::hintReader(QList<Hint>& hintList) {
@@ -488,7 +515,7 @@ void CueControl::saveCuePoint(double cuePoint) {
 }
 
 void CueControl::cueSet(double v) {
-    if (v != 1.0)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -501,7 +528,7 @@ void CueControl::cueSet(double v) {
 
 void CueControl::cueGoto(double v)
 {
-    if (v != 1.0f)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -523,7 +550,7 @@ void CueControl::cueGoto(double v)
 
 void CueControl::cueGotoAndStop(double v)
 {
-    if (v != 1.0f)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -540,10 +567,10 @@ void CueControl::cuePreview(double v)
 {
     QMutexLocker lock(&m_mutex);
 
-    if (v == 1.0f) {
+    if (v) {
         m_pPlayButton->set(1.0);
         m_bPreviewing = true;
-    } else if (v == 0.0f && m_bPreviewing) {
+    } else if (!v && m_bPreviewing) {
         m_pPlayButton->set(0.0);
         m_bPreviewing = false;
     }
@@ -557,7 +584,7 @@ void CueControl::cuePreview(double v)
 }
 
 void CueControl::cueSimple(double v) {
-    if (v != 1.0f)
+    if (!v)
         return;
 
     QMutexLocker lock(&m_mutex);
@@ -587,7 +614,7 @@ void CueControl::cueCDJ(double v) {
     bool playing = (m_pPlayButton->get() == 1.0);
     double cuePoint = m_pCuePoint->get();
 
-    if (v == 1.0f) {
+    if (v) {
         if (playing) {
             m_pPlayButton->set(0.0);
 
