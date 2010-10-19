@@ -16,8 +16,10 @@
 
 #include "enginepregain.h"
 #include "controllogpotmeter.h"
-#include "controlobject.h"
+#include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "configobject.h"
+#include "controlobject.h"
 
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
@@ -29,6 +31,17 @@ EnginePregain::EnginePregain(const char * group)
   ControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
 
 
+ if(ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"))==NULL)
+ {
+	ReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
+ 	EnableRG = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+ }
+  else
+ {
+	ReplayGainBoost = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"));
+    EnableRG = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+ }
+
 }
 
 EnginePregain::~EnginePregain()
@@ -39,15 +52,18 @@ EnginePregain::~EnginePregain()
 
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    float fGain=potmeterPregain->get();
+
+	CSAMPLE * pOutput = (CSAMPLE *)pOut;
+    float fEnableRG = EnableRG->get();
+    float fReplayGainBoost = ReplayGainBoost->get();
+    float fGain = potmeterPregain->get();
     float fRGain = ControlReplayGain->get();
     m_fReplayGainCorrection=1;
-   if(fRGain != 0)
+   if(fRGain*fEnableRG != 0)
    {
-    	//Passing a boost of +9dB
-	    //TODO: This last should be user configurable  (see http://replaygain.hydrogenaudio.org/)
-	   m_fReplayGainCorrection=fRGain*pow(10,9/20);
+
+    	//Passing a user defined boost
+	   m_fReplayGainCorrection=fRGain*pow(10, fReplayGainBoost/20);
     }
     fGain = (fGain/2)*m_fReplayGainCorrection;;
     if (fGain == 1.)

@@ -20,12 +20,12 @@ public:
     ~DlgPrefReplayGain();
 public slots:
 	/** Update initial gain increment */
-	void slotUpdateBoost(int);
-    /** Apply changes to widget */
-	void slotSetRGEnabled(int);
-	void slotSetRGAnalyserEnabled(int);
-	//void slotApply();
-	//void slotUpdate();
+	void slotUpdateBoost();
+	void slotSetRGEnabled();
+	void slotSetRGAnalyserEnabled();
+
+	void slotApply();
+	void slotUpdate();
 	void setDefaults();
 signals:
     void apply(const QString &);
@@ -33,7 +33,6 @@ private:
 
     // Determines whether or not to gray out the preferences
     void loadSettings();
-    void updateRGEnabled();
 
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;

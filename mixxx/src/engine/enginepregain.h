@@ -18,15 +18,16 @@
 #define ENGINEPREGAIN_H
 
 #include "engineobject.h"
+#include "controlobject.h"
 
 
 class ControlLogpotmeter;
+class ControlPotmeter;
 class ControlObject;
-
 class EnginePregain : public EngineObject
 {
 public:
-    EnginePregain(const char *group);
+    EnginePregain( const char *group);
     ~EnginePregain();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -34,6 +35,7 @@ public:
 
 private:
     ControlLogpotmeter *potmeterPregain;
+    ControlPotmeter *ReplayGainBoost, *EnableRG;
     ControlObject *ControlReplayGain;
     float m_fReplayGainCorrection;
 

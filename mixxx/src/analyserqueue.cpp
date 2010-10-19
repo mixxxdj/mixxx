@@ -203,7 +203,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
-    ret->addAnalyser(new AnalyserGain());
+    ret->addAnalyser(new AnalyserGain(_config));
 
     ret->start(QThread::IdlePriority);
     return ret;

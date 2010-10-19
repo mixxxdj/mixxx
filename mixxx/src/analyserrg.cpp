@@ -8,19 +8,17 @@
 #include "analyserrg.h"
 #include "replaygain/replaygain_analysis.h"
 
-AnalyserGain::AnalyserGain() {
-
+AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
+	 m_pConfigRG = _config;
+	 m_istepcontrol = 0;
 }
 
 void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
-	m_istepcontrol = 0;
-    if(tio->getRG() != 0) {
-        return;
-   }
+	bool AnalyserEnabled = (bool)m_pConfigRG->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+	if(totalSamples == 0 || tio->getRG() != 0 || !AnalyserEnabled) return;
 
-    if(totalSamples == 0) return;
-    m_istepcontrol = InitGainAnalysis( (long)sampleRate );
+	m_istepcontrol = InitGainAnalysis( (long)sampleRate );
 
  //   m_iStartTime = clock();
 }
@@ -31,7 +29,7 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
 	if(m_istepcontrol!=1) return;
-	//optimal: float_t m_fLems[4096], m_fRems[4096];
+
 	float_t m_fLems[4096], m_fRems[4096];
 	int RGCounter = 0;
 	for(int i=0; i<iLen; i+=2) {
@@ -60,7 +58,6 @@ void AnalyserGain::finalise(TrackPointer tio) {
 	float_t Gain_Result = pow(10,GetTitleGain()/20);
 
 	tio->setRG(Gain_Result);
-
 	m_istepcontrol=0;
 //m_iStartTime = clock() - m_iStartTime;
 //qDebug() << "AnalyserGain :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
