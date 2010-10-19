@@ -31,8 +31,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotPrevTrackInfo()));
 
     m_pMenu = new QMenu(this);
-    //Edit on clicking selected row
-    setEditTriggers(QAbstractItemView::SelectedClicked);
+
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
@@ -614,7 +613,7 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
-    
+
     if (event->key() == Qt::Key_Return)
     {
 		/*

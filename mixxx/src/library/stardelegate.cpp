@@ -2,7 +2,7 @@
                            stardelegate.cpp
                               -------------------
     copyright            : (C) 2010 Tobias Rafreider
-	copyright            : (C) 2009 Nokia Corporation 
+	copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 
@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 
+#include <QtDebug>
 #include <QtGui>
 
 #include "stardelegate.h"
@@ -24,23 +25,30 @@
 
 /*
  * The function is invoked once for each item, represented by a QModelIndex object from the model.
- * If the data stored in the item is a StarRating, we paint it use a star editor for displaying; 
- * otherwise, we let QItemDelegate paint it for us. 
+ * If the data stored in the item is a StarRating, we paint it use a star editor for displaying;
+ * otherwise, we let QItemDelegate paint it for us.
  * This ensures that the StarDelegate can handle the most common data types.
  */
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	
+    // Populate the correct colors based on the styling
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
+
+    // Set the palette appropriately based on whether the row is selected or not
+    if (newOption.state & QStyle::State_Selected) {
+        painter->fillRect(newOption.rect, newOption.palette.highlight());
+        painter->setBrush(newOption.palette.highlightedText());
+    } else {
+        painter->fillRect(newOption.rect, newOption.palette.base());
+        painter->setBrush(newOption.palette.text());
+    }
+
     if (qVariantCanConvert<StarRating>(index.data())) {
         StarRating starRating = qVariantValue<StarRating>(index.data());
-
-		if (option.state & QStyle::State_Selected)
-           painter->fillRect(option.rect, option.palette.highlight());
-
-        starRating.paint(painter, option.rect, option.palette,
-                         StarRating::ReadOnly);
+        starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
     } else {
-        QStyledItemDelegate::paint(painter, option, index);
+        QStyledItemDelegate::paint(painter, newOption, index);
     }
 }
 
@@ -55,18 +63,22 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelInd
 }
 /*
  * If the item is a StarRating, we create a StarEditor and connect
- * its editingFinished() signal to our commitAndCloseEditor() slot, 
+ * its editingFinished() signal to our commitAndCloseEditor() slot,
  * so we can update the model when the editor closes.
  */
 QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,const QModelIndex &index) const
 {
+    // Populate the correct colors based on the styling
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
+
     if (qVariantCanConvert<StarRating>(index.data())) {
-        StarEditor *editor = new StarEditor(parent);
+        StarEditor *editor = new StarEditor(parent, newOption);
         connect(editor, SIGNAL(editingFinished()),
         this, SLOT(commitAndCloseEditor()));
         return editor;
     } else {
-        return QStyledItemDelegate::createEditor(parent, option, index);
+        return QStyledItemDelegate::createEditor(parent, newOption, index);
     }
 }
 
@@ -91,7 +103,7 @@ void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
     }
 }
 /*
- * When the user is done editing, we emit commitData() and closeEditor() (both declared in QAbstractItemDelegate), 
+ * When the user is done editing, we emit commitData() and closeEditor() (both declared in QAbstractItemDelegate),
  * to tell the model that there is edited data and to inform the view that the editor is no longer needed.
  */
 void StarDelegate::commitAndCloseEditor()

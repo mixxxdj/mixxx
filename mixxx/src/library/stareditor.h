@@ -2,7 +2,7 @@
                            stareditor.h
                               -------------------
      copyright            : (C) 2010 Tobias Rafreider
-	 copyright            : (C) 2009 Nokia Corporation 
+	 copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 
@@ -36,7 +36,7 @@ class StarEditor : public QWidget
 	Q_OBJECT
 
 public:
-    StarEditor(QWidget *parent = 0);
+    StarEditor(QWidget *parent, const QStyleOptionViewItem& option);
 
     QSize sizeHint() const;
     void setStarRating(const StarRating &starRating) {

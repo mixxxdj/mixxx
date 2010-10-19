@@ -30,14 +30,15 @@
  #include "starrating.h"
 
 /*
- * We enable mouse tracking on the widget so we can follow the cursor even 
- * when the user doesn't hold down any mouse button. We also turn on 
- * QWidget's auto-fill background feature to obtain an opaque background. 
+ * We enable mouse tracking on the widget so we can follow the cursor even
+ * when the user doesn't hold down any mouse button. We also turn on
+ * QWidget's auto-fill background feature to obtain an opaque background.
  * (Without the call, the view's background would shine through the editor.)
  */
-StarEditor::StarEditor(QWidget *parent)
-    : QWidget(parent)
+StarEditor::StarEditor(QWidget *parent, const QStyleOptionViewItem &option)
+        : QWidget(parent)
 {
+    setPalette(option.palette);
     setMouseTracking(true);
     setAutoFillBackground(true);
 }
@@ -46,17 +47,17 @@ QSize StarEditor::sizeHint() const
  {
     return m_starRating.sizeHint();
  }
-/* 
- * We simply call StarRating::paint() to draw the stars, 
+/*
+ * We simply call StarRating::paint() to draw the stars,
  * just like we did when implementing StarDelegate
  */
 void StarEditor::paintEvent(QPaintEvent *)
  {
     QPainter painter(this);
-    m_starRating.paint(&painter, rect(), this->palette(), StarRating::Editable);
+    m_starRating.paint(&painter, rect(), palette(), StarRating::Editable);
  }
 /*
- * In the mouse event handler, we call setStarCount() on 
+ * In the mouse event handler, we call setStarCount() on
  * the private data member m_starRating to reflect the current cursor position,
  * and we call QWidget::update() to force a repaint.
  */
@@ -82,7 +83,7 @@ void StarEditor::paintEvent(QPaintEvent *)
  int StarEditor::starAtPosition(int x)
  {
     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
-    
+
 	if (star <= 0 || star > m_starRating.maxStarCount())
         return -1;
 

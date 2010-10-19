@@ -2,7 +2,7 @@
                            stardelegate.h
                               -------------------
      copyright            : (C) 2010 Tobias Rafreider
-	 copyright            : (C) 2009 Nokia Corporation 
+	 copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 
@@ -22,14 +22,14 @@
 #include <QStyledItemDelegate>
 
 /*
- * When displaying data in a QListView, QTableView, or QTreeView, 
- * the individual items are drawn by a delegate. 
- * Also, when the user starts editing an item (e.g., by double-clicking the item), 
+ * When displaying data in a QListView, QTableView, or QTreeView,
+ * the individual items are drawn by a delegate.
+ * Also, when the user starts editing an item (e.g., by double-clicking the item),
  * the delegate provides an editor widget that is placed on top of the item while editing takes place.
  *
- * By default a QListView, QTableView, or QTreeView has a QItemDelegate attached, 
+ * By default a QListView, QTableView, or QTreeView has a QItemDelegate attached,
  * which inherits QAbstractItemDelegate and handles the most common data types (notably int and QString).
- * If we need to support custom data types, or want to customize the rendering or the editing for 
+ * If we need to support custom data types, or want to customize the rendering or the editing for
  * existing data types, we can subclass QAbstractItemDelegate or QItemDelegate or QStyledItemDelegate
  */
 class StarDelegate : public QStyledItemDelegate
