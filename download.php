@@ -69,6 +69,7 @@ sudo apt-get update
 sudo apt-get install mixxx libportaudio2
 	   </pre>
 	   This will install the latest version of Mixxx from the <a href="https://launchpad.net/~mixxxdevelopers/+archive/ppa">Mixxx Developers PPA</a> on Launchpad.
+       <br><br>
 
 	   <b>Ubuntu 10.10 (Maverick):</b><br>
 	   Our older Mixxx 1.8.0 release can be installed directly from the Ubuntu Software Centre.<br><br>
