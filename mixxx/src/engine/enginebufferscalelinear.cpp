@@ -180,6 +180,17 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
         Q_ASSERT(current_sample % 2 == 0);
         Q_ASSERT(current_sample >= 0);
+        
+        //This code is so messed up. These ASSERTs should be enabled, but they actually
+        //fire because of bug(s). 
+        //Q_ASSERT(prev_sample >= 0);
+        //Q_ASSERT(prev_sample-1 < kiLinearScaleReadAheadLength); 
+        //the prev_sample-1 leaves room for the other sample in the stereo frame
+        //Instead, we're going to workaround the bug by just clamping prev_sample
+        //to make sure it stays in bounds:
+        prev_sample = math_min(kiLinearScaleReadAheadLength, prev_sample);
+        prev_sample = math_max(0, prev_sample);
+
 
         if (prev_sample != current_sample) {
             m_fPreviousL = buffer_int[prev_sample];

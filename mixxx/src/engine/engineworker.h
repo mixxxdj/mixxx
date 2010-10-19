@@ -21,10 +21,9 @@ class EngineWorker : public QObject, public QRunnable {
     virtual void run();
 
   signals:
-    void workReady();
-    void workStarting();
-    void workDone();
+    void workReady(EngineWorker* worker);
+    void workStarting(EngineWorker* worker);
+    void workDone(EngineWorker* worker);
 };
-
 
 #endif /* ENGINEWORKER_H */

@@ -65,7 +65,8 @@ class OggVorbis(Dependence):
                 raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
         else:
             if not conf.CheckLib('vorbisfile'):
-		Exception('Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers.')
+                Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
+                    'or the libvorbisfile development headers.')
 
         if not conf.CheckLib('vorbis'):
             raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
@@ -189,6 +190,10 @@ class FidLib(Dependence):
         if build.platform_is_windows:
             if build.toolchain_is_msvs:
                 symbol = 'T_MSVC'
+            elif build.crosscompile:
+                # Not sure why, but fidlib won't build with mingw32msvc and
+                # T_MINGW
+                symbol = 'T_LINUX'
             elif build.toolchain_is_gnu:
                 symbol = 'T_MINGW'
         else:
@@ -223,7 +228,7 @@ class SoundTouch(Dependence):
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
         if build.platform_is_windows and build.toolchain_is_msvs:
-            if build.machine == 'x86_64':
+            if build.machine_is_64bit:
                 sources.append(
                     '#lib/%s/cpu_detect_x64_win.cpp' % self.SOUNDTOUCH_PATH)
             elif build.machine == 'x86':
@@ -525,8 +530,8 @@ class MixxxCore(Feature):
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
             build.env.RES('#src/mixxx.rc')
-	    # Tobias Rafreider: What is the purpose of the following line, if
-	    # the file doesn't exist?
+            # Tobias Rafreider: What is the purpose of the following line, if
+            # the file doesn't exist?
             #
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
@@ -561,12 +566,9 @@ class MixxxCore(Feature):
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
 
-            build.env.Append(LINKFLAGS = [#'/nodefaultlib:libc.lib',
-                                          #'/nodefaultlib:libcd.lib',
-                                          '/nodefaultlib:MSVCRT.lib',
-                                        #  '/nodefaultlib:LIBCMT.lib',
-                                        #  '/nodefaultlib:LIBCMTd.lib',
-                                          '/entry:mainCRTStartup'])
+
+
+
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
             build.env.Append(CXXFLAGS = '/Zc:wchar_t-')
@@ -595,18 +597,13 @@ class MixxxCore(Feature):
             build.env.Append(LIBS = 'winspool')
             build.env.Append(LIBS = 'shell32')'''
 
-            # Makes the program not launch a shell first
-            if build.toolchain_is_msvs:
-                build.env.Append(LINKFLAGS = '/subsystem:windows')
-            elif build.toolchain_is_gnu:
-                build.env.Append(LINKFLAGS = '-subsystem,windows')
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
             #Check for pkg-config >= 0.15.0
             if not conf.CheckForPKGConfig('0.15.0'):
-		raise Exception('pkg-config >= 0.15.0 not found.')
+                raise Exception('pkg-config >= 0.15.0 not found.')
 
 
         elif build.platform_is_osx:
@@ -675,3 +672,17 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
                 FidLib, Mad, SndFile, OggVorbis, OpenGL]
+
+    def post_dependency_check_configure(self, build, conf):
+        """Sets up additional things in the Environment that must happen
+        after the Configure checks run."""
+        if build.platform_is_windows:
+            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                          '/nodefaultlib:LIBCMTd.lib',
+                                          '/entry:mainCRTStartup'])
+            # Makes the program not launch a shell first 
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = '/subsystem:windows')
+            elif build.toolchain_is_gnu:
+                build.env.Append(LINKFLAGS = '--subsystem,windows')
+                build.env.Append(LINKFLAGS = '-mwindows')

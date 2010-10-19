@@ -24,7 +24,10 @@ class MixxxBuild(object):
             machine = self.host_machine
 
         if toolchain is None:
-            toolchain = 'gnu'
+            if self.host_platform == 'windows':
+                raise Exception('must specify toolchain on Windows (msvs or gnu)')
+            else:
+                toolchain = 'gnu'
 
         if build is None:
             build = 'debug'
@@ -35,7 +38,9 @@ class MixxxBuild(object):
         if target not in ['windows', 'osx', 'linux', 'bsd']:
             raise Exception("invalid target platform")
 
-        if machine not in ['x86_64', 'x86', 'i686', 'i586', 'i486', 'i386', 'powerpc', 'powerpc64']:
+        if machine not in ['x86_64', 'x86', 'i686', 'i586',
+                           'i486', 'i386', 'powerpc', 'powerpc64',
+                           'AMD64', 'EM64T', 'INTEL64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -62,22 +67,21 @@ class MixxxBuild(object):
 
         flags_force32 = int(Script.ARGUMENTS.get('force32', 0))
         flags_force64 = int(Script.ARGUMENTS.get('force64', 0))
-        if self.toolchain == 'gnu':
-            if flags_force32 and flags_force64:
-                logging.error('Both force32 and force64 cannot be enabled at once')
-                Script.Exit(1)
+        if flags_force32 and flags_force64:
+            logging.error('Both force32 and force64 cannot be enabled at once')
+            Script.Exit(1)
 
-            if flags_force32:
-                if self.machine in ['powerpc', 'powerpc64']:
-                    self.machine = 'powerpc'
-                else:
-                    self.machine = 'x86'
-            elif flags_force64:
-                if self.machine in ['powerpc', 'powerpc64']:
-                    self.machine = 'powerpc64'
-                else:
-                    self.machine = 'x86_64'
-        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64']
+        if flags_force32:
+            if self.machine in ['powerpc', 'powerpc64']:
+                self.machine = 'powerpc'
+            else:
+                self.machine = 'x86'
+        elif flags_force64:
+            if self.machine in ['powerpc', 'powerpc64']:
+                self.machine = 'powerpc64'
+            else:
+                self.machine = 'x86_64'
+        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64', 'AMD64', 'EM64T', 'INTEL64']
 
         self.bitwidth = 32
         if self.machine_is_64bit:
@@ -147,6 +151,18 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS = '-m64')
 
+        if self.crosscompile:
+            crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
+
+            if crosscompile_root == '':
+                print "Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required."
+                Script.Exit(1)
+
+            crosscompile_root = os.path.abspath(crosscompile_root)
+            self.env.Append(CPPPATH=os.path.join(crosscompile_root, 'include'))
+            self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'lib'))
+            self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'bin'))
+
         self.install_options()
 
     def detect_platform(self):
@@ -206,7 +222,10 @@ class MixxxBuild(object):
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
-
+        vars.Add('target', 'Set the build target for cross-compiling (windows, osx, linux, bsd).', '')
+        vars.Add('machine', 'Set the machine type for cross-compiling (x86_64, x86, powerpc, powerpc64).', '')
+        vars.Add('toolchain', 'Specify the toolchain to use for building (gnu, msvs). Default is gnu.', 'gnu')
+        vars.Add('crosscompile_root', 'Set the path to the root of a cross-compile sandbox.', '')
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
 
@@ -224,7 +243,7 @@ class MixxxBuild(object):
         vars.Save(cachefile, self.env)
 
     def get_features(self):
-        return self.available_features
+        return self.available_features\
 
 class Dependence(object):
 
@@ -242,6 +261,9 @@ class Dependence(object):
         return []
 
     def configure(self, build, conf):
+        pass
+    
+    def post_dependency_check_configure(self, build, conf):
         pass
 
 class Feature(Dependence):
