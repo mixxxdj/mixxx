@@ -135,10 +135,10 @@ class MixxxApp : public QMainWindow
   private:
     void checkDirectRendering();
 
-    QApplication *app;
-
     // Pointer to the root GUI widget
     QWidget* m_pView;
+
+    QApplication *m_pApp;
 
     // The mixing engine.
     EngineMaster *m_pEngine;
@@ -147,15 +147,17 @@ class MixxxApp : public QMainWindow
     SkinLoader* m_pSkinLoader;
 
     // The sound manager
-    SoundManager *soundmanager;
+    SoundManager *m_pSoundManager;
+
+
     // Keeps track of players
     PlayerManager* m_pPlayerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
-    ControlObject *control;
-    ConfigObject<ConfigValue> *config;
+    ControlObject *m_pControl;
+    ConfigObject<ConfigValue> *m_pConfig;
     /** Pointer to active keyboard configuration */
-    ConfigObject<ConfigValueKbd> *kbdconfig;
+    ConfigObject<ConfigValueKbd> *m_pKbdConfig;
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
@@ -163,66 +165,67 @@ class MixxxApp : public QMainWindow
     Library* m_pLibrary;
 
     /** file_menu contains all items of the menubar entry "File" */
-    QMenu *fileMenu;
+    QMenu *m_pFileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
-    QMenu *editMenu;
+    QMenu *m_pEditMenu;
     /** library menu */
-    QMenu *libraryMenu;
+    QMenu *m_pLibraryMenu;
     /** options_menu contains all items of the menubar entry "Options" */
-    QMenu *optionsMenu;
+    QMenu *m_pOptionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
-    QMenu *viewMenu;
+    QMenu *m_pViewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
-    QMenu *helpMenu;
+    QMenu *m_pHelpMenu;
 
 #ifdef __SCRIPT__
     QMenu *macroMenu;
 #endif
 
-    /** actions for the application initialized in initActions() and used to en/disable them
-      * according to your needs during the program */
-    QAction *fileNew;
-    QAction *fileLoadSongPlayer1;
-    QAction *fileLoadSongPlayer2;
-    QAction *fileSave;
-    QAction *fileSaveAs;
-    QAction *fileClose;
-    QAction *filePrint;
-    QAction *fileQuit;
+    QAction *m_pFileNew;
+    QAction *m_pFileLoadSongPlayer1;
+    QAction *m_pFileLoadSongPlayer2;
+    QAction *m_pFileSave;
+    QAction *m_pFileSaveAs;
+    QAction *m_pFileClose;
+    QAction *m_pFilePrint;
+    QAction *m_pFileQuit;
 
-    QAction *editCut;
-    QAction *editCopy;
-    QAction *editPaste;
+    QAction *m_pEditCut;
+    QAction *m_pEditCopy;
+    QAction *m_pEditPaste;
 
-    QAction *playlistsNew;
-    QAction *cratesNew;
-    QAction *playlistsImport;
-    QAction **playlistsList;
+    QAction *m_pPlaylistsNew;
+    QAction *m_pCratesNew;
+    QAction *m_pPlaylistsImport;
+    QAction **m_pPlaylistsList;
 
-    QAction *batchBpmDetect;
+    QAction *m_pIPodToggle;
 
-    QAction *libraryRescan;
+    QAction *m_pBatchBpmDetect;
 
-    QAction *optionsBeatMark;
+    QAction *m_pLibraryRescan;
+
+    QAction *m_pOptionsBeatMark;
+
 #ifdef __VINYLCONTROL__
-    QAction *optionsVinylControl;
+    QAction *m_pOptionsVinylControl;
 #endif
-    QAction *optionsRecord;
-    QAction *optionsFullScreen;
-    QAction *optionsPreferences;
+    QAction *m_pOptionsRecord;
+    QAction *m_pOptionsFullScreen;
+    QAction *m_pOptionsPreferences;
 #ifdef __SHOUTCAST__
-    QAction *optionsShoutcast;
+    QAction *m_pOptionsShoutcast;
 #endif
 
-    QAction *helpAboutApp;
-    QAction *helpSupport;
+    QAction *m_pHelpAboutApp;
+    QAction *m_pHelpSupport;
 #ifdef __SCRIPT__
     QAction *macroStudio;
 #endif
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
-    DlgPreferences *prefDlg;
+    DlgPreferences *m_pPrefDlg;
 
 #ifdef __SCRIPT__
     ScriptEngine *scriptEng;
@@ -230,7 +233,7 @@ class MixxxApp : public QMainWindow
 
     int noSoundDlg(void);
     // Fullscreen patch
-    QPoint winpos;
+    QPoint m_winpos;
 };
 
 //A structure to store the parsed command-line arguments

@@ -23,13 +23,13 @@ class MIDIScript(Feature):
             return
         if build.platform_is_windows:
             build.env.Append(LIBS = 'QtScript4')
-	elif build.platform_is_linux:
-            build.env.Append(LIBS = 'QtScript')
-	elif build.platform_is_osx:
-            # TODO(XXX) put in logic here to add a -framework QtScript
-            pass
+        elif build.platform_is_linux:
+                build.env.Append(LIBS = 'QtScript')
+        elif build.platform_is_osx:
+                # TODO(XXX) put in logic here to add a -framework QtScript
+                pass
         build.env.Append(CPPPATH = '$QTDIR/include/QtScript')
-	build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
+        build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
 
     def sources(self, build):
         return ["midi/midiscriptengine.cpp"]
@@ -295,7 +295,7 @@ class ScriptStudio(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-	build.env.Append(CPPDEFINES = '__SCRIPT__')
+        build.env.Append(CPPDEFINES = '__SCRIPT__')
 
     def sources(self, build):
         build.env.Uic4('script/scriptstudio.ui')
@@ -318,7 +318,7 @@ class ScriptStudio(Feature):
 
 class AsmLib(Feature):
     def description(self):
-        return "Agner Fog\'s ASMLIB (http://www.agner.org/optimize)"
+        return "Agner Fog\'s ASMLIB"
 
     def enabled(self, build):
         build.flags['asmlib'] = util.get_flags(build.env, 'asmlib', 0)
@@ -335,14 +335,14 @@ class AsmLib(Feature):
 
         build.env.Append(LIBPATH='#/../asmlib')
         if build.platform_is_linux:
-		build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		build.env.Append(LIBS = '":alibelf%so.a"' % build.bitwidth)
-	elif build.platform_is_osx:
-		build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		build.env.Append(LIBS = '":alibmac%so.a"' % build.bitwidth)
-	elif build.platform_is_windows:
-		build.env.Append(CCFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
-		build.env.Append(LIBS = 'alibcof%so' % build.bitwidth)
+            build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+            build.env.Append(LIBS = '":alibelf%so.a"' % build.bitwidth)
+        elif build.platform_is_osx:
+            build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+            build.env.Append(LIBS = '":alibmac%so.a"' % build.bitwidth)
+        elif build.platform_is_windows:
+            build.env.Append(CCFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
+            build.env.Append(LIBS = 'alibcof%so' % build.bitwidth)
 
 
 class QDebug(Feature):
@@ -356,7 +356,7 @@ class QDebug(Feature):
         if build.platform_is_windows:
             if int(build.flags['msvcdebug']):
                 # Turn general debugging flag on too if msvcdebug is specified
-		build.flags['qdebug'] = 1
+                build.flags['qdebug'] = 1
         if int(build.flags['qdebug']):
             return True
         return False
@@ -370,7 +370,7 @@ class QDebug(Feature):
 
 class CMetrics(Feature):
     def description(self):
-        return "NOT-WORKING Community Metrics Stats-Reporting"
+        return "NOT-WORKING CMetrics Reporting"
 
     def enabled(self, build):
         if build.platform_is_windows or build.platform_is_linux:
@@ -393,7 +393,7 @@ class CMetrics(Feature):
 
         if build.platform_is_windows:
             build.env.Append(LIBS = 'cmetrics')
-	else:
+        else:
             client = 'MIXXX'
             server = 'metrics.mixxx.org' # mixxx metrics collector
             SCons.Export('client server')
@@ -478,11 +478,11 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS = '-pthread')
         test_env.Append(LINKFLAGS = '-pthread')
 
-	test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+        test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
         gtest_dir = test_env.Dir("#lib/gtest-1.3.0")
         gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.3.0'))
         #build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-	test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
 
         env = test_env
         SCons.Export('env')
@@ -598,7 +598,10 @@ class Optimize(Feature):
         if not build.platform_is_windows:
             vars.Add('optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
         else:
-            vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
+            if build.machine_is_64bit:
+                vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
+            else:
+                vars.Add('optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)\n  3 to use SSE instructions\n  4 to use SSE2 instructions', 1)
 
 
     def configure(self, build, conf):
@@ -713,7 +716,7 @@ class Tuned(Feature):
         if not build.platform_is_windows:
             vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
         elif build.machine_is_64bit: # 64-bit windows
-		vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
+            vars.Add('tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -739,15 +742,13 @@ class Tuned(Feature):
                     # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
                     # IA64 which uses a different compiler.)  For a release, we choose
                     # to have code run about the same on both
-
                     build.env.Append(CCFLAGS = '/favor:blend')
                 else:
-                    self.status = "Disabled (currently broken with Visual Studio)"
-                    build.env.Append(CCFLAGS = '/favor:blend')
-                    # Only valid choices are AMD64, INTEL64, and blend. Also
-                    # /favor is only valid for Visual Studio 2010, 2003 does not
-                    # have it.
-                    #self.status = "Enabled (%s-optimized)" % machine
-                    #build.env.Append(CCFLAGS = '/favor:' + machine)
+                    #self.status = "Disabled (currently broken with Visual Studio)"
+                    #build.env.Append(CCFLAGS = '/favor:blend')
+                    # Only valid choices are AMD64, EM64T (INTEL64 on later compilers,)
+                    # and blend.
+                    self.status = "Enabled (%s-optimized)" % build.machine
+                    build.env.Append(CCFLAGS = '/favor:' + build.machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
