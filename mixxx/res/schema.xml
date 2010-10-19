@@ -160,6 +160,8 @@ METADATA
       DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
       DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
       DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
+      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
+      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
     </sql>
   </revision>
 </schema>
