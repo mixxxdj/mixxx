@@ -295,7 +295,7 @@ class ScriptStudio(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-	build.env.Append(CPPDEFINES = '__SCRIPT__')
+        build.env.Append(CPPDEFINES = '__SCRIPT__')
 
     def sources(self, build):
         build.env.Uic4('script/scriptstudio.ui')
@@ -335,14 +335,14 @@ class AsmLib(Feature):
 
         build.env.Append(LIBPATH='#/../asmlib')
         if build.platform_is_linux:
-		build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		build.env.Append(LIBS = '":alibelf%so.a"' % build.bitwidth)
-	elif build.platform_is_osx:
-		build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-		build.env.Append(LIBS = '":alibmac%so.a"' % build.bitwidth)
-	elif build.platform_is_windows:
-		build.env.Append(CCFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
-		build.env.Append(LIBS = 'alibcof%so' % build.bitwidth)
+            build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+            build.env.Append(LIBS = '":alibelf%so.a"' % build.bitwidth)
+        elif build.platform_is_osx:
+            build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
+            build.env.Append(LIBS = '":alibmac%so.a"' % build.bitwidth)
+        elif build.platform_is_windows:
+            build.env.Append(CCFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
+            build.env.Append(LIBS = 'alibcof%so' % build.bitwidth)
 
 
 class QDebug(Feature):
@@ -356,7 +356,7 @@ class QDebug(Feature):
         if build.platform_is_windows:
             if int(build.flags['msvcdebug']):
                 # Turn general debugging flag on too if msvcdebug is specified
-		build.flags['qdebug'] = 1
+                build.flags['qdebug'] = 1
         if int(build.flags['qdebug']):
             return True
         return False
@@ -393,7 +393,7 @@ class CMetrics(Feature):
 
         if build.platform_is_windows:
             build.env.Append(LIBS = 'cmetrics')
-	else:
+        else:
             client = 'MIXXX'
             server = 'metrics.mixxx.org' # mixxx metrics collector
             SCons.Export('client server')
@@ -478,11 +478,11 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS = '-pthread')
         test_env.Append(LINKFLAGS = '-pthread')
 
-	test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+        test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
         gtest_dir = test_env.Dir("#lib/gtest-1.3.0")
         gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.3.0'))
         #build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-	test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
 
         env = test_env
         SCons.Export('env')
