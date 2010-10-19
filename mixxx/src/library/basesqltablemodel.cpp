@@ -89,9 +89,7 @@ bool BaseSqlTableModel::select() {
     return result;
 }
 
-QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
-    // TODO(XXX) THIS WHOLE METHOD NEEDS REWORKING rryan 10/2010
-
+QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         return QVariant();
     }
@@ -110,7 +108,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
      * The if-block below is only executed when a table item has been edited.
      *
      */
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole || role == Qt::EditRole) && m_trackOverrides.contains(trackId)) {
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole || role == Qt::EditRole) &&
+        m_trackOverrides.contains(trackId)) {
         //qDebug() << "Returning override for track" << trackId;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
@@ -134,10 +133,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         } else if (fieldIndex(LIBRARYTABLE_COMMENT) == col) {
             return QVariant(pTrack->getComment());
         } else if (fieldIndex(LIBRARYTABLE_DURATION) == col) {
-            QVariant value = pTrack->getDuration();
-            if (qVariantCanConvert<int>(value))
-                value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-            return value;
+            return pTrack->getDuration();
         } else if (fieldIndex(LIBRARYTABLE_BITRATE) == col) {
             return QVariant(pTrack->getBitrate());
         } else if (fieldIndex(LIBRARYTABLE_BPM) == col) {
@@ -147,69 +143,59 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == col) {
             return QVariant(pTrack->getTimesPlayed());
         } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
-            QVariant value = pTrack->getRating();
+            return pTrack->getRating();
+        }
+    }
+
+    // If none of these work, hand off to the lower layer to deal with. The role
+    // might not be Edit/Display/ToolTip, or we might have a bug.
+    return QSqlTableModel::data(index, role);
+}
+
+
+QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid()) {
+        return QVariant();
+    }
+
+    int row = index.row();
+    int col = index.column();
+
+    // This value is the value in its most raw form. It was looked up either
+    // from the SQL table or from the cached track layer.
+    QVariant value = getBaseValue(index, role);
+
+    // Format the value based on whether we are in a tooltip, display, or edit
+    // role
+    if (role == Qt::ToolTipRole || role == Qt::DisplayRole) {
+        if (index.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
+            if (qVariantCanConvert<int>(value))
+                value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+        } else if (index.column() == fieldIndex(LIBRARYTABLE_RATING)) {
             if (qVariantCanConvert<int>(value))
                 value = qVariantFromValue(StarRating(value.toInt()));
-            return value;
+        } else if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
+            if (qVariantCanConvert<int>(value))
+                value =  QString("(%1)").arg(value.toInt());
+        } else if (index.column() == fieldIndex(LIBRARYTABLE_PLAYED)) {
+            // Convert to a bool. Not really that useful since it gets converted
+            // right back to a QVariant
+            value = (value == "true") ? true : false;
         }
-    }
-
-    QVariant value;
-
-    if (role == Qt::ToolTipRole || role == Qt::EditRole)
-        value = QSqlTableModel::data(index, Qt::DisplayRole);
-    else
-        value = QSqlTableModel::data(index, role);
-
-    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
-        if (index.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-            if (qVariantCanConvert<int>(value)) {
-                return MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-            }
-        }
-    }
-    if (role == Qt::DisplayRole) {
-        if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            return QString("(%1)").arg(value.toInt());
-        }
-        else if (index.column() == fieldIndex(LIBRARYTABLE_PLAYED)) {
-            if (value == "true")
-                return true;
-            else
-                return false;
-        }
-    }
-    else if (role == Qt::EditRole) {
-        if (index.column() == fieldIndex(LIBRARYTABLE_BPM))
+    } else if (role == Qt::EditRole) {
+        if (index.column() == fieldIndex(LIBRARYTABLE_BPM)) {
             return value.toDouble();
-        else if (index.column() == fieldIndex(LIBRARYTABLE_COMMENT))
-            return value.toString();
-        else if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED))
+        } else if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
             return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-        else {
-            qDebug() << "Can't edit this column" << index.column();
-            return QVariant();
+        } else if (index.column() == fieldIndex(LIBRARYTABLE_RATING)) {
+            if (qVariantCanConvert<int>(value))
+                value = qVariantFromValue(StarRating(value.toInt()));
         }
-    }
-    else if (role == Qt::CheckStateRole) {
+    } else if (role == Qt::CheckStateRole) {
         if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
             bool played = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-            if (played) {
-                return Qt::Checked;
-            }
-            return Qt::Unchecked;
+            value = played ? Qt::Checked : Qt::Unchecked;
         }
-    }
-
-    if (fieldIndex(LIBRARYTABLE_DURATION) == col)
-    {
-        if (qVariantCanConvert<int>(value))
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-    }
-    if (fieldIndex(LIBRARYTABLE_RATING) == col)
-    {
-        if (qVariantCanConvert<int>(value))
-            value = qVariantFromValue(StarRating(value.toInt()));
     }
 
     return value;
