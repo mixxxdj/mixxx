@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QRegExp>
 #include <QtXmlPatterns/QXmlQuery>
+#include <QDesktopServices>
 
 #include "itunestrackmodel.h"
 #include "xmlparse.h"
@@ -167,13 +168,16 @@ QString ITunesTrackModel::findValueByKey(QDomNode dictNode, QString key) const
 {
     QDomElement curElem;
 
-
     curElem = dictNode.firstChildElement("key");
     while(!curElem.isNull()) {
         if ( curElem.text() == key ) {
             QDomElement value;
             value = curElem.nextSiblingElement();
-            return value.text();
+            QString textValue = value.text();
+            //Either iTunes lies about the text encoding in its XML file or 
+            //Qt misdetects it. We workaround this explicitly sayi it's UTF-8.
+            textValue = QString::fromUtf8(textValue.toAscii().data(), textValue.size());
+            return textValue;
         }
 
         curElem = curElem.nextSiblingElement("key");
@@ -284,17 +288,26 @@ TrackPointer ITunesTrackModel::getTrackById(QString id) {
 QString ITunesTrackModel::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
-		musicFolder = QDir::homePath() + "/Music/iTunes/iTunes Music Library.xml";
+    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/iTunes Music Library.xml";
 #elif defined(__WINDOWS__)
-    QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
-		// if the value method fails it returns QTDir::homePath
-    musicFolder = settings.value("My Music", QDir::homePath()).toString();
-    musicFolder += "\\iTunes\\iTunes Music Library.xml";
+    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\iTunes Music Library.xml";
 #elif defined(__LINUX__)
-		musicFolder =  QDir::homePath() + "/.itunes.xml";
+		musicFolder = QDir::homePath() + "/.itunes.xml";
 #else
 		musicFolder = "";
 #endif
     qDebug() << "ITunesLibrary=[" << musicFolder << "]";
     return musicFolder;
 }
+
+//OwenB - for use by the playlistmodel
+QDomNode ITunesTrackModel::getTrackNodeById(const QString& id) const
+{
+    if ( !m_mTracksById.contains(id))
+        return QDomNode();
+
+    QDomNode songNode = m_mTracksById[id];
+    return songNode;
+}
+
+

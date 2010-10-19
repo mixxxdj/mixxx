@@ -39,7 +39,7 @@ QVariant BrowseFeature::title() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon();
+    return QIcon(":/images/library/ic_library_browse.png");
 }
 
 QAbstractItemModel* BrowseFeature::getChildModel() {
@@ -111,12 +111,21 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 void BrowseFeature::onFileActivate(const QModelIndex& index) {
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
-    QString path = m_browseModel.filePath(sourceIndex);
-    QFileInfo info(path);
+    QFileInfo info = m_browseModel.fileInfo(sourceIndex);
     QString absPath = info.absoluteFilePath();
-    qDebug() << "activate()" << path;
 
     if (m_browseModel.isDir(sourceIndex)) {
+        if (!info.isReadable()) {
+            // Alert that the user didn't have permissions.
+            WBrowseTableView* pBrowseTableView = dynamic_cast<WBrowseTableView*>(sender());
+            if (pBrowseTableView) {
+                QMessageBox::warning(pBrowseTableView,
+                                     tr("Permission Denied"),
+                                     tr("You don't have permission to view this folder."));
+            }
+            return;
+        }
+
         m_browseModel.setRootPath(absPath);
         QModelIndex absIndex = m_browseModel.index(absPath);
         QModelIndex absIndexProxy = m_proxyModel.mapFromSource(absIndex);

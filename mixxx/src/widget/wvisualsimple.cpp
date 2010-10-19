@@ -19,8 +19,6 @@
 #include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <q3dragobject.h>
-//Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
@@ -29,11 +27,14 @@
 
 #include "waveform/waveformrenderer.h"
 
-WVisualSimple::WVisualSimple(const char* group, QWidget * parent) : WWidget(parent)
+WVisualSimple::WVisualSimple(const char* group, QWidget * parent, WaveformRenderer* pWaveformRenderer)
+        : WWidget(parent),
+          m_group(group),
+          m_iValue(64),
+          m_pWaveformRenderer(pWaveformRenderer)
+
 {
-    m_pWaveformRenderer = new WaveformRenderer(group);
     setAcceptDrops(true);
-    m_iValue = 64;
 }
 
 WVisualSimple::~WVisualSimple()
@@ -44,7 +45,6 @@ void WVisualSimple::dragEnterEvent(QDragEnterEvent * event)
 {
   if (event->mimeData()->hasUrls())
       event->acceptProposedAction();
-  //    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualSimple::dropEvent(QDropEvent * event)
@@ -55,7 +55,7 @@ void WVisualSimple::dropEvent(QDropEvent * event)
     QString name = url.toLocalFile();
 
     event->accept();
-    emit(trackDropped(name));
+    emit(trackDropped(name, m_group));
   } else
     event->ignore();
 }
@@ -100,6 +100,10 @@ void WVisualSimple::setup(QDomNode node)
     colorSignal = WSkinColor::getCorrectColor(colorSignal);
     colorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     colorMarker = WSkinColor::getCorrectColor(colorMarker);
+}
+
+void WVisualSimple::refresh() {
+    // Do nothing since its the simple waveform.
 }
 
 void WVisualSimple::mouseMoveEvent(QMouseEvent * e)

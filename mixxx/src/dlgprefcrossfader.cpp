@@ -20,7 +20,6 @@
 #include "controlobject.h"
 #include "engine/enginexfader.h"
 #include <qlineedit.h>
-#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>
@@ -39,6 +38,9 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
     config = _config;
 	m_pxfScene = NULL;
 	
+    m_transform = 0;
+    m_cal = 0;
+
     setupUi(this);
 
 	connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));

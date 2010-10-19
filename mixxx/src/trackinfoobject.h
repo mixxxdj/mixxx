@@ -21,8 +21,6 @@
 #include <QList>
 #include <QObject>
 #include <QFileInfo>
-#include <q3memarray.h>
-#include <q3valuelist.h>
 #include <QMutex>
 #include <QVector>
 #include <QSharedPointer>
@@ -52,9 +50,9 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString sLocation="");
+    TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(QFileInfo& fileInfo);
+    TrackInfoObject(QFileInfo& fileInfo, bool parseHeader=true);
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
@@ -223,7 +221,7 @@ public:
   private:
 
     // Common initialization function between all TIO constructors.
-    void initialize();
+    void initialize(bool parseHeader);
 
     // Initialize all the location variables.
     void populateLocation(QFileInfo& fileInfo);

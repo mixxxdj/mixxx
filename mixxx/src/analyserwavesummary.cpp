@@ -18,6 +18,7 @@ AnalyserWavesummary::AnalyserWavesummary() {
 }
 
 void AnalyserWavesummary::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    Q_UNUSED(sampleRate);
     // Check if the preview has already been generated
     const QByteArray* p = tio->getWaveSummary();
     if(p != NULL && p->size() > 0) {
@@ -77,5 +78,5 @@ void AnalyserWavesummary::finalise(TrackPointer tio) {
     //to delete the pointer.
     delete m_pData;
     m_pData = NULL;
-    qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
+    //qDebug() << "AnalyserWavesummary generation successful for " << tio->getFilename();
 }

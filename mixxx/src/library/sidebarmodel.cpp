@@ -6,8 +6,8 @@
 #include "library/sidebarmodel.h"
 
 SidebarModel::SidebarModel(QObject* parent)
-    : m_iDefaultSelectedIndex(0),
-      QAbstractItemModel(parent) {
+        : QAbstractItemModel(parent),
+          m_iDefaultSelectedIndex(0) {
 }
 
 SidebarModel::~SidebarModel() {
@@ -19,6 +19,8 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     connect(feature, SIGNAL(featureUpdated()), this, SLOT(refreshData()));
     QAbstractItemModel* model = feature->getChildModel();
 
+    connect(model, SIGNAL(modelReset()),
+            this, SLOT(slotModelReset()));
     connect(model, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
             this, SLOT(slotDataChanged(const QModelIndex&,const QModelIndex&)));
     connect(model, SIGNAL(rowsAboutToBeInserted(const QModelIndex&, int, int)),
@@ -263,4 +265,10 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     //qDebug() << "slotRowsRemoved" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
+}
+
+void SidebarModel::slotModelReset() {
+    // If a child model is reset, we can't really do anything but reset(). This
+    // will close any open items.
+    reset();
 }

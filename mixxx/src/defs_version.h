@@ -1,7 +1,7 @@
 /***************************************************************************
                           defs_version.h  -  description
                           --------------
-    copyright            : (C) 2009 by Sean Pappalardo
+    copyright            : (C) 2010 by Sean Pappalardo
     email                :
  ***************************************************************************/
 
@@ -15,4 +15,9 @@
  ***************************************************************************/
 
 // Doing this in its own file avoids needlessly rebuilding everything when just the version number changes
-#define VERSION "Trunk"
+
+// We define the version to be the branch name in Sconscript.env, unless it's a release branch
+#ifndef VERSION
+    // In that case, this value is used
+    #define VERSION "Trunk"
+#endif

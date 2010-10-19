@@ -53,7 +53,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     // that it displays the wave as we work.
     tio->setVisualWaveform(downsample);
 
-    qDebug() << "AnalyserWaveform: f " << sampleRate << " samplesPerDownsample: " << samplesPerDownsample << " downsamples " << numDownsamples << " from " << totalSamples;
+    //qDebug() << "AnalyserWaveform: f " << sampleRate << " samplesPerDownsample: " << samplesPerDownsample << " downsamples " << numDownsamples << " from " << totalSamples;
 
     m_iStrideLength = samplesPerDownsample*2;
     m_iCurPos = 0;
@@ -101,6 +101,7 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyserWaveform::finalise(TrackPointer tio) {
+    Q_UNUSED(tio);
     if(downsample == NULL) {
         return;
     }
@@ -108,7 +109,7 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
     downsample = NULL;
     downsampleVector = NULL;
 
-    qDebug() << "AnalyserWaveform :: Waveform downsampling finished.";
+    //qDebug() << "AnalyserWaveform :: Waveform downsampling finished.";
     m_iStartTime = clock() - m_iStartTime;
-    qDebug() << "AnalyserWaveform :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
+    //qDebug() << "AnalyserWaveform :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
 }

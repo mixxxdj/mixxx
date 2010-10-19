@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Dec 2 2003
     copyright            : (C) 2003 by Tue Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,7 +20,6 @@
 
 #include <qobject.h>
 #include <qevent.h>
-#include <q3valuelist.h>
 #include <qkeysequence.h>
 //Added by qt3to4:
 #include <QKeyEvent>
@@ -42,11 +41,11 @@ public:
     bool eventFilter(QObject *obj, QEvent *e);
 
 private:
-    bool kbdPress(QKeySequence k, bool release);
+    bool kbdPress(QKeySequence k, bool release, bool autoRepeat);
     /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */
     QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
-    Q3ValueList<int> m_qActiveKeyList;
+    QList<int> m_qActiveKeyList;
     /** Pointer to keyboard config object */
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
 };

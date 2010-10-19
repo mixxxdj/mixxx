@@ -1,16 +1,20 @@
 #ifndef WPREPARELIBRARYTABLEVIEW_H
 #define WPREPARELIBRARYTABLEVIEW_H
 
-#include "configobject.h"
-#include "wtracktableview.h"
-class QWidget;
+#include <QWidget>
 
-class WPrepareLibraryTableView : public WTrackTableView 
+#include "configobject.h"
+#include "widget/wtracktableview.h"
+
+class TrackCollection;
+
+class WPrepareLibraryTableView : public WTrackTableView
 {
     public:
         WPrepareLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                            ConfigKey headerStateKey,
-                            ConfigKey vScrollBarPosKey);
+                                 TrackCollection* pTrackCollection,
+                                 ConfigKey headerStateKey,
+                                 ConfigKey vScrollBarPosKey);
         ~WPrepareLibraryTableView();
 
         virtual void onSearchStarting();

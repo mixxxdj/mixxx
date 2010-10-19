@@ -86,8 +86,41 @@ RhythmboxPlaylistModel::~RhythmboxPlaylistModel()
 
 Qt::ItemFlags RhythmboxPlaylistModel::flags ( const QModelIndex & index ) const
 {
-    return QAbstractTableModel::flags(index);
+    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+
+    if (!index.isValid())
+        return Qt::ItemIsEnabled;
+
+    defaultFlags |= Qt::ItemIsDragEnabled;
+
+    return defaultFlags;
 }
+
+QMimeData* RhythmboxPlaylistModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+
+    //Ok, so the list of indexes we're given contains separates indexes for
+    //each column, so even if only one row is selected, we'll have like 7 indexes.
+    //We need to only count each row once:
+    QList<int> rows;
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            if (!rows.contains(index.row())) {
+                rows.push_back(index.row());
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+                if (!url.isValid())
+                    qDebug() << "ERROR invalid url\n";
+                else
+                    urls.append(url);
+            }
+        }
+    }
+    mimeData->setUrls(urls);
+    return mimeData;
+}
+
 
 QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) const
 {
@@ -97,32 +130,17 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
     if (!index.isValid())
         return QVariant();
 
-    // TODO(XXX) THIS IS SOAKED IN WASTE. It creates a new TIO for every
-    // row. The trackmodel need some sort of 'getIndexOfTrack' call, and then
-    // you simply pass this whole call off to RhythmboxTrackModel::data(index).
-    TrackPointer pTrack = getTrack(index);
-    if ( pTrack == NULL )
-        return QVariant();
+    // OwenB - attempting to make this more efficient, don't create a new
+    // TIO for every row
+	  if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
+		  // get location string from playlist
+        QString location = getTrackLocation(index);
 
-    if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
-        switch (index.column()) {
-            case RhythmboxPlaylistModel::COLUMN_ARTIST:
-                return pTrack->getArtist();
-            case RhythmboxPlaylistModel::COLUMN_TITLE:
-                return pTrack->getTitle();
-            case RhythmboxPlaylistModel::COLUMN_ALBUM:
-                return pTrack->getAlbum();
-            case RhythmboxPlaylistModel::COLUMN_DATE:
-                return pTrack->getYear();
-            case RhythmboxPlaylistModel::COLUMN_GENRE:
-                return pTrack->getGenre();
-            case RhythmboxPlaylistModel::COLUMN_LOCATION:
-                return pTrack->getLocation();
-            case RhythmboxPlaylistModel::COLUMN_DURATION:
-                return MixxxUtils::secondsToMinutes(pTrack->getDuration());
-            default:
-                return QVariant();
-        }
+          // use this to get DOM node from RhythmboxTrackModel
+       QDomNode songNode = m_pRhythmbox->getTrackNodeByLocation(location);
+
+          // return the node's data item that was asked for.
+        return m_pRhythmbox->getTrackColumnData(songNode, index);
     }
 
     return QVariant();
@@ -202,24 +220,32 @@ void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index)
     //Should do nothing... hmmm
 }
 
+void RhythmboxPlaylistModel::removeTracks(const QModelIndexList& indices)
+{
+    //Should do nothing... hmmm
+}
+
 void RhythmboxPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
     //Should do nothing... hmmm
 }
 
-QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const
-{
-    //FIXME
-    return QString();
-}
 
-TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
+
+QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const
 {
     QDomNodeList playlistTrackList = m_mPlaylists[m_sCurrentPlaylist];
     QDomNode pnode = playlistTrackList.at(index.row());
     QString location = pnode.toElement().text();
 
- 	return m_pRhythmbox->getTrackByLocation(location);
+    return location;
+}
+
+TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
+{
+    QString location = getTrackLocation(index);
+
+    return m_pRhythmbox->getTrackByLocation(location);
 }
 
 QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
