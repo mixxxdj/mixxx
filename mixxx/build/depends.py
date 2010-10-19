@@ -65,7 +65,8 @@ class OggVorbis(Dependence):
                 raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
         else:
             if not conf.CheckLib('vorbisfile'):
-		Exception('Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers.')
+                Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
+                    'or the libvorbisfile development headers.')
 
         if not conf.CheckLib('vorbis'):
             raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
@@ -528,8 +529,8 @@ class MixxxCore(Feature):
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
             build.env.RES('#src/mixxx.rc')
-	    # Tobias Rafreider: What is the purpose of the following line, if
-	    # the file doesn't exist?
+            # Tobias Rafreider: What is the purpose of the following line, if
+            # the file doesn't exist?
             #
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
@@ -601,7 +602,7 @@ class MixxxCore(Feature):
 
             #Check for pkg-config >= 0.15.0
             if not conf.CheckForPKGConfig('0.15.0'):
-		raise Exception('pkg-config >= 0.15.0 not found.')
+                raise Exception('pkg-config >= 0.15.0 not found.')
 
 
         elif build.platform_is_osx:
