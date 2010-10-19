@@ -40,6 +40,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_ALBUM + "," +
                                   LIBRARYTABLE_YEAR + "," +
                                   LIBRARYTABLE_DURATION + "," +
+                                  LIBRARYTABLE_RATING + "," +
                                   LIBRARYTABLE_GENRE + "," +
                                   LIBRARYTABLE_FILETYPE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
@@ -71,36 +72,8 @@ void CrateTableModel::setCrate(int crateId) {
 
     select();
 
-    setHeaderData(fieldIndex(LIBRARYTABLE_TIMESPLAYED),
-                  Qt::Horizontal, tr("Played"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ID),
-                  Qt::Horizontal, tr("ID"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
-                  Qt::Horizontal, tr("Artist"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
-                  Qt::Horizontal, tr("Title"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
-                  Qt::Horizontal, tr("Album"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
-                  Qt::Horizontal, tr("Genre"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
-                  Qt::Horizontal, tr("Type"));
-    setHeaderData(fieldIndex("location"),
-                  Qt::Horizontal, tr("Location"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
-                  Qt::Horizontal, tr("Comment"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
-                  Qt::Horizontal, tr("Duration"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
-                  Qt::Horizontal, tr("Track #"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
-                  Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
-                  Qt::Horizontal, tr("BPM"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
-                  Qt::Horizontal, tr("Date Added"));
+    // BaseSqlTableModel sets up the header names
+    initHeaderData();
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
@@ -250,96 +223,8 @@ QMimeData* CrateTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-Qt::ItemFlags CrateTableModel::flags(const QModelIndex& index) const {
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
-
-    //Enable dragging songs from this data model to elsewhere (like the waveform
-    //widget to load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    if (index.column() == fieldIndex(LIBRARYTABLE_BPM)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-    else if (index.column() == fieldIndex(LIBRARYTABLE_COMMENT)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-    else if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
-
-    return defaultFlags;
-}
-
 QItemDelegate* CrateTableModel::delegateForColumn(int i) {
     return NULL;
-}
-
-QVariant CrateTableModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value;
-
-    if (role == Qt::ToolTipRole)
-        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
-    else
-        value = BaseSqlTableModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
-    }
-    if (role == Qt::DisplayRole) {
-        if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            return QString("(%1)").arg(value.toInt());
-        }
-        else if (item.column() == fieldIndex(LIBRARYTABLE_PLAYED)) {
-            if (value == "true")
-                return true;
-            else
-                return false;
-        }
-    }
-    else if (role == Qt::EditRole) {
-        if (item.column() == fieldIndex(LIBRARYTABLE_BPM)) return value.toInt();
-        else if (item.column() == fieldIndex(LIBRARYTABLE_COMMENT)) return value.toString();
-        else if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) return item.sibling(item.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-        else {
-            qDebug() << "Can't edit this column" << item.column();
-            return QVariant();
-        }
-    }
-    else if (role == Qt::CheckStateRole) {
-        if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            bool played = item.sibling(item.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-            if (played) {
-                return Qt::Checked;
-            }
-            return Qt::Unchecked;
-        }
-    }
-    return value;
-}
-
-bool CrateTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    //qDebug() << "edited " << index.row() << " " << index.column() << "to " << value << " with role " << role;
-    if (index.isValid() && role == Qt::CheckStateRole)
-    {
-        QString val = value.toInt() > 0 ? QString("true") : QString("false");
-        if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
-            return setData(playedIndex, val, Qt::EditRole);
-        }
-    }
-    else if (BaseSqlTableModel::setData(index, value, role))
-    {
-        submitAll();
-        return true;
-    }
-    /*else
-      {
-      qDebug() << "problem with setdata" << lastError();
-      }*/
-    return false;
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {

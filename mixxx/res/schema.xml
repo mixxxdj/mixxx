@@ -148,14 +148,17 @@ METADATA
   </revision>
   <revision version="6">
     <description>
-      Add timesplayed column
+      Add timesplayed and rating column. Reset header state.
     </description>
     <sql>
       ALTER TABLE library ADD COLUMN timesplayed integer DEFAULT 0;
+      ALTER TABLE library ADD COLUMN rating integer DEFAULT 0;
 
       UPDATE library SET timesplayed = played;
       UPDATE library SET played = 0;
+
       DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
+      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
       DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
     </sql>
   </revision>

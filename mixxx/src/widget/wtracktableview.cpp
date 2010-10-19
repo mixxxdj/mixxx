@@ -614,13 +614,15 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
-    m_selectedIndices = this->selectionModel()->selectedRows();
+    
     if (event->key() == Qt::Key_Return)
     {
-        if (m_selectedIndices.size() > 0) {
-            QModelIndex index = m_selectedIndices.at(0);
-            slotMouseDoubleClicked(index);
-        }
+		/*
+		 * It is not a good idea if 'key_return'
+		 * causes a track to load since we allow in-line editing
+		 * of table items in general
+		 */
+        return;
     }
     else if (event->key() == Qt::Key_BracketLeft)
     {

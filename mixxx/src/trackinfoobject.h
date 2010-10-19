@@ -166,6 +166,10 @@ public:
 
     int getId() const;
 
+    /** Returns rating */
+    int getRating() const;
+    /** Sets rating */
+    void setRating(int);
 
     /** Get URL for track */
     QString getURL();
@@ -291,6 +295,8 @@ public:
     int m_iSampleRate;
     /** Number of channels */
     int m_iChannels;
+    /**Track rating */
+    int m_Rating;;
     /** Bitrate, number of kilobits per second of audio in the track*/
     int m_iBitrate;
     /** Number of times the track has been played */
