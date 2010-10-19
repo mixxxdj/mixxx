@@ -73,8 +73,9 @@
          </font>
         </property>
         <property name="text">
-         <string>Big Fat Warning: Tell something about
-volume changing when ReplayGain is on.</string>
+         <string>On old computers the analyser may take some seconds.
+ Wait until the song is normalized before playing with
+ pregain and volume.</string>
         </property>
        </widget>
       </item>
