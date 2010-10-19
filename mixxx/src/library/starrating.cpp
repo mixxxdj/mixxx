@@ -2,7 +2,7 @@
                            starrating.cpp
                               -------------------
      copyright            : (C) 2010 Tobias Rafreider
-	 copyright            : (C) 2009 Nokia Corporation 
+	 copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 
@@ -32,9 +32,7 @@ StarRating::StarRating(int starCount, int maxStarCount)
 
     m_starPolygon << QPointF(1.0, 0.5);
     for (int i = 1; i < 5; ++i)
-		m_starPolygon << QPointF(0.5 + 0.5 * cos(0.8 * i * 3.14), 0.5 + 0.5 * sin(0.8 * i * 3.14));
-
-		m_diamondPolygon << QPointF(0.4, 0.5) << QPointF(0.5, 0.4) << QPointF(0.6, 0.5) << QPointF(0.5, 0.6) << QPointF(0.4, 0.5);
+        m_starPolygon << QPointF(0.5 + 0.5 * cos(0.8 * i * 3.14), 0.5 + 0.5 * sin(0.8 * i * 3.14));    m_diamondPolygon << QPointF(0.4, 0.5) << QPointF(0.5, 0.4) << QPointF(0.6, 0.5) << QPointF(0.5, 0.6) << QPointF(0.4, 0.5);
 }
 
 QSize StarRating::sizeHint() const
@@ -52,12 +50,11 @@ void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &pal
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
 
+    // Workaround for painting issue. If we are editable, assume we are
+    // selected, so use the highlight and hightlightedText colors.
     if (mode == Editable) {
-		//painter->setBrush(Qt::cyan);
-        painter->setBrush(palette.text());
-    } else {
-		//painter->setBrush(Qt::cyan);
-        painter->setBrush(palette.text());
+        painter->fillRect(rect, palette.highlight());
+        painter->setBrush(palette.highlightedText());
     }
 
     int yOffset = (rect.height() - PaintingScaleFactor) / 2;
@@ -67,7 +64,7 @@ void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &pal
     for (int i = 0; i < m_myMaxStarCount; ++i) {
         if (i < m_myStarCount) {
             painter->drawPolygon(m_starPolygon, Qt::WindingFill);
-        } else if (mode == Editable) {
+        } else {
             painter->drawPolygon(m_diamondPolygon, Qt::WindingFill);
         }
         painter->translate(1.0, 0.0);

@@ -17,13 +17,13 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
-    //Setup properties for table
+    // Setup properties for table
 
-    //Editing starts when clicking on an already selected item.
+    // Editing starts when clicking on an already selected item.
     setEditTriggers(QAbstractItemView::SelectedClicked);
 
-    //This is to support rating of tracks
-	setItemDelegate(new StarDelegate);
+    // This is to support rating of tracks
+    setItemDelegate(new StarDelegate());
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);

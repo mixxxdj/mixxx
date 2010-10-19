@@ -161,6 +161,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     int row = index.row();
     int col = index.column();
 
+    //qDebug() << "BaseSqlTableModel::data() column:" << col << "role:" << role;
+
     // This value is the value in its most raw form. It was looked up either
     // from the SQL table or from the cached track layer.
     QVariant value = getBaseValue(index, role);
@@ -208,6 +210,8 @@ bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value,
 
     int row = index.row();
     int col = index.column();
+
+    //qDebug() << "BaseSqlTableModel::setData() column:" << col << "value:" << value << "role:" << role;
 
     // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
     if (role == Qt::CheckStateRole) {
