@@ -1124,7 +1124,7 @@ Copyright (C) 2010 Mixxx
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Key-lock&#10;Activates position-independent time stretch for this deck.&#10;Warning: changing this while the deck is producing sound may result in undesired faults in the audio!&#10;</Tooltip>
+		<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
