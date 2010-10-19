@@ -36,6 +36,8 @@ class BaseSqlTableModel : public QSqlTableModel {
   private slots:
     void trackChanged(int trackId);
   private:
+    QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
+
     QString m_qTableName;
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
