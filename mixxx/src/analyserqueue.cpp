@@ -112,7 +112,7 @@ void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         // analyser queue is CPU intensive so we want to get out of the way of
         // the audio callback thread.
         //QThread::yieldCurrentThread();
-        QThread::usleep(10);
+        //QThread::usleep(10);
 
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
     delete[] data16;

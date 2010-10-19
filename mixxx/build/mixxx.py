@@ -24,7 +24,10 @@ class MixxxBuild(object):
             machine = self.host_machine
 
         if toolchain is None:
-            toolchain = 'gnu'
+            if self.host_platform == 'windows':
+                raise Exception('must specify toolchain on Windows (msvs or gnu)')
+            else:
+                toolchain = 'gnu'
 
         if build is None:
             build = 'debug'
@@ -36,7 +39,8 @@ class MixxxBuild(object):
             raise Exception("invalid target platform")
 
         if machine not in ['x86_64', 'x86', 'i686', 'i586',
-                           'i486', 'i386', 'powerpc', 'powerpc64']:
+                           'i486', 'i386', 'powerpc', 'powerpc64',
+                           'AMD64', 'EM64T', 'INTEL64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -63,22 +67,21 @@ class MixxxBuild(object):
 
         flags_force32 = int(Script.ARGUMENTS.get('force32', 0))
         flags_force64 = int(Script.ARGUMENTS.get('force64', 0))
-        if self.toolchain == 'gnu':
-            if flags_force32 and flags_force64:
-                logging.error('Both force32 and force64 cannot be enabled at once')
-                Script.Exit(1)
+        if flags_force32 and flags_force64:
+            logging.error('Both force32 and force64 cannot be enabled at once')
+            Script.Exit(1)
 
-            if flags_force32:
-                if self.machine in ['powerpc', 'powerpc64']:
-                    self.machine = 'powerpc'
-                else:
-                    self.machine = 'x86'
-            elif flags_force64:
-                if self.machine in ['powerpc', 'powerpc64']:
-                    self.machine = 'powerpc64'
-                else:
-                    self.machine = 'x86_64'
-        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64']
+        if flags_force32:
+            if self.machine in ['powerpc', 'powerpc64']:
+                self.machine = 'powerpc'
+            else:
+                self.machine = 'x86'
+        elif flags_force64:
+            if self.machine in ['powerpc', 'powerpc64']:
+                self.machine = 'powerpc64'
+            else:
+                self.machine = 'x86_64'
+        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64', 'AMD64', 'EM64T', 'INTEL64']
 
         self.bitwidth = 32
         if self.machine_is_64bit:

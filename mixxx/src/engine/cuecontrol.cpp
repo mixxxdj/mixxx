@@ -26,6 +26,8 @@ CueControl::CueControl(const char * _group,
         m_mutex(QMutex::Recursive) {
     createControls();
 
+    m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
+
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
     m_pCuePoint->set(-1);
@@ -75,6 +77,8 @@ void CueControl::createControls() {
     for (int i = 0; i < m_iNumHotCues; ++i) {
         ControlObject* hotcuePosition = new ControlObject(
             keyForControl(i, "position"));
+        connect(hotcuePosition, SIGNAL(valueChanged(double)),
+                this, SLOT(hotcuePositionChanged(double)));
         hotcuePosition->set(-1);
         m_controlMap[hotcuePosition] = i;
         m_hotcuePosition.append(hotcuePosition);
@@ -457,6 +461,24 @@ void CueControl::hotcueClear(double v) {
     }
 
     detachCue(hotcue);
+}
+
+void CueControl::hotcuePositionChanged(double newPosition) {
+    QMutexLocker lock(&m_mutex);
+    if (!m_pLoadedTrack)
+        return;
+
+    int hotcue = senderHotcue(sender());
+
+    Cue* pCue = m_hotcue[hotcue];
+    if (pCue) {
+        // Setting the position to -1 is the same as calling hotcue_x_clear
+        if (newPosition == -1) {
+            pCue->setHotCue(-1);
+        } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
+            pCue->setPosition(newPosition);
+        }
+    }
 }
 
 void CueControl::hintReader(QList<Hint>& hintList) {
