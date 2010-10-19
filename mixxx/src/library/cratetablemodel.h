@@ -20,9 +20,7 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
 
     void setCrate(int crateId);
 
-    virtual QVariant data(const QModelIndex& item, int role) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
 
     // From TrackModel
     virtual TrackPointer getTrack(const QModelIndex& index) const;
@@ -35,7 +33,6 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual QItemDelegate* delegateForColumn(const int i);
 

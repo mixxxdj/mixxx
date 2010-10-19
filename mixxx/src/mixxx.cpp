@@ -185,10 +185,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) || (!dir.exists()))
     {
-        QString fd = QFileDialog::getExistingDirectory(this, 
+        QString fd = QFileDialog::getExistingDirectory(this,
                          tr("Choose music library directory"),
                          QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-        
+
         if (fd != "")
         {
             config->set(ConfigKey("[Playlist]","Directory"), fd);
