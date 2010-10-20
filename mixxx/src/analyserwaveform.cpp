@@ -101,6 +101,7 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyserWaveform::finalise(TrackPointer tio) {
+    Q_UNUSED(tio);
     if(downsample == NULL) {
         return;
     }

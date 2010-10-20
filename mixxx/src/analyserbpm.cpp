@@ -12,10 +12,12 @@ AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
 }
 
 void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    Q_UNUSED(totalSamples);
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     m_bProcessEntireSong = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
-    int defaultrange = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
+    // var not used, remove? TODO(bkgood)
+    // int defaultrange = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
     bool bpmEnabled = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
 
     // If BPM detection is not enabled, or the track already has BPM detection done.

@@ -12,9 +12,7 @@
 
 #include <QBrush>
 #include <QtDebug>
-#include <Q3MemArray>
 #include <QMouseEvent>
-#include <Q3ValueList>
 #include <QPaintEvent>
 #include <qpainter.h>
 #include <QtDebug>

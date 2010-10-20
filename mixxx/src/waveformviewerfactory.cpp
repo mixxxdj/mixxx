@@ -27,13 +27,13 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         qDebug() << "WaveformViewerFactory::createWaveformViewer -- invalid target pointer";
         return WAVEFORM_INVALID;
     }
-    
+
     if (pConfig->getValueString(ConfigKey("[Controls]", "Visuals")).toInt() == 1) {
         bVisualWaveform = false;
     }
 
     if(bVisualWaveform) {
-        
+
         qDebug() << "WaveformViewerFactory :: Creating new visual waveform";
         // Support shared GL rendering contexts
         WGLWaveformViewer *other = (m_visualGLViewers.isEmpty() ? NULL : (WGLWaveformViewer*)m_visualGLViewers.first());
@@ -41,7 +41,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
             qDebug() << "WaveformViewerFactory :: Making new GL context.";
         else
             qDebug() << "WaveformViewerFactory :: Sharing existing GL context.";
-        
+
         WGLWaveformViewer *visual = new WGLWaveformViewer(group, pWaveformRenderer, parent, NULL);
 
         if(visual->isValid()) {
@@ -71,14 +71,14 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
             ret = WAVEFORM_WIDGET;
             *target = nongl;*/
         }
-        
+
     }
 
     // WTF: Intentionally separate from previous block.
     if(!bVisualWaveform) {
         qDebug() << "WaveformViewerFactory :: Creating new simple waveform";
         // Preference is for simple or regular, for now just simple.
-        WVisualSimple *simple = new WVisualSimple(group,parent);
+        WVisualSimple *simple = new WVisualSimple(group,parent, pWaveformRenderer);
         m_simpleViewers.append(simple);
         m_viewers.append(simple);
         ret = WAVEFORM_SIMPLE;
@@ -93,12 +93,12 @@ void WaveformViewerFactory::destroyWaveformViewer(QObject *pWaveformViewer) {
 
     if(pWaveformViewer == NULL)
         return;
-    
+
     // Precondition is that we created this waveform viewer.
     if(!m_viewers.contains(pWaveformViewer))
         return;
 
-    
+
     int index = m_viewers.indexOf(pWaveformViewer);
     //ASSERT(index != -!);
     m_viewers.removeAt(index);
@@ -110,13 +110,13 @@ void WaveformViewerFactory::destroyWaveformViewer(QObject *pWaveformViewer) {
     index = m_visualViewers.indexOf((WWaveformViewer*)pWaveformViewer);
     if(index != -1)
         m_visualViewers.removeAt(index);
-    
+
     index = m_visualGLViewers.indexOf((WGLWaveformViewer*)pWaveformViewer);
     if(index != -1)
         m_visualGLViewers.removeAt(index);
 
     delete pWaveformViewer;
-    
+
 }
 
 WaveformViewerType WaveformViewerFactory::getWaveformViewerType(QObject *pWaveformViewer) {
