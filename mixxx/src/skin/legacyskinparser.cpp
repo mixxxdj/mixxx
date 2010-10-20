@@ -1,6 +1,7 @@
 // legacyskinparser.cpp
 // Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
 
+#include <QtGlobal>
 #include <QtDebug>
 #include <QDir>
 #include <QStackedWidget>
@@ -464,6 +465,7 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseLabel(QDomElement node, QWidget* pParent) {
     WLabel * p = new WLabel(pParent);
     p->setup(node);
+    p->installEventFilter(m_pKeyboard);
     return p;
 }
 
@@ -498,7 +500,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
 
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 
-    QGridLayout* pLibraryPageLayout = new QGridLayout();
+    QGridLayout* pLibraryPageLayout = new QGridLayout(pLibraryPage);
     pLibraryPageLayout->setContentsMargins(0, 0, 0, 0);
     pLibraryPage->setLayout(pLibraryPageLayout);
 
@@ -507,13 +509,20 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
     WLibrary* pLibraryWidget = new WLibrary(pSplitter);
     pLibraryWidget->installEventFilter(m_pKeyboard);
 
-    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(pSplitter);
+    QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
+
+    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(pLibrarySidebarPage);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
 
-    QString path = m_pConfig->getConfigPath();
-    WSearchLineEdit* pLineEditSearch =
-            new WSearchLineEdit(path, node, pParent);
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig,
+                                                           pLibrarySidebarPage);
     pLineEditSearch->setup(node);
+
+    QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
+    vl->setContentsMargins(0,0,0,0); //Fill entire space
+    vl->addWidget(pLineEditSearch);
+    vl->addWidget(pLibrarySidebar);
+    pLibrarySidebarPage->setLayout(vl);
 
     // Connect search box signals to the library
     connect(pLineEditSearch, SIGNAL(search(const QString&)),
@@ -524,13 +533,6 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
             pLibraryWidget, SLOT(searchStarting()));
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
             pLineEditSearch, SLOT(restoreSearch(const QString&)));
-
-    QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
-    QVBoxLayout* vl = new QVBoxLayout();
-    vl->setContentsMargins(0,0,0,0); //Fill entire space
-    vl->addWidget(pLineEditSearch);
-    vl->addWidget(pLibrarySidebar);
-    pLibrarySidebarPage->setLayout(vl);
 
     m_pLibrary->bindWidget(pLibrarySidebar,
                            pLibraryWidget,
@@ -558,39 +560,99 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
 
     pTabWidget->addWidget(pLibraryPage);
 
+    QString style = WWidget::selectNodeQString(node, "Style");
 
-    // The sidebar widget doesn't have any default stylings. Use the Library
-    //ones on it.
-    QColor fgc(0,255,0);
+    // Workaround to support legacy color styling
+    QColor color(0,0,0);
+
+
+    // Qt 4.7.0's GTK style is broken.
+    bool hasQtKickedUsInTheNuts = false;
+
+#ifdef __LINUX__
+#define ohyesithas true
+    QString QtVersion = qVersion();
+    if (QtVersion == "4.7.0") {
+        hasQtKickedUsInTheNuts = ohyesithas;
+    }
+#undef ohyesithas
+#endif
+
+    QString styleHack = "";
+
     if (!WWidget::selectNode(node, "FgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+        color = WSkinColor::getCorrectColor(color);
 
-        fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTreeView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView::item:!selected { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTreeView::item:!selected { color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
+        }
+        styleHack.append(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QLabel { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
+    }
 
-        //pLibrarySidebar->setForegroundColor(WSkinColor::getCorrectColor(fgc));
+    if (!WWidget::selectNode(node, "BgColor").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        color = WSkinColor::getCorrectColor(color);
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTreeView {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView {  background-color: %1; }\n ").arg(color.name()));
 
-        // Row colors
-        if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
-        {
-            QColor r1;
-            r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-            r1 = WSkinColor::getCorrectColor(r1);
-            QColor r2;
-            r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-            r2 = WSkinColor::getCorrectColor(r2);
+            // Required for styling the item backgrounds, need to pick !selected
+            styleHack.append(QString("QTreeView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("QTableView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
 
-            // For now make text the inverse of the background so it's readable
-            // In the future this should be configurable from the skin with this
-            // as the fallback option
-            QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
+            // Styles the sidebar triangle area where there is no triangle
+            styleHack.append(QString("QTreeView::branch:!has-children {  background-color: %1; }\n ").arg(color.name()));
 
-            QPalette Rowpalette = pParent->palette();
-            Rowpalette.setColor(QPalette::Base, r1);
-            Rowpalette.setColor(QPalette::AlternateBase, r2);
-            Rowpalette.setColor(QPalette::Text, text);
+            // We can't style the triangle portions because the triangle
+            // disappears when we do background-color. I suspect they use
+            // background-image instead of border-image, against their own
+            // documentation's recommendation.
 
-            pLibrarySidebar->setPalette(Rowpalette);
+            // styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+            styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
+        }
+
+        styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
+    }
+
+    if (!WWidget::selectNode(node, "BgColorRowEven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+        color = WSkinColor::getCorrectColor(color);
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTableView::item:!selected { background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
         }
     }
+
+    if (!WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
+        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+        color = WSkinColor::getCorrectColor(color);
+
+        if (hasQtKickedUsInTheNuts) {
+            styleHack.append(QString("QTableView::item:alternate:!selected { background-color: %1; }\n ").arg(color.name()));
+        } else {
+            styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+        }
+    }
+
+    style.prepend(styleHack);
+
+    pTabWidget->setStyleSheet(style);
 
     return pTabWidget;
 }
