@@ -157,9 +157,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -289,6 +291,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
+
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
@@ -614,6 +617,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
+    // Wake up the reader so that it processes our hints / loads new files
+    // (hopefully) before the next callback.
+    m_pReader->wake();
+
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -650,6 +657,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
+        // TODO(XXX) SSE
         while (i<iLen)
         {
             pOutput[i] = fStep*(iLen-(i+1));
@@ -657,6 +665,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         }
     }
 
+    // TODO(XXX) memset
     // Reset rest of buffer
     while (i<iBufferSize)
     {
@@ -713,7 +722,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
-void EngineBuffer::loadTrack(TrackPointer pTrack) {
+void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
 
@@ -732,9 +741,11 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
     connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)));
+            this, SLOT(slotControlSeek(double)),
+            Qt::DirectConnection);
     connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)));
+            this, SLOT(slotControlSeekAbs(double)),
+            Qt::DirectConnection);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {

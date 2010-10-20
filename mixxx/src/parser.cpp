@@ -10,19 +10,16 @@
 //
 //
 
-#include "parser.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <QtDebug>
+#include "parser.h"
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
  **/
 
 
-Parser::Parser()
+Parser::Parser() : QObject()
 {
-    m_psLocations = new Q3PtrList<QString>;
 }
 
 Parser::~Parser()
@@ -33,35 +30,30 @@ Parser::~Parser()
 
 void Parser::clearLocations()
 {
-    while(!m_psLocations->isEmpty())
-        m_psLocations->removeFirst();
+    while(!m_sLocations.isEmpty())
+        m_sLocations.removeFirst();
 }
 
 long Parser::countParsed()
 {
-    return (long)m_psLocations->count();
+    return (long)m_sLocations.count();
 }
 
 bool Parser::isFilepath(QString sFilepath){
-    QFile * file = new QFile(sFilepath);
-
-    if(file->exists())
-
-        return true;
-    else
-
-        return false;
-
+    QFile file(sFilepath);
+    bool exists = file.exists();
+    file.close();
+    return exists;
 }
 
 bool Parser::isBinary(QString filename){
-    QFile * file = new QFile(filename);
+    QFile file(filename);
 
-    if(file->open(QIODevice::ReadOnly)){
+    if(file.open(QIODevice::ReadOnly)){
         char c;
         unsigned char uc;
         
-        if(!file->getChar(&c))
+        if(!file.getChar(&c))
         {
           qDebug() << "Parser: Error reading stream on " << filename;
           return true; //should this raise an exception?
@@ -71,7 +63,7 @@ bool Parser::isBinary(QString filename){
         
         if(!(33<=uc && uc<=127))  //Starting byte is no character
         {
-            file->close();
+            file.close();
             return true;
         }
 
@@ -79,6 +71,6 @@ bool Parser::isBinary(QString filename){
         qDebug() << "Parser: Could not open file: " << filename;
     }
     //qDebug(QString("Parser: textstream starting character is: %1").arg(i));
-    file->close();
+    file.close();
     return false;
 }

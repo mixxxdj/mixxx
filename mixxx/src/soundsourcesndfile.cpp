@@ -23,8 +23,7 @@
 #include "soundsourcesndfile.h"
 #include <qstring.h>
 #include <QtDebug>
-//Added by qt3to4:
-#include <Q3ValueList>
+
 /*
    Class for reading files using libsndfile
  */
@@ -159,7 +158,7 @@ int SoundSourceSndFile::parseHeader()
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
 
     if (is_flac) {
-        TagLib::FLAC::File f(location);
+        TagLib::FLAC::File f(location.toAscii().constData());
         result = processTaglibFile(f);
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         TagLib::Ogg::XiphComment* xiph = f.xiphComment();
@@ -170,7 +169,7 @@ int SoundSourceSndFile::parseHeader()
             processXiphComment(xiph);
         }
     } else if (is_wav) {
-        TagLib::RIFF::WAV::File f(location);
+        TagLib::RIFF::WAV::File f(location.toAscii().constData());
         result = processTaglibFile(f);
 
         TagLib::ID3v2::Tag* id3v2 = f.tag();
@@ -179,7 +178,7 @@ int SoundSourceSndFile::parseHeader()
         }
     } else {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(location);
+        TagLib::RIFF::AIFF::File f(location.toAscii().constData());
         result = processTaglibFile(f);
 
         TagLib::ID3v2::Tag* id3v2 = f.tag();

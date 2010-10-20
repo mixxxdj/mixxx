@@ -1,11 +1,11 @@
 /***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #include <QtCore>
 
@@ -13,6 +13,7 @@
 
 #include "controlpotmeter.h"
 #include "ladspa/ladspacontrol.h"
+#include "sampleutil.h"
 
 EngineLADSPA * EngineLADSPA::m_pEngine = NULL;
 
@@ -59,7 +60,7 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             delete con->control;
             delete con->potmeter;
             con->control = NULL;
-	    connection = m_Connections.erase(connection);
+            connection = m_Connections.erase(connection);
         }
         else
         {
@@ -68,49 +69,47 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         }
     }
 
-    for (int i = 0; i < m_monoBufferSize; i++)
-    {
-        m_pBufferLeft[0][i] = pIn[2 * i];
-        m_pBufferRight[0][i] = pIn[2 * i + 1];
-    }
+    SampleUtil::deinterleaveBuffer(m_pBufferLeft[0], m_pBufferRight[0],
+                                   pIn, m_monoBufferSize);
 
     LADSPAInstanceLinkedList::iterator instance = m_Instances.begin();
     while (instance != m_Instances.end())
     {
-	if ((*instance)->remove)
-	    instance = m_Instances.erase(instance);
-	else
-	{
-	    if ((*instance)->isEnabled())
-	    {
-            //qDebug() << "enabled";
-		CSAMPLE wet = (CSAMPLE)(*instance)->getWet();
-		if ((*instance)->isInplaceBroken() || wet < 1.0)
-		{
-		    CSAMPLE dry = 1.0 - wet;
-		    (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[1], m_pBufferRight[1], m_monoBufferSize);
-		    // TODO: Use run_adding() if possible
-		    for (int i = 0; i < m_monoBufferSize; i++)
-		    {
-			m_pBufferLeft [0][i] = m_pBufferLeft [0][i] * dry + m_pBufferLeft [1][i] * wet;
-			m_pBufferRight[0][i] = m_pBufferRight[0][i] * dry + m_pBufferRight[1][i] * wet;
-		    }
-		}
-		else
-		{
-		    (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[0], m_pBufferRight[0], m_monoBufferSize);
-		}
-	    }
+        if ((*instance)->remove)
+            instance = m_Instances.erase(instance);
+        else
+        {
+            if ((*instance)->isEnabled())
+            {
+                //qDebug() << "enabled";
+                CSAMPLE wet = (CSAMPLE)(*instance)->getWet();
+                if ((*instance)->isInplaceBroken() || wet < 1.0)
+                {
+                    CSAMPLE dry = 1.0 - wet;
+                    (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0],
+                                         m_pBufferLeft[1], m_pBufferRight[1],
+                                         m_monoBufferSize);
+                    // TODO: Use run_adding() if possible
+                    SampleUtil::copy2WithGain(m_pBufferLeft[0], m_pBufferLeft[0], dry,
+                                              m_pBufferLeft[1], wet, m_monoBufferSize);
+                    SampleUtil::copy2WithGain(m_pBufferRight[0], m_pBufferRight[0], dry,
+                                              m_pBufferRight[1], wet, m_monoBufferSize);
+                }
+                else
+                {
+                    (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0],
+                                         m_pBufferLeft[0], m_pBufferRight[0],
+                                         m_monoBufferSize);
+                }
+            }
             ++instance;
         }
     }
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    for (int i = 0; i < m_monoBufferSize; i++)
-    {
-	pOutput[2 * i]     = m_pBufferLeft [0][i];
-	pOutput[2 * i + 1] = m_pBufferRight[0][i];
-    }
+    SampleUtil::interleaveBuffer(pOutput,
+                                 m_pBufferLeft[0], m_pBufferRight[0],
+                                 m_monoBufferSize);
 }
 
 void EngineLADSPA::addInstance(LADSPAInstance * instance)

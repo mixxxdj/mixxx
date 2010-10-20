@@ -37,8 +37,9 @@ class WVisualSimple : public WWidget
 {
     Q_OBJECT
   public:
-    WVisualSimple(const char* group, QWidget *parent=0);
+    WVisualSimple(const char* group, QWidget *parent, WaveformRenderer* pWaveformRenderer);
     virtual ~WVisualSimple();
+
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
@@ -48,13 +49,15 @@ class WVisualSimple : public WWidget
     void paintEvent(QPaintEvent *);
 
   signals:
-    void trackDropped(QString filename);
+    void trackDropped(QString filename, QString group);
 
   public slots:
     void setValue(double) {};
     void refresh();
 
+
   protected:
+    QString m_group;
     int m_iStartPosX, m_iValue;
     QPoint m_qMarkerPos1, m_qMarkerPos2, m_qMousePos;
 

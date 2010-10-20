@@ -20,7 +20,7 @@
 #include <QPixmap>
 #include <QtDebug>
 
-Q3Dict<PixmapInfoType> WPixmapStore::dictionary(251);
+QHash<QString, PixmapInfoType*> WPixmapStore::dictionary;
 
 ImgSource * WPixmapStore::loader = 0;
 
@@ -46,7 +46,7 @@ QPixmap * WPixmapStore::getPixmap(const QString &fileName)
     if (loader != 0) {
         QImage * img = loader->getImage(fileName);
 
-        info->pixmap = new QPixmap(QPixmap::fromImage(*img)); //ack, hacky; there must be a better way (we're using pixmap pointers, but perhaps qt4 expects that you'll just copy?) --kousu 2009/03	
+        info->pixmap = new QPixmap(QPixmap::fromImage(*img)); //ack, hacky; there must be a better way (we're using pixmap pointers, but perhaps qt4 expects that you'll just copy?) --kousu 2009/03
         // No longer need the original QImage (I hope...) - adam_d
         delete img;
     } else {
@@ -73,19 +73,19 @@ QPixmap * WPixmapStore::getPixmapNoCache(const QString& fileName) {
 void WPixmapStore::deletePixmap(QPixmap * p)
 {
     // Search for pixmap in list
-    Q3DictIterator<PixmapInfoType> it(dictionary);
+    PixmapInfoType *info = NULL;
+    QMutableHashIterator<QString, PixmapInfoType*> it(dictionary);
 
-    for( ; it.current(); ++it )
+    while (it.hasNext())
     {
-        PixmapInfoType * info = it.current();
-
+        info = it.next().value();
         if (p == info->pixmap)
         {
             info->instCount--;
             if (info->instCount<1)
             {
+                it.remove();
                 delete info->pixmap;
-                dictionary.remove(it.currentKey());
                 delete info;
             }
 
