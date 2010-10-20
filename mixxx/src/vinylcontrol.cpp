@@ -42,11 +42,10 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
 
     //Vinyl control mode
-    iVCMode = m_pConfig->getValueString(ConfigKey(group,"VinylMode")).toInt();
+    iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
 
     //Enabled or not
     bIsEnabled = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol")).toInt();
-
 }
 
 void VinylControl::ToggleVinylControl(bool enable)
