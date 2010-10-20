@@ -8,10 +8,14 @@
 #include <QDomNode>
 #include <QColor>
 
+#include "configobject.h"
+
 class WSearchLineEdit : public QLineEdit {
     Q_OBJECT
   public:
-    WSearchLineEdit(QString& skinpath, QDomNode node, QWidget* parent = 0);
+    WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
+                    QWidget* pParent);
+    virtual ~WSearchLineEdit();
     void setup(QDomNode node);
 
   protected:
