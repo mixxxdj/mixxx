@@ -228,7 +228,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 int SoundSourceOggVorbis::parseHeader()
 {
     setType("ogg");
-    TagLib::Ogg::Vorbis::File f(getFilename().toAscii().constData());
+    TagLib::Ogg::Vorbis::File f(getFilename().toUtf8().constData());
 
     // Takes care of all the default metadata
     bool result = processTaglibFile(f);
