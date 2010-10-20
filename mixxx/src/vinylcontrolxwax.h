@@ -47,9 +47,7 @@ private:
 	bool bSeeking; 					//Are we seeking through the record? (ie. is it moving really fast?)
 	bool bHaveSignal;					//Any signal at all?
 	bool bAtRecordEnd;
-	bool bModeSwitch;               //when mode has switched, don't stop playback until we get signal
 	bool bForceResync;
-	time_t dSwitchTime;
 	int iNewMode;
 	double dOldFilePos;
 	double dSteadyPitch;
