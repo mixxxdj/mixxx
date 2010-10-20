@@ -18,7 +18,8 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
+#include "engine/enginechannel.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -36,50 +37,51 @@ class ControlObject;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
-// class EngineBufferMasterRate;
-
-/**
-  *@author Tue and Ken Haste Andersen
-  */
-
-class EngineMaster : public EngineObject
-{
+class EngineMaster : public EngineObject {
 public:
-    EngineMaster(ConfigObject<ConfigValue> *_config,
-                 EngineBuffer *buffer1, EngineBuffer *buffer2,
-                 EngineChannel *, EngineChannel *, const char *group);
-    ~EngineMaster();
-    /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
+    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
+    virtual ~EngineMaster();
+
+    // Reconfigures the EngineBufferScaleSRC objects with the sound quality
+    // written in the config database
     void setPitchIndpTimeStretch(bool b);
+
+    // Get access to the sample buffers. None of these are thread safe. Only to
+    // be called by SoundManager.
     const CSAMPLE* getMasterBuffer();
     const CSAMPLE* getHeadphoneBuffer();
+    int numChannels();
+    const CSAMPLE* getChannelBuffer(int i);
+
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
-private:
-	void xfadeGains(FLOAT_TYPE *gain1, FLOAT_TYPE *gain2, double xfadePosition, double transform, double calibration);
+
+    // Add an EngineChannel to the mixing engine. This is not thread safe --
+    // only call it before the engine has started mixing.
+    void addChannel(EngineChannel* pChannel);
+
+    static double gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                              double leftGain,
+                              double centerGain,
+                              double rightGain);
+
+  private:
+    QList<EngineChannel*> m_channels;
+
+    CSAMPLE *m_pMaster, *m_pHead;
+    QList<CSAMPLE*> m_channelBuffers;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
-    EngineBuffer *buffer1, *buffer2;
-    EngineChannel *channel1, *channel2;
     EngineVolume *volume, *head_volume;
     EngineClipping *clipping, *head_clipping;
-    EngineFlanger *flanger;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
 #endif
     EngineVuMeter *vumeter;
-    EngineVolume *volume1, *volume2;
-    EngineVuMeter *vumeter1, *vumeter2;
-    EngineVinylSoundEmu *vinylsound1, *vinylsound2;
     EngineSideChain *sidechain;
 
-//     EngineBufferMasterRate *m_pEngineBufferMasterRate;
-
-//     ControlObject *m_pControlObjectHeadphoneMute;
-    ControlPotmeter *crossfader, *head_mix, *m_pBalance, *xFaderCurve, *xFaderCalibration;
-    ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2, *transform1, *transform2;
-    CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;
-    bool master1, master2;
+    ControlPotmeter *crossfader, *head_mix,
+        *m_pBalance, *xFaderCurve, *xFaderCalibration;
 };
 
 #endif

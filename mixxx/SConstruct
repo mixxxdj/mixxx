@@ -19,7 +19,7 @@ import os
 
 # if you don't specify your platform, we autodetect platform/machine  using python
 # if you don't specify your machine then we pick iX86 by default
-# default toolchain: gnu
+# default toolchain: gnu (but you'll get an error on Windows if you don't specify one)
 # default build: debug
 
 import logging
@@ -37,8 +37,8 @@ available_features = [features.HifiEq,
                       features.Shoutcast,
                       features.Profiling,
                       features.Tuned,
-                      features.Optimize,
                       features.QDebug,
+                      features.Optimize,
                       features.M4A,
                       features.WavPack,
                       features.TestSuite,
