@@ -40,8 +40,10 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
         	RGCounter++;
     }
-
-	m_istepcontrol = AnalyzeSamples(m_fLems,m_fRems,RGCounter,2);
+	//go to const to avoid >=gcc 4.4 problems
+	const float_t* m_fLemsConst = m_fLems;
+	const float_t* m_fRemsConst = m_fRems;
+	m_istepcontrol = AnalyzeSamples(m_fLemsConst,m_fRemsConst,RGCounter,2);
 }
 
 
