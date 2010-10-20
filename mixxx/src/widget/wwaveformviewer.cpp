@@ -139,7 +139,7 @@ void WWaveformViewer::dropEvent(QDropEvent * event)
             name = url.toString();
 
         event->accept();
-        emit(trackDropped(name));
+        emit(trackDropped(name, m_pGroup));
     } else {
         event->ignore();
     }

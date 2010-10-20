@@ -107,6 +107,9 @@ void TrackDAO::saveTrack(TrackPointer track) {
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
+    if (!pTrack) {
+        qWarning() << "TrackDAO::saveTrack() was given NULL track.";
+    }
     // If track's id is not -1, then update, otherwise add.
     int trackId = pTrack->getId();
     if (trackId != -1) {

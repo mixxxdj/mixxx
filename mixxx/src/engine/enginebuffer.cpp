@@ -628,6 +628,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
+    // Wake up the reader so that it processes our hints / loads new files
+    // (hopefully) before the next callback.
+    m_pReader->wake();
+
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
@@ -664,6 +668,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
+        // TODO(XXX) SSE
         while (i<iLen)
         {
             pOutput[i] = fStep*(iLen-(i+1));
@@ -671,6 +676,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         }
     }
 
+    // TODO(XXX) memset
     // Reset rest of buffer
     while (i<iBufferSize)
     {
@@ -727,7 +733,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
-void EngineBuffer::loadTrack(TrackPointer pTrack) {
+void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
 
