@@ -176,7 +176,7 @@ inline long unsigned SoundSourceM4A::length(){
 int SoundSourceM4A::parseHeader(){
     setType("m4a");
 
-    TagLib::MP4::File f(getFilename().toAscii().constData());
+    TagLib::MP4::File f(getFilename().toUtf8().constData());
     bool result = processTaglibFile(f);
     TagLib::MP4::Tag* tag = f.tag();
 

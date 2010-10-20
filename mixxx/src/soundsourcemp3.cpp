@@ -550,7 +550,7 @@ int SoundSourceMp3::parseHeader()
 {
     setType("mp3");
 
-    TagLib::MPEG::File f(getFilename().toAscii().constData());
+    TagLib::MPEG::File f(getFilename().toUtf8().constData());
 
     // Takes care of all the default metadata
     bool result = processTaglibFile(f);
