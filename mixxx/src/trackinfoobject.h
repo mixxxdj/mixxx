@@ -21,8 +21,6 @@
 #include <QList>
 #include <QObject>
 #include <QFileInfo>
-#include <q3memarray.h>
-#include <q3valuelist.h>
 #include <QMutex>
 #include <QVector>
 #include <QSharedPointer>

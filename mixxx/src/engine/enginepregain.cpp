@@ -21,6 +21,9 @@
 #include "configobject.h"
 #include "controlobject.h"
 
+#include "sampleutil.h"
+
+
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
@@ -53,9 +56,9 @@ EnginePregain::~EnginePregain()
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
 
-	CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fEnableRG = EnableRG->get();
     float fReplayGainBoost = ReplayGainBoost->get();
+    CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain = potmeterPregain->get();
     float fRGain = ControlReplayGain->get();
     m_fReplayGainCorrection=1;
@@ -77,6 +80,7 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
         return;
     }
 
-    for (int i=0; i<iBufferSize; ++i)
-        pOutput[i] = pIn[i]*fGain;
+
+    // SampleUtil deals with aliased buffers and gains of 1 or 0.
+    SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
 }

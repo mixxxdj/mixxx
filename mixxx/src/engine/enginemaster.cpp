@@ -15,51 +15,44 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QDebug>
+#include <QList>
+#include <QPair>
+
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
+#include "enginebuffer.h"
 #include "enginemaster.h"
 #include "engine/engineworkerscheduler.h"
 #include "enginebuffer.h"
 #include "enginevolume.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
-#include "engineflanger.h"
 #include "enginevumeter.h"
-#include "enginevinylsoundemu.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
+#include "sampleutil.h"
+
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
-#ifdef __VINYLCONTROL__
-#include "enginevinylcontrol.h"
-#endif
-// #include "enginebuffermasterrate.h"
-#include <QDebug>
+
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
-                           EngineBuffer * _buffer1, EngineBuffer * _buffer2,
-                           EngineChannel * _channel1, EngineChannel * _channel2,
-                           const char * group)
-{
+                           const char * group) {
+
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
 
-    buffer1 = _buffer1;
-    buffer2 = _buffer2;
-    channel1 = _channel1;
-    channel2 = _channel2;
+    // Master sample rate
+    ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
+    sr->set(44100.);
 
-    // TODO(XXX) In features_hydra, stick this in addChannel()
-    buffer1->bindWorkers(m_pWorkerScheduler);
-    buffer2->bindWorkers(m_pWorkerScheduler);
+    // Latency control
+    new ControlObject(ConfigKey(group, "latency"));
 
-    // Defaults
-    master1 = true;
-    master2 = true;
-
-    // Flanger
-    flanger = new EngineFlanger("[Flanger]");
+    // Master rate
+    new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -68,10 +61,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
-
-    // Transform buttons
-    transform1 = new ControlPushButton(ConfigKey("[Channel1]", "transform"));
-    transform2 = new ControlPushButton(ConfigKey("[Channel2]", "transform"));
 
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
@@ -95,48 +84,19 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Headphone Clipping
     head_clipping = new EngineClipping("");
 
-    // Channel Volume control:
-    volume1 = new EngineVolume(ConfigKey("[Channel1]","volume"));
-    volume2 = new EngineVolume(ConfigKey("[Channel2]","volume"));
-
-    // Channel VU meter:
-    vumeter1 = new EngineVuMeter("[Channel1]");
-    vumeter2 = new EngineVuMeter("[Channel2]");
-
-    // Vinyl sound emulation
-    vinylsound1 = new EngineVinylSoundEmu(_config, "[Channel1]");
-    vinylsound2 = new EngineVinylSoundEmu(_config, "[Channel2]");
-
-    // Mute on active headphone
-//     m_pControlObjectHeadphoneMute = new ControlObject(ConfigKey(group,"HeadphoneMute"));
-
-    pfl1 = channel1->getPFL();
-    pfl2 = channel2->getPFL();
-
-    flanger1 = flanger->getButtonCh1();
-    flanger2 = flanger->getButtonCh2();
-
-    Q_ASSERT(flanger1);
-    Q_ASSERT(flanger2);
-
-//     m_pEngineBufferMasterRate = new EngineBufferMasterRate();
-
     // Allocate buffers
-    m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pHead = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pMaster = new CSAMPLE[MAX_BUFFER_LEN];
-
-    memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
     memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     sidechain = new EngineSideChain(_config);
 
-	//X-Fader Setup
-	xFaderCurve = new ControlPotmeter(ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
-	xFaderCalibration = new ControlPotmeter(ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+    //X-Fader Setup
+    xFaderCurve = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+    xFaderCalibration = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
 }
 
 EngineMaster::~EngineMaster()
@@ -150,19 +110,34 @@ EngineMaster::~EngineMaster()
     delete clipping;
     delete head_clipping;
     delete sidechain;
-//     delete m_pControlObjectHeadphoneMute;
-//     delete m_pEngineBufferMasterRate;
-    delete [] m_pTemp1;
-    delete [] m_pTemp2;
-    delete [] m_pHead;
-    delete [] m_pMaster;
+
+    SampleUtil::free(m_pHead);
+    SampleUtil::free(m_pMaster);
+
+    QMutableListIterator<CSAMPLE*> buffer_it(m_channelBuffers);
+    while (buffer_it.hasNext()) {
+        CSAMPLE* buffer = buffer_it.next();
+        buffer_it.remove();
+        SampleUtil::free(buffer);
+    }
+
+    QMutableListIterator<EngineChannel*> channel_it(m_channels);
+    while (channel_it.hasNext()) {
+        EngineChannel* channel = channel_it.next();
+        channel_it.remove();
+        delete channel;
+    }
 
 }
 
 void EngineMaster::setPitchIndpTimeStretch(bool b)
 {
-    buffer1->setPitchIndpTimeStretch(b);
-    buffer2->setPitchIndpTimeStretch(b);
+    QListIterator<EngineChannel*> channel_iter(m_channels);
+
+    while (channel_iter.hasNext()) {
+        EngineChannel* pChannel = channel_iter.next();
+        pChannel->setPitchIndpTimeStretch(b);
+    }
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer()
@@ -179,117 +154,85 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 {
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
 
-    //
-    // Process the buffer, the channels and the effects:
-    //
+    // Prepare each channel for output
 
-    if (master1)
-    {
-        buffer1->process(0, m_pTemp1, iBufferSize);
-        vinylsound1->process(m_pTemp1, m_pTemp1, iBufferSize);
-        channel1->process(m_pTemp1, m_pTemp1, iBufferSize);
-        if (flanger1->get()==1. && flanger2->get()==0.)
-            flanger->process(m_pTemp1, m_pTemp1, iBufferSize);
+    QList<CSAMPLE*> pflChannels;
+    QList<QPair<CSAMPLE*, EngineChannel::ChannelOrientation> > masterChannels;
+
+    for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
+        EngineChannel* channel = m_channels[channel_number];
+        CSAMPLE* buffer = m_channelBuffers[channel_number];
+        channel->process(NULL, buffer, iBufferSize);
+
+        // If the channel is enabled for previewing in headphones, add it to a
+        // list of headphone channels.
+        if (channel->isPFL()) {
+            pflChannels.push_back(buffer);
+        }
+
+        // Add the channel to the list of master output channels.
+        masterChannels.push_back(
+            QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(
+                buffer, channel->getOrientation()));
     }
 
-    if (master2)
-    {
-        buffer2->process(0, m_pTemp2, iBufferSize);
-        vinylsound2->process(m_pTemp2, m_pTemp2, iBufferSize);
-        channel2->process(m_pTemp2, m_pTemp2, iBufferSize);
-        if (flanger1->get()==0. && flanger2->get()==1.)
-            flanger->process(m_pTemp2, m_pTemp2, iBufferSize);
-    }
-
-    //
-    // Output channel:
-    //
-
-    //
-    // Headphone channel:
-    //
-    // Head phone left/right mix
-    float cf_val = head_mix->get();
-    float chead_gain = 0.5*(-cf_val+1.);
-    float cmaster_gain = 0.5*(cf_val+1.);
-    //qDebug() << "head val " << cf_val << ", head " << chead_gain << ", master " << cmaster_gain;
-
-    if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
-    {
-        //qDebug() << "both";
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pTemp1[i]*chead_gain + m_pTemp2[i]*chead_gain;
-    }
-    else if (master1 && pfl1->get()==1.)
-    {
-        //qDebug() << "ch 1";
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pTemp1[i]*chead_gain;
-    }
-    else if (master2 && pfl2->get()==1.)
-    {
-        //qDebug() << "ch 2";
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pTemp2[i]*chead_gain;
-    }
-    else
-    {
-        //qDebug() << "none";
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = 0.;
-    }
-
-    // Volume and vu meters for each channel
-    vumeter1->process(m_pTemp1, m_pTemp1, iBufferSize);
-    volume1->process(m_pTemp1, m_pTemp1, iBufferSize);
-    vumeter2->process(m_pTemp2, m_pTemp2, iBufferSize);
-    volume2->process(m_pTemp2, m_pTemp2, iBufferSize);
-
+    // Perform the master mix.
 
     // Crossfader and Transform buttons
-	/*
-    cf_val = crossfader->get();
-    //qDebug() << "cf_val: " << cf_val;
+    //set gain levels;
     float c1_gain, c2_gain;
-    if (cf_val>0)
-    {
-        if (transform2->get()) {
-            c1_gain = 1.;
-            c2_gain = 1.-cf_val;
-        } else {
-            c1_gain = 1.-cf_val;
-            c2_gain = 1.;
-        }
+    EngineXfader::getXfadeGains(c1_gain, c2_gain,
+                                crossfader->get(), xFaderCurve->get(),
+                                xFaderCalibration->get());
 
+    if (masterChannels.size() == 0) {
+        SampleUtil::applyGain(m_pMaster, 0.0f, iBufferSize);
+    } else if (masterChannels.size() == 1) {
+        QPair<CSAMPLE*, EngineChannel::ChannelOrientation>& channel =
+                masterChannels[0];
+        CSAMPLE* buffer = channel.first;
+        EngineChannel::ChannelOrientation orientation = channel.second;
+
+        // Apply gain
+        double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
+        SampleUtil::copyWithGain(m_pMaster, buffer, gain, iBufferSize);
+    } else if (masterChannels.size() == 2) {
+        QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel1 =
+                masterChannels[0];
+        QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel2 =
+                masterChannels[1];
+        CSAMPLE* buffer1 = channel1.first;
+        CSAMPLE* buffer2 = channel2.first;
+        EngineChannel::ChannelOrientation orientation1 = channel1.second;
+        EngineChannel::ChannelOrientation orientation2 = channel2.second;
+        double gain1 = gainForOrientation(orientation1, c1_gain, 1.0f, c2_gain);
+        double gain2 = gainForOrientation(orientation2, c1_gain, 1.0f, c2_gain);
+
+        SampleUtil::copy2WithGain(m_pMaster,
+                                  buffer1, gain1,
+                                  buffer2, gain2,
+                                  iBufferSize);
+    } else {
+        // Set m_pMaster to all 0s
+        SampleUtil::applyGain(m_pMaster, 0.0f, iBufferSize);
+
+        for (int i = 0; i < masterChannels.size(); ++i) {
+            QPair<CSAMPLE*, EngineChannel::ChannelOrientation> channel =
+                    masterChannels[i];
+            CSAMPLE* buffer = channel.first;
+            EngineChannel::ChannelOrientation orientation = channel.second;
+            double gain = gainForOrientation(orientation, c1_gain, 1.0f, c2_gain);
+            SampleUtil::addWithGain(m_pMaster, buffer, gain, iBufferSize);
+        }
     }
-    else
-    {
-        if (transform1->get()) {
-            c1_gain = 1.+cf_val;
-            c2_gain = 1.;
-        } else {
-            c1_gain = 1.;
-            c2_gain = 1.+cf_val;
-        }
-    }*/
-	//set gain levels;
-	float c1_gain, c2_gain;
-	EngineXfader::getXfadeGains(c1_gain, c2_gain, crossfader->get(), xFaderCurve->get(), xFaderCalibration->get());
-
-    for (int i=0; i<iBufferSize; ++i)
-        m_pMaster[i] = (m_pTemp1[i]*c1_gain) + (m_pTemp2[i]*c2_gain);
-
 
     // Master volume
     volume->process(m_pMaster, m_pMaster, iBufferSize);
 
 #ifdef __LADSPA__
+    // LADPSA master effects
     ladspa->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
-
-    // Process the flanger on master if flanger is enabled on both channels
-    if (flanger1->get()==1. && flanger2->get()==1.)
-        flanger->process(m_pMaster, m_pMaster, iBufferSize);
 
     // Clipping
     clipping->process(m_pMaster, m_pMaster, iBufferSize);
@@ -303,38 +246,101 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     else if (bal<0.)
         balright += bal;
 
-    for (int i=0; i<iBufferSize; i+=2)
-    {
-        //Perform balancing on main out
-        m_pMaster[i  ] = m_pMaster[i  ]*balleft;
-        m_pMaster[i+1] = m_pMaster[i+1]*balright;
-    }
+    // Perform balancing on main out
+    SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
 
-    // Add master to headphone
-    for (int i=0; i<iBufferSize; i++)
-        m_pHead[i] += m_pMaster[i]*cmaster_gain;
+    // Update VU meter (it does not return anything). Needs to be here so that
+    // master balance is reflected in the VU meter.
+    if (vumeter != NULL)
+        vumeter->process(m_pMaster, m_pMaster, iBufferSize);
+
+    //Submit master samples to the side chain to do shoutcasting, recording,
+    //etc.  (cpu intensive non-realtime tasks)
+    sidechain->submitSamples(m_pMaster, iBufferSize);
+
+    // Compute headphone mix
+
+    // Head phone left/right mix
+    float cf_val = head_mix->get();
+    float chead_gain = 0.5*(-cf_val+1.);
+    float cmaster_gain = 0.5*(cf_val+1.);
+    // qDebug() << "head val " << cf_val
+    //          << ", head " << chead_gain
+    //          << ", master " << cmaster_gain;
+
+    // Set headphone to master with appropriate gain
+    SampleUtil::copyWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+
+    if (pflChannels.size() == 0) {
+        // Do nothing
+    } else if (pflChannels.size() == 1) {
+        // Apply gain
+        CSAMPLE* buffer = pflChannels[0];
+        SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
+    } else if (pflChannels.size() == 2) {
+        CSAMPLE* buffer1 = pflChannels[0];
+        CSAMPLE* buffer2 = pflChannels[1];
+        SampleUtil::add2WithGain(m_pHead,
+                                 buffer1, chead_gain,
+                                 buffer2, chead_gain,
+                                 iBufferSize);
+    } else {
+        for (int i = 0; i < pflChannels.size(); ++i) {
+            CSAMPLE* buffer = pflChannels[i];
+            SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
+        }
+    }
 
     // Head volume and clipping
     head_volume->process(m_pHead, m_pHead, iBufferSize);
     head_clipping->process(m_pHead, m_pHead, iBufferSize);
 
-    int j=0;
-
-    // moved here to take balance into account -elysion
-    // Update VU meter (it does not return anything):
-    if (vumeter!=0)
-        vumeter->process(m_pMaster, m_pMaster, iBufferSize);
-
-
-    //Submit samples to the side chain to do shoutcasting, recording, etc.
-    //(cpu intensive non-realtime tasks)
-    sidechain->submitSamples(m_pMaster, iBufferSize);
-
-    //Master/headphones interleaving is now done in SoundManager::requestBuffer() - Albert Nov 18/07
-
+    //Master/headphones interleaving is now done in
+    //SoundManager::requestBuffer() - Albert Nov 18/07
 
     // We're close to the end of the callback. Schedule the workers. Hopefully
     // the work thread doesn't get scheduled between now and then.
     m_pWorkerScheduler->runWorkers();
 }
 
+void EngineMaster::addChannel(EngineChannel* pChannel) {
+    CSAMPLE* pChannelBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+    memset(pChannelBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_channelBuffers.push_back(pChannelBuffer);
+    m_channels.push_back(pChannel);
+    pChannel->getEngineBuffer()->bindWorkers(m_pWorkerScheduler);
+
+    // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
+    // the two EngineBuffers together so they can beat-sync off of each other.
+    // rryan 6/2010
+    if (m_channels.length() == 2) {
+        EngineBuffer *pBuffer1 = m_channels[0]->getEngineBuffer();
+        EngineBuffer *pBuffer2 = m_channels[1]->getEngineBuffer();
+        pBuffer1->setOtherEngineBuffer(pBuffer2);
+        pBuffer2->setOtherEngineBuffer(pBuffer1);
+    }
+}
+
+int EngineMaster::numChannels() {
+    return m_channels.size();
+}
+
+const CSAMPLE* EngineMaster::getChannelBuffer(int i) {
+    if (i >= 0 && i < numChannels()) {
+        return m_channelBuffers[i];
+    }
+    return NULL;
+}
+
+// static
+double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                                        double leftGain,
+                                        double centerGain,
+                                        double rightGain) {
+    if (orientation == EngineChannel::LEFT) {
+        return leftGain;
+    } else if (orientation == EngineChannel::RIGHT) {
+        return rightGain;
+    }
+    return centerGain;
+}
