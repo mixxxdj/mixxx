@@ -42,7 +42,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     m_samples               = NULL;
     char * timecode  =  NULL;
     bShouldClose    = false;
-    bModeSwitch		= false;
     bForceResync    = false;
     iNewMode		= -1;
     dUiUpdateTime   = -1.0f;
@@ -193,48 +192,32 @@ void VinylControlXwax::run()
         	dVinylPitch = timecoder_get_pitch(&timecoder);
             filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
             reportedMode = mode->get();
+            //qDebug() << "cur mode" << reportedMode;
             reportedPlayButton = playButton->get();
             
             //if playing, don't switch modes instantly, in case user goes through ABS on the
 			//way to REL
 			//also reset timer if they switch the new mode too
-			if ((!bModeSwitch && iVCMode != reportedMode) || (bModeSwitch && iNewMode != reportedMode))
+			if (iVCMode != reportedMode)
 		    {
-		    	if (reportedPlayButton && reportedMode != MIXXX_VCMODE_CONSTANT) //delayed switch while playing back
+		    	qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
+		    	//if we have needleskip on, and are playing, don't allow change 
+		    	//to absolute mode (would cause sudden track skip)
+		    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE 
+		    		&& m_bNeedleSkipPrevention )
 		    	{
-			    	bModeSwitch = true;
-		    		iNewMode = reportedMode;
-			    	dSwitchTime = time(NULL); 
+		    		iVCMode = MIXXX_VCMODE_RELATIVE;
+		    		mode->slotSet((double)iVCMode);
 			    }
-			    else //switch instantly
+			    else //go ahead and switch
 			    {
-			    	bModeSwitch = false;
 			    	iVCMode = reportedMode;
 			    	bForceResync = true;
+			    	if (vinylStatus->get() == VINYL_STATUS_ERROR)
+	            		vinylStatus->slotSet(VINYL_STATUS_OK);
 		   		}	
 		    }
-            
-            if (bModeSwitch && time(NULL) - dSwitchTime > 1.0f && reportedMode == iNewMode)
-            {
-            	if (reportedMode == MIXXX_VCMODE_ABSOLUTE && atRecordEnd)
-            	{   //override. DJ is dealing with end-of-record, and they
-            		//almost certainly do not want absolute mode
-            		iVCMode = MIXXX_VCMODE_RELATIVE;
-            		mode->slotSet((double)iVCMode);
-            	}
-            	else
-            	{
-	            	iVCMode = reportedMode;
-	            	bForceResync = true;
-	            	//reset error light on mode change
-	            	if (vinylStatus->get() == VINYL_STATUS_ERROR)
-	            		vinylStatus->slotSet(VINYL_STATUS_OK);
-	            }
-	            	
-	           	bModeSwitch = false;
-            	iNewMode = -1;
-            }
-            
+		    
             //are we newly playing near the end of the record?  (in absolute mode, this happens
             //when the filepos is past safe (more accurate), 
             //but it can also happen in relative mode if the vinylpos is nearing the end
