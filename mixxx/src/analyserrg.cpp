@@ -30,20 +30,17 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
 	if(m_istepcontrol!=1) return;
 
-	float_t m_fLems[4096], m_fRems[4096];
+	CSAMPLE *m_fLems = new CSAMPLE[4096];
+	CSAMPLE *m_fRems = new CSAMPLE[4096];
 	int RGCounter = 0;
 	for(int i=0; i<iLen; i+=2) {
-    		CSAMPLE l = pIn[i];
-    		CSAMPLE r = pIn[i+1];
-        	m_fLems[RGCounter] = (float_t)l*32767;
-        	m_fRems[RGCounter] = (float_t)r*32767;
+        	m_fLems[RGCounter] = pIn[i]*32767;
+        	m_fRems[RGCounter] = pIn[i+1]*32767;
 
         	RGCounter++;
     }
-	//go to const to avoid >=gcc 4.4 problems
-	const float_t* m_fLemsConst = m_fLems;
-	const float_t* m_fRemsConst = m_fRems;
-	m_istepcontrol = AnalyzeSamples(m_fLemsConst,m_fRemsConst,RGCounter,2);
+
+	m_istepcontrol = AnalyzeSamples(m_fLems,m_fRems,RGCounter,2);
 }
 
 
