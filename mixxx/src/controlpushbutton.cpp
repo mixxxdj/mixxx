@@ -24,6 +24,8 @@
 ControlPushButton::ControlPushButton(ConfigKey key) :
     ControlObject(key, false) {
     m_bIsToggleButton = false;
+    m_iNoStates = 2;
+    m_dValue = 0;
 }
 
 ControlPushButton::~ControlPushButton()
@@ -37,62 +39,53 @@ void ControlPushButton::setToggleButton(bool bIsToggleButton)
     m_bIsToggleButton = bIsToggleButton;
 }
 
+void ControlPushButton::setStates(int num_states)
+{
+	m_iNoStates = num_states;
+}
+
 void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
 {
     //if (m_bMidiSimulateLatching)
 
     //qDebug() << "bMidiSimulateLatching is true!";
     // Only react on NOTE_ON midi events if simulating latching...
-
-
+    
+    qDebug() << bool(c==NOTE_ON) << v;
+    
     if (m_bIsToggleButton) //This block makes push-buttons act as toggle buttons.
     {
-        //qDebug() << "Is a toggle button!";
-        if (c==NOTE_ON && v>0.) //Only react to "NOTE_ON" midi events.
+        if (c==NOTE_ON && v>0.) //Only turn on on note on
         {
-            //qDebug() << "NOTE_ON caught!";
             if (m_dValue==0.)
                 m_dValue = 1.;
-            else
-                m_dValue = 0.;
         }
+        else //Only turn off on note off
+       	{
+       		if (m_dValue==1.)
+       			m_dValue = 0.;
+       	}
     }
     else //Not a toggle button (trigger only when button pushed)
     {
-        //qDebug() << "Is NOT a toggle button!";
-        if (c == NOTE_ON)
-            m_dValue = v;
-        else if (c == NOTE_OFF)
-            m_dValue = 0.0;
+    	if (m_iNoStates > 2) //multistate button
+    	{
+    		if (v > 0.) //looking for NOTE_ON doesn't seem to work...
+    		{
+	    		m_dValue++;
+	    		if (m_dValue >= m_iNoStates)
+	    			m_dValue = 0;
+	    	}
+    	}
+    	else  //press-and-hold button
+    	{
+		    if (c == NOTE_ON)
+	        	m_dValue = v;
+		    else if (c == NOTE_OFF)
+		        m_dValue = 0.0;
+		}
     }
-    if (c==NOTE_OFF)
-    {
 
-        //qDebug() << "NOTE_OFF caught!";
-    }
-
-
-/*    else
-    {
-        qDebug() << "bMidiSimulateLatching is false!";
-        qDebug() << "m_dValue is: " << m_dValue << ", v is: " << v;
-
-        if (v==0.)
-            m_dValue = 0.;
-        else
-            m_dValue = 1.;
-
-    }
- */
-/*
-        if (v>0.)
-        {
-            if (m_dValue==0.)
-                m_dValue = 1.;
-            else
-                m_dValue = 0.;
-        }
- */
     emit(valueChanged(m_dValue));
 }
 
