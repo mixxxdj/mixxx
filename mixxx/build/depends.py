@@ -87,14 +87,7 @@ class Mad(Dependence):
 
     def sources(self, build):
         return ['soundsourcemp3.cpp']
-        
-class Flac(Dependence):
-    def configure(self, build, conf):
-        if not conf.CheckLib(['FLAC','libFLAC']):
-            raise Exception('Did not find libFLAC.a, libFLAC.lib, or the libFLAC development header files - exiting!')
 
-    def sources(self, build):
-        return ['soundsourceflac.cpp']
 
 class SndFile(Dependence):
 
@@ -106,6 +99,18 @@ class SndFile(Dependence):
 
     def sources(self, build):
         return ['soundsourcesndfile.cpp']
+
+class FLAC(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckHeader('FLAC/stream_decoder.h'):
+            raise Exception('Did not find libFLAC development headers, exiting!')
+        elif not conf.CheckLib(['libFLAC', 'FLAC']):
+            raise Exception('Did not find libFLAC development libraries, exiting!')
+        return
+
+    def sources(self, build):
+        return ['soundsourceflac.cpp',]
+
 
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
@@ -494,7 +499,6 @@ class MixxxCore(Feature):
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
 
-
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "player.cpp",
@@ -680,7 +684,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, OggVorbis, Flac, OpenGL]
+                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
