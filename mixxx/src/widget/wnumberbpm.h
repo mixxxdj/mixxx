@@ -19,6 +19,8 @@
 #define WNUMBERBPM_H
 
 #include "wnumber.h"
+#include "trackinfoobject.h"
+
 class ControlObjectThreadMain;
 
 /**
@@ -34,6 +36,8 @@ public:
 public slots:
     /** Sets the value */
     void setValue(double dValue);
+    void slotTrackLoaded(TrackPointer track);
+    void slotTrackUnloaded(TrackPointer track);
 
 private:
     /** Pointer to control object for rate */

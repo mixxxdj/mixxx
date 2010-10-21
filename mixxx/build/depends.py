@@ -372,7 +372,6 @@ class MixxxCore(Feature):
                    "controlvaluedelegate.cpp",
                    "mixxxcontrol.cpp",
                    "mixxx.cpp",
-                   "mixxxview.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
@@ -380,6 +379,7 @@ class MixxxCore(Feature):
 
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
+                   "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
@@ -481,9 +481,13 @@ class MixxxCore(Feature):
                    "waveform/waveformrendermarkrange.cpp",
                    "waveform/waveformrenderbeat.cpp",
 
-                   "imginvert.cpp",
-                   "imgloader.cpp",
-                   "imgcolor.cpp",
+                   "skin/imginvert.cpp",
+                   "skin/imgloader.cpp",
+                   "skin/imgcolor.cpp",
+                   "skin/skinloader.cpp",
+                   "skin/legacyskinparser.cpp",
+                   "skin/colorschemeparser.cpp",
+
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
