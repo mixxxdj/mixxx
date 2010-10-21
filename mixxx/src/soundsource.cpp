@@ -25,6 +25,7 @@
 #include <taglib/id3v1tag.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
+#include <taglib/wavpackfile.h>
 
 
 #include "soundsource.h"
