@@ -53,7 +53,7 @@ void DlgPrefReplayGain::loadSettings()
 		EnableGain->setChecked(false);
 		if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainEnabled")).toInt()==1)EnableGain->setChecked(true);
 		EnableAnalyser->setChecked(false);
-		if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainEnabled")).toInt())EnableAnalyser->setChecked(true);
+		if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainAnalyserEnabled")).toInt())EnableAnalyser->setChecked(true);
 		slotSetRGAnalyserEnabled();
 		slotSetRGEnabled();
 		slotUpdateBoost();
