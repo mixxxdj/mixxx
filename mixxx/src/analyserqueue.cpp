@@ -213,7 +213,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
 	AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
-    //ret->addAnalyser(new AnalyserGain());
+    ret->addAnalyser(new AnalyserGain(_config));
 	ret->start(QThread::IdlePriority);
 	return ret;
 }
