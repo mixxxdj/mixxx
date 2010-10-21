@@ -16,8 +16,12 @@ AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
 void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
 	bool AnalyserEnabled = (bool)m_pConfigRG->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-	if(totalSamples == 0 || tio->getRG() != 0 || !AnalyserEnabled) return;
-
+	float RG = tio->getRG();
+	if(totalSamples == 0 || RG != 0 || !AnalyserEnabled) {
+		qDebug() << "Replaygain Analyser will not start.";
+		if (RG != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(RG) << " dB for track :" <<(tio->getFilename());
+		return;
+	}
 	m_istepcontrol = InitGainAnalysis( (long)sampleRate );
 
  //   m_iStartTime = clock();
@@ -57,7 +61,9 @@ void AnalyserGain::finalise(TrackPointer tio) {
 	float_t Gain_Result = pow(10,GetTitleGain()/20);
 
 	tio->setRG(Gain_Result);
+	if(Gain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(Gain_Result) << " dB for track " << (tio->getFilename());
 	m_istepcontrol=0;
+	Gain_Result=0;
 //m_iStartTime = clock() - m_iStartTime;
 //qDebug() << "AnalyserGain :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
 }
