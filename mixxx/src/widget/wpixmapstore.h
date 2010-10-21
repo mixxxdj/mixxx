@@ -20,7 +20,8 @@
 
 #include <QHash>
 #include <qpixmap.h>
-#include "imgsource.h"
+
+#include "skin/imgsource.h"
 
 /**
   *

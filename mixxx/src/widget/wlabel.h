@@ -26,7 +26,7 @@
   *@author Tue Haste Andersen
   */
 
-class WLabel : public WWidget  
+class WLabel : public WWidget
 {
     Q_OBJECT
 public:

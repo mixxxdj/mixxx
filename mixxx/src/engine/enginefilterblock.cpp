@@ -22,6 +22,7 @@
 #include "enginefilteriir.h"
 #include "enginefilter.h"
 #include "enginefilterbutterworth8.h"
+#include "sampleutil.h"
 
 EngineFilterBlock::EngineFilterBlock(const char * group)
 {
@@ -120,7 +121,7 @@ void EngineFilterBlock::setFilters(bool forceSetting)
 		if(blofi)
 		{
 			low = new EngineFilterIIR(bessel_lowpass4,4);
-		    band = new EngineFilterIIR(bessel_bandpass,8);
+      band = new EngineFilterIIR(bessel_bandpass,8);
 			high = new EngineFilterIIR(bessel_highpass4,4);
 		}
 		else
@@ -147,14 +148,16 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
         fHigh = filterpotHigh->get(); //*1.2;
 
 #ifndef __LOFI__
-	setFilters();
+    setFilters();
 #endif
+
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);
     high->process(pIn, m_pTemp3, iBufferSize);
 
-    for (int i=0; i<iBufferSize; ++i)
-        pOutput[i] = (fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
-
+    SampleUtil::copy3WithGain(pOutput,
+                              m_pTemp1, fLow,
+                              m_pTemp2, fMid,
+                              m_pTemp3, fHigh, iBufferSize);
 }
 
