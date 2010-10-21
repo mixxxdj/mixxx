@@ -2,8 +2,8 @@
                           enginechannel.h  -  description
                              -------------------
     begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    copyright            : (C) 2002 by
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -19,7 +19,9 @@
 #define ENGINECHANNEL_H
 
 #include "engineobject.h"
+#include "configobject.h"
 
+class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
@@ -27,27 +29,46 @@ class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
+class EngineVinylSoundEmu;
 class ControlPushButton;
 
-/**
-  *@author 
-  */
-
-class EngineChannel : public EngineObject  
-{
+class EngineChannel : public EngineObject {
 public:
-    EngineChannel(const char *group);
-    ~EngineChannel();
-    void notify(double) {};
-    ControlPushButton *getPFL();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void setEngineBuffer(EngineBuffer* pEngineBuffer);
-private:
+    enum ChannelOrientation {
+        LEFT = 0,
+        CENTER,
+        RIGHT,
+    };
 
-    EnginePregain *pregain;
-    EngineFilterBlock *filter;
-    EngineClipping *clipping;
-    ControlPushButton *pfl;
+    EngineChannel(const char *group, ConfigObject<ConfigValue>* pConfig,
+                  ChannelOrientation defaultOrientation = CENTER);
+    virtual ~EngineChannel();
+
+    bool isPFL();
+    ChannelOrientation getOrientation();
+    const QString& getGroup();
+
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+
+    // TODO(XXX) This hack needs to be removed.
+    EngineBuffer* getEngineBuffer();
+
+    void setPitchIndpTimeStretch(bool b);
+
+private:
+    const QString m_group;
+    ConfigObject<ConfigValue>* m_pConfig;
+    ControlPushButton* m_pPFL;
+    ControlObject* m_pOrientation;
+
+    EngineBuffer* m_pBuffer;
+    EngineClipping* m_pClipping;
+    EngineFilterBlock* m_pFilter;
+    EngineFlanger* m_pFlanger;
+    EnginePregain* m_pPregain;
+    EngineVinylSoundEmu* m_pVinylSoundEmu;
+    EngineVolume* m_pVolume;
+    EngineVuMeter* m_pVUMeter;
 };
 
 #endif
