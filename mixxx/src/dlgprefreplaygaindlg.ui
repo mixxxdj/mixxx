@@ -84,7 +84,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QGroupBox" name="grpBpmSchemes">
+    <widget class="QGroupBox" name="grpRP">
      <property name="minimumSize">
       <size>
        <width>409</width>
@@ -175,19 +175,6 @@
         <item>
          <layout class="QHBoxLayout" name="_4">
           <item>
-           <widget class="QLabel" name="label0">
-            <property name="font">
-             <font/>
-            </property>
-            <property name="text">
-             <string>0  dB</string>
-            </property>
-            <property name="wordWrap">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -201,15 +188,25 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label15">
-            <property name="font">
-             <font/>
+           <widget class="QLCDNumber" name="lcddB">
+            <property name="locale">
+             <locale language="C" country="AnyCountry"/>
             </property>
+            <property name="numDigits">
+             <number>2</number>
+            </property>
+            <property name="digitCount">
+             <number>2</number>
+            </property>
+            <property name="segmentStyle">
+             <enum>QLCDNumber::Flat</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>+15 dB </string>
-            </property>
-            <property name="wordWrap">
-             <bool>false</bool>
+             <string>dB</string>
             </property>
            </widget>
           </item>
@@ -249,5 +246,22 @@
  <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>SliderBoost</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>lcddB</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>220</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
