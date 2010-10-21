@@ -173,7 +173,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
     QString nodeName = node.nodeName();
-    qDebug() << "parseNode" << node.nodeName();
+    //qDebug() << "parseNode" << node.nodeName();
 
     if (nodeName == "skin") {
         // Root of the document
