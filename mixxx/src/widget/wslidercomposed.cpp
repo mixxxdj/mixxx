@@ -143,7 +143,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
 }
 
 void WSliderComposed::wheelEvent(QWheelEvent *e)
-{   
+{
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
     double newValue = getValue() + (wheelDirection);
     this->updateValue(newValue);

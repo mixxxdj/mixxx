@@ -6,49 +6,52 @@
 #include <QStyle>
 #include <QFont>
 
-WSearchLineEdit::WSearchLineEdit(QString& skinpath, QDomNode node, QWidget* parent) : QLineEdit(parent) {
+WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
+                                 QWidget* pParent) : QLineEdit(pParent) {
 
-	m_clearButton = new QToolButton(this);
-	QPixmap pixmap(skinpath.append("/skins/cross.png"));
-	m_clearButton->setIcon(QIcon(pixmap));
-	m_clearButton->setIconSize(pixmap.size());
-	m_clearButton->setCursor(Qt::ArrowCursor);
-	m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
-	m_clearButton->hide();
+    QString skinpath = pConfig->getConfigPath();
+    m_clearButton = new QToolButton(this);
+    QPixmap pixmap(skinpath.append("/skins/cross.png"));
+    m_clearButton->setIcon(QIcon(pixmap));
+    m_clearButton->setIconSize(pixmap.size());
+    m_clearButton->setCursor(Qt::ArrowCursor);
+    m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
+    m_clearButton->hide();
 
-	m_place = true;
-	showPlaceholder();
+    m_place = true;
+    showPlaceholder();
 
-    setup(node);
-
-	//Set up a timer to search after a few hundred milliseconds timeout.
-	//This stops us from thrashing the database if you type really fast.
-	m_searchTimer.setSingleShot(true);
-	connect(&m_searchTimer, SIGNAL(timeout()),
-          this, SLOT(triggerSearch()));
+    //Set up a timer to search after a few hundred milliseconds timeout.
+    //This stops us from thrashing the database if you type really fast.
+    m_searchTimer.setSingleShot(true);
+    connect(&m_searchTimer, SIGNAL(timeout()),
+            this, SLOT(triggerSearch()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(slotSetupTimer(const QString&)));
 
-	//When you hit enter, it will trigger the search.
-	connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
+    //When you hit enter, it will trigger the search.
+    connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
 
-	connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clear()));
     //Forces immediate update of tracktable
-	connect(m_clearButton, SIGNAL(clicked()), this, SLOT(triggerSearch()));
+    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(triggerSearch()));
 
-	connect(this, SIGNAL(textChanged(const QString&)),
-          this, SLOT(updateCloseButton(const QString&)));
+    connect(this, SIGNAL(textChanged(const QString&)),
+            this, SLOT(updateCloseButton(const QString&)));
 
-	int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").
-                arg(m_clearButton->sizeHint().width() + frameWidth + 1));
+                  arg(m_clearButton->sizeHint().width() + frameWidth + 1));
 
     QSize msz = minimumSizeHint();
     setMinimumSize(qMax(msz.width(),
                         m_clearButton->sizeHint().height() + frameWidth * 2 + 2),
-                    qMax(msz.height(),
+                   qMax(msz.height(),
                         m_clearButton->sizeHint().height() + frameWidth * 2 + 2));
+}
+
+WSearchLineEdit::~WSearchLineEdit() {
 }
 
 void WSearchLineEdit::setup(QDomNode node)
@@ -57,10 +60,10 @@ void WSearchLineEdit::setup(QDomNode node)
     QColor bgc(255,255,255);
     if (!WWidget::selectNode(node, "BgColor").isNull()) {
         bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        this->setAutoFillBackground(true);
+        setAutoFillBackground(true);
     }
-    QPalette palette;
-    palette.setBrush(this->backgroundRole(), WSkinColor::getCorrectColor(bgc));
+    QPalette pal = palette();
+    pal.setBrush(backgroundRole(), WSkinColor::getCorrectColor(bgc));
 
     // Foreground color
     m_fgc = QColor(0,0,0);
@@ -69,8 +72,8 @@ void WSearchLineEdit::setup(QDomNode node)
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
-    palette.setBrush(this->foregroundRole(), m_fgc);
-    this->setPalette(palette);
+    pal.setBrush(foregroundRole(), m_fgc);
+    setPalette(pal);
 
 }
 
@@ -89,9 +92,9 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
         blockSignals(true);
         setText("");
         blockSignals(false);
-        QPalette palette = this->palette();
-        palette.setColor(this->foregroundRole(), m_fgc);
-        setPalette(palette);
+        QPalette pal = palette();
+        pal.setColor(foregroundRole(), m_fgc);
+        setPalette(pal);
         m_place = false;
         emit(searchStarting());
     }
@@ -116,9 +119,9 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
         m_place = true;
         showPlaceholder();
     } else {
-        QPalette palette = this->palette();
-        palette.setColor(this->foregroundRole(), m_fgc);
-        setPalette(palette);
+        QPalette pal = palette();
+        pal.setColor(foregroundRole(), m_fgc);
+        setPalette(pal);
         m_place = false;
     }
     updateCloseButton(text);
@@ -143,9 +146,9 @@ void WSearchLineEdit::showPlaceholder() {
     blockSignals(true);
     setText(tr("Search..."));
     blockSignals(false);
-    QPalette palette = this->palette();
-    palette.setColor(this->foregroundRole(), Qt::lightGray);
-    setPalette(palette);
+    QPalette pal = palette();
+    pal.setColor(foregroundRole(), Qt::lightGray);
+    setPalette(pal);
 }
 
 void WSearchLineEdit::updateCloseButton(const QString& text)
