@@ -11,6 +11,7 @@
 #include <qlabel.h>
 #include <qstring.h>
 #include <qpushbutton.h>
+#include <qlcdnumber.h>
 #include <qslider.h>
 #include <QtCore>
 #include <QMessageBox>
@@ -50,13 +51,11 @@ void DlgPrefReplayGain::loadSettings()
 	else
 	{
 		SliderBoost->setValue(config->getValueString(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")).toInt());
+		lcddB->display(config->getValueString(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")).toInt());
 		EnableGain->setChecked(false);
 		if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainEnabled")).toInt()==1)EnableGain->setChecked(true);
 		EnableAnalyser->setChecked(false);
 		if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainAnalyserEnabled")).toInt())EnableAnalyser->setChecked(true);
-		slotSetRGAnalyserEnabled();
-		slotSetRGEnabled();
-		slotUpdateBoost();
 	}
 	slotUpdate();
 	slotApply();
@@ -67,7 +66,7 @@ void DlgPrefReplayGain::setDefaults()
 	EnableGain->setChecked(true);
 	EnableAnalyser->setChecked(false);
 	SliderBoost->setValue(6);
-
+	lcddB -> display(6);
 	slotUpdate();
 	slotApply();
 }
@@ -119,6 +118,7 @@ void DlgPrefReplayGain::slotUpdateBoost()
 	     	EnableAnalyser->setEnabled(false);
 	     	SliderBoost->setValue(0);
 	     	SliderBoost->setEnabled(false);
+	     	lcddB -> display(0);
 	     }
  }
 
