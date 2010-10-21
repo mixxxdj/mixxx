@@ -1206,8 +1206,7 @@ void MixxxApp::rebootMixxxView() {
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
     m_pView->hide();
-    m_pView->deleteLater();
-    m_pView = NULL;
+    delete m_pView;
     m_pView = new QFrame();
     setCentralWidget(m_pView);
 
