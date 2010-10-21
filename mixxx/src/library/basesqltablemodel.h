@@ -30,6 +30,7 @@ class BaseSqlTableModel : public QSqlTableModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
     /** calls readWriteFlags() by default */
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual void setLibraryPrefix(QString sPrefix);
   protected:
     virtual QString orderByClause() const;
     virtual void initHeaderData();
@@ -46,6 +47,7 @@ class BaseSqlTableModel : public QSqlTableModel {
     QSet<int> m_trackOverrides;
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
+    QString m_sPrefix;
 };
 
 #endif /* BASESQLTABLEMODEL_H */

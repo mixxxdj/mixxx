@@ -183,7 +183,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             // Convert to a bool. Not really that useful since it gets converted
             // right back to a QVariant
             value = (value == "true") ? true : false;
-        }
+        } else if (index.column() == fieldIndex(LIBRARYTABLE_LOCATION)) {
+			if (value.toString().startsWith(m_sPrefix))
+				return value.toString().remove(0, m_sPrefix.size() + 1);
+		}
     } else if (role == Qt::EditRole) {
         if (index.column() == fieldIndex(LIBRARYTABLE_BPM)) {
             return value.toDouble();
@@ -368,4 +371,11 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
 Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const
 {
     return readWriteFlags(index);
+}
+
+void BaseSqlTableModel::setLibraryPrefix(QString sPrefix)
+{
+	m_sPrefix = sPrefix;
+	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
+		m_sPrefix.chop(1);
 }
