@@ -87,7 +87,7 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
     if (!skinDir.exists()) {
         return QDomElement();
     }
-    
+
     QString skinXmlPath = skinDir.filePath("skin.xml");
     QFile skinXmlFile(skinXmlPath);
 
@@ -103,7 +103,7 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
 
     // TODO(XXX) legacy
     WWidget::setPixmapPath(skinPath.append("/"));
-    
+
     skinXmlFile.close();
     return skin.documentElement();
 }

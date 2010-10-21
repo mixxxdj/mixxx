@@ -468,6 +468,9 @@ class MixxxCore(Feature):
                    "library/featuredartistswebview.cpp",
                    "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
+                   "library/starrating.cpp",
+                   "library/stardelegate.cpp",
+                   "library/stareditor.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
@@ -498,6 +501,7 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
+
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
@@ -693,7 +697,7 @@ class MixxxCore(Feature):
             build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
                                           '/nodefaultlib:LIBCMTd.lib',
                                           '/entry:mainCRTStartup'])
-            # Makes the program not launch a shell first 
+            # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
             elif build.toolchain_is_gnu:

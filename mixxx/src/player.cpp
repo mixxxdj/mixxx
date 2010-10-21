@@ -187,6 +187,8 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
 
+    m_pLoadedTrack->incTimesPlayed();
+
     // Generate waveform summary
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.
     // TODO(rryan) : fix this crap -- the waveform renderers should be owned by

@@ -27,6 +27,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_RATING + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
@@ -58,36 +59,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //and shows it...
     //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
-    //Set the column heading labels, rename them for translations and have
-    //proper capitalization
-	setHeaderData(fieldIndex(LIBRARYTABLE_TIMESPLAYED),
-                  Qt::Horizontal, tr("Played"));                  
-    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
-                  Qt::Horizontal, tr("Artist"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
-                  Qt::Horizontal, tr("Title"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
-                  Qt::Horizontal, tr("Album"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
-                  Qt::Horizontal, tr("Genre"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
-                  Qt::Horizontal, tr("Type"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
-                  Qt::Horizontal, tr("Location"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
-                  Qt::Horizontal, tr("Comment"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
-                  Qt::Horizontal, tr("Duration"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
-                  Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
-                  Qt::Horizontal, tr("BPM"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
-                  Qt::Horizontal, tr("Track #"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
-                  Qt::Horizontal, tr("Date Added"));
+    // BaseSqlTabelModel will setup the header info
+    initHeaderData();
 
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
     slotSearch("");
@@ -130,15 +103,15 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-	return m_trackDao.getTrack(trackId);
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    return m_trackDao.getTrack(trackId);
 }
 
 QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 {
-	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	return location;
+    const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
+    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+    return location;
 }
 
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
@@ -156,9 +129,9 @@ void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
 
 void LibraryTableModel::removeTrack(const QModelIndex& index)
 {
-	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-	m_trackDao.removeTrack(trackId);
-	select(); //Repopulate the data model.
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    m_trackDao.removeTrack(trackId);
+    select(); //Repopulate the data model.
 }
 
 void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -230,67 +203,6 @@ QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value;
-    if (role == Qt::ToolTipRole)
-        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
-    else
-        value = BaseSqlTableModel::data(item, role);
-        
-    if (role == Qt::DisplayRole || role == Qt::ToolTipRole)
-	{
-		if (item.column() == fieldIndex(LIBRARYTABLE_DURATION)) 
-		{
-	        if (qVariantCanConvert<int>(value)) {
-	            return MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-	        }
-	    }
-	    else if (item.column() == fieldIndex(LIBRARYTABLE_LOCATION))
-	    {
-	    	if (value.toString().startsWith(m_sPrefix))
-				return value.toString().remove(0, m_sPrefix.size() + 1);
-	    }
-	    else if (item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-		    if (qVariantCanConvert<int>(value)) {
-		        return MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-		    }
-		}
-	}
-	if (role == Qt::DisplayRole) {
-		if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-			return QString("(%1)").arg(value.toInt());
-		}
-		else if (item.column() == fieldIndex(LIBRARYTABLE_PLAYED)) {
-			if (value == "true") 
-				return true;
-			else
-				return false;
-		}
-    }
-    else if (role == Qt::EditRole) {
-    	if (item.column() == fieldIndex(LIBRARYTABLE_BPM)) return value.toInt();
-    	else if (item.column() == fieldIndex(LIBRARYTABLE_COMMENT)) return value.toString();
-    	else if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) return item.sibling(item.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-    	else {
-	    	qDebug() << "Can't edit this column" << item.column();
-	    	return QVariant();
-		}
-    }
-    else if (role == Qt::CheckStateRole) {	
-    	if (item.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-    		bool played = item.sibling(item.row(), fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-    		if (played) {
-    			return Qt::Checked;
-    		}
-    		return Qt::Unchecked;
-    	}
-    }
-    return value;
-}
-
 QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
@@ -318,50 +230,10 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-      return Qt::ItemIsEnabled;
-
-	//Enable dragging songs from this data model to elsewhere (like the waveform
-	//widget to load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    if (index.column() == fieldIndex(LIBRARYTABLE_BPM)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-    else if (index.column() == fieldIndex(LIBRARYTABLE_COMMENT)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-    else if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
-
-    return defaultFlags;
-}
-
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
     return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
             TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
-}
-
-bool LibraryTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-	//qDebug() << "edited " << index.row() << " " << index.column() << "to " << value << " with role " << role;
-   	if (index.isValid() && role == Qt::CheckStateRole)
-   	{
-   		QString val = value.toInt() > 0 ? QString("true") : QString("false");
-    	if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-    		QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
-    		return setData(playedIndex, val, Qt::EditRole);
-		}
-   	}
-	else if (BaseSqlTableModel::setData(index, value, role))
-	{
-		submitAll();
-		return true;
-	}
-	/*else
-	{
-		qDebug() << "problem with setdata" << lastError();
-	}*/
-	return false;
 }
 
 /*

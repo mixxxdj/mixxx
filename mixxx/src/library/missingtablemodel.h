@@ -26,7 +26,7 @@ class MissingTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-    virtual QVariant data(const QModelIndex& item, int role) const;
+   
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QItemDelegate* delegateForColumn(const int i);

@@ -23,13 +23,21 @@ class BaseSqlTableModel : public QSqlTableModel {
     virtual void setSort(int column, Qt::SortOrder order);
     virtual bool select();
     virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
-
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    /** Use this if you want a model that is read-only. */
+    virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
+    /** Use this if you want a model that can be changed  */
+    virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
+    /** calls readWriteFlags() by default */
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
   protected:
     virtual QString orderByClause() const;
+    virtual void initHeaderData();
   private slots:
     void trackChanged(int trackId);
   private:
+    QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
+
     QString m_qTableName;
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
