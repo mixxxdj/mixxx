@@ -14,6 +14,7 @@
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
 #include "mathstuff.h"
+#include "waveform/waveformrenderer.h"
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineMaster* pMixingEngine,
@@ -22,7 +23,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
       m_iPlayerNumber(playerNumber),
       m_strChannel(group),
       m_pLoadedTrack() {
-
     EngineChannel::ChannelOrientation orientation;
     if (playerNumber % 2 == 1)
         orientation = EngineChannel::LEFT;
@@ -80,6 +80,15 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
     ControlObject::getControl(ConfigKey(m_strChannel,"TrackEndMode"))->queueFromThread(
         m_pConfig->getValueString(ConfigKey("[Controls]",config_key)).toDouble());
+
+    // Create WaveformRenderer last, because it relies on controls created above
+    // (e.g. EngineBuffer)
+
+    m_pWaveformRenderer = new WaveformRenderer(pSafeGroupName);
+    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
+    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
 }
 
 Player::~Player()
@@ -218,4 +227,8 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
 
 QString Player::getGroup() {
     return m_strChannel;
+}
+
+WaveformRenderer* Player::getWaveformRenderer() {
+    return m_pWaveformRenderer;
 }
