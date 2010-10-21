@@ -33,6 +33,7 @@
 #include "engine/enginevumeter.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
+#include "waveformviewerfactory.h"
 #include "waveform/waveformrenderer.h"
 #include "soundsourceproxy.h"
 
@@ -42,7 +43,6 @@
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
-#include "library/legacylibraryimporter.h"
 
 #include "soundmanager.h"
 #include "defs_urls.h"
@@ -51,6 +51,9 @@
 #include "midi/mididevicemanager.h"
 
 #include "upgrade.h"
+#include "mixxxkeyboard.h"
+#include "skin/skinloader.h"
+#include "skin/legacyskinparser.h"
 
 #include "build.h" // #defines of details of the build set up (flags,
 // repo number, etc). This isn't a real file, SConscript generates it and it
@@ -220,6 +223,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
                 .append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(m_pKbdConfig);
 
+    m_pKeyboard = new MixxxKeyboard(m_pKbdConfig);
+
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
 
@@ -228,18 +233,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
     m_pSoundManager->queryDevices();
 
-    // Find path of skin
-    QString qSkinPath = getSkinPath();
-
     // Get Music dir
-    QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
-    if (m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"))
-            .length() < 1 || !dir.exists()) {
-        QString fd = QFileDialog::getExistingDirectory(this,
-            tr("Choose music library directory"),
+    QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
+    if (m_pConfig->getValueString(
+        ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
+    {
+        QString fd = QFileDialog::getExistingDirectory(
+            this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-        if (fd != "") {
-            m_pConfig->set(ConfigKey("[Playlist]", "Directory"), fd);
+
+        if (fd != "")
+        {
+            m_pConfig->set(ConfigKey("[Playlist]","Directory"), fd);
             m_pConfig->Save();
         }
     }
@@ -247,8 +252,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
 
     // Use frame as container for view, needed for fullscreen display
-    m_pFrame = new QFrame;
-    setCentralWidget(m_pFrame);
+    m_pView = new QFrame;
+    setCentralWidget(m_pView);
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
@@ -257,9 +262,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
     m_pPlayerManager->addPlayer();
     m_pPlayerManager->addPlayer();
-
-    m_pView = new MixxxView(m_pFrame, m_pKbdConfig, qSkinPath, m_pConfig,
-                            m_pPlayerManager, m_pLibrary);
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -272,25 +274,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pLibraryScanner->scan(
         m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
 
-
     // Call inits to invoke all other construction parts
-
-    // TODO rryan : Move this to WaveformViewerFactory or something.
-    /*
-    if (bVisualsWaveform && !view->activeWaveform())
-    {
-        config->set(ConfigKey("[Controls]", "Visuals"), ConfigValue(1));
-        QMessageBox * mb = new QMessageBox(this);
-        mb->setWindowTitle(QString("Wavform displays"));
-        mb->setIcon(QMessageBox::Information);
-        mb->setText(
-            "OpenGL cannot be initialized, which means that\n"
-            "the waveform displays won't work. A simple\n"
-            "mode will be used instead where you can still\n"
-            "use the mouse to change speed.");
-        mb->show();
-    }
-    */
 
     // Verify path for xml track file.
     QFile trackfile(
@@ -336,9 +320,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pMidiDeviceManager->queryDevices();
     m_pMidiDeviceManager->setupDevices();
 
+    m_pSkinLoader = new SkinLoader(m_pConfig);
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pView, m_pSoundManager,
+    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager,
                                  m_pMidiDeviceManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 
@@ -383,8 +368,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     initActions();
     initMenuBar();
 
+    // Loads the skin as a child of m_pView
+    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+                                        m_pKeyboard,
+                                        m_pPlayerManager,
+                                        m_pLibrary)) {
+        qDebug() << "Could not load default skin.";
+    }
+
     // Check direct rendering and warn user if they don't have it
-    m_pView->checkDirectRendering();
+    checkDirectRendering();
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
@@ -424,12 +417,6 @@ MixxxApp::~MixxxApp()
     delete scriptEng;
 #endif
 
-#ifdef __IPOD__
-    if (m_pTrack->m_qIPodPlaylist.getSongNum()) {
-      qDebug() << "Dispose of iPod track collection";
-      m_pTrack->m_qIPodPlaylist.clear();
-    }
-#endif
     qDebug() << "save config, " << qTime.elapsed();
     m_pConfig->Save();
 
@@ -476,14 +463,11 @@ MixxxApp::~MixxxApp()
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
     m_pConfig->Save();
-
     delete m_pPrefDlg;
 
-    delete m_pFrame;
-
 #ifdef __C_METRICS__
-    // cmetrics will cause this whole method to segfault on Linux/i386 if it
-    // is called after config is deleted. Obviously, it depends on config somehow.
+    // cmetrics will cause this whole method to segfault on Linux/i386 if it is
+    // called after config is deleted. Obviously, it depends on config somehow.
     qDebug() << "cmetrics to report:" << "Mixxx deconstructor complete.";
     cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE,
             "Mixxx deconstructor complete.");
@@ -593,14 +577,6 @@ void MixxxApp::initActions()
     m_pPlaylistsImport = new QAction(tr("&Import playlist"), this);
     m_pPlaylistsImport->setShortcut(tr("Ctrl+I"));
     m_pPlaylistsImport->setShortcutContext(Qt::ApplicationShortcut);
-
-#ifdef __IPOD__
-    iPodToggle = new QAction(tr("iPod &Active"), this);
-    iPodToggle->setShortcut(tr("Ctrl+A"));
-    iPodToggle->setShortcutContext(Qt::ApplicationShortcut);
-    iPodToggle->setCheckable(true);
-    connect(iPodToggle, SIGNAL(toggled(bool)), this, SLOT(slotiPodToggle(bool)));
-#endif
 
     m_pOptionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
 
@@ -811,13 +787,6 @@ void MixxxApp::initMenuBar()
     m_pLibraryMenu->addAction(m_pCratesNew);
     //libraryMenu->addAction(playlistsImport);
 
-#ifdef __IPOD__
-    libraryMenu->addSeparator();
-    libraryMenu->addAction(iPodToggle);
-    connect(libraryMenu, SIGNAL(aboutToShow()),
-            this, SLOT(slotlibraryMenuAboutToShow()));
-#endif
-
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
 
@@ -844,128 +813,7 @@ void MixxxApp::initMenuBar()
 
 }
 
-
-void MixxxApp::slotiPodToggle(bool toggle) {
-#ifdef __IPOD__
-// iPod stuff
-  QString iPodMountPoint =
-      m_pConfig->getValueString(ConfigKey("[iPod]", "MountPoint"));
-  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
-                       QDir( iPodMountPoint + "/iPod_Control").exists();
-  bool iPodActivated = iPodAvailable && toggle;
-
-  iPodToggle->setEnabled(iPodAvailable);
-
-  if (iPodAvailable && iPodActivated
-          && view->m_pComboBox->findData(TABLE_MODE_IPOD) == -1 ) {
-    view->m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
-    // Activate IPod model
-
-    Itdb_iTunesDB *itdb;
-    itdb = itdb_parse (iPodMountPoint, NULL);
-    if (itdb == NULL) {
-      qDebug() << "Error reading iPod database\n";
-      return;
-    }
-    GList *it;
-    int count = 0;
-    m_pTrack->m_qIPodPlaylist.clear();
-
-    for (it = itdb->tracks; it != NULL; it = it->next) {
-       count++;
-       Itdb_Track *song;
-       song = (Itdb_Track *)it->data;
-
-//     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a
-//     VERY long delay in loading from the iPod
-//   QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
-
-       QString fullFilePath =
-           iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
-       QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/'));
-       QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
-       QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
-
-       if (song->movie_flag) {
-           qDebug() << "Movies/Videos not supported." << song->title
-               << fullFilePath;
-           continue;
-       }
-       if (song->unk220 && fileSuffix == "m4p") {
-           qDebug() << "Protected media not supported." << song->title
-               << fullFilePath;
-           continue;
-       }
-#ifndef __FFMPEGFILE__
-       if (fileSuffix == "m4a") {
-           qDebug() << "m4a media support (via FFMPEG) is not compiled into "
-               "this build of Mixxx. :( " << song->title << fullFilePath;
-           continue;
-       }
-#endif // __FFMPEGFILE__
-
-
-//qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
-
-       TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName);
-       pTrack->setBpm(song->BPM);
-       pTrack->setBpmConfirm(song->BPM != 0);  //void setBeatFirst(float); ??
-//       pTrack->setHeaderParsed(true);
-       pTrack->setComment(song->comment);
-//       pTrack->setType(file.suffix());
-       pTrack->setType(fileSuffix);
-       pTrack->setBitrate(song->bitrate);
-       pTrack->setSampleRate(song->samplerate);
-       pTrack->setDuration(song->tracklen/1000);
-       pTrack->setTitle(song->title);
-       pTrack->setArtist(song->artist);
-       // song->rating // user rating
-       // song->volume and song->soundcheck -- track level normalization /
-       // gain info as determined by iTunes
-       m_pTrack->m_qIPodPlaylist.addTrack(pTrack);
-    }
-    itdb_free (itdb);
-
-    //qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum()
-    //<< "of"<< count <<"songs on the iPod.";
-
-    view->m_pComboBox->setCurrentIndex(
-        view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-    //m_pTrack->slotActivatePlaylist(
-    //    view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-    //m_pTrack->resizeColumnsForLibraryMode();
-
-    //FIXME: Commented out above due to library rework.
-
-  } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
-    view->m_pComboBox->setCurrentIndex(
-        view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
-    //m_pTrack->slotActivatePlaylist(
-    //  view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
-    //FIXME: library reworking
-
-    view->m_pComboBox->removeItem(
-        view->m_pComboBox->findData(TABLE_MODE_IPOD) );
-    // Empty iPod model m_qIPodPlaylist
-    //m_pTrack->m_qIPodPlaylist.clear();
-
-  }
-#else
-  Q_UNUSED(toggle); // suppress gcc unused parameter warning
-#endif
-}
-
-
 void MixxxApp::slotlibraryMenuAboutToShow(){
-
-#ifdef __IPOD__
-  QString iPodMountPoint =
-      m_pConfig->getValueString(ConfigKey("[iPod]", "MountPoint"));
-  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
-                       QDir( iPodMountPoint + "/iPod_Control").exists();
-  iPodToggle->setEnabled(iPodAvailable);
-
-#endif
 }
 
 bool MixxxApp::queryExit()
@@ -1078,20 +926,23 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         //         int deskh = app->desktop()->height();
 
         //support for xinerama
-        int deskw = m_pApp->desktop()->screenGeometry(m_pFrame).width();
-        int deskh = m_pApp->desktop()->screenGeometry(m_pFrame).height();
+        int deskw = m_pApp->desktop()->screenGeometry(m_pView).width();
+        int deskh = m_pApp->desktop()->screenGeometry(m_pView).height();
 #else
         int deskw = width();
         int deskh = height();
 #endif
-        m_pView->move(
-            (deskw - m_pView->width())/2, (deskh - m_pView->height())/2);
+        if (m_pView)
+            m_pView->move((deskw - m_pView->width())/2,
+                          (deskh - m_pView->height())/2);
         // FWI: End of fullscreen patch
     }
     else
     {
         // FWI: Begin of fullscreen patch
-        m_pView->move(0,0);
+        if (m_pView)
+            m_pView->move(0,0);
+
         menuBar()->show();
         showNormal();
 
@@ -1455,9 +1306,12 @@ void MixxxApp::slotHelpSupport()
 }
 
 void MixxxApp::rebootMixxxView() {
-    // Ok, so wierdly if you call setFixedSize with the same value twice,
-    // Qt breaks
-    // So we check and if the size hasn't changed we don't make the call
+
+    if (!m_pView)
+        return;
+
+    // Ok, so wierdly if you call setFixedSize with the same value twice, Qt
+    // breaks. So we check and if the size hasn't changed we don't make the call
     int oldh = m_pView->height();
     int oldw = m_pView->width();
     qDebug() << "Now in Rebootmixxview...";
@@ -1468,9 +1322,20 @@ void MixxxApp::rebootMixxxView() {
     // it is not fullscreen, but acts as if it is.
     slotOptionsFullScreen(false);
 
-    QString qSkinPath = getSkinPath();
+    // TODO(XXX) Make getSkinPath not public
+    QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    m_pView->rebootGUI(m_pFrame, m_pConfig, qSkinPath);
+    m_pView->hide();
+    delete m_pView;
+    m_pView = new QFrame();
+    setCentralWidget(m_pView);
+
+    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+                                        m_pKeyboard,
+                                        m_pPlayerManager,
+                                        m_pLibrary)) {
+        qDebug() << "Could not reload the skin.";
+    }
 
     qDebug() << "rebootgui DONE";
 
@@ -1478,37 +1343,6 @@ void MixxxApp::rebootMixxxView() {
             || oldh != m_pView->height() + menuBar()->height()) {
       setFixedSize(m_pView->width(), m_pView->height() + menuBar()->height());
     }
-}
-
-QString MixxxApp::getSkinPath() {
-    QString qConfigPath = m_pConfig->getConfigPath();
-
-    QString qSkinPath(qConfigPath);
-    qSkinPath.append("skins/");
-    if (QDir(qSkinPath).exists())
-    {
-        // Is the skin listed in the config database there? If not, use
-        // default (outlineSmall) skin
-        if ((m_pConfig->getValueString(ConfigKey("[Config]", "Skin"))
-                .length() > 0
-            && QDir(QString(qSkinPath).append(
-                m_pConfig->getValueString(ConfigKey("[Config]", "Skin"))))
-                    .exists()))
-            qSkinPath.append(
-                m_pConfig->getValueString(ConfigKey("[Config]", "Skin")));
-        else
-        {
-            m_pConfig->set(
-                ConfigKey("[Config]", "Skin"), ConfigValue("outlineNetbook"));
-            m_pConfig->Save();
-            qSkinPath.append(
-                m_pConfig->getValueString(ConfigKey("[Config]", "Skin")));
-        }
-    }
-    else
-        qCritical() << "Skin directory does not exist:" << qSkinPath;
-
-    return qSkinPath;
 }
 
 /** Event filter to block certain events. For example, this function is used
@@ -1574,4 +1408,23 @@ void MixxxApp::slotOptionsShoutcast(bool value){
 #else
     Q_UNUSED(value);
 #endif
+}
+
+void MixxxApp::checkDirectRendering() {
+    // IF
+    //  * A waveform viewer exists
+    // AND
+    //  * The waveform viewer is an OpenGL waveform viewer
+    // AND
+    //  * The waveform viewer does not have direct rendering enabled.
+    // THEN
+    //  * Warn user
+
+    if (WaveformViewerFactory::numViewers(WAVEFORM_GL) > 0 &&
+        !WaveformViewerFactory::isDirectRenderingEnabled() &&
+        m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
+		    QMessageBox::warning(0, "OpenGL Direct Rendering",
+                             "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+        m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+    }
 }

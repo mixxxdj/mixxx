@@ -61,3 +61,15 @@ void WNumberBpm::setValue(double)
     WNumber::setValue(bpm*rate);
 }
 
+
+void WNumberBpm::slotTrackLoaded(TrackPointer track) {
+    connect(track.data(), SIGNAL(bpmUpdated(double)),
+            this, SLOT(setValue(double)));
+    float fBpm = track->getBpm();
+    if (fBpm > 0)
+        setValue(fBpm);
+}
+
+void WNumberBpm::slotTrackUnloaded(TrackPointer track) {
+    setValue(0);
+}
