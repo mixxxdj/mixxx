@@ -13,6 +13,7 @@
 #include <math.h>
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
+#include "controlobjectthreadmain.h"
 
 WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
 {
@@ -20,6 +21,12 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
     m_dOldValue = 0.;
     m_qsText = "Pos: ";
     m_bRemain = false;
+
+    m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
+    connect(m_pShowDurationRemaining, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetRemain(double)));
+    slotSetRemain(m_pShowDurationRemaining->get());
+
     m_pRateControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate")));
     m_pRateDirControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pDurationControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "duration")));
@@ -81,6 +88,10 @@ void WNumberPos::setValue(double dValue)
     m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8")
                       .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
                       .arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
+}
+
+void WNumberPos::slotSetRemain(double remain) {
+    setRemain(remain == 1.0f);
 }
 
 void WNumberPos::setRemain(bool bRemain)
