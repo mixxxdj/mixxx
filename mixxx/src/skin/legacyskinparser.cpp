@@ -31,6 +31,7 @@
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
 #include "widget/wtracktext.h"
+#include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberbpm.h"
@@ -193,6 +194,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
         return parseVisual(node, pParent);
     } else if (nodeName == "Text") {
         return parseText(node, pParent);
+    } else if (nodeName == "TrackProperty") {
+        return parseTrackProperty(node, pParent);
     } else if (nodeName == "VuMeter") {
         return parseVuMeter(node, pParent);
     } else if (nodeName == "StatusLight") {
@@ -354,6 +357,26 @@ QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
         return NULL;
 
     WTrackText* p = new WTrackText(pParent);
+    p->setup(node);
+    p->installEventFilter(m_pKeyboard);
+
+    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+            p, SLOT(slotTrackLoaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+            p, SLOT(slotTrackUnloaded(TrackPointer)));
+    return p;
+}
+
+QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent) {
+    int channel = WWidget::selectNodeInt(node, "Channel");
+    QString channelStr = QString("[Channel%1]").arg(channel);
+
+    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+
+    if (!pPlayer)
+        return NULL;
+
+    WTrackProperty* p = new WTrackProperty(pParent);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
 

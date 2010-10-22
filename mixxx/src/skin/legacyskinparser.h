@@ -43,6 +43,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseVisual(QDomElement node, QWidget* pParent);
     QWidget* parseOverview(QDomElement node, QWidget* pParent);
     QWidget* parseText(QDomElement node, QWidget* pParent);
+    QWidget* parseTrackProperty(QDomElement node, QWidget* pParent);
     QWidget* parseVuMeter(QDomElement node, QWidget* pParent);
     QWidget* parseStatusLight(QDomElement node, QWidget* pParent);
     QWidget* parseDisplay(QDomElement node, QWidget* pParent);
