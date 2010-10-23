@@ -93,9 +93,9 @@ promotracks_files = Glob('#res/promo/*')
 ladspapresets_files = Glob('#res/ladspa_presets/*')
 
 #Documentation
-docs_files = Glob('#LICENSE')
-docs_files += Glob('#README')
-docs_files += Glob('#Mixxx-Manual.pdf')
+docs_files = Glob('#./LICENSE')
+docs_files += Glob('#./README')
+docs_files += Glob('#./Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
 dotdesktop_files = Glob('#src/mixxx.desktop')
@@ -209,7 +209,7 @@ if platformString == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+	dmg = env.Dmg('mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
 if 'win' in platformString:
