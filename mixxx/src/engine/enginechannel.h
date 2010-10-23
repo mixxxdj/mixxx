@@ -19,6 +19,7 @@
 #define ENGINECHANNEL_H
 
 #include "engineobject.h"
+#include "configobject.h"
 
 class EngineBuffer;
 class EnginePregain;

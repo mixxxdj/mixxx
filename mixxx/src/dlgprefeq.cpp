@@ -19,7 +19,6 @@
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
 #include <qlineedit.h>
-#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>
@@ -55,6 +54,9 @@ DlgPrefEQ::DlgPrefEQ(QWidget * parent, ConfigObject<ConfigValue> * _config) :  Q
 	CheckBoxLoFi->setEnabled(false);
 #endif
 	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
+
+	m_lowEqFreq = 0;
+	m_highEqFreq = 0;
 
 	loadSettings();
 }
@@ -109,6 +111,7 @@ void DlgPrefEQ::slotUpdateHiEQ()
         SliderHiEQ->setValue( SliderLoEQ->value());
     }
 	m_highEqFreq = getEqFreq(SliderHiEQ->value());
+    validate_levels();
 	if(m_highEqFreq < 1000)
 		TextHiEQ->setText( QString("%1 Hz").arg(m_highEqFreq));
 	else
@@ -125,6 +128,7 @@ void DlgPrefEQ::slotUpdateLoEQ()
         SliderLoEQ->setValue( SliderHiEQ->value());
     }
 	m_lowEqFreq = getEqFreq(SliderLoEQ->value());
+    validate_levels();
     if(m_lowEqFreq < 1000)
 		TextLoEQ->setText( QString("%1 Hz").arg(m_lowEqFreq));
 	else
@@ -172,3 +176,15 @@ int DlgPrefEQ::getEqFreq(int sliderVal)
 	}
 }
 
+void DlgPrefEQ::validate_levels() {
+    if (m_lowEqFreq == m_highEqFreq) {
+        // magic numbers: 16 is the low, 20050 is the high
+        if (m_lowEqFreq == 16) {
+            ++m_highEqFreq;
+        } else if (m_highEqFreq == 20050) {
+            --m_lowEqFreq;
+        } else {
+            ++m_highEqFreq;
+        }
+    }
+}

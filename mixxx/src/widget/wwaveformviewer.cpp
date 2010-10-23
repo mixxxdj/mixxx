@@ -16,7 +16,6 @@
 
 WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) : QWidget(parent, f)
 {
-
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
 
@@ -25,19 +24,10 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
     setAcceptDrops(true);
 
     installEventFilter(this);
-
-    // Start a timer based on our desired FPS
-    // TODO Eventually make this user-configurable.
-    int desired_fps = 1;
-    int update_interval = 1000 / desired_fps;
-    m_iTimerID = startTimer(update_interval);
-
     m_painting = false;
 }
 
 WWaveformViewer::~WWaveformViewer() {
-    // Stop the timer we started
-    killTimer(m_iTimerID);
 }
 
 void WWaveformViewer::setup(QDomNode node) {
@@ -47,7 +37,6 @@ void WWaveformViewer::setup(QDomNode node) {
     int sep = pos.indexOf(",");
     int x = pos.left(sep).toInt();
     int y = pos.mid(sep+1).toInt();
-
     move(x,y);
 
     // Acquire size
@@ -55,8 +44,15 @@ void WWaveformViewer::setup(QDomNode node) {
     sep = size.indexOf(",");
     x = size.left(sep).toInt();
     y = size.mid(sep+1).toInt();
-
     setFixedSize(x,y);
+
+    // Get tooltip
+    QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
+    setToolTip(tooltip);
+
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
 
     m_pWaveformRenderer->setup(node);
 
@@ -76,7 +72,7 @@ void WWaveformViewer::paintEvent(QPaintEvent *event) {
     // QPainter goes out of scope and is destructed
 }
 
-void WWaveformViewer::timerEvent(QTimerEvent *qte) {
+void WWaveformViewer::refresh() {
     //m_paintMutex.lock();
     if(!m_painting) {
         m_painting = true;

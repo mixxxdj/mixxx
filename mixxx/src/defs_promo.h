@@ -5,6 +5,7 @@
 #ifndef __DEFS_PROMO_H__
 #define __DEFS_PROMO_H__
 
-#define MIXXX_PROMO_DIR "promo"
+#define MIXXX_PROMO_DIR         "promo"
+#define MIXXX_PROMO_VERSION     "1.8.0"
 
 #endif 

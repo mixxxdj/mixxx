@@ -16,7 +16,6 @@
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
-#include <QtDebug>
 
 PlayerInfo &PlayerInfo::Instance()
 {

@@ -23,6 +23,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
+class TrackCollection;
 
 #define MIXXX_PROMO_HTML_LOCATION "promo/promotracks.html"
 
@@ -32,7 +33,8 @@ class BundledSongsWebView : public QWebView, public LibraryView
     Q_PROPERTY(bool m_statTracking READ statTracking WRITE setStatTracking)
     Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
     public:
-        BundledSongsWebView(QWidget* parent, QString promoBundlePath, 
+        BundledSongsWebView(QWidget* parent, TrackCollection* trackCollection,
+                           QString promoBundlePath, 
                            QString localURL, bool firstRun,
                            ConfigObject<ConfigValue>* config);
         ~BundledSongsWebView();
@@ -67,6 +69,7 @@ class BundledSongsWebView : public QWebView, public LibraryView
         bool m_statTracking;
         bool m_bFirstRun;
         ConfigObject<ConfigValue>* m_pConfig;
+        TrackCollection* m_pTrackCollection;
 };
 
 

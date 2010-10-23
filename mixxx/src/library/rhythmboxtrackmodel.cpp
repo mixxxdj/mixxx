@@ -38,7 +38,7 @@ RhythmboxTrackModel::RhythmboxTrackModel()
      * the XPath query to make sure it is the schema we expect.
      */
     query.setFocus(&db);
-    query.setQuery("rhythmdb[@version='1.6']/entry[@type='song']");
+    query.setQuery("rhythmdb[@version='1.4' or @version='1.6' or @version='1.7']/entry[@type='song']");
     if ( ! query.isValid())
         return;
 
@@ -138,7 +138,11 @@ QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModel
 
 TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
 {
-    QString trackLocation = QUrl(songNode.firstChildElement("location").text()).toLocalFile();
+    QString strloc = songNode.firstChildElement("location").text();
+    QByteArray strlocbytes = strloc.toUtf8();
+    QUrl location = QUrl::fromEncoded(strlocbytes);
+    QString trackLocation = location.toLocalFile();
+
     TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(songNode.firstChildElement("artist").text());
@@ -158,4 +162,14 @@ TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
 
     // Have QObject handle deleting this track
     return TrackPointer(pTrack, &QObject::deleteLater);
+}
+
+//OwenB - for use by the playlistmodel
+QDomNode RhythmboxTrackModel::getTrackNodeByLocation(const QString& location) const
+{
+    if ( !m_mTracksByLocation.contains(location))
+        return QDomNode();
+
+    QDomNode songNode = m_mTracksByLocation[location];
+    return songNode;
 }

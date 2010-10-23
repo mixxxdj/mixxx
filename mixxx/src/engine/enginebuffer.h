@@ -181,6 +181,7 @@ private:
     int m_iSamplesCalculated;
 
     ControlObject* m_pTrackSamples;
+    ControlObject* m_pTrackSampleRate;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;

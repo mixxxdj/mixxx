@@ -18,10 +18,6 @@ SamplerManager::SamplerManager(ConfigObject<ConfigValue> *pConfig,
 
     connect(m_pLibrary, SIGNAL(loadTrackToSampler(TrackPointer, int)),
         this, SLOT(slotLoadTrackToSampler(TrackPointer, int)));
-
-    // Disabled to remove loading into sampler on double click
-    //connect(m_pLibrary, SIGNAL(loadTrack(TrackInfoObject*)),
-    //  this, SLOT(slotLoadTrackIntoNextAvailableSampler(TrackInfoObject*)));
 }
 
 SamplerManager::~SamplerManager() {
@@ -40,16 +36,13 @@ int SamplerManager::numSamplers() {
 }
 
 Sampler* SamplerManager::addSampler() {
-    Sampler* pSampler;
     int number = numSamplers() + 1;
 
-
-    //TODO Fix this so it adjusts to the number of players
-    pSampler = new Sampler(m_pConfig, m_pEngine, number,
-        QString("[Channel%1]").arg(number+2));
+    Sampler* pSampler = new Sampler(m_pConfig, m_pEngine, number,
+                                    QString("[Sampler%1]").arg(number));
 
 
-    // Connect the player to the library so that when a track is unloaded, it's
+    // Connect the sampler to the library so that when a track is unloaded, it's
     // data (eg. waveform summary) is saved back to the database.
     connect(pSampler, SIGNAL(unloadingTrack(TrackPointer)),
         &(m_pLibrary->getTrackCollection()->getTrackDAO()),
@@ -76,7 +69,6 @@ Sampler* SamplerManager::getSampler(QString group) {
     }
     return NULL;
 }
-
 
 Sampler* SamplerManager::getSampler(int sampler) {
     if (sampler < 1 || sampler > numSamplers()) {
@@ -116,7 +108,7 @@ TrackPointer SamplerManager::lookupTrack(QString location) {
     // Try to get TrackInfoObject* from library, identified by location.
     TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
     TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackPointer 
+    // If not, create a new TrackPointer
     if (pTrack == NULL)
     {
         pTrack = TrackPointer(new TrackInfoObject(location));

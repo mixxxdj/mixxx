@@ -18,8 +18,9 @@
 #ifndef WWIDGET_H
 #define WWIDGET_H
 
-#include <qwidget.h>
-#include <qdom.h>
+#include <QtGui>
+#include <QtXml>
+
 #include "configobject.h"
 
 /**
@@ -75,6 +76,10 @@ protected:
     /** Pointer to keyboard config object */
     static ConfigObject<ConfigValueKbd> *m_spKbdConfigObject;
 
+    QString getTooltip() {
+        return m_Tooltip;
+    }
+
 private:
     /** Variable containing the path to the pixmaps */
     static QString m_qPath;
@@ -82,8 +87,6 @@ private:
     QString m_Tooltip;
     /** Property used when connecting to ControlObject */
     bool m_bEmitOnDownPress;
-    /** Property used when connecting to ControlObject */
-    Qt::ButtonState m_qButtonState;
 };
 
 #endif

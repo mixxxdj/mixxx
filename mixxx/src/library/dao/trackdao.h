@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QSet>
 #include <QHash>
+#include <QList>
 #include <QSqlDatabase>
 #include <QSharedPointer>
 #include <QWeakPointer>
@@ -38,6 +39,14 @@ const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
 const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
 const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 
+const QString TRACKLOCATIONSTABLE_ID = "id";
+const QString TRACKLOCATIONSTABLE_LOCATION = "location";
+const QString TRACKLOCATIONSTABLE_FILENAME = "filename";
+const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
+const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
+const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
+const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
+
 class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT
   public:
@@ -52,7 +61,10 @@ Q_OBJECT
     QString getTrackLocation(int id);
     int addTrack(QString absoluteFilePath);
     int addTrack(QFileInfo& fileInfo);
+    void addTracks(QList<TrackInfoObject*> tracksToAdd);
     void removeTrack(int id);
+    void removeTracks(QList<int> ids);
+    void unremoveTrack(int trackId);
     TrackPointer getTrack(int id) const;
     bool isDirty(int trackId);
 
@@ -81,7 +93,7 @@ Q_OBJECT
     // to the database.
     void saveDirtyTracks();
 
-    // Clears the cached TrackInfoObjects, which can be useful when the 
+    // Clears the cached TrackInfoObjects, which can be useful when the
     // underlying database tables change (eg. during a library rescan,
     // we might detect that a track has been moved and modify the update
     // the tables directly.)
@@ -98,6 +110,12 @@ Q_OBJECT
     void addTrack(TrackInfoObject* pTrack);
     TrackPointer getTrackFromDB(QSqlQuery &query) const;
     QString absoluteFilePath(QString location);
+
+    void prepareTrackLocationsInsert(QSqlQuery& query);
+    void bindTrackToTrackLocationsInsert(QSqlQuery& query, TrackInfoObject* pTrack);
+    void prepareLibraryInsert(QSqlQuery& query);
+    void bindTrackToLibraryInsert(QSqlQuery& query,
+                                  TrackInfoObject* pTrack, int trackLocationId);
 
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);

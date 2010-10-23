@@ -37,6 +37,7 @@ class CueControl : public EngineControl {
     void hotcueActivate(double v);
     void hotcueActivatePreview(double v);
     void hotcueClear(double v);
+    void hotcuePositionChanged(double newPosition);
 
     void cueSet(double v);
     void cueGoto(double v);
@@ -58,6 +59,7 @@ class CueControl : public EngineControl {
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
+    int m_iCurrentlyPreviewingHotcues;
 
     const int m_iNumHotCues;
     // Hotcue state controls
@@ -72,6 +74,7 @@ class CueControl : public EngineControl {
     QList<ControlObject*> m_hotcueClear;
     QList<Cue*> m_hotcue;
 
+    ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;

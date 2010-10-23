@@ -124,7 +124,7 @@
                     <group>[Channel2]</group>
                     <key>reverse</key>
                     <options>
-                        <Switch/>
+                        <Button/>
                     </options>
                 </control>
                 <control>
@@ -178,7 +178,7 @@
                     <group>[Channel1]</group>
                     <key>reverse</key>
                     <options>
-                        <Switch/>
+                        <Button/>
                     </options>
                 </control>
                 <control>

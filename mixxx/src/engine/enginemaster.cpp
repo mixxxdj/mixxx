@@ -85,9 +85,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     head_clipping = new EngineClipping("");
 
     // Allocate buffers
-
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     sidechain = new EngineSideChain(_config);
 
@@ -109,11 +110,11 @@ EngineMaster::~EngineMaster()
     delete clipping;
     delete head_clipping;
     delete sidechain;
-    
+
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
-    
+
 
     QMutableListIterator<CSAMPLE*> buffer_it(m_channelBuffers);
     while (buffer_it.hasNext()) {
@@ -121,7 +122,7 @@ EngineMaster::~EngineMaster()
         buffer_it.remove();
         SampleUtil::free(buffer);
     }
-    
+
 
     QMutableListIterator<EngineChannel*> channel_it(m_channels);
     while (channel_it.hasNext()) {
@@ -129,8 +130,8 @@ EngineMaster::~EngineMaster()
         channel_it.remove();
         delete channel;
     }
-    
-    
+
+
 
 }
 
@@ -308,8 +309,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
-    
-    m_channelBuffers.push_back(SampleUtil::alloc(MAX_BUFFER_LEN));
+    CSAMPLE* pChannelBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+    memset(pChannelBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_channelBuffers.push_back(pChannelBuffer);
     m_channels.push_back(pChannel);
     pChannel->getEngineBuffer()->bindWorkers(m_pWorkerScheduler);
 

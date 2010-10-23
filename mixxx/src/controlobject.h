@@ -20,9 +20,6 @@
 
 #include <QObject>
 #include <QEvent>
-#include <q3ptrlist.h>
-//#include <qaccel.h>
-#include <q3ptrqueue.h>
 #include <QMutex>
 #include "midi/midimessage.h"
 #include "configobject.h"
@@ -64,7 +61,7 @@ class ControlObject : public QObject
 public:
     ControlObject();
     ControlObject(ConfigKey key, bool bIgnoreNops=true);
-    ~ControlObject();
+    virtual ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest. */
     static bool connectControls(ConfigKey src, ConfigKey dest);
     /** Disonnect a control object. */
@@ -125,7 +122,7 @@ private:
     // Whether to ignore set/add/sub()'s which would have no effect
     bool m_bIgnoreNops;
     /** List of associated proxy objects */
-    Q3PtrList<ControlObjectThread> m_qProxyList;
+    QList<ControlObjectThread*> m_qProxyList;
     /** Mutex for the proxy list */
     QMutex m_qProxyListMutex;
 
@@ -136,12 +133,12 @@ private:
     /** Mutex protecting access to the queues */
     static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread, m_sqQueueMutexChanges;
     /** Queue holding control changes from MIDI */
-    static Q3PtrQueue<QueueObjectMidi> m_sqQueueMidi;
+    static QQueue<QueueObjectMidi*> m_sqQueueMidi;
     /** Queues holding control changes from other application threads and from widgets */
-    static Q3PtrQueue<QueueObjectThread> m_sqQueueThread;
+    static QQueue<QueueObjectThread*> m_sqQueueThread;
     /** Queue holding ControlObjects that has changed, but not been syncronized with it's
      * associated ControlObjectProxy objects. */
-    static Q3PtrQueue<ControlObject> m_sqQueueChanges;
+    static QQueue<ControlObject*> m_sqQueueChanges;
 };
 
 
