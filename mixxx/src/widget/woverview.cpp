@@ -12,9 +12,7 @@
 
 #include <QBrush>
 #include <QtDebug>
-#include <Q3MemArray>
 #include <QMouseEvent>
-#include <Q3ValueList>
 #include <QPaintEvent>
 #include <qpainter.h>
 #include <QtDebug>
@@ -61,7 +59,7 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
 
     QString pattern = "hotcue_%1_position";
 
-    int i = 0;
+    int i = 1;
     ConfigKey hotcueKey;
     hotcueKey.group = m_pGroup;
     hotcueKey.item = pattern.arg(i);
@@ -163,6 +161,10 @@ void WOverview::setValue(double fValue)
 
 void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
 {
+    // Connect wavesummaryUpdated signals to our update slots.
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+            this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    // Now in case the track's wavesummary is already done, load it.
     slotLoadNewWaveform(pTrack.data());
 }
 
@@ -408,16 +410,17 @@ void WOverview::paintEvent(QPaintEvent *)
                     continue;
                 fPos = float(position) * (width()-2) / m_liSampleDuration;
                 //qDebug() << "Drawing cue" << i << "at" << fPos;
-                // paint.drawLine(fPos, 0,
-                //                fPos, height());
+
+                paint.drawLine(fPos, 0,
+                               fPos, height());
                 // paint.drawLine(fPos+1, 0,
                 //                fPos+1, height());
 
-                int halfHeight = height()/2;
-                QRectF rect(QPointF(fPos-textWidth, halfHeight-textHeight),
-                            QPointF(fPos+textWidth, halfHeight+textHeight));
+                // int halfHeight = height()/2;
+                // QRectF rect(QPointF(fPos-textWidth, halfHeight-textHeight),
+                //             QPointF(fPos+textWidth, halfHeight+textHeight));
 
-                paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i));
+                // paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i+1));
             }
         }
     }

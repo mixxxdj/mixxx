@@ -30,7 +30,7 @@ WPushButton::WPushButton(QWidget * parent) : WWidget(parent)
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
     setStates(0);
-    //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03 
+    //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
 WPushButton::~WPushButton()
@@ -64,6 +64,14 @@ void WPushButton::setup(QDomNode node)
         state = state.nextSibling();
     }
 
+    m_bLeftClickForcePush = false;
+    if (selectNodeQString(node, "LeftClickIsPushButton").contains("true", Qt::CaseInsensitive))
+        m_bLeftClickForcePush = true;
+
+    m_bRightClickForcePush = false;
+    if (selectNodeQString(node, "RightClickIsPushButton").contains("true", Qt::CaseInsensitive))
+        m_bRightClickForcePush = true;
+
     //--------
     //This next big block allows each ControlPushButton to know whether or not it's
     //a "toggle" button.
@@ -79,21 +87,48 @@ void WPushButton::setup(QDomNode node)
         configKey.group = key.left(key.indexOf(","));
         configKey.item = key.mid(key.indexOf(",")+1);
 
-        ControlPushButton * p = (ControlPushButton *)ControlObject::getControl(configKey);
+        ControlPushButton* p =
+                dynamic_cast<ControlPushButton*>(ControlObject::getControl(configKey));
+
+        if (p == NULL) {
+            qWarning() << "WPushButton for control " << key << "is null, skipping.";
+            con = con.nextSibling();
+            continue;
+        }
 
         //Find out if we're a push button...
         if (node.nodeName()=="PushButton")
         {
-            //qDebug(configKey.item);
-            //qDebug() << "Number of States: " << iStates;
+            bool isLeftButton = false;
+            bool isRightButton = false;
+            if (!selectNode(con, "ButtonState").isNull())
+            {
+                if (selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
+                    isLeftButton = true;
+                }
+                else if (selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
+                    isRightButton = true;
+                }
+            }
 
-            //If we have 2 states, tell my controlpushbutton object that we're a toggle button.
-          if (iNumStates == 2) {
-            if (p == 0)
-              qWarning() << "wpushbutton p is null\n";
-            else
-              p->setToggleButton(true);
-          }
+            // If we have 2 states, tell my controlpushbutton object that we're
+            // a toggle button. Only set the control as a toggle button if it
+            // has not been forced to remain a push button by the
+            // Right/LeftClickIsPushButton directive above. Do this by checking
+            // whether this control is mapped to the RightButton or LeftButton
+            // and check it against the value of m_bLeft/RightClickForcePush. We
+            // have to handle the case where no ButtonState is provided for the
+            // control. If no button is provided, then we have to assume the
+            // connected control should be a toggle.
+
+            bool setAsToggleButton = iNumStates == 2 &&
+                    ((!isLeftButton && !isRightButton) ||
+                     ( (isLeftButton && !m_bLeftClickForcePush) ||
+                       (isRightButton && !m_bRightClickForcePush) ) );
+
+            // if (setAsToggleButton)
+            //     p->setToggleButton(true);
+
             // BJW: Removed this so that buttons that are hardcoded as toggle in the source
             // don't get overridden if a skin fails to set them to 2-state. Buttons still
             // default to non-toggle otherwise.
@@ -182,25 +217,46 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
 {
     m_bPressed = true;
 
+    bool leftClick = e->button() == Qt::LeftButton;
+    bool rightClick = e->button() == Qt::RightButton;
+
+    // The value to emit.
+    double emitValue = m_fValue;
+
     // Calculate new state if it is a one state button
-    if (m_iNoStates==1)
-    {
-        if (m_fValue==0.)
-            m_fValue = 1.;
-        else
-            m_fValue = 0.;
+    if (m_iNoStates == 1) {
+        m_fValue = emitValue = (m_fValue == 0.0f) ? 1.0f : 0.0f;
     }
-    // Update state on left press if it is a n-state button
-    else if (e->button()==Qt::LeftButton)
-    {
-        m_fValue = (int)(m_fValue+1.)%m_iNoStates;
+    // Update state on press if it is a n-state button and not a pushbutton
+    else if (leftClick) {
+        if (m_bLeftClickForcePush) {
+            emitValue = 1.0f;
+        } else {
+            m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
+        }
     }
-    
-    if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftDown((double)m_fValue));
-    else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightDown((double)m_fValue));
-        
+
+    // Do not allow right-clicks to change the state of the button. This is how
+    // Mixxx <1.8.0 worked so keep it that way. For a multi-state button, really
+    // only one click type (left/right) should be able to change the state. One
+    // problem with this is that you can get the button out of sync with its
+    // underlying control. For example the PFL buttons on Jus's skins could get
+    // out of sync with the button state. rryan 9/2010
+
+    // else if (rightClick) {
+    //     if (m_bRightClickForcePush) {
+    //         emitValue = 1.0f;
+    //     } else {
+    //         m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
+    //     }
+    // }
+
+    if (leftClick) {
+        emit(valueChangedLeftDown(emitValue));
+    } else if (rightClick) {
+        emit(valueChangedRightDown(emitValue));
+    }
+
     update();
 }
 
@@ -208,19 +264,25 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e)
 {
     m_bPressed = false;
 
+    bool leftClick = e->button() == Qt::LeftButton;
+    bool rightClick = e->button() == Qt::RightButton;
+
+    // The value to emit
+    double emitValue = m_fValue;
+
     // Update state if it is a one state button.
     if (m_iNoStates==1) // && e->button()==Qt::LeftButton)
     {
-        if (m_fValue==0.)
-            m_fValue = 1.;
-        else
-            m_fValue = 0.;
+        m_fValue = emitValue = (m_fValue == 0.0f) ? 1.0f : 0.0f;
+    } else if ((leftClick && m_bLeftClickForcePush) || (rightClick && m_bRightClickForcePush)) {
+        emitValue = 0.0f;
     }
 
-    if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftUp((double)m_fValue));
-    else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightUp((double)m_fValue));
+    if (leftClick) {
+        emit(valueChangedLeftUp(emitValue));
+    } else if (rightClick) {
+        emit(valueChangedRightUp(emitValue));
+    }
 
     update();
 }

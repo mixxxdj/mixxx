@@ -21,12 +21,15 @@
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QRegExp>
+#include <QList>
 
 #include "configobject.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
+
+class TrackInfoObject;
 
 #define AUTODJ_TABLE "Auto DJ"
 
@@ -47,7 +50,8 @@ class TrackCollection : public QObject
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
-    bool importDirectory(QString directory, TrackDAO &trackDao);
+    bool importDirectory(QString directory, TrackDAO &trackDao,
+                         QList<TrackInfoObject*>& tracksToAdd);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();

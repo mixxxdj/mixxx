@@ -21,8 +21,6 @@
 #include <QList>
 #include <QObject>
 #include <QFileInfo>
-#include <q3memarray.h>
-#include <q3valuelist.h>
 #include <QMutex>
 #include <QVector>
 #include <QSharedPointer>
@@ -52,9 +50,9 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString sLocation="");
+    TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(QFileInfo& fileInfo);
+    TrackInfoObject(QFileInfo& fileInfo, bool parseHeader=true);
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
@@ -66,11 +64,27 @@ public:
 
     /** Returns the duration in seconds */
     int getDuration() const;
+    /** Set duration in seconds */
+    void setDuration(int);
     /** Returns the duration as a string: H:MM:SS */
     QString getDurationStr() const;
 
     // Accessors for various stats of the file on disk. These are auto-populated
     // when the TIO is constructed, or when setLocation() is called.
+
+    Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
+    Q_PROPERTY(QString title READ getTitle WRITE setTitle)
+    Q_PROPERTY(QString album READ getAlbum WRITE setAlbum)
+    Q_PROPERTY(QString genre READ getGenre WRITE setGenre)
+    Q_PROPERTY(QString year READ getYear WRITE setYear)
+    Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
+    Q_PROPERTY(int times_played READ getTimesPlayed)
+    Q_PROPERTY(QString comment READ getComment WRITE setComment)
+    Q_PROPERTY(float bpm READ getBpm WRITE setBpm)
+    Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
+    Q_PROPERTY(int duration READ getDuration WRITE setDuration)
+    Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
+
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
@@ -124,8 +138,7 @@ public:
     int getChannels() const;
     /** Output a formatted string with all the info */
     QString getInfo() const;
-    /** Set duration in seconds */
-    void setDuration(int);
+
 
     /** Getter/Setter methods for metadata */
     /** Return title */
@@ -223,7 +236,7 @@ public:
   private:
 
     // Common initialization function between all TIO constructors.
-    void initialize();
+    void initialize(bool parseHeader);
 
     // Initialize all the location variables.
     void populateLocation(QFileInfo& fileInfo);

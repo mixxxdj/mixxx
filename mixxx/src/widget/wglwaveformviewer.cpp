@@ -25,12 +25,6 @@ WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWavef
 
     installEventFilter(this);
 
-    // Start a timer based on our desired FPS
-    // TODO Eventually make this user-configurable.
-    int desired_fps = 40;
-    int update_interval = 1000 / desired_fps;
-    m_iTimerID = startTimer(update_interval);
-
     m_painting = false;
 }
 
@@ -41,8 +35,6 @@ bool WGLWaveformViewer::directRendering()
 
 
 WGLWaveformViewer::~WGLWaveformViewer() {
-    // Stop the timer we started
-    killTimer(m_iTimerID);
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
@@ -52,7 +44,6 @@ void WGLWaveformViewer::setup(QDomNode node) {
     int sep = pos.indexOf(",");
     int x = pos.left(sep).toInt();
     int y = pos.mid(sep+1).toInt();
-
     move(x,y);
 
     // Acquire size
@@ -60,8 +51,15 @@ void WGLWaveformViewer::setup(QDomNode node) {
     sep = size.indexOf(",");
     x = size.left(sep).toInt();
     y = size.mid(sep+1).toInt();
-
     setFixedSize(x,y);
+
+    // Get tooltip
+    QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
+    setToolTip(tooltip);
+
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "")
+        setStyleSheet(style);
 
     m_pWaveformRenderer->setup(node);
 
@@ -85,7 +83,7 @@ void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     // QPainter goes out of scope and is destructed
 }
 
-void WGLWaveformViewer::timerEvent(QTimerEvent *qte) {
+void WGLWaveformViewer::refresh() {
     //m_paintMutex.lock();
     if(!m_painting) {
         m_painting = true;

@@ -2,6 +2,7 @@
 #include <QMessageBox>
 
 #include "player.h"
+#include "playerinfo.h"
 
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
@@ -13,26 +14,33 @@
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
 #include "mathstuff.h"
+#include "waveform/waveformrenderer.h"
 
 Player::Player(ConfigObject<ConfigValue> *pConfig,
                EngineMaster* pMixingEngine,
-               int playerNumber, const char* pGroup)
+               int playerNumber, QString group)
     : m_pConfig(pConfig),
       m_iPlayerNumber(playerNumber),
-      m_strChannel(pGroup),
+      m_strChannel(group),
       m_pLoadedTrack() {
-
     EngineChannel::ChannelOrientation orientation;
     if (playerNumber % 2 == 1)
         orientation = EngineChannel::LEFT;
     else
         orientation = EngineChannel::RIGHT; 
 
-    EngineChannel* pChannel = new EngineChannel(pGroup, pConfig, orientation);
+    // Need to strdup the string because EngineChannel will save the pointer,
+    // but we might get deleted before the EngineChannel. TODO(XXX)
+    // pSafeGroupName is leaked. It's like 5 bytes so whatever.
+    const char* pSafeGroupName = strdup(m_strChannel.toAscii().constData());
+
+    EngineChannel* pChannel = new EngineChannel(pSafeGroupName,
+                                                pConfig, orientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
-    CueControl* pCueControl = new CueControl(m_strChannel, pConfig);
+    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
+
     connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
             pCueControl, SLOT(loadTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),
@@ -72,6 +80,15 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
     ControlObject::getControl(ConfigKey(m_strChannel,"TrackEndMode"))->queueFromThread(
         m_pConfig->getValueString(ConfigKey("[Controls]",config_key)).toDouble());
+
+    // Create WaveformRenderer last, because it relies on controls created above
+    // (e.g. EngineBuffer)
+
+    m_pWaveformRenderer = new WaveformRenderer(pSafeGroupName);
+    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
+    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
+            m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
 }
 
 Player::~Player()
@@ -158,6 +175,10 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
     m_pLoadedTrack.clear();
+
+    // Update the PlayerInfo class that is used in EngineShoutcast to replace
+    // the metadata of a stream
+    PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
 }
 
 void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
@@ -178,8 +199,9 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
 
-    // Update TrackInfoObject of the helper class //FIXME
-    //PlayerInfo::Instance().setTrackInfo(1, m_pLoadedTrack);
+    // Update the PlayerInfo class that is used in EngineShoutcast to replace
+    // the metadata of a stream
+    PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
 
     // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);
@@ -205,4 +227,8 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
 
 QString Player::getGroup() {
     return m_strChannel;
+}
+
+WaveformRenderer* Player::getWaveformRenderer() {
+    return m_pWaveformRenderer;
 }

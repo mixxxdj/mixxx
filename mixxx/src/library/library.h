@@ -25,6 +25,7 @@ class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PromoTracksFeature;
 class PlaylistFeature;
+class CrateFeature;
 class LibraryMIDIControl;
 class MixxxKeyboard;
 
@@ -61,6 +62,7 @@ public slots:
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
+    void slotCreateCrate();
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
@@ -78,6 +80,7 @@ private:
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
+    CrateFeature* m_pCrateFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
     LibraryMIDIControl* m_pLibraryMIDIControl;
 };

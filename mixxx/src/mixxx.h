@@ -35,21 +35,8 @@
 #include <QFrame>
 #include <qstringlist.h>
 
-#ifdef QT3_SUPPORT
-#include <Q3Action>
-#include <q3mainwindow.h>
-#include <q3popupmenu.h>
-#include <q3whatsthis.h>
-#include <q3filedialog.h>
-#else
-#include <q3mainwindow.h>
-#include <q3popupmenu.h>
-#include <q3whatsthis.h>
-#include <q3filedialog.h>
-#endif
 // application specific includes
 #include "defs.h"
-#include "mixxxview.h"
 #include "trackinfoobject.h"
 #include "engine/enginemaster.h"
 #include "controlobject.h"
@@ -76,6 +63,8 @@ class LibraryScanner;
 class AnalyserQueue;
 class Library;
 class MidiDeviceManager;
+class MixxxKeyboard;
+class SkinLoader;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -85,13 +74,13 @@ class MidiDeviceManager;
   */
 class MixxxApp : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     /** Construtor. files is a list of command line arguments */
     MixxxApp(QApplication *app, struct CmdlineArgs args);
     /** destructor */
-    ~MixxxApp();
+    virtual ~MixxxApp();
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
@@ -111,9 +100,6 @@ class MixxxApp : public QMainWindow
     /** exits the application */
     void slotFileQuit();
 
-    /** toogle ipod active - Don't #ifdef this because MOC is dumb**/
-    void slotiPodToggle(bool toggle);
-
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
@@ -130,107 +116,120 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-    QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
-
     /** Scan or rescan the music library directory */
     void slotScanLibrary();
     /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
     void slotEnableRescanLibraryAction();
+    /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+    void slotOptionsMenuShow();
+    /** toggles Livebroadcasting **/
+    void slotOptionsShoutcast(bool value);
+
+
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
 
-  private:
-    /** view is the main widget which represents your working area. The View
-     * class should handle all events of the view widget.  It is kept empty so
-     * you can create your view according to your application's needs by
-     * changing the view class.
-     */
-    MixxxView *view;
-    QFrame *frame;
 
-    QApplication *app;
+
+  private:
+    void checkDirectRendering();
+
+    // Pointer to the root GUI widget
+    QWidget* m_pView;
+
+    QApplication *m_pApp;
+
     // The mixing engine.
     EngineMaster *m_pEngine;
 
-    // The sound manager
-    SoundManager *soundmanager;
+    // The skin loader
+    SkinLoader* m_pSkinLoader;
 
+    // The sound manager
+    SoundManager *m_pSoundManager;
+
+
+    // Keeps track of players
     PlayerManager* m_pPlayerManager;
     SamplerManager* m_pSamplerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
-    ControlObject *control;
-    ConfigObject<ConfigValue> *config;
+    ControlObject *m_pControl;
+    ConfigObject<ConfigValue> *m_pConfig;
     /** Pointer to active keyboard configuration */
-    ConfigObject<ConfigValueKbd> *kbdconfig;
+    ConfigObject<ConfigValueKbd> *m_pKbdConfig;
+    MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
 
     /** file_menu contains all items of the menubar entry "File" */
-    QMenu *fileMenu;
+    QMenu *m_pFileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
-    QMenu *editMenu;
+    QMenu *m_pEditMenu;
     /** library menu */
-    QMenu *libraryMenu;
+    QMenu *m_pLibraryMenu;
     /** options_menu contains all items of the menubar entry "Options" */
-    QMenu *optionsMenu;
+    QMenu *m_pOptionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
-    QMenu *viewMenu;
+    QMenu *m_pViewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
-    QMenu *helpMenu;
+    QMenu *m_pHelpMenu;
 
 #ifdef __SCRIPT__
     QMenu *macroMenu;
 #endif
 
-    /** actions for the application initialized in initActions() and used to en/disable them
-      * according to your needs during the program */
-    QAction *fileNew;
-    QAction *fileLoadSongPlayer1;
-    QAction *fileLoadSongPlayer2;
-    QAction *fileSave;
-    QAction *fileSaveAs;
-    QAction *fileClose;
-    QAction *filePrint;
-    QAction *fileQuit;
+    QAction *m_pFileNew;
+    QAction *m_pFileLoadSongPlayer1;
+    QAction *m_pFileLoadSongPlayer2;
+    QAction *m_pFileSave;
+    QAction *m_pFileSaveAs;
+    QAction *m_pFileClose;
+    QAction *m_pFilePrint;
+    QAction *m_pFileQuit;
 
-    QAction *editCut;
-    QAction *editCopy;
-    QAction *editPaste;
+    QAction *m_pEditCut;
+    QAction *m_pEditCopy;
+    QAction *m_pEditPaste;
 
-    QAction *playlistsNew;
-    QAction *playlistsImport;
-    QAction **playlistsList;
+    QAction *m_pPlaylistsNew;
+    QAction *m_pCratesNew;
+    QAction *m_pPlaylistsImport;
+    QAction **m_pPlaylistsList;
 
-    QAction *iPodToggle;
+    QAction *m_pIPodToggle;
 
-    QAction *batchBpmDetect;
+    QAction *m_pBatchBpmDetect;
 
-    QAction *libraryRescan;
+    QAction *m_pLibraryRescan;
 
-    QAction *optionsBeatMark;
+    QAction *m_pOptionsBeatMark;
+
 #ifdef __VINYLCONTROL__
-    QAction *optionsVinylControl;
+    QAction *m_pOptionsVinylControl;
 #endif
-    QAction *optionsRecord;
-    QAction *optionsFullScreen;
-    QAction *optionsPreferences;
+    QAction *m_pOptionsRecord;
+    QAction *m_pOptionsFullScreen;
+    QAction *m_pOptionsPreferences;
+#ifdef __SHOUTCAST__
+    QAction *m_pOptionsShoutcast;
+#endif
 
-    QAction *helpAboutApp;
-    QAction *helpSupport;
+    QAction *m_pHelpAboutApp;
+    QAction *m_pHelpSupport;
 #ifdef __SCRIPT__
     QAction *macroStudio;
 #endif
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
-    DlgPreferences *prefDlg;
+    DlgPreferences *m_pPrefDlg;
 
 #ifdef __SCRIPT__
     ScriptEngine *scriptEng;
@@ -238,7 +237,7 @@ class MixxxApp : public QMainWindow
 
     int noSoundDlg(void);
     // Fullscreen patch
-    QPoint winpos;
+    QPoint m_winpos;
 };
 
 //A structure to store the parsed command-line arguments

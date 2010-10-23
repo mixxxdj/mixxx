@@ -243,7 +243,7 @@ void DlgPrefBpm::slotDefaultBpmScheme()
         clearListIcons();
         
         QListWidgetItem *item = lstSchemes->item(row);
-        item->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
+        item->setIcon(QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     }
 }
 
@@ -414,8 +414,7 @@ void DlgPrefBpm::saveBpmSchemes()
     }
 
     // Write to the file:
-    Q3TextStream Xml(&opmlFile);
-    Xml.setEncoding(Q3TextStream::Unicode);
+    QTextStream Xml(&opmlFile);
     Xml << domXML.toString();
     opmlFile.close();
 }
@@ -430,7 +429,7 @@ void DlgPrefBpm::populateBpmSchemeList()
         scheme->setText(m_BpmSchemes.at(i)->getName());
         if(m_BpmSchemes.at(i)->getName() == defaultscheme)
         {
-            scheme->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
+            scheme->setIcon(QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
         }
     }
 }
