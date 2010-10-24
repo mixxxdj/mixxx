@@ -199,10 +199,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) || (!dir.exists()))
     {
-        QString fd = QFileDialog::getExistingDirectory(this, 
+        QString fd = QFileDialog::getExistingDirectory(this,
                          tr("Choose music library directory"),
                          QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-        
+
         if (fd != "")
         {
             config->set(ConfigKey("[Playlist]","Directory"), fd);
@@ -226,15 +226,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     //Create the "players" (virtual playback decks)
     m_pPlayer1 = new Player(config, buffer1, "[Channel1]");
     m_pPlayer2 = new Player(config, buffer2, "[Channel2]");
-
-    //Connect the player to the track collection so that when a track is unloaded,
-    //it's data (eg. waveform summary) is saved back to the database.
-    connect(m_pPlayer1, SIGNAL(unloadingTrack(TrackPointer)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackPointer)));
-    connect(m_pPlayer2, SIGNAL(unloadingTrack(TrackPointer)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackPointer)));
 
     view=new MixxxView(frame, kbdconfig, qSkinPath, config, m_pPlayer1, m_pPlayer2,
                        m_pLibrary);
