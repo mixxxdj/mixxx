@@ -82,15 +82,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlPlay(double)));
     playButton->set(0);
     playButtonCOT = new ControlObjectThreadMain(playButton);
-    
+
     //Play from Start Button (for sampler)
-    playStartButton = new ControlPushButton(ConfigKey(group, "playstart"), true);
+    playStartButton = new ControlPushButton(ConfigKey(group, "playstart"));
     connect(playStartButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlayFromStart(double)));
     playStartButton->set(0);
     playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
-    
+
     //Stop playback (for sampler)
-    stopButton = new ControlPushButton(ConfigKey(group, "stop"), true);
+    stopButton = new ControlPushButton(ConfigKey(group, "stop"));
     connect(stopButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlStop(double)));
     stopButton->set(0);
     stopButtonCOT = new ControlObjectThreadMain(stopButton);

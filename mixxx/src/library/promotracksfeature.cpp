@@ -140,24 +140,24 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
     m_pBundledSongsView = new BundledSongsWebView(libraryWidget, m_pTrackCollection,
-                                                  PROMO_BUNDLE_PATH, 
-                                                  m_sPromoLocalHTMLLocation, 
+                                                  PROMO_BUNDLE_PATH,
+                                                  m_sPromoLocalHTMLLocation,
                                                   m_bFirstRun, m_pConfig);
     m_pBundledSongsView->installEventFilter(keyboard);
 
     libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
     connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pBundledSongsView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
+    connect(m_pBundledSongsView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
 /*  XXX: Re-enable this code for Promo 3.0
     m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this));
     libraryWidget->registerView(m_sFeaturedArtistsViewName, m_pFeaturedArtistsView);
     connect(m_pFeaturedArtistsView, SIGNAL(loadTrack(TrackInfoObject*)),
             this, SIGNAL(loadTrack(TrackInfoObject*)));
-    connect(m_pFeaturedArtistsView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, int)));
+    connect(m_pFeaturedArtistsView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, QString)),
+            this, SIGNAL(loadTrackToPlayer(TrackInfoObject*, QString)));
     */
 }
 

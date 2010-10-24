@@ -36,12 +36,6 @@ class WTrackTableView : public WLibraryTableView
 public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
-    void slotLoadPlayer1();
-    void slotLoadPlayer2();
-    void slotLoadSampler1();
-    void slotLoadSampler2();
-    void slotLoadSampler3();
-    void slotLoadSampler4();
 private slots:
     void slotRemove();
     void slotShowTrackInfo();
@@ -50,10 +44,7 @@ private slots:
     void slotSendToAutoDJ();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
-signals:
-    void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, int player);
-    void loadTrackToSampler(TrackPointer pTrack, int sampler);
+    void loadSelectionToGroup(QString group);
 
 private:
     void showTrackInfo(QModelIndex index);
@@ -70,6 +61,7 @@ private:
     TrackCollection* m_pTrackCollection;
     //QList<QString> m_selectedTrackLocations;
     QModelIndexList m_selectedIndices;
+    QSignalMapper m_loadTrackMapper;
 
     DlgTrackInfo* pTrackInfo;
     QModelIndex currentTrackInfoIndex;

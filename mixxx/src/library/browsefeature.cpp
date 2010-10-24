@@ -70,10 +70,8 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     connect(pBrowseView, SIGNAL(activated(const QModelIndex &)),
             this, SLOT(onFileActivate(const QModelIndex &)));
-    connect(pBrowseView, SIGNAL(loadToPlayer(const QModelIndex&, int)),
-            this, SLOT(loadToPlayer(const QModelIndex&, int)));
-    connect(pBrowseView, SIGNAL(loadToSampler(const QModelIndex&, int)),
-            this, SLOT(loadToSampler(const QModelIndex&, int)));
+    connect(pBrowseView, SIGNAL(loadToPlayer(const QModelIndex&, QString)),
+            this, SLOT(loadToPlayer(const QModelIndex&, QString)));
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             pBrowseView, SLOT(setRootIndex(const QModelIndex&)));
     connect(pBrowseView, SIGNAL(search(const QString&)),
@@ -145,7 +143,7 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
     }
 }
 
-void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
+void BrowseFeature::loadToPlayer(const QModelIndex& index, QString group) {
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
     QString path = m_browseModel.filePath(sourceIndex);
     QFileInfo info(path);
@@ -160,26 +158,7 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
             track = TrackPointer(new TrackInfoObject(info), &QObject::deleteLater);
         }
 
-        emit(loadTrackToPlayer(track, player));
-    }
-}
-
-void BrowseFeature::loadToSampler(const QModelIndex& index, int sampler) {
-    QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
-    QString path = m_browseModel.filePath(sourceIndex);
-    QFileInfo info(path);
-    QString absPath = info.absoluteFilePath();
-
-    if (!m_browseModel.isDir(sourceIndex)) {
-        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-        TrackPointer track = trackDao.getTrack(trackDao.getTrackId(absPath));
-
-        // The track doesn't exist in the database.
-        if (track == NULL) {
-            track = TrackPointer(new TrackInfoObject(absPath));
-        }
-
-        emit(loadTrackToSampler(track, sampler));
+        emit(loadTrackToPlayer(track, group));
     }
 }
 

@@ -24,8 +24,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, int player);
-    void loadTrackToSampler(TrackPointer pTrack, int sampler);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group);
 
   public slots:
     void saveVScrollBarPos();
