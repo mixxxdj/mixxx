@@ -1018,7 +1018,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-	bool current = (bool)m_pConfig->getValueString(ConfigKey("[Channel1]","vinylcontrol")).toInt();
+	bool current = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh1")).toInt();
 	if (current != toggle)
 		ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol"))->set((double)toggle);
 #endif
@@ -1086,7 +1086,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-	bool current = (bool)m_pConfig->getValueString(ConfigKey("[Channel2]","vinylcontrol")).toInt();
+	bool current = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh2")).toInt();
 	if (current != toggle)
 		ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol"))->set((double)toggle);
 #endif
