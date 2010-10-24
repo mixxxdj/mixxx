@@ -36,7 +36,7 @@ public:
     void installEventFilter(QObject* pFilter);
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, int player);
+    void loadTrackToPlayer(TrackPointer pTrack, QString player);
 
   private:
     void stopAnalysis();

@@ -30,6 +30,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(pTrackInfo, SIGNAL(previous()),
             this, SLOT(slotPrevTrackInfo()));
 
+    connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
+            this, SLOT(loadSelectionToGroup(QString)));
+
     m_pMenu = new QMenu(this);
 
     m_pSamplerMenu = new QMenu(this);
@@ -171,22 +174,28 @@ void WTrackTableView::createActions()
     Q_ASSERT(m_pSamplerMenu);
 
     m_pPlayer1Act = new QAction(tr("Load in Player 1"),this);
-    connect(m_pPlayer1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
+    m_loadTrackMapper.setMapping(m_pPlayer1Act, "[Channel1]");
+    connect(m_pPlayer1Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
 
     m_pPlayer2Act = new QAction(tr("Load in Player 2"),this);
-    connect(m_pPlayer2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
+    m_loadTrackMapper.setMapping(m_pPlayer2Act, "[Channel2]");
+    connect(m_pPlayer2Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
 
     m_pSampler1Act = new QAction(tr("Sampler 1"),this);
-    connect(m_pSampler1Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler1()));
+    m_loadTrackMapper.setMapping(m_pSampler1Act, "[Sampler1]");
+    connect(m_pSampler1Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
 
     m_pSampler2Act = new QAction(tr("Sampler 2"),this);
-    connect(m_pSampler2Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler2()));
+    m_loadTrackMapper.setMapping(m_pSampler2Act, "[Sampler2]");
+    connect(m_pSampler2Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
 
     m_pSampler3Act = new QAction(tr("Sampler 3"),this);
-    connect(m_pSampler3Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler3()));
+    m_loadTrackMapper.setMapping(m_pSampler3Act, "[Sampler3]");
+    connect(m_pSampler3Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
 
     m_pSampler4Act = new QAction(tr("Sampler 4"),this);
-    connect(m_pSampler4Act, SIGNAL(triggered()), this, SLOT(slotLoadSampler4()));
+    m_loadTrackMapper.setMapping(m_pSampler4Act, "[Sampler4]");
+    connect(m_pSampler4Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
 
     m_pRemoveAct = new QAction(tr("Remove"),this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
@@ -196,12 +205,6 @@ void WTrackTableView::createActions()
 
     m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue"),this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
-
- 	//m_pRenamePlaylistAct = new QAction(tr("Rename..."), this);
- 	//connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
-
- 	//Create all the "send to->playlist" actions.
- 	//updatePlaylistActions();
 
     m_pSamplerMenu->addAction(m_pSampler1Act);
     m_pSamplerMenu->addAction(m_pSampler2Act);
@@ -218,74 +221,14 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
     }
 }
 
-void WTrackTableView::slotLoadPlayer1() {
+void WTrackTableView::loadSelectionToGroup(QString group) {
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, 1));
-        }
-    }
-}
-
-void WTrackTableView::slotLoadPlayer2() {
-    if (m_selectedIndices.size() > 0) {
-        QModelIndex index = m_selectedIndices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, 2));
-        }
-    }
-}
-
-void WTrackTableView::slotLoadSampler1() {
-    if (m_selectedIndices.size() > 0) {
-        QModelIndex index = m_selectedIndices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToSampler(pTrack, 1));
-        }
-    }
-}
-
-void WTrackTableView::slotLoadSampler2() {
-    if (m_selectedIndices.size() > 0) {
-        QModelIndex index = m_selectedIndices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToSampler(pTrack, 2));
-        }
-    }
-}
-
-void WTrackTableView::slotLoadSampler3() {
-    if (m_selectedIndices.size() > 0) {
-        QModelIndex index = m_selectedIndices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToSampler(pTrack, 3));
-        }
-    }
-}
-
-void WTrackTableView::slotLoadSampler4() {
-    if (m_selectedIndices.size() > 0) {
-        QModelIndex index = m_selectedIndices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToSampler(pTrack, 4));
+            emit(loadTrackToPlayer(pTrack, group));
         }
     }
 }
@@ -708,11 +651,11 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
     }
     else if (event->key() == Qt::Key_BracketLeft)
     {
-        slotLoadPlayer1();
+        loadSelectionToGroup("[Channel1]");
     }
     else if (event->key() == Qt::Key_BracketRight)
     {
-        slotLoadPlayer2();
+        loadSelectionToGroup("[Channel2]");
     }
     else
         QTableView::keyPressEvent(event);

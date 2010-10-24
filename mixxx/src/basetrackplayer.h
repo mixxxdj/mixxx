@@ -1,38 +1,42 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
-#include <QtCore>
+#ifndef BASETRACKPLAYER_H
+#define BASETRACKPLAYER_H
 
 #include "configobject.h"
 #include "trackinfoobject.h"
+#include "baseplayer.h"
+#include "engine/enginechannel.h";
 
 class EngineMaster;
-class ControlObjectThreadMain;
 class ControlObject;
+class ControlObjectThreadMain;
 class WaveformRenderer;
 
-class Player : public QObject
-{
-	Q_OBJECT
-	public:
-    Player(ConfigObject<ConfigValue> *pConfig, EngineMaster* pMixingEngine,
-           int playerNumber, QString group);
-    ~Player();
-    QString getGroup();
-    WaveformRenderer* getWaveformRenderer();
-public slots:
+class BaseTrackPlayer : public BasePlayer {
+    Q_OBJECT
+  public:
+    BaseTrackPlayer(QObject* pParent,
+                    ConfigObject<ConfigValue>* pConfig,
+                    EngineMaster* pMixingEngine,
+                    EngineChannel::ChannelOrientation defaultOrientation,
+                    QString group);
+    virtual ~BaseTrackPlayer();
+
+    WaveformRenderer* getWaveformRenderer() const;
+
+  public slots:
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
-signals:
+
+  signals:
     void loadTrack(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
-private:
-    ConfigObject<ConfigValue>* m_pConfig;
-    int m_iPlayerNumber;
-    QString m_strChannel;
 
+  private:
+    ConfigKey getTrackEndModeConfigKey();
+
+    ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
 
     ControlObjectThreadMain* m_pCuePoint;
@@ -44,4 +48,5 @@ private:
     WaveformRenderer* m_pWaveformRenderer;
 };
 
-#endif
+
+#endif /* BASETRACKPLAYER_H */

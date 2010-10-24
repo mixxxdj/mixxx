@@ -38,9 +38,7 @@
 #include "soundsourceproxy.h"
 
 #include "analyserqueue.h"
-#include "player.h"
 #include "playermanager.h"
-#include "samplermanager.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
@@ -259,16 +257,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
-    // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
-    m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
+    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
 
-    m_pSamplerManager = new SamplerManager(config, m_pEngine, m_pLibrary);
-    m_pSamplerManager->addSampler();
-    m_pSamplerManager->addSampler();
-    m_pSamplerManager->addSampler();
-    m_pSamplerManager->addSampler();
+    // Create the player manager.
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary, m_pAnalyserQueue);
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -346,18 +344,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
-    for (int i = 0; i < m_pPlayerManager->numPlayers()
+    for (int i = 0; i < m_pPlayerManager->numDecks()
             && i < args.qlMusicFiles.count(); ++i) {
-        m_pPlayerManager->slotLoadToPlayer(args.qlMusicFiles.at(i), i+1);
+        m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
 
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
             m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < m_pPlayerManager->numPlayers()
+        for (int i = 0; i < m_pPlayerManager->numDecks()
                 && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
+            m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
         }
     }
 
@@ -430,11 +428,11 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
 
+    qDebug() << "delete analyserqueue, " << qTime.elapsed();
+    delete m_pAnalyserQueue;
+
     qDebug() << "delete playerManager" << qTime.elapsed();
     delete m_pPlayerManager;
-
-    qDebug() << "delete SamplerManager" << qTime.elapsed();
-    delete m_pSamplerManager;
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
@@ -836,7 +834,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
-        m_pPlayerManager->slotLoadToPlayer(s, 1);
+        m_pPlayerManager->slotLoadToDeck(s, 1);
     }
 }
 
@@ -866,7 +864,7 @@ void MixxxApp::slotFileLoadSongPlayer2()
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
-        m_pPlayerManager->slotLoadToPlayer(s, 2);
+        m_pPlayerManager->slotLoadToDeck(s, 2);
     }
 }
 

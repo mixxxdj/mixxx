@@ -50,8 +50,7 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, int player);
-    void loadTrackToSampler(TrackPointer pTrack, int sampler);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
 };
 

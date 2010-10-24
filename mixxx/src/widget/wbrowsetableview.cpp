@@ -36,14 +36,14 @@ void WBrowseTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
 void WBrowseTableView::slotLoadPlayer1() {
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
-        emit(loadToPlayer(selectedIndices.at(0), 1));
+        emit(loadToPlayer(selectedIndices.at(0), "[Channel1]"));
     }
 }
 
 void WBrowseTableView::slotLoadPlayer2() {
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
-        emit(loadToPlayer(selectedIndices.at(0), 2));
+        emit(loadToPlayer(selectedIndices.at(0), "[Channel2]"));
     }
 }
 

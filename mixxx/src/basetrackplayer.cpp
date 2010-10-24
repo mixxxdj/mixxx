@@ -1,41 +1,35 @@
 #include <QtCore>
 #include <QMessageBox>
 
-#include "player.h"
+#include "basetrackplayer.h"
 #include "playerinfo.h"
 
-#include "configobject.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "playerinfo.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
 #include "mathstuff.h"
 #include "waveform/waveformrenderer.h"
 
-Player::Player(ConfigObject<ConfigValue> *pConfig,
-               EngineMaster* pMixingEngine,
-               int playerNumber, QString group)
-    : m_pConfig(pConfig),
-      m_iPlayerNumber(playerNumber),
-      m_strChannel(group),
-      m_pLoadedTrack() {
-    EngineChannel::ChannelOrientation orientation;
-    if (playerNumber % 2 == 1)
-        orientation = EngineChannel::LEFT;
-    else
-        orientation = EngineChannel::RIGHT; 
+BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
+                                 ConfigObject<ConfigValue> *pConfig,
+                                 EngineMaster* pMixingEngine,
+                                 EngineChannel::ChannelOrientation defaultOrientation,
+                                 QString group)
+        : BasePlayer(pParent, group),
+          m_pConfig(pConfig),
+          m_pLoadedTrack() {
 
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
-    const char* pSafeGroupName = strdup(m_strChannel.toAscii().constData());
+    const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
     EngineChannel* pChannel = new EngineChannel(pSafeGroupName,
-                                                pConfig, orientation);
+                                                pConfig, defaultOrientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
@@ -59,27 +53,27 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
 
     //Get cue point control object
     m_pCuePoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel,"cue_point")));
+        ControlObject::getControl(ConfigKey(getGroup(),"cue_point")));
     // Get loop point control objects
     m_pLoopInPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel,"loop_start_position")));
+        ControlObject::getControl(ConfigKey(getGroup(),"loop_start_position")));
     m_pLoopOutPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel,"loop_end_position")));
+        ControlObject::getControl(ConfigKey(getGroup(),"loop_end_position")));
     //Playback position within the currently loaded track (in this player).
     m_pPlayPosition = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel, "playposition")));
+        ControlObject::getControl(ConfigKey(getGroup(), "playposition")));
 
     //Duration of the current song, we create this one because nothing else does.
-    m_pDuration = new ControlObject(ConfigKey(m_strChannel, "duration"));
+    m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
+        ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
 
     // Setup state of End of track controls from config database
-    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
-    ControlObject::getControl(ConfigKey(m_strChannel,"TrackEndMode"))->queueFromThread(
-        m_pConfig->getValueString(ConfigKey("[Controls]",config_key)).toDouble());
+    ConfigKey trackEndModeConfigKey = getTrackEndModeConfigKey();
+    ControlObject::getControl(ConfigKey(getGroup(),"TrackEndMode"))->queueFromThread(
+        m_pConfig->getValueString(trackEndModeConfigKey).toDouble());
 
     // Create WaveformRenderer last, because it relies on controls created above
     // (e.g. EngineBuffer)
@@ -91,12 +85,12 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
             m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
 }
 
-Player::~Player()
+BaseTrackPlayer::~BaseTrackPlayer()
 {
     // Save state of End of track controls in config database
-    int config_value = (int)ControlObject::getControl(ConfigKey(m_strChannel, "TrackEndMode"))->get();
-    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
-    m_pConfig->set(ConfigKey("[Controls]",config_key), ConfigValue(config_value));
+    int config_value = (int)ControlObject::getControl(ConfigKey(getGroup(), "TrackEndMode"))->get();
+    ConfigKey trackEndModeConfigKey = getTrackEndModeConfigKey();
+    m_pConfig->set(trackEndModeConfigKey, ConfigValue(config_value));
 
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
@@ -110,7 +104,7 @@ Player::~Player()
     delete m_pBPM;
 }
 
-void Player::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
+void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 {
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {
@@ -156,7 +150,7 @@ void Player::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
     emit(loadTrack(track));
 }
 
-void Player::slotLoadFailed(TrackPointer track, QString reason) {
+void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
@@ -178,10 +172,10 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
+    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
 
-void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
+void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 {
     // Read the tags if required
     if(!m_pLoadedTrack->getHeaderParsed())
@@ -191,7 +185,7 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.
     // TODO(rryan) : fix this crap -- the waveform renderers should be owned by
     // Player so they can just set this directly or something.
-    ControlObjectThreadMain* pVisualResampleCO = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_strChannel,"VisualResample")));
+    ControlObjectThreadMain* pVisualResampleCO = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(getGroup(),"VisualResample")));
     m_pLoadedTrack->setVisualResampleRate(pVisualResampleCO->get());
     delete pVisualResampleCO;
 
@@ -201,7 +195,7 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(m_strChannel.mid(8,1).toInt(), m_pLoadedTrack);
+    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 
     // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);
@@ -225,10 +219,15 @@ void Player::slotFinishLoading(TrackPointer pTrackInfoObject)
     emit(newTrackLoaded(m_pLoadedTrack));
 }
 
-QString Player::getGroup() {
-    return m_strChannel;
+WaveformRenderer* BaseTrackPlayer::getWaveformRenderer() const {
+    return m_pWaveformRenderer;
 }
 
-WaveformRenderer* Player::getWaveformRenderer() {
-    return m_pWaveformRenderer;
+ConfigKey BaseTrackPlayer::getTrackEndModeConfigKey() {
+    QString bareGroup = getGroup();
+    if (bareGroup.size() > 2) {
+        bareGroup = bareGroup.mid(1, bareGroup.size()-2);
+    }
+    QString config_key = QString("TrackEndMode_%1").arg(bareGroup);
+    return ConfigKey("[Controls]", config_key);
 }

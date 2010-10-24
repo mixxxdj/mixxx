@@ -4,7 +4,8 @@
 #include "playermanager.h"
 
 #include "trackinfoobject.h"
-#include "player.h"
+#include "deck.h"
+#include "sampler.h"
 #include "analyserqueue.h"
 #include "controlobject.h"
 #include "library/library.h"
@@ -13,99 +14,156 @@
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
                              EngineMaster* pEngine,
-                             Library* pLibrary)
+                             Library* pLibrary,
+                             AnalyserQueue* pAnalyserQueue)
         : m_pConfig(pConfig),
           m_pEngine(pEngine),
-          m_pLibrary(pLibrary) {
-    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(pConfig);
+          m_pLibrary(pLibrary),
+          m_pAnalyserQueue(pAnalyserQueue) {
 
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
-             this, SLOT(slotLoadTrackIntoNextAvailablePlayer(TrackPointer)));
+             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
 }
 
 PlayerManager::~PlayerManager() {
-    delete m_pAnalyserQueue;
-
-    QMutableListIterator<Player*> it(m_players);
-    while (it.hasNext()) {
-        Player* pPlayer = it.next();
-        it.remove();
-        delete pPlayer;
-    }
+    // No need to delete anything because they are all parented to us and will
+    // be destroyed when we are destroyed.
+    m_players.clear();
+    m_decks.clear();
+    m_samplers.clear();
 }
 
-int PlayerManager::numPlayers() {
-    return m_players.size();
+int PlayerManager::numDecks() {
+    return m_decks.size();
 }
 
-Player* PlayerManager::addPlayer() {
-    Player* pPlayer;
-    int number = numPlayers() + 1;
-        pPlayer = new Player(m_pConfig, m_pEngine,
-                                     number,
-                                     QString("[Channel%1]").arg(number));
-    
+int PlayerManager::numSamplers() {
+    return m_samplers.size();
+}
 
-    // Connect the player to the library so that when a track is unloaded, it's
-    // data (eg. waveform summary) is saved back to the database.
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            &(m_pLibrary->getTrackCollection()->getTrackDAO()),
-            SLOT(saveTrack(TrackPointer)));
+Deck* PlayerManager::addDeck() {
+    Deck* pDeck;
+    int number = numDecks() + 1;
+    QString group = QString("[Channel%1]").arg(number);
+
+    EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
+    if (number % 2 == 0)
+        orientation = EngineChannel::RIGHT;
+
+    pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, group);
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
             m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
 
-    m_players.append(pPlayer);
+    Q_ASSERT(!m_players.contains(group));
+    m_players[group] = pDeck;
+    m_decks.append(pDeck);
 
-    return pPlayer;
+    return pDeck;
 }
 
-Player* PlayerManager::getPlayer(QString group) {
-    QList<Player*>::iterator it = m_players.begin();
-    while (it != m_players.end()) {
-        Player* pPlayer = *it;
-        if (pPlayer->getGroup() == group) {
-            return pPlayer;
-        }
-        it++;
+
+Sampler* PlayerManager::addSampler() {
+    Sampler* pSampler;
+    int number = numSamplers() + 1;
+    QString group = QString("[Sampler%1]").arg(number);
+
+    // All samplers are in the center
+    EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
+
+    pSampler = new Sampler(this, m_pConfig, m_pEngine, orientation, group);
+
+    // Connect the player to the analyser queue so that loaded tracks are
+    // analysed.
+    connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+
+    Q_ASSERT(!m_players.contains(group));
+    m_players[group] = pSampler;
+    m_samplers.append(pSampler);
+
+    return pSampler;
+}
+
+BaseTrackPlayer* PlayerManager::getPlayer(QString group) {
+    if (m_players.contains(group)) {
+        return m_players[group];
     }
     return NULL;
 }
 
 
-Player* PlayerManager::getPlayer(int player) {
-    if (player < 1 || player > numPlayers()) {
-        qWarning() << "Warning PlayerManager::getPlayer() called with invalid index: "
-                   << player;
+Deck* PlayerManager::getDeck(unsigned int deck) {
+    if (deck < 1 || deck > numDecks()) {
+        qWarning() << "Warning PlayerManager::getDeck() called with invalid index: "
+                   << deck;
         return NULL;
     }
-    return m_players[player - 1];
+    return m_decks[deck - 1];
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
-    Player* pPlayer = getPlayer(player);
+Sampler* PlayerManager::getSampler(unsigned int sampler) {
+    if (sampler < 1 || sampler > numSamplers()) {
+        qWarning() << "Warning PlayerManager::getSampler() called with invalid index: "
+                   << sampler;
+        return NULL;
+    }
+    return m_samplers[sampler - 1];
+}
+
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
+    BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
-        qWarning() << "Invalid player argument " << player << " to slotLoadTrackToPlayer.";
+        qWarning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
         return;
     }
 
     pPlayer->slotLoadTrack(pTrack);
 }
 
-void PlayerManager::slotLoadTrackIntoNextAvailablePlayer(TrackPointer pTrack)
+void PlayerManager::slotLoadToPlayer(QString location, QString group) {
+    BaseTrackPlayer* pPlayer = getPlayer(group);
+
+    if (pPlayer == NULL) {
+        qWarning() << "Invalid group argument " << group << " to slotLoadToPlayer.";
+        return;
+    }
+
+    TrackPointer pTrack = lookupTrack(location);
+
+    //Load the track into the Player.
+    pPlayer->slotLoadTrack(pTrack);
+}
+
+void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
 {
-    QList<Player*>::iterator it = m_players.begin();
-    while (it != m_players.end()) {
-        Player* pPlayer = *it;
+    QList<Deck*>::iterator it = m_decks.begin();
+    while (it != m_decks.end()) {
+        Deck* pDeck = *it;
         ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pPlayer->getGroup(), "play"));
+                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
-            pPlayer->slotLoadTrack(pTrack, false);
+            pDeck->slotLoadTrack(pTrack, false);
+            break;
+        }
+        it++;
+    }
+}
+
+void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack)
+{
+    QList<Sampler*>::iterator it = m_samplers.begin();
+    while (it != m_samplers.end()) {
+        Sampler* pSampler = *it;
+        ControlObject* playControl =
+                ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
+        if (playControl && playControl->get() != 1.) {
+            pSampler->slotLoadTrack(pTrack, false);
             break;
         }
         it++;
@@ -124,31 +182,30 @@ TrackPointer PlayerManager::lookupTrack(QString location) {
     return pTrack;
 }
 
-void PlayerManager::slotLoadToPlayer(QString location, int player) {
-    Player* pPlayer = getPlayer(player);
+void PlayerManager::slotLoadToDeck(QString location, int deck) {
+    Deck* pDeck = getDeck(deck);
 
-    if (pPlayer == NULL) {
-        qWarning() << "Invalid player argument " << player << " to slotLoadToPlayer.";
+    if (pDeck == NULL) {
+        qWarning() << "Invalid deck argument " << deck << " to slotLoadToDeck.";
         return;
     }
 
     TrackPointer pTrack = lookupTrack(location);
 
-    //Load the track into the Player.
-    pPlayer->slotLoadTrack(pTrack);
+    //Load the track into the Deck.
+    pDeck->slotLoadTrack(pTrack);
 }
 
+void PlayerManager::slotLoadToSampler(QString location, int sampler) {
+    Sampler* pSampler = getSampler(sampler);
 
-void PlayerManager::slotLoadToPlayer(QString location, QString group) {
-    Player* pPlayer = getPlayer(group);
-
-    if (pPlayer == NULL) {
-        qWarning() << "Invalid group argument " << group << " to slotLoadToPlayer.";
+    if (pSampler == NULL) {
+        qWarning() << "Invalid sampler argument " << sampler << " to slotLoadToSampler.";
         return;
     }
 
     TrackPointer pTrack = lookupTrack(location);
 
-    //Load the track into the Player.
-    pPlayer->slotLoadTrack(pTrack);
+    //Load the track into the Sampler.
+    pSampler->slotLoadTrack(pTrack);
 }

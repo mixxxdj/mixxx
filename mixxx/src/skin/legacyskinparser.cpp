@@ -14,7 +14,7 @@
 
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
-#include "player.h"
+#include "basetrackplayer.h"
 #include "library/library.h"
 #include "waveformviewerfactory.h"
 
@@ -286,7 +286,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
     // get free'd at some point.
     const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (pPlayer == NULL)
         return NULL;
@@ -308,7 +308,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
     // now while everything expects groups as const char* because otherwise
@@ -351,7 +351,7 @@ QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
@@ -371,7 +371,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent
     int channel = WWidget::selectNodeInt(node, "Channel");
     QString channelStr = QString("[Channel%1]").arg(channel);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
@@ -462,7 +462,7 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
     // get free'd at some point.
     const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
