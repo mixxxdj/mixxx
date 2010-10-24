@@ -21,8 +21,8 @@
 #include "dlgprefshoutcast.h"
 
 
-#include "../recording/encodervorbis.h"
-#include "../recording/encodermp3.h"
+#include "recording/encodervorbis.h"
+#include "recording/encodermp3.h"
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
