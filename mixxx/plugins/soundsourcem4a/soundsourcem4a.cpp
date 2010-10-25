@@ -14,6 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <taglib/mp4file.h>
 #include <neaacdec.h>
 
 #ifdef __MP4V2__
@@ -173,112 +174,19 @@ inline long unsigned SoundSourceM4A::length(){
 }
 
 int SoundSourceM4A::parseHeader(){
+    setType("m4a");
 
-    //Disclaimer: This code sucks because we're opening the file twice.
-    //            Once in the MP4Read(..) below, and once in the
-    //            initializeDecoder() call at the bottom of this function.
+    TagLib::MP4::File f(getFilename().toUtf8().constData());
+    bool result = processTaglibFile(f);
+    TagLib::MP4::Tag* tag = f.tag();
 
-    QString mp4FileName = this->getFilename();
-    QByteArray qbaFileName = mp4FileName.toUtf8();
-    MP4FileHandle mp4file = MP4Read(qbaFileName.data());
-
-    if (mp4file == MP4_INVALID_FILE_HANDLE) {
-        qDebug() << "SSM4A::ParseHeader : " << mp4FileName
-                 << "could not be opened using the MP4 decoder.";
-        return ERR;
+    if (tag) {
+        processMP4Tag(tag);
     }
 
-    this->setType("m4a");
-    char* value = NULL;
-
-    if (MP4GetMetadataName(mp4file, &value) && value != NULL) {
-        setTitle(QString::fromUtf8(value));
-        MP4Free(value);
-        value = NULL;
-    }
-
-    if (MP4GetMetadataArtist(mp4file, &value) && value != NULL) {
-        setArtist(QString::fromUtf8(value));
-        MP4Free(value);
-        value = NULL;
-    }
-
-    if (MP4GetMetadataAlbum(mp4file, &value) && value != NULL) {
-        setAlbum(value);
-        MP4Free(value);
-        value = NULL;
-    }
-
-    if (MP4GetMetadataComment(mp4file, &value) && value != NULL) {
-        setComment(QString::fromUtf8(value));
-        MP4Free(value);
-        value = NULL;
-    }
-
-    if (MP4GetMetadataYear(mp4file, &value) && value != NULL) {
-        setYear(QString::fromUtf8(value));
-        MP4Free(value);
-        value = NULL;
-    }
-
-    if (MP4GetMetadataGenre(mp4file, &value) && value != NULL) {
-        setGenre(QString::fromUtf8(value));
-        MP4Free(value);
-        value = NULL;
-    }
-
-#ifndef _MSC_VER
-    u_int16_t bpm = 0;
-    u_int16_t track = 0;
-    u_int16_t numTracks = 0; // don't actually use this but MP4GetMetadataTrack
-                             // barfs if you give it null
-#else
-    // MSVC doesn't know what a u_int16_t is, so we have to tell it
-    unsigned short bpm = 0;
-    unsigned short track = 0;
-    unsigned short numTracks = 0;
-#endif
-    if (MP4GetMetadataTempo(mp4file, &bpm)) {
-        if(bpm > 0) {
-#ifdef _MSC_VER
-            Q_ASSERT(sizeof(bpm)==2);   // Just making sure we're in bounds
-#endif
-            this->setBPM(bpm);
-            //Track->setBpmConfirm(true);
-        }
-    }
-    if (MP4GetMetadataTrack(mp4file, &track, &numTracks)) {
-        if(track > 0) {
-#ifdef _MSC_VER
-            Q_ASSERT(sizeof(track)==2);   // Just making sure we're in bounds
-#endif
-            this->setTrackNumber(QString::number(track));
-        }
-    }
-
-    // We are only interested in first track for the initial dev iteration
-    int track_id = MP4FindTrackId(mp4file, 0, MP4_AUDIO_TRACK_TYPE);
-
-    if (track_id == MP4_INVALID_TRACK_ID) {
-        qDebug() << "SSM4A::ParseHeader: Could not find any audio tracks in " << mp4FileName;
-    }
-
-    // Get the track duration in time scale units of the mp4
-    int duration_scale = MP4GetTrackDuration(mp4file, track_id);
-    int duration_seconds = MP4ConvertFromTrackDuration(mp4file, track_id,
-                                                       duration_scale,
-                                                       MP4_SECS_TIME_SCALE);
-    this->setDuration(duration_seconds);
-
-    int bits_per_second = MP4GetTrackBitRate(mp4file, track_id);
-    this->setBitrate(bits_per_second/1000);
-
-    //We have to initialize the decoder to figure out the sample rate
-    //and the number of channels in the track...
-    if (initializeDecoder() != OK)
-        return ERR;
-
-    return OK;
+    if (result)
+        return OK;
+    return ERR;
 }
 
 QList<QString> SoundSourceM4A::supportedFileExtensions()

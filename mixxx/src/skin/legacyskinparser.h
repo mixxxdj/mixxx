@@ -37,6 +37,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     bool compareConfigKeys(QDomNode node, QString key);
 
     // Parsers for each node
+    QWidget* parseWidgetGroup(QDomElement node, QWidget* pParent);
     QWidget* parseBackground(QDomElement node, QWidget* pParent);
     QWidget* parsePushButton(QDomElement node, QWidget* pParent);
     QWidget* parseSliderComposed(QDomElement node, QWidget* pParent);
