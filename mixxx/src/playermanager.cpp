@@ -209,3 +209,4 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
     //Load the track into the Sampler.
     pSampler->slotLoadTrack(pTrack);
 }
+

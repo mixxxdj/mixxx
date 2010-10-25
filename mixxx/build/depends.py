@@ -494,6 +494,7 @@ class MixxxCore(Feature):
                    "deck.cpp",
                    "sampler.cpp",
                    "playermanager.cpp",
+                   "samplerbank.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "dlgprefrecord.cpp",
