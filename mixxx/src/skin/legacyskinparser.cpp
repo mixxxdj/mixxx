@@ -216,9 +216,11 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
         return parseKnob(node, pParent);
     } else if (nodeName == "TableView") {
         return parseTableView(node, pParent);
+    } else if (nodeName == "WidgetGroup") {
+        return parseWidgetGroup(node, pParent);
     }
 
-    // Descend chilren
+    // Descend chilren, should only happen for the root node
     QDomNodeList children = node.childNodes();
 
     for (int i = 0; i < children.count(); ++i) {
@@ -230,6 +232,53 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
     }
 
     return pParent;
+}
+
+QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node, QWidget* pParent) {
+    QWidget* pGroup = new QGroupBox(pParent);
+
+    // Position
+    if (!WWidget::selectNode(node, "Pos").isNull())
+    {
+        QString pos = WWidget::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.indexOf(",")).toInt();
+        int y = pos.mid(pos.indexOf(",")+1).toInt();
+        pGroup->move(x,y);
+    }
+
+    // Size
+    if (!WWidget::selectNode(node, "Size").isNull())
+    {
+        QString size = WWidget::selectNodeQString(node, "Size");
+        int x = size.left(size.indexOf(",")).toInt();
+        int y = size.mid(size.indexOf(",")+1).toInt();
+        pGroup->setFixedSize(x,y);
+    }
+
+    if (!WWidget::selectNode(node, "Layout").isNull()) {
+        QString layout = WWidget::selectNodeQString(node, "Layout");
+        if (layout == "vertical") {
+
+        } else if (layout == "horizontal") {
+
+        }
+    }
+
+    QDomNode childrenNode = WWidget::selectNode(node, "Children");
+    if (!childrenNode.isNull()) {
+        // Descend chilren
+        QDomNodeList children = childrenNode.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (node.isElement()) {
+                parseNode(node.toElement(), pGroup);
+            }
+        }
+    }
+
+    return pGroup;
 }
 
 QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pParent) {
