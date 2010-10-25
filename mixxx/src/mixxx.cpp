@@ -566,7 +566,13 @@ void MixxxApp::initActions()
     m_pOptionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
 
     m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
+
+#ifdef __APPLE__
+    m_pOptionsFullScreen->setShortcut(tr("Ctrl+F"));
+#else
     m_pOptionsFullScreen->setShortcut(tr("F11"));
+#endif
+
     m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     // connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));

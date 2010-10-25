@@ -11,8 +11,8 @@
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
-          TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
+        : TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
+          BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
