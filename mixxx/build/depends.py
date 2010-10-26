@@ -292,6 +292,10 @@ class SoundTouch(Dependence):
                 (build.toolchain_is_gnu and optimize > 2):
             build.env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
+class TagLib(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib('tag'):
+            raise Exception("Could not find libtag or it's development headers.")
 
 class MixxxCore(Feature):
 
@@ -689,7 +693,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL]
+                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
