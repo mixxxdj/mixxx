@@ -36,6 +36,7 @@ class ConfigKey;
 class ControlObject;
 
 class EngineRecord : public EngineAbstractRecord {
+    Q_OBJECT
   public:
     EngineRecord(ConfigObject<ConfigValue> *_config);
     virtual ~EngineRecord();
