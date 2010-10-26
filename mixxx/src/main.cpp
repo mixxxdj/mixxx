@@ -155,6 +155,13 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
+    // Load the translations for Qt and for Mixxx
+
+    QTranslator* qtTranslator = new QTranslator();
+    qtTranslator->load("qt_" + QLocale::system().name(),
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a->installTranslator(qtTranslator);
+
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
@@ -191,7 +198,7 @@ int main(int argc, char * argv[])
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
-            
+
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
             printf(fileExtensionsBA);
