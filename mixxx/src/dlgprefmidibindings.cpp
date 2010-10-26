@@ -36,8 +36,6 @@
 #endif
 
 
-#define MIXXX_TEXT_NO_OUTPUT_DEVICE tr("None")
-
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice,
                                          MidiDeviceManager* midiDeviceManager,
                                          ConfigObject<ConfigValue> *pConfig) :
@@ -134,7 +132,7 @@ void DlgPrefMidiBindings::enumerateOutputDevices()
 {
     comboBoxOutputDevice->clear();
 
-    comboBoxOutputDevice->addItem(MIXXX_TEXT_NO_OUTPUT_DEVICE);
+    comboBoxOutputDevice->addItem(tr("None"));
 
     //For each MIDI output device, insert an item into the output device combobox.
     QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(true, false);
@@ -226,7 +224,7 @@ void DlgPrefMidiBindings::slotApply() {
         //FIXME: We need some logic like this to make changing the output device work.
         //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
         /*
-        if (comboBoxOutputDevice->currentText() != MIXXX_TEXT_NO_OUTPUT_DEVICE)
+        if (comboBoxOutputDevice->currentText() != tr("None"))
             m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
         */
     }
