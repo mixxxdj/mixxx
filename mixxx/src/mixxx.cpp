@@ -583,6 +583,7 @@ void MixxxApp::initActions()
 
     m_pHelpAboutApp = new QAction(tr("&About..."), this);
     m_pHelpSupport = new QAction(tr("&Community Support..."), this);
+
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
