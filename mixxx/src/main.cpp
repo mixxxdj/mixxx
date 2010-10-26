@@ -162,10 +162,6 @@ int main(int argc, char * argv[])
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     a->installTranslator(qtTranslator);
 
-    QTranslator* mixxxTranslator = new QTranslator();
-    mixxxTranslator->load("mixxx_" + QLocale::system().name());
-    a->installTranslator(mixxxTranslator);
-
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
