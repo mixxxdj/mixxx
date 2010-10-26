@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <QtGui>
+#include <QTranslator>
 
 #include "widget/wknob.h"
 #include "widget/wslider.h"
@@ -129,6 +130,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = m_pConfig->getConfigPath();
+
+    QString translationsFolder = qConfigPath + "translations/";
+    QTranslator* mixxxTranslator = new QTranslator();
+    mixxxTranslator->load("mixxx_" + QLocale::system().name(),
+                          translationsFolder);
+    a->installTranslator(mixxxTranslator);
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
