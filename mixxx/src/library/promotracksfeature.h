@@ -36,7 +36,7 @@ class SongDownloader;
 
 class PromoTracksFeature : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     PromoTracksFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection,
