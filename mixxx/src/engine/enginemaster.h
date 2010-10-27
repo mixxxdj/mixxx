@@ -42,10 +42,6 @@ public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
     virtual ~EngineMaster();
 
-    // Reconfigures the EngineBufferScaleSRC objects with the sound quality
-    // written in the config database
-    void setPitchIndpTimeStretch(bool b);
-
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
     const CSAMPLE* getMasterBuffer() const;

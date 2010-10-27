@@ -53,8 +53,6 @@ public:
     // TODO(XXX) This hack needs to be removed.
     EngineBuffer* getEngineBuffer();
 
-    void setPitchIndpTimeStretch(bool b);
-
 private:
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;

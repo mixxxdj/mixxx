@@ -104,7 +104,3 @@ EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
     }
     return CENTER;
 }
-
-void EngineChannel::setPitchIndpTimeStretch(bool b) {
-    m_pBuffer->setPitchIndpTimeStretch(b);
-}

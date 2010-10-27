@@ -130,16 +130,6 @@ EngineMaster::~EngineMaster()
 
 }
 
-void EngineMaster::setPitchIndpTimeStretch(bool b)
-{
-    QListIterator<EngineChannel*> channel_iter(m_channels);
-
-    while (channel_iter.hasNext()) {
-        EngineChannel* pChannel = channel_iter.next();
-        pChannel->setPitchIndpTimeStretch(b);
-    }
-}
-
 const CSAMPLE* EngineMaster::getMasterBuffer() const
 {
     return m_pMaster;

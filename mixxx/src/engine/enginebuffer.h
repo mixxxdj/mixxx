@@ -76,8 +76,6 @@ class EngineBuffer : public EngineObject
 public:
     EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
     ~EngineBuffer();
-    /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
-    void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -123,7 +121,7 @@ public:
                              QString reason);
 
 private:
-
+    void setPitchIndpTimeStretch(bool b);
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
