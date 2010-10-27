@@ -53,6 +53,7 @@ public:
     // TODO(XXX) This hack needs to be removed.
     EngineBuffer* getEngineBuffer();
 
+    bool isActive();
 private:
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;

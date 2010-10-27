@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <QtGui>
+#include <QTranslator>
 
 #include "widget/wknob.h"
 #include "widget/wslider.h"
@@ -129,6 +130,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = m_pConfig->getConfigPath();
+
+    QString translationsFolder = qConfigPath + "translations/";
+    QTranslator* mixxxTranslator = new QTranslator();
+    mixxxTranslator->load("mixxx_" + QLocale::system().name(),
+                          translationsFolder);
+    a->installTranslator(mixxxTranslator);
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
@@ -631,7 +638,13 @@ void MixxxApp::initActions()
     m_pOptionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
 
     m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
+
+#ifdef __APPLE__
+    m_pOptionsFullScreen->setShortcut(tr("Ctrl+F"));
+#else
     m_pOptionsFullScreen->setShortcut(tr("F11"));
+#endif
+
     m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     // connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
@@ -642,6 +655,7 @@ void MixxxApp::initActions()
 
     m_pHelpAboutApp = new QAction(tr("&About..."), this);
     m_pHelpSupport = new QAction(tr("&Community Support..."), this);
+
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));

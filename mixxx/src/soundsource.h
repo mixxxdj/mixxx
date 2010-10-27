@@ -18,6 +18,12 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
+#include <taglib/tfile.h>
+#include <taglib/apetag.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/xiphcomment.h>
+#include <taglib/mp4tag.h>
+
 #include "defs.h"
 #include <QString>
 
@@ -83,6 +89,18 @@ public:
     virtual void setSampleRate(unsigned int);
     virtual void setChannels(int);
 protected:
+
+    // Automatically collects generic data from a TagLib File: title, artist,
+    // album, comment, genre, year, tracknumber, duration, bitrate, samplerate,
+    // and channels.
+    bool processTaglibFile(TagLib::File& f);
+    bool processID3v2Tag(TagLib::ID3v2::Tag* id3v2);
+    bool processAPETag(TagLib::APE::Tag* ape);
+    bool processXiphComment(TagLib::Ogg::XiphComment* xiph);
+    bool processMP4Tag(TagLib::MP4::Tag* mp4);
+    void processBpmString(QString tagName, QString sBpm);
+
+
     /** File name */
     QString m_qFilename;
 
@@ -102,6 +120,7 @@ protected:
     int m_iChannels;
     //Dontcha be forgettin' to initialize these variables.... arr
 
+    static const bool s_bDebugMetadata;
 };
 
 #endif
