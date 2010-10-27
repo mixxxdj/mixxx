@@ -21,6 +21,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bPlayer2Primed = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
 
+
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -44,6 +45,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     //Override some playlist-view properties:
     //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
     m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
+    //Sort by the position column and lock it
+    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
+    m_pTrackTableView->setSortingEnabled(false);
 
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;

@@ -35,9 +35,9 @@ QString PromoTracksFeature::m_sPromoRemoteHTMLLocation;
 #define PROMO_BUNDLE_PATH (config->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/")
 #define LOCAL_HTML_LOCATION (PROMO_BUNDLE_PATH + "index.html")
 
-const QString PromoTracksFeature::m_sFeaturedArtistsViewName = tr("Featured Artists");
-const QString PromoTracksFeature::m_sBundledSongsViewName = tr("Bundled Songs");
-const QString PromoTracksFeature::m_sMyDownloadsViewName = tr("My Downloads");
+const QString PromoTracksFeature::m_sFeaturedArtistsViewName = "Featured Artists";
+const QString PromoTracksFeature::m_sBundledSongsViewName = "Bundled Songs";
+const QString PromoTracksFeature::m_sMyDownloadsViewName = "My Downloads";
 
 PromoTracksFeature::PromoTracksFeature(QObject* parent,
                              ConfigObject<ConfigValue>* config,
@@ -93,19 +93,19 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
     //If we've bundled songs with Mixxx, show the fancy bundled songs view
     if (QFile::exists(LOCAL_HTML_LOCATION)) {
         qDebug() << "Bundled tracks found at:" << LOCAL_HTML_LOCATION;
-        childrenStringList << m_sBundledSongsViewName;
+        childrenStringList << tr(m_sBundledSongsViewName.toUtf8().constData());
     }
     else {
         qDebug() << "No bundled tracks found, disabling view. Looked in:" << LOCAL_HTML_LOCATION;
     }
 
     QStringList childrenStringList;
-    childrenStringList <<  m_sMyDownloadsViewName;
+    childrenStringList <<  tr(m_sMyDownloadsViewName.toUtf8().constData());
     m_childModel.setStringList(childrenStringList);
 
     CrateDAO& crateDAO = pTrackCollection->getCrateDAO();
-    crateDAO.createCrate(m_sMyDownloadsViewName); //XXX: hidden = false for debug
-    m_downloadsTableModel.setTable(m_sMyDownloadsViewName);
+    crateDAO.createCrate(tr(m_sMyDownloadsViewName.toUtf8().constData())); //XXX: hidden = false for debug
+    m_downloadsTableModel.setTable(tr(m_sMyDownloadsViewName.toUtf8().constData()));
     */
 
 }
@@ -114,7 +114,7 @@ PromoTracksFeature::~PromoTracksFeature() {
 }
 
 QVariant PromoTracksFeature::title() {
-    return m_sFeaturedArtistsViewName;
+    return tr(m_sFeaturedArtistsViewName.toUtf8().constData());
 }
 
 QIcon PromoTracksFeature::getIcon() {
@@ -145,7 +145,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                                   m_bFirstRun, m_pConfig);
     m_pBundledSongsView->installEventFilter(keyboard);
 
-    libraryWidget->registerView(m_sBundledSongsViewName, m_pBundledSongsView);
+    libraryWidget->registerView(tr(m_sBundledSongsViewName.toUtf8().constData()), m_pBundledSongsView);
     connect(m_pBundledSongsView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pBundledSongsView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -153,7 +153,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
 /*  XXX: Re-enable this code for Promo 3.0
     m_pFeaturedArtistsView = new FeaturedArtistsWebView(libraryWidget, libraryPath, m_sPromoRemoteHTMLLocation, new SongDownloader(this));
-    libraryWidget->registerView(m_sFeaturedArtistsViewName, m_pFeaturedArtistsView);
+    libraryWidget->registerView(tr(m_sFeaturedArtistsViewName.toUtf8().constData()), m_pFeaturedArtistsView);
     connect(m_pFeaturedArtistsView, SIGNAL(loadTrack(TrackInfoObject*)),
             this, SIGNAL(loadTrack(TrackInfoObject*)));
     connect(m_pFeaturedArtistsView, SIGNAL(loadTrackToPlayer(TrackInfoObject*, QString)),
@@ -169,13 +169,13 @@ QAbstractItemModel* PromoTracksFeature::getChildModel() {
 
 void PromoTracksFeature::activate() {
     //XXX Promo 3.0:
-    //emit(switchToView(m_sFeaturedArtistsViewName));
-    emit(switchToView(m_sBundledSongsViewName));
+    //emit(switchToView(tr(m_sFeaturedArtistsViewName.toUtf8().constData())));
+    emit(switchToView(tr(m_sBundledSongsViewName.toUtf8().constData())));
 }
 
 void PromoTracksFeature::activateChild(const QModelIndex& index) {
     QString itemString = m_childModel.data(index, Qt::DisplayRole).toString();
-    if (itemString == m_sMyDownloadsViewName)
+    if (itemString == tr(m_sMyDownloadsViewName.toUtf8().constData()))
     {
         emit(showTrackModel(&m_downloadsTableModel));
     }

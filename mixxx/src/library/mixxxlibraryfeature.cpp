@@ -10,7 +10,7 @@
 #include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 
-#define CHILD_MISSING tr("Missing Songs")
+#define CHILD_MISSING "Missing Songs"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
@@ -18,7 +18,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
       m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
       m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)) {
     QStringList children;
-    children << CHILD_MISSING; //Insert michael jackson joke here
+    children << tr(CHILD_MISSING); //Insert michael jackson joke here
     m_childModel.setStringList(children);
 }
 
@@ -52,7 +52,7 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
-    if (itemName == CHILD_MISSING) //lulz!
+    if (itemName == tr(CHILD_MISSING)) //lulz!
         emit(showTrackModel(m_pMissingTableModel));
 }
 
