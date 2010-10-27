@@ -613,7 +613,7 @@ class MixxxCore(Feature):
 
         elif build.platform_is_osx:
             #Non-standard libpaths for fink and certain (most?) darwin ports
-            build.env.Append(LIBPATH = ['/sw/lib'])
+            #build.env.Append(LIBPATH = ['/sw/lib'])
             build.env.Append(CPPPATH = ['/sw/include'])
 
             #Non-standard libpaths for darwin ports

@@ -552,7 +552,7 @@ void MixxxApp::initActions()
     m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pFileQuit = new QAction(tr("E&xit"), this);
+    m_pFileQuit = new QAction(tr("&Exit"), this);
     m_pFileQuit->setShortcut(tr("Ctrl+Q"));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
 
@@ -585,7 +585,11 @@ void MixxxApp::initActions()
     // connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
 
     m_pOptionsPreferences = new QAction(tr("&Preferences"), this);
+#ifdef __APPLE__
+    m_pOptionsPreferences->setShortcut(tr("Ctrl+,"));
+#else
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
+#endif
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
 
     m_pHelpAboutApp = new QAction(tr("&About..."), this);
@@ -604,7 +608,7 @@ void MixxxApp::initActions()
 #endif
 
     m_pOptionsRecord = new QAction(tr("&Record Mix"), this);
-    //optionsRecord->setShortcut(tr("Ctrl+R"));
+    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
     m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
 
 #ifdef __SCRIPT__

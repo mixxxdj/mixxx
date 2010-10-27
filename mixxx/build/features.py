@@ -674,7 +674,7 @@ class Optimize(Feature):
 
             # GC unused code
             build.env.Append(CCFLAGS='-ffunction-sections -fdata-sections')
-            build.env.Append(LINKFLAGS='-Wl,--gc-sections')
+            #build.env.Append(LINKFLAGS='-Wl,--gc-sections')
 
             if optimize_level == 1:
                 # only includes what we already applied
