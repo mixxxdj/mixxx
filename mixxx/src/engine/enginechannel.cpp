@@ -104,3 +104,7 @@ EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
     }
     return CENTER;
 }
+
+bool EngineChannel::isActive() {
+    return m_pBuffer->isTrackLoaded();
+}

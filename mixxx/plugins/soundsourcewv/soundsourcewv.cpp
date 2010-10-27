@@ -3,8 +3,10 @@
 //great help from rryan & others on #mixxx
 //format_samples adapted from cmus (Peter Lemenkov)
 
-
 #include <QtDebug>
+
+#include <taglib/wavpackfile.h>
+
 #include "soundsourcewv.h"
 
 void format_samples(int bps, char *dst, int32_t *src, uint32_t count);
@@ -117,59 +119,23 @@ inline long unsigned SoundSourceWV::length(){
 }
 
 
-int SoundSourceWV::parseHeader(){
-//	QString filename = m_qFilename;
-	QByteArray qBAFilename = m_qFilename.toUtf8();
-	char msg[80];
-	*msg='\0';
+int SoundSourceWV::parseHeader() {
+    setType("wv");
 
-	WavpackContext *twvc = WavpackOpenFileInput(qBAFilename, msg, OPEN_TAGS,0);
-	if (!twvc) {
-		qDebug() << "SSWV::ParseHeader : WavpackOpenFileInput: " << msg;
-		return ERR;
-	}
+    TagLib::WavPack::File f(getFilename().toUtf8().constData());
 
-	int wavpackmode = WavpackGetMode(twvc);
-	if (MODE_FLOAT & wavpackmode) {
-		qDebug() << "SSWV::ParseHeader: 32 bit float file format will not be loaded";
-		WavpackCloseFile(twvc);
-		return ERR;
-	}
+    // Takes care of all the default metadata
+    bool result = processTaglibFile(f);
 
-	this->setType("wv");
-	if (!(MODE_VALID_TAG & wavpackmode)) {
-		qDebug() << "SSWV::ParseHeader: no valid tags";
-	} else {
-		char wvtag[80];
-		if (WavpackGetTagItem(twvc, "TITLE", wvtag, 80))	//should be case-insensitive.
-			this->setTitle(QString(wvtag));
-		if (WavpackGetTagItem(twvc, "ARTIST", wvtag, 80))
-			this->setArtist(QString(wvtag));
-		if (WavpackGetTagItem(twvc, "ALBUM", wvtag, 80))
-			this->setAlbum(QString(wvtag));
-		if (WavpackGetTagItem(twvc, "YEAR", wvtag, 80))
-			this->setYear(QString(wvtag));
-		if (WavpackGetTagItem(twvc, "GENRE", wvtag, 80))
-			this->setGenre(QString(wvtag));
+    TagLib::APE::Tag *ape = f.APETag();
+    if (ape) {
+        processAPETag(ape);
+    }
 
-		if (WavpackGetTagItem(twvc, "TBPM", wvtag, 80)) {
-			float bpm=str2bpm(QString(wvtag));
-			if (bpm>0.0f) {
-				this->setBPM(bpm);
-			}
-		}
-	}
-
-	this->setDuration(WavpackGetNumSamples(twvc) / WavpackGetSampleRate(twvc));
-	this->setBitrate(WavpackGetAverageBitrate(twvc, 0)/1000);
-	this->setSampleRate(WavpackGetSampleRate(twvc));
-	this->setChannels(WavpackGetReducedChannels(twvc));
-
-	WavpackCloseFile(twvc);
-	return OK;
+    if (result)
+        return OK;
+    return ERR;
 }
-
-
 
 void format_samples(int Bps, char *dst, int32_t *src, uint32_t count)
 {

@@ -287,6 +287,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     pause.lock();
+    m_pCurrentTrack = pTrack;
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
@@ -305,6 +306,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     pause.lock();
+    m_pCurrentTrack.clear();
     file_srate_old = 0;
     file_length_old = 0;
     playButton->set(0.0);
@@ -758,4 +760,11 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     pWorkerScheduler->bindWorker(m_pReader);
+}
+
+bool EngineBuffer::isTrackLoaded() {
+    if (m_pCurrentTrack) {
+        return true;
+    }
+    return false;
 }

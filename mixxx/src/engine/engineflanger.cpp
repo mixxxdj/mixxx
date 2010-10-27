@@ -50,11 +50,11 @@ EngineFlanger::EngineFlanger(const char * group)
     potmeterLFOperiod = ControlObject::getControl(ConfigKey("[Flanger]", "lfoPeriod"));
 
     if (potmeterDepth == NULL)
-        potmeterDepth = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
+        potmeterDepth = new ControlPotmeter(ConfigKey("[Flanger]", "lfoDepth"), 0., 1.);
     if (potmeterDelay == NULL)
-        potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 10000.);
+        potmeterDelay = new ControlPotmeter(ConfigKey("[Flanger]", "lfoDelay"), 50., 10000.);
     if (potmeterLFOperiod == NULL)
-        potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 50000., 2000000.);
+        potmeterLFOperiod = new ControlPotmeter(ConfigKey("[Flanger]", "lfoPeriod"), 50000., 2000000.);
 
     // Create an enable key on a per-deck basis.
     flangerEnable = new ControlPushButton(ConfigKey(group, "flanger"));
