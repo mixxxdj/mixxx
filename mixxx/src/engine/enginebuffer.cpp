@@ -211,7 +211,7 @@ EngineBuffer::~EngineBuffer()
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
-    pause.lock(); //Just to be safe - Albert
+    // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // Change sound scale mode
 
@@ -233,7 +233,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
         m_pScale = m_pScaleLinear;
     }
     m_bScalerChanged = true;
-    pause.unlock();
 }
 
 double EngineBuffer::getBpm()
@@ -384,19 +383,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     bool bCurBufferPaused = false;
 
-    if (m_pKeylock->get() && m_pScale != m_pScaleST) {
-        //qDebug() << "setting PITS on for" << getGroup();
-        setPitchIndpTimeStretch(true);
-        m_bScalerChanged = true;
-        setNewPlaypos(filepos_play);
-    } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
-        //qDebug() << "setting PITS off for " << getGroup();
-        setPitchIndpTimeStretch(false);
-        m_bScalerChanged = true;
-        setNewPlaypos(filepos_play);
-    }
-
     if (!m_pTrackEnd->get() && pause.tryLock()) {
+
+        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+            setPitchIndpTimeStretch(true);
+        } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
+            setPitchIndpTimeStretch(false);
+        }
+
         float sr = m_pSampleRate->get();
         double baserate = 0.0f;
         if (sr > 0)
