@@ -164,6 +164,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         CSAMPLE* buffer = m_channelBuffers[channel_number];
         channel->process(NULL, buffer, iBufferSize);
 
+        if (!channel->isActive()) {
+            continue;
+        }
+
         // If the channel is enabled for previewing in headphones, add it to a
         // list of headphone channels.
         if (channel->isPFL()) {

@@ -55,6 +55,8 @@ public:
 
     void setPitchIndpTimeStretch(bool b);
 
+    bool isActive();
+
 private:
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
