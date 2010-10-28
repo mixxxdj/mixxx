@@ -161,6 +161,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
         EngineChannel* channel = m_channels[channel_number];
+
+        if (!channel->isActive()) {
+            continue;
+        }
+
         CSAMPLE* buffer = m_channelBuffers[channel_number];
         channel->process(NULL, buffer, iBufferSize);
 

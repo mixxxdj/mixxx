@@ -59,8 +59,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     // Position display configuration
     m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
-    ComboBoxPosition->addItem("Position");
-    ComboBoxPosition->addItem("Remaining");
+    ComboBoxPosition->addItem(tr("Position"));
+    ComboBoxPosition->addItem(tr("Remaining"));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
@@ -126,8 +126,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
         m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
 
     // Update combo box
-    ComboBoxVisuals->addItem("On");
-    ComboBoxVisuals->addItem("Off");
+    ComboBoxVisuals->addItem(tr("On"));
+    ComboBoxVisuals->addItem(tr("Off"));
     ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
 
     connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
@@ -160,8 +160,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     m_pControlCueDefault2->slotSet(cueDefaultValue);
 
     // Update combo box
-    ComboBoxCueDefault->addItem("CDJ Mode");
-    ComboBoxCueDefault->addItem("Simple");
+    ComboBoxCueDefault->addItem(tr("CDJ Mode"));
+    ComboBoxCueDefault->addItem(tr("Simple"));
     ComboBoxCueDefault->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).toInt());
 
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
@@ -277,7 +277,7 @@ void DlgPrefControls::slotUpdateSchemes()
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem("This skin does not support schemes", 0);
+        ComboBoxSchemeconf->addItem(tr("This skin does not support schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
@@ -312,8 +312,8 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->setCurrentIndex((int)idx);
 
     ComboBoxRateDir->clear();
-    ComboBoxRateDir->addItem("Up increases speed");
-    ComboBoxRateDir->addItem("Down increases speed (Technics SL1210)");
+    ComboBoxRateDir->addItem(tr("Up increases speed"));
+    ComboBoxRateDir->addItem(tr("Down increases speed (Technics SL1210)"));
 
     if (m_pControlRateDir1->get()==1)
         ComboBoxRateDir->setCurrentIndex(0);

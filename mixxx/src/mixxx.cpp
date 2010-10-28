@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <QtGui>
+#include <QTranslator>
 
 #include "widget/wknob.h"
 #include "widget/wslider.h"
@@ -130,6 +131,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = m_pConfig->getConfigPath();
 
+    QString translationsFolder = qConfigPath + "translations/";
+    QTranslator* mixxxTranslator = new QTranslator();
+    mixxxTranslator->load("mixxx_" + QLocale::system().name(),
+                          translationsFolder);
+    a->installTranslator(mixxxTranslator);
+
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
     QString metricsAgree =
@@ -140,18 +147,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         metricsAgree = "no";
         int dlg = -1;
         while (dlg != 0 && dlg != 1) {
-            dlg = QMessageBox::question(this, "Mixxx",
-                "Mixxx's development is driven by community feedback.  At "
+            dlg = QMessageBox::question(this, tr("Mixxx"),
+                tr("Mixxx's development is driven by community feedback.  At "
                 "your discretion, Mixxx can automatically send data on your "
                 "user experience back to the developers. Would you like to "
-                "help us make Mixxx better by enabling this feature?",
-                "Yes", "No", "Privacy Policy", 0, -1);
+                "help us make Mixxx better by enabling this feature?"),
+                tr("Yes"), tr("No"), tr("Privacy Policy"), 0, -1);
             switch (dlg) {
             case 0: metricsAgree = "yes";
             case 1: break;
             default: //show privacy policy
-                QMessageBox::information(this, "Mixxx: Privacy Policy",
-                    "Mixxx's development is driven by community feedback. "
+                QMessageBox::information(this, tr("Mixxx: Privacy Policy"),
+                    tr("Mixxx's development is driven by community feedback. "
                     "In order to help improve future versions Mixxx will with "
                     "your permission collect information on your hardware and "
                     "usage of Mixxx.  This information will primarily be used "
@@ -171,7 +178,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
                     "\t- Performance statistics (average latency, CPU usage)\n"
                     "\nThis information will not be used to personally "
                     "identify you, contact you, advertise to you, or otherwise"
-                    " bother you in any way.\n");
+                    " bother you in any way.\n"));
                 break;
              }
         }
@@ -467,26 +474,26 @@ int MixxxApp::noSoundDlg(void)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle("Sound Device Busy");
-    msgBox.setText(
-        "<html>Mixxx cannot access the sound device <b>"+
+    msgBox.setWindowTitle(tr("Sound Device Busy"));
+    msgBox.setText(tr(
+        "<html>Mixxx cannot access the sound device <b>")+
         m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
         "</b>. "+
-        "Another application is using the sound device or it is "+
-        "not plugged in."+
+        tr("Another application is using the sound device or it is ")+
+        tr("not plugged in.")+
         "<ul>"+
             "<li>"+
-                "<b>Retry</b> after closing the other application "+
-                "or reconnecting the sound device"+
+                tr("<b>Retry</b> after closing the other application ")+
+                tr("or reconnecting the sound device")+
             "</li>"+
             "<li>"+
-                "<b>Reconfigure</b> Mixxx to use another sound device."+
+                tr("<b>Reconfigure</b> Mixxx to use another sound device.")+
             "</li>" +
             "<li>"+
-                "Get <b>Help</b> from the Mixxx Wiki."+
+                tr("Get <b>Help</b> from the Mixxx Wiki.")+
             "</li>"+
             "<li>"+
-                "<b>Exit</b> without saving your settings."+
+                tr("<b>Exit</b> without saving your settings.")+
             "</li>" +
         "</ul></html>"
     );
@@ -545,7 +552,7 @@ void MixxxApp::initActions()
     m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pFileQuit = new QAction(tr("E&xit"), this);
+    m_pFileQuit = new QAction(tr("&Exit"), this);
     m_pFileQuit->setShortcut(tr("Ctrl+Q"));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
 
@@ -583,6 +590,7 @@ void MixxxApp::initActions()
 
     m_pHelpAboutApp = new QAction(tr("&About..."), this);
     m_pHelpSupport = new QAction(tr("&Community Support..."), this);
+
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
@@ -596,7 +604,7 @@ void MixxxApp::initActions()
 #endif
 
     m_pOptionsRecord = new QAction(tr("&Record Mix"), this);
-    //optionsRecord->setShortcut(tr("Ctrl+R"));
+    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
     m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
 
 #ifdef __SCRIPT__

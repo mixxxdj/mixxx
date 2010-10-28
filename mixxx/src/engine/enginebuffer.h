@@ -99,6 +99,8 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
+
+    bool isTrackLoaded();
   public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
@@ -220,6 +222,8 @@ private:
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we
         start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch; // TODO(rryan) remove?
+
+    TrackPointer m_pCurrentTrack;
 };
 
 #endif
