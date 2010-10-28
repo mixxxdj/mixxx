@@ -23,7 +23,6 @@
 #include <qmessagebox.h>
 #include <qiodevice.h>
 #include <qfile.h>
-#include <q3textstream.h>
 #include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
@@ -91,16 +90,11 @@ void MessageHandler( QtMsgType type, const char * input )
 
     if(!Logfile.isOpen())
     {
-    Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
-
-#ifdef QT3_SUPPORT
-    Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-#else
-    Logfile.open(IO_WriteOnly | IO_Translate);
-#endif
+        Logfile.setFileName("mixxx.log"); //XXX will there ever be a case that we can't write to our current working directory?
+        Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    Q3TextStream Log( &Logfile );
+    QTextStream Log( &Logfile );
 
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
 
@@ -161,6 +155,13 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     a = new QApplication(argc, argv);
 
+    // Load the translations for Qt and for Mixxx
+
+    QTranslator* qtTranslator = new QTranslator();
+    qtTranslator->load("qt_" + QLocale::system().name(),
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a->installTranslator(qtTranslator);
+
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
@@ -197,7 +198,7 @@ int main(int argc, char * argv[])
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
-            
+
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
             printf(fileExtensionsBA);

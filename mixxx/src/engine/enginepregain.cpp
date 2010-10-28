@@ -16,6 +16,7 @@
 
 #include "enginepregain.h"
 #include "controllogpotmeter.h"
+#include "sampleutil.h"
 
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
@@ -35,19 +36,9 @@ EnginePregain::~EnginePregain()
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    float fGain=potmeterPregain->get();
+    float fGain = potmeterPregain->get();
     fGain = fGain/2;
-    if (fGain == 1.)
-    {
-        if (pIn!=pOut)
-        {
-            for (int i=0; i<iBufferSize; ++i)
-                pOutput[i] = pIn[i];
-            //memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
-        }
-        return;
-    }
 
-    for (int i=0; i<iBufferSize; ++i)
-        pOutput[i] = pIn[i]*fGain;
+    // SampleUtil deals with aliased buffers and gains of 1 or 0.
+    SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
 }

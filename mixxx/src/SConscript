@@ -6,6 +6,8 @@ import sys
 import SCons
 import shutil
 
+from build import util
+
 #TODO:
 #-figure out what files actually need what defines and write separate builder lines for them (so that changing a #define doesn't cause a rebuild of everything)
 #-
@@ -28,6 +30,7 @@ import shutil
 #Useful functions
 #
 
+mixxx_version = util.get_mixxx_version()
 print "WE ARE IN:", os.getcwd()
 
 plugins = []
@@ -37,22 +40,52 @@ plugins = []
 #######################
 
 
-Import('build_dir')
-Import('platformString')
-Import('env')
+Import('build')
 Import('sources')
-Import('flags')
 Import('soundsource_plugins') #Grab these from the SConstruct above us
-Import('bitwidth')
 
+env = build.env
+flags = build.flags
 
 #Tell SCons to build Mixxx
 #=========================
-if 'win' in platformString:
-	dist_dir = 'dist'+bitwidth
+if build.platform_is_windows:
+	dist_dir = 'dist%s' % build.bitwidth
 	mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
 	mixxx_bin = env.Program('mixxx', sources)
+
+def build_tests():
+        test_files = Glob('test/*.cpp', strings=True)
+        test_env = env.Clone()
+        test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+        test_files = [test_env.StaticObject(filename) \
+                              if filename !='main.cpp' else filename
+                      for filename in test_files]
+
+        mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
+        test_sources = (test_files + mixxx_sources)
+
+        env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
+	env.Append(LIBS = 'gtest')
+
+	env.Program(target='mixxx-test', source=test_sources)
+
+	Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
+
+def run_tests():
+        ret = Execute("./mixxx-test")
+	if ret != 0:
+                print "WARNING: Not all tests pass. See mixxx-test output."
+                Exit(ret)
+
+if int(build.flags['test']):
+        print "Building tests."
+        build_tests()
+
+if 'test' in BUILD_TARGETS:
+	print "Running tests."
+	run_tests()
 
 
 
@@ -93,9 +126,9 @@ promotracks_files = Glob('#res/promo/*')
 ladspapresets_files = Glob('#res/ladspa_presets/*')
 
 #Documentation
-docs_files = Glob('#LICENSE')
-docs_files += Glob('#README')
-docs_files += Glob('#Mixxx-Manual.pdf')
+docs_files = Glob('#./LICENSE')
+docs_files += Glob('#./README')
+docs_files += Glob('#./Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
 dotdesktop_files = Glob('#src/mixxx.desktop')
@@ -107,9 +140,23 @@ icon_files = Glob('#res/images/mixxx-icon.png')
 image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
-dll_files = Glob('#/../mixxx-win' + bitwidth + 'lib-msvc/[!"msvc"]*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
+
+# TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
+# all files on 2+ builds after a clean.
+if build.toolchain_is_msvs:
+        dll_files = Glob('#/../mixxx-win%slib-msvc/[!"msvc"]*.dll' % build.bitwidth)
+elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        # We're cross-compiling, grab these from the crosscompile bin folder. How should we be doing this?
+        dll_files = Glob('#/../mixxx-win%slib-crossmingw' % build.bitwidth)
+elif build.crosscompile and build.platform_is_osx:
+        # Glob appropriate dylib files. We have 4 different library types,
+        # x86_64, x86, powerpc, powerpc64
+        dylib_files = Glob('#/../mixxx-osx-%s-crossmingw' % build.machine)
+else:
+        dll_files = list() # dll_files += on the next line required dll_files to exist
+
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/Qt3Support4.dll $QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSVG4.dll $QTDIR/bin/QtWebKit4.dll
+dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSvg4.dll $QTDIR/bin/QtWebKit4.dll
 $QTDIR/bin/phonon4.dll""")
 
 if int(flags['script']) or int(flags['midiscript']):
@@ -117,7 +164,7 @@ if int(flags['script']) or int(flags['midiscript']):
 
 
 
-if platformString in ('linux', 'bsd'):
+if build.platform_is_linux or build.platform_is_bsd:
 	flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
 	if not os.path.exists(flags['prefix']):
 		print "Error: Prefix path does not exist!"
@@ -178,7 +225,7 @@ if platformString in ('linux', 'bsd'):
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
-if platformString == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
+if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
 	ARCH="macintel" #XXX should get this from scons or the system somehow?
@@ -209,10 +256,10 @@ if platformString == 'osx' and 'bundle' in COMMAND_LINE_TARGETS:
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	dmg = env.Dmg('Mixxx-'+env['MIXXX_VERSION']+'-'+ARCH, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+	dmg = env.Dmg('mixxx-%s-%s' % (mixxx_version, ARCH), [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
-if 'win' in platformString:
+if build.platform_is_windows:
 	skins = env.Install("#"+dist_dir+"/skins", skin_files)
 	resource = env.Install("#"+dist_dir+"/", resource_files)
 	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)
@@ -240,19 +287,28 @@ if 'win' in platformString:
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
-	def cleanSVNDirsFromDist():
-		if os.path.exists(dist_dir):
-			print "Cleaning .svn directories from "+dist_dir+"... ",
-			os.system('cmd.exe /c @FOR /F "tokens=*" %D IN (\'dir /b /ad /s '+dist_dir+'\*.svn*\') do @(rd /s /q "%D") 2> NUL')
-			print "Done."
-	import atexit
-	atexit.register(cleanSVNDirsFromDist)
+def win32_find_nsis_via_registry():
+        # Windows registry access to find where NSIS is installed
+        import _winreg
+        hklm = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
+        nsis_location_handle = None
+        try:
+                nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+        except WindowsError:
+                nsis_location_handle = None
+
+        if not nsis_location_handle:
+                try:
+                        nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
+                except WindowsError:
+                        nsis_location_handle = None
+        return nsis_location_handle
 
 def BuildRelease(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
 	print
-	print "You have built version ", env['MIXXX_VERSION']
+	print "You have built version %s" % mixxx_version
 	print
 	if int(flags['msvcdebug']):
 		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
@@ -262,7 +318,7 @@ def BuildRelease(target, source, env):
 	print
 	print "Installer file ",
 	os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
-	print
+	printpath
 	print "Top line of README, check version:"
 	os.system('head -n 1 README')
 	print
@@ -274,37 +330,30 @@ def BuildRelease(target, source, env):
 
 	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
 		print "\nNow building installer..."
-
 		buildwin64 = ""
-		type(buildwin64) == str
 
-		# Windows registry access to find where NSIS is installed
-		import _winreg
-		hklm = _winreg.ConnectRegistry( None, _winreg.HKEY_LOCAL_MACHINE )
-		nsis_location_handle = ""
-		try:
-			nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
-		except WindowsError:
-			nsis_location_handle = None
+                command_flag = None
+                nsis_path = None
+                if not build.crosscompile and build.platform_is_windows:
+                        nsis_directory = win32_find_nsis_via_registry()
+                        nsis_path = "\"%s\\makensis.exe\"" % nsis_directory
+                        command_flag = '/'
+                elif build.crosscompile and build.platform_is_windows:
+                        nsis_path = 'makensis'
+                        command_flag = '-'
 
-		if not nsis_location_handle:
-			try:
-				nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
-			except WindowsError:
-				nsis_location_handle = None
-
-		if not nsis_location_handle:
+                if not nsis_path:
 			print "Cannot find NSIS. Do you have it installed?"
 		else:
-			if bitwidth == '64':
-				buildwin64 = "/Dx64=1"
+                        parameters = []
+			if build.machine_is_64bit:
+                                parameters.append("%sx64=1" % command_flag)
 			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
 			_winreg.CloseKey(hklm)
 
 			# Call the NSIS build
 			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % {'path':nsis_location, \
-'version':env['MIXXX_VERSION'], '64bit':buildwin64}
-			type(command) == str
+'version':mixxx_version, '64bit':buildwin64}
 			print "Using command:" + command
 			os.system(command)
 	else:
@@ -323,7 +372,7 @@ def BuildUbuntuPackage(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
 	print
-	print "You have built version ", env['MIXXX_VERSION']
+	print "You have built version ", mixxx_version
 	print
 	print
 	print "Top line of README, check version:"
@@ -339,8 +388,8 @@ def BuildUbuntuPackage(target, source, env):
 	if ("yes" == "yes"):
 		print "Now building DEB package..."
                 print
-		mixxx_dir = 'mixxx-' + env['MIXXX_VERSION']
-		mixxx_tarball = 'mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz' #The underscore is super important here to make the deb package work
+		mixxx_dir = 'mixxx-' + mixxx_version
+		mixxx_tarball = 'mixxx_' + mixxx_version + '.orig.tar.gz' #The underscore is super important here to make the deb package work
 
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
@@ -353,7 +402,7 @@ def BuildUbuntuPackage(target, source, env):
 		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
 		# Export the source folder
-		print "* Exporting source folder from current workspace (bzr rev: " + getBZRRevision() + ")"
+		print "* Exporting source folder from current workspace (bzr rev: " + util.get_bzr_revision() + ")"
 		print
 		os.system('bzr export ubuntu/'+mixxx_dir + ' .')
 
@@ -365,10 +414,10 @@ def BuildUbuntuPackage(target, source, env):
 
 		os.chdir('ubuntu')
 		# Tar the source code
-		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz ... (this can take a couple minutes)"
+		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + mixxx_version + ".orig.tar.gz ... (this can take a couple minutes)"
 		print
-		os.system("rm -f mixxx_" + env['MIXXX_VERSION'] + ".orig.tar.gz") #Remove old tarball
-		os.system('tar --exclude=debian --exclude=debian/* -czf  mixxx_' + env['MIXXX_VERSION'] + '.orig.tar.gz ' + mixxx_dir)
+		os.system("rm -f mixxx_" + mixxx_version + ".orig.tar.gz") #Remove old tarball
+		os.system('tar --exclude=debian --exclude=debian/* -czf  mixxx_' + mixxx_version + '.orig.tar.gz ' + mixxx_dir)
 
 		os.chdir(mixxx_dir)
 		# Copy the debian folder from /build/debian to exported source folder root

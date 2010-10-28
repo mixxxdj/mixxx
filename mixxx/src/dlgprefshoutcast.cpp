@@ -96,7 +96,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     //Encoding bitrate combobox
     tmp_index = comboBoxEncodingBitrate->findText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")));
     if (tmp_index < 0) //Set default if invalid.
-        tmp_index = 0;
+        tmp_index = 5; // 128 kbps
     comboBoxEncodingBitrate->setCurrentIndex(tmp_index);
 
     //Encoding format combobox
@@ -129,11 +129,12 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
 DlgPrefShoutcast::~DlgPrefShoutcast()
 {
-
+	
 }
 
 void DlgPrefShoutcast::slotUpdate()
 {
+	enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 }
 
 void DlgPrefShoutcast::slotApply()
