@@ -1137,13 +1137,13 @@ für die mitgelieferten Songs</translation>
         <translation>Webseite</translation>
     </message>
     <message>
+        <location filename="../../src/ui_dlgprefshoutcastdlg.h" line="410"/>
         <source>http://mixxx.sf.net</source>
-        <translation type="obsolete">http://www.mixxx.org</translation>
+        <translation type="unfinished">http://www.mixxx.org</translation>
     </message>
     <message>
-        <location filename="../../src/ui_dlgprefshoutcastdlg.h" line="410"/>
         <source>http://www.mixxx.org</source>
-        <translation>http://www.mixxx.org</translation>
+        <translation type="obsolete">http://www.mixxx.org</translation>
     </message>
     <message>
         <location filename="../../src/ui_dlgprefshoutcastdlg.h" line="411"/>
@@ -1484,16 +1484,19 @@ Hat Ihre Soundkarte nur 2 Kanäle, setzen Sie den Kopfhörer auf &apos;Keine&apo
 <context>
     <name>DlgPrefSoundItem</name>
     <message>
+        <location filename="../../src/dlgprefsounditem.cpp" line="46"/>
         <source>None</source>
-        <translation type="obsolete">Keine</translation>
+        <translation type="unfinished">Keine</translation>
     </message>
     <message>
+        <location filename="../../src/ui_dlgprefsounditem.h" line="63"/>
         <source>Form</source>
-        <translation type="obsolete">Form</translation>
+        <translation type="unfinished">Form</translation>
     </message>
     <message>
+        <location filename="../../src/ui_dlgprefsounditem.h" line="64"/>
         <source>Type (#)</source>
-        <translation type="obsolete">Type (#)</translation>
+        <translation type="unfinished">Type (#)</translation>
     </message>
 </context>
 <context>
@@ -2973,6 +2976,11 @@ Selecting &quot;No&quot; will abort the recording.</source>
 </context>
 <context>
     <name>MixxxLibraryFeature</name>
+    <message>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="21"/>
+        <source>Missing Songs</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <location filename="../../src/library/mixxxlibraryfeature.cpp" line="31"/>
         <source>Library</source>
