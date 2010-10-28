@@ -9,6 +9,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 
+class ControlObject;
 class Deck;
 class Sampler;
 class BaseTrackPlayer;
@@ -66,6 +67,8 @@ class PlayerManager : public QObject {
     EngineMaster* m_pEngine;
     Library* m_pLibrary;
     AnalyserQueue* m_pAnalyserQueue;
+    ControlObject* m_pCONumDecks;
+    ControlObject* m_pCONumSamplers;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

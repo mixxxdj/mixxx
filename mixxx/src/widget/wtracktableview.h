@@ -11,7 +11,7 @@
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
 
-
+class ControlObjectThreadMain;
 class DlgTrackInfo;
 class TrackCollection;
 
@@ -59,7 +59,7 @@ private:
 
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
-    //QList<QString> m_selectedTrackLocations;
+
     QModelIndexList m_selectedIndices;
     QSignalMapper m_loadTrackMapper;
 
@@ -68,24 +68,20 @@ private:
 
     SearchThread m_searchThread;
 
-    //Used for right-click operations
-    /** Right-click menu */
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;;
-    QSignalMapper m_playlistMapper, m_crateMapper;
-    /**Send to AutoDJ Action**/
+    ControlObjectThreadMain* m_pNumSamplers;
+    ControlObjectThreadMain* m_pNumDecks;
+
+    // Context menu machinery
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
+    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
+
+    // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;
-    /**Send to Player 1 Action**/
-    QAction *m_pPlayer1Act;
-    /**Send to Player 2 Action**/
-    QAction *m_pPlayer2Act;
-    /**Send to Samplers Action**/
-    QAction *m_pSampler1Act;
-    QAction *m_pSampler2Act;
-    QAction *m_pSampler3Act;
-    QAction *m_pSampler4Act;
-    /**Remove from Table Action**/
+
+    // Remove from table
     QAction *m_pRemoveAct;
-    /**Shows track editor/BPM tap**/
+
+    // Show track-editor action
     QAction *m_pPropertiesAct;
 };
 
