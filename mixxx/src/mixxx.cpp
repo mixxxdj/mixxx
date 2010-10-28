@@ -148,10 +148,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         int dlg = -1;
         while (dlg != 0 && dlg != 1) {
             dlg = QMessageBox::question(this, tr("Mixxx"),
-                tr("Mixxx's development is driven by community feedback.  At ")
-                tr("your discretion, Mixxx can automatically send data on your ")
-                tr("user experience back to the developers. Would you like to ")
-                tr("help us make Mixxx better by enabling this feature?"),
+                tr("Mixxx's development is driven by community feedback.  At "
+                "your discretion, Mixxx can automatically send data on your "
+                "user experience back to the developers. Would you like to "
+                "help us make Mixxx better by enabling this feature?"),
                 tr("Yes"), tr("No"), tr("Privacy Policy"), 0, -1);
             switch (dlg) {
             case 0: metricsAgree = "yes";
@@ -585,11 +585,7 @@ void MixxxApp::initActions()
     // connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
 
     m_pOptionsPreferences = new QAction(tr("&Preferences"), this);
-#ifdef __APPLE__
-    m_pOptionsPreferences->setShortcut(tr("Ctrl+,"));
-#else
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
-#endif
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
 
     m_pHelpAboutApp = new QAction(tr("&About..."), this);
