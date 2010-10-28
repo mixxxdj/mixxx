@@ -46,7 +46,7 @@ PlaylistFeature::~PlaylistFeature() {
 }
 
 QVariant PlaylistFeature::title() {
-    return "Playlists";
+    return tr("Playlists");
 }
 
 QIcon PlaylistFeature::getIcon() {

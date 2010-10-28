@@ -12,170 +12,143 @@ msgstr ""
 
 #. ts-context AutoDJFeature
 #: ../../src/library/autodjfeature.cpp:31
-#, fuzzy
 msgid "Auto DJ"
-msgstr ""
+msgstr "AutoDJ"
 
 #. ts-context BrowseFeature
 #: ../../src/library/browsefeature.cpp:38
-#, fuzzy
 msgid "Browse"
-msgstr ""
+msgstr "Browsen"
 
 #. ts-context BrowseFeature
 #: ../../src/library/browsefeature.cpp:123
-#, fuzzy
 msgid "Permission Denied"
-msgstr ""
+msgstr "Zugriff verweigert"
 
 #. ts-context BrowseFeature
 #: ../../src/library/browsefeature.cpp:124
-#, fuzzy
 msgid "You don't have permission to view this folder."
-msgstr ""
+msgstr "Sie haben keine Berechtigung diesen Ordner zu öffnen."
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:22 ../../src/library/cratefeature.cpp:134
 #: ../../src/library/cratefeature.cpp:136
-#, fuzzy
 msgid "New Crate"
-msgstr ""
+msgstr "Neues Crate"
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:26
-#, fuzzy
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:43
-#, fuzzy
 msgid "Crates"
-msgstr ""
+msgstr "Crates"
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:135
-#, fuzzy
 msgid "Crate name:"
-msgstr ""
+msgstr "Name des Crate:"
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:141
-#, fuzzy
 msgid "Crate Creation Failed"
-msgstr ""
+msgstr "Erstellung des Crate fehlgeschlagen"
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:142
-#, fuzzy
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Ein Crate muss einen Namen haben."
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:155
-#, fuzzy
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Erstellung des Crate fehlgeschlagen"
 
 #. ts-context CrateFeature
 #: ../../src/library/cratefeature.cpp:156
-#, fuzzy
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Ein Crate mit diesem Namen gibt es bereits."
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:73
-#, fuzzy
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:75
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:77
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:79
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:81
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:83
-#, fuzzy
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:85
-#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "Art"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:87
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:89
-#, fuzzy
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:91
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:93
-#, fuzzy
 msgid "Track #"
-msgstr ""
+msgstr "Titel#"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:95
-#, fuzzy
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:97
-#, fuzzy
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #. ts-context CrateTableModel
 #: ../../src/library/cratetablemodel.cpp:99
-#, fuzzy
 msgid "Date Added"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #. ts-context DlgAboutDlg
 #: ../../src/ui_dlgaboutdlg.h:79
-#, fuzzy
 msgid "About Mixxx"
-msgstr ""
+msgstr "Über Mixxx"
 
+# WIrd dynamisch durch die "echten" Credits ergänzt // keine Übersetzung hier
 #. ts-context DlgAboutDlg
 #: ../../src/ui_dlgaboutdlg.h:80
-#, fuzzy
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -191,157 +164,147 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
 "font-family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; "
+"font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; "
+"margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" "
+"font-family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
+"font-family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #. ts-context DlgAboutDlg
 #: ../../src/ui_dlgaboutdlg.h:88
-#, fuzzy
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #. ts-context DlgAboutDlg
 #: ../../src/ui_dlgaboutdlg.h:89
-#, fuzzy
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Offizielle Webseite</a>"
 
 #. ts-context DlgAutoDJ
-#: ../../src/dlgautodj.cpp:141
-#, fuzzy
+#: ../../src/dlgautodj.cpp:145
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "AutoDJ aktivieren"
 
 #. ts-context DlgAutoDJ
-#: ../../src/dlgautodj.cpp:204 ../../src/ui_dlgautodj.h:87
-#, fuzzy
+#: ../../src/dlgautodj.cpp:208 ../../src/ui_dlgautodj.h:87
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "AutoDJ deaktivieren"
 
 #. ts-context DlgAutoDJ
 #: ../../src/ui_dlgautodj.h:85
-#, fuzzy
 msgid "Manage"
-msgstr ""
+msgstr "Verwalten"
 
 #. ts-context DlgAutoDJ
 #: ../../src/ui_dlgautodj.h:86
-#, fuzzy
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Titel zur Warteliste hinzufügen..."
 
 #. ts-context DlgBpmSchemeDlg
 #: ../../src/ui_dlgbpmschemedlg.h:89
-#, fuzzy
 msgid "BPM Scheme"
-msgstr ""
+msgstr "BPM Schema"
 
 #. ts-context DlgBpmSchemeDlg
 #: ../../src/ui_dlgbpmschemedlg.h:90
-#, fuzzy
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Schema Name:"
 
 #. ts-context DlgBpmSchemeDlg
 #: ../../src/ui_dlgbpmschemedlg.h:91
-#, fuzzy
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Bereich"
 
 #. ts-context DlgBpmSchemeDlg
 #: ../../src/ui_dlgbpmschemedlg.h:92
-#, fuzzy
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #. ts-context DlgBpmSchemeDlg
 #: ../../src/ui_dlgbpmschemedlg.h:93
-#, fuzzy
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #. ts-context DlgBpmSchemeDlg
 #: ../../src/ui_dlgbpmschemedlg.h:94
-#, fuzzy
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Gesamten Song analyzieren"
 
 #. ts-context DlgMidiLearning
 #: ../../src/dlgmidilearning.cpp:172 ../../src/dlgmidilearning.cpp:190
 #: ../../src/ui_dlgmidilearning.h:202
-#, fuzzy
 msgid "Skip"
-msgstr ""
+msgstr "Überspringen"
 
 #. ts-context DlgMidiLearning
 #: ../../src/dlgmidilearning.cpp:205 ../../src/ui_dlgmidilearning.h:200
-#, fuzzy
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Erfolgreich zugewiesen:"
 
 #. ts-context DlgMidiLearning
 #: ../../src/dlgmidilearning.cpp:209
-#, fuzzy
 msgid "Next"
-msgstr ""
+msgstr "Weiter"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:194
-#, fuzzy
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "MIDI-Lern Assistent"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:195
-#, fuzzy
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "Wilkommen zum MIDI-Lern Assistent"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:196
-#, fuzzy
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Dieser Assistent ermöglicht es die Bedienelemente Ihres MIDI-Controllers "
+"denen von Mixxx zuzuweisen."
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:197
-#, fuzzy
 msgid "Begin"
-msgstr ""
+msgstr "Start"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:198
-#, fuzzy
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "Bitte bewegen Sie das MIDI Bedienelement für:"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:199
-#, fuzzy
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Mixxx Element"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:201
-#, fuzzy
 msgid "Previous"
-msgstr ""
+msgstr "Zurück"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:203
-#, fuzzy
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "Zum weitermachen oder überspringen die Spacetaste drücken."
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:204
-#, fuzzy
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "Midi-Lernen ist vollständig!"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:205
-#, fuzzy
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -357,856 +320,809 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; "
 "text-indent:0px;\"><br />Now go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; "
+"text-indent:0px;\">Dieser Assistent kann jederzeit erneut gestartet "
+"werden.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; "
+"text-indent:0px;\"><br />Und nun los!</p></body></html>"
 
 #. ts-context DlgMidiLearning
 #: ../../src/ui_dlgmidilearning.h:211
-#, fuzzy
 msgid "Finito!"
-msgstr ""
+msgstr "Fertig!"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:152
-#, fuzzy
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "BPM Erkennung Einstellungen"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:153
-#, fuzzy
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM Erkennung"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:154
-#, fuzzy
 msgid "Enable BPM Detection"
-msgstr ""
+msgstr "BPM Erkennung aktivieren"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:155
-#, fuzzy
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "BPM eines Titels beim Import erkennen"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:156
-#, fuzzy
 msgid "Write BPM to ID3 Tag"
-msgstr ""
+msgstr "BPM in das ID3 Tag schreiben"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:158
-#, fuzzy
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Falls BPM erkannt wird aber nicht im angegebenen Bereich"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:160
-#, fuzzy
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "BPM überhalb des Bereiches erlauben"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:161
-#, fuzzy
 msgid "BPM Schemes"
-msgstr ""
+msgstr "BPM Schemen"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:162
-#, fuzzy
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:163
-#, fuzzy
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:164
-#, fuzzy
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
 
 #. ts-context DlgPrefBPMDlg
 #: ../../src/ui_dlgprefbpmdlg.h:165
-#, fuzzy
 msgid "Default"
-msgstr ""
+msgstr "Voreinstellung"
 
 #. ts-context DlgPrefBpm
 #: ../../src/dlgprefbpm.cpp:411
-#, fuzzy
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #. ts-context DlgPrefBpm
 #: ../../src/dlgprefbpm.cpp:412
-#, fuzzy
 msgid "Cannot open file %1"
-msgstr ""
+msgstr "Kann Datei %1 nicht öffnen"
+
+#. ts-context DlgPrefControls
+#: ../../src/dlgprefcontrols.cpp:280
+msgid "This skin does not support schemes"
+msgstr "Dieses Skin unterstützt keine Farbschemen"
+
+#. ts-context DlgPrefControls
+#: ../../src/dlgprefcontrols.cpp:315
+msgid "Up increases speed"
+msgstr "Hoch erhöht Geschwindigkeit"
+
+#. ts-context DlgPrefControls
+#: ../../src/dlgprefcontrols.cpp:316
+msgid "Down increases speed (Technics SL1210)"
+msgstr "Runter erhöht Geschwindigkeit (Technics SL1210)"
 
 #. ts-context DlgPrefControls
 #: ../../src/dlgprefcontrols.cpp:380
-#, fuzzy
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #. ts-context DlgPrefControls
 #: ../../src/dlgprefcontrols.cpp:382
-#, fuzzy
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr ""
+msgstr "Mixxx muss neu gestartet werden damit die Änderungen wirkasam werden."
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:380
-#, fuzzy
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:381
-#, fuzzy
 msgid "Skin"
-msgstr ""
+msgstr "Skin"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:382
-#, fuzzy
 msgid "Scheme"
-msgstr ""
+msgstr "Farbschema"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:383
-#, fuzzy
 msgid "Waveform display"
-msgstr ""
+msgstr "Wellenform Anzeige"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:384
-#, fuzzy
 msgid "Position display"
-msgstr ""
+msgstr "Positionsanzeige"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:385
-#, fuzzy
 msgid "Tool tips"
-msgstr ""
+msgstr "Tooltips"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:388
-#, fuzzy
 msgid "On"
-msgstr ""
+msgstr "An"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:389
-#, fuzzy
 msgid "Off"
-msgstr ""
+msgstr "Aus"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:391
-#, fuzzy
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Bereich Pitch/Rate Regler"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:392
-#, fuzzy
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Richtung Pitch/Rate Regler"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:393
-#, fuzzy
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Cue Modus"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:394
-#, fuzzy
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Cue merken (Auto recall)"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:395
-#, fuzzy
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "Permanente Pitch/Rate Tasten"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:396 ../../src/ui_dlgprefcontrolsdlg.h:407
-#, fuzzy
 msgid "Left click"
-msgstr ""
+msgstr "Linksklick"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:397 ../../src/ui_dlgprefcontrolsdlg.h:408
-#, fuzzy
 msgid "Right click"
-msgstr ""
+msgstr "Rechtsklick"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:399
-#, fuzzy
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Veränderung permanente Rate (zwischen 1 und 8000) beim Linksklick"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:401 ../../src/ui_dlgprefcontrolsdlg.h:405
 #: ../../src/ui_dlgprefcontrolsdlg.h:412 ../../src/ui_dlgprefcontrolsdlg.h:416
-#, fuzzy
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:403
-#, fuzzy
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Veränderung permanente Rate (zwischen 1 und 8000) beim Rechtsklick"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:406
-#, fuzzy
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "Temporäre Pitch/Rate Tasten"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:410
-#, fuzzy
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Veränderung temporäre Rate (zwischen 1 und 8000) beim Linksklick"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:414
-#, fuzzy
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Veränderung temporäre Rate ( zwischen 1 und 8000) beim Rechtsklick"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:417
-#, fuzzy
 msgid "Ramping Pitchbend"
-msgstr ""
+msgstr "Weiches Pitchbend"
 
 #. ts-context DlgPrefControlsDlg
 #: ../../src/ui_dlgprefcontrolsdlg.h:418
-#, fuzzy
 msgid "Pitchbend sensitivity"
-msgstr ""
+msgstr "Empfindlichkeit Pitchbend "
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:215
-#, fuzzy
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:216
-#, fuzzy
 msgid "Crossfader Curve"
-msgstr ""
+msgstr "Crossfader Kurve"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:217
-#, fuzzy
 msgid "Slow fade"
-msgstr ""
+msgstr "Langsamer Fade"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:218
-#, fuzzy
 msgid "Fast cut"
-msgstr ""
+msgstr "Harter Cut"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:219
-#, fuzzy
 msgid "Constant power"
-msgstr ""
+msgstr "Konstant"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:220
-#, fuzzy
 msgid "Mixing"
-msgstr ""
+msgstr "Mixen"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:221
-#, fuzzy
 msgid "Scratching"
-msgstr ""
+msgstr "Scratchen"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:222
-#, fuzzy
 msgid "Linear"
-msgstr ""
+msgstr "Linear"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:223
-#, fuzzy
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarithmisch"
 
 #. ts-context DlgPrefCrossfaderDlg
 #: ../../src/ui_dlgprefcrossfaderdlg.h:224
-#, fuzzy
 msgid "Reset"
-msgstr ""
+msgstr "Zurücksetzen"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:238
-#, fuzzy
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:239
-#, fuzzy
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "Statische EQs (für langsame CPUs)"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:240
-#, fuzzy
 msgid "High Shelf EQ"
-msgstr ""
+msgstr "High Shelf EQ"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:241
-#, fuzzy
 msgid "textLabel1"
-msgstr ""
+msgstr "textLabel1"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:242 ../../src/ui_dlgprefeqdlg.h:247
-#, fuzzy
 msgid "16 Hz"
-msgstr ""
+msgstr "16 Hz"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:243 ../../src/ui_dlgprefeqdlg.h:248
-#, fuzzy
 msgid "2.045 kHz"
-msgstr ""
+msgstr "2.045 kHz"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:244 ../../src/ui_dlgprefeqdlg.h:249
-#, fuzzy
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20.05 kHz"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:245
-#, fuzzy
 msgid "Low Shelf EQ"
-msgstr ""
+msgstr "Low Shelf EQ"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:246
-#, fuzzy
 msgid "textLabel2"
-msgstr ""
+msgstr "textLabel2"
 
 #. ts-context DlgPrefEQDlg
 #: ../../src/ui_dlgprefeqdlg.h:250
-#, fuzzy
 msgid "Reset"
-msgstr ""
+msgstr "Zurücksetzen"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:135
-#, fuzzy
 msgid "None"
-msgstr ""
+msgstr "Keine"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:243
-#, fuzzy
 msgid "Apply MIDI device settings?"
-msgstr ""
+msgstr "EInstellungen für MIDI-Gerät anwenden?"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:244
-#, fuzzy
 msgid ""
 "Your settings must be applied before starting the MIDI learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"Die Einstellugen müssen angewendet werden bevor Sie den MIDI-Lern Assistent "
+"starten.\n"
+"Einstellungen anwenden und weiter?"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:277
-#, fuzzy
 msgid "Overwrite existing mapping?"
-msgstr ""
+msgstr "Existierendes Mapping überschreiben?"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:278
-#, fuzzy
 msgid ""
 "Are you sure you'd like to load the %1 mapping?\n"
 "This will overwrite your existing MIDI mapping."
 msgstr ""
+"Wollen Sie wirklich das %1 Mapping laden?\n"
+"Es wird Ihr bereits existierendes Mapping überschreiben."
+
+#. ts-context DlgPrefMidiBindings
+#: ../../src/dlgprefmidibindings.cpp:302
+msgid "Export Mixxx MIDI Bindings"
+msgstr "Mixxx MIDI Bindings exportieren"
+
+#. ts-context DlgPrefMidiBindings
+#: ../../src/dlgprefmidibindings.cpp:303
+msgid "Preset Files (*.midi.xml)"
+msgstr "Preset Datei (*.midi.xml)"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:340
-#, fuzzy
 msgid "Select Control Group"
-msgstr ""
+msgstr "Control Gruppe auswählen"
 
 #. ts-context DlgPrefMidiBindings
 #: ../../src/dlgprefmidibindings.cpp:363
-#, fuzzy
 msgid "Select Control"
-msgstr ""
+msgstr "Control auswählen"
+
+#. ts-context DlgPrefMidiBindings
+#: ../../src/dlgprefmidibindings.cpp:408
+msgid "Clear Input Bindings"
+msgstr "Input Bindings löschen"
+
+#. ts-context DlgPrefMidiBindings
+#: ../../src/dlgprefmidibindings.cpp:409
+msgid "Are you sure you want to clear all bindings?"
+msgstr "Wollen Sie wirklich alle Bindings löschen?"
+
+#. ts-context DlgPrefMidiBindings
+#: ../../src/dlgprefmidibindings.cpp:456
+msgid "Clear Output Bindings"
+msgstr "Output Bindings löschen"
+
+#. ts-context DlgPrefMidiBindings
+#: ../../src/dlgprefmidibindings.cpp:457
+msgid "Are you sure you want to clear all output bindings?"
+msgstr "Wollen Sie wirklich alle Output Bindings löschen?"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:241
-#, fuzzy
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:242
-#, fuzzy
 msgid "Your Device Name"
-msgstr ""
+msgstr "Gerätename"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:244
-#, fuzzy
 msgid "Load Preset:"
-msgstr ""
+msgstr "Preset laden:"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:245
-#, fuzzy
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:246
-#, fuzzy
 msgid "Output:"
-msgstr ""
+msgstr "Output:"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:247
-#, fuzzy
 msgid "Enabled"
-msgstr ""
+msgstr "Aktiviert"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:248
-#, fuzzy
 msgid "Controls"
-msgstr ""
+msgstr "Controls"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:249
 #: ../../src/ui_dlgprefmidibindingsdlg.h:255
-#, fuzzy
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:250
 #: ../../src/ui_dlgprefmidibindingsdlg.h:256
-#, fuzzy
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:251
-#, fuzzy
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "MIDI-Lern Assistent"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:252
 #: ../../src/ui_dlgprefmidibindingsdlg.h:257
-#, fuzzy
 msgid "Clear All"
-msgstr ""
+msgstr "Alles entfernen"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:253
-#, fuzzy
 msgid "MIDI Input"
-msgstr ""
+msgstr "MIDI Input"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:254
-#, fuzzy
 msgid "Outputs"
-msgstr ""
+msgstr "Outputs"
 
 #. ts-context DlgPrefMidiBindingsDlg
 #: ../../src/ui_dlgprefmidibindingsdlg.h:258
-#, fuzzy
 msgid "MIDI Output"
-msgstr ""
+msgstr "MIDI Output"
 
 #. ts-context DlgPrefNoMidiDlg
 #: ../../src/ui_dlgprefnomididlg.h:56
-#, fuzzy
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #. ts-context DlgPrefNoMidiDlg
 #: ../../src/ui_dlgprefnomididlg.h:57
-#, fuzzy
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "Keine MIDI Geräte verfügbar"
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:149
-#, fuzzy
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Verzeichnis für die Musikbibliothek auswählen"
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:183
-#, fuzzy
 msgid "Multiple iPods Detected"
-msgstr ""
+msgstr "Verschiedene iPods erkannt"
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:184
-#, fuzzy
 msgid ""
 "Mixxx has detected another iPod. \n"
 "\n"
 msgstr ""
+"Mixxx hat einen weiteren iPod erkannt.\n"
+"\n"
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:185
-#, fuzzy
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr ""
+msgstr "\"Ja\" wählen um den neu erkannten iPod zu benutzen @ "
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:186
-#, fuzzy
 msgid " or to continue to search for other iPods. \n"
-msgstr ""
+msgstr "oder um nach weiteren iPods zu suchen.\n"
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:187
-#, fuzzy
 msgid "Choose No to use the existing iPod @ "
-msgstr ""
+msgstr "\"Nein\" wählen um den bisherigen iPod zu benutzen @ "
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:188
-#, fuzzy
 msgid " and end detection. \n"
-msgstr ""
+msgstr "und die Erkennung zu beenden.\n"
 
 #. ts-context DlgPrefPlaylist
 #: ../../src/dlgprefplaylist.cpp:206
-#, fuzzy
 msgid "Choose iPod mount point"
-msgstr ""
+msgstr "iPod Mountpoint auswählen"
 
+# Dummy // keine Übersetzung
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:192
-#, fuzzy
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:193
-#, fuzzy
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:194
-#, fuzzy
 msgid "iPod mountpoint"
-msgstr ""
+msgstr "iPod Mountpoint"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:195 ../../src/ui_dlgprefplaylistdlg.h:199
-#, fuzzy
 msgid "Browse..."
-msgstr ""
+msgstr "Browsen..."
 
+# Dummy // keine Übersetzung
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:196
-#, fuzzy
 msgid "Detect"
-msgstr ""
+msgstr "Detect"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:197
-#, fuzzy
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:198
-#, fuzzy
 msgid "Music Directory:"
-msgstr ""
+msgstr "Musik Verzeichnis:"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:200
-#, fuzzy
 msgid "Audio Playback Plugins"
-msgstr ""
+msgstr "Audiowiedergabe-Plugins"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:201
-#, fuzzy
 msgid "Extra Playback Plugins:"
-msgstr ""
+msgstr "Extra Wiedergabe-Plugins:"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:202
-#, fuzzy
 msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff Wiedergabe:"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:203
-#, fuzzy
 msgid "Built-in"
-msgstr ""
+msgstr "Integriert"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:204
-#, fuzzy
 msgid "Available Online..."
-msgstr ""
+msgstr "Online verfügbar..."
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:205
-#, fuzzy
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Mitgelieferte Songs (Bundle)"
 
 #. ts-context DlgPrefPlaylistDlg
 #: ../../src/ui_dlgprefplaylistdlg.h:206
-#, fuzzy
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Unterstütze Mixxx und erlaube das Sammeln und Senden \n"
+"von Statistiken über die Wiedergabe und Anzahl der besuchten Links \n"
+"für die mitgelieferten Songs"
 
+#. ts-context DlgPrefRecord
+#: ../../src/dlgprefrecord.cpp:72
+msgid "Save Recording As..."
+msgstr "Speichere Aufnahme als..."
+
+#. ts-context DlgPrefRecord
+#: ../../src/dlgprefrecord.cpp:112
+msgid "kbps"
+msgstr "kbps"
+
+#. ts-context DlgPrefRecord
+#: ../../src/dlgprefrecord.cpp:114
+msgid "Quality: "
+msgstr "Qualität:"
+
+# Dummy // keine Übersetzung
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:220
-#, fuzzy
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:221
-#, fuzzy
 msgid "File"
-msgstr ""
+msgstr "Datei"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:222
-#, fuzzy
 msgid "Browse..."
-msgstr ""
+msgstr "Browsen..."
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:223
-#, fuzzy
 msgid "Encoding"
-msgstr ""
+msgstr "Kodierung"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:224 ../../src/ui_dlgprefrecorddlg.h:225
-#, fuzzy
 msgid "Quality"
-msgstr ""
+msgstr "Qualität"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:226
-#, fuzzy
 msgid "High"
-msgstr ""
+msgstr "Hoch"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:227
-#, fuzzy
 msgid "Low"
-msgstr ""
+msgstr "Niedrig"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:228
-#, fuzzy
 msgid "Tags"
-msgstr ""
+msgstr "Tags"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:229
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:230
-#, fuzzy
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #. ts-context DlgPrefRecordDlg
 #: ../../src/ui_dlgprefrecorddlg.h:231
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
+# Dummy // keine Übersetzung
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:386
-#, fuzzy
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:387
-#, fuzzy
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Streaming aktivieren"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:388
-#, fuzzy
 msgid "Server connection"
-msgstr ""
+msgstr "Serververbindung"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:389
-#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:392
-#, fuzzy
 msgid "Icecast 2"
-msgstr ""
+msgstr "Icecast 2"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:393
-#, fuzzy
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:394
-#, fuzzy
 msgid "Icecast 1"
-msgstr ""
+msgstr "Icecast 1"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:396
-#, fuzzy
 msgid "Mount"
-msgstr ""
+msgstr "Mount"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:397
-#, fuzzy
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
+# im Sinne von Arbeitsrechner , nicht Moderator
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:398
-#, fuzzy
 msgid "Host"
-msgstr ""
+msgstr "Host"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:399
-#, fuzzy
 msgid "192.168.123.8"
-msgstr ""
+msgstr "192.168.123.8"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:400
-#, fuzzy
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:401
-#, fuzzy
 msgid "8000"
-msgstr ""
+msgstr "8000"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:402
-#, fuzzy
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:403
-#, fuzzy
 msgid "source"
-msgstr ""
+msgstr "Quelle"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:404
-#, fuzzy
 msgid "Password"
-msgstr ""
+msgstr "Passwort"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:405
-#, fuzzy
 msgid "test1234"
-msgstr ""
+msgstr "test1234"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:406
-#, fuzzy
 msgid "Stream settings"
-msgstr ""
+msgstr "Stream Einstellungen"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:407
-#, fuzzy
 msgid "Stream name"
-msgstr ""
+msgstr "Stream Name"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:408
-#, fuzzy
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Mixxx Icecast Test"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:409
-#, fuzzy
 msgid "Website"
-msgstr ""
+msgstr "Webseite"
+
+#. ts-context DlgPrefShoutcastDlg
+#~ msgid "http://mixxx.sf.net"
+#~ msgstr "http://www.mixxx.org"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:410
-#, fuzzy
-msgid "http://mixxx.sf.net"
-msgstr ""
+msgid "http://www.mixxx.org"
+msgstr "http://www.mixxx.org"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:411
-#, fuzzy
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:412
-#, fuzzy
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -1220,1985 +1136,2100 @@ msgid ""
 "font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream "
 "is on line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; "
+"margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" "
+"font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Dieser Stream "
+"ist nur zu Testzwecken online!</span></p></body></html>"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:417
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:418
-#, fuzzy
 msgid "Live mix"
-msgstr ""
+msgstr "Live Mix"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:419
-#, fuzzy
 msgid "Public stream"
-msgstr ""
+msgstr "Öffentlicher Stream"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:420
-#, fuzzy
 msgid "Encoding"
-msgstr ""
+msgstr "Kodierung"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:421
-#, fuzzy
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:424
-#, fuzzy
 msgid "320 kbps"
-msgstr ""
+msgstr "320 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:425
-#, fuzzy
 msgid "256 kbps"
-msgstr ""
+msgstr "256 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:426
-#, fuzzy
 msgid "224 kbps"
-msgstr ""
+msgstr "224 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:427
-#, fuzzy
 msgid "192 kbps"
-msgstr ""
+msgstr "192 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:428
-#, fuzzy
 msgid "160 kbps"
-msgstr ""
+msgstr "160 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:429
-#, fuzzy
 msgid "128 kbps"
-msgstr ""
+msgstr "128 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:430
-#, fuzzy
 msgid "112 kbps"
-msgstr ""
+msgstr "112 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:431
-#, fuzzy
 msgid "96 kbps"
-msgstr ""
+msgstr "96 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:432
-#, fuzzy
 msgid "80 kbps"
-msgstr ""
+msgstr "80 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:433
-#, fuzzy
 msgid "64 kbps"
-msgstr ""
+msgstr "64 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:434
-#, fuzzy
 msgid "48 kbps"
-msgstr ""
+msgstr "48 kbps"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:436
-#, fuzzy
 msgid "Format"
-msgstr ""
+msgstr "Format"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:439
-#, fuzzy
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:440
-#, fuzzy
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:442
-#, fuzzy
 msgid "Channels"
-msgstr ""
+msgstr "Kanäle"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:445
-#, fuzzy
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:447
-#, fuzzy
 msgid "Custom metadata"
-msgstr ""
+msgstr "Eigene Metadaten"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:448
-#, fuzzy
 msgid "Enable custom metadata"
-msgstr ""
+msgstr "Eigene Metadaten aktivieren"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:449
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:450
-#, fuzzy
 msgid "%mainartist"
-msgstr ""
+msgstr "%mainartist"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:451
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:452
-#, fuzzy
 msgid "%maintitle"
-msgstr ""
+msgstr "%maintitle"
 
 #. ts-context DlgPrefShoutcastDlg
 #: ../../src/ui_dlgprefshoutcastdlg.h:453
-#, fuzzy
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
+"Aus technischen Gründen wird eine bestehende Verbindung unterbrochen und "
+"erneut hergestellt wenn Änderungen an den Shoutcast Einstellungen "
+"vorgenommen werden."
 
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:136 ../../src/dlgprefsound.cpp:160
+#: ../../src/dlgprefsound.cpp:189
+msgid "None"
+msgstr "Keine"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:229
+msgid "JACK"
+msgstr "JACK"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:238
+msgid "%1 ms"
+msgstr "%1 ms"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:297
+msgid "Mixxx"
+msgstr "Mixxx "
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:298
+msgid ""
+"FinalScratch records currently only work properly with a 44100 Hz "
+"samplerate.\n"
+"The samplerate has been reset to 44100 Hz."
+msgstr ""
+"FinalScratch Vinyls arbeiten nur zuverlässig mit einer Samplerate von 44100 "
+"Hz\n"
+"Die Samplerate wurde auf 44100 Hz zurückgesetzt."
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:320 ../../src/dlgprefsound.cpp:322
+#: ../../src/dlgprefsound.cpp:324 ../../src/dlgprefsound.cpp:359
+msgid "Configuration error"
+msgstr "Fehler in der Konfiguration"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:320
+msgid "You cannot send multiple outputs to a single channel"
+msgstr ""
+"Es können nicht mehrere Augänge an einen einzelnen Kanal gesendet werden"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:322
+msgid "You cannot use a single pair of channels for both decks"
+msgstr "Es kann nicht ein Kanalpaar für beide Decks benutzt werden"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:324 ../../src/dlgprefsound.cpp:359
+msgid "Audio device could not be opened"
+msgstr "Das Audiogerät konnte nicht geöffnet werden"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:353
+msgid "Configuration problem"
+msgstr "Fehler in der Konfiguration"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:353
+msgid "Sound API could not be initialized"
+msgstr "Sound API konnte nicht initialisiert werden"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:475
+msgid "Mixxx - Master and Headphones sharing the same channels"
+msgstr "Mixxx - Master und Kopfhörer teilen sich einen Kanal"
+
+#. ts-context DlgPrefSound
+#: ../../src/dlgprefsound.cpp:476
+msgid ""
+"Having the Headphone share the same sound card output channels as Master\n"
+"will result in Mixxx playing back at full volume irespective of the volume\n"
+"controls (this is because Headphone channels do not repect Master volume).\n"
+"\n"
+"This configuration is NOT recommended because of that.\n"
+"\n"
+"If your sound card has only two channels set the 'Headphones' channel to "
+"'None'."
+msgstr ""
+"Wenn sich Master und Kopfhörer den selben Kanal auf der Soundkarte teilen,\n"
+"wird Mixxx unabhängig von den Einstellung des Players mit voller Lautstärke "
+"abspielen.\n"
+"Die Kopfhörer Kanäle beachten die Master-Lautstärke nicht.\n"
+"\n"
+"Daher ist diese Konfiguration nicht empfohlen.\n"
+"\n"
+"Hat Ihre Soundkarte nur 2 Kanäle, setzen Sie den Kopfhörer auf 'Keine'."
+
+# Dummy // keine Übersetzung
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:320
-#, fuzzy
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:321
-#, fuzzy
 msgid "Audio Output"
-msgstr ""
+msgstr "Audioausgabe"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:322
-#, fuzzy
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:323
-#, fuzzy
 msgid "Headphones"
-msgstr ""
+msgstr "Kopfhörer"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:324
-#, fuzzy
 msgid "Sample rate (Hz)"
-msgstr ""
+msgstr "Samplerate (Hz)"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:325
-#, fuzzy
 msgid "Sound API"
-msgstr ""
+msgstr "Sound API"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:326
-#, fuzzy
 msgid "Pitch behaviour"
-msgstr ""
+msgstr "Pitchmodus"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:327
-#, fuzzy
 msgid "Vinyl emulation"
-msgstr ""
+msgstr "Vinyl Emulation"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:328
-#, fuzzy
 msgid "Pitch independent time stretch"
-msgstr ""
+msgstr "Timestretch (Pitch unabhängig)"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:329
-#, fuzzy
 msgid ""
 "Stretching beyond +-10% with pitch independent time stretch is not advised, "
 "and is likely to result in bad sound quality."
 msgstr ""
+"Mehr als +/- 10%  Timestretch ist nicht empfohlen und resultiert "
+"möglicherweise in schlechter Soundqualität."
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:330
-#, fuzzy
 msgid "Latency"
-msgstr ""
+msgstr "Latenz"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:331
-#, fuzzy
 msgid "256 ms"
-msgstr ""
+msgstr "256 ms"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:332
-#, fuzzy
 msgid "Low"
-msgstr ""
+msgstr "Niedrig"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:333
-#, fuzzy
 msgid "High"
-msgstr ""
+msgstr "Hoch"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:334
-#, fuzzy
 msgid "Fast CPU"
-msgstr ""
+msgstr "Schnelle CPU"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:335
-#, fuzzy
 msgid "Slow CPU"
-msgstr ""
+msgstr "Langsame CPU"
 
 #. ts-context DlgPrefSoundDlg
 #: ../../src/ui_dlgprefsounddlg.h:336
-#, fuzzy
 msgid ""
 "Tips:<ul><li>Increase your latency if you hear pops during "
 "playback</li><li>Reduce your latency to improve Mixxx's "
 "responsiveness</li></ul>"
 msgstr ""
+"Tips:<ul><li>Erhöhen Sie die Latenz wenn Störungen während der Wiedergabe zu "
+"hören sind.</li><li>Reduzieren Sie die Latenz damit Mixxx besser "
+"anspricht.</li></ul>"
 
 #. ts-context DlgPrefSoundItem
-#: ../../src/dlgprefsounditem.cpp:46
-#, fuzzy
-msgid "None"
-msgstr ""
+#~ msgid "None"
+#~ msgstr "Keine"
 
 #. ts-context DlgPrefSoundItem
-#: ../../src/ui_dlgprefsounditem.h:63
-#, fuzzy
-msgid "Form"
-msgstr ""
+#~ msgid "Form"
+#~ msgstr "Form"
 
 #. ts-context DlgPrefSoundItem
-#: ../../src/ui_dlgprefsounditem.h:64
-#, fuzzy
-msgid "Type (#)"
-msgstr ""
+#~ msgid "Type (#)"
+#~ msgstr "Type (#)"
 
 #. ts-context DlgPrefVinyl
 #: ../../src/dlgprefvinyl.cpp:149 ../../src/dlgprefvinyl.cpp:151
-#, fuzzy
 msgid "None"
-msgstr ""
+msgstr "Keine"
 
+#. ts-context DlgPrefVinyl
+#: ../../src/dlgprefvinyl.cpp:440 ../../src/dlgprefvinyl.cpp:442
+#: ../../src/dlgprefvinyl.cpp:444
+msgid "Configuration error"
+msgstr "Fehler in der Konfiguration"
+
+#. ts-context DlgPrefVinyl
+#: ../../src/dlgprefvinyl.cpp:440
+msgid "You cannot send multiple outputs to a single channel"
+msgstr ""
+"Es können nicht mehrere Augänge an einen einzelnen Kanal gesendet werden"
+
+#. ts-context DlgPrefVinyl
+#: ../../src/dlgprefvinyl.cpp:442
+msgid "You cannot use a single pair of channels for both decks"
+msgstr ""
+"Es können nicht mehrere Augänge an einen einzelnen Kanal gesendet werden"
+
+#. ts-context DlgPrefVinyl
+#: ../../src/dlgprefvinyl.cpp:444
+msgid "Audio device could not be opened"
+msgstr "Das Audiogerät konnte nicht geöffnet werden"
+
+# Dummy // Keine Übersetzung
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:309
-#, fuzzy
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:310
-#, fuzzy
 msgid "Input"
-msgstr ""
+msgstr "Eingang"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:311
-#, fuzzy
 msgid "Deck 1"
-msgstr ""
+msgstr "Deck 1"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:312
-#, fuzzy
 msgid "Deck 2"
-msgstr ""
+msgstr "Deck 2"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:313
-#, fuzzy
 msgid ""
 "<a "
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Troubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Fehlerbehebung</a>"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:314
-#, fuzzy
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Turntable Vorverstärker"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:315
-#, fuzzy
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Aus)"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:316
-#, fuzzy
 msgid "150"
-msgstr ""
+msgstr "159"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:317
-#, fuzzy
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Vinyl Konfiguration"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:318
-#, fuzzy
 msgid "Vinyl Type"
-msgstr ""
+msgstr "Vinyl Typ"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:319
-#, fuzzy
 msgid "Lead-in time"
-msgstr ""
+msgstr "Lead-In (Vorlaufzeit)"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:320
-#, fuzzy
 msgid "seconds"
-msgstr ""
+msgstr "Sekunden"
 
+# ??? English original is misleading in this context
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:321
-#, fuzzy
 msgid "Control Mode"
-msgstr ""
+msgstr "Modus"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:322
-#, fuzzy
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absoluter Modus"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:323
-#, fuzzy
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relativer Modus"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:324
-#, fuzzy
 msgid "Scratch Mode"
-msgstr ""
+msgstr "Scratch Modus"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:325
-#, fuzzy
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Needle Skip Prävention aktivieren"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:326
-#, fuzzy
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signal Qualität"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:328
-#, fuzzy
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #. ts-context DlgPrefVinylDlg
 #: ../../src/ui_dlgprefvinyldlg.h:330
-#, fuzzy
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:165
-#, fuzzy
 msgid "Sound Hardware"
-msgstr ""
+msgstr "Sound Hardware"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:177
-#, fuzzy
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI Controller"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:191
-#, fuzzy
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:197
-#, fuzzy
 msgid "Interface"
-msgstr ""
+msgstr "Oberfläche"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:203
-#, fuzzy
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalizer"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:209
-#, fuzzy
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:215
-#, fuzzy
 msgid "Recording"
-msgstr ""
+msgstr "Aufnahme"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:221
-#, fuzzy
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM Erkennung"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:230
-#, fuzzy
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Vinylsteuerung"
 
 #. ts-context DlgPreferences
 #: ../../src/dlgpreferences.cpp:238
-#, fuzzy
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "Streaming"
 
 #. ts-context DlgPreferencesDlg
 #: ../../src/ui_dlgpreferencesdlg.h:90
-#, fuzzy
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #. ts-context DlgPreferencesDlg
 #: ../../src/ui_dlgpreferencesdlg.h:92
-#, fuzzy
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #. ts-context DlgPrepare
 #: ../../src/ui_dlgprepare.h:108
-#, fuzzy
 msgid "Manage"
-msgstr ""
+msgstr "Verwalten"
 
 #. ts-context DlgPrepare
 #: ../../src/ui_dlgprepare.h:109
-#, fuzzy
 msgid "Recently Added"
-msgstr ""
+msgstr "Kürzlich hinzugefügt"
 
 #. ts-context DlgPrepare
 #: ../../src/ui_dlgprepare.h:110
-#, fuzzy
 msgid "All Songs"
-msgstr ""
+msgstr "Alle Titel"
 
 #. ts-context DlgPrepare
 #: ../../src/ui_dlgprepare.h:111
-#, fuzzy
 msgid "Progress"
-msgstr ""
+msgstr "Fortschritt"
 
 #. ts-context DlgPrepare
 #: ../../src/ui_dlgprepare.h:112
-#, fuzzy
 msgid "Select All"
-msgstr ""
+msgstr "Alles auswählen"
 
 #. ts-context DlgPrepare
 #: ../../src/ui_dlgprepare.h:113
-#, fuzzy
 msgid "Analyze"
-msgstr ""
+msgstr "Analyzieren"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:395
-#, fuzzy
 msgid "Track Editor"
-msgstr ""
+msgstr "Titel Editor"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:396
-#, fuzzy
 msgid "Song:"
-msgstr ""
+msgstr "Titel:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:397
-#, fuzzy
 msgid "Title:"
-msgstr ""
+msgstr "Name:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:398
-#, fuzzy
 msgid "Artist:"
-msgstr ""
+msgstr "Interpret:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:399
-#, fuzzy
 msgid "Album:"
-msgstr ""
+msgstr "Album:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:400
-#, fuzzy
 msgid "Date:"
-msgstr ""
+msgstr "Hinzugefügt:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:401
-#, fuzzy
 msgid "Track #:"
-msgstr ""
+msgstr "Titel#:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:402
-#, fuzzy
 msgid "Genre:"
-msgstr ""
+msgstr "Genre:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:403
-#, fuzzy
 msgid "Filename:"
-msgstr ""
+msgstr "Dateiname:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:404
-#, fuzzy
 msgid "Duration:"
-msgstr ""
+msgstr "Dauer:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:405
-#, fuzzy
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:406
-#, fuzzy
 msgid "File Type:"
-msgstr ""
+msgstr "Dateiart:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:407
-#, fuzzy
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:408
-#, fuzzy
 msgid "Comments:"
-msgstr ""
+msgstr "Kommentare:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:409
-#, fuzzy
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "Metadaten aus der Datei laden."
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:410
-#, fuzzy
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Titel Informationen ( Klick zum Aufklappen)"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:411
-#, fuzzy
 msgid "Track BPM: "
-msgstr ""
+msgstr "Titel BPM:"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:412
-#, fuzzy
 msgid "x2"
-msgstr ""
+msgstr "x2"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:413
-#, fuzzy
 msgid "/2"
-msgstr ""
+msgstr "/2"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:414
-#, fuzzy
 msgid "Tap to Beat"
-msgstr ""
+msgstr "Tippe zum Beat"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:415
-#, fuzzy
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
+"Hinweis: Nutzen Sie die \"Analyzieren\" Ansicht in der Bibliothek für die "
+"BPM Erkennung."
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:416
-#, fuzzy
 msgid "Track BPM"
-msgstr ""
+msgstr "Titel BPM"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:418
-#, fuzzy
 msgid "Cue Id"
-msgstr ""
+msgstr "Cue ID"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:420
-#, fuzzy
 msgid "Position"
-msgstr ""
+msgstr "Position"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:422
-#, fuzzy
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:424
-#, fuzzy
 msgid "Label"
-msgstr ""
+msgstr "Label"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:425
-#, fuzzy
 msgid "Activate Cue"
-msgstr ""
+msgstr "Cue aktivieren"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:426
-#, fuzzy
 msgid "Delete Cue"
-msgstr ""
+msgstr "Cue löschen"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:427
-#, fuzzy
 msgid "Track Cuepoints"
-msgstr ""
+msgstr "Titel Cuepunkte"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:428
-#, fuzzy
 msgid "<< &Prev"
-msgstr ""
+msgstr "<< &Zurück"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:429
-#, fuzzy
 msgid "&Apply"
-msgstr ""
+msgstr "&Anwenden"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:430
-#, fuzzy
 msgid "&Cancel"
-msgstr ""
+msgstr "&Abbrechen"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:431
-#, fuzzy
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #. ts-context DlgTrackInfo
 #: ../../src/ui_dlgtrackinfo.h:432
-#, fuzzy
 msgid "&Next >>"
+msgstr "&Weiter >>"
+
+#. ts-context EncoderMp3
+#: ../../src/recording/encodermp3.cpp:107 ../../src/recording/encodermp3.cpp:195
+msgid "Encoder"
+msgstr "Encoder"
+
+#. ts-context EncoderMp3
+#: ../../src/recording/encodermp3.cpp:110
+msgid ""
+"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+"install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+"exists on your system </html>"
 msgstr ""
+"<html>Mixxx kann den Lame MP3 Encoder nicht finden oder nicht laden. "
+"<p>Bitte libmp3lame installieren (auch bekannt als Lame) und überprüfen ob "
+"/usr/lib/libmp3lame.so auf diesem System existiert</html>"
+
+#. ts-context EncoderMp3
+#: ../../src/recording/encodermp3.cpp:113
+msgid ""
+"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+"lame_enc.dll in the directory you have installed Mixxx </html>"
+msgstr ""
+"<html>Mixxx kann den Lame MP3 Encoder nicht finden oder nicht laden. "
+"<p>Bitte lame_enc.dll in das Installationsverzeichnis von Mixxx kopieren "
+"</html>"
+
+#. ts-context EncoderMp3
+#: ../../src/recording/encodermp3.cpp:116
+msgid ""
+"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+"install libmp3lame (also known as lame) and check if "
+"/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+msgstr ""
+"<html>Mixxx kann den Lame MP3 Encoder nicht finden oder nicht laden. "
+"<p>Bitte libmp3lame installieren (auch bekannt als Lame) und überprüfen ob "
+"/usr/local/lib/libmp3lame.dylib auf diesem System existiert</html>"
+
+#. ts-context EncoderMp3
+#: ../../src/recording/encodermp3.cpp:196
+msgid ""
+"<html>Mixxx has detected that you use a modified version of libmp3lame. See "
+"<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> for more information.</html>"
+msgstr ""
+"<html>Mixxx hat erkannt das Sie eine modifizierte Version von libmp3lame "
+"benutzen. Besuchen Sie das<a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> "
+"für weitere Informationen.</html>"
 
 #. ts-context EngineRecord
 #: ../../src/recording/enginerecord.cpp:228
-#, fuzzy
 msgid "Recording"
-msgstr ""
+msgstr "Aufnehmen"
 
 #. ts-context EngineRecord
 #: ../../src/recording/enginerecord.cpp:229
-#, fuzzy
 msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
+"<html>Konnte keine Audiodatei für die Aufnahme erstellen!<p><br>VIelleicht "
+"haben Sie nicht genug Speicherplatz oder keine Zugriffsberechtigung</html>"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:75
 #: ../../src/engine/engineshoutcast.cpp:80
-#, fuzzy
 msgid "Mixxx encountered a problem"
-msgstr ""
+msgstr "Mixxx hat ein Problem festgestellt"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:75
-#, fuzzy
 msgid "Could not allocate shout_t"
-msgstr ""
+msgstr "Konnte shout_t nicht zuweisen"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:80
-#, fuzzy
 msgid "Could not allocate shout_metadata_t"
-msgstr ""
+msgstr "Konnte shout_metadata_t nicht zuweisen"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:84
-#, fuzzy
 msgid "Error setting non-blocking mode:"
+msgstr "Fehler beim Aktivieren des Non-blocking Modus:"
+
+#. ts-context EngineShoutcast
+#: ../../src/engine/engineshoutcast.cpp:342
+msgid "Shoutcast aborted connect after 3 tries"
+msgstr "Shoutcast hat die Verbindung nach 3 Versuchen unterbrochen"
+
+#. ts-context EngineShoutcast
+#: ../../src/engine/engineshoutcast.cpp:342
+#: ../../src/engine/engineshoutcast.cpp:366
+msgid ""
+"Please check your connection to the Internet and verify that your username "
+"and password are correct."
 msgstr ""
+"Bitte überprüfen Sie die Internetverbindung und vergewissern sich das ihr "
+"Benutzername und Kennwort richtig sind."
+
+#. ts-context EngineShoutcast
+#: ../../src/engine/engineshoutcast.cpp:366
+msgid "Mixxx could not connect to the server"
+msgstr "Mixxx konnte keine Verbindung zum Server herstellen"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:438
 #: ../../src/engine/engineshoutcast.cpp:469
 #: ../../src/engine/engineshoutcast.cpp:646
-#, fuzzy
 msgid "Live broadcasting"
-msgstr ""
+msgstr "Streaming"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:439
-#, fuzzy
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr ""
+msgstr "Mixxx hat sich erfolgreich mit dem Shoutcast Server verbunden"
 
 #. ts-context EngineShoutcast
 #: ../../src/engine/engineshoutcast.cpp:470
-#, fuzzy
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr ""
+msgstr "Mixxx hat sich erfolgreich von Shoutcast Server getrennt"
+
+#. ts-context ErrorDialogHandler
+#: ../../src/errordialoghandler.cpp:90
+msgid "Fatal error"
+msgstr "Fataler Fehler"
+
+#. ts-context ErrorDialogHandler
+#: ../../src/errordialoghandler.cpp:91
+msgid "Critical error"
+msgstr "Kritischer Fehler"
+
+#. ts-context ErrorDialogHandler
+#: ../../src/errordialoghandler.cpp:92
+msgid "Warning"
+msgstr "Warnung"
+
+#. ts-context ErrorDialogHandler
+#: ../../src/errordialoghandler.cpp:93
+msgid "Information"
+msgstr "Information"
+
+#. ts-context ErrorDialogHandler
+#: ../../src/errordialoghandler.cpp:94
+msgid "Question"
+msgstr "Frage"
 
 #. ts-context ITunesFeature
 #: ../../src/library/itunesfeature.cpp:29
-#, fuzzy
 msgid "iTunes"
-msgstr ""
+msgstr "iTunes"
 
 #. ts-context ITunesFeature
 #: ../../src/library/itunesfeature.cpp:42
-#, fuzzy
 msgid "Load iTunes Library?"
-msgstr ""
+msgstr "Die iTunes Bibliothek laden?"
 
 #. ts-context ITunesFeature
 #: ../../src/library/itunesfeature.cpp:43
-#, fuzzy
 msgid "Would you like to load your iTunes library?"
-msgstr ""
+msgstr "Wollen Sie Ihre iTunes Bibliothek laden?"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:108
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:111
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:114
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:117
-#, fuzzy
 msgid "Date"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:120
-#, fuzzy
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:123
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:126
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:129
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context ITunesPlaylistModel
 #: ../../src/library/itunesplaylistmodel.cpp:132
-#, fuzzy
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 #. ts-context LADSPAPresetSlot
 #: ../../src/ladspa/ladspapresetslot.cpp:113
-#, fuzzy
 msgid "Drag a preset from the list & drop it here"
-msgstr ""
+msgstr "Ein Preset aus der Liste hier herziehen und ablegen"
 
 #. ts-context LibraryScannerDlg
 #: ../../src/library/libraryscannerdlg.cpp:30
-#, fuzzy
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr ""
+"Mixxx benötigt einen Moment um Ihre Musikbibliothek zu scannen, bitte "
+"warten..."
 
 #. ts-context LibraryScannerDlg
 #: ../../src/library/libraryscannerdlg.cpp:32
-#, fuzzy
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:62
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:64
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:66
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:68
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:70
-#, fuzzy
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:72
-#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "Art"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:74
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:76
-#, fuzzy
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:78
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:80
-#, fuzzy
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:82
-#, fuzzy
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:84
-#, fuzzy
 msgid "Track #"
-msgstr ""
+msgstr "Titel#"
 
 #. ts-context LibraryTableModel
 #: ../../src/library/librarytablemodel.cpp:86
-#, fuzzy
 msgid "Date Added"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #. ts-context MidiInputMappingTableModel
 #: ../../src/midi/midiinputmappingtablemodel.cpp:166
-#, fuzzy
 msgid "Midi Status Type"
-msgstr ""
+msgstr "Midi Status Typ"
 
 #. ts-context MidiInputMappingTableModel
 #: ../../src/midi/midiinputmappingtablemodel.cpp:170
-#, fuzzy
 msgid "Midi Note"
-msgstr ""
+msgstr "Midi Note"
 
 #. ts-context MidiInputMappingTableModel
 #: ../../src/midi/midiinputmappingtablemodel.cpp:174
-#, fuzzy
 msgid "Midi Channel"
-msgstr ""
+msgstr "Midi Kanal"
 
 #. ts-context MidiInputMappingTableModel
 #: ../../src/midi/midiinputmappingtablemodel.cpp:178
-#, fuzzy
 msgid "Control Group"
-msgstr ""
+msgstr "Control Gruppe"
 
 #. ts-context MidiInputMappingTableModel
 #: ../../src/midi/midiinputmappingtablemodel.cpp:182
-#, fuzzy
 msgid "Control Value"
-msgstr ""
+msgstr "Control Wert"
 
 #. ts-context MidiMapping
 #: ../../src/midi/midimapping.cpp:633
-#, fuzzy
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "MIDI-Script Funktion nicht gefunden"
 
 #. ts-context MidiMapping
 #: ../../src/midi/midimapping.cpp:634
-#, fuzzy
 msgid "The MIDI script function '%1' was not found in loaded scripts."
 msgstr ""
+"Die MIDI-Script Funktion %1 wurde nicht in den geladenen Skripten gefunden."
 
 #. ts-context MidiMapping
 #: ../../src/midi/midimapping.cpp:637
-#, fuzzy
 msgid ""
 "The MIDI message %1 %2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"Die MIDI Nachricht %1 %2 wird nicht eingebunden.\n"
+"(Klicke \"Details\" für weitere Hinweise.)"
 
 #. ts-context MidiMapping
 #: ../../src/midi/midimapping.cpp:641
-#, fuzzy
 msgid ""
 "* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
+"* Überprüfen Sie ob der Funktionsname in der Mappingdatei (.xml) und der "
+"Scriptdatei (.js) richtig geschrieben ist\n"
 
 #. ts-context MidiMapping
 #: ../../src/midi/midimapping.cpp:644
-#, fuzzy
 msgid ""
 "* Check to see that the script file name (.js) is spelled correctly in the "
 "mapping file (.xml)"
 msgstr ""
+"* Überprüfen Sie ob der Name der Scriptdatei (.js) in der Mappingdatei "
+"(.xml) richtig geschrieben ist"
 
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:179
-#, fuzzy
 msgid "Midi Status"
-msgstr ""
+msgstr "Midi Status Typ"
 
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:183
-#, fuzzy
 msgid "Midi Note"
-msgstr ""
+msgstr "Midi Note"
 
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:187
-#, fuzzy
 msgid "Midi Channel"
-msgstr ""
+msgstr "Midi Kanal"
 
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:191
-#, fuzzy
 msgid "Control Group"
-msgstr ""
+msgstr "Control Gruppe"
 
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:195
-#, fuzzy
 msgid "Control Value"
-msgstr ""
+msgstr "Control Wert"
 
+# ???
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:199
-#, fuzzy
 msgid "Threshold Min"
-msgstr ""
+msgstr "Grenzbereich Min"
 
 #. ts-context MidiOutputMappingTableModel
 #: ../../src/midi/midioutputmappingtablemodel.cpp:203
-#, fuzzy
 msgid "Threshold Max"
-msgstr ""
+msgstr "Grenzbereich Max"
 
 #. ts-context MidiScriptEngine
 #: ../../src/midi/midiscriptengine.cpp:463
-#, fuzzy
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Uncaught exception bei Zeile %1 in Datei %2: %3"
 
 #. ts-context MidiScriptEngine
 #: ../../src/midi/midiscriptengine.cpp:469
-#, fuzzy
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Uncaught exception bei Zeile %1 in übergebenen Code: %2"
 
 #. ts-context MidiScriptEngine
 #: ../../src/midi/midiscriptengine.cpp:493
-#, fuzzy
 msgid "MIDI script error"
-msgstr ""
+msgstr "MIDI-Script Fehler"
 
+# ??
 #. ts-context MidiScriptEngine
 #: ../../src/midi/midiscriptengine.cpp:494
-#, fuzzy
 msgid "A MIDI control you just used is not working properly."
-msgstr ""
+msgstr "Eine gerade benutzte MIDI-Control arbeitet nicht richtig."
 
 #. ts-context MidiScriptEngine
 #: ../../src/midi/midiscriptengine.cpp:495
-#, fuzzy
 msgid ""
 "<html>(The MIDI script code needs to be fixed.)<br>For now, you "
 "can:<ul><li>Ignore this error for this session but you may experience "
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Der MIDI-Script Code muss korrigiert werden.)<br>Sie können "
+"nun:<ul><li>Den Fehler für diese Sitzung ignorieren, es kann aber zu "
+"unvorhergesehenem Verhalten kommen.</li><li>Den MIDI-Controller "
+"aus/anschalten (Reset)</li></ul></html>"
 
 #. ts-context MidiStatusDelegate
 #: ../../src/midi/midistatusdelegate.cpp:46
-#, fuzzy
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:64
 #: ../../src/library/missingtablemodel.cpp:78
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:66
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:68
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:70
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:72
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:74
-#, fuzzy
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:76
-#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "Art"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:80
-#, fuzzy
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:82
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:84
-#, fuzzy
 msgid "Track #"
-msgstr ""
+msgstr "Titel#"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:86
-#, fuzzy
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:88
-#, fuzzy
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #. ts-context MissingTableModel
 #: ../../src/library/missingtablemodel.cpp:90
-#, fuzzy
 msgid "Date Added"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:112 ../../src/mixxx.cpp:114 ../../src/mixxx.cpp:116
-#, fuzzy
+#: ../../src/mixxx.cpp:113 ../../src/mixxx.cpp:115 ../../src/mixxx.cpp:117
 msgid "Mixxx "
-msgstr ""
+msgstr "Mixxx "
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:242
-#, fuzzy
+#: ../../src/mixxx.cpp:151
+msgid ""
+"Mixxx's development is driven by community feedback.  At your discretion, "
+"Mixxx can automatically send data on your user experience back to the "
+"developers. Would you like to help us make Mixxx better by enabling this "
+"feature?"
+msgstr ""
+"Mixxx's Entwicklung richtet sich nach dem Feedback aus der Community. Mit "
+"Ihrer Zustimmung kann Mixxx automatisch anonyme Daten über die "
+"Programmnutzung an die Entwickler senden. Wollen Sie uns helfen Mixxx besser "
+"zu machen indem Sie dieses Feature aktivieren?"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:155
+msgid "Yes"
+msgstr "Ja"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:155
+msgid "No"
+msgstr "Nein"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:155
+msgid "Privacy Policy"
+msgstr "Datenschutz"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:160
+msgid "Mixxx: Privacy Policy"
+msgstr "Mixxx: Datenschutz"
+
+# ??? for the first sentence (Anglizismus?)
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:161
+msgid ""
+"Mixxx's development is driven by community feedback. In order to help "
+"improve future versions Mixxx will with your permission collect information "
+"on your hardware and usage of Mixxx.  This information will primarily be "
+"used to fix bugs, improve features, and determine the system requirements of "
+"later versions.  Additionally this information may be used in aggregate for "
+"statistical purposes.\n"
+"\n"
+"The hardware information will include:\n"
+"\t- CPU model and features\n"
+"\t- Total/Available Amount of RAM\n"
+"\t- Available disk space\n"
+"\t- OS version\n"
+"\n"
+"Your usage information will include:\n"
+"\t- Settings/Preferences\n"
+"\t- Internal errors\n"
+"\t- Internal debugging messages\n"
+"\t- Performance statistics (average latency, CPU usage)\n"
+"\n"
+"This information will not be used to personally identify you, contact you, "
+"advertise to you, or otherwise bother you in any way.\n"
+msgstr ""
+"Mixxx's Entwicklung richtet sich nach dem Feedback aus der Community. Um "
+"zukünftige Versionen von Mixxx zu verbessern, werden mit Ihrer Zustimmung "
+"anonyme Informationen über die benutzte Hardware und die Art der Nutzung von "
+"Mixxx gesammelt.sammelt.Diese Informationen werden vorrangig benutzt um "
+"Fehler zu beheben, Features zu verbessern und die Systemvorraussetzungen für "
+"spätere Versionen abschätzen zu können. Außerdem werden die "
+"Gesamtinformationen für statistische Zwecke genutzt.\n"
+"\n"
+"Informationen über die Hardware beinhalten:\n"
+"\t- CPU Modell und Features\n"
+"\t- Verfügbarer/Benutzter RAM-Speicher\n"
+"\t- Verfügbarer Festplattenspeicher\n"
+"\t- Version des Betriebssystems\n"
+"\n"
+"Informationen über die Nutzung beinhalten:\n"
+"\t- Einstellungen\n"
+"\t- Mixxx interne Fehler\n"
+"\t- Mixxx interne Debug Nachrichten\n"
+"\t- Statistiken über die Lesitung ( Latenz, Prozessorauslastung )\n"
+"\n"
+"Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu "
+"identifizieren, zu kontaktieren, gezielt zu bewerben oder anderweitig zu "
+"belästigen."
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:249
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Verzeichnis für die Musikbibliothek auswählen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:494
-#, fuzzy
-msgid "Retry"
-msgstr ""
+#: ../../src/mixxx.cpp:477
+msgid "Sound Device Busy"
+msgstr "Audiogerät beschäftigt"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:478
+msgid "<html>Mixxx cannot access the sound device <b>"
+msgstr "<html>Mixxx konnte nicht auf das Audiogerät zugreifen<b>"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:482
+msgid "Another application is using the sound device or it is "
+msgstr "Eine andere Anwendung benutzt das Audiogerät oder es ist"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:483
+msgid "not plugged in."
+msgstr "nicht angeschlossen."
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:486
+msgid "<b>Retry</b> after closing the other application "
+msgstr "<b>Wiederholen</b> nach dem Schließen der anderen Anwendung"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:487
+msgid "or reconnecting the sound device"
+msgstr "oder dem erneuten Anschluss der Soundkarte"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:490
+msgid "<b>Reconfigure</b> Mixxx to use another sound device."
+msgstr "Mixxx <b>neu konfigurieren</b> um eine andere Soundkarte zu benutzen."
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:493
+msgid "Get <b>Help</b> from the Mixxx Wiki."
+msgstr "Holen Sie sich <b>Hilfe</b>  aus dem Mixxx Wiki."
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:496
-#, fuzzy
+msgid "<b>Exit</b> without saving your settings."
+msgstr "<b>Beenden</b> ohne die Einstellungen abzuspeichern."
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:501
+msgid "Retry"
+msgstr "Wiederholen"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:503
 msgid "Reconfigure"
-msgstr ""
+msgstr "Neu konfigurieren"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:498
-#, fuzzy
+#: ../../src/mixxx.cpp:505
 msgid "Help"
-msgstr ""
+msgstr "Hilfe"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:500
-#, fuzzy
+#: ../../src/mixxx.cpp:507
 msgid "Exit"
-msgstr ""
+msgstr "Beenden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:540
-#, fuzzy
+#: ../../src/mixxx.cpp:547
 msgid "&Load Song (Player 1)..."
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:541
-#, fuzzy
-msgid "Ctrl+O"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:544
-#, fuzzy
-msgid "&Load Song (Player 2)..."
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:545
-#, fuzzy
-msgid "Ctrl+Shift+O"
-msgstr ""
+msgstr "&Titel in Player 1 laden"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:548
-#, fuzzy
-msgid "E&xit"
-msgstr ""
+msgid "Ctrl+O"
+msgstr "Ctrl+O"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:549
-#, fuzzy
-msgid "Ctrl+Q"
-msgstr ""
+#: ../../src/mixxx.cpp:551
+msgid "&Load Song (Player 2)..."
+msgstr "&Titel in Player 2 laden"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:552
-#, fuzzy
-msgid "&Rescan Library"
-msgstr ""
+msgid "Ctrl+Shift+O"
+msgstr "Ctrl+Shift+O"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:554
-#, fuzzy
-msgid "Add &new playlist"
-msgstr ""
+#~ msgid "E&xit"
+#~ msgstr "&Beenden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:555
-#, fuzzy
-msgid "Ctrl+N"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:558
-#, fuzzy
-msgid "Add new &crate"
-msgstr ""
+#: ../../src/mixxx.cpp:556
+msgid "Ctrl+Q"
+msgstr "Ctrl+Q"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:559
-#, fuzzy
-msgid "Ctrl+C"
-msgstr ""
+msgid "&Rescan Library"
+msgstr "&Bibliothek erneut scannen"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:561
+msgid "Add &new playlist"
+msgstr "&Neue Wiedergabeliste erstellen"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:562
-#, fuzzy
-msgid "&Import playlist"
-msgstr ""
+msgid "Ctrl+N"
+msgstr "Ctrl+N"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:563
-#, fuzzy
-msgid "Ctrl+I"
-msgstr ""
+#: ../../src/mixxx.cpp:565
+msgid "Add new &crate"
+msgstr "&Neues Crate erstellen"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:566
-#, fuzzy
-msgid "&Audio Beat Marks"
-msgstr ""
+msgid "Ctrl+C"
+msgstr "Ctrl+C"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:568
-#, fuzzy
-msgid "&Full Screen"
-msgstr ""
+#: ../../src/mixxx.cpp:569
+msgid "&Import playlist"
+msgstr "&Wiedergabeliste importieren"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:571
-#, fuzzy
-msgid "Ctrl+F"
-msgstr ""
+#: ../../src/mixxx.cpp:570
+msgid "Ctrl+I"
+msgstr "Ctrl+I"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:573
-#, fuzzy
-msgid "F11"
-msgstr ""
+msgid "&Audio Beat Marks"
+msgstr "&Audio Beat Marker"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:575
+msgid "&Full Screen"
+msgstr "&Vollbild"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:578
+msgid "Ctrl+F"
+msgstr "Ctrl+F"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:580
-#, fuzzy
-msgid "&Preferences"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:581
-#, fuzzy
-msgid "Ctrl+P"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:584
-#, fuzzy
-msgid "&About..."
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:585
-#, fuzzy
-msgid "&Community Support..."
-msgstr ""
+msgid "F11"
+msgstr "F11"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:587
-#, fuzzy
-msgid "Enable &Vinyl Control"
-msgstr ""
+msgid "&Preferences"
+msgstr "&Einstellungen"
+
+#. ts-context MixxxApp
+#~ msgid "Ctrl+,"
+#~ msgstr "Ctrl+,"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:588
-#, fuzzy
+msgid "Ctrl+P"
+msgstr "Ctrl+P"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:591
+msgid "&About..."
+msgstr "&Über..."
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:592
+msgid "&Community Support..."
+msgstr "&Community Unterstützung..."
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:595
+msgid "Enable &Vinyl Control"
+msgstr "&Vinylsteuerung aktivieren"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:596
 msgid "Ctrl+Y"
-msgstr ""
+msgstr "Ctrl+Y"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:593
-#, fuzzy
+#: ../../src/mixxx.cpp:601
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Streaming aktivieren"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:594
-#, fuzzy
+#: ../../src/mixxx.cpp:602
 msgid "Ctrl+L"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:598
-#, fuzzy
-msgid "&Record Mix"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:603
-#, fuzzy
-msgid "Show Studio"
-msgstr ""
+msgstr "Ctrl+L"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:606
-#, fuzzy
-msgid "Opens a song in player 1"
-msgstr ""
+msgid "&Record Mix"
+msgstr "&Mix aufnehmen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:608
-#, fuzzy
+#: ../../src/mixxx.cpp:607
+msgid "Ctrl+R"
+msgstr "Ctrl+R"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:611
+msgid "Show Studio"
+msgstr "Studio anzeigen"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:614
+msgid "Opens a song in player 1"
+msgstr "Titel in Player 1 laden"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:616
 msgid ""
 "Open\n"
 "\n"
 "Opens a song in player 1"
 msgstr ""
+"Öffnen\n"
+"\n"
+"Titel in Player 1 laden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:612
-#, fuzzy
+#: ../../src/mixxx.cpp:620
 msgid "Opens a song in player 2"
-msgstr ""
+msgstr "Titel in Player 2 laden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:614
-#, fuzzy
+#: ../../src/mixxx.cpp:622
 msgid ""
 "Open\n"
 "\n"
 "Opens a song in player 2"
 msgstr ""
+"Öffnen\n"
+"\n"
+"Titel in Player 2 laden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:618
-#, fuzzy
+#: ../../src/mixxx.cpp:626
 msgid "Quits the application"
-msgstr ""
+msgstr "Diese Anwendung beenden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:619
-#, fuzzy
+#: ../../src/mixxx.cpp:627
 msgid ""
 "Exit\n"
 "\n"
 "Quits the application"
 msgstr ""
+"Beenden\n"
+"\n"
+"Diese Anwendung beenden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:622
-#, fuzzy
+#: ../../src/mixxx.cpp:630
 msgid "Rescans the song library"
-msgstr ""
+msgstr "Die Musikbibliothek erneut scannen "
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:624
-#, fuzzy
+#: ../../src/mixxx.cpp:632
 msgid ""
 "Rescan library\n"
 "\n"
 "Rescans the song library"
 msgstr ""
+"Bibliothek erneut scannen\n"
+"\n"
+"Die Musikbibliothek erneut scannen "
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:631
-#, fuzzy
+#: ../../src/mixxx.cpp:639
 msgid "Create a new playlist"
-msgstr ""
+msgstr "Neue Wiedergabeliste erstellen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:632
-#, fuzzy
+#: ../../src/mixxx.cpp:640
 msgid ""
 "New playlist\n"
 "\n"
 "Create a new playlist"
 msgstr ""
+"Neue Wiedergabeliste\n"
+"\n"
+"Eine neue Wiedergabeliste erstellen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:636
-#, fuzzy
+#: ../../src/mixxx.cpp:644
 msgid "Create a new crate"
-msgstr ""
+msgstr "Neues Crate erstellen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:637
-#, fuzzy
+#: ../../src/mixxx.cpp:645
 msgid ""
 "New crate\n"
 "\n"
 "Create a new crate."
 msgstr ""
+"Neues Crate\n"
+"\n"
+"Eine neues Crate erstellen."
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:641 ../../src/mixxx.cpp:642
-#, fuzzy
+#: ../../src/mixxx.cpp:649 ../../src/mixxx.cpp:650
 msgid "Import playlist"
-msgstr ""
+msgstr "Wiedergabeliste importieren"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:649
-#, fuzzy
+#: ../../src/mixxx.cpp:657
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Audio Beat Marker"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:651
-#, fuzzy
+#: ../../src/mixxx.cpp:659
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
+"Audio Beat Marker\n"
+"Markiere Beats durch Audio Klicks"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:664
-#, fuzzy
+#: ../../src/mixxx.cpp:672
 msgid "Activate Vinyl Control"
-msgstr ""
+msgstr "Vinylsteuerung aktivieren"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:666
-#, fuzzy
+#: ../../src/mixxx.cpp:674
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
-msgstr ""
+msgstr "Timecode Vinyls benutzen um Mixxx mit externen Turntables zu steuern"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:679
-#, fuzzy
+#: ../../src/mixxx.cpp:687
 msgid "Activate live broadcasting"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:681
-#, fuzzy
-msgid "Stream your mixes to a shoutcast or icecast server"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:688
-#, fuzzy
-msgid "Start Recording your Mix"
-msgstr ""
+msgstr "Streaming aktivieren"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:689
-#, fuzzy
-msgid "Record your mix to a file"
-msgstr ""
+msgid "Stream your mixes to a shoutcast or icecast server"
+msgstr "Den Mix zu einem Icecast oder Shoutcast Server streamen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:695
-#, fuzzy
-msgid "Full Screen"
-msgstr ""
+#: ../../src/mixxx.cpp:696
+msgid "Start Recording your Mix"
+msgstr "Den Mix aufnehmen"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:697
-#, fuzzy
-msgid "Display Mixxx using the full screen"
-msgstr ""
-
-#. ts-context MixxxApp
-#: ../../src/mixxx.cpp:701
-#, fuzzy
-msgid "Preferences"
-msgstr ""
+msgid "Record your mix to a file"
+msgstr "Den Mix in einer Datei speichern"
 
 #. ts-context MixxxApp
 #: ../../src/mixxx.cpp:703
-#, fuzzy
+msgid "Full Screen"
+msgstr "Vollbild"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:705
+msgid "Display Mixxx using the full screen"
+msgstr "Mixxx im Vollbildmodus anzeigen"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:709
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:711
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
+"Einstellungen\n"
+"Wiedergabe- und MIDI-Einstellungen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:707
-#, fuzzy
+#: ../../src/mixxx.cpp:715
 msgid "Support..."
-msgstr ""
+msgstr "Ünterstützung..."
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:708
-#, fuzzy
+#: ../../src/mixxx.cpp:716
 msgid ""
 "Support\n"
 "\n"
 "Get help with Mixxx"
 msgstr ""
+"Unterstützung\n"
+"\n"
+"Hilfe bei Problemen mit Mixxx"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:711
-#, fuzzy
+#: ../../src/mixxx.cpp:719
 msgid "About the application"
-msgstr ""
+msgstr "Über diese Anwendung"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:712
-#, fuzzy
+#: ../../src/mixxx.cpp:720
 msgid ""
 "About\n"
 "\n"
 "About the application"
 msgstr ""
+"Über\n"
+"\n"
+"Über diese Anwendung"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:716
-#, fuzzy
+#: ../../src/mixxx.cpp:724
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Zeigt das Macro-Studio Fenster"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:718
-#, fuzzy
+#: ../../src/mixxx.cpp:726
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
 msgstr ""
+"Studio anzeigen\n"
+"\n"
+"Macht das das Macro-Studio sichtbar"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:727
-#, fuzzy
+#: ../../src/mixxx.cpp:735
 msgid "&File"
-msgstr ""
+msgstr "&Datei"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:728
-#, fuzzy
+#: ../../src/mixxx.cpp:736
 msgid "&Options"
-msgstr ""
+msgstr "&Optionen"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:729
-#, fuzzy
+#: ../../src/mixxx.cpp:737
 msgid "&Library"
-msgstr ""
+msgstr "&Bibliothek"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:730
-#, fuzzy
+#: ../../src/mixxx.cpp:738
 msgid "&View"
-msgstr ""
+msgstr "&Ansicht"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:731
-#, fuzzy
+#: ../../src/mixxx.cpp:739
 msgid "&Help"
-msgstr ""
+msgstr "&Hilfe"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:733
-#, fuzzy
+#: ../../src/mixxx.cpp:741
 msgid "&Macro"
-msgstr ""
+msgstr "&Makro"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:795
-#, fuzzy
+#: ../../src/mixxx.cpp:803
 msgid "Quit..."
-msgstr ""
+msgstr "Beenden..."
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:796
-#, fuzzy
+#: ../../src/mixxx.cpp:804
 msgid "Do your really want to quit?"
-msgstr ""
+msgstr "Wollen Sie wirklich beenden?"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:816 ../../src/mixxx.cpp:846 ../../src/mixxx.cpp:956
-#, fuzzy
+#: ../../src/mixxx.cpp:150 ../../src/mixxx.cpp:824 ../../src/mixxx.cpp:854
+#: ../../src/mixxx.cpp:964
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx "
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:817
-#, fuzzy
+#: ../../src/mixxx.cpp:555
+msgid "&Exit"
+msgstr "&Beenden"
+
+#. ts-context MixxxApp
+#: ../../src/mixxx.cpp:825
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"Ein Titel läuft momentan in Player 1.\n"
+"Wollen Sie wirklich einen neuen Titel laden?"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:829
-#, fuzzy
+#: ../../src/mixxx.cpp:837
 msgid "Load Song into Player 1"
-msgstr ""
+msgstr "Titel in Player 1 laden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:847
-#, fuzzy
+#: ../../src/mixxx.cpp:855
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"Ein Titel läuft momentan in Player 2.\n"
+"Wollen Sie wirklich einen neuen Titel laden?"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:859
-#, fuzzy
+#: ../../src/mixxx.cpp:867
 msgid "Load Song into Player 2"
-msgstr ""
+msgstr "Titel in Player 2 laden"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:957
-#, fuzzy
+#: ../../src/mixxx.cpp:965
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in vinyl control preferences."
 msgstr ""
+"Kein(e) Eingabegerät(e) ausgewählt.\n"
+"Bitte wählen Sie eine Soundkarte in den Einstellungen der Vinylsteuerung."
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:994
-#, fuzzy
+#: ../../src/mixxx.cpp:1002
 msgid "Save Recording As..."
-msgstr ""
+msgstr "Speichere Aufnahme als..."
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:1019
-#, fuzzy
+#: ../../src/mixxx.cpp:1027
 msgid "Mixxx Recording"
-msgstr ""
+msgstr "Mixxx Aufnahme"
 
 #. ts-context MixxxApp
-#: ../../src/mixxx.cpp:1020
-#, fuzzy
+#: ../../src/mixxx.cpp:1028
 msgid ""
 "The file %1 already exists. Would you like to overwrite it?\n"
 "Selecting \"No\" will abort the recording."
 msgstr ""
+"Die Datei %1 existiert bereits. Möchten Sie diese Datei überschreiben?\n"
+"\"Nein\" beendet die Aufnahme."
 
 #. ts-context MixxxLibraryFeature
 #: ../../src/library/mixxxlibraryfeature.cpp:31
-#, fuzzy
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #. ts-context Player
 #: ../../src/player.cpp:162
-#, fuzzy
 msgid "Couldn't load track."
-msgstr ""
+msgstr "Konnte Track nicht laden."
 
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:22
 #: ../../src/library/playlistfeature.cpp:104
-#, fuzzy
 msgid "New Playlist"
-msgstr ""
+msgstr "Neue Wiedergabeliste"
 
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:26
-#, fuzzy
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
+
+#. ts-context PlaylistFeature
+#: ../../src/library/playlistfeature.cpp:49
+msgid "Playlists"
+msgstr "Wiedergabelisten"
 
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:104
-#, fuzzy
 msgid "Playlist name:"
-msgstr ""
+msgstr "Name der Wiedergabeliste:"
 
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:108
 #: ../../src/library/playlistfeature.cpp:118
 #: ../../src/library/playlistfeature.cpp:134
-#, fuzzy
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
 
+# "leere Namen" gibt es nicht
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:109
-#, fuzzy
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Eine Wiedergabeliste muss einen Namen haben."
 
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:119
-#, fuzzy
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Ein Fehler ist aufgetreten beim Erstellen der Wiedergabeliste:"
 
 #. ts-context PlaylistFeature
 #: ../../src/library/playlistfeature.cpp:135
-#, fuzzy
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Eine Wiedergabeliste mit diesem Namen gibt es bereits."
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:85
-#, fuzzy
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:87
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:89
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:91
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:93
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:95
-#, fuzzy
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:97
-#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "Art"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:99
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:101
-#, fuzzy
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:103
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:105
-#, fuzzy
 msgid "Track #"
-msgstr ""
+msgstr "Titel#"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:107
-#, fuzzy
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:109
-#, fuzzy
 msgid "Date Added"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #. ts-context PlaylistTableModel
 #: ../../src/library/playlisttablemodel.cpp:111
-#, fuzzy
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #. ts-context PrepareFeature
 #: ../../src/library/preparefeature.cpp:31
-#, fuzzy
 msgid "Analyze"
-msgstr ""
+msgstr "Analyzieren"
 
 #. ts-context RhythmboxFeature
 #: ../../src/library/rhythmboxfeature.cpp:30
-#, fuzzy
 msgid "Rhythmbox"
-msgstr ""
+msgstr "Rhythmbox"
 
 #. ts-context RhythmboxFeature
 #: ../../src/library/rhythmboxfeature.cpp:47
-#, fuzzy
 msgid "Load Rhythmbox Library?"
-msgstr ""
+msgstr "Die Rhythmbox Bibliothek laden?"
 
 #. ts-context RhythmboxFeature
 #: ../../src/library/rhythmboxfeature.cpp:48
-#, fuzzy
 msgid "Would you like to load your Rhythmbox library?"
-msgstr ""
+msgstr "Wollen Sie Ihre Rhythmbox Bibliothek laden?"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:164
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:167
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:170
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:173
-#, fuzzy
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:176
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:179
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:182
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context RhythmboxPlaylistModel
 #: ../../src/library/rhythmboxplaylistmodel.cpp:185
-#, fuzzy
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:66
-#, fuzzy
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:67
-#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:68
-#, fuzzy
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:69
-#, fuzzy
 msgid "Date"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:70
-#, fuzzy
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:71
-#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #. ts-context RhythmboxTrackModel
 #: ../../src/library/rhythmboxtrackmodel.cpp:72
-#, fuzzy
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #. ts-context TrackCollection
 #: ../../src/library/trackcollection.cpp:59
-#, fuzzy
 msgid "Cannot open database"
-msgstr ""
+msgstr "Kann Datenbank nicht öffnen"
 
 #. ts-context TrackCollection
 #: ../../src/library/trackcollection.cpp:60
-#, fuzzy
 msgid ""
 "Unable to establish a database connection.\n"
 "Mixxx requires QT with SQLite support. Please read the Qt SQL driver "
@@ -3206,16 +3237,19 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Kann keine Verbindung zur Datenbank herstellen.\n"
+"Mixxx benötigt QT mit SQLite Unterstützung. Bitte lesen Sie die QT SQL "
+"Treiber Dokumentation für weitere Informationen.\n"
+"\n"
+"Klick OK zum Beenden."
 
 #. ts-context TrackCollection
 #: ../../src/library/trackcollection.cpp:71
-#, fuzzy
 msgid "Cannot upgrade database schema"
-msgstr ""
+msgstr "Kann Datenbankschema nicht upgraden"
 
 #. ts-context TrackCollection
 #: ../../src/library/trackcollection.cpp:72
-#, fuzzy
 msgid ""
 "Unable to upgrade your database schema to version %1.\n"
 "Your mixxx.db file may be corrupt.\n"
@@ -3223,119 +3257,127 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Kann Datenbankschema nicht auf Version %1 upgraden.\n"
+"Ihre mixxx.db Datei ist möglichweise beschädigt.\n"
+"Versuchen Sie die Datei umzubenennen und starten Mixxx dann erneut.\n"
+"\n"
+"Klick OK zum Beenden."
 
 #. ts-context Ui
-#: ../../src/dlgprefcontrols.cpp:170
-#, fuzzy
+#: ../../src/dlgprefcontrols.cpp:62
+msgid "Position"
+msgstr "Position"
+
+#. ts-context Ui
+#: ../../src/dlgprefcontrols.cpp:63
+msgid "Remaining"
+msgstr "Verbleibend"
+
+#. ts-context Ui
+#: ../../src/dlgprefcontrols.cpp:129 ../../src/dlgprefcontrols.cpp:170
 msgid "On"
-msgstr ""
+msgstr "An"
 
 #. ts-context Ui
-#: ../../src/dlgprefcontrols.cpp:171
-#, fuzzy
+#: ../../src/dlgprefcontrols.cpp:130 ../../src/dlgprefcontrols.cpp:171
 msgid "Off"
-msgstr ""
+msgstr "Aus"
+
+#. ts-context Ui
+#: ../../src/dlgprefcontrols.cpp:163
+msgid "CDJ Mode"
+msgstr "CDJ Modus"
+
+#. ts-context Ui
+#: ../../src/dlgprefcontrols.cpp:164
+msgid "Simple"
+msgstr "Einfach"
 
 #. ts-context Ui
 #: ../../src/dlgprefcontrols.cpp:215
-#, fuzzy
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Mixxx hat einen WVGA Bildschirm erkannt"
 
 #. ts-context Ui
 #: ../../src/dlgprefcontrols.cpp:215
-#, fuzzy
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Mixxx hat erkannt ihr Bildschirm hat eine Auflösung von "
 
 #. ts-context Ui
 #: ../../src/dlgprefcontrols.cpp:217
-#, fuzzy
 msgid ""
 "The only skin compatiable with this size display is OutlineMini (800x480).  "
 "Would you like to use that skin?"
 msgstr ""
+"Das einzigste mit dieser Auflösung kompatible Skin  ist OutlineMini "
+"(800x480).\n"
+"Wollen Sie das Skin benutzen?"
 
 #. ts-context Ui
 #: ../../src/dlgpreferences.cpp:60
-#, fuzzy
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #. ts-context Ui
-#: ../../src/dlgprefshoutcast.cpp:90
-#, fuzzy
-msgid "Live Mix"
-msgstr ""
+#~ msgid "Live Mix"
+#~ msgstr "Live Mix"
 
 #. ts-context VinylControlSignalWidget
 #: ../../src/vinylcontrolsignalwidget.cpp:66
-#, fuzzy
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #. ts-context WBrowseTableView
 #: ../../src/widget/wbrowsetableview.cpp:13
-#, fuzzy
 msgid "Load in Player 1"
-msgstr ""
+msgstr "In Player 1 laden"
 
 #. ts-context WBrowseTableView
 #: ../../src/widget/wbrowsetableview.cpp:14
-#, fuzzy
 msgid "Load in Player 2"
-msgstr ""
+msgstr "In Player 2 laden"
 
 #. ts-context WSearchLineEdit
 #: ../../src/widget/wsearchlineedit.cpp:147
-#, fuzzy
 msgid "Search..."
-msgstr ""
+msgstr "Suchen..."
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:35
-#, fuzzy
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Zur Wiedergabeliste hinzufügen"
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:37
-#, fuzzy
 msgid "Add to Crate"
-msgstr ""
+msgstr "Zum Crate hinzufügen"
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:164
-#, fuzzy
 msgid "Load in Player 1"
-msgstr ""
+msgstr "In Player 1 laden"
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:167
-#, fuzzy
 msgid "Load in Player 2"
-msgstr ""
+msgstr "In Player 2 laden"
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:170
-#, fuzzy
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:173
-#, fuzzy
 msgid "Properties..."
-msgstr ""
+msgstr "Eigenschaften..."
 
 #. ts-context WTrackTableView
 #: ../../src/widget/wtracktableview.cpp:176
-#, fuzzy
 msgid "Add to Auto DJ Queue"
-msgstr ""
+msgstr "Zur AutoDJ Warteliste hinzufügen"
 
 #. ts-context WTrackTableViewHeader
 #: ../../src/widget/wtracktableviewheader.cpp:12
-#, fuzzy
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Spalten zeigen oder verbergen."
