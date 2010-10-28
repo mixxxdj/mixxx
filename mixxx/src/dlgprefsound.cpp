@@ -133,7 +133,7 @@ void DlgPrefSound::slotUpdate()
 {
     // API's
     ComboBoxSoundApi->clear();
-    ComboBoxSoundApi->insertItem(0, "None");
+    ComboBoxSoundApi->insertItem(0, tr("None"));
     QList<QString> apis = m_pSoundManager->getHostAPIList();
     QListIterator<QString> api_it(apis);
     QString api;
@@ -157,7 +157,7 @@ void DlgPrefSound::slotUpdate()
 
     // Master sound card combobox
     ComboBoxSoundcardMaster->clear();
-    ComboBoxSoundcardMaster->insertItem(0, "None");
+    ComboBoxSoundcardMaster->insertItem(0, tr("None"));
     QListIterator<SoundDevice *> it(devices);
     //it = devices.begin();
     j = 1;
@@ -172,7 +172,7 @@ void DlgPrefSound::slotUpdate()
 
     // Master right sound card info
 /*  ComboBoxSoundcardMasterRight->clear();
-    ComboBoxSoundcardMasterRight->insertItem(0, "None");
+    ComboBoxSoundcardMasterRight->insertItem(0, tr("None"));
     it.toFront();
     j = 1;
     while (it.hasNext())
@@ -186,7 +186,7 @@ void DlgPrefSound::slotUpdate()
  */
     // Headphones sound card info
     ComboBoxSoundcardHeadphones->clear();
-    ComboBoxSoundcardHeadphones->insertItem(0, "None");
+    ComboBoxSoundcardHeadphones->insertItem(0, tr("None"));
     it.toFront();
     j = 1;
     while (it.hasNext())
@@ -226,7 +226,7 @@ void DlgPrefSound::slotUpdate()
         SliderLatency->setEnabled(false);
         //Set the latency slider to appear as 16 ms, just for the hell of it.
         SliderLatency->setValue(getSliderLatencyVal(16));
-        TextLabelLatency->setText("JACK");
+        TextLabelLatency->setText(tr("JACK"));
     }
     else
         SliderLatency->setEnabled(true);
@@ -235,7 +235,7 @@ void DlgPrefSound::slotUpdate()
 
 void DlgPrefSound::slotLatency()
 {
-    TextLabelLatency->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatency->value())));
+    TextLabelLatency->setText(QString(tr("%1 ms")).arg(getSliderLatencyMsec(SliderLatency->value())));
 }
 
 /** Converts a slider tick position into a latency in milliseconds */
@@ -294,9 +294,9 @@ void DlgPrefSound::slotApply()
     if ((config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == MIXXX_VINYL_FINALSCRATCH) && 
         (config->getValueString(ConfigKey("[Soundcard]","Samplerate")) != "44100"))
     {
-        QMessageBox::warning( this, "Mixxx",
-                            "FinalScratch records currently only work properly with a 44100 Hz samplerate.\n"
-                            "The samplerate has been reset to 44100 Hz." );    
+        QMessageBox::warning( this, tr("Mixxx"),
+                            tr("FinalScratch records currently only work properly with a 44100 Hz samplerate.\n"
+                            "The samplerate has been reset to 44100 Hz."));    
         config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
     }
 #endif
@@ -317,11 +317,11 @@ void DlgPrefSound::slotApply()
 	{
 	    deviceOpenError = m_pSoundManager->setupDevices();
 	    if (deviceOpenError == MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL)
-	        QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
+	        QMessageBox::warning(0, tr("Configuration error"), tr("You cannot send multiple outputs to a single channel"));
 	    else if (deviceOpenError == MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL)
-	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");		
+	        QMessageBox::warning(0, tr("Configuration error"), tr("You cannot use a single pair of channels for both decks"));		
 	    else if (deviceOpenError != 0)
-		    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+		    QMessageBox::warning(0, tr("Configuration error"),tr("Audio device could not be opened"));
 		else
 			slotUpdate();
 	}
@@ -350,13 +350,13 @@ void DlgPrefSound::slotApplyApi()
     {
         // Did they select the null api?
         if (ComboBoxSoundApi->currentText() != "None") {
-            QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
+            QMessageBox::warning(0, tr("Configuration problem"),tr("Sound API could not be initialized"));
             config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
         }
     } else {
         if (m_pSoundManager->setupDevices() != 0)
         {
-            QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+            QMessageBox::warning(0, tr("Configuration error"),tr("Audio device could not be opened"));
 			m_parent->setHidden(false);
         }
     }
@@ -472,8 +472,8 @@ void DlgPrefSound::slotChannelChange(){
          ComboBoxSoundcardMaster->isEnabled() && ComboBoxSoundcardHeadphones->isEnabled() && 
          ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHeadphones->currentText() && 
          ComboBoxChannelMaster->currentText() == ComboBoxChannelHeadphones->currentText()) {
-           QMessageBox::warning(this, "Mixxx - Master and Headphones sharing the same channels", 
-             "Having the Headphone share the same sound card output channels as Master\nwill result in Mixxx playing back at full volume irespective of the volume\ncontrols (this is because Headphone channels do not repect Master volume).\n\nThis configuration is NOT recommended because of that.\n\nIf your sound card has only two channels set the 'Headphones' channel to 'None'.");
+           QMessageBox::warning(this, tr("Mixxx - Master and Headphones sharing the same channels"), 
+             tr("Having the Headphone share the same sound card output channels as Master\nwill result in Mixxx playing back at full volume irespective of the volume\ncontrols (this is because Headphone channels do not repect Master volume).\n\nThis configuration is NOT recommended because of that.\n\nIf your sound card has only two channels set the 'Headphones' channel to 'None'."));
     }
 #endif
 }
