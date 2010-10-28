@@ -866,11 +866,11 @@ HerculesRMX.rateChange = function (value, group) {
       HerculesRMX.Decks.Left.Buttons.Sync.setLed(HerculesRMX.LedState.off);
    }
    if (HerculesRMX.Decks.Right.Buttons.Sync.state != HerculesRMX.ButtonState.pressed) {
-      engine.beginTimer(20, "HerculesRMX.Decks.Right.Buttons.Sync.setLed(HerculesRMX.LedState.off)", true);
+      engine.beginTimer(25, "HerculesRMX.Decks.Right.Buttons.Sync.setLed(HerculesRMX.LedState.off)", true);
    }
    if (value != 0.0) {
       var deck = HerculesRMX.GetDeck(group);
-      engine.beginTimer(25, "HerculesRMX.GetDeck('" + group + "').Buttons.PitchReset.setLed(HerculesRMX.LedState.off)", true);
+      engine.beginTimer(30, "HerculesRMX.GetDeck('" + group + "').Buttons.PitchReset.setLed(HerculesRMX.LedState.off)", true);
    }
 };
 

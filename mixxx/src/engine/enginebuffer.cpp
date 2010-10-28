@@ -138,6 +138,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
+    m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
@@ -156,9 +157,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -197,6 +200,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pTrackEndMode;
 
     delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
     delete m_pScaleST;
@@ -282,10 +286,13 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     pause.lock();
+    m_pCurrentTrack = pTrack;
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
+    m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
+
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
@@ -298,11 +305,13 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     pause.lock();
+    m_pCurrentTrack.clear();
     file_srate_old = 0;
     file_length_old = 0;
     playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
+    m_pTrackSampleRate->set(0);
     pause.unlock();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -454,14 +463,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             (at_start && backwards) ||
             (at_end && !backwards);
 
-        // If paused, then ramp out.
-        if (bCurBufferPaused) {
-            // If this is the first process() since being paused, then ramp out.
-            if (!m_bLastBufferPaused) {
-                rampOut(pOut, iBufferSize);
-            }
-        // Otherwise, scale the audio.
-        } else { // if (bCurBufferPaused)
+        // If the buffer is not paused, then scale the audio.
+        if (!bCurBufferPaused) {
             CSAMPLE *output;
             double idx;
 
@@ -566,7 +569,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            !m_pTrackEnd->get() &&
             ((at_start && backwards) ||
              (at_end && !backwards))) {
 
@@ -612,10 +614,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // release the pauselock
         pause.unlock();
     } else { // if (!m_pTrackEnd->get() && pause.tryLock()) {
-        if (!m_bLastBufferPaused)
-            rampOut(pOut, iBufferSize);
+        // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
     }
+
+    // Wake up the reader so that it processes our hints / loads new files
+    // (hopefully) before the next callback.
+    m_pReader->wake();
 
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
@@ -624,6 +629,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         float fStep = pOutput[iLen-1]/(float)iLen;
         for (int i=0; i<iLen; ++i)
             pOutput[i] = fStep*i;
+
+    }
+    // Force ramp out if this is the first buffer to be paused.
+    else if (!m_bLastBufferPaused && bCurBufferPaused) {
+        rampOut(pOut, iBufferSize);
+    }
+    // If the previous buffer was paused and we are currently paused, then
+    // memset the output to zero.
+    else if (m_bLastBufferPaused && bCurBufferPaused) {
+        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
@@ -643,6 +658,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
+        // TODO(XXX) SSE
         while (i<iLen)
         {
             pOutput[i] = fStep*(iLen-(i+1));
@@ -650,6 +666,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         }
     }
 
+    // TODO(XXX) memset
     // Reset rest of buffer
     while (i<iBufferSize)
     {
@@ -706,7 +723,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
-void EngineBuffer::loadTrack(TrackPointer pTrack) {
+void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
 
@@ -725,11 +742,20 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
     connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)));
+            this, SLOT(slotControlSeek(double)),
+            Qt::DirectConnection);
     connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)));
+            this, SLOT(slotControlSeekAbs(double)),
+            Qt::DirectConnection);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     pWorkerScheduler->bindWorker(m_pReader);
+}
+
+bool EngineBuffer::isTrackLoaded() {
+    if (m_pCurrentTrack) {
+        return true;
+    }
+    return false;
 }

@@ -3,6 +3,7 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
+                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -21,48 +22,47 @@
 #include "defs.h"
 #include "configobject.h"
 #include "encoder.h"
-#include "trackinfoobject.h"
+#include "defs_recording.h"
 
 #include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
 
 class EngineAbstractRecord;
+class TrackInfoObject;
 
 class EncoderVorbis : public Encoder {
     Q_OBJECT
-
-public:
+  public:
     EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
     ~EncoderVorbis();
-    int initEncoder();
-    int initEncoder(float quality);
     int initEncoder(int bitrate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
+    void updateMetaData(char* artist, char* title, char* album);
+    void flush();
 
-
-private slots:
-    void updateMetaData(TrackPointer trackInfoObj);
-
-private:
+  private:
     int getSerial();
-    void flushStream();
     void initStream();
-    void sendPackages();
     bool metaDataHasChanged();
+    //Call this method in conjunction with shoutcast streaming
+    void writePage();
 
     ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
-    ogg_stream_state oggs;    /* take physical pages, weld into logical stream
+    ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream
                                  of packets */
-    ogg_page oggpage;         /* Ogg bitstream page: contains Vorbis packets */
-    ogg_packet oggpacket;     /* raw packet of data */
-    vorbis_block vblock;      /* local working space for packet-to-PCM */
-    vorbis_dsp_state vdsp;    /* central working space for packet-to-PCM */
-    vorbis_info vinfo;        /* stores all static vorbis bitstream settings */
-    vorbis_comment vcomment;  /* stores all user comments */
+    ogg_page m_oggpage;         /* Ogg bitstream page: contains Vorbis packets */
+    ogg_packet m_oggpacket;     /* raw packet of data */
+    vorbis_block m_vblock;      /* local working space for packet-to-PCM */
+    vorbis_dsp_state m_vdsp;    /* central working space for packet-to-PCM */
+    vorbis_info m_vinfo;        /* stores all static vorbis bitstream settings */
+    vorbis_comment m_vcomment;  /* stores all user comments */
+    bool m_header_write;
 
-    EngineAbstractRecord *pEngine;
+    EngineAbstractRecord *m_pEngine;
     TrackPointer m_pMetaData;
-    char *metaDataTitle;
-    char *metaDataArtist;
+    char *m_metaDataTitle;
+    char *m_metaDataArtist;
+    char *m_metaDataAlbum;
+    QFile m_file;
 };
 
 #endif
