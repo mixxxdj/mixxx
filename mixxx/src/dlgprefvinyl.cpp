@@ -329,7 +329,7 @@ void DlgPrefVinyl::slotApply()
 
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !m_pSoundManager->setupDevices())
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None"|| (m_pSoundManager->setupDevices() != 0))
-    //    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+    //    QMessageBox::warning(0, tr("Configuration error","Audio device could not be opened"));
     //else
     slotUpdate();
 }
@@ -437,11 +437,11 @@ void DlgPrefVinyl::applySoundDeviceChanges()
 	{
 	    deviceOpenError = m_pSoundManager->setupDevices();
 	    if (deviceOpenError == MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL)
-	        QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
+	        QMessageBox::warning(0, tr("Configuration error"), tr("You cannot send multiple outputs to a single channel"));
 	    else if (deviceOpenError == MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL)
-	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");
+	        QMessageBox::warning(0, tr("Configuration error"), tr("You cannot use a single pair of channels for both decks"));
 	    else if (deviceOpenError != 0)
-		    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+		    QMessageBox::warning(0, tr("Configuration error"),tr("Audio device could not be opened"));
 		else
 			slotUpdate();
 	}
