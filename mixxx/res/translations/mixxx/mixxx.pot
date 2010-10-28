@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-28 14:55-0400\n"
+"POT-Creation-Date: 2010-10-28 15:35-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -329,10 +329,23 @@ msgid "Cannot open file %1"
 msgstr ""
 
 #: DlgPrefControls#1
-msgid "Information"
+msgid "This skin does not support schemes"
 msgstr ""
 
 #: DlgPrefControls#2
+msgid "Up increases speed"
+msgstr ""
+
+#: DlgPrefControls#3
+msgid "Down increases speed (Technics SL1210)"
+msgstr ""
+
+#: DlgPrefControls#4
+msgctxt "DlgPrefControls#4"
+msgid "Information"
+msgstr ""
+
+#: DlgPrefControls#5
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
 
@@ -541,11 +554,35 @@ msgid ""
 msgstr ""
 
 #: DlgPrefMidiBindings#6
-msgid "Select Control Group"
+msgid "Export Mixxx MIDI Bindings"
 msgstr ""
 
 #: DlgPrefMidiBindings#7
+msgid "Preset Files (*.midi.xml)"
+msgstr ""
+
+#: DlgPrefMidiBindings#8
+msgid "Select Control Group"
+msgstr ""
+
+#: DlgPrefMidiBindings#9
 msgid "Select Control"
+msgstr ""
+
+#: DlgPrefMidiBindings#10
+msgid "Clear Input Bindings"
+msgstr ""
+
+#: DlgPrefMidiBindings#11
+msgid "Are you sure you want to clear all bindings?"
+msgstr ""
+
+#: DlgPrefMidiBindings#12
+msgid "Clear Output Bindings"
+msgstr ""
+
+#: DlgPrefMidiBindings#13
+msgid "Are you sure you want to clear all output bindings?"
 msgstr ""
 
 #: DlgPrefMidiBindingsDlg#1
@@ -711,6 +748,19 @@ msgstr ""
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
+msgstr ""
+
+#: DlgPrefRecord#1
+msgctxt "DlgPrefRecord#1"
+msgid "Save Recording As..."
+msgstr ""
+
+#: DlgPrefRecord#2
+msgid "kbps"
+msgstr ""
+
+#: DlgPrefRecord#3
+msgid "Quality: "
 msgstr ""
 
 #: DlgPrefRecordDlg#1
@@ -992,6 +1042,75 @@ msgid ""
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
 
+#: DlgPrefSound#1
+msgctxt "DlgPrefSound#1"
+msgid "None"
+msgstr ""
+
+#: DlgPrefSound#2
+msgid "JACK"
+msgstr ""
+
+#: DlgPrefSound#3
+msgid "%1 ms"
+msgstr ""
+
+#: DlgPrefSound#4
+msgctxt "DlgPrefSound#4"
+msgid "Mixxx"
+msgstr ""
+
+#: DlgPrefSound#5
+msgid ""
+"FinalScratch records currently only work properly with a 44100 Hz "
+"samplerate.\n"
+"The samplerate has been reset to 44100 Hz."
+msgstr ""
+
+#: DlgPrefSound#6
+msgctxt "DlgPrefSound#6"
+msgid "Configuration error"
+msgstr ""
+
+#: DlgPrefSound#7
+msgctxt "DlgPrefSound#7"
+msgid "You cannot send multiple outputs to a single channel"
+msgstr ""
+
+#: DlgPrefSound#8
+msgctxt "DlgPrefSound#8"
+msgid "You cannot use a single pair of channels for both decks"
+msgstr ""
+
+#: DlgPrefSound#9
+msgctxt "DlgPrefSound#9"
+msgid "Audio device could not be opened"
+msgstr ""
+
+#: DlgPrefSound#10
+msgid "Configuration problem"
+msgstr ""
+
+#: DlgPrefSound#11
+msgid "Sound API could not be initialized"
+msgstr ""
+
+#: DlgPrefSound#12
+msgid "Mixxx - Master and Headphones sharing the same channels"
+msgstr ""
+
+#: DlgPrefSound#13
+msgid ""
+"Having the Headphone share the same sound card output channels as Master\n"
+"will result in Mixxx playing back at full volume irespective of the volume\n"
+"controls (this is because Headphone channels do not repect Master volume).\n"
+"\n"
+"This configuration is NOT recommended because of that.\n"
+"\n"
+"If your sound card has only two channels set the 'Headphones' channel to "
+"'None'."
+msgstr ""
+
 #: DlgPrefSoundDlg#1
 msgctxt "DlgPrefSoundDlg#1"
 msgid "Form1"
@@ -1084,6 +1203,26 @@ msgstr ""
 #: DlgPrefVinyl#1
 msgctxt "DlgPrefVinyl#1"
 msgid "None"
+msgstr ""
+
+#: DlgPrefVinyl#2
+msgctxt "DlgPrefVinyl#2"
+msgid "Configuration error"
+msgstr ""
+
+#: DlgPrefVinyl#3
+msgctxt "DlgPrefVinyl#3"
+msgid "You cannot send multiple outputs to a single channel"
+msgstr ""
+
+#: DlgPrefVinyl#4
+msgctxt "DlgPrefVinyl#4"
+msgid "You cannot use a single pair of channels for both decks"
+msgstr ""
+
+#: DlgPrefVinyl#5
+msgctxt "DlgPrefVinyl#5"
+msgid "Audio device could not be opened"
 msgstr ""
 
 #: DlgPrefVinylDlg#1
@@ -1340,6 +1479,7 @@ msgid "Cue Id"
 msgstr ""
 
 #: DlgTrackInfo#24
+msgctxt "DlgTrackInfo#24"
 msgid "Position"
 msgstr ""
 
@@ -1383,6 +1523,37 @@ msgstr ""
 msgid "&Next >>"
 msgstr ""
 
+#: EncoderMp3#1
+msgid "Encoder"
+msgstr ""
+
+#: EncoderMp3#2
+msgid ""
+"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+"install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+"exists on your system </html>"
+msgstr ""
+
+#: EncoderMp3#3
+msgid ""
+"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+"lame_enc.dll in the directory you have installed Mixxx </html>"
+msgstr ""
+
+#: EncoderMp3#4
+msgid ""
+"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+"install libmp3lame (also known as lame) and check if "
+"/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+msgstr ""
+
+#: EncoderMp3#5
+msgid ""
+"<html>Mixxx has detected that you use a modified version of libmp3lame. See "
+"<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> for more information.</html>"
+msgstr ""
+
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
 msgid "Recording"
@@ -1411,15 +1582,50 @@ msgid "Error setting non-blocking mode:"
 msgstr ""
 
 #: EngineShoutcast#5
-msgid "Live broadcasting"
+msgid "Shoutcast aborted connect after 3 tries"
 msgstr ""
 
 #: EngineShoutcast#6
-msgid "Mixxx has successfully connected to the shoutcast server"
+msgid ""
+"Please check your connection to the Internet and verify that your username "
+"and password are correct."
 msgstr ""
 
 #: EngineShoutcast#7
+msgid "Mixxx could not connect to the server"
+msgstr ""
+
+#: EngineShoutcast#8
+msgid "Live broadcasting"
+msgstr ""
+
+#: EngineShoutcast#9
+msgid "Mixxx has successfully connected to the shoutcast server"
+msgstr ""
+
+#: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
+msgstr ""
+
+#: ErrorDialogHandler#1
+msgid "Fatal error"
+msgstr ""
+
+#: ErrorDialogHandler#2
+msgid "Critical error"
+msgstr ""
+
+#: ErrorDialogHandler#3
+msgid "Warning"
+msgstr ""
+
+#: ErrorDialogHandler#4
+msgctxt "ErrorDialogHandler#4"
+msgid "Information"
+msgstr ""
+
+#: ErrorDialogHandler#5
+msgid "Question"
 msgstr ""
 
 #: ITunesFeature#1
@@ -1737,368 +1943,463 @@ msgstr ""
 
 #: MixxxApp#2
 msgctxt "MixxxApp#2"
-msgid "Choose music library directory"
+msgid "Mixxx"
 msgstr ""
 
 #: MixxxApp#3
-msgid "Retry"
+msgid ""
+"Mixxx's development is driven by community feedback.  At your discretion, "
+"Mixxx can automatically send data on your user experience back to the "
+"developers. Would you like to help us make Mixxx better by enabling this "
+"feature?"
 msgstr ""
 
 #: MixxxApp#4
-msgid "Reconfigure"
+msgid "Yes"
 msgstr ""
 
 #: MixxxApp#5
-msgid "Help"
+msgid "No"
 msgstr ""
 
 #: MixxxApp#6
-msgid "Exit"
+msgid "Privacy Policy"
 msgstr ""
 
 #: MixxxApp#7
-msgid "&Load Song (Player 1)..."
+msgid "Mixxx: Privacy Policy"
 msgstr ""
 
 #: MixxxApp#8
-msgid "Ctrl+O"
+msgid ""
+"Mixxx's development is driven by community feedback. In order to help "
+"improve future versions Mixxx will with your permission collect information "
+"on your hardware and usage of Mixxx.  This information will primarily be "
+"used to fix bugs, improve features, and determine the system requirements of "
+"later versions.  Additionally this information may be used in aggregate for "
+"statistical purposes.\n"
+"\n"
+"The hardware information will include:\n"
+"\t- CPU model and features\n"
+"\t- Total/Available Amount of RAM\n"
+"\t- Available disk space\n"
+"\t- OS version\n"
+"\n"
+"Your usage information will include:\n"
+"\t- Settings/Preferences\n"
+"\t- Internal errors\n"
+"\t- Internal debugging messages\n"
+"\t- Performance statistics (average latency, CPU usage)\n"
+"\n"
+"This information will not be used to personally identify you, contact you, "
+"advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
 
 #: MixxxApp#9
-msgid "&Load Song (Player 2)..."
+msgctxt "MixxxApp#9"
+msgid "Choose music library directory"
 msgstr ""
 
 #: MixxxApp#10
-msgid "Ctrl+Shift+O"
+msgid "Sound Device Busy"
 msgstr ""
 
 #: MixxxApp#11
-msgid "E&xit"
+msgid "<html>Mixxx cannot access the sound device <b>"
 msgstr ""
 
 #: MixxxApp#12
-msgid "Ctrl+Q"
+msgid "Another application is using the sound device or it is "
 msgstr ""
 
 #: MixxxApp#13
-msgid "&Rescan Library"
+msgid "not plugged in."
 msgstr ""
 
 #: MixxxApp#14
-msgid "Add &new playlist"
+msgid "<b>Retry</b> after closing the other application "
 msgstr ""
 
 #: MixxxApp#15
-msgid "Ctrl+N"
+msgid "or reconnecting the sound device"
 msgstr ""
 
 #: MixxxApp#16
-msgid "Add new &crate"
+msgid "<b>Reconfigure</b> Mixxx to use another sound device."
 msgstr ""
 
 #: MixxxApp#17
-msgid "Ctrl+C"
+msgid "Get <b>Help</b> from the Mixxx Wiki."
 msgstr ""
 
 #: MixxxApp#18
-msgid "&Import playlist"
+msgid "<b>Exit</b> without saving your settings."
 msgstr ""
 
 #: MixxxApp#19
-msgid "Ctrl+I"
+msgid "Retry"
 msgstr ""
 
 #: MixxxApp#20
-msgid "&Audio Beat Marks"
+msgid "Reconfigure"
 msgstr ""
 
 #: MixxxApp#21
-msgid "&Full Screen"
+msgid "Help"
 msgstr ""
 
 #: MixxxApp#22
-msgid "Ctrl+F"
+msgid "Exit"
 msgstr ""
 
 #: MixxxApp#23
-msgid "F11"
+msgid "&Load Song (Player 1)..."
 msgstr ""
 
 #: MixxxApp#24
-msgid "&Preferences"
+msgid "Ctrl+O"
 msgstr ""
 
 #: MixxxApp#25
-msgid "Ctrl+P"
+msgid "&Load Song (Player 2)..."
 msgstr ""
 
 #: MixxxApp#26
-msgid "&About..."
+msgid "Ctrl+Shift+O"
 msgstr ""
 
 #: MixxxApp#27
-msgid "&Community Support..."
+msgid "&Exit"
 msgstr ""
 
 #: MixxxApp#28
-msgid "Enable &Vinyl Control"
+msgid "Ctrl+Q"
 msgstr ""
 
 #: MixxxApp#29
-msgid "Ctrl+Y"
+msgid "&Rescan Library"
 msgstr ""
 
 #: MixxxApp#30
-msgctxt "MixxxApp#30"
-msgid "Enable live broadcasting"
+msgid "Add &new playlist"
 msgstr ""
 
 #: MixxxApp#31
-msgid "Ctrl+L"
+msgid "Ctrl+N"
 msgstr ""
 
 #: MixxxApp#32
-msgid "&Record Mix"
+msgid "Add new &crate"
 msgstr ""
 
 #: MixxxApp#33
-msgid "Show Studio"
+msgid "Ctrl+C"
 msgstr ""
 
 #: MixxxApp#34
-msgid "Opens a song in player 1"
+msgid "&Import playlist"
 msgstr ""
 
 #: MixxxApp#35
+msgid "Ctrl+I"
+msgstr ""
+
+#: MixxxApp#36
+msgid "&Audio Beat Marks"
+msgstr ""
+
+#: MixxxApp#37
+msgid "&Full Screen"
+msgstr ""
+
+#: MixxxApp#38
+msgid "Ctrl+F"
+msgstr ""
+
+#: MixxxApp#39
+msgid "F11"
+msgstr ""
+
+#: MixxxApp#40
+msgid "&Preferences"
+msgstr ""
+
+#: MixxxApp#41
+msgid "Ctrl+P"
+msgstr ""
+
+#: MixxxApp#42
+msgid "&About..."
+msgstr ""
+
+#: MixxxApp#43
+msgid "&Community Support..."
+msgstr ""
+
+#: MixxxApp#44
+msgid "Enable &Vinyl Control"
+msgstr ""
+
+#: MixxxApp#45
+msgid "Ctrl+Y"
+msgstr ""
+
+#: MixxxApp#46
+msgctxt "MixxxApp#46"
+msgid "Enable live broadcasting"
+msgstr ""
+
+#: MixxxApp#47
+msgid "Ctrl+L"
+msgstr ""
+
+#: MixxxApp#48
+msgid "&Record Mix"
+msgstr ""
+
+#: MixxxApp#49
+msgid "Ctrl+R"
+msgstr ""
+
+#: MixxxApp#50
+msgid "Show Studio"
+msgstr ""
+
+#: MixxxApp#51
+msgid "Opens a song in player 1"
+msgstr ""
+
+#: MixxxApp#52
 msgid ""
 "Open\n"
 "\n"
 "Opens a song in player 1"
 msgstr ""
 
-#: MixxxApp#36
+#: MixxxApp#53
 msgid "Opens a song in player 2"
 msgstr ""
 
-#: MixxxApp#37
+#: MixxxApp#54
 msgid ""
 "Open\n"
 "\n"
 "Opens a song in player 2"
 msgstr ""
 
-#: MixxxApp#38
+#: MixxxApp#55
 msgid "Quits the application"
 msgstr ""
 
-#: MixxxApp#39
+#: MixxxApp#56
 msgid ""
 "Exit\n"
 "\n"
 "Quits the application"
 msgstr ""
 
-#: MixxxApp#40
+#: MixxxApp#57
 msgid "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#41
+#: MixxxApp#58
 msgid ""
 "Rescan library\n"
 "\n"
 "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#42
+#: MixxxApp#59
 msgid "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#43
+#: MixxxApp#60
 msgid ""
 "New playlist\n"
 "\n"
 "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#44
+#: MixxxApp#61
 msgid "Create a new crate"
 msgstr ""
 
-#: MixxxApp#45
+#: MixxxApp#62
 msgid ""
 "New crate\n"
 "\n"
 "Create a new crate."
 msgstr ""
 
-#: MixxxApp#46
+#: MixxxApp#63
 msgid "Import playlist"
 msgstr ""
 
-#: MixxxApp#47
+#: MixxxApp#64
 msgid "Audio Beat Marks"
 msgstr ""
 
-#: MixxxApp#48
+#: MixxxApp#65
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
 
-#: MixxxApp#49
+#: MixxxApp#66
 msgid "Activate Vinyl Control"
 msgstr ""
 
-#: MixxxApp#50
+#: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 
-#: MixxxApp#51
+#: MixxxApp#68
 msgid "Activate live broadcasting"
 msgstr ""
 
-#: MixxxApp#52
+#: MixxxApp#69
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr ""
 
-#: MixxxApp#53
+#: MixxxApp#70
 msgid "Start Recording your Mix"
 msgstr ""
 
-#: MixxxApp#54
+#: MixxxApp#71
 msgid "Record your mix to a file"
 msgstr ""
 
-#: MixxxApp#55
+#: MixxxApp#72
 msgid "Full Screen"
 msgstr ""
 
-#: MixxxApp#56
+#: MixxxApp#73
 msgid "Display Mixxx using the full screen"
 msgstr ""
 
-#: MixxxApp#57
-msgctxt "MixxxApp#57"
+#: MixxxApp#74
+msgctxt "MixxxApp#74"
 msgid "Preferences"
 msgstr ""
 
-#: MixxxApp#58
+#: MixxxApp#75
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
 
-#: MixxxApp#59
+#: MixxxApp#76
 msgid "Support..."
 msgstr ""
 
-#: MixxxApp#60
+#: MixxxApp#77
 msgid ""
 "Support\n"
 "\n"
 "Get help with Mixxx"
 msgstr ""
 
-#: MixxxApp#61
+#: MixxxApp#78
 msgid "About the application"
 msgstr ""
 
-#: MixxxApp#62
+#: MixxxApp#79
 msgid ""
 "About\n"
 "\n"
 "About the application"
 msgstr ""
 
-#: MixxxApp#63
+#: MixxxApp#80
 msgid "Shows the macro studio window"
 msgstr ""
 
-#: MixxxApp#64
+#: MixxxApp#81
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
 msgstr ""
 
-#: MixxxApp#65
+#: MixxxApp#82
 msgid "&File"
 msgstr ""
 
-#: MixxxApp#66
+#: MixxxApp#83
 msgid "&Options"
 msgstr ""
 
-#: MixxxApp#67
+#: MixxxApp#84
 msgid "&Library"
 msgstr ""
 
-#: MixxxApp#68
+#: MixxxApp#85
 msgid "&View"
 msgstr ""
 
-#: MixxxApp#69
+#: MixxxApp#86
 msgid "&Help"
 msgstr ""
 
-#: MixxxApp#70
+#: MixxxApp#87
 msgid "&Macro"
 msgstr ""
 
-#: MixxxApp#71
+#: MixxxApp#88
 msgid "Quit..."
 msgstr ""
 
-#: MixxxApp#72
+#: MixxxApp#89
 msgid "Do your really want to quit?"
 msgstr ""
 
-#: MixxxApp#73
-msgid "Mixxx"
-msgstr ""
-
-#: MixxxApp#74
+#: MixxxApp#90
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#75
+#: MixxxApp#91
 msgid "Load Song into Player 1"
 msgstr ""
 
-#: MixxxApp#76
+#: MixxxApp#92
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#77
+#: MixxxApp#93
 msgid "Load Song into Player 2"
 msgstr ""
 
-#: MixxxApp#78
+#: MixxxApp#94
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in vinyl control preferences."
 msgstr ""
 
-#: MixxxApp#79
+#: MixxxApp#95
+msgctxt "MixxxApp#95"
 msgid "Save Recording As..."
 msgstr ""
 
-#: MixxxApp#80
+#: MixxxApp#96
 msgid "Mixxx Recording"
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#97
 msgid ""
 "The file %1 already exists. Would you like to overwrite it?\n"
 "Selecting \"No\" will abort the recording."
 msgstr ""
 
 #: MixxxLibraryFeature#1
-msgctxt "MixxxLibraryFeature#1"
+msgid "Missing Songs"
+msgstr ""
+
+#: MixxxLibraryFeature#2
+msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
 msgstr ""
 
@@ -2116,22 +2417,26 @@ msgid "Remove"
 msgstr ""
 
 #: PlaylistFeature#3
-msgid "Playlist name:"
+msgid "Playlists"
 msgstr ""
 
 #: PlaylistFeature#4
-msgid "Playlist Creation Failed"
+msgid "Playlist name:"
 msgstr ""
 
 #: PlaylistFeature#5
-msgid "A playlist cannot have a blank name."
+msgid "Playlist Creation Failed"
 msgstr ""
 
 #: PlaylistFeature#6
-msgid "An unknown error occurred while creating playlist: "
+msgid "A playlist cannot have a blank name."
 msgstr ""
 
 #: PlaylistFeature#7
+msgid "An unknown error occurred while creating playlist: "
+msgstr ""
+
+#: PlaylistFeature#8
 msgid "A playlist by that name already exists."
 msgstr ""
 
@@ -2324,35 +2629,48 @@ msgstr ""
 
 #: Ui#1
 msgctxt "Ui#1"
-msgid "On"
+msgid "Position"
 msgstr ""
 
 #: Ui#2
-msgctxt "Ui#2"
-msgid "Off"
+msgid "Remaining"
 msgstr ""
 
 #: Ui#3
-msgid "Mixxx Detected a WVGA Screen"
+msgctxt "Ui#3"
+msgid "On"
 msgstr ""
 
 #: Ui#4
-msgid "Mixxx has detected that your screen has a resolution of "
+msgctxt "Ui#4"
+msgid "Off"
 msgstr ""
 
 #: Ui#5
+msgid "CDJ Mode"
+msgstr ""
+
+#: Ui#6
+msgid "Simple"
+msgstr ""
+
+#: Ui#7
+msgid "Mixxx Detected a WVGA Screen"
+msgstr ""
+
+#: Ui#8
+msgid "Mixxx has detected that your screen has a resolution of "
+msgstr ""
+
+#: Ui#9
 msgid ""
 "The only skin compatiable with this size display is OutlineMini (800x480).  "
 "Would you like to use that skin?"
 msgstr ""
 
-#: Ui#6
-msgctxt "Ui#6"
+#: Ui#10
+msgctxt "Ui#10"
 msgid "Preferences"
-msgstr ""
-
-#: Ui#7
-msgid "Live Mix"
 msgstr ""
 
 #: VinylControlSignalWidget#1
