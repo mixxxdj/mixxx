@@ -161,12 +161,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
         EngineChannel* channel = m_channels[channel_number];
-        CSAMPLE* buffer = m_channelBuffers[channel_number];
-        channel->process(NULL, buffer, iBufferSize);
 
         if (!channel->isActive()) {
             continue;
         }
+
+        CSAMPLE* buffer = m_channelBuffers[channel_number];
+        channel->process(NULL, buffer, iBufferSize);
 
         // If the channel is enabled for previewing in headphones, add it to a
         // list of headphone channels.
