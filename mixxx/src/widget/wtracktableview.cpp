@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
 
@@ -33,10 +34,20 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
 
+    connect(&m_deckMapper, SIGNAL(mapped(QString)),
+            this, SLOT(loadSelectionToGroup(QString)));
+    connect(&m_samplerMapper, SIGNAL(mapped(QString)),
+            this, SLOT(loadSelectionToGroup(QString)));
+
+    m_pNumSamplers = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "num_samplers")));
+    m_pNumDecks = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
+
     m_pMenu = new QMenu(this);
 
     m_pSamplerMenu = new QMenu(this);
-    m_pSamplerMenu->setTitle(tr("Load in Sampler"));
+    m_pSamplerMenu->setTitle(tr("Load to Sampler"));
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
@@ -68,12 +79,6 @@ WTrackTableView::~WTrackTableView()
     }
 
     delete m_pAutoDJAct;
-    delete m_pPlayer1Act;
-    delete m_pPlayer2Act;
-    delete m_pSampler1Act;
-    delete m_pSampler2Act;
-    delete m_pSampler3Act;
-    delete m_pSampler4Act;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
     delete m_pMenu;
@@ -173,30 +178,6 @@ void WTrackTableView::createActions()
     Q_ASSERT(m_pMenu);
     Q_ASSERT(m_pSamplerMenu);
 
-    m_pPlayer1Act = new QAction(tr("Load in Player 1"),this);
-    m_loadTrackMapper.setMapping(m_pPlayer1Act, "[Channel1]");
-    connect(m_pPlayer1Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
-
-    m_pPlayer2Act = new QAction(tr("Load in Player 2"),this);
-    m_loadTrackMapper.setMapping(m_pPlayer2Act, "[Channel2]");
-    connect(m_pPlayer2Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
-
-    m_pSampler1Act = new QAction(tr("Sampler 1"),this);
-    m_loadTrackMapper.setMapping(m_pSampler1Act, "[Sampler1]");
-    connect(m_pSampler1Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
-
-    m_pSampler2Act = new QAction(tr("Sampler 2"),this);
-    m_loadTrackMapper.setMapping(m_pSampler2Act, "[Sampler2]");
-    connect(m_pSampler2Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
-
-    m_pSampler3Act = new QAction(tr("Sampler 3"),this);
-    m_loadTrackMapper.setMapping(m_pSampler3Act, "[Sampler3]");
-    connect(m_pSampler3Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
-
-    m_pSampler4Act = new QAction(tr("Sampler 4"),this);
-    m_loadTrackMapper.setMapping(m_pSampler4Act, "[Sampler4]");
-    connect(m_pSampler4Act, SIGNAL(triggered()), &m_loadTrackMapper, SLOT(map()));
-
     m_pRemoveAct = new QAction(tr("Remove"),this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
@@ -205,11 +186,6 @@ void WTrackTableView::createActions()
 
     m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue"),this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
-
-    m_pSamplerMenu->addAction(m_pSampler1Act);
-    m_pSamplerMenu->addAction(m_pSampler2Act);
-    m_pSamplerMenu->addAction(m_pSampler3Act);
-    m_pSamplerMenu->addAction(m_pSampler4Act);
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
@@ -283,30 +259,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     //Get the indices of the selected rows.
     m_selectedIndices = this->selectionModel()->selectedRows();
 
-    //Gray out some stuff if multiple songs were selected.
-    if (m_selectedIndices.count() != 1) {
-        m_pPlayer1Act->setEnabled(false);
-        m_pPlayer2Act->setEnabled(false);
-        m_pSampler1Act->setEnabled(false);
-        m_pSampler2Act->setEnabled(false);
-        m_pSampler3Act->setEnabled(false);
-        m_pSampler4Act->setEnabled(false);
-        m_pPropertiesAct->setEnabled(false);
-    } else {
-        m_pPlayer1Act->setEnabled(true);
-        m_pPlayer2Act->setEnabled(true);
-        m_pSampler1Act->setEnabled(true);
-        m_pSampler2Act->setEnabled(true);
-        m_pSampler3Act->setEnabled(true);
-        m_pSampler4Act->setEnabled(true);
-        m_pPropertiesAct->setEnabled(true);
-    }
-
-    //Gray out player 1 and/or player 2 if those players are playing.
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-        m_pPlayer1Act->setEnabled(false);
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-        m_pPlayer2Act->setEnabled(false);
+    // Gray out some stuff if multiple songs were selected.
+    bool oneSongSelected = m_selectedIndices.count() == 1;
 
     m_pMenu->clear();
 
@@ -315,10 +269,37 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addSeparator();
     }
 
-    m_pMenu->addAction(m_pPlayer1Act);
-    m_pMenu->addAction(m_pPlayer2Act);
+    int iNumDecks = m_pNumDecks->get();
+    if (iNumDecks > 0) {
+        for (int i = 1; i <= iNumDecks; ++i) {
+            QString deckGroup = QString("[Channel%1]").arg(i);
+            bool deckPlaying = ControlObject::getControl(
+                ConfigKey(deckGroup, "play"))->get() == 1.0f;
+            bool deckEnabled = !deckPlaying && oneSongSelected;
+            QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
+            pAction->setEnabled(deckEnabled);
+            m_pMenu->addAction(pAction);
+            m_deckMapper.setMapping(pAction, deckGroup);
+            connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+        }
+    }
 
-    m_pMenu->addMenu(m_pSamplerMenu);
+    int iNumSamplers = m_pNumSamplers->get();
+    if (iNumSamplers > 0) {
+        m_pSamplerMenu->clear();
+        for (int i = 1; i <= iNumSamplers; ++i) {
+            QString samplerGroup = QString("[Sampler%1]").arg(i);
+            bool samplerPlaying = ControlObject::getControl(
+                ConfigKey(samplerGroup, "play"))->get() == 1.0f;
+            bool samplerEnabled = !samplerPlaying && oneSongSelected;
+            QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
+            pAction->setEnabled(samplerEnabled);
+            m_pSamplerMenu->addAction(pAction);
+            m_samplerMapper.setMapping(pAction, samplerGroup);
+            connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+        }
+        m_pMenu->addMenu(m_pSamplerMenu);
+    }
 
     m_pMenu->addSeparator();
 
@@ -363,6 +344,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
+
+    m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
     //Create the right-click menu

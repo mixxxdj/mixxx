@@ -3,6 +3,7 @@
 
 #include "playermanager.h"
 
+#include "controlobject.h"
 #include "trackinfoobject.h"
 #include "deck.h"
 #include "sampler.h"
@@ -19,12 +20,17 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
         : m_pConfig(pConfig),
           m_pEngine(pEngine),
           m_pLibrary(pLibrary),
-          m_pAnalyserQueue(pAnalyserQueue) {
+          m_pAnalyserQueue(pAnalyserQueue),
+          m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"))),
+          m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))) {
 
     connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
              this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
+
+    m_pCONumDecks->set(0);
+    m_pCONumSamplers->set(0);
 }
 
 PlayerManager::~PlayerManager() {
@@ -62,6 +68,7 @@ Deck* PlayerManager::addDeck() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
     m_decks.append(pDeck);
+    m_pCONumDecks->add(1);
 
     return pDeck;
 }
@@ -85,6 +92,7 @@ Sampler* PlayerManager::addSampler() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
+    m_pCONumSamplers->add(1);
 
     return pSampler;
 }
