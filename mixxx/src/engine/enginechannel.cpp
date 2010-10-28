@@ -108,3 +108,7 @@ EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
 void EngineChannel::setPitchIndpTimeStretch(bool b) {
     m_pBuffer->setPitchIndpTimeStretch(b);
 }
+
+bool EngineChannel::isActive() {
+    return m_pBuffer->isTrackLoaded();
+}
