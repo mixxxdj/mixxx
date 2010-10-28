@@ -6,10 +6,10 @@
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
     <meta name="author" content="haran" />
     <meta name="generator" content="haran" />
-	<META NAME="description" CONTENT="Mixxx is free cross-platform digital DJ software with professional features like
-									  parallel visual displays, beat estimation, beat matching, skins, EQs..." />
-	<META NAME="keywords" CONTENT="dj, dj software, free dj software, mixxx, mp3 dj, crossfader, digital dj, beatmix, beatmixing, mp3, open source, mixing, mixer" />
-    <link rel="SHORTCUT ICON" href="/favicon.ico"><!-- TODO: put a real favicon.ico on server, this one is blank, just to prevent IE 404 apache log spam -->
+	<META NAME="description" CONTENT="Mixxx is free cross-platform digital DJ mixing software with professional features like
+									  automatic BPM matching, seamless looping, quick song search, skins, high quality EQs, ..." />
+	<META NAME="keywords" CONTENT="dj, dj software, free dj software, mixxx, dj mix, mp3 dj, mix mp3, download, crossfader, digital dj, beatmix, beatmixing, mp3, open source, mixing, mixer" />
+	<link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" type="text/css" href="css/prosimii-screen.css" media="screen, tv, projection" title="Default" />
     <link rel="stylesheet" type="text/css" href="css/slider.css" media="screen" /> 
     <link rel="stylesheet" type="text/css" href="prettyPhoto/css/prettyPhoto.css" media="screen" /> 
@@ -173,6 +173,7 @@ $(function() {
                 <H1>Set your Mixes Free</H1>
                 <p>Our <b>advanced mixing engine</b> gives you complete control over your live mixes. Hot cues,
                    looping controls, and our high fidelity EQs let you mix and remix with more control.
+                   <em>Create your own MP3 DJ mix today!</em>
                    </p>
                 <H1>Open Source means Freedom</H1>
                 <p>Why invest your time building your music library with expensive commercial
