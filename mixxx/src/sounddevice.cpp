@@ -17,6 +17,7 @@
 
 #include <QtDebug>
 #include <QtCore>
+#include "audiopath.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
 
@@ -28,11 +29,7 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
     m_strDisplayName = "Unknown Soundcard";
     m_iNumOutputChannels = 2;
     m_iNumInputChannels = 2;
-    m_iBufferSize = 3200; //~72 milliseconds at 44100 Hz
     m_dSampleRate = 44100.0f;
-    //Add channel 1 and 2 as active channels
-    //m_listActiveChannels.push_back(1);
-    //m_listActiveChannels.push_back(2);
 }
 
 SoundDevice::~SoundDevice()
@@ -40,27 +37,27 @@ SoundDevice::~SoundDevice()
 
 }
 
-QString SoundDevice::getInternalName()
+QString SoundDevice::getInternalName() const
 {
     return m_strInternalName;
 }
 
-QString SoundDevice::getDisplayName()
+QString SoundDevice::getDisplayName() const
 {
     return m_strDisplayName;
 }
 
-QString SoundDevice::getHostAPI()
+QString SoundDevice::getHostAPI() const
 {
     return m_hostAPI;
 }
 
-int SoundDevice::getNumInputChannels()
+int SoundDevice::getNumInputChannels() const
 {
     return m_iNumInputChannels;
 }
 
-int SoundDevice::getNumOutputChannels()
+int SoundDevice::getNumOutputChannels() const
 {
     return m_iNumOutputChannels;
 }
@@ -70,59 +67,73 @@ void SoundDevice::setHostAPI(QString api)
     m_hostAPI = api;
 }
 
-int SoundDevice::addSource(const AudioSource src)
+void SoundDevice::setSampleRate(double sampleRate) {
+    if (sampleRate <= 0.0) {
+        // this is the default value used elsewhere in this file
+        sampleRate = 44100.0;
+    }
+    m_dSampleRate = sampleRate;
+}
+
+void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
+    if (framesPerBuffer * 2 > (unsigned int) MAX_BUFFER_LEN) {
+        // framesPerBuffer * 2 because a frame will generally end up
+        // being 2 samples and MAX_BUFFER_LEN is a number of samples
+        // this isn't checked elsewhere, so...
+        qFatal("framesPerBuffer too big in "
+                "SoundDevice::setFramesPerBuffer(uint)");
+    }
+    m_framesPerBuffer = framesPerBuffer;
+}
+
+SoundDeviceError SoundDevice::addOutput(const AudioOutput &out)
 { 
-	//Check if the output channels are already used
-	QListIterator<AudioSource> itr(m_audioSources);
-	while(itr.hasNext())
-	{
-		AudioSource src_internal = itr.next();
-		AudioSource src_lower = (src_internal.channelBase < src.channelBase) ? src_internal : src;
-		AudioSource src_higher = (src_internal.channelBase < src.channelBase) ?  src : src_internal;
-		if((src_lower.channelBase + src_lower.channels) > src_higher.channelBase)
-			return MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL;
-	}
-    m_audioSources.push_back(src);
-    
-    return 0;
+    //Check if the output channels are already used
+    foreach (AudioOutput myOut, m_audioOutputs) {
+        if (out.channelsClash(myOut)) {
+            return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;
+        }
+    }
+    if (out.getChannelGroup().getChannelBase()
+            + out.getChannelGroup().getChannelCount() > getNumOutputChannels()) {
+        return SOUNDDEVICE_ERROR_EXCESSIVE_OUTPUT_CHANNEL;
+    }
+    m_audioOutputs.append(out);
+    return SOUNDDEVICE_ERROR_OK;
 }
 
-void SoundDevice::clearSources()
+void SoundDevice::clearOutputs()
 {
-    while (!m_audioSources.empty())
-        m_audioSources.pop_back();
+    m_audioOutputs.clear();
 }
 
-int SoundDevice::addReceiver(const AudioReceiver recv)
+SoundDeviceError SoundDevice::addInput(const AudioInput &in)
 {
     //Check if the input channels are already used
-    QListIterator<AudioReceiver> itr(m_audioReceivers);
-	while(itr.hasNext())
-	{
-		AudioReceiver recv_internal = itr.next();
-		AudioReceiver recv_lower  = (recv_internal.channelBase < recv.channelBase) ?  recv_internal : recv;
-		AudioReceiver recv_higher = (recv_internal.channelBase < recv.channelBase) ?  recv : recv_internal;
-		if((recv_lower.channelBase + recv_lower.channels) > recv_higher.channelBase)
-			return MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL;
-	}
-    m_audioReceivers.push_back(recv);
-    
-    return 0;
+    foreach (AudioInput myIn, m_audioInputs) {
+        if (in.channelsClash(myIn)) {
+            return SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL;
+        }
+    }
+    if (in.getChannelGroup().getChannelBase()
+            + in.getChannelGroup().getChannelCount() > getNumInputChannels()) {
+        return SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL;
+    }
+    m_audioInputs.append(in);
+    return SOUNDDEVICE_ERROR_OK;
 }
 
-void SoundDevice::clearReceivers()
+void SoundDevice::clearInputs()
 {
-    while (!m_audioReceivers.empty())
-        m_audioReceivers.pop_back();
+    m_audioInputs.clear();
 }
 
-bool SoundDevice::operator== (SoundDevice * other)
+bool SoundDevice::operator==(const SoundDevice &other) const
 {
-    return (this->getInternalName() == other->getInternalName());
+    return this->getInternalName() == other.getInternalName();
 }
 
-bool SoundDevice::operator== (QString other)
+bool SoundDevice::operator==(const QString &other) const
 {
-    return (this->getInternalName() == other);
+    return getInternalName() == other;
 }
-

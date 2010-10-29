@@ -236,9 +236,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
 
     // Initialize player device
-
+    // while this is created here, setupDevices needs to be called sometime
+    // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
-    m_pSoundManager->queryDevices();
 
     // Get Music dir
     QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -257,10 +257,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     }
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
-
-    // Use frame as container for view, needed for fullscreen display
-    m_pView = new QFrame;
-    setCentralWidget(m_pView);
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
@@ -328,7 +324,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
-    while (m_pSoundManager->setupDevices() != 0)
+    int setupDevices = m_pSoundManager->setupDevices();
+    unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
+    // test for at least one out device, if none, display another dlg that
+    // says "mixxx will barely work with no outs"
+    while (setupDevices != OK || numDevices == 0)
     {
 
 #ifdef __C_METRICS__
@@ -337,8 +337,21 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 #endif
 
         // Exit when we press the Exit button in the noSoundDlg dialog
-        if ( noSoundDlg() != 0 )
-            exit(0);
+        // only call it if setupDevices != OK
+        if (setupDevices != OK) {
+            if (noSoundDlg() != 0) {
+                exit(0);
+            }
+        } else if (numDevices == 0) {
+            bool continueClicked = false;
+            int noOutput = noOutputDlg(&continueClicked);
+            if (continueClicked) break;
+            if (noOutput != 0) {
+                exit(0);
+            }
+        }
+        setupDevices = m_pSoundManager->setupDevices();
+        numDevices = m_pSoundManager->getConfig().getOutputs().count();
     }
 
     //setFocusPolicy(QWidget::StrongFocus);
@@ -368,6 +381,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     initActions();
     initMenuBar();
 
+    // Use frame as container for view, needed for fullscreen display
+    m_pView = new QFrame;
+
     // Loads the skin as a child of m_pView
     if (!m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
@@ -375,6 +391,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
                                         m_pLibrary)) {
         qDebug() << "Could not load default skin.";
     }
+
+    // this has to be after the OpenGL widgets are created or depending on a
+    // million different variables the first waveform may be horribly
+    // corrupted. See bug 521509 -- bkgood
+    setCentralWidget(m_pView);
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -394,13 +415,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 #endif
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
+    /* // TODO(bkgood) delete this block if the moving of setCentralWidget
+     * //              totally fixes this first-wavefore-fubar issue for
+     * //              everyone
     QString QtVersion = qVersion();
     if (QtVersion>="4.6.0") {
         qDebug() << "Qt v4.6.0 or higher detected. Using rebootMixxxView() "
             "workaround.\n    (See bug https://bugs.launchpad.net/mixxx/"
             "+bug/521509)";
         rebootMixxxView();
-    }
+    } */
 }
 
 MixxxApp::~MixxxApp()
@@ -475,26 +499,25 @@ int MixxxApp::noSoundDlg(void)
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Sound Device Busy"));
-    msgBox.setText(tr(
-        "<html>Mixxx cannot access the sound device <b>")+
-        m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMaster"))+
-        "</b>. "+
-        tr("Another application is using the sound device or it is ")+
-        tr("not plugged in.")+
-        "<ul>"+
-            "<li>"+
-                tr("<b>Retry</b> after closing the other application ")+
-                tr("or reconnecting the sound device")+
-            "</li>"+
-            "<li>"+
-                tr("<b>Reconfigure</b> Mixxx to use another sound device.")+
-            "</li>" +
-            "<li>"+
-                tr("Get <b>Help</b> from the Mixxx Wiki.")+
-            "</li>"+
-            "<li>"+
-                tr("<b>Exit</b> without saving your settings.")+
-            "</li>" +
+    msgBox.setText(
+        "<html>" +
+        tr("Mixxx was unable to access all the configured sound devices. "
+        "Another application is using a sound device Mixxx is configured to "
+        "use or a device is not plugged in.") +
+        "<ul>"
+            "<li>" +
+                tr("<b>Retry</b> after closing the other application "
+                "or reconnecting a sound device") +
+            "</li>"
+            "<li>" +
+                tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
+            "</li>"
+            "<li>" +
+                tr("Get <b>Help</b> from the Mixxx Wiki.") +
+            "</li>"
+            "<li>" +
+                tr("<b>Exit</b> Mixxx.") +
+            "</li>"
         "</ul></html>"
     );
 
@@ -540,6 +563,56 @@ int MixxxApp::noSoundDlg(void)
     }
 }
 
+int MixxxApp::noOutputDlg(bool *continueClicked)
+{
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle("No Output Devices");
+    msgBox.setText( "<html>Mixxx was configured without any output sound devices. "
+                    "Audio processing will be disabled without a configured output device."
+                    "<ul>"
+                        "<li>"
+                            "<b>Continue</b> without any outputs."
+                        "</li>"
+                        "<li>"
+                            "<b>Reconfigure</b> Mixxx's sound device settings."
+                        "</li>"
+                        "<li>"
+                            "<b>Exit</b> Mixxx."
+                        "</li>"
+                    "</ul></html>"
+    );
+
+    QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
+    QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
+    QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+
+    while (true)
+    {
+        msgBox.exec();
+
+        if (msgBox.clickedButton() == continueButton) {
+            *continueClicked = true;
+            return 0;
+        } else if (msgBox.clickedButton() == reconfigureButton) {
+            msgBox.hide();
+            m_pSoundManager->queryDevices();
+
+            // This way of opening the dialog allows us to use it synchronously
+            m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
+            m_pPrefDlg->exec();
+            if ( m_pPrefDlg->result() == QDialog::Accepted) {
+                m_pSoundManager->queryDevices();
+                return 0;
+            }
+
+            msgBox.show();
+
+        } else if (msgBox.clickedButton() == exitButton) {
+            return 1;
+        }
+    }
+}
 
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
@@ -952,22 +1025,23 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 #ifdef __VINYLCONTROL__
     //qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
 
-    QString device1 =
-        m_pConfig->getValueString(ConfigKey("[VinylControl]", "DeviceInputDeck1")
-    );
-    QString device2 =
-        m_pConfig->getValueString(ConfigKey("[VinylControl]", "DeviceInputDeck2")
-    );
+    QMultiHash<QString, AudioInput> inputs = m_pSoundManager->getConfig().getInputs();
+    unsigned int countVCIns = 0;
+    foreach (AudioInput in, inputs.values()) {
+        if (in.getType() == AudioInput::VINYLCONTROL) {
+            ++countVCIns;
+        }
+    }
 
-    if (device1 == "" && device2 == "" && (toggle==true))
+    if (countVCIns == 0 && toggle)
     {
         QMessageBox::warning(this, tr("Mixxx"),
-            tr("No input device(s) select.\n"
-            "Please select your soundcard(s) in vinyl control preferences."),
+            tr("No input device(s) select.\nPlease select your soundcard(s) "
+                "in the sound hardware preferences."),
             QMessageBox::Ok,
             QMessageBox::Ok);
         m_pPrefDlg->show();
-        m_pPrefDlg->showVinylControlPage();
+        m_pPrefDlg->showSoundHardwarePage();
         m_pOptionsVinylControl->setChecked(false);
     }
     else
@@ -1222,7 +1296,6 @@ void MixxxApp::rebootMixxxView() {
     m_pView->hide();
     delete m_pView;
     m_pView = new QFrame();
-    setCentralWidget(m_pView);
 
     if (!m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
@@ -1230,6 +1303,9 @@ void MixxxApp::rebootMixxxView() {
                                         m_pLibrary)) {
         qDebug() << "Could not reload the skin.";
     }
+
+    // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+    setCentralWidget(m_pView);
 
     qDebug() << "rebootgui DONE";
 
