@@ -130,22 +130,12 @@ EngineMaster::~EngineMaster()
 
 }
 
-void EngineMaster::setPitchIndpTimeStretch(bool b)
-{
-    QListIterator<EngineChannel*> channel_iter(m_channels);
-
-    while (channel_iter.hasNext()) {
-        EngineChannel* pChannel = channel_iter.next();
-        pChannel->setPitchIndpTimeStretch(b);
-    }
-}
-
-const CSAMPLE* EngineMaster::getMasterBuffer()
+const CSAMPLE* EngineMaster::getMasterBuffer() const
 {
     return m_pMaster;
 }
 
-const CSAMPLE* EngineMaster::getHeadphoneBuffer()
+const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
 {
     return m_pHead;
 }
@@ -326,12 +316,12 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-int EngineMaster::numChannels() {
+int EngineMaster::numChannels() const {
     return m_channels.size();
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(int i) {
-    if (i >= 0 && i < numChannels()) {
+const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
+    if (i < numChannels()) {
         return m_channelBuffers[i];
     }
     return NULL;
