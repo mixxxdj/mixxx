@@ -70,11 +70,6 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
 
-    // Setup state of End of track controls from config database
-    ConfigKey trackEndModeConfigKey = getTrackEndModeConfigKey();
-    ControlObject::getControl(ConfigKey(getGroup(),"TrackEndMode"))->queueFromThread(
-        m_pConfig->getValueString(trackEndModeConfigKey).toDouble());
-
     // Create WaveformRenderer last, because it relies on controls created above
     // (e.g. EngineBuffer)
 
@@ -87,11 +82,6 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
 BaseTrackPlayer::~BaseTrackPlayer()
 {
-    // Save state of End of track controls in config database
-    int config_value = (int)ControlObject::getControl(ConfigKey(getGroup(), "TrackEndMode"))->get();
-    ConfigKey trackEndModeConfigKey = getTrackEndModeConfigKey();
-    m_pConfig->set(trackEndModeConfigKey, ConfigValue(config_value));
-
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();

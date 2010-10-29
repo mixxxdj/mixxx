@@ -64,7 +64,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_iSamplesCalculated(0),
     m_dAbsPlaypos(0.),
     m_pTrackEnd(NULL),
-    m_pTrackEndMode(NULL),
+    m_pRepeat(NULL),
     startButton(NULL),
     endButton(NULL),
     m_pScale(NULL),
@@ -136,8 +136,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     //A COTM for use in slots that are called by the GUI thread.
     m_pTrackEndCOT = new ControlObjectThreadMain(m_pTrackEnd);
 
-    // TrackEndMode determines what to do at the end of a track
-    m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
+    m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
+    m_pRepeat->setToggleButton(true);
 
 #ifdef __VINYLCONTROL__
     // Vinyl Control status indicator
@@ -211,7 +211,8 @@ EngineBuffer::~EngineBuffer()
     delete visualPlaypos;
 
     delete m_pTrackEnd;
-    delete m_pTrackEndMode;
+
+    delete m_pRepeat;
 
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
@@ -401,7 +402,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // - Scale the audio with m_pScale, copy the resulting samples into the
     //   output buffer
     // - Give EngineControl's a chance to do work / request seeks, etc
-    // - Process EndOfTrack mode if we're at the end of a track
+    // - Process repeat mode if we're at the end or beginning of a track
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
@@ -470,7 +471,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
-            if ((rate_old <= 0 && rate > 0) ||
+            if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
             {
                 setNewPlaypos(filepos_play);
@@ -592,54 +593,23 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // external parts of Mixxx to observe its status.
         updateIndicators(rate, iBufferSize);
 
-        // Handle End-Of-Track mode
+        // Handle repeat mode
         at_start = filepos_play <= 0;
         at_end = filepos_play >= file_length_old;
+
+        bool repeat_enabled = m_pRepeat->get() != 0.0f;
 
         bool end_of_track = (at_start && backwards) ||
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            ((at_start && backwards) ||
-             (at_end && !backwards))) {
-
-            // If end of track mode is set to next, signal EndOfTrack to TrackList,
-            // otherwise start looping, pingpong or stop the track
-            int m = (int)m_pTrackEndMode->get();
-            //qDebug() << "end mode " << m;
-            switch (m)
-            {
-            case TRACK_END_MODE_STOP:
-                //qDebug() << "stop";
+        if ((playButton->get() || (fwdButton->get() || backButton->get()))
+            && end_of_track) {
+            if (repeat_enabled) {
+                double seekPosition = at_start ? file_length_old : 0;
+                slotControlSeek(seekPosition);
+            } else {
                 playButton->set(0.);
-                break;
-            case TRACK_END_MODE_NEXT:
-                //m_pTrackEnd->set(1.);
-                playButton->set(0.);
-                emit(loadNextTrack());
-                break;
-
-            case TRACK_END_MODE_LOOP:
-                //qDebug() << "loop";
-                if(filepos_play <= 0)
-                    slotControlSeek(file_length_old);
-                else
-                    slotControlSeek(0.);
-                break;
-/*
-            case TRACK_END_MODE_PING:
-                qDebug() << "Ping not implemented yet";
-
-                if (reverseButton->get())
-                reverseButton->set(0.);
-                else
-                reverseButton->set(1.);
-
-                break;
- */
-            default:
-                qDebug() << "Invalid track end mode: " << m;
             }
         }
 
