@@ -106,7 +106,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     } else {
         for (unsigned int i = 1; i + 1 <= numChannels; ++i) {
             channelComboBox->addItem(
-                QString("Channels %1 - %2").arg(i).arg(i + 1), i - 1);
+                QString(tr("Channels %1 - %2")).arg(i).arg(i + 1), i - 1);
             // i-1 because want the data part to be what goes into audiopath's
             // channelbase which is zero-based -- bkgood
         }
