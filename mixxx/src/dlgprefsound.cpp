@@ -45,7 +45,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
             this, SLOT(slotApply()));
 
     apiComboBox->clear();
-    apiComboBox->addItem("None", "None");
+    apiComboBox->addItem(tr("None"), "None");
     updateAPIs();
     connect(apiComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(apiChanged(int)));
@@ -55,7 +55,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
         if (srate > 0) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(QString("%1 Hz").arg(srate), srate);
+            sampleRateComboBox->addItem(QString(tr("%1 Hz")).arg(srate), srate);
         }
     }
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
@@ -110,9 +110,9 @@ void DlgPrefSound::slotApply() {
             == MIXXX_VINYL_FINALSCRATCH &&
         sampleRateComboBox->itemData(sampleRateComboBox->currentIndex()).toUInt()
             != 44100) {
-        QMessageBox::warning(this, "Mixxx Error",
-            "FinalScratch records currently only work properly with a "
-            "44100 Hz sample rate.\nThe sample rate has been reset to 44100 Hz.");
+        QMessageBox::warning(this, tr("Mixxx Error"),
+            tr("FinalScratch records currently only work properly with a "
+            "44100 Hz sample rate.\nThe sample rate has been reset to 44100 Hz."));
         sampleRateComboBox->setCurrentIndex(sampleRateComboBox->findData(44100));
     }
 #endif
@@ -123,25 +123,25 @@ void DlgPrefSound::slotApply() {
     int err = m_pSoundManager->setConfig(m_config);
     if (err != OK) {
         QString error;
-        QString deviceName("a device");
-        QString detailedError("An unknown error occurred");
+        QString deviceName(tr("a device"));
+        QString detailedError(tr("An unknown error occurred"));
         SoundDevice *device = m_pSoundManager->getErrorDevice();
         if (device != NULL) {
-            deviceName = QString("sound device \"%1\"").arg(device->getDisplayName());
+            deviceName = QString(tr("sound device \"%1\"")).arg(device->getDisplayName());
             detailedError = device->getError();
         }
         switch (err) {
         case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
-            error = QString("Two outputs cannot share channels on %1").arg(deviceName);
+            error = QString(tr("Two outputs cannot share channels on %1")).arg(deviceName);
             break;
         case SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL:
-            error = QString("Two inputs cannot share channels on %1").arg(deviceName);
+            error = QString(tr("Two inputs cannot share channels on %1")).arg(deviceName);
             break;
         default:
-            error = QString("Error opening %1\n%2").arg(deviceName).arg(detailedError);
+            error = QString(tr("Error opening %1\n%2")).arg(deviceName).arg(detailedError);
             break;
         }
-        QMessageBox::warning(NULL, "Configuration error", error);
+        QMessageBox::warning(NULL, tr("Configuration error"), error);
     }
     m_settingsModified = false;
     applyButton->setEnabled(false);
@@ -329,7 +329,7 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
         unsigned int latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
-        latencyComboBox->addItem(QString("%1 ms").arg(latency), i + 1);
+        latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
     if (oldLatency < latencyComboBox->count() && oldLatency >= 0) {
