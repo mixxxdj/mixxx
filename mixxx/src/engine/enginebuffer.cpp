@@ -183,12 +183,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
-    //Figure out which one to use (setPitchIndpTimeStretch does this)
-    int iPitchIndpTimeStretch =
-        _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
-    this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
+    this->setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
 
     setNewPlaypos(0.);
+
+    m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"));
+    m_pKeylock->setToggleButton(true);
+    m_pKeylock->set(false);
 }
 
 EngineBuffer::~EngineBuffer()
@@ -218,11 +219,12 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleLinear;
     delete m_pScaleST;
 
+    delete m_pKeylock;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
-    pause.lock(); //Just to be safe - Albert
+    // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // Change sound scale mode
 
@@ -244,7 +246,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
         m_pScale = m_pScaleLinear;
     }
     m_bScalerChanged = true;
-    pause.unlock();
 }
 
 double EngineBuffer::getBpm()
@@ -409,6 +410,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
+
+        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+            setPitchIndpTimeStretch(true);
+        } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
+            setPitchIndpTimeStretch(false);
+        }
+
         float sr = m_pSampleRate->get();
         double baserate = 0.0f;
         if (sr > 0)
@@ -436,7 +444,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // TODO: Configurable vinyl stop effect.
         if (wheelTouchSensorEnabled) {
             // Act as scratch controller
-            if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt()) {
+            if (m_pKeylock->get()) {
                 // Use vinyl-style pitch bending
                 // qDebug() << "Disabling Pitch-Independent Time Stretch for scratching";
                 m_bResetPitchIndpTimeStretch = true;
@@ -593,7 +601,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            !m_pTrackEnd->get() &&
             ((at_start && backwards) ||
              (at_end && !backwards))) {
 

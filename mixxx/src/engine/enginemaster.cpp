@@ -135,22 +135,12 @@ EngineMaster::~EngineMaster()
 
 }
 
-void EngineMaster::setPitchIndpTimeStretch(bool b)
-{
-    QListIterator<EngineChannel*> channel_iter(m_channels);
-
-    while (channel_iter.hasNext()) {
-        EngineChannel* pChannel = channel_iter.next();
-        pChannel->setPitchIndpTimeStretch(b);
-    }
-}
-
-const CSAMPLE* EngineMaster::getMasterBuffer()
+const CSAMPLE* EngineMaster::getMasterBuffer() const
 {
     return m_pMaster;
 }
 
-const CSAMPLE* EngineMaster::getHeadphoneBuffer()
+const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
 {
     return m_pHead;
 }
@@ -166,12 +156,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
         EngineChannel* channel = m_channels[channel_number];
-        CSAMPLE* buffer = m_channelBuffers[channel_number];
-        channel->process(NULL, buffer, iBufferSize);
 
         if (!channel->isActive()) {
             continue;
         }
+
+        CSAMPLE* buffer = m_channelBuffers[channel_number];
+        channel->process(NULL, buffer, iBufferSize);
 
         // If the channel is enabled for previewing in headphones, add it to a
         // list of headphone channels.
@@ -330,12 +321,12 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-int EngineMaster::numChannels() {
+int EngineMaster::numChannels() const {
     return m_channels.size();
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(int i) {
-    if (i >= 0 && i < numChannels()) {
+const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
+    if (i < numChannels()) {
         return m_channelBuffers[i];
     }
     return NULL;
