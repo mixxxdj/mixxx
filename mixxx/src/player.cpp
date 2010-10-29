@@ -76,11 +76,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
 
-    // Setup state of End of track controls from config database
-    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
-    ControlObject::getControl(ConfigKey(m_strChannel,"TrackEndMode"))->queueFromThread(
-        m_pConfig->getValueString(ConfigKey("[Controls]",config_key)).toDouble());
-
     // Create WaveformRenderer last, because it relies on controls created above
     // (e.g. EngineBuffer)
 
@@ -93,11 +88,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
 
 Player::~Player()
 {
-    // Save state of End of track controls in config database
-    int config_value = (int)ControlObject::getControl(ConfigKey(m_strChannel, "TrackEndMode"))->get();
-    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
-    m_pConfig->set(ConfigKey("[Controls]",config_key), ConfigValue(config_value));
-
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();
