@@ -15,8 +15,8 @@ $shortpath = substr($fullpath, strlen($basepath)); //eg. mixxx-1.8.0/mixxx-1.8.0
 //echo $shortpath;
 //echo "<BR>";
 $mirrors = array(0=>"http://downloads.mixxx.org",
-	         //1=>"http://moo.glines.org/mixxx",
-	         1=>"http://web.mit.edu/rryan/www/downloads.mixxx.org/");
+	         1=>"http://moo.glines.org/mixxx",
+	         2=>"http://web.mit.edu/rryan/www/downloads.mixxx.org/");
 
 $mirror = "";
 //Pick a random mirror if it's enabled
