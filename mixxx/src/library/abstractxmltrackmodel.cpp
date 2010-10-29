@@ -210,3 +210,9 @@ void AbstractXmlTrackModel::addColumnName(int index, QString name)
 void AbstractXmlTrackModel::addSearchColumn(int index) {
     m_searchColumns.push_back(index);
 }
+
+TrackModel::CapabilitiesFlags AbstractXmlTrackModel::getCapabilities() const {
+    return TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_ADDTOCRATE |
+            TRACKMODELCAPS_ADDTOAUTODJ;
+}
+

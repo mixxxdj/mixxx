@@ -35,7 +35,6 @@
 
 // application specific includes
 #include "defs.h"
-#include "mixxxview.h"
 #include "trackinfoobject.h"
 #include "engine/enginemaster.h"
 #include "controlobject.h"
@@ -44,6 +43,7 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
+#include "audiopath.h"
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
@@ -61,6 +61,8 @@ class LibraryScanner;
 class AnalyserQueue;
 class Library;
 class MidiDeviceManager;
+class MixxxKeyboard;
+class SkinLoader;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -96,9 +98,6 @@ class MixxxApp : public QMainWindow
     /** exits the application */
     void slotFileQuit();
 
-    /** toogle ipod active - Don't #ifdef this because MOC is dumb**/
-    void slotiPodToggle(bool toggle);
-
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
@@ -115,7 +114,6 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-    QString getSkinPath();
 
     void slotlibraryMenuAboutToShow();
     /** Scan or rescan the music library directory */
@@ -127,26 +125,33 @@ class MixxxApp : public QMainWindow
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
 
+
+
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
 
+
+
   private:
-    /** view is the main widget which represents your working area. The View
-     * class should handle all events of the view widget.  It is kept empty so
-     * you can create your view according to your application's needs by
-     * changing the view class.
-     */
-    MixxxView *m_pView;
-    QFrame *m_pFrame;
+    void checkDirectRendering();
+
+    // Pointer to the root GUI widget
+    QWidget* m_pView;
 
     QApplication *m_pApp;
+
     // The mixing engine.
     EngineMaster *m_pEngine;
+
+    // The skin loader
+    SkinLoader* m_pSkinLoader;
 
     // The sound manager
     SoundManager *m_pSoundManager;
 
+
+    // Keeps track of players
     PlayerManager* m_pPlayerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
@@ -154,6 +159,7 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValue> *m_pConfig;
     /** Pointer to active keyboard configuration */
     ConfigObject<ConfigValueKbd> *m_pKbdConfig;
+    MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
     // The library management object
@@ -176,8 +182,6 @@ class MixxxApp : public QMainWindow
     QMenu *macroMenu;
 #endif
 
-    /** actions for the application initialized in initActions() and used to en/disable them
-      * according to your needs during the program */
     QAction *m_pFileNew;
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
@@ -203,6 +207,7 @@ class MixxxApp : public QMainWindow
     QAction *m_pLibraryRescan;
 
     QAction *m_pOptionsBeatMark;
+
 #ifdef __VINYLCONTROL__
     QAction *m_pOptionsVinylControl;
 #endif
@@ -228,6 +233,7 @@ class MixxxApp : public QMainWindow
 #endif
 
     int noSoundDlg(void);
+    int noOutputDlg(bool *continueClicked);
     // Fullscreen patch
     QPoint m_winpos;
 };

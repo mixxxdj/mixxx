@@ -1,7 +1,7 @@
 //
 // C++ Interface: wnumberpos
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
@@ -13,7 +13,9 @@
 #define WNUMBERPOS_H
 
 #include "wnumber.h"
+
 class ControlObjectThreadWidget;
+class ControlObjectThreadMain;
 
 /**
 @author Tue Haste Andersen
@@ -30,6 +32,8 @@ public:
     void setRemain(bool bRemain);
 public slots:
     void slotSetDuration(double dDuration);
+  private slots:
+    void slotSetRemain(double dRemain);
 private:
     /** Duration in seconds */
     double m_dDuration;
@@ -37,6 +41,7 @@ private:
     double m_dOldValue;
     /** True if remaining content is being shown */
     bool m_bRemain;
+    ControlObjectThreadMain* m_pShowDurationRemaining;
     /** Pointer to control object for rate and duration*/
     ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl, *m_pDurationControl;
 };

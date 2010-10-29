@@ -309,6 +309,7 @@ class MixxxCore(Feature):
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
+                   "dlgprefsounditem.cpp",
                    "dlgprefmidibindings.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefnomidi.cpp",
@@ -379,7 +380,6 @@ class MixxxCore(Feature):
                    "controlvaluedelegate.cpp",
                    "mixxxcontrol.cpp",
                    "mixxx.cpp",
-                   "mixxxview.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
@@ -387,6 +387,7 @@ class MixxxCore(Feature):
 
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
+                   "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
@@ -404,6 +405,7 @@ class MixxxCore(Feature):
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
                    "widget/hexspinbox.cpp",
+                   "widget/wtrackproperty.cpp",
 
                    "mathstuff.cpp",
 
@@ -485,9 +487,13 @@ class MixxxCore(Feature):
                    "waveform/waveformrendermarkrange.cpp",
                    "waveform/waveformrenderbeat.cpp",
 
-                   "imginvert.cpp",
-                   "imgloader.cpp",
-                   "imgcolor.cpp",
+                   "skin/imginvert.cpp",
+                   "skin/imgloader.cpp",
+                   "skin/imgcolor.cpp",
+                   "skin/skinloader.cpp",
+                   "skin/legacyskinparser.cpp",
+                   "skin/colorschemeparser.cpp",
+
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
@@ -495,6 +501,8 @@ class MixxxCore(Feature):
                    "playermanager.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
+                   "soundmanagerconfig.cpp",
+                   "audiopath.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
@@ -525,6 +533,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
+        build.env.Uic4('dlgprefsounditem.ui')
 
         # Add the QRC file which compiles in some extra resources (prefs icons,
         # etc.)

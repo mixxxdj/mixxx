@@ -76,8 +76,6 @@ class EngineBuffer : public EngineObject
 public:
     EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
     ~EngineBuffer();
-    /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
-    void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -99,6 +97,8 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
+
+    bool isTrackLoaded();
   public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
@@ -123,7 +123,7 @@ public:
                              QString reason);
 
 private:
-
+    void setPitchIndpTimeStretch(bool b);
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
@@ -191,6 +191,7 @@ private:
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
+    ControlPushButton *m_pKeylock;
 
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
@@ -220,6 +221,8 @@ private:
     /** Whether Pitch-Independent Time Stretch should be re-enabled when we
         start playing post-scratch **/
     bool m_bResetPitchIndpTimeStretch; // TODO(rryan) remove?
+
+    TrackPointer m_pCurrentTrack;
 };
 
 #endif

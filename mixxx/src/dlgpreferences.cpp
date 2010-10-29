@@ -38,6 +38,7 @@
 #include "mixxx.h"
 #include "midi/mididevicemanager.h"
 #include "midi/mididevice.h"
+#include "skin/skinloader.h"
 #include <QTabWidget>
 
 #include <QTabBar>
@@ -45,10 +46,10 @@
 #include <QtGui>
 #include <QEvent>
 
-DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
+DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman,
-                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
-{
+                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config)
+        :  QDialog(), Ui::DlgPreferencesDlg() {
     m_pMixxx = mixxx;
     m_pMidiDeviceManager = midi;
 
@@ -66,7 +67,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, config);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, view, mixxx, config);
+    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);
@@ -126,13 +127,13 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(closeDlg()), wvinylcontrol,SLOT(slotClose()));
     connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-    connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control
 #endif
 #ifdef __SHOUTCAST__
     connect(this, SIGNAL(showDlg()), wshoutcast,SLOT(slotUpdate()));
 #endif
 
 #ifdef __VINYLCONTROL__
+    connect(wvinylcontrol, SIGNAL(refreshVCProxies()), wsound, SLOT(forceApply()));
     connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
 #endif
@@ -169,6 +170,7 @@ void DlgPreferences::createIcons()
     m_pSoundButton->setText(0, tr("Sound Hardware"));
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    
 /*
     QTreeWidgetItem * midiButton = new QTreeWidgetItem(contentsTreeWidget);
     midiButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
@@ -259,9 +261,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     if (!current)
         current = previous;
 
-    if (current == m_pSoundButton)
+    if (current == m_pSoundButton) {
+           wsound->slotUpdate();
            pagesWidget->setCurrentWidget(wsound);
-       else if (current == m_pPlaylistButton)
+       } else if (current == m_pPlaylistButton)
            pagesWidget->setCurrentWidget(wplaylist);
        else if (current == m_pControlsButton)
            pagesWidget->setCurrentWidget(wcontrols);
@@ -325,12 +328,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 
 }
 
-void DlgPreferences::showVinylControlPage()
+void DlgPreferences::showSoundHardwarePage()
 {
-#ifdef __VINYLCONTROL__
-    pagesWidget->setCurrentWidget(wvinylcontrol);
-    contentsTreeWidget->setCurrentItem(m_pVinylControlButton);
-#endif
+    pagesWidget->setCurrentWidget(wsound);
+    contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
 bool DlgPreferences::eventFilter(QObject * o, QEvent * e)

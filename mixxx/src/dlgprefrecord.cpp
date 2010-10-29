@@ -69,7 +69,7 @@ void DlgPrefRecord::slotBrowseSave()
 {
     QString encodingType = comboBoxEncoding->currentText();    
     QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
-    QString selectedFile = QFileDialog::getSaveFileName(NULL, "Save Recording As...", config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")), encodingFileFilter);
+    QString selectedFile = QFileDialog::getSaveFileName(NULL, tr("Save Recording As..."), config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")), encodingFileFilter);
     if (selectedFile.toLower() != "")
     {
         if(!selectedFile.toLower().endsWith("." + encodingType.toLower()))
@@ -109,9 +109,9 @@ void DlgPrefRecord::updateTextQuality()
     int quality = getSliderQualityVal();
     QString encodingType = comboBoxEncoding->currentText();
     if (encodingType == ENCODING_MP3)
-        TextQuality->setText(QString( QString::number(quality) + "kbps"));
+        TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
     if (encodingType == ENCODING_OGG)
-        TextQuality->setText(QString( "Quality: " + QString::number(quality)));
+        TextQuality->setText(QString( tr("Quality: ") + QString::number(quality)));
     
 }
 
