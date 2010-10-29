@@ -39,9 +39,9 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
     setupUi(this);
     if (AudioPath::isIndexed(type)) {
         typeLabel->setText(
-            QString("%1 %2").arg(AudioPath::getStringFromType(type)).arg(index + 1));
+            QString("%1 %2").arg(AudioPath::getTrStringFromType(type)).arg(index + 1));
     } else {
-        typeLabel->setText(AudioPath::getStringFromType(type));
+        typeLabel->setText(AudioPath::getTrStringFromType(type));
     }
     deviceComboBox->addItem(tr("None"), "None");
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
