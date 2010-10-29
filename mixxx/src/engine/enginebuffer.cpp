@@ -447,7 +447,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
-            if ((rate_old <= 0 && rate > 0) ||
+            if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
             {
                 setNewPlaypos(filepos_play);
