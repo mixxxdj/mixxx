@@ -90,10 +90,17 @@ DlgPrefSound::~DlgPrefSound() {
 }
 
 /**
- * Slot called when the preferences dialog is opened.
+ * Slot called when the preferences dialog  is opened or this pane is
+ * selected.
  */
 void DlgPrefSound::slotUpdate() {
+    // this is unfortunate, because slotUpdate is called every time
+    // we change to this pane, we lose changed and unapplied settings
+    // every time. There's no real way around this, just anothe argument
+    // for a prefs rewrite -- bkgood
     loadSettings();
+    m_settingsModified = false;
+    applyButton->setEnabled(false);
 }
 
 /**
