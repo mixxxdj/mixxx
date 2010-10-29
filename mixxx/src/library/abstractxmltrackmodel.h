@@ -62,6 +62,7 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
+    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 
 public slots:
 

@@ -19,6 +19,7 @@
 #define ENGINECHANNEL_H
 
 #include "engineobject.h"
+#include "configobject.h"
 
 class EngineBuffer;
 class EnginePregain;
@@ -52,8 +53,7 @@ public:
     // TODO(XXX) This hack needs to be removed.
     EngineBuffer* getEngineBuffer();
 
-    void setPitchIndpTimeStretch(bool b);
-
+    bool isActive();
 private:
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;

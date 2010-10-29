@@ -189,6 +189,7 @@ int SoundSourceSndFile::parseHeader()
 
     if (result)
         return OK;
+    return ERR;
 }
 
 /*

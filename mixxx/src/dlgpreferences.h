@@ -30,7 +30,6 @@ class QListWidgetItem;
 class QStackedWidget;
 
 class MixxxApp;
-class MixxxView;
 class PlayerProxy;
 class SoundManager;
 class DlgPrefSound;
@@ -47,6 +46,7 @@ class DlgPrefShoutcast;
 class DlgPrefReplayGain;
 class PowerMate;
 class MidiDeviceManager;
+class SkinLoader;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -56,7 +56,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
 {
     Q_OBJECT
 public:
-    DlgPreferences(MixxxApp *mixxx, MixxxView *view, SoundManager *soundman,
+    DlgPreferences(MixxxApp *mixxx, SkinLoader* pSkinLoader, SoundManager *soundman,
                    MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();
@@ -66,7 +66,7 @@ public slots:
     void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void showVinylControlPage();
+    void showSoundHardwarePage();
     void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
 signals:
     void closeDlg();

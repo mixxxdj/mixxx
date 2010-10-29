@@ -26,6 +26,7 @@
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
 #include <taglib/textidentificationframe.h>
+#include <taglib/wavpackfile.h>
 
 
 #include "soundsource.h"
@@ -112,7 +113,6 @@ QString SoundSource::getTrackNumber()
 }
 float SoundSource::getRG()
 {
-	//qDebug() << "Getting Replay Gain value:" << m_fRG;
 	return m_fRG;
 }
 float SoundSource::getBPM()
@@ -170,7 +170,6 @@ void SoundSource::setTrackNumber(QString trackNumber)
 }
 void SoundSource::setRG(float replaygain)
 {
-	//qDebug() << "Setting RG value to " << replaygain;
 	m_fRG = replaygain;
 }
 void SoundSource::setBPM(float bpm)

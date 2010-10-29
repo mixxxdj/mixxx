@@ -9,6 +9,7 @@
 class EngineMaster;
 class ControlObjectThreadMain;
 class ControlObject;
+class WaveformRenderer;
 
 class Player : public QObject
 {
@@ -18,6 +19,7 @@ class Player : public QObject
            int playerNumber, QString group);
     ~Player();
     QString getGroup();
+    WaveformRenderer* getWaveformRenderer();
 public slots:
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
@@ -40,6 +42,7 @@ private:
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pRG;
+    WaveformRenderer* m_pWaveformRenderer;
 };
 
 #endif
