@@ -142,6 +142,12 @@ QString AudioPath::getString() const {
  * @note This method is static.
  */
 QString AudioPath::getStringFromType(AudioPathType type) {
+    // WARNING on tr() wrapping in this method: these strings are stored
+    // in the SoundManagerConfig xml file, I'm concerned that a user using
+    // a lang other than ENG will change their language settings and lose
+    // their prefs, which I'd find highly annoying. I do plan on fixing this,
+    // but if someone beat me to it I wanted a proper warning in here.
+    // TODO(bkgood)
     switch (type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
