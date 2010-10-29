@@ -577,7 +577,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            !m_pTrackEnd->get() &&
             ((at_start && backwards) ||
              (at_end && !backwards))) {
 

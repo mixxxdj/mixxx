@@ -147,18 +147,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         metricsAgree = "no";
         int dlg = -1;
         while (dlg != 0 && dlg != 1) {
-            dlg = QMessageBox::question(this, "Mixxx",
-                "Mixxx's development is driven by community feedback.  At "
+            dlg = QMessageBox::question(this, tr("Mixxx"),
+                tr("Mixxx's development is driven by community feedback.  At "
                 "your discretion, Mixxx can automatically send data on your "
                 "user experience back to the developers. Would you like to "
-                "help us make Mixxx better by enabling this feature?",
-                "Yes", "No", "Privacy Policy", 0, -1);
+                "help us make Mixxx better by enabling this feature?"),
+                tr("Yes"), tr("No"), tr("Privacy Policy"), 0, -1);
             switch (dlg) {
             case 0: metricsAgree = "yes";
             case 1: break;
             default: //show privacy policy
-                QMessageBox::information(this, "Mixxx: Privacy Policy",
-                    "Mixxx's development is driven by community feedback. "
+                QMessageBox::information(this, tr("Mixxx: Privacy Policy"),
+                    tr("Mixxx's development is driven by community feedback. "
                     "In order to help improve future versions Mixxx will with "
                     "your permission collect information on your hardware and "
                     "usage of Mixxx.  This information will primarily be used "
@@ -178,7 +178,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
                     "\t- Performance statistics (average latency, CPU usage)\n"
                     "\nThis information will not be used to personally "
                     "identify you, contact you, advertise to you, or otherwise"
-                    " bother you in any way.\n");
+                    " bother you in any way.\n"));
                 break;
              }
         }
@@ -257,10 +257,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     }
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
-
-    // Use frame as container for view, needed for fullscreen display
-    m_pView = new QFrame;
-    setCentralWidget(m_pView);
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
@@ -385,6 +381,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     initActions();
     initMenuBar();
 
+    // Use frame as container for view, needed for fullscreen display
+    m_pView = new QFrame;
+
     // Loads the skin as a child of m_pView
     if (!m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
@@ -392,6 +391,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
                                         m_pLibrary)) {
         qDebug() << "Could not load default skin.";
     }
+
+    // this has to be after the OpenGL widgets are created or depending on a
+    // million different variables the first waveform may be horribly
+    // corrupted. See bug 521509 -- bkgood
+    setCentralWidget(m_pView);
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -411,13 +415,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 #endif
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
+    /* // TODO(bkgood) delete this block if the moving of setCentralWidget
+     * //              totally fixes this first-wavefore-fubar issue for
+     * //              everyone
     QString QtVersion = qVersion();
     if (QtVersion>="4.6.0") {
         qDebug() << "Qt v4.6.0 or higher detected. Using rebootMixxxView() "
             "workaround.\n    (See bug https://bugs.launchpad.net/mixxx/"
             "+bug/521509)";
         rebootMixxxView();
-    }
+    } */
 }
 
 MixxxApp::~MixxxApp()
@@ -491,24 +498,25 @@ int MixxxApp::noSoundDlg(void)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle("Sound Device Busy");
+    msgBox.setWindowTitle(tr("Sound Device Busy"));
     msgBox.setText(
-        "<html>Mixxx was unable to access all the configured sound devices. "
+        "<html>" +
+        tr("Mixxx was unable to access all the configured sound devices. "
         "Another application is using a sound device Mixxx is configured to "
-        "use or a device is not plugged in."
+        "use or a device is not plugged in.") +
         "<ul>"
-            "<li>"
-                "<b>Retry</b> after closing the other application "
-                "or reconnecting a sound device"
+            "<li>" +
+                tr("<b>Retry</b> after closing the other application "
+                "or reconnecting a sound device") +
             "</li>"
-            "<li>"
-                "<b>Reconfigure</b> Mixxx's sound device settings."
+            "<li>" +
+                tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
             "</li>"
-            "<li>"
-                "Get <b>Help</b> from the Mixxx Wiki."
+            "<li>" +
+                tr("Get <b>Help</b> from the Mixxx Wiki.") +
             "</li>"
-            "<li>"
-                "<b>Exit</b> Mixxx."
+            "<li>" +
+                tr("<b>Exit</b> Mixxx.") +
             "</li>"
         "</ul></html>"
     );
@@ -617,7 +625,7 @@ void MixxxApp::initActions()
     m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pFileQuit = new QAction(tr("E&xit"), this);
+    m_pFileQuit = new QAction(tr("&Exit"), this);
     m_pFileQuit->setShortcut(tr("Ctrl+Q"));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
 
@@ -669,7 +677,7 @@ void MixxxApp::initActions()
 #endif
 
     m_pOptionsRecord = new QAction(tr("&Record Mix"), this);
-    //optionsRecord->setShortcut(tr("Ctrl+R"));
+    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
     m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
 
 #ifdef __SCRIPT__
@@ -1288,7 +1296,6 @@ void MixxxApp::rebootMixxxView() {
     m_pView->hide();
     delete m_pView;
     m_pView = new QFrame();
-    setCentralWidget(m_pView);
 
     if (!m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
@@ -1296,6 +1303,9 @@ void MixxxApp::rebootMixxxView() {
                                         m_pLibrary)) {
         qDebug() << "Could not reload the skin.";
     }
+
+    // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+    setCentralWidget(m_pView);
 
     qDebug() << "rebootgui DONE";
 
