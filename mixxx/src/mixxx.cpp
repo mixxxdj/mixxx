@@ -258,10 +258,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
 
-    // Use frame as container for view, needed for fullscreen display
-    m_pView = new QFrame;
-    setCentralWidget(m_pView);
-
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
@@ -368,6 +364,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     initActions();
     initMenuBar();
 
+    // Use frame as container for view, needed for fullscreen display
+    m_pView = new QFrame;
+
     // Loads the skin as a child of m_pView
     if (!m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
@@ -375,6 +374,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
                                         m_pLibrary)) {
         qDebug() << "Could not load default skin.";
     }
+
+    // this has to be after the OpenGL widgets are created or depending on a
+    // million different variables the first waveform may be horribly
+    // corrupted. See bug 521509 -- bkgood
+    setCentralWidget(m_pView);
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -394,13 +398,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 #endif
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
+    /* // TODO(bkgood) delete this block if the moving of setCentralWidget
+     * //              totally fixes this first-wavefore-fubar issue for
+     * //              everyone
     QString QtVersion = qVersion();
     if (QtVersion>="4.6.0") {
         qDebug() << "Qt v4.6.0 or higher detected. Using rebootMixxxView() "
             "workaround.\n    (See bug https://bugs.launchpad.net/mixxx/"
             "+bug/521509)";
         rebootMixxxView();
-    }
+    } */
 }
 
 MixxxApp::~MixxxApp()
@@ -1222,7 +1229,6 @@ void MixxxApp::rebootMixxxView() {
     m_pView->hide();
     delete m_pView;
     m_pView = new QFrame();
-    setCentralWidget(m_pView);
 
     if (!m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
@@ -1230,6 +1236,9 @@ void MixxxApp::rebootMixxxView() {
                                         m_pLibrary)) {
         qDebug() << "Could not reload the skin.";
     }
+
+    // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+    setCentralWidget(m_pView);
 
     qDebug() << "rebootgui DONE";
 
