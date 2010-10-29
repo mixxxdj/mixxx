@@ -201,7 +201,11 @@ private:
     double m_dAbsPlaypos;
 
     /** Control used to signal when at end of file */
-    ControlObject *m_pTrackEnd, *m_pTrackEndMode;
+    ControlObject *m_pTrackEnd;
+
+    // Whether or not to repeat the track when at the end
+    ControlPushButton* m_pRepeat;
+
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
 
