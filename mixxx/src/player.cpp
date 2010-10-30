@@ -152,7 +152,6 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
-    slotUnloadTrack(track);
 }
 
 void Player::slotUnloadTrack(TrackPointer) {
