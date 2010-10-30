@@ -20,15 +20,16 @@ class Player : public QObject
     ~Player();
     QString getGroup();
     WaveformRenderer* getWaveformRenderer();
-public slots:
+  public slots:
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
-signals:
+    void slotUnloadTrack(TrackPointer track);
+  signals:
     void loadTrack(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
-private:
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     int m_iPlayerNumber;
     QString m_strChannel;
