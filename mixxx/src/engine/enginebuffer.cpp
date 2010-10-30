@@ -78,21 +78,21 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     playButton = new ControlPushButton(ConfigKey(group, "play"));
     playButton->setToggleButton(true);
     connect(playButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)));
-    playButton->set(0);
+            this, SLOT(slotControlPlay(double)),
+            Qt::DirectConnection);
     playButtonCOT = new ControlObjectThreadMain(playButton);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
     connect(startButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlStart(double)));
-    startButton->set(0);
+            this, SLOT(slotControlStart(double)),
+            Qt::DirectConnection);
 
     // End button
     endButton = new ControlPushButton(ConfigKey(group, "end"));
     connect(endButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlEnd(double)));
-    endButton->set(0);
+            this, SLOT(slotControlEnd(double)),
+            Qt::DirectConnection);
 
     m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
 
@@ -110,7 +110,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlSeek(double)));
+            this, SLOT(slotControlSeek(double)),
+            Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
     visualPlaypos =
