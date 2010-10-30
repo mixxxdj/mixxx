@@ -672,10 +672,6 @@ class Optimize(Feature):
             # Common flags to all optimizations
             build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
 
-            # GC unused code
-            build.env.Append(CCFLAGS='-ffunction-sections -fdata-sections')
-            build.env.Append(LINKFLAGS='-Wl,--gc-sections')
-
             if optimize_level == 1:
                 # only includes what we already applied
                 self.status = "Enabled -- Basic Optimizations (-03)"

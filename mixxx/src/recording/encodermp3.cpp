@@ -104,16 +104,16 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
     if(!m_library || !m_library->isLoaded()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle("Encoder");
+        props->setTitle(tr("Encoder"));
         QString key = "";
 #ifdef __LINUX__
-        key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system </html>";
+        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system </html>");
         props->setText(key);
 #elif __WINDOWS__
-        key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>";
+        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>");
         props->setText(key);
 #elif __APPLE__
-        key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>";
+        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>");
         props->setText(key);
 #endif
         props->setKey(key);
@@ -192,8 +192,8 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle("Encoder");
-        QString key = "<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>";
+        props->setTitle(tr("Encoder"));
+        QString key = tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
         props->setText(key);
         props->setKey(key);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
