@@ -71,8 +71,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_fLastSampleValue(0.),
-    m_bLastBufferPaused(true),
-    m_bResetPitchIndpTimeStretch(true) {
+    m_bLastBufferPaused(true) {
+
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
@@ -98,14 +98,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
-
-    // BJW Wheel touch sensor (makes wheel act as scratch)
-    wheelTouchSensor = new ControlPushButton(ConfigKey(group, "wheel_touch_sensor"));
-    // BJW Wheel touch-sens switch (toggles ignoring touch sensor)
-    wheelTouchSwitch = new ControlPushButton(ConfigKey(group, "wheel_touch_switch"));
-    wheelTouchSwitch->setToggleButton(true);
-    // BJW Whether to revert to PitchIndpTimeStretch after scratching
-    m_bResetPitchIndpTimeStretch = false;
 
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
@@ -198,8 +190,6 @@ EngineBuffer::~EngineBuffer()
     delete startButton;
     delete endButton;
     delete rateEngine;
-    delete wheelTouchSensor;
-    delete wheelTouchSwitch;
     delete playposSlider;
     delete visualPlaypos;
 
@@ -413,48 +403,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         float sr = m_pSampleRate->get();
+
         double baserate = 0.0f;
         if (sr > 0)
             baserate = ((double)file_srate_old/sr);
 
-        // Is a touch sensitive wheel being touched?
-        bool wheelTouchSensorEnabled = wheelTouchSwitch->get() && wheelTouchSensor->get();
-
-        bool paused = false;
-
-        if (!playButton->get())
-            paused = true;
-
-        if (wheelTouchSensorEnabled) {
-            paused = true;
-        }
-
-        // TODO(rryan) : review this touch sensitive business with the Mixxx
-        // team to see if this is what we actually want.
-
-        // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
-        // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
-        // the wheel's motion is amplified to produce a scrub effect. Also note that playback speed factors like
-        // rateSlider and reverseButton are ignored so that the feel of the wheel is always consistent.
-        // TODO: Configurable vinyl stop effect.
-        if (wheelTouchSensorEnabled) {
-            // Act as scratch controller
-            if (m_pKeylock->get()) {
-                // Use vinyl-style pitch bending
-                // qDebug() << "Disabling Pitch-Independent Time Stretch for scratching";
-                m_bResetPitchIndpTimeStretch = true;
-                setPitchIndpTimeStretch(false);
-            }
-        } else if (!paused) {
-            // BJW: Reset timestretch mode if required. NB it's intentional that this should not
-            // get reset until playing; this enables released spinbacks in stop mode.
-            if (m_bResetPitchIndpTimeStretch) {
-                setPitchIndpTimeStretch(true);
-                m_bResetPitchIndpTimeStretch = false;
-                // qDebug() << "Re-enabling Pitch-Independent Time Stretch";
-            }
-        }
-
+        bool paused = playButton->get() != 0.0f ? false : true;
 
         double rate = m_pRateControl->calculateRate(baserate, paused);
         //qDebug() << "rate" << rate << " paused" << paused;
