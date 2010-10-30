@@ -62,7 +62,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     file_length_old(-1),
     file_srate_old(0),
     m_iSamplesCalculated(0),
-    m_dAbsPlaypos(0.),
     m_pTrackEnd(NULL),
     m_pRepeat(NULL),
     startButton(NULL),
@@ -178,6 +177,12 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"));
     m_pKeylock->setToggleButton(true);
     m_pKeylock->set(false);
+
+    m_pEject = new ControlPushButton(ConfigKey(group, "eject"));
+    connect(m_pEject, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEjectTrack(double)),
+            Qt::DirectConnection);
+
 }
 
 EngineBuffer::~EngineBuffer()
@@ -208,6 +213,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleST;
 
     delete m_pKeylock;
+    delete m_pEject;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -284,6 +290,7 @@ double EngineBuffer::getRate()
     return m_pRateControl->getRawRate();
 }
 
+// WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
@@ -304,9 +311,16 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     emit(trackLoaded(pTrack));
 }
 
+// WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
+    ejectTrack();
+    emit(trackLoadFailed(pTrack, reason));
+}
+
+void EngineBuffer::ejectTrack() {
     pause.lock();
+    TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.clear();
     file_srate_old = 0;
     file_length_old = 0;
@@ -315,10 +329,12 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     pause.unlock();
-    emit(trackLoadFailed(pTrack, reason));
+
+    emit(trackUnloaded(pTrack));
 }
 
 
+// WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
     if(isnan(change) || change > 1.0 || change < 0.0) {
@@ -350,6 +366,7 @@ void EngineBuffer::slotControlSeek(double change)
     setNewPlaypos(new_playpos);
 }
 
+// WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeekAbs(double abs)
 {
     slotControlSeek(abs/file_length_old);
@@ -701,6 +718,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
+// WARNING: This method runs in the GUI thread
 void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
@@ -736,4 +754,10 @@ bool EngineBuffer::isTrackLoaded() {
         return true;
     }
     return false;
+}
+
+void EngineBuffer::slotEjectTrack(double v) {
+    if (v > 0) {
+        ejectTrack();
+    }
 }
