@@ -191,7 +191,6 @@ private:
 
     ControlObject *rateEngine;
     ControlObject *m_pMasterRate;
-    ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
@@ -222,10 +221,6 @@ private:
     float m_fLastSampleValue;
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
-
-    /** Whether Pitch-Independent Time Stretch should be re-enabled when we
-        start playing post-scratch **/
-    bool m_bResetPitchIndpTimeStretch; // TODO(rryan) remove?
 
     TrackPointer m_pCurrentTrack;
 };
