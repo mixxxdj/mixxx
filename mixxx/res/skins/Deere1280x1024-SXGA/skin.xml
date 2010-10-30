@@ -2342,7 +2342,7 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>3</NumberStates>
+		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_trackmode_stop.png</Pressed>
@@ -2350,17 +2350,12 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_next.png</Pressed>
-			<Unpressed>btn_trackmode_next.png</Unpressed>
-		</State>
-		<State>
-			<Number>2</Number>
 			<Pressed>btn_trackmode_loop.png</Pressed>
 			<Unpressed>btn_trackmode_loop.png</Unpressed>
 		</State>
 		<Pos>367,202</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+			<ConfigKey>[Channel1],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -2368,7 +2363,7 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>3</NumberStates>
+		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_trackmode_stop.png</Pressed>
@@ -2376,17 +2371,12 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_next.png</Pressed>
-			<Unpressed>btn_trackmode_next.png</Unpressed>
-		</State>
-		<State>
-			<Number>2</Number>
 			<Pressed>btn_trackmode_loop.png</Pressed>
 			<Unpressed>btn_trackmode_loop.png</Unpressed>
 		</State>
 		<Pos>1223,202</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 
