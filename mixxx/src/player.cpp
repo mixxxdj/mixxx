@@ -56,6 +56,8 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
             this, SLOT(slotFinishLoading(TrackPointer)));
     connect(pEngineBuffer, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SLOT(slotLoadFailed(TrackPointer, QString)));
+    connect(pEngineBuffer, SIGNAL(trackUnloaded(TrackPointer)),
+            this, SLOT(slotUnloadTrack(TrackPointer)));
 
     //Get cue point control object
     m_pCuePoint = new ControlObjectThreadMain(
@@ -76,11 +78,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_strChannel, "file_bpm")));
 
-    // Setup state of End of track controls from config database
-    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
-    ControlObject::getControl(ConfigKey(m_strChannel,"TrackEndMode"))->queueFromThread(
-        m_pConfig->getValueString(ConfigKey("[Controls]",config_key)).toDouble());
-
     // Create WaveformRenderer last, because it relies on controls created above
     // (e.g. EngineBuffer)
 
@@ -93,11 +90,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig,
 
 Player::~Player()
 {
-    // Save state of End of track controls in config database
-    int config_value = (int)ControlObject::getControl(ConfigKey(m_strChannel, "TrackEndMode"))->get();
-    QString config_key = QString("TrackEndModeCh%1").arg(m_iPlayerNumber);
-    m_pConfig->set(ConfigKey("[Controls]",config_key), ConfigValue(config_value));
-
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();
@@ -160,6 +152,9 @@ void Player::slotLoadFailed(TrackPointer track, QString reason) {
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
+}
+
+void Player::slotUnloadTrack(TrackPointer) {
     if (m_pLoadedTrack) {
         // TODO(XXX) This could be a help or a hurt. This should disconnect
         // every signal connected to the track. Other parts of Mixxx might be

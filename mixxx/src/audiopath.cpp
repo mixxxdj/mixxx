@@ -126,28 +126,21 @@ bool AudioPath::channelsClash(const AudioPath &other) const {
 
 /**
  * Returns a string describing the AudioPath for user benefit.
- * @note Ideally this will use tr() for i18n but the rest of mixxx
- *       doesn't at the moment so worry about that later. :)
  */
 QString AudioPath::getString() const {
     if (isIndexed(getType())) {
         return QString("%1 %2")
-            .arg(getStringFromType(getType())).arg(m_index + 1);
+            .arg(getTrStringFromType(getType())).arg(m_index + 1);
     }
-    return getStringFromType(getType());
+    return getTrStringFromType(getType());
 }
 
 /**
  * Returns a string given an AudioPathType.
  * @note This method is static.
+ * @note For user-facing usage, see getTrStringFromType
  */
 QString AudioPath::getStringFromType(AudioPathType type) {
-    // WARNING on tr() wrapping in this method: these strings are stored
-    // in the SoundManagerConfig xml file, I'm concerned that a user using
-    // a lang other than ENG will change their language settings and lose
-    // their prefs, which I'd find highly annoying. I do plan on fixing this,
-    // but if someone beat me to it I wanted a proper warning in here.
-    // TODO(bkgood)
     switch (type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
@@ -167,6 +160,32 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Passthrough");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
+}
+
+/**
+ * Returns a translated string given an AudioPathType.
+ * @note This method is static.
+ */
+QString AudioPath::getTrStringFromType(AudioPathType type) {
+    switch (type) {
+    case INVALID:
+        // this shouldn't happen but g++ complains if I don't
+        // handle this -- bkgood
+        return QString(QObject::tr("Invalid"));
+    case MASTER:
+        return QString(QObject::tr("Master"));
+    case HEADPHONES:
+        return QString(QObject::tr("Headphones"));
+    case DECK:
+        return QString(QObject::tr("Deck"));
+    case VINYLCONTROL:
+        return QString(QObject::tr("Vinyl Control"));
+    case MICROPHONE:
+        return QString(QObject::tr("Microphone"));
+    case EXTPASSTHROUGH:
+        return QString(QObject::tr("Passthrough"));
+    }
+    return QString(QObject::tr("Unknown path type %1")).arg(type);
 }
 
 /**
