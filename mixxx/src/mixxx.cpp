@@ -241,6 +241,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
     // Get Music dir
+    bool hasChanged_MusicDir = false;
     QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
     if (m_pConfig->getValueString(
         ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
@@ -253,6 +254,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         {
             m_pConfig->set(ConfigKey("[Playlist]","Directory"), fd);
             m_pConfig->Save();
+            hasChanged_MusicDir = true;
         }
     }
     // Needed for Search class and Simple skin
@@ -273,9 +275,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
-    //Scan the library for new files and directories.
-    m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+    //Scan the library for new files and directories
+    bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
+    if(rescan || hasChanged_MusicDir){    
+        m_pLibraryScanner->scan(
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+    }
 
     // Call inits to invoke all other construction parts
 
