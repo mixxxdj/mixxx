@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include <taglib/tag.h>
+#include <taglib/id3v2frame.h>
 
 #include <taglib/id3v2frame.h>
 #include <taglib/id3v2header.h>
@@ -18,6 +19,7 @@
 #include <taglib/aifffile.h>
 #include <taglib/rifffile.h>
 #include <taglib/wavfile.h>
+#include <taglib/textidentificationframe.h>
 
 AudioTagger::AudioTagger (QString file) 
 {
@@ -101,6 +103,7 @@ void AudioTagger::save ()
     if(m_file.endsWith(".mp3", Qt::CaseInsensitive)){
         file =  new TagLib::MPEG::File(m_file.toUtf8().constData());
         //process special ID3 fields, APEv2 fiels, etc
+        addID3v2Tag( ((TagLib::MPEG::File*) file)->ID3v2Tag()  );
    
     }
     if(m_file.endsWith(".mp4", Qt::CaseInsensitive)){
@@ -159,6 +162,41 @@ void AudioTagger::save ()
 }
 void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2)
 {
+    TagLib::ID3v2::FrameList bpmFrame = id3v2->frameListMap()["TBPM"];
+    if (!bpmFrame.isEmpty()) 
+    {
+        bpmFrame.front()->setText(m_bpm.toStdString());
+        
+    }
+    else
+    {
+        /* 
+         * add new frame TextIdentificationFrame which is responsible for TKEY and TBPM
+         * see http://developer.kde.org/~wheeler/taglib/api/classTagLib_1_1ID3v2_1_1TextIdentificationFrame.html
+         */
+       
+        TagLib::ID3v2::TextIdentificationFrame* newFrame = new TagLib::ID3v2::TextIdentificationFrame("TBPM", TagLib::String::Latin1);
+        
+        newFrame->setText(m_bpm.toStdString());
+        id3v2->addFrame(newFrame);
+
+    }
+
+    TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
+    if (!bpmFrame.isEmpty()) 
+    {
+        keyFrame.front()->setText(m_key.toStdString());
+        
+    }
+    else
+    {
+        //add new frame
+        TagLib::ID3v2::TextIdentificationFrame* newFrame = new TagLib::ID3v2::TextIdentificationFrame("TKEY", TagLib::String::Latin1);
+        
+        newFrame->setText(m_key.toStdString());
+        id3v2->addFrame(newFrame);
+
+    }
 
 }
 void AudioTagger::addAPETag(TagLib::APE::Tag* ape)
