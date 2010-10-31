@@ -33,19 +33,19 @@ class PlayerManager : public QObject {
     Sampler* addSampler();
 
     // Return the number of players
-    int numDecks();
+    unsigned int numDecks() const;
 
     // Return the number of samplers
-    int numSamplers();
+    unsigned int numSamplers() const;
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    BaseTrackPlayer* getPlayer(QString group);
+    BaseTrackPlayer* getPlayer(QString group) const;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
-    Deck* getDeck(unsigned int player);
+    Deck* getDeck(unsigned int player) const;
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
-    Sampler* getSampler(unsigned int sampler);
+    Sampler* getSampler(unsigned int sampler) const;
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck

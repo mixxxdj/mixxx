@@ -4,7 +4,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "baseplayer.h"
-#include "engine/enginechannel.h";
+#include "engine/enginechannel.h"
 
 class EngineMaster;
 class ControlObject;

@@ -9,6 +9,7 @@
 #include "sampler.h"
 #include "analyserqueue.h"
 #include "controlobject.h"
+#include "samplerbank.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "engine/enginemaster.h"
@@ -23,6 +24,10 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
           m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))) {
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
+
+    // This is parented to the PlayerManager so does not need to be deleted
+    SamplerBank* pSamplerBank = new SamplerBank(this);
+    Q_UNUSED(pSamplerBank);
 
     connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
@@ -44,11 +49,11 @@ PlayerManager::~PlayerManager() {
     delete m_pAnalyserQueue;
 }
 
-int PlayerManager::numDecks() {
+unsigned int PlayerManager::numDecks() const {
     return m_decks.size();
 }
 
-int PlayerManager::numSamplers() {
+unsigned int PlayerManager::numSamplers() const {
     return m_samplers.size();
 }
 
@@ -76,7 +81,6 @@ Deck* PlayerManager::addDeck() {
     return pDeck;
 }
 
-
 Sampler* PlayerManager::addSampler() {
     Sampler* pSampler;
     int number = numSamplers() + 1;
@@ -100,7 +104,7 @@ Sampler* PlayerManager::addSampler() {
     return pSampler;
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(QString group) {
+BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
     if (m_players.contains(group)) {
         return m_players[group];
     }
@@ -108,7 +112,7 @@ BaseTrackPlayer* PlayerManager::getPlayer(QString group) {
 }
 
 
-Deck* PlayerManager::getDeck(unsigned int deck) {
+Deck* PlayerManager::getDeck(unsigned int deck) const {
     if (deck < 1 || deck > numDecks()) {
         qWarning() << "Warning PlayerManager::getDeck() called with invalid index: "
                    << deck;
@@ -117,7 +121,7 @@ Deck* PlayerManager::getDeck(unsigned int deck) {
     return m_decks[deck - 1];
 }
 
-Sampler* PlayerManager::getSampler(unsigned int sampler) {
+Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     if (sampler < 1 || sampler > numSamplers()) {
         qWarning() << "Warning PlayerManager::getSampler() called with invalid index: "
                    << sampler;
