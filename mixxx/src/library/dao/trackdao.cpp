@@ -4,6 +4,7 @@
 #include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
+#include "audiotagger.h"
 
 // The number of tracks to cache in memory at once. Once the n+1'th track is
 // created, the TrackDAO's QCache deletes its TrackPointer to the track, which
@@ -877,9 +878,18 @@ void TrackDAO::clearCache()
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
 
     if(m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1){
-       qDebug() << "Writing ID3 comments";
-
-
+       
+        AudioTagger tagger(pTrack->getLocation());
+        
+        tagger.setArtist(pTrack->getArtist());
+        tagger.setTitle(pTrack->getTitle());
+        tagger.setGenre(pTrack->getGenre());
+        tagger.setAlbum(pTrack->getAlbum());
+        tagger.setComment(pTrack->getComment());
+        tagger.setTracknumber(pTrack->getTrackNumber());
+        tagger.setBpm(pTrack->getBpmStr());
+        
+        tagger.save();
     
     }
 

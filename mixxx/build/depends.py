@@ -463,6 +463,7 @@ class MixxxCore(Feature):
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
+                   "audiotagger.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
