@@ -221,12 +221,17 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph)
     xiph->addField("BPM", m_bpm.toStdString());
 
     xiph->removeField("TEMPO");  	
-    xiph->addField("TEMPO", m_bpm.toStdString());    
+    xiph->addField("TEMPO", m_bpm.toStdString()); 
+  
+    xiph->removeField("INITIALKEY");  	
+    xiph->addField("INITIALKEY", m_key.toStdString()); 
+    xiph->removeField("KEY");  	
+    xiph->addField("KEY", m_key.toStdString());   
        
 }
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4)
 {
-
+  
 }
 
 
