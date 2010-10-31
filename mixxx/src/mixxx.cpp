@@ -64,10 +64,6 @@
 
 #include "defs_version.h"
 
-#ifdef __IPOD__
-#include "gpod/itdb.h"
-#endif
-
 #ifdef __C_METRICS__
 #include <cmetrics.h>
 #include "defs_mixxxcmetrics.h"
@@ -211,9 +207,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
 
-    // Instantiate a ControlObject, and set static parent widget
-    m_pControl = new ControlNull();
-
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
     QString userKeyboard =
@@ -255,8 +248,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pConfig->Save();
         }
     }
-    // Needed for Search class and Simple skin
-    new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
@@ -459,9 +450,6 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
-
-//    qDebug() << "delete prefDlg";
-//    delete m_pControlEngine;
 
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;
