@@ -116,6 +116,7 @@ void AudioTagger::save ()
     if(m_file.endsWith(".ogg", Qt::CaseInsensitive)){
         file =  new TagLib::Ogg::Vorbis::File(m_file.toUtf8().constData());
         //process special ID3 fields, APEv2 fiels, etc
+        addXiphComment( ((TagLib::Ogg::Vorbis::File*) file)->tag()   );
    
     }
     if(m_file.endsWith(".wav", Qt::CaseInsensitive)){
@@ -209,7 +210,19 @@ void AudioTagger::addAPETag(TagLib::APE::Tag* ape)
 }
 void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph)
 {
+    if(!xiph) return;
 
+    // Some tools use "BPM" so check for that.
+    
+    /* Taglib does not support the update of Vorbis comments.
+     * thus, we have to reomve the old comment and add the new one
+     */
+    xiph->removeField("BPM");  	
+    xiph->addField("BPM", m_bpm.toStdString());
+
+    xiph->removeField("TEMPO");  	
+    xiph->addField("TEMPO", m_bpm.toStdString());    
+       
 }
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4)
 {
