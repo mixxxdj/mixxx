@@ -12,9 +12,10 @@
 // 0.
 #define TRACK_CACHE_SIZE 20
 
-TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao)
+TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
+          m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE) {
 
 }
@@ -113,6 +114,10 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
         if (pTrack->isDirty()) {
             updateTrack(pTrack);
             m_dirtyTracks.remove(trackId);
+
+            //Write audio meta data, if enabled in the preferences
+            writeAudioMetaData(pTrack);
+
             emit(trackClean(trackId));
         } else {
             Q_ASSERT(!m_dirtyTracks.contains(trackId));
@@ -868,4 +873,14 @@ void TrackDAO::detectMovedFiles()
 void TrackDAO::clearCache()
 {
     m_trackCache.clear();
+}
+void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
+
+    if(m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1){
+       qDebug() << "Writing ID3 comments";
+
+
+    
+    }
+
 }

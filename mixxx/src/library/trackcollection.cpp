@@ -16,7 +16,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_db(QSqlDatabase::addDatabase("QSQLITE")),
           m_playlistDao(m_db),
           m_cueDao(m_db),
-          m_trackDao(m_db, m_cueDao),
+          m_trackDao(m_db, m_cueDao, pConfig),
           m_crateDao(m_db),
           m_supportedFileExtensionsRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
                                          Qt::CaseInsensitive)
