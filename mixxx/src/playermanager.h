@@ -23,8 +23,7 @@ class PlayerManager : public QObject {
   public:
     PlayerManager(ConfigObject<ConfigValue> *pConfig,
                   EngineMaster* pEngine,
-                  Library* pLibrary,
-                  AnalyserQueue* pAnalyserQueue);
+                  Library* pLibrary);
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager

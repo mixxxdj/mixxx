@@ -262,10 +262,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
-    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
-
     // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary, m_pAnalyserQueue);
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
@@ -463,9 +461,6 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
-
-    qDebug() << "delete analyserqueue, " << qTime.elapsed();
-    delete m_pAnalyserQueue;
 
     qDebug() << "delete playerManager" << qTime.elapsed();
     delete m_pPlayerManager;
