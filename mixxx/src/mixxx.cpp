@@ -40,7 +40,6 @@
 
 #include "analyserqueue.h"
 #include "playermanager.h"
-#include "samplerbank.h"
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -270,9 +269,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-
-    // This is parented to the PlayerManager so does not need to be deleted
-    SamplerBank* pSamplerBank = new SamplerBank(m_pPlayerManager);
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
