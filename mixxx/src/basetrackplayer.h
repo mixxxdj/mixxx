@@ -27,6 +27,7 @@ class BaseTrackPlayer : public BasePlayer {
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
+    void slotUnloadTrack(TrackPointer track);
 
   signals:
     void loadTrack(TrackPointer pTrack);

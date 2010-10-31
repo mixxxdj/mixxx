@@ -50,6 +50,8 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
             this, SLOT(slotFinishLoading(TrackPointer)));
     connect(pEngineBuffer, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SLOT(slotLoadFailed(TrackPointer, QString)));
+    connect(pEngineBuffer, SIGNAL(trackUnloaded(TrackPointer)),
+            this, SLOT(slotUnloadTrack(TrackPointer)));
 
     //Get cue point control object
     m_pCuePoint = new ControlObjectThreadMain(
@@ -144,6 +146,9 @@ void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
+}
+
+void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
     if (m_pLoadedTrack) {
         // TODO(XXX) This could be a help or a hurt. This should disconnect
         // every signal connected to the track. Other parts of Mixxx might be
