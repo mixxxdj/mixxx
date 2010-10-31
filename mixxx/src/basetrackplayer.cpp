@@ -218,11 +218,3 @@ WaveformRenderer* BaseTrackPlayer::getWaveformRenderer() const {
     return m_pWaveformRenderer;
 }
 
-ConfigKey BaseTrackPlayer::getTrackEndModeConfigKey() {
-    QString bareGroup = getGroup();
-    if (bareGroup.size() > 2) {
-        bareGroup = bareGroup.mid(1, bareGroup.size()-2);
-    }
-    QString config_key = QString("TrackEndMode_%1").arg(bareGroup);
-    return ConfigKey("[Controls]", config_key);
-}

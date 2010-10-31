@@ -35,8 +35,6 @@ class BaseTrackPlayer : public BasePlayer {
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
 
   private:
-    ConfigKey getTrackEndModeConfigKey();
-
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
 
