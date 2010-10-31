@@ -106,11 +106,14 @@ void AudioTagger::save ()
     
         //If the mp3 has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
         addID3v2Tag( ((TagLib::MPEG::File*) file)->ID3v2Tag(true)  );
-   
+        //If the mp3 has an APE tag, we update 
+        addAPETag( ((TagLib::MPEG::File*) file)->APETag(false)  );
+        
     }
-    if(m_file.endsWith(".mp4", Qt::CaseInsensitive)){
+    if(m_file.endsWith(".m4a", Qt::CaseInsensitive)){
         file =  new TagLib::MP4::File(m_file.toUtf8().constData());
         //process special ID3 fields, APEv2 fiels, etc
+        processMP4Tag(((TagLib::MP4::File*) file)->tag());
    
     }
     if(m_file.endsWith(".ogg", Qt::CaseInsensitive)){
@@ -121,17 +124,23 @@ void AudioTagger::save ()
     }
     if(m_file.endsWith(".wav", Qt::CaseInsensitive)){
         file =  new TagLib::RIFF::WAV::File(m_file.toUtf8().constData());
-        //process special ID3 fields, APEv2 fiels, etc
+        //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
+        addID3v2Tag( ((TagLib::RIFF::WAV::File*) file)->tag()  );
    
     }
     if(m_file.endsWith(".flac", Qt::CaseInsensitive)){
         file =  new TagLib::FLAC::File(m_file.toUtf8().constData());
-        //process special ID3 fields, APEv2 fiels, etc
+       
+        //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
+        addID3v2Tag( ((TagLib::FLAC::File*) file)->ID3v2Tag(true)  );
+        //If the flac has no APE tag, we create a new one and add the TBPM and TKEY frame
+        addXiphComment( ((TagLib::FLAC::File*) file)->xiphComment (true)   );
    
     }
     if(m_file.endsWith(".aif", Qt::CaseInsensitive) || m_file.endsWith(".aiff", Qt::CaseInsensitive)){
         file =  new TagLib::RIFF::AIFF::File(m_file.toUtf8().constData());
-        //process special ID3 fields, APEv2 fiels, etc
+        //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
+        addID3v2Tag( ((TagLib::RIFF::AIFF::File*) file)->tag()  );
    
     }
     
@@ -206,6 +215,14 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2)
 }
 void AudioTagger::addAPETag(TagLib::APE::Tag* ape)
 {
+    if(!ape) return;
+    /*
+     * Adds to the item specified by key the data value. 
+     * If replace is true, then all of the other values on the same key will be removed first. 
+     */
+    ape->addValue("BPM",m_bpm.toStdString(), true);
+    ape->addValue("BPM",m_bpm.toStdString(), true);
+		
 
 }
 void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph)
@@ -231,7 +248,8 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph)
 }
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4)
 {
-  
+    //TODO
+
 }
 
 
