@@ -16,6 +16,7 @@
 #include "trackinfoobject.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
+#include "configobject.h"
 
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
@@ -54,7 +55,8 @@ class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT
   public:
     //TrackDAO() {};
-    TrackDAO(QSqlDatabase& database, CueDAO& cueDao);
+    /** The 'config object' is necessary because users decide ID3 tags get synchronized on track metadata change **/
+    TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig = 0);
     void finish();
     virtual ~TrackDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
@@ -121,6 +123,7 @@ Q_OBJECT
     void bindTrackToLibraryInsert(QSqlQuery& query,
                                   TrackInfoObject* pTrack, int trackLocationId);
 
+    void writeAudioMetaData(TrackInfoObject* pTrack);
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);
 
@@ -144,6 +147,7 @@ Q_OBJECT
     mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;
     mutable QCache<int,TrackPointer> m_trackCache;
+    ConfigObject<ConfigValue> * m_pConfig;
 };
 
 #endif //TRACKDAO_H

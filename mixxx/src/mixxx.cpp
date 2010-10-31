@@ -280,6 +280,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     if(rescan || hasChanged_MusicDir){    
         m_pLibraryScanner->scan(
             m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        qDebug() << "Rescan finished";
     }
 
     // Call inits to invoke all other construction parts
