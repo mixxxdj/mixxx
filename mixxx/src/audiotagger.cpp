@@ -103,7 +103,9 @@ void AudioTagger::save ()
     if(m_file.endsWith(".mp3", Qt::CaseInsensitive)){
         file =  new TagLib::MPEG::File(m_file.toUtf8().constData());
         //process special ID3 fields, APEv2 fiels, etc
-        addID3v2Tag( ((TagLib::MPEG::File*) file)->ID3v2Tag()  );
+    
+        //If the mp3 has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
+        addID3v2Tag( ((TagLib::MPEG::File*) file)->ID3v2Tag(true)  );
    
     }
     if(m_file.endsWith(".mp4", Qt::CaseInsensitive)){
@@ -162,6 +164,8 @@ void AudioTagger::save ()
 }
 void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2)
 {
+    if(!id3v2) return;
+    
     TagLib::ID3v2::FrameList bpmFrame = id3v2->frameListMap()["TBPM"];
     if (!bpmFrame.isEmpty()) 
     {
