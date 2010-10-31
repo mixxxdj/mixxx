@@ -15,20 +15,21 @@
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
                              EngineMaster* pEngine,
-                             Library* pLibrary,
-                             AnalyserQueue* pAnalyserQueue)
+                             Library* pLibrary)
         : m_pConfig(pConfig),
           m_pEngine(pEngine),
           m_pLibrary(pLibrary),
-          m_pAnalyserQueue(pAnalyserQueue),
           m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"))),
           m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))) {
+
+    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
 
     connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
              this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
 
+    // Redundant
     m_pCONumDecks->set(0);
     m_pCONumSamplers->set(0);
 }
@@ -39,6 +40,8 @@ PlayerManager::~PlayerManager() {
     m_players.clear();
     m_decks.clear();
     m_samplers.clear();
+
+    delete m_pAnalyserQueue;
 }
 
 int PlayerManager::numDecks() {

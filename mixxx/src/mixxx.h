@@ -166,7 +166,6 @@ class MixxxApp : public QMainWindow
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
-    AnalyserQueue* m_pAnalyserQueue;
 
     /** file_menu contains all items of the menubar entry "File" */
     QMenu *m_pFileMenu;
