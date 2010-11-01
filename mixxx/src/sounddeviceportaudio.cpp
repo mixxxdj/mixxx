@@ -226,15 +226,9 @@ int SoundDevicePortAudio::open()
     ControlObjectThreadMain* pControlObjectLatency =
         new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
 
-    //The latency ControlObject value MUST BE ZERO, otherwise the waveform view gets out of whack.
-    //Yes, this is confusing. Fortunately, the latency ControlObject is ONLY used in the waveform view
-    //code. Here's my theory of what's happened: There's some code in the waveform view (visualbuffer.cpp) to
-    //adjust the waveform for the latency, so it always lines up perfectly with the audio. I don't think that
-    //code was ever properly finished though, which is why we need this hack. So, fixing the waveform code is
-    //a TODO:
-    pControlObjectLatency->slotSet(0);
-
+    pControlObjectLatency->slotSet(latencyMSec);
     pControlObjectSampleRate->slotSet(m_dSampleRate);
+
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
