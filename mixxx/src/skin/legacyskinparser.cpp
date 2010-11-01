@@ -218,6 +218,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
         return parseTableView(node, pParent);
     } else if (nodeName == "WidgetGroup") {
         return parseWidgetGroup(node, pParent);
+    } else if (nodeName == "Style") {
+        return parseStyle(node, pParent);
     }
 
     // Descend chilren, should only happen for the root node
@@ -237,23 +239,7 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node, QWidget* pParent) {
     QWidget* pGroup = new QGroupBox(pParent);
 
-    // Position
-    if (!WWidget::selectNode(node, "Pos").isNull())
-    {
-        QString pos = WWidget::selectNodeQString(node, "Pos");
-        int x = pos.left(pos.indexOf(",")).toInt();
-        int y = pos.mid(pos.indexOf(",")+1).toInt();
-        pGroup->move(x,y);
-    }
-
-    // Size
-    if (!WWidget::selectNode(node, "Size").isNull())
-    {
-        QString size = WWidget::selectNodeQString(node, "Size");
-        int x = size.left(size.indexOf(",")).toInt();
-        int y = size.mid(size.indexOf(",")+1).toInt();
-        pGroup->setFixedSize(x,y);
-    }
+    setupWidget(node, pGroup);
 
     if (!WWidget::selectNode(node, "Layout").isNull()) {
         QString layout = WWidget::selectNodeQString(node, "Layout");
@@ -312,6 +298,8 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parsePushButton(QDomElement node, QWidget* pParent) {
     WPushButton* p = new WPushButton(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     return p;
@@ -319,6 +307,8 @@ QWidget* LegacySkinParser::parsePushButton(QDomElement node, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parseSliderComposed(QDomElement node, QWidget* pParent) {
     WSliderComposed* p = new WSliderComposed(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     setControlDefaults(node, p);
@@ -341,9 +331,11 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
         return NULL;
 
     WOverview* p = new WOverview(pSafeChannelStr, pParent);
-    p->installEventFilter(m_pKeyboard);
 
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
+    p->installEventFilter(m_pKeyboard);
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -382,6 +374,8 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
 
     p->setWidget((QWidget *)widget, true, true, true, Qt::LeftButton);
 
+    setupWidget(node, widget);
+    setupConnections(node, widget);
     if (type == WAVEFORM_GL) {
         ((WGLWaveformViewer*)widget)->setup(node);
     } else if (type == WAVEFORM_WIDGET) {
@@ -406,6 +400,8 @@ QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
         return NULL;
 
     WTrackText* p = new WTrackText(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
 
@@ -426,6 +422,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent
         return NULL;
 
     WTrackProperty* p = new WTrackProperty(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
 
@@ -438,6 +436,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent
 
 QWidget* LegacySkinParser::parseVuMeter(QDomElement node, QWidget* pParent) {
     WVuMeter * p = new WVuMeter(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     return p;
@@ -445,6 +445,8 @@ QWidget* LegacySkinParser::parseVuMeter(QDomElement node, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parseStatusLight(QDomElement node, QWidget* pParent) {
     WStatusLight * p = new WStatusLight(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     return p;
@@ -452,6 +454,8 @@ QWidget* LegacySkinParser::parseStatusLight(QDomElement node, QWidget* pParent) 
 
 QWidget* LegacySkinParser::parseDisplay(QDomElement node, QWidget* pParent) {
     WDisplay * p = new WDisplay(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     return p;
@@ -478,6 +482,8 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
 
 
     WNumberRate * p = new WNumberRate(pSafeChannelStr, pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     p->setPalette(palette);
@@ -497,6 +503,8 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
 
     WNumberPos* p = new WNumberPos(pSafeChannelStr, pParent);
     p->installEventFilter(m_pKeyboard);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     return p;
 }
@@ -517,6 +525,8 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
         return NULL;
 
     WNumberBpm * p = new WNumberBpm(pSafeChannelStr, pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
 
@@ -530,6 +540,8 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parseNumber(QDomElement node, QWidget* pParent) {
     WNumber* p = new WNumber(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     return p;
@@ -537,6 +549,8 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parseLabel(QDomElement node, QWidget* pParent) {
     WLabel * p = new WLabel(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     return p;
@@ -544,6 +558,8 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node, QWidget* pParent) {
 
 QWidget* LegacySkinParser::parseKnob(QDomElement node, QWidget* pParent) {
     WKnob * p = new WKnob(pParent);
+    setupWidget(node, p);
+    setupConnections(node, p);
     p->setup(node);
     p->installEventFilter(m_pKeyboard);
     setControlDefaults(node, p);
@@ -728,4 +744,106 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
     pTabWidget->setStyleSheet(style);
 
     return pTabWidget;
+}
+
+QWidget* LegacySkinParser::parseStyle(QDomElement node, QWidget* pParent) {
+    QString style = node.text();
+    pParent->setStyleSheet(style);
+    return pParent;
+}
+
+void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
+    // Position
+    if (!WWidget::selectNode(node, "Pos").isNull())
+    {
+        QString pos = WWidget::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.indexOf(",")).toInt();
+        int y = pos.mid(pos.indexOf(",")+1).toInt();
+        pWidget->move(x,y);
+    }
+
+    // Size
+    if (!WWidget::selectNode(node, "Size").isNull())
+    {
+        QString size = WWidget::selectNodeQString(node, "Size");
+        int x = size.left(size.indexOf(",")).toInt();
+        int y = size.mid(size.indexOf(",")+1).toInt();
+        pWidget->setFixedSize(x,y);
+    }
+
+    // Tooltip
+    if (!WWidget::selectNode(node, "Tooltip").isNull()) {
+        QString toolTip = WWidget::selectNodeQString(node, "Tooltip");
+        pWidget->setToolTip(toolTip);
+    }
+
+    QString style = WWidget::selectNodeQString(node, "Style");
+    if (style != "")
+        pWidget->setStyleSheet(style);
+
+}
+
+void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
+    // For each connection
+    QDomNode con = WWidget::selectNode(node, "Connection");
+
+    while (!con.isNull())
+    {
+        // Get ConfigKey
+        QString key = WWidget::selectNodeQString(con, "ConfigKey");
+
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
+
+        // Check that the control exists
+        ControlObject * control = ControlObject::getControl(configKey);
+
+        if (control == NULL) {
+            qWarning() << "Requested control does not exist:" << key;
+            con = con.nextSibling();
+            continue;
+        }
+
+        if (!WWidget::selectNode(con, "OnOff").isNull() &&
+            WWidget::selectNodeQString(con, "OnOff")=="true")
+        {
+            // Connect control proxy to widget
+            (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
+        }
+        else
+        {
+            // Get properties from XML, or use defaults
+            bool bEmitOnDownPress = true;
+            if (WWidget::selectNodeQString(con, "EmitOnDownPress").contains("false", Qt::CaseInsensitive))
+                bEmitOnDownPress = false;
+
+            bool connectValueFromWidget = true;
+            if (WWidget::selectNodeQString(con, "ConnectValueFromWidget").contains("false", Qt::CaseInsensitive))
+                connectValueFromWidget = false;
+
+            bool connectValueToWidget = true;
+            if (WWidget::selectNodeQString(con, "ConnectValueToWidget").contains("false", Qt::CaseInsensitive))
+                connectValueToWidget = false;
+
+            Qt::MouseButton state = Qt::NoButton;
+            if (!WWidget::selectNode(con, "ButtonState").isNull())
+            {
+                if (WWidget::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
+                    state = Qt::LeftButton;
+                else if (WWidget::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive))
+                    state = Qt::RightButton;
+            }
+
+            // Connect control proxy to widget
+            (new ControlObjectThreadWidget(control))->setWidget(pWidget, connectValueFromWidget, connectValueToWidget, bEmitOnDownPress, state);
+
+            // Add keyboard shortcut info to tooltip string
+            QString tooltip = pWidget->toolTip();
+            QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
+            if (!shortcut.isEmpty() && !tooltip.contains(shortcut, Qt::CaseInsensitive)) {
+                tooltip.append(QString("\nShortcut: %1").arg(shortcut));
+                pWidget->setToolTip(tooltip);
+            }
+        }
+        con = con.nextSibling();
+    }
 }
