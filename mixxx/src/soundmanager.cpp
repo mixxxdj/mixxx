@@ -18,36 +18,32 @@
 #include <QtDebug>
 #include <QtCore>
 #include <portaudio.h>
+#include <cstring> // for memcpy
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
+#include "audiopath.h"
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
  *  @param _master A pointer to the audio engine's mastering class.
  */
-SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master) : QObject()
+SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
+    : QObject()
+    , m_pErrorDevice(NULL)
+#ifdef __PORTAUDIO__
+    , m_paInitialized(false)
+#endif
 {
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
     m_pMaster = _master;
-    m_pStreamBuffers[SOURCE_MASTER] = (CSAMPLE*)_master->getMasterBuffer();
-    m_pStreamBuffers[SOURCE_HEADPHONES] = (CSAMPLE*)_master->getHeadphoneBuffer();
-
-    //Note that we deal with input as shorts instead of CSAMPLEs
-    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE] = new short[MAX_BUFFER_LEN];
-    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO] = new short[MAX_BUFFER_LEN];
-    m_pReceiverBuffers[RECEIVER_MICROPHONE] = new short[MAX_BUFFER_LEN];
 
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
-#ifdef __VINYLCONTROL__
-    m_VinylControl[0] = 0;
-    m_VinylControl[1] = 0;
-#endif
 
     //TODO: Find a better spot for this:
     //Set up a timer to sync Mixxx's ControlObjects on...
@@ -71,35 +67,53 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputL")));
     ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputR")));
 
-
-
-    pControlObjectLatency->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
-    pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
-
-
-    qDebug() << "SampleRate" << pControlObjectSampleRate->get();
-    qDebug() << "Latency" << pControlObjectLatency->get();
-
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back("44100");
-    m_samplerates.push_back("48000");
-    m_samplerates.push_back("96000");
+    m_samplerates.push_back(44100);
+    m_samplerates.push_back(48000);
+    m_samplerates.push_back(96000);
+
+    queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
+                    // its thing if it needs to
+
+    if (!m_config.readFromDisk()) {
+        m_config.loadDefaults(this, SoundManagerConfig::ALL);
+    }
+    checkConfig();
+    m_config.writeToDisk(); // in case anything changed by applying defaults
+
+    // TODO(bkgood) do these really need to be here? they're set in
+    // SoundDevicePortAudio::open
+    pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
+    pControlObjectSampleRate->slotSet(m_config.getSampleRate());
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
   and terminates PortAudio. */
 SoundManager::~SoundManager()
 {
-    //TODO: Should only call Pa_Terminate() if Pa_Inititialize() was successful.
-
     //Clean up devices.
     clearDeviceList();
 
-    Pa_Terminate();
+    if (m_paInitialized) {
+        Pa_Terminate();
+        m_paInitialized = false;
+    }
+    // vinyl control proxies and input buffers are freed in closeDevices, called
+    // by clearDeviceList -- bkgood
+}
 
-    delete [] m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
-    delete [] m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
-    delete [] m_pReceiverBuffers[RECEIVER_MICROPHONE];
+/**
+ * Returns a pointer to the EngineMaster instance this SoundManager
+ * is using.
+ * @note pointer is const at this point because this is only being inserted
+ *       so that the prefs can find out how many channels there are and I
+ *       feel uneasy about providing mutable access to the engine. Make it
+ *       non-const if you end up needing a non-const pointer to the engine
+ *       where you only have SoundMan.
+ */
+const EngineMaster* SoundManager::getEngine() const
+{
+    return m_pMaster;
 }
 
 /** Returns a list of all the devices we've enumerated through PortAudio.
@@ -159,7 +173,7 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
 /** Get a list of host APIs supported by PortAudio.
  *  @return The list of audio APIs supported on the current computer.
  */
-QList<QString> SoundManager::getHostAPIList()
+QList<QString> SoundManager::getHostAPIList() const
 {
     QList<QString> apiList;
 
@@ -172,23 +186,6 @@ QList<QString> SoundManager::getHostAPIList()
     }
 
     return apiList;
-}
-
-/** Set which host API Mixxx should use.
- *  @param api The host API that you want Mixxx to use.
- *  @return 0 on success, non-zero otherwise.
- */
-int SoundManager::setHostAPI(QString api)
-{
-    m_hostAPI = api;
-    m_pConfig->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(api));
-
-    return 0;
-}
-//FIXME: Unused
-QString SoundManager::getHostAPI()
-{
-    return m_hostAPI;
 }
 
 /** Closes all the open sound devices.
@@ -219,16 +216,28 @@ void SoundManager::closeDevices()
     iNumDevicesHaveRequestedBuffer = 0;
     //requestBufferMutex.unlock();
 
-#ifdef __VINYLCONTROL__
-    if (m_VinylControl[0])
-        delete m_VinylControl[0];
-    if (m_VinylControl[1])
-        delete m_VinylControl[1];
-    if (m_VinylControl[0])
-        m_VinylControl[0] = NULL;
-    if (m_VinylControl[1])
-        m_VinylControl[1] = NULL;
+    m_outputBuffers.clear(); // anti-cruft (safe because outputs only have
+                             // pointers to memory owned by EngineMaster)
 
+    foreach (AudioInput in, m_inputBuffers.keys()) {
+        short *buffer = m_inputBuffers[in];
+        if (buffer != NULL) {
+            delete [] buffer;
+            m_inputBuffers[in] = buffer = NULL;
+        }
+    }
+    m_inputBuffers.clear();
+
+#ifdef __VINYLCONTROL__
+    // TODO(bkgood) see comment where these objects are created in setupDevices,
+    // this should probably be in the dtor or at least somewhere other
+    // than here.
+    while (!m_VinylControl.empty()) {
+        VinylControlProxy *vc = m_VinylControl.takeLast();
+        if (vc != NULL) {
+            delete vc;
+        }
+    }
 #endif
 }
 
@@ -248,14 +257,17 @@ void SoundManager::clearDeviceList()
     }
     
 #ifdef __PORTAUDIO__
-    Pa_Terminate();
+    if (m_paInitialized) {
+        Pa_Terminate();
+        m_paInitialized = false;
+    }
 #endif
 }
 
 /** Returns a list of samplerates we will attempt to support.
  *  @return The list of available samplerates.
  */
-QList<QString> SoundManager::getSamplerateList()
+QList<unsigned int> SoundManager::getSampleRates() const
 {
     return m_samplerates;
 }
@@ -267,13 +279,18 @@ void SoundManager::queryDevices()
     clearDeviceList();
 
 #ifdef __PORTAUDIO__
-    PaError err = Pa_Initialize();
+    PaError err = paNoError;
+    if (!m_paInitialized) {
+        err = Pa_Initialize();
+        m_paInitialized = true;
+    }
     if (err != paNoError)
     {
         qDebug() << "Error:" << Pa_GetErrorText(err);
+        m_paInitialized = false;
         return;
     }
-    
+
     int iNumDevices;
     iNumDevices = Pa_GetDeviceCount();
     if(iNumDevices < 0)
@@ -285,7 +302,6 @@ void SoundManager::queryDevices()
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++)
     {
-        const PaHostApiInfo * apiInfo = NULL;
         deviceInfo = Pa_GetDeviceInfo(i);
         if (!deviceInfo)
             continue;
@@ -301,71 +317,12 @@ void SoundManager::queryDevices()
             PaTime 	defaultHighOutputLatency
             double 	defaultSampleRate
          */
-        apiInfo = Pa_GetHostApiInfo(deviceInfo->hostApi);
-        if (!apiInfo)
-            continue;
-        //if (apiInfo->name == m_hostAPI)
-        {
-            SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
-            m_devices.push_back((SoundDevice*)currentDevice);
-        }
+        SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+        m_devices.push_back(currentDevice);
     }
-
-
 #endif
-}
-
-//Attempt to set up some sane default sound device settings.
-//The parameters control what stuff gets set to the defaults.other
-void SoundManager::setDefaults(bool api, bool devices, bool other)
-{
-    qDebug() << "SoundManager: Setting defaults";
-
-    QList<QString> apiList = getHostAPIList();
-
-    if (api && !apiList.isEmpty())
-    {
-#ifdef __LINUX__
-        //Check for JACK and use that if it's available, otherwise use ALSA
-        if (apiList.contains(MIXXX_PORTAUDIO_JACK_STRING))
-            setHostAPI(MIXXX_PORTAUDIO_JACK_STRING);
-        else
-            setHostAPI(MIXXX_PORTAUDIO_ALSA_STRING);
-#endif
-#ifdef __WINDOWS__
-//TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
-//        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
-//            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);
-//        else
-//Existence of ASIO doesn't necessarily mean you've got ASIO devices
-//Do something more advanced one day if you like - Adam
-            setHostAPI(MIXXX_PORTAUDIO_DIRECTSOUND_STRING);
-#endif
-#ifdef __APPLE__
-        setHostAPI(MIXXX_PORTAUDIO_COREAUDIO_STRING);
-#endif
-    }
-
-    if (devices)
-    {
-        //Set the default master device to be the first ouput device in the list (that matches the API)
-		QList<SoundDevice *> qlistAPI = getDeviceList(getHostAPI(), true, false);
-		if(! qlistAPI.isEmpty())
-		{
-			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(qlistAPI.front()->getInternalName()));
-			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(qlistAPI.front()->getInternalName()));
-			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(qlistAPI.front()->getInternalName()));
-			m_pConfig->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(QString::number(0)));
-			m_pConfig->set(ConfigKey("[Soundcard]","ChannelHeadphones"), ConfigValue(QString::number(2)));
-		}
-    }
-
-    if (other)
-    {
-        //Default samplerate, latency
-        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(48000));
-        m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(21));
-    }
+    // now tell the prefs that we updated the device list -- bkgood
+    emit(devicesUpdated());
 }
 
 //Opens all the devices chosen by the user in the preferences dialog, and establishes
@@ -374,106 +331,139 @@ int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
     int err = 0;
-    bool bNeedToOpenDeviceForOutput = 0;
-    bool bNeedToOpenDeviceForInput = 0;
-    QListIterator<SoundDevice *> deviceIt(m_devices);
-    SoundDevice * device;
+    iNumDevicesOpenedForOutput = iNumDevicesOpenedForInput = 0;
+    int devicesAttempted = 0;
+    int devicesOpened = 0;
+    int vinylInputs = 0;
 
-    //Set sound scale method
-    if (m_pMaster)
-        m_pMaster->setPitchIndpTimeStretch(m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt());
+    // filter out any devices in the config we don't actually have
+    m_config.filterOutputs(this);
+    m_config.filterInputs(this);
 
+    // close open devices, close running vinyl control proxies
+    closeDevices();
 #ifdef __VINYLCONTROL__
     //Initialize vinyl control
-    m_VinylControl[0] = new VinylControlProxy(m_pConfig, "[Channel1]");
-    m_VinylControl[1] = new VinylControlProxy(m_pConfig, "[Channel2]");
+    // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
+    // shouldn't be any reason for these to be reinitialized every time the
+    // audio prefs are updated. Will require work in DlgPrefVinyl.
+    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
+    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
-
-    while (deviceIt.hasNext())
-    {
-        device = deviceIt.next();
-        bNeedToOpenDeviceForOutput = 0;
-        bNeedToOpenDeviceForInput = 0;
-
-        //Close the device in case it was open.
-        device->close();
-
-        //Disconnect the device from any sources/receivers.
-        device->clearSources();
-        device->clearReceivers();
-
-        //Connect the mixing engine's sound output(s) to the soundcard(s).
-
-        if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == device->getInternalName())
-        {
-			AudioSource src;
-			src.channelBase = m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt();
-			src.channels = 2;	//TODO: Should we have a mono option?  Surround sound mixing might be cool...
-			src.type = SOURCE_MASTER;
-
-            err = device->addSource(src);
-            if (err != 0)
+    foreach (SoundDevice *device, m_devices) {
+        bool isInput = false;
+        bool isOutput = false;
+        device->clearInputs();
+        device->clearOutputs();
+        m_pErrorDevice = device;
+        foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
+            isInput = true;
+            err = device->addInput(in);
+            if (err != OK)
                 return err;
-            bNeedToOpenDeviceForOutput = 1;
+            if (!m_inputBuffers.contains(in)) {
+                // TODO(bkgood) look into allocating this with the frames per
+                // buffer value from SMConfig
+                m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
+            }
+            if(in.getType() == AudioInput::VINYLCONTROL)
+            	vinylInputs++;
         }
-        if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
-        {
-            AudioSource src;
-			src.channelBase = m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt();
-			src.channels = 2;
-			src.type = SOURCE_HEADPHONES;
-
-			err = device->addSource(src);
-			if (err != 0)
+        foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
+            isOutput = true;
+            // following keeps us from asking for a channel buffer EngineMaster
+            // doesn't have -- bkgood
+            if (out.getType() == AudioOutput::DECK
+                    && out.getIndex() >= m_pMaster->numChannels()) continue;
+            err = device->addOutput(out);
+            if (err != OK)
                 return err;
-            bNeedToOpenDeviceForOutput = 1;
+            // TODO(bkgood) this would be nicer as something like
+            // EngineMaster::getBuffer(AudioPathType type, uint index = 0);
+            // but I don't want to mess with enginemaster if I can help it
+            // before hydra's merged
+            switch (out.getType()) {
+            case AudioPath::MASTER:
+                m_outputBuffers[out] = m_pMaster->getMasterBuffer();
+                break;
+            case AudioPath::HEADPHONES:
+                m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
+                break;
+            case AudioPath::DECK:
+                m_outputBuffers[out] = m_pMaster->getChannelBuffer(out.getIndex());
+                break;
+            default:
+                break;
+            }
         }
-
-        //Connect the soundcard's inputs to the Engine.
-        if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getInternalName())
-        {
-            AudioReceiver recv;
-			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt();
-			recv.channels = 2;
-			recv.type = RECEIVER_VINYLCONTROL_ONE;
-
-            err = device->addReceiver(recv);
-            if (err != 0)
-                return err;
-            bNeedToOpenDeviceForInput = 1;
-        }
-        if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
-        {
-            AudioReceiver recv;
-			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt();
-			recv.channels = 2;
-			recv.type = RECEIVER_VINYLCONTROL_TWO;
-
-            err = device->addReceiver(recv);
-            if (err != 0)
-                return err;
-            bNeedToOpenDeviceForInput = 1;
-        }
-
-        //Open the device.
-        if (bNeedToOpenDeviceForOutput || bNeedToOpenDeviceForInput)
-        {
+        if (isInput || isOutput) {
+            device->setSampleRate(m_config.getSampleRate());
+            device->setFramesPerBuffer(m_config.getFramesPerBuffer());
+            ++devicesAttempted;
             err = device->open();
-            if (err != 0)
+            if (err != OK) {
                 return err;
-            else
-            {
-                iNumDevicesOpenedForOutput += (int)bNeedToOpenDeviceForOutput;
-                iNumDevicesOpenedForInput += (int)bNeedToOpenDeviceForInput;
+            } else {
+                ++devicesOpened;
+                if (isOutput)
+                    ++iNumDevicesOpenedForOutput;
+                if (isInput)
+                    ++iNumDevicesOpenedForInput;
             }
         }
     }
+    
+#ifdef __VINYLCONTROL__    
+    if (vinylInputs == 1)
+    	m_pConfig->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), true);
+    else
+    	m_pConfig->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), false);
+#endif
 
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
-    //Returns non-zero if we have no output devices
-    return (iNumDevicesOpenedForOutput == 0);
+    // returns OK if we were able to open all the devices the user
+    // wanted
+    if (devicesAttempted == devicesOpened) {
+        return OK;
+    }
+    m_pErrorDevice = NULL;
+    return ERR;
+}
+
+SoundDevice* SoundManager::getErrorDevice() const {
+    return m_pErrorDevice;
+}
+
+SoundManagerConfig SoundManager::getConfig() const {
+    return m_config;
+}
+
+int SoundManager::setConfig(SoundManagerConfig config) {
+    int err = OK;
+    m_config = config;
+    checkConfig();
+    err = setupDevices();
+    if (err == OK) {
+        m_config.writeToDisk();
+    }
+    // certain parts of mixxx rely on this being here, for the time being, just
+    // letting those be -- bkgood
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    return err;
+}
+
+void SoundManager::checkConfig() {
+    if (!m_config.checkAPI(*this)) {
+        m_config.setAPI(DEFAULT_API);
+        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+    }
+    if (!m_config.checkSampleRate(*this)) {
+        m_config.setSampleRate(DEFAULT_SAMPLE_RATE);
+        m_config.loadDefaults(this, SoundManagerConfig::OTHER);
+    }
+    // latency checks itself for validity on SMConfig::setLatency()
 }
 
 void SoundManager::sync()
@@ -484,8 +474,10 @@ void SoundManager::sync()
 }
 
 //Requests a buffer in the proper format, if we're prepared to give one.
-CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer)
+QHash<AudioOutput, const CSAMPLE*>
+SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer)
 {
+    Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
 
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
@@ -513,17 +505,14 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 
         requestBufferMutex.unlock();
     }
-	return m_pStreamBuffers;
+    return m_outputBuffers;
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
-CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer,
-                                   unsigned long iFramesPerBuffer, unsigned int iFrameSize)
+void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
+                              unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
-    short* vinylControlBuffer1 = NULL; /** Pointer to the buffer containing the vinyl control audio for deck 1*/
-    short* vinylControlBuffer2 = NULL; /** Pointer to the buffer containing the vinyl control audio for deck 1*/
-
-//    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE]
+//    m_inputBuffers[RECEIVER_VINYLCONTROL_ONE]
 
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
     //short vinylControlBuffer2[iFramesPerBuffer * 2];
@@ -532,13 +521,26 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 
     //memset(vinylControlBuffer1, 0, iFramesPerBuffer * iFrameSize * sizeof(*vinylControlBuffer1));
 
+    // IMPORTANT -- Mixxx should ALWAYS be the owner of whatever input buffer we're using,
+    // otherwise we double-free (well, PortAudio frees and then we free) and everything
+    // goes to hell -- bkgood
+
     /** If the framesize is only 2, then we only have one pair of input channels
      *  That means we don't have to do any deinterlacing, and we can pass
      *  the audio on to its intended destination. */
+    // this special casing is probably not worth keeping around. It had a speed
+    // advantage before because it just assigned a pointer instead of copying data,
+    // but this meant we couldn't free all the receiver buffer pointers, because some
+    // of them might potentially be owned by portaudio. Not freeing them means we leak
+    // memory in certain cases -- bkgood
     if (iFrameSize == 2)
     {
-        vinylControlBuffer1 = inputBuffer;
-        vinylControlBuffer2 = inputBuffer;
+        QListIterator<AudioInput> inputItr(inputs);
+        while (inputItr.hasNext()) {
+            AudioInput in = inputItr.next();
+            memcpy(m_inputBuffers[in], inputBuffer,
+                    sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
+        }
     }
 
 /*
@@ -548,85 +550,86 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
     {
         for (int i = 0; i < iFramesPerBuffer; i++) //For each frame of audio
         {
-            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE][i*2    ] = inputBuffer[i*iFrameSize    ];
-            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE][i*2 + 1] = inputBuffer[i*iFrameSize + 1];
-            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO][i*2    ] = inputBuffer[i*iFrameSize + 2];
-            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO][i*2 + 1] = inputBuffer[i*iFrameSize + 3];
+            m_inputBuffers[RECEIVER_VINYLCONTROL_ONE][i*2    ] = inputBuffer[i*iFrameSize    ];
+            m_inputBuffers[RECEIVER_VINYLCONTROL_ONE][i*2 + 1] = inputBuffer[i*iFrameSize + 1];
+            m_inputBuffers[RECEIVER_VINYLCONTROL_TWO][i*2    ] = inputBuffer[i*iFrameSize + 2];
+            m_inputBuffers[RECEIVER_VINYLCONTROL_TWO][i*2 + 1] = inputBuffer[i*iFrameSize + 3];
         }
         //Set the pointers to point to the de-interlaced input audio
-        vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
-        vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+        vinylControlBuffer1 = m_inputBuffers[RECEIVER_VINYLCONTROL_ONE];
+        vinylControlBuffer2 = m_inputBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
 */
     else { //More than two channels of input (iFrameSize > 2)
-
-        //Do crazy deinterleaving of the audio into the correct m_pReceiverBuffers.
-
+        //Do crazy deinterleaving of the audio into the correct m_inputBuffers.
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
         for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
-			//Deinterlace the input audio data from the portaudio buffer
-			//We iterate through the receiver list to find out what goes into each buffer.
-			//Data is deinterlaced in the order of the list
-			QListIterator<AudioReceiver> devItr(recvs);
-			int iChannel;
-			while(devItr.hasNext())
-			{
-				AudioReceiver recv = devItr.next();
-				int iLocalFrameBase = (iFrameBase/iFrameSize) * recv.channels;
-				for(iChannel = 0; iChannel < recv.channels; iChannel++)	//this will make sure a sample from each channel is copied
-				{
-					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			        m_pReceiverBuffers[recv.type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
+            //Deinterlace the input audio data from the portaudio buffer
+            //We iterate through the receiver list to find out what goes into each buffer.
+            //Data is deinterlaced in the order of the list
+            QListIterator<AudioInput> inputItr(inputs);
+            int iChannel;
+            while (inputItr.hasNext())
+            {
+                AudioInput in = inputItr.next();
+                ChannelGroup chanGroup = in.getChannelGroup();
+                int iLocalFrameBase = (iFrameBase/iFrameSize) * chanGroup.getChannelCount();
+
+                for (iChannel = 0; iChannel < chanGroup.getChannelCount(); iChannel++)
+                    //this will make sure a sample from each channel is copied
+                {
+                    //output[iFrameBase + src.channelBase + iChannel] +=
+                    //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    m_inputBuffers[in][iLocalFrameBase + iChannel] =
+                        inputBuffer[iFrameBase + chanGroup.getChannelBase() + iChannel];
                 }
-			}
+            }
         }
-        //Set the pointers to point to the de-interlaced input audio
-        vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
-        vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
-
-/*
-
-*/
-
 
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
-        QListIterator<AudioReceiver> devItr(recvs);
-        while(devItr.hasNext())
+        QListIterator<AudioInput> inputItr(inputs);
+        AudioInput singledeck;
+        unsigned int singledeckIndex = 0;
+        int vinylcount = 0;
+        while (inputItr.hasNext())
         {
-            AudioReceiver recv = devItr.next();
-            if (recv.type == RECEIVER_VINYLCONTROL_ONE)
-            {
-                //recv.channelBase
-                Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
-                if (m_VinylControl[0])
-                    m_VinylControl[0]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
+            AudioInput in = inputItr.next();
+            if (in.getType() == AudioInput::VINYLCONTROL) {
+            	vinylcount++;
+                unsigned int index = in.getIndex();
+                Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood
                 if (m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
                 {
-                	if (m_VinylControl[1])
-                    	m_VinylControl[1]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
+                	//if this is the first deck, remember it because we're going
+                	//to use this deck's samples for all subsequent decks
+                	if (vinylcount == 1)
+                	{
+                		singledeck = in;
+                		singledeckIndex = index;
+                	}
+                	if (m_VinylControl[singledeckIndex] && m_inputBuffers.contains(singledeck))
+                		//this is guaranteed to be deck 0, isn't it?
+                		m_VinylControl[index]->AnalyseSamples(m_inputBuffers[singledeck], iFramesPerBuffer);
                 }
+                else
+                {
+                	if (m_VinylControl[index] && m_inputBuffers.contains(in)) 
+                 	   m_VinylControl[index]->AnalyseSamples(m_inputBuffers[in], iFramesPerBuffer);
+				}
             }
-            if (recv.type == RECEIVER_VINYLCONTROL_TWO)
-            {
-                if (!m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
-            	{
-	                Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
-	                if (m_VinylControl[1])
-	                    m_VinylControl[1]->AnalyseSamples(vinylControlBuffer2, iFramesPerBuffer);
-	            }
-            }
+        }
+        if (m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
+        {
+        	//analyse samples for the rest of the vinyl decks (that have no input of their own
+        	if (m_VinylControl[singledeckIndex] && m_inputBuffers.contains(singledeck))
+        		m_VinylControl[1]->AnalyseSamples(m_inputBuffers[singledeck], iFramesPerBuffer);
         }
 #endif
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
-
-
-    return NULL; //FIXME: Return void instead?
 }
-
-

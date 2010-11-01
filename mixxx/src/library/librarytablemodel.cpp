@@ -269,8 +269,8 @@ Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
     if (!index.isValid())
       return Qt::ItemIsEnabled;
 
-	//Enable dragging songs from this data model to elsewhere (like the waveform
-	//widget to load a track into a Player).
+    // Enable dragging songs from this data model to elsewhere (like the
+    // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     /** FIXME: This doesn't seem to work - Albert */

@@ -53,8 +53,8 @@ private:
     ControlObjectThreadMain* m_pCOPlayPos2;
     ControlObjectThreadMain* m_pCOPlay1;
     ControlObjectThreadMain* m_pCOPlay2;
-    ControlObjectThreadMain* m_pCOTrackEndMode1;
-    ControlObjectThreadMain* m_pCOTrackEndMode2;
+    ControlObjectThreadMain* m_pCORepeat1;
+    ControlObjectThreadMain* m_pCORepeat2;
     ControlObjectThreadMain* m_pCOCrossfader;
 };
 
