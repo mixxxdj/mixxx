@@ -270,11 +270,11 @@ void EngineShoutcast::updateFromPreferences()
 		delete m_encoder;		//delete m_encoder if it has been initalized (with maybe) different bitrate
 	}
     if ( ! qstrcmp(m_baFormat, "MP3")) {
-        m_encoder = new EncoderMp3(m_pConfig, this);
+        m_encoder = new EncoderMp3(this);
 
     }
     else if ( ! qstrcmp(m_baFormat, "Ogg Vorbis")) {
-        m_encoder = new EncoderVorbis(m_pConfig, this);
+        m_encoder = new EncoderVorbis(this);
     }
     else {
         qDebug() << "**** Unknown Encoder Format";
@@ -613,7 +613,12 @@ void EngineShoutcast::updateMetaData()
 		    // convert QStrings to char*s
 		    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
 		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-		    baSong = baArtist + " - " + baTitle;
+		    
+		    if (baArtist.isEmpty())
+		        baSong = baTitle;
+		    else
+		        baSong = baArtist + " - " + baTitle;
+
 			/** Update metadata */
 			shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     		shout_set_metadata(m_pShout, m_pShoutMetaData);
