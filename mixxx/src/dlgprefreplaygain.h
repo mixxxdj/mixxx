@@ -2,7 +2,7 @@
  * dlgprefreplaygain.h
  *
  *  Created on: 18/ott/2010
- *      Author: vittorio
+ *      Author: Vittorio Colao
  */
 
 #ifndef DLGPREFREPLAYGAIN_H_
@@ -19,23 +19,23 @@ public:
     DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefReplayGain();
 public slots:
-	/** Update initial gain increment */
-	void slotUpdateBoost();
-	void slotSetRGEnabled();
-	void slotSetRGAnalyserEnabled();
+/** Update initial gain increment */
+void slotUpdateBoost();
+void slotSetRGEnabled();
+void slotSetRGAnalyserEnabled();
 
-	void slotApply();
-	void slotUpdate();
-	void setDefaults();
+void slotApply();
+void slotUpdate();
+void setDefaults();
 signals:
-    void apply(const QString &);
+void apply(const QString &);
 private:
 
-    // Determines whether or not to gray out the preferences
-    void loadSettings();
+// Determines whether or not to gray out the preferences
+void loadSettings();
 
-    /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
+/** Pointer to config object */
+ConfigObject<ConfigValue> *config;
 
 };
 

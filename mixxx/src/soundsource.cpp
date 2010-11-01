@@ -256,14 +256,14 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
 }
 
 void SoundSource::parseRGString (QString sRG) {
-	 QString RGstring = sRG.remove( " dB" );
-	 float fRG = pow(10,(RGstring.toFloat())/20);
-	 //I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
-	 //This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
-	 if(fRG==1.0f){
-		 fRG= 0.0f;
-	 }
-	 setRG(fRG);
+    QString RGstring = sRG.remove( " dB" );
+    float fRG = pow(10,(RGstring.toFloat())/20);
+    //I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
+    //This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
+    if(fRG==1.0f){
+        fRG= 0.0f;
+    }
+    setRG(fRG);
 }
 
 void SoundSource::processBpmString(QString tagName, QString sBpm) {
@@ -283,7 +283,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         TagLib::ID3v2::FrameList::ConstIterator it = id3v2->frameList().begin();
         for(; it != id3v2->frameList().end(); it++) {
             qDebug() << "ID3V2" << (*it)->frameID().data() << "-"
-                     << TStringToQString((*it)->toString());
+                    << TStringToQString((*it)->toString());
         }
     }
 
@@ -302,23 +302,23 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     }
     // Foobar2000-style ID3v2.3.0 tags
     // TODO: Check if everything is ok.
-         TagLib::ID3v2::FrameList frames = id3v2->frameListMap()["TXXX"];
-         for ( TagLib::ID3v2::FrameList::Iterator it = frames.begin(); it != frames.end(); ++it ) {
-             TagLib::ID3v2::UserTextIdentificationFrame* RGframe =
-                 dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>( *it );
-             if ( RGframe && RGframe->fieldList().size() >= 2 )
-             {
-                 QString desc = TStringToQString( RGframe->description() ).toLower();
-                 if ( desc == "replaygain_album_gain" ){
-                	 QString sRG = TStringToQString( RGframe->fieldList()[1]);
-                 	 parseRGString(sRG);
-                 }
-                 if ( desc == "replaygain_track_gain" ){
-                	 QString sRG = TStringToQString( RGframe->fieldList()[1]);
-                	 parseRGString(sRG);
-                 }
-             }
-         }
+    TagLib::ID3v2::FrameList frames = id3v2->frameListMap()["TXXX"];
+    for ( TagLib::ID3v2::FrameList::Iterator it = frames.begin(); it != frames.end(); ++it ) {
+        TagLib::ID3v2::UserTextIdentificationFrame* RGframe =
+                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>( *it );
+        if ( RGframe && RGframe->fieldList().size() >= 2 )
+        {
+            QString desc = TStringToQString( RGframe->description() ).toLower();
+            if ( desc == "replaygain_album_gain" ){
+                QString sRG = TStringToQString( RGframe->fieldList()[1]);
+                parseRGString(sRG);
+            }
+            if ( desc == "replaygain_track_gain" ){
+                QString sRG = TStringToQString( RGframe->fieldList()[1]);
+                parseRGString(sRG);
+            }
+        }
+    }
 
 
 
@@ -329,7 +329,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
     if (s_bDebugMetadata) {
         for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
-            it != ape->itemListMap().end(); ++it) {
+                it != ape->itemListMap().end(); ++it) {
             qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
         }
     }
@@ -340,23 +340,23 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
     }
 
     if ( ape->itemListMap().contains("REPLAYGAIN_ALBUM_GAIN") ) {
-    	QString sRG = TStringToQString(ape->itemListMap()["REPLAYGAIN_ALBUM_GAIN"].toString());
-    	parseRGString(sRG);
+        QString sRG = TStringToQString(ape->itemListMap()["REPLAYGAIN_ALBUM_GAIN"].toString());
+        parseRGString(sRG);
     }
 
     //Prefer track gain over album gain.
     if ( ape->itemListMap().contains("REPLAYGAIN_TRACK_GAIN") ) {
-       	QString sRG = TStringToQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
-       	qDebug()<<"APE value" << sRG;
-       	parseRGString(sRG);
-       }
+        QString sRG = TStringToQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
+        qDebug()<<"APE value" << sRG;
+        parseRGString(sRG);
+    }
     return true;
 }
 
 bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     if (s_bDebugMetadata) {
         for (TagLib::Ogg::FieldListMap::ConstIterator it = xiph->fieldListMap().begin();
-             it != xiph->fieldListMap().end(); ++it) {
+                it != xiph->fieldListMap().end(); ++it) {
             qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
         }
     }
@@ -377,16 +377,16 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
 
 
     if (xiph->fieldListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
-            TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_ALBUM_GAIN"];
-            QString sRG = TStringToQString(rgainString.toString());
-            parseRGString(sRG);
-        }
+        TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_ALBUM_GAIN"];
+        QString sRG = TStringToQString(rgainString.toString());
+        parseRGString(sRG);
+    }
 
     if (xiph->fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
-                TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_TRACK_GAIN"];
-                QString sRG = TStringToQString(rgainString.toString());
-                parseRGString(sRG);
-            }
+        TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_TRACK_GAIN"];
+        QString sRG = TStringToQString(rgainString.toString());
+        parseRGString(sRG);
+    }
 
 
     return true;
