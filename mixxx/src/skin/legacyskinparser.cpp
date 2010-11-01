@@ -344,6 +344,11 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotUnloadTrack(TrackPointer)));
 
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotLoadNewWaveform(pTrack);
+    }
+
     return p;
 }
 
@@ -547,6 +552,11 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
 
     return p;
 }
