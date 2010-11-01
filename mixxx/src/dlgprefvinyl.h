@@ -20,14 +20,13 @@
 
 #include "ui_dlgprefvinyldlg.h"
 #include "configobject.h"
-#include "soundmanager.h"
 #include "vinylcontrolsignalwidget.h"
 
 class QWidget;
 class PlayerProxy;
 class ControlObject;
 class ControlObjectThreadMain;
-
+class SoundManager;
 
 /**
   *@author Stefan Langhammer
@@ -44,16 +43,10 @@ public slots:
     /** Update widget */
     void slotUpdate();
     void slotApply();
-	void ChannelsSlotApply();
-    void slotComboBoxDeviceDeck1Change();
-    void slotComboBoxDeviceDeck2Change();
-    void refreshDeck1Channels();
-    void refreshDeck2Channels();
 	void EnableRelativeModeSlotApply();
 	void VinylTypeSlotApply();
 	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();
-    void enableValidComboBoxes();
     void updateSignalQuality1(double value);
     void updateSignalQuality2(double value);
     void updateInputLevelLeft1(double value);
@@ -65,9 +58,10 @@ public slots:
 
 signals:
     void apply();
+    void refreshVCProxies();
+private slots:
+    void settingsChanged();
 private:
-	void applySoundDeviceChanges();
-
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
 
@@ -84,6 +78,7 @@ private:
     ControlObjectThreadMain* m_vinylControlInput1R;
     ControlObjectThreadMain* m_vinylControlInput2L;
     ControlObjectThreadMain* m_vinylControlInput2R;
+    bool m_dontForce;
 };
 
 #endif
