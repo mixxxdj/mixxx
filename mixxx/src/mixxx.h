@@ -157,8 +157,8 @@ class MixxxApp : public QMainWindow
     MidiDeviceManager *m_pMidiDeviceManager;
 
     ConfigObject<ConfigValue> *m_pConfig;
-    /** Pointer to active keyboard configuration */
-    ConfigObject<ConfigValueKbd> *m_pKbdConfig;
+
+
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
