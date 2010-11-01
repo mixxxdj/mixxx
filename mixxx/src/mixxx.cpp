@@ -274,8 +274,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
     //Scan the library for new files and directories.
-    //m_pLibraryScanner->scan(
-    //    m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+    m_pLibraryScanner->scan(
+        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
 
     // Call inits to invoke all other construction parts
 
