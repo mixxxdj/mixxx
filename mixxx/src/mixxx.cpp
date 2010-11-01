@@ -265,7 +265,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
     //Scan the library for new files and directories.
-    m_pLibraryScanner->scan(
+	m_pLibraryScanner->scan(
         m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
 
     // Call inits to invoke all other construction parts
@@ -1042,7 +1042,7 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-	if (tryToggleVinylControl(1) >= 0)
+	if (tryToggleVinylControl(0))
 	{
 		m_pConfig->set(
             ConfigKey("[VinylControl]", "EnabledCh1"), ConfigValue((int)toggle));
@@ -1083,19 +1083,7 @@ void MixxxApp::slotCheckboxVinylControl(bool toggle)
 int MixxxApp::tryToggleVinylControl(int deck)
 {
 #ifdef __VINYLCONTROL__  
-	QMultiHash<QString, AudioInput> inputs = m_pSoundManager->getConfig().getInputs();
-    unsigned int countIns = 0;
-    unsigned int countVCIns = 0;
-    foreach (AudioInput in, inputs.values()) {
-    	++countIns;
-        if (in.getType() == AudioInput::VINYLCONTROL) {
-        	++countVCIns;
-        	if (countVCIns == deck)
-            	return countIns;
-        }
-    }
-
-	return -1;
+	return m_pSoundManager->hasVinylInput(deck);
 #endif
 }
 
@@ -1103,10 +1091,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
 	//we just need at least 1 input (deck 1) because of single deck mode
-	if ((m_pConfig->getValueString(
-			ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt() && 
-			tryToggleVinylControl(1) >= 0) ||
-		tryToggleVinylControl(2) >= 0)
+	if (tryToggleVinylControl(1))
 	{
 		m_pConfig->set(
             ConfigKey("[VinylControl]", "EnabledCh2"), ConfigValue((int)toggle));
