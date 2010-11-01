@@ -37,7 +37,8 @@ class WWidget : public QWidget  {
    Q_OBJECT
 public:
     WWidget(QWidget *parent=0, Qt::WFlags flags=0);
-    ~WWidget();
+    virtual ~WWidget();
+
     /** Sets the path used to find pixmaps */
     static void setPixmapPath(QString qPath);
     static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
@@ -70,15 +71,9 @@ protected:
     /** Is true if widget is off */
     bool m_bOff;
 
-    QString getTooltip() {
-        return m_Tooltip;
-    }
-
 private:
     /** Variable containing the path to the pixmaps */
     static QString m_qPath;
-    /** stashes the tooltip text **/
-    QString m_Tooltip;
     /** Property used when connecting to ControlObject */
     bool m_bEmitOnDownPress;
 };
