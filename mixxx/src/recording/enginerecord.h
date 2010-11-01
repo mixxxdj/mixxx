@@ -68,6 +68,8 @@ class EngineRecord : public EngineAbstractRecord {
 
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
+
+    ControlObjectThread* m_samplerate;
 };
 
 #endif
