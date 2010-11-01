@@ -410,6 +410,12 @@ QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
     return p;
 }
 
@@ -432,6 +438,12 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
     return p;
 }
 
