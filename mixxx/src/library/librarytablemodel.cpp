@@ -230,8 +230,26 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
+Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
+{
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+    if (!index.isValid())
+      return Qt::ItemIsEnabled;
+
     // Enable dragging songs from this data model to elsewhere (like the
     // waveform widget to load a track into a Player).
+    defaultFlags |= Qt::ItemIsDragEnabled;
+
+    /** FIXME: This doesn't seem to work - Albert */
+    const int bpmColumnIndex = fieldIndex(LIBRARYTABLE_BPM);
+    if (index.column() == bpmColumnIndex)
+    {
+        return defaultFlags | Qt::ItemIsEditable;
+    }
+
+    return defaultFlags;
+}
+
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
     return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
