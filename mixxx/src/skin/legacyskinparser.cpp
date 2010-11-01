@@ -857,7 +857,9 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             }
 
             // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidget(pWidget, connectValueFromWidget, connectValueToWidget, bEmitOnDownPress, state);
+            (new ControlObjectThreadWidget(control))->setWidget(
+                pWidget, connectValueFromWidget, connectValueToWidget,
+                bEmitOnDownPress, state);
 
             // Add keyboard shortcut info to tooltip string
             QString tooltip = pWidget->toolTip();
