@@ -95,15 +95,6 @@ WOverview::~WOverview()
 
 void WOverview::setup(QDomNode node)
 {
-    // Setup position and connections
-    WWidget::setup(node);
-
-    // Size
-    QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.indexOf(",")).toInt();
-    int y = size.mid(size.indexOf(",")+1).toInt();
-    setFixedSize(x,y);
-
     // Set constants for line drawing
 /*
     m_qMarkerPos1.setX(x/2);

@@ -27,7 +27,6 @@
 #include "dlgprefmidibindings.h"
 #include "midi/mididevice.h"
 #include "midi/mididevicemanager.h"
-#include "widget/wwidget.h"
 #include "configobject.h"
 #include "midi/midimapping.h"
 
