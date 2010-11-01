@@ -35,8 +35,6 @@ WLabel::~WLabel()
 
 void WLabel::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Colors
     QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
 

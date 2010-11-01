@@ -38,12 +38,8 @@ class WWidget : public QWidget  {
 public:
     WWidget(QWidget *parent=0, Qt::WFlags flags=0);
     ~WWidget();
-    /** Sets pointer to keyboard configuration */
-    static void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     /** Sets the path used to find pixmaps */
     static void setPixmapPath(QString qPath);
-    /** Given an XML DOM node, initialize the widget */
-    void setup(QDomNode node);
     static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
     static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
     static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
@@ -73,8 +69,6 @@ protected:
     double m_fValue;
     /** Is true if widget is off */
     bool m_bOff;
-    /** Pointer to keyboard config object */
-    static ConfigObject<ConfigValueKbd> *m_spKbdConfigObject;
 
     QString getTooltip() {
         return m_Tooltip;

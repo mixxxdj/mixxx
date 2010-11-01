@@ -36,8 +36,6 @@ WNumber::~WNumber()
 
 void WNumber::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Number of digits
     setNumDigits(selectNodeInt(node, "NumberOfDigits"));
 
