@@ -230,6 +230,8 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
+    // Enable dragging songs from this data model to elsewhere (like the
+    // waveform widget to load a track into a Player).
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
     return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |

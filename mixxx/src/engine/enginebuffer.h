@@ -83,8 +83,6 @@ class EngineBuffer : public EngineObject
 public:
     EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
     ~EngineBuffer();
-    /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
-    void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -106,6 +104,8 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
+
+    bool isTrackLoaded();
   public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
@@ -118,10 +118,12 @@ public:
     // has completed.
     void slotLoadTrack(TrackPointer pTrack);
 
+    void slotEjectTrack(double);
+
   signals:
     void trackLoaded(TrackPointer pTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
-    void loadNextTrack();
+    void trackUnloaded(TrackPointer pTrack);
 
   private slots:
     void slotTrackLoaded(TrackPointer pTrack,
@@ -130,7 +132,7 @@ public:
                              QString reason);
 
 private:
-
+    void setPitchIndpTimeStretch(bool b);
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
@@ -138,6 +140,8 @@ private:
 
     void hintReader(const double rate,
                     const int iSourceSamples);
+
+    void ejectTrack();
 
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
@@ -196,20 +200,22 @@ private:
 
     ControlObject *rateEngine;
     ControlObject *m_pMasterRate;
-    ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
     ControlObject *m_pSeekWindowTweak;
+    ControlPushButton *m_pKeylock;
 
-    /** Mutex used in sharing buffer and abs playpos */
-    QMutex m_qPlayposMutex;
-    /** Buffer and absolute playpos shared among threads */
-    double m_dAbsPlaypos;
+    ControlPushButton *m_pEject;
 
     /** Control used to signal when at end of file */
-    ControlObject *m_pTrackEnd, *m_pTrackEndMode;
-    ControlObject *m_pVinylStatus;  //Status of vinyl control
+    ControlObject *m_pTrackEnd;
+
+    // Whether or not to repeat the track when at the end
+    ControlPushButton* m_pRepeat;
+
+	ControlObject *m_pVinylStatus;  //Status of vinyl control
+	
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
 
@@ -228,9 +234,7 @@ private:
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
 
-    /** Whether Pitch-Independent Time Stretch should be re-enabled when we
-        start playing post-scratch **/
-    bool m_bResetPitchIndpTimeStretch; // TODO(rryan) remove?
+    TrackPointer m_pCurrentTrack;
 };
 
 #endif

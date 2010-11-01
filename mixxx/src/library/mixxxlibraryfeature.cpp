@@ -18,7 +18,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
       m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
       m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)) {
     QStringList children;
-    children << tr(CHILD_MISSING); //Insert michael jackson joke here
+    children << tr("Missing Songs"); //Insert michael jackson joke here
     m_childModel.setStringList(children);
 }
 
@@ -52,7 +52,8 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
-    if (itemName == tr(CHILD_MISSING)) //lulz!
+
+    if (itemName == m_childModel.stringList().at(0))
         emit(showTrackModel(m_pMissingTableModel));
 }
 

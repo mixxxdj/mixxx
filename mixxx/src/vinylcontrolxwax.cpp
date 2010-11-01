@@ -114,6 +114,7 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
         
         bHaveSignal = fabs((float)samples[0]) + fabs((float)samples[1]) > MIN_SIGNAL;
+        //qDebug() << "signal?" << bHaveSignal;
         
         waitForNextInput.wakeAll();
         lockSamples.unlock();
@@ -172,6 +173,7 @@ void VinylControlXwax::run()
         	// Analyse the input samples
 		    int iPosition = -1;
 	        iPosition = timecoder_get_position(&timecoder, &when);
+	        //qDebug() << id << iPosition;
 	        
         	double cur_duration = duration->get();
         	//FIXME? we should really sync on all track changes

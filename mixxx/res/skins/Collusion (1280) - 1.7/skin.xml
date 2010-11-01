@@ -319,7 +319,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 	</PushButton>
 	<PushButton>
 		<Tooltip>Deck A: End of track mode</Tooltip>
-		<NumberStates>3</NumberStates>
+		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>b-eot-s.png</Pressed>
@@ -327,17 +327,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>b-eot-n.png</Pressed>
-			<Unpressed>b-eot-n.png</Unpressed>
-		</State>
-		<State>
-			<Number>2</Number>
 			<Pressed>b-eot-r.png</Pressed>
 			<Unpressed>b-eot-r.png</Unpressed>
 		</State>
 		<Pos>99,117</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+			<ConfigKey>[Channel1],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -537,7 +532,7 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 	</PushButton>
 	<PushButton>
 		<Tooltip>Deck B: End of track mode</Tooltip>
-		<NumberStates>3</NumberStates>
+		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>b-eot-s.png</Pressed>
@@ -545,17 +540,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>b-eot-n.png</Pressed>
-			<Unpressed>b-eot-n.png</Unpressed>
-		</State>
-		<State>
-			<Number>2</Number>
 			<Pressed>b-eot-r.png</Pressed>
 			<Unpressed>b-eot-r.png</Unpressed>
 		</State>
 		<Pos>1143,117</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -1121,12 +1111,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Control>loop_end_position</Control>
 			<Text> Out </Text>
 		</Mark>
-		<!-- 
+		<!--
 		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
-		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
+		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
@@ -1380,12 +1370,12 @@ Copyright (C) 2010 Jeff Nelson (dj.synth /////at\\\\\ gmail)
 			<Control>loop_end_position</Control>
 			<Text> Out </Text>
 		</Mark>
-		<!-- 
+		<!--
 		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues 
-		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel. 
+		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>

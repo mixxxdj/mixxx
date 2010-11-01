@@ -323,6 +323,7 @@ class MixxxCore(Feature):
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
+                   "dlgprefsounditem.cpp",
                    "dlgprefmidibindings.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefnomidi.cpp",
@@ -514,6 +515,8 @@ class MixxxCore(Feature):
                    "playermanager.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
+                   "soundmanagerconfig.cpp",
+                   "audiopath.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
@@ -543,6 +546,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
+        build.env.Uic4('dlgprefsounditem.ui')
 
         # Add the QRC file which compiles in some extra resources (prefs icons,
         # etc.)

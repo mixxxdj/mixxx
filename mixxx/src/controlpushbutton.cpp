@@ -51,20 +51,30 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
     //qDebug() << "bMidiSimulateLatching is true!";
     // Only react on NOTE_ON midi events if simulating latching...
     
-    qDebug() << bool(c==NOTE_ON) << v;
+    //qDebug() << c << v;
     
     if (m_bIsToggleButton) //This block makes push-buttons act as toggle buttons.
     {
-        if (c==NOTE_ON && v>0.) //Only turn on on note on
-        {
-            if (m_dValue==0.)
-                m_dValue = 1.;
-        }
-        else //Only turn off on note off
-       	{
-       		if (m_dValue==1.)
-       			m_dValue = 0.;
-       	}
+    	if (c == NOTE_ON)
+    	{
+    		if (v > 0.)
+    		{
+    			m_dValue = !m_dValue;
+    		}
+    	}
+    	else
+    	{
+			if (v > 0.)
+		    {
+		        if (m_dValue == 0.)
+		            m_dValue = 1.;
+		    }
+		    else
+		   	{
+		   		if (m_dValue == 1.)
+		   			m_dValue = 0.;
+		   	}
+		}
     }
     else //Not a toggle button (trigger only when button pushed)
     {
@@ -79,9 +89,9 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
     	}
     	else  //press-and-hold button
     	{
-		    if (c == NOTE_ON)
+		    if (v > 0.)
 	        	m_dValue = v;
-		    else if (c == NOTE_OFF)
+		    else
 		        m_dValue = 0.0;
 		}
     }

@@ -43,6 +43,7 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
+#include "audiopath.h"
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
@@ -102,10 +103,9 @@ class MixxxApp : public QMainWindow
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
     void slotControlVinylControl(double toggle);
     void slotCheckboxVinylControl(bool toggle);
-    bool tryToggleVinylControl(bool toggle);
+    int tryToggleVinylControl(int deck);
     void slotControlVinylControl2(double toggle);
     void slotCheckboxVinylControl2(bool toggle);
-    bool tryToggleVinylControl2(bool toggle);
     /** toggle recording - Don't #ifdef this because MOC is dumb**/
     void slotOptionsRecord(bool toggle);
     /** toogle full screen mode */
@@ -238,6 +238,7 @@ class MixxxApp : public QMainWindow
 #endif
 
     int noSoundDlg(void);
+    int noOutputDlg(bool *continueClicked);
     // Fullscreen patch
     QPoint m_winpos;
 };
