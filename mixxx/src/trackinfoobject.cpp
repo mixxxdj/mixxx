@@ -268,8 +268,8 @@ bool TrackInfoObject::exists()  const
 
 float TrackInfoObject::getRG() const
 {
-	QMutexLocker lock(&m_qMutex);
-	return m_fRG;
+    QMutexLocker lock(&m_qMutex);
+    return m_fRG;
 }
 
 void TrackInfoObject::setRG(float f)
