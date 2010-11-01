@@ -1,32 +1,37 @@
-#, fuzzy
+# French translation for mixxx
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the mixxx package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-28 16:01-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: mixxx\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2010-10-28 15:35-0400\n"
+"PO-Revision-Date: 2010-10-29 01:16+0000\n"
+"Last-Translator: Mathieu Rene <Unknown>\n"
+"Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Translate Toolkit 1.5.3\n"
+"X-Launchpad-Export-Date: 2010-11-01 05:05+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "DJ Auto"
 
 #: BrowseFeature#1
 msgid "Browse"
-msgstr ""
+msgstr "Parcourir"
 
 #: BrowseFeature#2
 msgid "Permission Denied"
-msgstr ""
+msgstr "Permission refusée"
 
 #: BrowseFeature#3
 msgid "You don't have permission to view this folder."
-msgstr ""
+msgstr "Vous n'avez pas la permission de voir ce répertoire."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -35,7 +40,7 @@ msgstr ""
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: CrateFeature#3
 msgid "Crates"
@@ -63,12 +68,12 @@ msgstr ""
 
 #: CrateTableModel#1
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artiste"
 
 #: CrateTableModel#3
 msgctxt "CrateTableModel#3"
@@ -88,66 +93,67 @@ msgstr ""
 #: CrateTableModel#6
 msgctxt "CrateTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Année"
 
 #: CrateTableModel#7
 msgctxt "CrateTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: CrateTableModel#8
 msgctxt "CrateTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Emplacement"
 
 #: CrateTableModel#9
 msgctxt "CrateTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Commentaire"
 
 #: CrateTableModel#10
 msgctxt "CrateTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Durée"
 
 #: CrateTableModel#11
 msgctxt "CrateTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Morceau #"
 
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Débit"
 
 #: CrateTableModel#13
 msgctxt "CrateTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: CrateTableModel#14
 msgctxt "CrateTableModel#14"
 msgid "Date Added"
-msgstr ""
+msgstr "Date d'ajout"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "À propos de Mixxx"
 
 #: DlgAboutDlg#2
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; "
-"font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
-"font-family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
 
 #: DlgAboutDlg#3
@@ -156,24 +162,24 @@ msgstr ""
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Site Web Officiel</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Désactiver le DJ Auto"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Activer le DJ Auto"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Paramètres"
 
 #: DlgAutoDJ#4
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Ajoutez des morceaux à la liste ci-dessous"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -185,7 +191,7 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "Plage BPM"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -197,11 +203,11 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analyzer le morceau au complet"
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr ""
+msgstr "Passer"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
@@ -209,26 +215,28 @@ msgstr ""
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Suivant"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Assistant de configuration MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "Bienvenue à l'assistant de configuration MIDI"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Cet assistant vous assistera à associer les contrôles de votre controlleur "
+"MIDI à ceux de Mixxx."
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "Commencer"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -252,9 +260,10 @@ msgstr ""
 
 #: DlgMidiLearning#13
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
 "font-weight:400; font-style:normal;\">\n"
@@ -911,9 +920,10 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
 "weight:400; font-style:normal;\">\n"
@@ -1244,8 +1254,9 @@ msgstr ""
 
 #: DlgPrefVinylDlg#5
 msgid ""
-"<a href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">T"
-"roubleshooting</a>"
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
 msgstr ""
 
 #: DlgPrefVinylDlg#6
@@ -1801,7 +1812,8 @@ msgid ""
 msgstr ""
 
 #: MidiMapping#4
-msgid "* Check to see that the function name is spelled correctly in the mapping "
+msgid ""
+"* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
 
