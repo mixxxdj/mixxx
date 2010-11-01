@@ -238,6 +238,7 @@ void SoundManager::closeDevices()
             delete vc;
         }
     }
+    m_VinylMapping.clear();
 #endif
 }
 
@@ -334,7 +335,6 @@ int SoundManager::setupDevices()
     iNumDevicesOpenedForOutput = iNumDevicesOpenedForInput = 0;
     int devicesAttempted = 0;
     int devicesOpened = 0;
-    int vinylInputs = 0;
 
     // filter out any devices in the config we don't actually have
     m_config.filterOutputs(this);
@@ -347,8 +347,10 @@ int SoundManager::setupDevices()
     // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
     // shouldn't be any reason for these to be reinitialized every time the
     // audio prefs are updated. Will require work in DlgPrefVinyl.
+    QHash<ChannelGroup, VinylControlProxy*> vinyl_inputs;
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
+	m_VinylMapping.clear();
 #endif
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
@@ -358,16 +360,44 @@ int SoundManager::setupDevices()
         m_pErrorDevice = device;
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
-            err = device->addInput(in);
-            if (err != OK)
-                return err;
+            err = device->addInput(in);            
+            if (in.getType() == AudioInput::VINYLCONTROL)
+            {
+#ifdef __VINYLCONTROL__
+            	if (err == OK)
+            	{
+            		//it's awkward here to map vinylcontrolproxy pointers
+            		//instead of indexes, but in the processing loop it's a 
+            		//lot cleaner
+            		
+            		//vinyl_inputs keeps track of which channel groups were 
+            		//originally assigned to which vinyl threads
+            		vinyl_inputs[in.getChannelGroup()] = 
+            			m_VinylControl[in.getIndex()];
+            		//m_VinylMapping keeps track of which AudioInputs should
+            		//be assigned to which vinyl threads
+            		m_VinylMapping[m_VinylControl[in.getIndex()]] = in;
+            	}
+            	else if (err == SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL)
+            	{
+            		//if we don't have this, something went wrong
+            		Q_ASSERT (vinyl_inputs.contains(in.getChannelGroup()));
+            		//assign the original "real" input to this deck,
+            		m_VinylMapping[m_VinylControl[in.getIndex()]] = 
+            			m_VinylMapping[vinyl_inputs[in.getChannelGroup()]];
+            	}
+            	else
+            		return err;
+#endif
+            }
+            else
+		        if (err != OK)
+                	return err;
             if (!m_inputBuffers.contains(in)) {
                 // TODO(bkgood) look into allocating this with the frames per
                 // buffer value from SMConfig
                 m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
             }
-            if(in.getType() == AudioInput::VINYLCONTROL)
-            	vinylInputs++;
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
             isOutput = true;
@@ -413,13 +443,6 @@ int SoundManager::setupDevices()
         }
     }
     
-#ifdef __VINYLCONTROL__    
-    if (vinylInputs == 1)
-    	m_pConfig->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), true);
-    else
-    	m_pConfig->set(ConfigKey("[VinylControl]","SingleDeckEnable" ), false);
-#endif
-
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
@@ -439,6 +462,16 @@ SoundDevice* SoundManager::getErrorDevice() const {
 SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
+
+#ifdef __VINYLCONTROL__        
+bool SoundManager::hasVinylInput(int deck)
+{
+	VinylControlProxy* vinyl_control = m_VinylControl[deck];
+	
+	return m_VinylControl[deck] && 
+		m_inputBuffers.contains(m_VinylMapping[vinyl_control]);
+}
+#endif
 
 int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
@@ -591,42 +624,22 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
-        QListIterator<AudioInput> inputItr(inputs);
-        AudioInput singledeck;
-        unsigned int singledeckIndex = 0;
-        int vinylcount = 0;
-        while (inputItr.hasNext())
+		/*QListIterator<AudioInput> inputItr(inputs);
+		while (inputItr.hasNext())
         {
             AudioInput in = inputItr.next();
-            if (in.getType() == AudioInput::VINYLCONTROL) {
-            	vinylcount++;
-                unsigned int index = in.getIndex();
-                Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood
-                if (m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
-                {
-                	//if this is the first deck, remember it because we're going
-                	//to use this deck's samples for all subsequent decks
-                	if (vinylcount == 1)
-                	{
-                		singledeck = in;
-                		singledeckIndex = index;
-                	}
-                	if (m_VinylControl[singledeckIndex] && m_inputBuffers.contains(singledeck))
-                		//this is guaranteed to be deck 0, isn't it?
-                		m_VinylControl[index]->AnalyseSamples(m_inputBuffers[singledeck], iFramesPerBuffer);
-                }
-                else
-                {
-                	if (m_VinylControl[index] && m_inputBuffers.contains(in)) 
-                 	   m_VinylControl[index]->AnalyseSamples(m_inputBuffers[in], iFramesPerBuffer);
-				}
-            }
-        }
-        if (m_pConfig->getValueString(ConfigKey("[VinylControl]", "SingleDeckEnable")).toInt())
-        {
-        	//analyse samples for the rest of the vinyl decks (that have no input of their own
-        	if (m_VinylControl[singledeckIndex] && m_inputBuffers.contains(singledeck))
-        		m_VinylControl[1]->AnalyseSamples(m_inputBuffers[singledeck], iFramesPerBuffer);
+            qDebug() << "theirs" << &m_inputBuffers[in];
+        }*/
+      
+      	QListIterator<VinylControlProxy*> vinylItr(m_VinylControl);
+    	while(vinylItr.hasNext())
+    	{
+    		VinylControlProxy* vinyl_control = vinylItr.next();
+           	//qDebug() << "mine" << vinyl_control << &m_inputBuffers[m_VinylMapping[vinyl_control]];
+        	if (vinyl_control && m_inputBuffers.contains(m_VinylMapping[vinyl_control]))
+            	vinyl_control->AnalyseSamples(m_inputBuffers[m_VinylMapping[vinyl_control]], iFramesPerBuffer);
+            //else
+            //	qDebug() << "processing FAIL";
         }
 #endif
     }

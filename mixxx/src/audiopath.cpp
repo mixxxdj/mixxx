@@ -69,6 +69,14 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
 }
 
 /**
+ * Generates a hash of this ChannelGroup, so it can act as a key in a QHash.
+ * @return a hash for this ChannelGroup
+ */
+unsigned int ChannelGroup::getHash() const {
+    return 0 | (m_channels << 8) | m_channelBase;
+}
+
+/**
  * Constructs an AudioPath object (must be called by a child class's
  * constructor, AudioPath is abstract).
  * @param channelBase the first channel on a sound device used by this AudioPath.
@@ -390,6 +398,13 @@ void AudioInput::setType(AudioPathType type) {
     } else {
         m_type = AudioPath::INVALID;
     }
+}
+
+/**
+ * Defined for QHash, so ChannelGroup can be used as a QHash key.
+ */
+unsigned int qHash(const ChannelGroup &group) {
+    return group.getHash();
 }
 
 /**
