@@ -61,7 +61,16 @@ MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping,
 
 MidiDevicePortMidi::~MidiDevicePortMidi()
 {
-    close();
+    int success = close();
+
+
+    QMutexLocker locker(&m_mutex);
+    if (success == 0) {
+        //Wait until run() has actually finished before letting the 
+        //destructor finish up
+        m_shutdownWait.wait(&m_mutex);
+    }
+    //Otherwise the stream was already closed, so we don't have to wait.
 }
 
 int MidiDevicePortMidi::open()
@@ -72,6 +81,9 @@ int MidiDevicePortMidi::open()
         qDebug() << "PortMIDI device" << m_strDeviceName << "already open";
         return -1;
     }
+
+    setReceiveInhibit(false);
+    setSendInhibit(false);
 
     startup();
 
@@ -145,6 +157,7 @@ int MidiDevicePortMidi::open()
 int MidiDevicePortMidi::close()
 {
     setReceiveInhibit(true);    // Prevent deadlock
+    setSendInhibit(true);
 
     if (!m_bIsOpen) {
         qDebug() << "PortMIDI device" << m_strDeviceName << "already closed";
@@ -248,6 +261,9 @@ void MidiDevicePortMidi::run()
 
     } while (!stopRunning);
 
+    m_mutex.lock();
+    m_shutdownWait.wakeAll();
+    m_mutex.unlock();
 
 }
 

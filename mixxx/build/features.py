@@ -4,6 +4,42 @@ import util
 from mixxx import Feature
 import SCons.Script as SCons
 
+class HSS1394(Feature):
+    def description(self):
+        return "HSS1394 MIDI device support"
+
+    def enabled(self, build):
+        build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 0)
+        if int(build.flags['hss1394']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if build.platform_is_linux:
+            # TODO(XXX) Enable this when when FFADO back-end support is written into Mixxx
+            return
+            #have_ffado = conf.CheckLib('ffado', autoadd=False)
+            #if not have_ffado:
+            #    raise Exception('Could not find libffado.')
+        else:
+            #have_hss1394_h = conf.CheckHeader('hss1394/hss1394.h') # WTF this gives tons of errors on MSVC
+            have_hss1394 = conf.CheckLib('hss1394', autoadd=False)
+            #if not (have_hss1394 and have_hss1394_h):
+            if not have_hss1394:
+                raise Exception('Could not find libhss1394 or its development headers.')
+            build.env.Append(LIBS = 'hss1394')
+        build.env.Append(CPPDEFINES = '__HSS1394__')
+
+    def sources(self, build):
+        sources = SCons.Split("""midi/mididevicehss1394.cpp
+                            midi/hss1394enumerator.cpp
+                            """)
+        return sources
 
 class MIDIScript(Feature):
     def description(self):

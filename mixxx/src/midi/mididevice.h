@@ -63,6 +63,11 @@ Q_OBJECT
         Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
         bool getMidiLearnStatus();
         void receive(MidiStatusByte status, char channel, char control, char value);
+#ifdef __MIDISCRIPT__
+        /** Receives System Exclusive (and other unhandled and/or arbitrary-length)
+            messages and passes them straight to a script function. */
+        void receive(const unsigned char data[], unsigned int length);
+#endif
         bool midiDebugging();
         void setReceiveInhibit(bool inhibit);
         void setSendInhibit(bool inhibit);
