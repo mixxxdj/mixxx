@@ -470,7 +470,7 @@ void TrackInfoObject::setTimesPlayed(int t)
 void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
-    std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString() << " - " << m_sFilename.toStdString();
+    //std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString() << " - " << m_sFilename.toStdString();
 	qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
     m_bPlayed = true;
     ++m_iTimesPlayed;
@@ -493,12 +493,12 @@ void TrackInfoObject::setPlayed(bool bPlayed)
    	{
 		if (bPlayed)
 		{
-			std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString() << " - " << m_sFilename.toStdString();
+			//std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString() << " - " << m_sFilename.toStdString();
 			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
 		}
 		else
 		{
-			std::cout << "Track Unplayed:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString()  << " - " << m_sFilename.toStdString();
+			//std::cout << "Track Unplayed:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString()  << " - " << m_sFilename.toStdString();
 			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
 	    }
 		setDirty(true);
