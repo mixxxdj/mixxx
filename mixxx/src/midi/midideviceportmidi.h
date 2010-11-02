@@ -53,6 +53,7 @@ protected:
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
     static QList<QString> m_deviceList;
     QMutex m_mutex;         /** Protects access to this object. Makes it thread safe. */
+    QWaitCondition m_shutdownWait;         /** Protects access to this object. Makes it thread safe. */
     static QMutex m_sPMLock;    // PortMidi is not thread-safe, so we need to only allow one thread at a time
     bool m_bStopRequested;
 };

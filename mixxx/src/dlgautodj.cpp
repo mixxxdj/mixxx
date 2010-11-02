@@ -21,6 +21,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bPlayer2Primed = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
 
+
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
@@ -44,6 +45,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     //Override some playlist-view properties:
     //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
     m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
+    //Sort by the position column and lock it
+    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
+    m_pTrackTableView->setSortingEnabled(false);
 
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
@@ -56,10 +60,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
                             ControlObject::getControl(ConfigKey("[Channel1]", "play")));
     m_pCOPlay2 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel2]", "play")));
-    m_pCOTrackEndMode1 = new ControlObjectThreadMain(
-                            ControlObject::getControl(ConfigKey("[Channel1]", "TrackEndMode")));
-    m_pCOTrackEndMode2 = new ControlObjectThreadMain(
-                            ControlObject::getControl(ConfigKey("[Channel2]", "TrackEndMode")));
+    m_pCORepeat1 = new ControlObjectThreadMain(
+                            ControlObject::getControl(ConfigKey("[Channel1]", "repeat")));
+    m_pCORepeat2 = new ControlObjectThreadMain(
+                            ControlObject::getControl(ConfigKey("[Channel2]", "repeat")));
     m_pCOCrossfader = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Master]", "crossfader")));
 }
@@ -194,7 +198,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
                 return;
             }
             m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
-            m_pCOTrackEndMode1->slotSet(1.0f); //Turn on NEXT mode to avoid race condition between async load
+            m_pCORepeat1->slotSet(1.0f); //Turn on repeat mode to avoid race condition between async load
                                                //and "play" command.
             m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
         }
@@ -206,8 +210,8 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         m_bAutoDJEnabled = false;
         m_pCOPlayPos1->disconnect(this);
         m_pCOPlayPos2->disconnect(this);
-        m_pCOTrackEndMode1->slotSet(0.0f); //Turn off NEXT mode
-        m_pCOTrackEndMode2->slotSet(0.0f); //Turn off NEXT mode
+        m_pCORepeat1->slotSet(0.0f); //Turn off repeat mode
+        m_pCORepeat2->slotSet(0.0f); //Turn off repeat mode
     }
 }
 
@@ -236,13 +240,13 @@ void DlgAutoDJ::player1PositionChanged(double value)
         //If the second player is stopped...
         if (m_pCOPlay2->get() == 0.0f)
         {
-            //Turn on STOP mode to tell Player 1 to stop at the end
-            m_pCOTrackEndMode1->slotSet(0.0f);
+            //Turn off repeat mode to tell Player 1 to stop at the end
+            m_pCORepeat1->slotSet(0.0f);
 
-            //Turn on NEXT mode to tell Player 2 to start playing when the new track is loaded.
+            //Turn on repeat mode to tell Player 2 to start playing when the new track is loaded.
             //This helps us get around the fact that it takes time for the track to be loaded
             //and that is executed asynchronously (so we get around the race condition).
-            m_pCOTrackEndMode2->slotSet(1.0f);
+            m_pCORepeat2->slotSet(1.0f);
             //Play!
             m_pCOPlay2->slotSet(1.0f);
         }
@@ -279,13 +283,13 @@ void DlgAutoDJ::player2PositionChanged(double value)
         }
         if (m_pCOPlay1->get() == 0.0f)
         {
-            //Turn on STOP mode to tell Player 2 to stop at the end
-            m_pCOTrackEndMode2->slotSet(0.0f);
+            //Turn off repeat mode to tell Player 2 to stop at the end
+            m_pCORepeat2->slotSet(0.0f);
 
-            //Turn on NEXT mode to tell Player 1 to start playing when the new track is loaded.
+            //Turn on repeat mode to tell Player 1 to start playing when the new track is loaded.
             //This helps us get around the fact that it takes time for the track to be loaded
             //and that is executed asynchronously (so we get around the race condition).
-            m_pCOTrackEndMode1->slotSet(1.0f);
+            m_pCORepeat1->slotSet(1.0f);
             m_pCOPlay1->slotSet(1.0f);
         }
 

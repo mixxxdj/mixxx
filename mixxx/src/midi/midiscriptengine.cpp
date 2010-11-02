@@ -38,7 +38,7 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
 {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
-    
+
     // Pre-allocate arrays for average number of virtual decks
     int decks = 16;
     m_intervalAccumulator.resize(decks);
@@ -46,7 +46,7 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_rampTo.resize(decks);
     m_ramp.resize(decks);
     m_pitchFilter.resize(decks);
-    
+
     // Initialize arrays used for testing and pointers
     for (int i=0; i < decks; i++) {
         m_dx[i]=NULL;
@@ -91,7 +91,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
     disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
                                                             char, MidiStatusByte, QString)),
                                 this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
-                                
+
     // Stop all timers
     stopAllTimers();
 
@@ -410,7 +410,7 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
         return false;
 
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, data);
+    args << QScriptValue(data);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -475,11 +475,11 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
         return false;
 
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, channel);
-    args << QScriptValue(m_pEngine, control);
-    args << QScriptValue(m_pEngine, value);
-    args << QScriptValue(m_pEngine, status);
-    args << QScriptValue(m_pEngine, group);
+    args << QScriptValue(channel);
+    args << QScriptValue(control);
+    args << QScriptValue(value);
+    args << QScriptValue(status);
+    args << QScriptValue(group);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -507,17 +507,17 @@ bool MidiScriptEngine::checkException() {
         QStringList error;
         error << (filename.isEmpty() ? "" : filename) << errorMessage << QString(line);
         m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
-        
+
         QString errorText = QString(tr("Uncaught exception at line %1 in file %2: %3"))
                             .arg(line)
                             .arg((filename.isEmpty() ? "" : filename))
                             .arg(errorMessage);
-                            
+
         if (filename.isEmpty())
             errorText = QString(tr("Uncaught exception at line %1 in passed code: %2"))
                         .arg(line)
                         .arg(errorMessage);
-        
+
         if (m_midiDebug)
             qCritical() << "MidiScriptEngine:" << errorText
                         << "\nBacktrace:\n"
@@ -545,16 +545,16 @@ void MidiScriptEngine::scriptErrorDialog(QString detailedError) {
         "<li>Try to recover by resetting your controller</li></ul></html>"));
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
-    
+
     // Allow user to suppress further notifications about this particular error
     props->addButton(QMessageBox::Ignore);
-    
+
     props->addButton(QMessageBox::Retry);
     props->addButton(QMessageBox::Close);
     props->setDefaultButton(QMessageBox::Close);
     props->setEscapeButton(QMessageBox::Close);
     props->setModal(false);
-    
+
     if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
         // Enable custom handling of the dialog buttons
         connect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
@@ -568,11 +568,11 @@ Input:   Key of dialog, StandardButton that was clicked
 Output:  -
 -------- ------------------------------------------------------ */
 void MidiScriptEngine::errorDialogButton(QString key, QMessageBox::StandardButton button) {
-    
+
     // Something was clicked, so disable this signal now
     disconnect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
         this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
-            
+
     if (button == QMessageBox::Retry) emit(resetController());
 }
 
@@ -736,6 +736,12 @@ void MidiScriptEngine::trigger(QString group, QString name) {
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
     ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
 
+    if (cobj == NULL) {
+        qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
+                   << "], which is non-existent. ignoring.";
+        return false;
+    }
+
     // When this function runs, assert that somebody is holding the script
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
@@ -801,9 +807,9 @@ void MidiScriptEngine::slotValueChanged(double value) {
         // Could branch to safeExecute from here, but for now do it this way.
         QScriptValue function_value = m_pEngine->evaluate(function);
         QScriptValueList args;
-        args << QScriptValue(m_pEngine, value);
-        args << QScriptValue(m_pEngine, key.group); // Added by Math`
-        args << QScriptValue(m_pEngine, key.item);  // Added by Math`
+        args << QScriptValue(value);
+        args << QScriptValue(key.group); // Added by Math`
+        args << QScriptValue(key.item);  // Added by Math`
         QScriptValue result = function_value.call(QScriptValue(), args);
         if (result.isError()) {
             qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
@@ -832,12 +838,12 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
     // Read in the script file
     QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
-        QString errorLog = 
+        QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")
                 .arg(filename)
                 .arg(input.error())
                 .arg(input.errorString());
-                        
+
         if (m_midiDebug) qCritical() << errorLog;
         else {
             qWarning() << errorLog;
@@ -846,7 +852,7 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
             props->setTitle("MIDI script file problem");
             props->setText(QString("There was a problem opening the MIDI script file %1.").arg(filename));
             props->setInfoText(input.errorString());
-            
+
             ErrorDialogHandler::instance()->requestErrorDialog(props);
             return false;
         }
@@ -885,7 +891,7 @@ bool MidiScriptEngine::safeEvaluate(QString filename) {
             props->setText(QString("There was an error in the MIDI script file %1.").arg(filename));
             props->setInfoText("The functionality provided by this script file will be disabled.");
             props->setDetails(error);
-            
+
             ErrorDialogHandler::instance()->requestErrorDialog(props);
         }
         return false;
@@ -1012,7 +1018,7 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
 
     m_scriptEngineLock.lock();
-    
+
     // See if this is a scratching timer
     if (m_scratchTimers.contains(timerId)) {
         m_scriptEngineLock.unlock();
@@ -1043,7 +1049,7 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta) {
-    
+
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
 //         qDebug() << "Already scratching deck" << deck << ". Overriding.";
@@ -1051,19 +1057,19 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
         killTimer(timerId);
         m_scratchTimers.remove(timerId);
     }
-    
+
     // Controller resolution in intervals per second at normal speed (rev/min * ints/rev * mins/sec)
     float intervalsPerSecond = (rpm * intervalsPerRev)/60;
-    
+
     m_dx[deck] = 1/intervalsPerSecond;
     m_intervalAccumulator[deck] = 0;
     m_ramp[deck] = false;
-    
+
     QString group = QString("[Channel%1]").arg(deck);
-    
+
     // Ramp
     float initVelocity = 0.0;   // Default to stopped
-    
+
     // See if the deck is already being scratched
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
     if (cot != NULL && cot->get() == 1) {
@@ -1086,20 +1092,20 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
             // See if we're in reverse play
             cot = getControlObjectThread(group, "reverse");
             if (cot != NULL && cot->get() == 1) rate = -rate;
-            
+
             initVelocity = rate;
         }
     }
-    
+
     // Initialize pitch filter (0.001s = 1ms)
     //  (We're assuming the OS actually gives us a 1ms timer below)
     if (alpha && beta) m_pitchFilter[deck]->init(0.001, initVelocity, alpha, beta);
     else m_pitchFilter[deck]->init(0.001, initVelocity); // Use filter's defaults if not specified
-    
+
     int timerId = startTimer(1);    // 1ms is shortest possible, OS dependent
     // Associate this virtual deck with this timer for later processing
     m_scratchTimers[timerId] = deck;
-    
+
     // Set scratch2_enable
     cot = getControlObjectThread(group, "scratch2_enable");
     if(cot != NULL) cot->slotSet(1);
@@ -1120,41 +1126,41 @@ void MidiScriptEngine::scratchTick(int deck, int interval) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchProcess(int timerId) {
-    
+
     int deck = m_scratchTimers[timerId];
     PitchFilter* filter = m_pitchFilter[deck];
     QString group = QString("[Channel%1]").arg(deck);
-    
+
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
         return;
     }
-    
+
     // Give the filter a data point:
-    
+
     // If we're ramping to end scratching, feed fixed data
     if (m_ramp[deck]) filter->observation(m_rampTo[deck]*0.001);
     //  This will (and should) be 0 if no net ticks have been accumulated (i.e. the wheel is stopped)
     else filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
-    
+
     // Actually do the scratching
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
     if(cot != NULL) cot->slotSet(filter->currentPitch());
-    
+
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
-    
+
     // If we're ramping and the current pitch is really close to the rampTo value,
     //  end scratching
 //     if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
     if (m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= 0.00001) {
-        
+
         m_ramp[deck] = false;   // Not ramping no mo'
-        
+
         // Clear scratch2_enable
         cot = getControlObjectThread(group, "scratch2_enable");
         if(cot != NULL) cot->slotSet(0);
-        
+
         // Remove timer
         killTimer(timerId);
         m_scratchTimers.remove(timerId);
@@ -1171,7 +1177,7 @@ void MidiScriptEngine::scratchProcess(int timerId) {
 void MidiScriptEngine::scratchDisable(int deck) {
 
     QString group = QString("[Channel%1]").arg(deck);
-    
+
     // See if deck is playing
     ControlObjectThread *cot = getControlObjectThread(group, "play");
     if (cot != NULL && cot->get() == 1) {
@@ -1188,7 +1194,7 @@ void MidiScriptEngine::scratchDisable(int deck) {
         // See if we're in reverse play
         cot = getControlObjectThread(group, "reverse");
         if (cot != NULL && cot->get() == 1) rate = -rate;
-        
+
         m_rampTo[deck] = rate;
     }
     else m_rampTo[deck]=0.0;

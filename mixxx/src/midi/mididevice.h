@@ -70,6 +70,7 @@ Q_OBJECT
 #endif
         bool midiDebugging();
         void setReceiveInhibit(bool inhibit);
+        void setSendInhibit(bool inhibit);
     public slots:
         void disableMidiLearn();
         void enableMidiLearn();
@@ -100,12 +101,18 @@ Q_OBJECT
         bool m_midiDebug;
         /** Mutex to protect against concurrent access to member variables */
         QMutex m_mutex;
-        /** Mutex to protect against concurrent access to m_pMidiMapping. */
-        QMutex m_mappingMutex;
+        /** Mutex to protect against concurrent access to the m_pMidiMapping _pointer. Note that MidiMapping itself is thread-safe, so we just need to protect the pointer!. */
+        QMutex m_mappingPtrMutex;
         /** A flag to inhibit the reception of messages from this device. This is used to prevent
             a race condition when a MIDI message is received and looked up in the MidiMapping while
             the MidiMapping is being modified (and is already locked).  */
         bool m_bReceiveInhibit;
+        /** A flag to inhibit the sending of MIDI messages to the MIDI device.
+            Similar to the above flag, this prevents race conditions, 
+            particularly one where the scripting engine tries to send a 
+            MIDI message while we're trying to shut it down. See
+            MidiDevice::shutdown() for more details. */
+        bool m_bSendInhibit;
 };
 
 #endif
