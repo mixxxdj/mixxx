@@ -38,32 +38,9 @@ WGLWaveformViewer::~WGLWaveformViewer() {
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
-
-    // Acquire position
-    QString pos = WWidget::selectNodeQString(node, "Pos");
-    int sep = pos.indexOf(",");
-    int x = pos.left(sep).toInt();
-    int y = pos.mid(sep+1).toInt();
-    move(x,y);
-
-    // Acquire size
-    QString size = WWidget::selectNodeQString(node, "Size");
-    sep = size.indexOf(",");
-    x = size.left(sep).toInt();
-    y = size.mid(sep+1).toInt();
-    setFixedSize(x,y);
-
-    // Get tooltip
-    QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
-    setToolTip(tooltip);
-
-    QString style = WWidget::selectNodeQString(node, "Style");
-    if (style != "")
-        setStyleSheet(style);
-
+    int w = width(), h = height();
     m_pWaveformRenderer->setup(node);
-
-    m_pWaveformRenderer->resize(x,y);
+    m_pWaveformRenderer->resize(w, h);
 }
 
 void WGLWaveformViewer::paintEvent(QPaintEvent *event) {

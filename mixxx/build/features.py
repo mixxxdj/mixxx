@@ -192,7 +192,6 @@ class VinylControl(Feature):
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
                    'vinylcontrolsignalwidget.cpp',
-                   'engine/enginevinylcontrol.cpp',
                    '#lib/scratchlib/DAnalyse.cpp']
         if build.platform_is_windows:
 			raise Exception('timecoder_win32 not updated yet')
