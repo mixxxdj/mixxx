@@ -6,6 +6,7 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QFile>
 
 
 #include "mixxx.h"
@@ -129,6 +130,14 @@ void WGLWaveformViewer::dropEvent(QDropEvent * event)
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
+		//total OWEN hack: because we strip out the library prefix
+		//in the view, we have to add it back here again to properly receive
+		//drops
+        if (!QFile(name).exists())
+        {
+        	if(QFile(m_sPrefix+"/"+name).exists())
+        		name = m_sPrefix+"/"+name;
+        }
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "")
             name = url.toString();
@@ -138,4 +147,12 @@ void WGLWaveformViewer::dropEvent(QDropEvent * event)
     } else {
         event->ignore();
     }
+}
+
+void WGLWaveformViewer::setLibraryPrefix(QString sPrefix)
+{
+	m_sPrefix = "";
+	m_sPrefix = sPrefix;
+	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
+		m_sPrefix.chop(1);
 }

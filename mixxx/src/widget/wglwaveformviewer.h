@@ -31,6 +31,7 @@ class WGLWaveformViewer : public QGLWidget
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
+    void setLibraryPrefix(QString sPrefix);
 
   public slots:
     void setValue(double);
@@ -55,7 +56,7 @@ class WGLWaveformViewer : public QGLWidget
     QMutex m_paintMutex;
 
     const char *m_pGroup;
-
+    QString m_sPrefix;
 };
 
 #endif

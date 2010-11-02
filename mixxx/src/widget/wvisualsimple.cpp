@@ -24,6 +24,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QUrl>
+#include <QFile>
 
 #include "waveform/waveformrenderer.h"
 
@@ -53,6 +54,19 @@ void WVisualSimple::dropEvent(QDropEvent * event)
     QList<QUrl> urls(event->mimeData()->urls());
     QUrl url = urls.first();
     QString name = url.toLocalFile();
+    
+    //total OWEN hack: because we strip out the library prefix
+	//in the view, we have to add it back here again to properly receive
+	//drops
+    if (!QFile(name).exists())
+    {
+    	if(QFile(m_sPrefix+"/"+name).exists())
+    		name = m_sPrefix+"/"+name;
+    }
+    
+    //If the file is on a network share, try just converting the URL to a string...
+    if (name == "")
+        name = url.toString();
 
     event->accept();
     emit(trackDropped(name, m_group));
@@ -152,5 +166,12 @@ void WVisualSimple::paintEvent(QPaintEvent *)
     }
 }
 
+void WVisualSimple::setLibraryPrefix(QString sPrefix)
+{
+	m_sPrefix = "";
+	m_sPrefix = sPrefix;
+	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
+		m_sPrefix.chop(1);
+}
 
 

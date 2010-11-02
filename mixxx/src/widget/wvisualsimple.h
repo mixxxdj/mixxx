@@ -47,6 +47,7 @@ class WVisualSimple : public WWidget
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
+    void setLibraryPrefix(QString sPrefix);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -60,6 +61,7 @@ class WVisualSimple : public WWidget
     QString m_group;
     int m_iStartPosX, m_iValue;
     QPoint m_qMarkerPos1, m_qMarkerPos2, m_qMousePos;
+    QString m_sPrefix;
 
     /** Colors */
     QColor colorSignal, colorMarker;

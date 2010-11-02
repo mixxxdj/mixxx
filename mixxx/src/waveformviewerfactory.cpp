@@ -45,6 +45,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         WGLWaveformViewer *visual = new WGLWaveformViewer(group, pWaveformRenderer, parent, NULL);
 
         if(visual->isValid()) {
+        	visual->setLibraryPrefix(pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
             m_visualGLViewers.append(visual);
             m_viewers.append(visual);
             ret = WAVEFORM_GL;
@@ -79,6 +80,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         qDebug() << "WaveformViewerFactory :: Creating new simple waveform";
         // Preference is for simple or regular, for now just simple.
         WVisualSimple *simple = new WVisualSimple(group,parent, pWaveformRenderer);
+        simple->setLibraryPrefix(pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
         m_simpleViewers.append(simple);
         m_viewers.append(simple);
         ret = WAVEFORM_SIMPLE;
