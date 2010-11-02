@@ -43,6 +43,7 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
+#include "audiopath.h"
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
@@ -154,10 +155,10 @@ class MixxxApp : public QMainWindow
     PlayerManager* m_pPlayerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
-    ControlObject *m_pControl;
+
     ConfigObject<ConfigValue> *m_pConfig;
-    /** Pointer to active keyboard configuration */
-    ConfigObject<ConfigValueKbd> *m_pKbdConfig;
+
+
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
@@ -181,25 +182,14 @@ class MixxxApp : public QMainWindow
     QMenu *macroMenu;
 #endif
 
-    QAction *m_pFileNew;
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
-    QAction *m_pFileSave;
-    QAction *m_pFileSaveAs;
-    QAction *m_pFileClose;
-    QAction *m_pFilePrint;
     QAction *m_pFileQuit;
-
-    QAction *m_pEditCut;
-    QAction *m_pEditCopy;
-    QAction *m_pEditPaste;
 
     QAction *m_pPlaylistsNew;
     QAction *m_pCratesNew;
     QAction *m_pPlaylistsImport;
     QAction **m_pPlaylistsList;
-
-    QAction *m_pIPodToggle;
 
     QAction *m_pBatchBpmDetect;
 
@@ -232,6 +222,7 @@ class MixxxApp : public QMainWindow
 #endif
 
     int noSoundDlg(void);
+    int noOutputDlg(bool *continueClicked);
     // Fullscreen patch
     QPoint m_winpos;
 };

@@ -98,6 +98,9 @@ int MidiDeviceHss1394::open()
         qDebug() << "HSS1394 device" << m_strDeviceName << "already open";
         return -1;
     }
+
+    setReceiveInhibit(false);
+    setSendInhibit(false);
     
     startup();
     
@@ -135,6 +138,7 @@ int MidiDeviceHss1394::open()
 int MidiDeviceHss1394::close()
 {   
     setReceiveInhibit(true);    // Prevent deadlock
+    setSendInhibit(true);
 
     if (!m_bIsOpen) {
         qDebug() << "HSS1394 device" << m_strDeviceName << "already closed";
@@ -167,6 +171,10 @@ int MidiDeviceHss1394::close()
 void MidiDeviceHss1394::sendShortMsg(unsigned int word) 
 {
     QMutexLocker Locker(&m_mutex);
+    
+    //Prevent race condition
+    if (m_bSendInhibit)
+        return;
 
 	unsigned char data[2];
 	data[0] = word & 0xFF;
@@ -193,6 +201,10 @@ void MidiDeviceHss1394::sendShortMsg(unsigned int word)
 void MidiDeviceHss1394::sendSysexMsg(unsigned char data[], unsigned int length) 
 {
     QMutexLocker Locker(&m_mutex);
+
+    //Prevent race condition
+    if (m_bSendInhibit)
+        return;
 
     m_sHSSLock.lock();
     int bytesSent = m_pChannel->SendChannelBytes(data,length);

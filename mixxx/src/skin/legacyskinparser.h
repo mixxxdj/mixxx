@@ -37,12 +37,14 @@ class LegacySkinParser : public QObject, public SkinParser {
     bool compareConfigKeys(QDomNode node, QString key);
 
     // Parsers for each node
+    QWidget* parseWidgetGroup(QDomElement node, QWidget* pParent);
     QWidget* parseBackground(QDomElement node, QWidget* pParent);
     QWidget* parsePushButton(QDomElement node, QWidget* pParent);
     QWidget* parseSliderComposed(QDomElement node, QWidget* pParent);
     QWidget* parseVisual(QDomElement node, QWidget* pParent);
     QWidget* parseOverview(QDomElement node, QWidget* pParent);
     QWidget* parseText(QDomElement node, QWidget* pParent);
+    QWidget* parseTrackProperty(QDomElement node, QWidget* pParent);
     QWidget* parseVuMeter(QDomElement node, QWidget* pParent);
     QWidget* parseStatusLight(QDomElement node, QWidget* pParent);
     QWidget* parseDisplay(QDomElement node, QWidget* pParent);
@@ -53,6 +55,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLabel(QDomElement node, QWidget* pParent);
     QWidget* parseKnob(QDomElement node, QWidget* pParent);
     QWidget* parseTableView(QDomElement node, QWidget* pParent);
+    QWidget* parseStyle(QDomElement node, QWidget* pParent);
+
+    void setupWidget(QDomNode node, QWidget* pWidget);
+    void setupConnections(QDomNode node, QWidget* pWidget);
 
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;

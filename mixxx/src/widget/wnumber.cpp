@@ -36,8 +36,6 @@ WNumber::~WNumber()
 
 void WNumber::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Number of digits
     setNumDigits(selectNodeInt(node, "NumberOfDigits"));
 
@@ -56,19 +54,18 @@ void WNumber::setup(QDomNode node)
 
     m_pLabel->setPalette(palette);
 
-    m_pLabel->setToolTip(getTooltip());
+    m_pLabel->setToolTip(toolTip());
 
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
 
-    // Size //XXX this code is repeated, it should be in a parsing class
     QString size = selectNodeQString(node, "Size");
     int x = size.left(size.indexOf(",")).toInt();
     int y = size.mid(size.indexOf(",")+1).toInt();
-    setFixedSize(x,y);
+    m_pLabel->setFixedSize(x,y);
 
-    // FWI: Begin of font size patch                                                    // FWI
+    // FWI: Begin of font size patch
     int fontsize = 9;
     if (!selectNode(node, "FontSize").isNull())
         fontsize = selectNodeQString(node, "FontSize").toInt();
@@ -92,23 +89,6 @@ void WNumber::setup(QDomNode node)
         m_dConstFactor = selectNodeQString(node, "ConstFactor").toDouble();
         setValue(0.);
     }
-
-    QString pos = selectNodeQString(node, "Pos");
-    int px = pos.left(pos.indexOf(",")).toInt();
-    int py = pos.mid(pos.indexOf(",")+1).toInt();
-    move(px,py);
-    m_pLabel->show();
-}
-
-void WNumber::setFixedSize(int x,int y)
-{
-    WWidget::setFixedSize(x,y);
-    m_pLabel->setFixedSize(x,y);
-}
-
-void WNumber::move(int x, int y)
-{
-    WWidget::move(x,y);
 }
 
 void WNumber::setNumDigits(int n)
