@@ -42,6 +42,7 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
     m_bIsOpen = false;
     m_bMidiLearn = false;
     m_bReceiveInhibit = false;
+    m_bSendInhibit = false;
 
     if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
@@ -60,40 +61,57 @@ MidiDevice::~MidiDevice()
     QMutexLocker locker(&m_mutex);
 
     qDebug() << "MidiDevice: Deleting MidiMapping...";
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     delete m_pMidiMapping;
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
 }
 
 void MidiDevice::startup()
 {
-    m_mappingMutex.lock();
+    QMutexLocker locker(&m_mappingPtrMutex);
 #ifdef __MIDISCRIPT__
+    setReceiveInhibit(true);
     m_pMidiMapping->startupScriptEngine();
+    setReceiveInhibit(false);
 #endif
-    m_mappingMutex.unlock();
 }
 
 void MidiDevice::shutdown()
 {
-    m_mappingMutex.lock();
+    QMutexLocker locker(&m_mappingPtrMutex);
+    //Stop us from processing any MIDI messages that are 
+    //received while we're trying to shut down the scripting engine.
+    //This prevents a deadlock that can happen because we've locked 
+    //the MIDI mapping pointer mutex (in the line above). If a
+    //MIDI message is received while this is locked, the script
+    //engine can end up waiting for the MIDI message to be
+    //mapped and we end up with a deadlock.
+    //Similarly, if a MIDI message is sent from the scripting 
+    //engine while we've held this lock, we'll end up with
+    //a similar deadlock. (Note that shutdownScriptEngin()
+    //waits for the scripting engine thread to terminate,
+    //which will never happen if it's stuck waiting for 
+    //m_mappingPtrMutex to unlock.
+    setReceiveInhibit(true);
+    setSendInhibit(true);
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
-    m_mappingMutex.unlock();
+    setReceiveInhibit(false);
+    setSendInhibit(false);
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
 {
     m_mutex.lock();
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     m_pMidiMapping = mapping;
-    
+
     if (m_pCorrespondingOutputDevice)
     {
         m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
     }
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
     m_mutex.unlock();
 }
 
@@ -141,9 +159,9 @@ void MidiDevice::enableMidiLearn() {
     m_bMidiLearn = true;
     m_mutex.unlock();
 
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
 }
 
 void MidiDevice::disableMidiLearn() {
@@ -151,9 +169,9 @@ void MidiDevice::disableMidiLearn() {
     m_bMidiLearn = false;
     m_mutex.unlock();
 
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
 }
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
@@ -183,7 +201,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         return; // Don't process midi messages further when MIDI learning
     }
 
-    QMutexLocker mappingLocker(&m_mappingMutex);
+    QMutexLocker mappingLocker(&m_mappingPtrMutex);
 
     // Only check for a mapping if the status byte is one we know how to handle
     if (status == MIDI_STATUS_NOTE_ON 
@@ -258,4 +276,11 @@ void MidiDevice::setReceiveInhibit(bool inhibit)
     //See comments for m_bReceiveInhibit.
     QMutexLocker locker(&m_mutex);
     m_bReceiveInhibit = inhibit;
+}
+
+void MidiDevice::setSendInhibit(bool inhibit)
+{
+    //See comments for m_bSendInhibit.
+    QMutexLocker locker(&m_mutex);
+    m_bSendInhibit = inhibit;
 }
