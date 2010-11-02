@@ -530,13 +530,13 @@ class Shoutcast(Feature):
         return "Shoutcast Broadcasting (OGG/MP3)"
 
     def enabled(self, build):
-        build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 0)
+        build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
         if int(build.flags['shoutcast']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
+        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
