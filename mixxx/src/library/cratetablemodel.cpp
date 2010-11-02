@@ -227,29 +227,6 @@ QItemDelegate* CrateTableModel::delegateForColumn(int i) {
     return NULL;
 }
 
-bool CrateTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-	//qDebug() << "edited " << index.row() << " " << index.column() << "to " << value << " with role " << role;
-   	if (index.isValid() && role == Qt::CheckStateRole)
-   	{
-   		QString val = value.toInt() > 0 ? QString("true") : QString("false");
-    	if (index.column() == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-    		QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
-    		return setData(playedIndex, val, Qt::EditRole);
-		}
-   	}
-	else if (BaseSqlTableModel::setData(index, value, role))
-	{
-		submitAll();
-		return true;
-	}
-	/*else
-	{
-		qDebug() << "problem with setdata" << lastError();
-	}*/
-	return false;
-}
-
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
     return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
             TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;

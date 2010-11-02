@@ -4,6 +4,7 @@
 #include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
+#include "audiotagger.h"
 
 // The number of tracks to cache in memory at once. Once the n+1'th track is
 // created, the TrackDAO's QCache deletes its TrackPointer to the track, which
@@ -12,9 +13,10 @@
 // 0.
 #define TRACK_CACHE_SIZE 20
 
-TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao)
+TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
+          m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE) {
 
 }
@@ -116,6 +118,10 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
         if (pTrack->isDirty()) {
             updateTrack(pTrack);
             m_dirtyTracks.remove(trackId);
+
+            //Write audio meta data, if enabled in the preferences
+            writeAudioMetaData(pTrack);
+
             emit(trackClean(trackId));
         } else {
             Q_ASSERT(!m_dirtyTracks.contains(trackId));
@@ -873,4 +879,23 @@ void TrackDAO::detectMovedFiles()
 void TrackDAO::clearCache()
 {
     m_trackCache.clear();
+}
+void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
+
+    if(m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1){
+       
+        AudioTagger tagger(pTrack->getLocation());
+        
+        tagger.setArtist(pTrack->getArtist());
+        tagger.setTitle(pTrack->getTitle());
+        tagger.setGenre(pTrack->getGenre());
+        tagger.setAlbum(pTrack->getAlbum());
+        tagger.setComment(pTrack->getComment());
+        tagger.setTracknumber(pTrack->getTrackNumber());
+        tagger.setBpm(pTrack->getBpmStr());
+        
+        tagger.save();
+    
+    }
+
 }
