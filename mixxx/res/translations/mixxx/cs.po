@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-10-30 18:47+0000\n"
+"PO-Revision-Date: 2010-11-01 19:37+0000\n"
 "Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-01 05:05+0000\n"
+"X-Launchpad-Export-Date: 2010-11-02 04:47+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -613,29 +613,29 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr ""
+msgstr "Výstup:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
-msgstr ""
+msgstr "Povoleno"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr ""
+msgstr "Ovládací prvky"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: DlgPrefMidiBindingsDlg#9
 msgctxt "DlgPrefMidiBindingsDlg#9"
 msgid "Remove"
-msgstr ""
+msgstr "Odstranit"
 
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
@@ -644,118 +644,120 @@ msgstr "MIDI Learning Wizard"
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Smazat všechno"
 
 #: DlgPrefMidiBindingsDlg#12
 msgid "MIDI Input"
-msgstr ""
+msgstr "MIDI vstup"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "Outputs"
-msgstr ""
+msgstr "Výstupy"
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "MIDI Output"
-msgstr ""
+msgstr "MIDI výstup"
 
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulář3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "MIDI zařízení nebyla nalezena"
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Vybrat adresář s hudební knihovnou"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
-msgstr ""
+msgstr "Bylo nalezeno více iPodů"
 
 #: DlgPrefPlaylist#3
 msgid ""
 "Mixxx has detected another iPod. \n"
 "\n"
 msgstr ""
+"Mixxx nalezl jiný iPod. \n"
+"\n"
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr ""
+msgstr "Vyberte Ano pro použití nově nalezeného iPodu @ "
 
 #: DlgPrefPlaylist#5
 msgid " or to continue to search for other iPods. \n"
-msgstr ""
+msgstr " a nebo pokračujte v hledání jiných iPodů. \n"
 
 #: DlgPrefPlaylist#6
 msgid "Choose No to use the existing iPod @ "
-msgstr ""
+msgstr "Vyberte Ne, pokud chcete použít existující iPod @ "
 
 #: DlgPrefPlaylist#7
 msgid " and end detection. \n"
-msgstr ""
+msgstr " a konec hledání. \n"
 
 #: DlgPrefPlaylist#8
 msgid "Choose iPod mount point"
-msgstr ""
+msgstr "Vyberte bod připojení iPodu"
 
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulář3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#3
 msgid "iPod mountpoint"
-msgstr ""
+msgstr "Bod připojení iPodu"
 
 #: DlgPrefPlaylistDlg#4
 msgctxt "DlgPrefPlaylistDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Procházet..."
 
 #: DlgPrefPlaylistDlg#5
 msgid "Detect"
-msgstr ""
+msgstr "Detekovat"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Library"
-msgstr ""
+msgstr "Knihovna"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Music Directory:"
-msgstr ""
+msgstr "Hudební adresář:"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Audio Playback Plugins"
-msgstr ""
+msgstr "Audio Playback pluginy"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Extra Playback Plugins:"
-msgstr ""
+msgstr "Extra Playback pluginy:"
 
 #: DlgPrefPlaylistDlg#10
 msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Built-in"
-msgstr ""
+msgstr "Vestavěný"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Available Online..."
-msgstr ""
+msgstr "K dispozici Online"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Přibalené songy"
 
 #: DlgPrefPlaylistDlg#14
 msgid ""
@@ -766,105 +768,105 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "Save Recording As..."
-msgstr ""
+msgstr "Uložit nahrávku jako..."
 
 #: DlgPrefRecord#2
 msgid "kbps"
-msgstr ""
+msgstr "kbps"
 
 #: DlgPrefRecord#3
 msgid "Quality: "
-msgstr ""
+msgstr "Kvalita "
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulář3"
 
 #: DlgPrefRecordDlg#2
 msgid "File"
-msgstr ""
+msgstr "Soubor"
 
 #: DlgPrefRecordDlg#3
 msgctxt "DlgPrefRecordDlg#3"
 msgid "Browse..."
-msgstr ""
+msgstr "Procházet..."
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Encoding"
-msgstr ""
+msgstr "Kódování"
 
 #: DlgPrefRecordDlg#5
 msgid "Quality"
-msgstr ""
+msgstr "Kvalita"
 
 #: DlgPrefRecordDlg#6
 msgctxt "DlgPrefRecordDlg#6"
 msgid "High"
-msgstr ""
+msgstr "Vysoká"
 
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Low"
-msgstr ""
+msgstr "Nízká"
 
 #: DlgPrefRecordDlg#8
 msgid "Tags"
-msgstr ""
+msgstr "Štítky"
 
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Title"
-msgstr ""
+msgstr "Titul"
 
 #: DlgPrefRecordDlg#10
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: DlgPrefRecordDlg#11
 msgctxt "DlgPrefRecordDlg#11"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulář3"
 
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Povolit živé vysílání"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Připojení k serveru"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
-msgstr ""
+msgstr "Icecast 2"
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
-msgstr ""
+msgstr "Icecast 1"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr ""
+msgstr "Připojit"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
@@ -872,55 +874,55 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
-msgstr ""
+msgstr "192.168.123.8"
 
 #: DlgPrefShoutcastDlg#12
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: DlgPrefShoutcastDlg#13
 msgid "8000"
-msgstr ""
+msgstr "8000"
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "Zdroj"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
-msgstr ""
+msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr ""
+msgstr "Nastavení proudu"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr ""
+msgstr "Jméno proudu"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Mixxx Icecast testování"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "Webová stránka"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://mixxx.sf.net"
-msgstr ""
+msgstr "http://mixxx.sf.net"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -940,115 +942,115 @@ msgstr ""
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr ""
+msgstr "Živý mix"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr ""
+msgstr "Veřejný proud"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr ""
+msgstr "Zakódování"
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
-msgstr ""
+msgstr "320 kbps"
 
 #: DlgPrefShoutcastDlg#31
 msgid "256 kbps"
-msgstr ""
+msgstr "256 kbps"
 
 #: DlgPrefShoutcastDlg#32
 msgid "224 kbps"
-msgstr ""
+msgstr "224 kbps"
 
 #: DlgPrefShoutcastDlg#33
 msgid "192 kbps"
-msgstr ""
+msgstr "192 kbps"
 
 #: DlgPrefShoutcastDlg#34
 msgid "160 kbps"
-msgstr ""
+msgstr "160 kbps"
 
 #: DlgPrefShoutcastDlg#35
 msgid "128 kbps"
-msgstr ""
+msgstr "128 kbps"
 
 #: DlgPrefShoutcastDlg#36
 msgid "112 kbps"
-msgstr ""
+msgstr "112 kbps"
 
 #: DlgPrefShoutcastDlg#37
 msgid "96 kbps"
-msgstr ""
+msgstr "96 kbps"
 
 #: DlgPrefShoutcastDlg#38
 msgid "80 kbps"
-msgstr ""
+msgstr "80 kbps"
 
 #: DlgPrefShoutcastDlg#39
 msgid "64 kbps"
-msgstr ""
+msgstr "64 kbps"
 
 #: DlgPrefShoutcastDlg#40
 msgid "48 kbps"
-msgstr ""
+msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "Formát"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "Kanály"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
-msgstr ""
+msgstr "Vlastní metadata"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr ""
+msgstr "Povolit vlastní metadata"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr ""
+msgstr "Umělec"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
-msgstr ""
+msgstr "%hlavníumělec"
 
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
 msgid "Title"
-msgstr ""
+msgstr "Titul"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
-msgstr ""
+msgstr "%hlavnítitul"
 
 #: DlgPrefShoutcastDlg#52
 msgid ""
