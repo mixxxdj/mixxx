@@ -59,19 +59,23 @@ void WStatusLight::setNoPos(int iNoPos)
 
 void WStatusLight::setup(QDomNode node)
 {
-	WWidget::setup(node);
 	// Number of states
     m_iNoPos = selectNodeInt(node, "NumberPos") + 1;
     setNoPos(m_iNoPos);
 	
-    for (int i=0; i<m_iNoPos; i++)
+    // Set pixmaps
+    m_bHorizontal = false;
+    if (!selectNode(node, "Horizontal").isNull() && selectNodeQString(node, "Horizontal")=="true")
+        m_bHorizontal = true;
+	
+	for (int i=0; i<m_iNoPos; i++)
     {
     	switch(i)
     	{
     		case 0:
 	    		// Set background pixmap if available
-				if (!selectNode(node, "BackPath").isNull())
-					setPixmap(0, getPath(selectNodeQString(node, "BackPath")));
+				if (!selectNode(node, "PathBack").isNull())
+					setPixmap(0, getPath(selectNodeQString(node, "PathBack")));
 			   	else
 			   		m_pPixmapSLs[0] = 0;
 	    		break;
@@ -88,7 +92,7 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
 {
     int pixIdx = iState;
     m_pPixmapSLs[pixIdx] = WPixmapStore::getPixmap(filename);
-    if (!m_pPixmapSLs[pixIdx])
+    if (!m_pPixmapSLs[pixIdx] || m_pPixmapSLs[pixIdx]->size()==QSize(0,0))
         qDebug() << "WPushButton: Error loading pixmap:" << filename << iState;
 
     // Set size of widget equal to pixmap size

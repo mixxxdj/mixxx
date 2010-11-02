@@ -49,6 +49,8 @@ private:
     int m_iNoPos;
     /** Associated pixmaps */
     QPixmap **m_pPixmapSLs;
+    /** True if it's a horizontal vu meter */
+    bool m_bHorizontal;
 };
 
 #endif
