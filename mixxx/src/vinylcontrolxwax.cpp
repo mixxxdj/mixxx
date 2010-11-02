@@ -343,7 +343,7 @@ void VinylControlXwax::run()
 	                    m_bNeedleSkipPrevention)
 	                {
 	                	//red alert, moved a lot of time on the record very quickly.
-	                	//move to relative mode and keep playing
+	                	//move to constant mode and keep playing
 	                	//TODO: trigger some sort of UI alert so the dj
 	                	//can clean the needle
 	                	qDebug() << "WARNING: needle skip detected!:";
@@ -364,7 +364,7 @@ void VinylControlXwax::run()
 	                else if (fabs(dVinylPosition - filePosition) > 0.1f &&
                 		dVinylPosition < 0.0f)
                     {
-                    	//At first I thought it was a bug to resync to leadin in absolute mode,
+                    	//At first I thought it was a bug to resync to leadin in relative mode,
                     	//but after using it that way it's actually pretty convenient.
                     	//qDebug() << "Vinyl leadin";
                     	syncPosition();
@@ -557,7 +557,8 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		//This means if we are playing, and we disable vinyl control,
 		//the track will keep playing at the previous rate.
 		//This allows for single-deck control, dj handoffs, etc.
-		controlScratch->slotSet(0.0f);
+		togglePlayButton(TRUE);
+		controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
 		resetSteadyPitch(0.0f, 0.0f);
 		bForceResync = true; 
 		if (!was)
