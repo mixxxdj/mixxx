@@ -25,8 +25,8 @@ HerculesMP3.blinking1 = false;
 HerculesMP3.blinking2 = false;
 HerculesMP3.playing1 = false;
 HerculesMP3.playing2 = false;
-HerculesMP3.blink2time = 0;
 HerculesMP3.blink2toggle = false;
+HerculesMP3.blink2timer = null;
 
 HerculesMP3.EXPO = 1.75;
 HerculesMP3.RATEPERM = 0.005;
@@ -51,6 +51,7 @@ HerculesMP3.init = function (id) {    // called when the MIDI device is opened &
     engine.connectControl("[Channel1]","playposition","HerculesMP3.playpos1");
     engine.connectControl("[Channel2]","playposition","HerculesMP3.playpos2");
     
+    engine.beginTimer(100,"HerculesMP3.rate_changer()");
     //print ("stuff hooked up");
 }
 
@@ -65,38 +66,6 @@ HerculesMP3.clearlights = function () {
     }
 }	  
 	  
-	// l=125;
-	// u=135; 
-	 
-	// midi.sendShortMsg(0xB1, HerculesMP3.leds["pfl1"], 0x7f);
-//	 HerculesMP3.sleep()
-	// midi.sendShortMsg(0xB1, HerculesMP3.leds["pfl1"], 0x0);
-	  
-	/* for (v=l; v<u; v++) {
-		print (v);
-		midi.sendShortMsg(0xB1, v, 0x7f);
-		HerculesMP3.sleep()
-	}
-	
-	HerculesMP3.sleep()
-	HerculesMP3.sleep()
-	
-	for (v=l; v<u; v++) {
-		print (v);
-		midi.sendShortMsg(0xB1, v, 0x0);
-		HerculesMP3.sleep()
-	}  */
-	
-	
-//}
-
-/*HerculesMP3.sleep = function () {
-	for (i=1; i<4000000; i++)
-	{
-		a=1;
-	}
-}*/
-
 HerculesMP3.play1 = function (value) { 
 	//print ("play1 "+value);
 	HerculesMP3.playing1 = value;
@@ -156,10 +125,6 @@ HerculesMP3.playpos1 = function (value) {
 	}			
 	//engine.trigger("[Channel1]","playposition");
 	//engine.trigger("[Channel1]","play");
-	
-	//are we changing rate?
-	if(HerculesMP3.rate1changing != 0)
-		HerculesMP3.change_rate1();
 }
 
 HerculesMP3.playpos2 = function (value) {
@@ -168,7 +133,9 @@ HerculesMP3.playpos2 = function (value) {
 	if (value > 0.9 && duration > 0)
 	{
 		//print ("Running blink workaround");
-		HerculesMP3.workaroundblink2(value);
+		//HerculesMP3.workaroundblink2(value);
+		if (!HerculesMP3.blinking2)
+			HerculesMP3.blink2timer = engine.beginTimer(1000,"HerculesMP3.workaroundblink2()");
 		HerculesMP3.blinking2 = true;
 	}
 	else
@@ -176,50 +143,26 @@ HerculesMP3.playpos2 = function (value) {
 		if (HerculesMP3.blinking2)
 		{
 			HerculesMP3.maybelightplay2();
+			engine.stopTimer(HerculesMP3.blink2timer);
 		}
 		HerculesMP3.blinking2 = false;
-		HerculesMP3.blink2time = 0;
 	}	
 	//engine.trigger("[Channel2]","playposition");
 	//engine.trigger("[Channel2]","play");
-	
-	//are we changing rate?
-	if(HerculesMP3.rate2changing != 0)
-		HerculesMP3.change_rate2();
 }
 
 HerculesMP3.workaroundblink2 = function(value) {
 	// for some reason, activating the blinker on deck 2 turns
 	// off the light on deck 1.  so, blink manually!
-	//print ("blinking "+value+" "+HerculesMP3.blink2time);
-	if (HerculesMP3.blink2time >= value)
-	{
-		//print ("reset blink2time");
-		HerculesMP3.blink2time = 0;
-	}
-		
-	if (value - HerculesMP3.blink2time > 0.002)
-	{
-		//print ("change state");
-		if (HerculesMP3.blink2toggle)
-			midi.sendShortMsg(0xB1, HerculesMP3.leds["ch 2 play"], 0x0);
-		else
-			midi.sendShortMsg(0xB1, HerculesMP3.leds["ch 2 play"], 0x7f);
-		HerculesMP3.blink2toggle = !HerculesMP3.blink2toggle;
-		HerculesMP3.blink2time = value;
-	}
+	//print ("change state");
+	if (HerculesMP3.blink2toggle)
+		midi.sendShortMsg(0xB1, HerculesMP3.leds["ch 2 play"], 0x0);
+	else
+		midi.sendShortMsg(0xB1, HerculesMP3.leds["ch 2 play"], 0x7f);
+	HerculesMP3.blink2toggle = !HerculesMP3.blink2toggle;
 }
 
 HerculesMP3.rate_perm_up_small1 = function (group, control, value, status) {
-	if (!engine.getValue("[Channel1]","play"))
-	{
-		if (value == 127)
-		{
-			print ("not playing, small adjust");
-			engine.setValue("[Channel1]", "rate", engine.getValue("[Channel1]","rate") + HerculesMP3.RATEPERM);
-		}
-		return;
-	}
 	if (value == 127)
 	{
 		HerculesMP3.rate1changing = 1;
@@ -235,15 +178,6 @@ HerculesMP3.rate_perm_up_small1 = function (group, control, value, status) {
 }
 
 HerculesMP3.rate_perm_up_small2 = function (group, control, value, status) {
-	if (!engine.getValue("[Channel2]","play"))
-	{
-		if (value == 127)
-		{
-			print ("not playing, small adjust");
-			engine.setValue("[Channel2]", "rate", engine.getValue("[Channel2]","rate") + HerculesMP3.RATEPERM);
-		}
-		return;
-	}
 	if (value == 127)
 	{
 		HerculesMP3.rate2changing = 1;
@@ -259,15 +193,6 @@ HerculesMP3.rate_perm_up_small2 = function (group, control, value, status) {
 }
 
 HerculesMP3.rate_perm_down_small1 = function (group, control, value, status) {
-	if (!engine.getValue("[Channel1]","play"))
-	{
-		if (value == 127)
-		{
-			print ("not playing, small adjust");
-			engine.setValue("[Channel1]", "rate", engine.getValue("[Channel1]","rate") - HerculesMP3.RATEPERM);
-		}
-		return;
-	}
 	if (value == 127)
 	{
 		HerculesMP3.rate1changing = -1;
@@ -283,15 +208,6 @@ HerculesMP3.rate_perm_down_small1 = function (group, control, value, status) {
 }
 
 HerculesMP3.rate_perm_down_small2 = function (group, control, value, status) {
-	if (!engine.getValue("[Channel2]","play"))
-	{
-		if (value == 127)
-		{
-			print ("not playing, small adjust");
-			engine.setValue("[Channel2]", "rate", engine.getValue("[Channel2]","rate") - HerculesMP3.RATEPERM);
-		}
-		return;
-	}
 	if (value == 127)
 	{
 		HerculesMP3.rate2changing = -1;
@@ -304,6 +220,13 @@ HerculesMP3.rate_perm_down_small2 = function (group, control, value, status) {
 		HerculesMP3.rate2startval = 0;
 		HerculesMP3.rate2time = 0;
 	}
+}
+
+HerculesMP3.rate_changer = function () {
+	if(HerculesMP3.rate1changing != 0)
+		HerculesMP3.change_rate1();
+	if(HerculesMP3.rate2changing != 0)
+		HerculesMP3.change_rate2();
 }
 
 HerculesMP3.change_rate1 = function () {
