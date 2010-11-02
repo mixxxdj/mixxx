@@ -255,6 +255,10 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 {
     QMutexLocker Locker(&m_mutex);
 
+    //Prevent race condition
+    if (m_bSendInhibit)
+        return;
+
     if (m_pOutputStream)
     {
         m_sPMLock.lock();
@@ -269,6 +273,10 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 void MidiDevicePortMidi::sendSysexMsg(unsigned char data[], unsigned int length)
 {
     QMutexLocker Locker(&m_mutex);
+
+    //Prevent race condition
+    if (m_bSendInhibit)
+        return;
 
     if (m_pOutputStream)
     {
