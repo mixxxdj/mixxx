@@ -396,7 +396,7 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
         return false;
 
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, data);
+    args << QScriptValue(data);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -427,11 +427,11 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
         return false;
 
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, channel);
-    args << QScriptValue(m_pEngine, control);
-    args << QScriptValue(m_pEngine, value);
-    args << QScriptValue(m_pEngine, status);
-    args << QScriptValue(m_pEngine, group);
+    args << QScriptValue(channel);
+    args << QScriptValue(control);
+    args << QScriptValue(value);
+    args << QScriptValue(status);
+    args << QScriptValue(group);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -743,9 +743,9 @@ void MidiScriptEngine::slotValueChanged(double value) {
         // Could branch to safeExecute from here, but for now do it this way.
         QScriptValue function_value = m_pEngine->evaluate(function);
         QScriptValueList args;
-        args << QScriptValue(m_pEngine, value);
-        args << QScriptValue(m_pEngine, key.group); // Added by Math`
-        args << QScriptValue(m_pEngine, key.item);  // Added by Math`
+        args << QScriptValue(value);
+        args << QScriptValue(key.group); // Added by Math`
+        args << QScriptValue(key.item);  // Added by Math`
         QScriptValue result = function_value.call(QScriptValue(), args);
         if (result.isError()) {
             qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
