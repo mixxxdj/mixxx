@@ -1027,8 +1027,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 			m_pView->hide();
 			delete m_pView;
 			m_pView = new QFrame();
-			setCentralWidget(m_pView);
-
+			
 			if (!m_pSkinLoader->loadCustomSkin(
 					fullscreenPath,
 					m_pView,
@@ -1037,6 +1036,8 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
                     m_pLibrary)) {
 				qDebug() << "Could not reload the skin.";
 			}
+			
+			setCentralWidget(m_pView);
 
 			qDebug() << "fullscreen reshape DONE";
 		}
@@ -1069,8 +1070,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 			m_pView->hide();
 			delete m_pView;
 			m_pView = new QFrame();
-			setCentralWidget(m_pView);
-
+			
 			if (!m_pSkinLoader->loadDefaultSkin(
 					m_pView,
                     m_pKeyboard,
@@ -1078,6 +1078,8 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
                     m_pLibrary)) {
 				qDebug() << "Could not reload the skin.";
 			}
+			
+			setCentralWidget(m_pView);
 
 			qDebug() << "unfullscreen DONE";
 		}
