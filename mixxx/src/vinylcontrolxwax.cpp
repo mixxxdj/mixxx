@@ -283,7 +283,7 @@ void VinylControlXwax::run()
 				//or 1 (plays back at that rate)
 				
 				if (reportedPlayButton)
-					controlScratch->slotSet(1.0f);
+					controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
 				else
 					controlScratch->slotSet(0.0f);
 					
@@ -501,7 +501,7 @@ void VinylControlXwax::enableConstantMode()
 	togglePlayButton(true);
 	double rate = controlScratch->get();
 	rateSlider->slotSet((fabs(rate) - 1.0f) / fRateRange);
-	controlScratch->slotSet(1.0f);
+	controlScratch->slotSet(rate);
 }
 
 void VinylControlXwax::disableRecordEndMode()
