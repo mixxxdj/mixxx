@@ -212,18 +212,23 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     QString userKeyboard =
         QDir::homePath().append("/").append(SETTINGS_PATH)
             .append("Custom.kbd.cfg");
+
+    ConfigObject<ConfigValueKbd>* pKbdConfig = NULL;
+
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
+        pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
     }
     else
         // Otherwise use the default
-        m_pKbdConfig =
-            new ConfigObject<ConfigValueKbd>(QString(qConfigPath)
-                .append("keyboard/").append("Standard.kbd.cfg"));
-    WWidget::setKeyboardConfig(m_pKbdConfig);
+        pKbdConfig =
+                new ConfigObject<ConfigValueKbd>(
+                    QString(qConfigPath)
+                    .append("keyboard/").append("Standard.kbd.cfg"));
 
-    m_pKeyboard = new MixxxKeyboard(m_pKbdConfig);
+    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
+    // initialization into MixxxKeyboard
+    m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
@@ -310,8 +315,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
-    //TODO: Try to open MIDI devices?
-    m_pMidiDeviceManager->queryDevices();
     m_pMidiDeviceManager->setupDevices();
 
     m_pSkinLoader = new SkinLoader(m_pConfig);

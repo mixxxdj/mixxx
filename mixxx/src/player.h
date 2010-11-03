@@ -20,6 +20,7 @@ class Player : public QObject
     ~Player();
     QString getGroup();
     WaveformRenderer* getWaveformRenderer();
+    TrackPointer getLoadedTrack();
   public slots:
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
