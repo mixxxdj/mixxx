@@ -282,7 +282,21 @@ bool MidiScriptEngine::execute(QString function, QString data) {
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
+   Input:   Function name, pointer to data buffer, length of buffer
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::execute(QString function, const unsigned char data[],
+                               unsigned int length) {
+    m_scriptEngineLock.lock();
+    bool ret = safeExecute(function, data, length);
+    m_scriptEngineLock.unlock();
+    return ret;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
    Input:   Function name, channel #, control #, value, status
+                MixxxControl group
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function, char channel,
@@ -397,6 +411,40 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
 
     QScriptValueList args;
     args << QScriptValue(data);
+
+    scriptFunction.call(QScriptValue(), args);
+    if (checkException())
+        return false;
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   Function name, ponter to data buffer, length of buffer
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
+                                    unsigned int length) {
+
+    if(m_pEngine == NULL) {
+        return false;
+    }
+
+    if (!m_pEngine->canEvaluate(function)) {
+        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
+        return false;
+    }
+
+    QScriptValue scriptFunction = m_pEngine->evaluate(function);
+
+    if (checkException())
+        return false;
+    if (!scriptFunction.isFunction())
+        return false;
+
+    QScriptValueList args;
+    args << QScriptValue(m_pEngine, (const char*)data);
+    args << QScriptValue(m_pEngine, length);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -647,6 +695,16 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
         cot->slotSet(newValue);
     }
 
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: qDebugs script output so it ends up in mixxx.log
+   Input:   String to log
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::log(QString message) {
+
+    qDebug()<<message;
 }
 
 /* -------- ------------------------------------------------------

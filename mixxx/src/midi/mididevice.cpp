@@ -264,6 +264,61 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     return;
 }
 
+#ifdef __MIDISCRIPT__
+// SysEx reception requires scripting
+void MidiDevice::receive(const unsigned char data[], unsigned int length) {
+    QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
+
+    QString message = m_strDeviceName+": [";
+    for(int i=0; i<length; i++) {
+        message += QString("%1%2")
+                    .arg(data[i], 2, 16, QChar('0')).toUpper()
+                    .arg((i<(length-1))?' ':']');
+    }
+
+    if (midiDebugging()) qDebug()<< message;
+
+    MidiMessage inputCommand((MidiStatusByte)data[0]);
+
+    //If the receive inhibit flag is true, then we don't process any midi messages
+    //that are received from the device. This is done in order to prevent a race
+    //condition where the MidiMapping is accessed via isMidiMessageMapped() below
+    //but it is already locked because it is being modified by the GUI thread.
+    //(This happens when you hit apply in the preferences and then quickly push
+    // a button on your controller.)
+    if (m_bReceiveInhibit)
+        return;
+
+    if (m_bMidiLearn)
+        return; // Don't process custom midi messages when MIDI learning
+
+    QMutexLocker mappingLocker(&m_mappingPtrMutex);
+
+    MixxxControl mixxxControl = m_pMidiMapping->getInputMixxxControl(inputCommand);
+    //qDebug() << "MidiDevice: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
+
+    ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
+
+    // Custom MixxxScript (QtScript) handler
+    
+    if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
+        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" 
+        //          << (int)channel << (int)control <<  (int)value << (int)status;
+
+        //Unlock the mutex here to prevent a deadlock if a script needs to send a MIDI message
+        //to the device. (sendShortMessage() would try to lock m_mutex...)
+        locker.unlock();
+
+        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, data, length)) {
+            qDebug() << "MidiDevice: Invalid script function" << configKey.item;
+        }
+        return;
+    }
+    qDebug() << "MidiDevice: No MIDI Script function found for" << message;
+    return;
+}
+#endif
+
 bool MidiDevice::midiDebugging()
 {
     //Assumes a lock is already held. :/
