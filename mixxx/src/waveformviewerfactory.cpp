@@ -163,6 +163,6 @@ bool WaveformViewerFactory::isDirectRenderingEnabled() {
         }
         return enabled;
     }
-
-
+    // Doesn't matter
+    return true;
 }

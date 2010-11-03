@@ -108,10 +108,9 @@ void DlgPrefRecord::updateTextQuality()
 {
     int quality = getSliderQualityVal();
     QString encodingType = comboBoxEncoding->currentText();
-    if (encodingType == ENCODING_MP3)
-        TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
-    if (encodingType == ENCODING_OGG)
-        TextQuality->setText(QString( tr("Quality: ") + QString::number(quality)));
+    
+    TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
+    
     
 }
 
@@ -128,11 +127,21 @@ void DlgPrefRecord::slotEncoding()
     }
     else if (comboBoxEncoding->currentText() == ENCODING_OGG)
     {
-        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt());
+        int value = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt();
+        //if value == 0 then a default value of 128kbps is proposed.
+        if(!value)
+            value = 6; // 128kbps
+        
+        SliderQuality->setValue(value);
     }
     else if (comboBoxEncoding->currentText() == ENCODING_MP3)
     {
-        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt());
+        int value = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt();
+        //if value == 0 then a default value of 128kbps is proposed.
+        if(!value)
+            value = 6; // 128kbps
+        
+        SliderQuality->setValue(value);
     }
     else
         qDebug() << "Invalid recording encoding type in" << __FILE__ << "on line:" << __LINE__;

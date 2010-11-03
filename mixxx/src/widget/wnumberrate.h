@@ -1,7 +1,7 @@
 //
 // C++ Interface: wnumberpos
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
@@ -24,7 +24,7 @@ class WNumberRate : public WNumber
     Q_OBJECT
 public:
     WNumberRate(const char *group, QWidget *parent=0);
-    ~WNumberRate();
+    virtual ~WNumberRate();
     void setValue(double dValue);
 
 private:

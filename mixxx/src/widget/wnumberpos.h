@@ -26,7 +26,7 @@ class WNumberPos : public WNumber
     Q_OBJECT
 public:
     WNumberPos(const char *group, QWidget *parent=0);
-    ~WNumberPos();
+    virtual ~WNumberPos();
     void setValue(double dValue);
     /** Set if the display shows remaining time (true) or position (false) */
     void setRemain(bool bRemain);
