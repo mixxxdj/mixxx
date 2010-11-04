@@ -133,6 +133,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_dVisualResampleRate = 0;
     m_dCreateDate = QDateTime::currentDateTime();
     m_Rating = 0;
+    m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader)
@@ -795,3 +796,15 @@ void TrackInfoObject::setRating (int rating){
     if (dirty)
         setDirty(true);
 }
+QString TrackInfoObject::getKey() const{
+    QMutexLocker lock(&m_qMutex);
+    return m_key;
+}
+void TrackInfoObject::setKey(QString key){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = key != m_key;
+    m_key = key;
+    if (dirty)
+        setDirty(true);
+}
+

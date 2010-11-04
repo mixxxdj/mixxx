@@ -186,6 +186,11 @@ public:
     /** Sets rating */
     void setRating(int);
 
+    /** Returns KEY_CODE */
+    QString getKey() const;
+    /** Set KEY_CODE */
+    void setKey(QString);
+
     /** Get URL for track */
     QString getURL();
     /** Set URL for track */
@@ -336,6 +341,8 @@ public:
     float m_fCuePoint;
     /** Date. creation date of file */
     QDateTime m_dCreateDate;
+
+    QString m_key;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;

@@ -42,6 +42,7 @@ const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
 const QString LIBRARYTABLE_PLAYED = "played";
 const QString LIBRARYTABLE_RATING = "rating";
+const QString LIBRARYTABLE_KEY = "key";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -50,6 +51,7 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
 const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
+
 
 class TrackDAO : public QObject { //// public DAO {
 Q_OBJECT

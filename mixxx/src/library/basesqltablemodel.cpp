@@ -61,6 +61,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Date Added"));
     setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
                   Qt::Horizontal, tr("#"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_KEY),
+                  Qt::Horizontal, tr("Key"));
 }
 
 bool BaseSqlTableModel::select() {
@@ -144,6 +146,8 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
             return QVariant(pTrack->getTimesPlayed());
         } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
             return pTrack->getRating();
+        } else if (fieldIndex(LIBRARYTABLE_KEY) == col) {
+            return pTrack->getKey();
         }
     }
 
@@ -263,6 +267,8 @@ bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
+    } else if (fieldIndex(LIBRARYTABLE_KEY) == col) {
+        pTrack->setKey(value.toString());
     }
 
     // Do not save the track here. Changing the track dirties it and the caching

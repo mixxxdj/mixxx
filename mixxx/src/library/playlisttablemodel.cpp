@@ -55,6 +55,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
                   "track_locations.location,"
