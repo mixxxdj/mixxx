@@ -229,3 +229,7 @@ QString Player::getGroup() {
 WaveformRenderer* Player::getWaveformRenderer() {
     return m_pWaveformRenderer;
 }
+
+TrackPointer Player::getLoadedTrack() {
+    return m_pLoadedTrack;
+}
