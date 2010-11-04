@@ -299,6 +299,24 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
     m_bBpmConfirm = confirm;
 }
 
+void TrackInfoObject::setTrackBeats(TrackBeats *beats, bool isDirty)
+{
+    QMutexLocker lock(&m_qMutex);
+    m_pTrackBeats = beats;
+    lock.unlock();
+    
+    if ( isDirty )
+        setDirty(true);
+
+    emit(trackBeatsUpdated(1));
+}
+
+TrackBeats *TrackInfoObject::getTrackBeats() const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_pTrackBeats;
+}
+
 bool TrackInfoObject::getHeaderParsed()  const
 {
     QMutexLocker lock(&m_qMutex);

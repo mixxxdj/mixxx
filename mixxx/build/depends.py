@@ -493,6 +493,7 @@ class MixxxCore(Feature):
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
+                   "trackbeats.cpp",
                    "player.cpp",
                    "playermanager.cpp",
                    "sounddevice.cpp",

@@ -37,6 +37,7 @@ class QDomNode;
 class ControlObject;
 class TrackPlaylist;
 class Cue;
+class TrackBeats;
 
 class TrackInfoObject;
 
@@ -218,6 +219,12 @@ public:
     /** Set the track's full file path */
     void setLocation(QString location);
 
+    /** Get the Track's Beats list */
+    TrackBeats* getTrackBeats() const;
+
+    /** Set the Track's Beats */
+    void setTrackBeats(TrackBeats* beats, bool isDirty);
+
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
@@ -227,6 +234,7 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
+    void trackBeatsUpdated(int);
     void cuesUpdated();
     void changed();
     void dirty();
@@ -334,6 +342,9 @@ public:
 
     double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
+
+    // Storage for the Track's detected beats
+    TrackBeats* m_pTrackBeats;
 
     friend class TrackDAO;
 };

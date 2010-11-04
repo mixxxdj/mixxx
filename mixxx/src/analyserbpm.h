@@ -17,6 +17,7 @@ class AnalyserBPM : public Analyser {
 
   private:
     float correctBPM(float BPM, int min, int max, int aboveRange);
+    void doBeats(TrackPointer tio);
 
     ConfigObject<ConfigValue> *m_pConfig;
     soundtouch::BPMDetect *m_pDetector;
