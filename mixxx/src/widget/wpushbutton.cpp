@@ -141,10 +141,6 @@ void WPushButton::setup(QDomNode node)
 
     //End of toggle button stuff.
     //--------
-
-
-    // Setup position
-    WWidget::setup(node);
 }
 
 void WPushButton::setStates(int iStates)

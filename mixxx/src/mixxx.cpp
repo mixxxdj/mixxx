@@ -64,10 +64,6 @@
 
 #include "defs_version.h"
 
-#ifdef __IPOD__
-#include "gpod/itdb.h"
-#endif
-
 #ifdef __C_METRICS__
 #include <cmetrics.h>
 #include "defs_mixxxcmetrics.h"
@@ -211,26 +207,28 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
 
-    // Instantiate a ControlObject, and set static parent widget
-    m_pControl = new ControlNull();
-
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
     QString userKeyboard =
         QDir::homePath().append("/").append(SETTINGS_PATH)
             .append("Custom.kbd.cfg");
+
+    ConfigObject<ConfigValueKbd>* pKbdConfig = NULL;
+
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
+        pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
     }
     else
         // Otherwise use the default
-        m_pKbdConfig =
-            new ConfigObject<ConfigValueKbd>(QString(qConfigPath)
-                .append("keyboard/").append("Standard.kbd.cfg"));
-    WWidget::setKeyboardConfig(m_pKbdConfig);
+        pKbdConfig =
+                new ConfigObject<ConfigValueKbd>(
+                    QString(qConfigPath)
+                    .append("keyboard/").append("Standard.kbd.cfg"));
 
-    m_pKeyboard = new MixxxKeyboard(m_pKbdConfig);
+    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
+    // initialization into MixxxKeyboard
+    m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
@@ -255,8 +253,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pConfig->Save();
         }
     }
-    // Needed for Search class and Simple skin
-    new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
@@ -316,8 +312,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
-    //TODO: Try to open MIDI devices?
-    m_pMidiDeviceManager->queryDevices();
     m_pMidiDeviceManager->setupDevices();
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
@@ -463,9 +457,6 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
-
-//    qDebug() << "delete prefDlg";
-//    delete m_pControlEngine;
 
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;

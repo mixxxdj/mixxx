@@ -131,13 +131,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
     m_pRepeat->setToggleButton(true);
 
-#ifdef __VINYLCONTROL__
-    // Vinyl Control status indicator
-    //Disabled because it's not finished yet
-    //m_pVinylControlIndicator =
-    //    new ControlObject(ConfigKey(group, "VinylControlIndicator"));
-#endif
-
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
