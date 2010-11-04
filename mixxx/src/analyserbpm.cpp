@@ -3,6 +3,7 @@
 
 #include "BPMDetect.h"
 #include "trackinfoobject.h"
+#include "trackbeats.h"
 #include "analyserbpm.h"
 
 
@@ -28,6 +29,16 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
         //                                    defaultrange ? MIN_BPM : m_iMinBpm,
         //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
+    }
+    else if ( tio->getBpm() != 0. )
+    {
+        // Make sure we have the track beats loaded or generate them.
+        TrackBeats *pTrackBeats = tio->getTrackBeats();
+        if ( pTrackBeats == NULL )
+            doBeats(tio);
+
+        // Let go of the reference
+        pTrackBeats = NULL;
     }
 }
 
@@ -58,6 +69,21 @@ float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
     return BPM;
 }
 
+void AnalyserBPM::doBeats(TrackPointer tio)
+{
+    TrackBeats *pTrackBeats = new TrackBeats(tio);
+    float seconds;
+    float duration = (float)tio->getDuration();
+    float inc = 60. / tio->getBpm();
+
+    for (seconds = 0; seconds < duration; seconds += inc)
+    {
+        pTrackBeats->addBeatSeconds(seconds);
+    }
+
+    tio->setTrackBeats(pTrackBeats, TRUE);
+}
+
 void AnalyserBPM::finalise(TrackPointer tio) {
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {
@@ -71,6 +97,8 @@ void AnalyserBPM::finalise(TrackPointer tio) {
 
         tio->setBpm(newbpm);
         tio->setBpmConfirm();
+
+        doBeats(tio);
         //if(pBpmReceiver) {
         //pBpmReceiver->setComplete(tio, false, bpm);
         //}

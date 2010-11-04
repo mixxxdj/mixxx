@@ -14,6 +14,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
+#include "trackbeats.h"
+
 
 WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent)
         : m_pParent(parent),
@@ -21,6 +23,7 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
           m_pBeatFirst(NULL),
           m_pTrackSamples(NULL),
           m_pTrack(),
+          m_pTrackBeats(NULL),
           m_iWidth(0),
           m_iHeight(0),
           m_dBpm(-1),
@@ -38,6 +41,7 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
 
     m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
+
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateTrackSamples(double)));
 }
@@ -56,6 +60,15 @@ void WaveformRenderBeat::slotUpdateBeatFirst(double v) {
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
     //qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
     m_iNumSamples = (int)samples;
+}
+
+void WaveformRenderBeat::slotUpdateTrackBeats(int)
+{
+    m_pTrackBeats = m_pTrack->getTrackBeats();
+    if ( m_pTrackBeats )
+        qDebug() << "WaveformRenderBeat :: beats = " << m_pTrackBeats->getBeatCount();
+    else
+        qDebug() << "No WaveformRenderBeat beats list";
 }
 
 void WaveformRenderBeat::resize(int w, int h) {
@@ -91,8 +104,11 @@ void WaveformRenderBeat::newTrack(TrackPointer pTrack) {
     m_dSamplesPerDownsample = n;
     m_dSamplesPerPixel = double(f)/z;
 
+    // Reset the tracker beats for each new song
+    m_pTrackBeats = pTrack->getTrackBeats();
+    //slotUpdateTrackBeats(1);
+    connect(pTrack.data(), SIGNAL(trackBeatsUpdated(int)), this, SLOT(slotUpdateTrackBeats(int)));
     //qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
-
 }
 
 void WaveformRenderBeat::setup(QDomNode node) {
@@ -108,9 +124,18 @@ void WaveformRenderBeat::setup(QDomNode node) {
     colorHighlight = WSkinColor::getCorrectColor(colorHighlight);
 }
 
+void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust)
+{
+    drawTrackBeat(pPainter, event, buffer, dPlayPos, rateAdjust);
+}
 
-void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
-    if(m_dBpm == -1 || m_dBpm == 0)
+void WaveformRenderBeat::drawTrackBeat(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust)
+{
+    QList<int> beatSamples;
+    int i;
+
+
+    if ( m_pTrackBeats == NULL )
         return;
 
     if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
@@ -135,11 +160,6 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     // Therefore, sample s is a beat if it satisfies  s % 60f/b == 0.
     // where s is a /mono/ sample
 
-    // beat length in samples
-    if(m_dBeatLength <= 0) {
-        m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
-    }
-
     double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
     const int oversample = (int)subpixelsPerPixel;
 
@@ -161,10 +181,18 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
     // snap to the first beat
     double curPos = ceilf(basePos/m_dBeatLength)*m_dBeatLength;
-
     bool reset = false;
-    for(;curPos <= endPos; curPos+=m_dBeatLength) {
-        if(curPos < 0)
+    int curSample = (int)round(curPos);
+    int endSample = (int)round(endPos);
+
+
+    beatSamples = m_pTrackBeats->findBeatsSamples(curSample, endSample);
+
+    for(i = 0; i < beatSamples.size(); i++) {
+        curPos = beatSamples.at(i);
+
+
+        if (curPos < 0)
             continue;
 
         // i relative to the current play position in subpixels
@@ -172,7 +200,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
         // If i is less than 20 subpixels from center, highlight it.
         if(abs(i) < 20) {
-            pPainter->setPen(colorHighlight);
+            pPainter->setPen(QColor(255,255,255));
             reset = true;
         }
 
