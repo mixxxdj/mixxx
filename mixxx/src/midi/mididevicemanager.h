@@ -18,9 +18,12 @@
 #define MIDIDEVICEMANAGER_H
 
 #include "configobject.h"
+#include "portmidienumerator.h"
+#ifdef __HSS1394__
+    #include "hss1394enumerator.h"
+#endif
+
 class MidiDevice;
-class MidiLearnListener;
-class MidiLearnProcessor;
 class DlgPrefMidiBindings;
 
 /** Manages creation/enumeration/deletion of MidiDevices. */
@@ -33,20 +36,20 @@ class MidiDeviceManager : public QObject
         QList<MidiDevice*> getDeviceList(bool bOutputDevices=true, bool bInputDevice=true);
         QStringList getConfigList(QString path);
         void saveMappings(bool onlyActive=false);
-        void closeDevices();
-        void queryDevices();
+        //void closeDevices();
         int setupDevices();
         ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
         void associateInputAndOutputDevices(MidiDevice* inputDevice, QString outputDeviceName);
-    /*    MidiDevice* getPrimaryMidiDevice() { return m_pPrimaryMidiDevice; }; //HACK while our code still sucks
-        void enableMidiLearn(DlgPrefMidiBindings* listener);
-        void disableMidiLearn(); */ //Moving MIDI learning into MIDI device, a la 1.7.0
     signals:
         void devicesChanged();
     private:
         QList<MidiDevice*> m_devices;
         ConfigObject<ConfigValue> *m_pDeviceSettings;
         ConfigObject<ConfigValue> *m_pConfig;
+        PortMidiEnumerator *m_pPMEnumerator;
+#ifdef __HSS1394__
+        Hss1394Enumerator *m_pHSSEnumerator;
+#endif
     };
     
 #endif

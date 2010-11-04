@@ -59,7 +59,6 @@ void WStatusLight::setNoPos(int iNoPos)
 
 void WStatusLight::setup(QDomNode node)
 {
-    WWidget::setup(node);
     // Number of states
     m_iNoPos = selectNodeInt(node, "NumberPos") + 1;
     setNoPos(m_iNoPos);
