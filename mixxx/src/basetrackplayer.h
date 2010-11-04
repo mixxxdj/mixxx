@@ -22,6 +22,7 @@ class BaseTrackPlayer : public BasePlayer {
     virtual ~BaseTrackPlayer();
 
     WaveformRenderer* getWaveformRenderer() const;
+    TrackPointer getLoadedTrack() const;
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);

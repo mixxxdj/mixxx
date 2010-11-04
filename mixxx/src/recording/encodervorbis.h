@@ -32,7 +32,7 @@ class TrackInfoObject;
 class EncoderVorbis : public Encoder {
     Q_OBJECT
   public:
-    EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
+    EncoderVorbis(EngineAbstractRecord *engine=0);
     ~EncoderVorbis();
     int initEncoder(int bitrate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
@@ -46,7 +46,7 @@ class EncoderVorbis : public Encoder {
     //Call this method in conjunction with shoutcast streaming
     void writePage();
 
-    ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
+   
     ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream
                                  of packets */
     ogg_page m_oggpage;         /* Ogg bitstream page: contains Vorbis packets */
@@ -63,6 +63,9 @@ class EncoderVorbis : public Encoder {
     char *m_metaDataArtist;
     char *m_metaDataAlbum;
     QFile m_file;
+
+    ControlObjectThread* m_samplerate;
+    
 };
 
 #endif

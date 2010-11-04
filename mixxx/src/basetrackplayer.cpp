@@ -218,3 +218,6 @@ WaveformRenderer* BaseTrackPlayer::getWaveformRenderer() const {
     return m_pWaveformRenderer;
 }
 
+TrackPointer BaseTrackPlayer::getLoadedTrack() const {
+    return m_pLoadedTrack;
+}
