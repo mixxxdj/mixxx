@@ -53,6 +53,7 @@ SoundSource::SoundSource(QString qFilename)
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iChannels = 0;
+    m_sKey = "";
 }
 
 SoundSource::~SoundSource()
@@ -345,7 +346,7 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
 }
 
 bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
-    if (s_bDebugMetadata) {
+    if (!s_bDebugMetadata) {
         for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
             it != mp4->itemListMap().end(); ++it) {
             qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
@@ -357,5 +358,11 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
         QString sBpm = TStringToQString(mp4->itemListMap()["tmpo"].toStringList().toString());
         processBpmString("MP4", sBpm);
     }
+    // Get KEY (conforms to Rapid Evolution)
+    if (mp4->itemListMap().contains("----:com.apple.iTunes:KEY")) {
+        QString key = TStringToQString(mp4->itemListMap()["----:com.apple.iTunes:KEY"].toStringList().toString());
+        setKey(key);
+    }
+
     return true;
 }
