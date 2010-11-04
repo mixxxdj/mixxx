@@ -323,7 +323,24 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         QString sBpm = TStringToQString(bpmString.toString());
         processBpmString("XIPH-TEMPO", sBpm);
     }
-
+    /*
+	 * Reading key code information
+	 * Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
+	 * 
+	 * Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
+	 * Assuming no distinction between start and end key, RE uses a "INITIALKEY" 
+	 * or a "KEY" vorbis comment. 
+	 */
+     if (xiph->fieldListMap().contains("KEY")) {
+        TagLib::StringList keyStr = xiph->fieldListMap()["KEY"];
+        QString key = TStringToQString(keyStr.toString());
+        setKey(key);
+    }
+    if (getKey() == "" && xiph->fieldListMap().contains("INITIALKEY")) {
+        TagLib::StringList keyStr = xiph->fieldListMap()["INITIALKEY"];
+        QString key = TStringToQString(keyStr.toString());
+        setKey(key);
+    }
     return true;
 }
 
