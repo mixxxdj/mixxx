@@ -182,6 +182,12 @@ void SoundSource::setChannels(int channels)
 {
     m_iChannels = channels;
 }
+QString SoundSource::getKey(){
+    return m_sKey;
+}
+void SoundSource::setKey(QString key){
+    m_sKey = key;
+}
 
 bool SoundSource::processTaglibFile(TagLib::File& f) {
     if (s_bDebugMetadata)
@@ -275,9 +281,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
     if (!keyFrame.isEmpty()) {
         QString sKey = TStringToQString(keyFrame.front()->toString());
-        if (s_bDebugMetadata)
-            qDebug() << "KEY" << sKey;
-        // TODO(XXX) write key to SoundSource and copy that to the Track
+        setKey(sKey);   
     }
 
     return true;

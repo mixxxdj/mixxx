@@ -44,6 +44,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_GENRE + "," +
                                   LIBRARYTABLE_FILETYPE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
+                                  LIBRARYTABLE_KEY + "," +
                                   LIBRARYTABLE_BPM + "," +
                                   LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
