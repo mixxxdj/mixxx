@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-01 19:37+0000\n"
+"PO-Revision-Date: 2010-11-03 19:35+0000\n"
 "Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-02 04:47+0000\n"
+"X-Launchpad-Export-Date: 2010-11-04 04:47+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -1101,19 +1101,19 @@ msgstr ""
 #: DlgPrefSound#9
 msgctxt "DlgPrefSound#9"
 msgid "Audio device could not be opened"
-msgstr ""
+msgstr "Zvukové zařízení nelze otevřít"
 
 #: DlgPrefSound#10
 msgid "Configuration problem"
-msgstr ""
+msgstr "Problém s konfigurací"
 
 #: DlgPrefSound#11
 msgid "Sound API could not be initialized"
-msgstr ""
+msgstr "Zvukové API nemohlo být inicializováno"
 
 #: DlgPrefSound#12
 msgid "Mixxx - Master and Headphones sharing the same channels"
-msgstr ""
+msgstr "Mixxx - Master a sluchátka sdílejí stejný kanál"
 
 #: DlgPrefSound#13
 msgid ""
@@ -1130,27 +1130,27 @@ msgstr ""
 #: DlgPrefSoundDlg#1
 msgctxt "DlgPrefSoundDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulář1"
 
 #: DlgPrefSoundDlg#2
 msgid "Audio Output"
-msgstr ""
+msgstr "Zvukový výstup"
 
 #: DlgPrefSoundDlg#3
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: DlgPrefSoundDlg#4
 msgid "Headphones"
-msgstr ""
+msgstr "Sluchátka"
 
 #: DlgPrefSoundDlg#5
 msgid "Sample rate (Hz)"
-msgstr ""
+msgstr "Sample rate"
 
 #: DlgPrefSoundDlg#6
 msgid "Sound API"
-msgstr ""
+msgstr "Zvukové API"
 
 #: DlgPrefSoundDlg#7
 msgid "Pitch behaviour"
@@ -1158,7 +1158,7 @@ msgstr ""
 
 #: DlgPrefSoundDlg#8
 msgid "Vinyl emulation"
-msgstr ""
+msgstr "Emulace vinylu"
 
 #: DlgPrefSoundDlg#9
 msgid "Pitch independent time stretch"
@@ -1172,11 +1172,11 @@ msgstr ""
 
 #: DlgPrefSoundDlg#11
 msgid "Latency"
-msgstr ""
+msgstr "Latence"
 
 #: DlgPrefSoundDlg#12
 msgid "256 ms"
-msgstr ""
+msgstr "256 ms"
 
 #: DlgPrefSoundDlg#13
 msgctxt "DlgPrefSoundDlg#13"
@@ -1190,11 +1190,11 @@ msgstr ""
 
 #: DlgPrefSoundDlg#15
 msgid "Fast CPU"
-msgstr ""
+msgstr "Rychlý procesor"
 
 #: DlgPrefSoundDlg#16
 msgid "Slow CPU"
-msgstr ""
+msgstr "Pomalý procesor"
 
 #: DlgPrefSoundDlg#17
 msgid ""
@@ -1202,6 +1202,8 @@ msgid ""
 "playback</li><li>Reduce your latency to improve Mixxx's "
 "responsiveness</li></ul>"
 msgstr ""
+"Tipy:<ul><li>Zvyšte latenci, pokud slyšíte pukání během "
+"přehrávání</li><li>Snižte latenci pro zlepšení odezvy Mixxxu</li></ul>"
 
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
@@ -1210,11 +1212,11 @@ msgstr ""
 
 #: DlgPrefSoundItem#2
 msgid "Form"
-msgstr ""
+msgstr "Formulář"
 
 #: DlgPrefSoundItem#3
 msgid "Type (#)"
-msgstr ""
+msgstr "Typ (#)"
 
 #: DlgPrefVinyl#1
 msgctxt "DlgPrefVinyl#1"
@@ -1224,39 +1226,39 @@ msgstr ""
 #: DlgPrefVinyl#2
 msgctxt "DlgPrefVinyl#2"
 msgid "Configuration error"
-msgstr ""
+msgstr "Chyba nastavení"
 
 #: DlgPrefVinyl#3
 msgctxt "DlgPrefVinyl#3"
 msgid "You cannot send multiple outputs to a single channel"
-msgstr ""
+msgstr "Není možné poslat více výstupů do jednoho kanálu"
 
 #: DlgPrefVinyl#4
 msgctxt "DlgPrefVinyl#4"
 msgid "You cannot use a single pair of channels for both decks"
-msgstr ""
+msgstr "Nelze použít jeden pár kanálů pro oba \"decky\""
 
 #: DlgPrefVinyl#5
 msgctxt "DlgPrefVinyl#5"
 msgid "Audio device could not be opened"
-msgstr ""
+msgstr "Zvukové zařízení nelze otevřít"
 
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulář1"
 
 #: DlgPrefVinylDlg#2
 msgid "Input"
-msgstr ""
+msgstr "Vstup"
 
 #: DlgPrefVinylDlg#3
 msgid "Deck 1"
-msgstr ""
+msgstr "Deck 1"
 
 #: DlgPrefVinylDlg#4
 msgid "Deck 2"
-msgstr ""
+msgstr "Deck 2"
 
 #: DlgPrefVinylDlg#5
 msgid ""
@@ -1264,26 +1266,29 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Řeš"
+"ení problémů</a>"
 
 #: DlgPrefVinylDlg#6
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Předzesilovač gramofonu"
 
 #: DlgPrefVinylDlg#7
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (vypnuto)"
 
 #: DlgPrefVinylDlg#8
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#9
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Nastavení vinylu"
 
 #: DlgPrefVinylDlg#10
 msgid "Vinyl Type"
-msgstr ""
+msgstr "Typ vinylu"
 
 #: DlgPrefVinylDlg#11
 msgid "Lead-in time"
@@ -1291,23 +1296,23 @@ msgstr ""
 
 #: DlgPrefVinylDlg#12
 msgid "seconds"
-msgstr ""
+msgstr "sekundy"
 
 #: DlgPrefVinylDlg#13
 msgid "Control Mode"
-msgstr ""
+msgstr "Režim kontroly"
 
 #: DlgPrefVinylDlg#14
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolutní režim"
 
 #: DlgPrefVinylDlg#15
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relativní režim"
 
 #: DlgPrefVinylDlg#16
 msgid "Scratch Mode"
-msgstr ""
+msgstr "Scratch režim"
 
 #: DlgPrefVinylDlg#17
 msgid "Enable Needle Skip Prevention"
@@ -1315,19 +1320,19 @@ msgstr ""
 
 #: DlgPrefVinylDlg#18
 msgid "Signal Quality"
-msgstr ""
+msgstr "Kvalita signálu"
 
 #: DlgPrefVinylDlg#19
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#20
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr ""
+msgstr "Zvukový hardware"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
@@ -1336,59 +1341,59 @@ msgstr ""
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
 msgid "Library"
-msgstr ""
+msgstr "Knihovna"
 
 #: DlgPreferences#4
 msgid "Interface"
-msgstr ""
+msgstr "Rozhraní"
 
 #: DlgPreferences#5
 msgid "Equalizers"
-msgstr ""
+msgstr "Ekvalizéry"
 
 #: DlgPreferences#6
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Recording"
-msgstr ""
+msgstr "Nahrávání"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Detekce BPM"
 
 #: DlgPreferences#9
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Kontrola vinylu"
 
 #: DlgPreferences#10
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "Živé vysílání"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #: DlgPreferencesDlg#2
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
 msgid "Manage"
-msgstr ""
+msgstr "Správa"
 
 #: DlgPrepare#2
 msgid "Recently Added"
-msgstr ""
+msgstr "Nedávno přidané"
 
 #: DlgPrepare#3
 msgid "All Songs"
-msgstr ""
+msgstr "Všechny songy"
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -1396,88 +1401,88 @@ msgstr ""
 
 #: DlgPrepare#5
 msgid "Select All"
-msgstr ""
+msgstr "Vybrat vše"
 
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "Analyze"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor stopy"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Song:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Titul:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Umělec:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
-msgstr ""
+msgstr "Album:"
 
 #: DlgTrackInfo#6
 msgid "Date:"
-msgstr ""
+msgstr "Datum:"
 
 #: DlgTrackInfo#7
 msgid "Track #:"
-msgstr ""
+msgstr "Stopa #:"
 
 #: DlgTrackInfo#8
 msgid "Genre:"
-msgstr ""
+msgstr "Žánr:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Jméno souboru:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
-msgstr ""
+msgstr "Doba trvání:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Typ souboru:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Komentáře:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "Obnovit metadata stopy ze souboru."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Informace o stopě (klikněte pro rozbalení)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
-msgstr ""
+msgstr "BPM stopy: "
 
 #: DlgTrackInfo#18
 msgid "x2"
-msgstr ""
+msgstr "x2"
 
 #: DlgTrackInfo#19
 msgid "/2"
-msgstr ""
+msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
@@ -1485,11 +1490,11 @@ msgstr ""
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
-msgstr ""
+msgstr "Tip: Pomocí knihovny Analýza náhledu spustit BPM detekci."
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
-msgstr ""
+msgstr "BPM stopy"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
@@ -1498,7 +1503,7 @@ msgstr ""
 #: DlgTrackInfo#24
 msgctxt "DlgTrackInfo#24"
 msgid "Position"
-msgstr ""
+msgstr "Pozice"
 
 #: DlgTrackInfo#25
 msgid "Hotcue"
@@ -1506,7 +1511,7 @@ msgstr ""
 
 #: DlgTrackInfo#26
 msgid "Label"
-msgstr ""
+msgstr "Štítek"
 
 #: DlgTrackInfo#27
 msgid "Activate Cue"
