@@ -36,7 +36,7 @@ public:
 private:
     ControlLogpotmeter *potmeterPregain;
     ControlPotmeter *m_pReplayGainBoost, *m_pEnableRG;
-    ControlObject *m_pControlReplayGain, *m_pTrackGain;
+    ControlObject *m_pControlReplayGain, *m_pTotalGain;
     float m_fReplayGainCorrection;
 
 };
