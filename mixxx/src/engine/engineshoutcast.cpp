@@ -339,7 +339,7 @@ bool EngineShoutcast::serverConnect()
         if (m_pShout)
             shout_close(m_pShout);
 		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
-		errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+		
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -363,7 +363,7 @@ bool EngineShoutcast::serverConnect()
 	m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
 	if(m_pShout){
 		shout_close(m_pShout);
-		errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+		//errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
 	}
 
     return false;
@@ -387,10 +387,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-                if ( m_iShoutFailures > 3 )
-                    serverConnect();
-                else
+                if ( m_iShoutFailures > 3 ){
+                    if(!serverConnect())
+                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                 }                       
+                 else{
                     m_iShoutFailures++;
+                 }
 
                 return;
             } else {
@@ -401,10 +404,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-            if ( m_iShoutFailures > 3 )
-                    serverConnect();
-                else
-                    m_iShoutFailures++;
+            if ( m_iShoutFailures > 3 ){
+                    if(!serverConnect())
+                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+             }                       
+             else{
+                m_iShoutFailures++;
+             }
 
             return;
         } else {
@@ -414,6 +420,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));
     } else {
         qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
+       // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
 }
 
@@ -439,6 +446,10 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
 				props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
 				ErrorDialogHandler::instance()->requestErrorDialog(props);
 			}
+            else{
+                errorDialog(tr("Mixxx could not connect to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+
+            }
 		}
         //send to shoutcast, if connection has been established
         if (m_iShoutStatus != SHOUTERR_CONNECTED)

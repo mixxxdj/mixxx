@@ -2,7 +2,7 @@
 /*      Stanton SCS.1m MIDI controller script v1.1              */
 /*          Copyright (C) 2009, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.x                                 */
+/*      For Mixxx version 1.8.x                                 */
 /****************************************************************/
 
 function StantonSCS1m() {}
@@ -21,7 +21,7 @@ StantonSCS1m.debug = false; // Enable/disable debugging messages to the console
 StantonSCS1m.faderStart = true; // Allows decks to start when their channel or cross fader is opened (toggleable with the top button)
 StantonSCS1m.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1m.channel = 0;   // MIDI channel the device is on
-StantonSCS1m.swVersion = "1.7";   // Mixxx version for display
+StantonSCS1m.swVersion = "1.8";   // Mixxx version for display
 StantonSCS1m.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messages for this device
 StantonSCS1m.modifier = { };    // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS1m.selectKnobMode = "browse"; // Current mode for the gray select knob
@@ -92,6 +92,10 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Master]","crossfader","StantonSCS1m.crossFaderStart");
     engine.connectControl("[Channel1]","volume","StantonSCS1m.ch1FaderStart");
     engine.connectControl("[Channel2]","volume","StantonSCS1m.ch2FaderStart");
+    
+	//  Initialize the vinyl LEDs if the mapping is loaded after a song is
+    StantonSCS1m.durationChange1(engine.getValue("[Channel1]","duration"));
+    StantonSCS1m.durationChange2(engine.getValue("[Channel2]","duration"));
     
     // Set LCD text
     StantonSCS1m.initLCDs();
@@ -342,7 +346,7 @@ StantonSCS1m.pitchRangeKnob2 = function (channel, control, value, status) {
 StantonSCS1m.pitchRangeKnob = function (value,deck) {
     if (StantonSCS1m.checkInSetup()) return;
     var currentValue = engine.getValue("[Channel"+deck+"]","rateRange");
-    var newValue = currentValue+(value-64)*.01;
+    var newValue = Math.round(currentValue*100+(value-64))*0.01;
     if (newValue<=0.01) newValue=0.01;
     if (newValue>1) newValue=1;
     engine.setValue("[Channel"+deck+"]","rateRange",newValue);
@@ -541,6 +545,7 @@ StantonSCS1m.pitchColor = function (value, deck) {
     if (value<=0.25) midi.sendShortMsg(No,49+offset,96);
     else if (value<=0.5) midi.sendShortMsg(No,49+offset,127);
     else if (value>0.5) midi.sendShortMsg(No,49+offset,32);
+    engine.trigger("[Channel"+deck+"]","rate");    // Force pitch display to update
 }
 
 // Virtual platter rings & time displays
@@ -593,6 +598,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
             StantonSCS1m.lastTime[deck]=message;
         }
         // Flash near the end of the track
+        // TODO: Use a timer for this
         if (trackTimeRemaining<=30 && trackTimeRemaining>15) {   // If <30s left, flash the LCD slowly
             if (StantonSCS1m.displayFlash[deck]==-1) StantonSCS1m.displayFlash[deck] = new Date();
             if (new Date() - StantonSCS1m.displayFlash[deck]>500) {

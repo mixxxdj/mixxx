@@ -32,7 +32,7 @@ class PortMIDI(Dependence):
             build.env.Append(LIBS='advapi32')
 
     def sources(self, build):
-        return ['midi/midideviceportmidi.cpp']
+        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
 class OpenGL(Dependence):
 
@@ -365,6 +365,7 @@ class MixxxCore(Feature):
 
                    "midi/mididevice.cpp",
                    "midi/mididevicemanager.cpp",
+                   "midi/midideviceenumerator.cpp",
                    "midi/midimapping.cpp",
                    "midi/midiinputmappingtablemodel.cpp",
                    "midi/midioutputmappingtablemodel.cpp",
