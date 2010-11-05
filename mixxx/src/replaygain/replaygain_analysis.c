@@ -149,11 +149,11 @@ static double           rsum;
 static int              freqindex;
 #ifndef __sun
 static Uint32_t  A [(size_t)(STEPS_per_dB * MAX_dB)];
-static Uint32_t  B [(size_t)(STEPS_per_dB * MAX_dB)];
+/*static Uint32_t  B [(size_t)(STEPS_per_dB * MAX_dB)];*/
 #else
 /* [JEC] Solaris Forte compiler doesn't like float calc in array indices */
 static Uint32_t  A [12000];
-static Uint32_t  B [12000];
+/*static Uint32_t  B [12000];*/
 #endif
 
 /* for each filter:
@@ -280,7 +280,7 @@ InitGainAnalysis ( long samplefreq )
     lout         = loutbuf   + MAX_ORDER;
     rout         = routbuf   + MAX_ORDER;
 
-    memset ( B, 0, sizeof(B) );
+    //memset ( B, 0, sizeof(B) );
 
     return INIT_GAIN_ANALYSIS_OK;
 }
@@ -409,7 +409,7 @@ GetTitleGain ( void )
     retval = analyzeResult ( A, sizeof(A)/sizeof(*A) );
 
     for ( i = 0; i < sizeof(A)/sizeof(*A); i++ ) {
-        B[i] += A[i];
+        //B[i] += A[i];
         A[i]  = 0;
     }
 
@@ -422,10 +422,10 @@ GetTitleGain ( void )
 }
 
 
-Float_t
-GetAlbumGain ( void )
-{
-    return analyzeResult ( B, sizeof(B)/sizeof(*B) );
-}
+//Float_t
+//GetAlbumGain ( void )
+//{
+//    return analyzeResult ( B, sizeof(B)/sizeof(*B) );
+//}
 
 /* end of replaygain_analysis.c */

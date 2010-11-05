@@ -10,6 +10,7 @@
 
 #include "renderobject.h"
 
+
 class QDomNode;
 class QPainter;
 class QPaintEvent;
@@ -23,13 +24,22 @@ class WaveformRenderSignal : public RenderObject {
     Q_OBJECT
 public:
     WaveformRenderSignal(const char *group, WaveformRenderer *parent);
+    ~WaveformRenderSignal();
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
+    void drawgain(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust, double gain);
     void newTrack(TrackPointer pTrack);
 
+public slots:
+    void slotUpdateGain(double gain);
+
 private:
+    float m_fGain;
+
     WaveformRenderer *m_pParent;
+    ControlObjectThreadMain *m_pGain;
+
     int m_iWidth, m_iHeight;
     QVector<QLineF> m_lines;
     TrackPointer m_pTrack;
