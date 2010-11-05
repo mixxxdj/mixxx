@@ -100,7 +100,7 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
         delete m_library;
         m_library = NULL;
     }
-
+    
     if(!m_library || !m_library->isLoaded()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
