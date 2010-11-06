@@ -64,12 +64,7 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
 void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 {
 //    if (m_fOldBaseRate != m_dBaseRate)
-    if (isnan(dBaseRate))
-		dBaseRate = 0.0f;
-		
-    m_fOldBaseRate = m_dBaseRate; //Save the old baserate when it changes
-    if(isnan(m_fOldBaseRate))
-    	m_fOldBaseRate = 0.0f;
+        m_fOldBaseRate = m_dBaseRate; //Save the old baserate when it changes
 
     m_dBaseRate = dBaseRate*m_dTempo;
 }
