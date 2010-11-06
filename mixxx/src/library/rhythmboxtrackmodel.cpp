@@ -159,7 +159,6 @@ TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     }
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
-    pTrack->setLocation(trackLocation);
 
     // Have QObject handle deleting this track
     return TrackPointer(pTrack, &QObject::deleteLater);

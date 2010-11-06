@@ -167,25 +167,15 @@ void LibraryScanner::run()
 
     QTime t2;
     t2.start();
-    
     //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
-    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
-    qDebug() << "upgrade filename is " << upgrade_filename;
-    QFile upgradefile(upgrade_filename);
-    if (!upgradefile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-	    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
-	    connect(&libImport, SIGNAL(progress(QString)),
-	            m_pProgress, SLOT(slotUpdate(QString)),
-	            Qt::BlockingQueuedConnection);
-	    m_database.transaction();
-	    libImport.import();
-	    m_database.commit();
-	    qDebug("Legacy importer took %d ms", t2.elapsed());
-	    
-	}
-	else
-		upgradefile.close();
+    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
+    connect(&libImport, SIGNAL(progress(QString)),
+            m_pProgress, SLOT(slotUpdate(QString)),
+            Qt::BlockingQueuedConnection);
+    m_database.transaction();
+    libImport.import();
+    m_database.commit();
+    qDebug("Legacy importer took %d ms", t2.elapsed());
 
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
@@ -366,8 +356,6 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
 
     //Calculate a hash of the directory's file list.
     newHash = qHash(newHashStr);
-    
-    //qDebug() << dirPath << "new hash" << newHash;
 
     //Try to retrieve a hash from the last time that directory was scanned.
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
@@ -378,7 +366,6 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
     {
         //If we didn't know about this directory before...
         if (!prevHashExists) {
-        	qDebug() << "creating hash";
             m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
         }
         else //Contents of a known directory have changed.

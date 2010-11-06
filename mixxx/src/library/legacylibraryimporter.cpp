@@ -174,16 +174,9 @@ void LegacyLibraryImporter::import()
             }
         }
 
-        QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
-        //now create stub so that the library is not readded next time program loads
-        QFile upgradefile(upgrade_filename);
-        if (!upgradefile.open(QIODevice::WriteOnly | QIODevice::Text))
-            qDebug() << "Couldn't open" << upgrade_filename << "for writing";
-        else
-        {
-            file.write("",0);
-            file.close();
-        }
+        //now change the file to mixxxtrack.bak so that its not readded next time program loads
+        file.copy(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxtrack.bak"));
+        file.remove();
     } else {
         qDebug() << errorMsg << " line: " << errorLine << " column: " << errorColumn;
     }
