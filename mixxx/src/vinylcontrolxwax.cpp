@@ -557,7 +557,8 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		//This means if we are playing, and we disable vinyl control,
 		//the track will keep playing at the previous rate.
 		//This allows for single-deck control, dj handoffs, etc.
-		togglePlayButton(TRUE);
+
+		togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
 		controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
 		resetSteadyPitch(0.0f, 0.0f);
 		bForceResync = true; 
