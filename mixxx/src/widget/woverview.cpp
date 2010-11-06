@@ -197,14 +197,17 @@ void WOverview::cueChanged(double v) {
 
 void WOverview::loopStartChanged(double v) {
     m_dLoopStart = v;
+    update();
 }
 
 void WOverview::loopEndChanged(double v) {
     m_dLoopEnd = v;
+    update();
 }
 
 void WOverview::loopEnabledChanged(double v) {
     m_bLoopEnabled = !(v == 0.0f);
+    update();
 }
 
 void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuration)
