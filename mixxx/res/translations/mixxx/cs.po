@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-03 19:35+0000\n"
+"PO-Revision-Date: 2010-11-05 09:24+0000\n"
 "Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-04 04:47+0000\n"
+"X-Launchpad-Export-Date: 2010-11-06 04:47+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -1535,19 +1535,19 @@ msgstr ""
 
 #: DlgTrackInfo#32
 msgid "&Cancel"
-msgstr ""
+msgstr "&zrušit"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
-msgstr ""
+msgstr "&další >>"
 
 #: EncoderMp3#1
 msgid "Encoder"
-msgstr ""
+msgstr "Encoder"
 
 #: EncoderMp3#2
 msgid ""
@@ -1555,12 +1555,17 @@ msgid ""
 "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
 "exists on your system </html>"
 msgstr ""
+"<html>Mixxx nemůže najít MP3 encoder lame. <p>Nainstalujte prosím libmp3lame "
+"(známou jako lame) a zkontrolujte, jestli je /usr/lib/libmp3lame.so ve vašem "
+"systému </html>"
 
 #: EncoderMp3#3
 msgid ""
 "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
 "lame_enc.dll in the directory you have installed Mixxx </html>"
 msgstr ""
+"<html>Mixxx nemůže najít MP3 encoder lame. <p>Vložte prosím lame_enc.dll do "
+"adresáře, který nainstaloval Mixxx </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -1579,17 +1584,19 @@ msgstr ""
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
 msgid "Recording"
-msgstr ""
+msgstr "Nahrávání"
 
 #: EngineRecord#2
 msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
+"<html>Není možné vytvořit zvukový soubor pro nahrávání!<p><br>Možná máte "
+"nedostatek místa na disku a nebo oprávnění zapisovat do souboru.</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr ""
+msgstr "Mixxx narazil na problém"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
@@ -1605,29 +1612,31 @@ msgstr ""
 
 #: EngineShoutcast#5
 msgid "Shoutcast aborted connect after 3 tries"
-msgstr ""
+msgstr "Připojení k Shoutcast bylo přerušeno po třetím  pokusu"
 
 #: EngineShoutcast#6
 msgid ""
 "Please check your connection to the Internet and verify that your username "
 "and password are correct."
 msgstr ""
+"Zkontrolujte prosím vaše připojení k internetu a ověřte, jestli je správně "
+"zadáno uživatelské jméno a heslo."
 
 #: EngineShoutcast#7
 msgid "Mixxx could not connect to the server"
-msgstr ""
+msgstr "Mixxx se nemohl spojit se serverem"
 
 #: EngineShoutcast#8
 msgid "Live broadcasting"
-msgstr ""
+msgstr "Živé vysílání"
 
 #: EngineShoutcast#9
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr ""
+msgstr "Mixxx se úspěšně připojil k Shoutcast serveru"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr ""
+msgstr "Mixxx se úspěšně odpojil od Shoutcast serveru"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
