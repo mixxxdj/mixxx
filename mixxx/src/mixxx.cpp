@@ -847,8 +847,10 @@ void MixxxApp::initMenuBar()
     //optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
-    m_pOptionsMenu->addAction(m_pOptionsVinylControl);
-    m_pOptionsMenu->addAction(m_pOptionsVinylControl2);
+	m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"));
+    m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
+    m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
+    m_pOptionsMenu->addMenu(m_pVinylControlMenu);
 #endif
     m_pOptionsMenu->addAction(m_pOptionsRecord);
 #ifdef __SHOUTCAST__
