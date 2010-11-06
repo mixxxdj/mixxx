@@ -202,6 +202,7 @@ class MixxxApp : public QMainWindow
     QAction *m_pOptionsBeatMark;
 
 #ifdef __VINYLCONTROL__
+	QMenu *m_pVinylControlMenu;
     QAction *m_pOptionsVinylControl;
     QAction *m_pOptionsVinylControl2;
 #endif
