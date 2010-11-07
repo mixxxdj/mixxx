@@ -838,30 +838,30 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     }
 
     QString filename = "";
-    QFile* input;
+    QFile input;
 
     if (scriptPaths.length() == 0) {
         // If we aren't given any paths to search, assume that scriptName
         // contains the full file name
         filename = scriptName;
-        input = new QFile(filename);
+        input.setFileName(filename);
     } else {
         QListIterator<QString> it(scriptPaths);
         do {
             filename = it.next()+scriptName;
-            input = new QFile(filename);
-        } while (it.hasNext() && !input->exists());
+            input.setFileName(filename);
+        } while (it.hasNext() && !input.exists());
     }
 
     qDebug() << "MidiScriptEngine: Loading" << filename;
 
     // Read in the script file
-    if (!input->open(QIODevice::ReadOnly)) {
+    if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")
                 .arg(filename)
-                .arg(input->error())
-                .arg(input->errorString());
+                .arg(input.error())
+                .arg(input.errorString());
 
         if (m_midiDebug) qCritical() << errorLog;
         else {
@@ -870,16 +870,16 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
             props->setType(DLG_WARNING);
             props->setTitle("MIDI script file problem");
             props->setText(QString("There was a problem opening the MIDI script file %1.").arg(filename));
-            props->setInfoText(input->errorString());
+            props->setInfoText(input.errorString());
 
             ErrorDialogHandler::instance()->requestErrorDialog(props);
             return false;
         }
     }
     QString scriptCode = "";
-    scriptCode.append(input->readAll());
+    scriptCode.append(input.readAll());
     scriptCode.append('\n');
-    input->close();
+    input.close();
 
     // Check syntax
     QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
