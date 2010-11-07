@@ -58,7 +58,8 @@ void DlgPrefReplayGain::loadSettings()
 void DlgPrefReplayGain::setDefaults()
 {
     EnableGain->setChecked(true);
-    EnableAnalyser->setChecked(false);
+    // Turn ReplayGain Analyser on by default as it does not give appreciable delay on recent hardware (<5 years old).
+    EnableAnalyser->setChecked(true);
     SliderBoost->setValue(6);
     lcddB -> display(6);
     slotUpdate();

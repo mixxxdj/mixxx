@@ -12,9 +12,9 @@ AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigRG = _config;
     m_iStepControl = 0;
 }
-//TODO: Rewriting replaygain/replagain_analys.* may improve performances. Anyway those willing to do should be sure of
+//TODO: On may think on rewriting replaygain/replagain_analys.* to improve performances. Anyway those willing to do should be sure of
 //		the resulting values to exactly coincide with "classical" replaygain_analysis.* ones.
-//		On the other hand, every other ReplayGain tagger uses exactly these methods and we do not have problems about
+//		On the other hand, every other ReplayGain tagger uses exactly these methods so that we do not have problems about
 //		values to coincide.
 
 void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -22,8 +22,8 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
     bool bAnalyserEnabled = (bool)m_pConfigRG->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     float fRG = tio->getRG();
     if(totalSamples == 0 || fRG != 0 || !bAnalyserEnabled) {
-        qDebug() << "Replaygain Analyser will not start.";
-        if (fRG != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fRG) << "dB for track :" <<(tio->getFilename());
+        //qDebug() << "Replaygain Analyser will not start.";
+        //if (fRG != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fRG) << "dB for track :" <<(tio->getFilename());
         return;
     }
     m_iStepControl = InitGainAnalysis( (long)sampleRate );
@@ -52,6 +52,8 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
     delete m_fLems;
     delete m_fRems;
+    m_fLems = NULL;
+    m_fRems = NULL;
 
 }
 
@@ -62,13 +64,15 @@ void AnalyserGain::finalise(TrackPointer tio) {
 
     if(m_iStepControl!=1) return;
 
-    //TODO: Digg into replay_gain code and modify it so that
-    // it directly sends the result as relative peaks.
-    // In that way there is no need to do this:
+    //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
+    // This means that we are going to transform from dB to peaks and viceversa.
+    // One may think to digg into replay_gain code and modify it so that
+    // it directly sends results as relative peaks.
+    // In that way there is no need to spend resources in calculating log10 or pow.
 
     float fGain_Result = pow(10,GetTitleGain()/20);
     tio->setRG(fGain_Result);
-    if(fGain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(fGain_Result) << "dB for track " << (tio->getFilename());
+    //if(fGain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(fGain_Result) << "dB for track " << (tio->getFilename());
     m_iStepControl=0;
     fGain_Result=0;
     //m_iStartTime = clock() - m_iStartTime;
