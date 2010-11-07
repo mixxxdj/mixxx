@@ -543,22 +543,27 @@ class Shoutcast(Feature):
             return
 
         libshout_found = conf.CheckLib(['libshout','shout'])
+        build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-
-        vorbisenc_found = conf.CheckLib(['vorbisenc'])
-        build.env.Append(CPPDEFINES = '__SHOUTCAST__')
-
+        
+        # libvorbisenc does only exist on Linux and OSX, on Windows it is
+        # included in vorbisfile.dll
+        if not build.platform_is_windows:
+            vorbisenc_found = conf.CheckLib(['vorbisenc'])
+            if not vorbisenc_found:
+                raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
+        
+        #pthread library needs to be explicitly linked on Windows
         if build.platform_is_windows:
             build.env.Append(LIBS = 'pthreadVC2')
             build.env.Append(LIBS = 'pthreadVCE2')
             build.env.Append(LIBS = 'pthreadVSE2')
-        elif not vorbisenc_found:
-            # libvorbisenc does only exist on Linux and OSX, on Windows it is
-            # included in vorbisfile.dll
-            raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-
+            build.env.Append(LIBS = 'Ws2_32')
+            build.env.Append(LIBS = 'winmm')
+            #libshout is stupid and shout be linked against all of these on its own.
+            
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
