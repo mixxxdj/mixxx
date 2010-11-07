@@ -162,16 +162,24 @@ void DlgPrefMidiBindings::enumeratePresets()
     // when a user has their controller plugged in)
     comboBoxPreset->addItem("...");
 
-    QString midiDirPath = m_pConfig->getConfigPath().append("midi/");
-    QDirIterator it(midiDirPath, QDirIterator::Subdirectories);
-    while (it.hasNext())
-    {
-        it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
-        QString curMapping = it.fileName();
-        if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
+    // paths to search for midi presets
+    QList<QString> midiDirPaths;
+    midiDirPaths.append(LPRESETS_PATH);
+    midiDirPaths.append(m_pConfig->getConfigPath().append("midi/"));
+
+    QDirIterator* it;
+    QListIterator<QString> itpth(midiDirPaths);
+    while (itpth.hasNext()) {
+        it = new QDirIterator(itpth.next());
+        while (it->hasNext())
         {
-            curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the .midi.xml
-            presetsList.append(curMapping);
+            it->next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
+            QString curMapping = it->fileName();
+            if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
+            {
+                curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the .midi.xml
+                presetsList.append(curMapping);
+            }
         }
     }
     //Sort in alphabetical order
@@ -285,7 +293,10 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
          }
     }
 
-    QString filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
+    QString filename = LPRESETS_PATH + name + MIDI_MAPPING_EXTENSION;
+    QFile ftest(filename);
+    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
+
     if (!filename.isNull()) m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);    // It's applied on prefs close
     m_pInputMappingTableView->update();
 
